@@ -375,8 +375,8 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   FuzzerData fuzz_data(data, size);
   const size_t node_count =
       kMinNodeCount + fuzz_data.NextByte() % kMaxNodeCount;
-  ui::AXNodeID max_id;
-  generator.GenerateInitialUpdate(fuzz_data, node_count, max_id);
+  generator.GenerateInitialUpdate(fuzz_data, node_count);
+  ui::AXNodeID max_id = generator.GetMaxAssignedID();
 
   ui::AXTree* tree = generator.GetTree();
 

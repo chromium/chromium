@@ -385,6 +385,22 @@ fuzzer_test("ax_node_position_fuzzer") {
   deps = [ ":accessibility" ]
 }
 
+if (is_win) {
+  fuzzer_test("ax_platform_node_textrangeprovider_win_fuzzer") {
+    sources = [
+      "ax_tree_fuzzer_util.cc",
+      "ax_tree_fuzzer_util.h",
+      "platform/ax_platform_node_textrangeprovider_win_fuzzer.cc",
+    ]
+
+    deps = [
+      ":accessibility",
+      ":test_support",
+      "//base/test:test_support",
+    ]
+  }
+}
+
 test("accessibility_perftests") {
   testonly = true
   sources = [ "ax_node_position_perftest.cc" ]

@@ -15,11 +15,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-using TestPositionType =
-    std::unique_ptr<ui::AXPosition<ui::AXNodePosition, ui::AXNode>>;
-using TestPositionRange =
-    ui::AXRange<ui::AXPosition<ui::AXNodePosition, ui::AXNode>>;
-
 FuzzerData::FuzzerData(const unsigned char* data, size_t size)
     : data_(data), data_size_(size), data_index_(0) {}
 
@@ -44,11 +39,10 @@ ui::AXTree* AXTreeFuzzerGenerator::GetTree() {
 }
 
 void AXTreeFuzzerGenerator::GenerateInitialUpdate(FuzzerData& fuzz_data,
-                                                  int node_count,
-                                                  ui::AXNodeID& max_node_id) {
-  max_node_id = 1;
+                                                  int node_count) {
+  max_assigned_node_id_ = 1;
   ui::AXTreeUpdate initial_state;
-  initial_state.root_id = max_node_id++;
+  initial_state.root_id = max_assigned_node_id_++;
 
   initial_state.has_tree_data = true;
   initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -61,76 +55,31 @@ void AXTreeFuzzerGenerator::GenerateInitialUpdate(FuzzerData& fuzz_data,
   parent_index_stack.push(initial_state.nodes.size());
   initial_state.nodes.push_back(root);
 
-  // As we give out ids sequentially, starting at 1, the max_node_id is
-  // equivalent to the node count.
+  // As we give out ids sequentially, starting at 1, the
+  // ...max_assigned_node_id_... is equivalent to the node count.
   while (fuzz_data.RemainingBytes() >= kMinimumNewNodeFuzzDataSize &&
-         max_node_id < node_count) {
+         max_assigned_node_id_ < node_count) {
     size_t extra_data_size =
         fuzz_data.RemainingBytes() - kMinimumNewNodeFuzzDataSize;
 
-    // Create a node.
-    ui::AXNodeData node;
-    node.id = max_node_id++;
-    // Connect parent to this node.
     ui::AXNodeData& parent = initial_state.nodes[parent_index_stack.top()];
-    parent.child_ids.push_back(node.id);
+
+    // Create a node.
+    ui::AXNodeData node = CreateChildNodeData(parent, max_assigned_node_id_++);
 
     // Determine role.
     node.role = GetInterestingRole(fuzz_data.NextByte(), parent.role);
 
     // Add role-specific properties.
-    if (node.role == ax::mojom::Role::kInlineTextBox) {
-      node.SetName(
-          parent.GetStringAttribute(ax::mojom::StringAttribute::kName));
-    } else if (node.role == ax::mojom::Role::kLineBreak) {
-      node.SetName("\n");
-    } else if (ui::IsText(node.role)) {
-      size_t text_size =
-          kMinTextFuzzDataSize + fuzz_data.NextByte() % kMaxTextFuzzDataSize;
-      if (text_size > extra_data_size)
-        text_size = extra_data_size;
-      extra_data_size -= text_size;
-      node.SetName(
-          GenerateInterestingText(fuzz_data.NextBytes(text_size), text_size));
-    }
+    AddRoleSpecificProperties(
+        fuzz_data, node,
+        parent.GetStringAttribute(ax::mojom::StringAttribute::kName),
+        extra_data_size);
 
-    enum NextNodeRelationship {
-      // Next node is a child of this node. (This node is a parent.)
-      kChild,
-      // Next node is sibling to this node. (This node is a leaf.)
-      kSibling,
-      // Next node is sibling to an ancestor. (This node is a leaf.)
-      kSiblingToAncestor
-    };
-
-    NextNodeRelationship next_node_relationship;
-    // Determine the relationship of the next node from fuzz data.
-    if (ui::CanHaveInlineTextBoxChildren(node.role)) {
-      // Force this to have a inline text child.
-      next_node_relationship = NextNodeRelationship::kChild;
-    } else if (node.role == ax::mojom::Role::kInlineTextBox) {
-      // Force next node to be a sibling to an ancestor.
-      next_node_relationship = NextNodeRelationship::kSiblingToAncestor;
-    } else {
-      // Determine next node using fuzz data.
-      switch (fuzz_data.NextByte() % 3) {
-        case 0:
-          if (CanHaveChildren(node.role)) {
-            next_node_relationship = NextNodeRelationship::kChild;
-            break;
-          }
-          ABSL_FALLTHROUGH_INTENDED;
-        case 1:
-          next_node_relationship = NextNodeRelationship::kSibling;
-          break;
-        case 2:
-          next_node_relationship = NextNodeRelationship::kSiblingToAncestor;
-          break;
-      }
-    }
-
+    // Determine the relationship of the next node from fuzz data. See
+    // implementation of `DetermineNextNodeRelationship` for details.
     size_t ancestor_pop_count;
-    switch (next_node_relationship) {
+    switch (DetermineNextNodeRelationship(node.role, fuzz_data.NextByte())) {
       case kChild:
         CHECK(CanHaveChildren(node.role));
         parent_index_stack.push(initial_state.nodes.size());
@@ -152,6 +101,211 @@ void AXTreeFuzzerGenerator::GenerateInitialUpdate(FuzzerData& fuzz_data,
   // Run with --v=1 to aid in debugging a specific crash.
   VLOG(1) << "Input accessibility tree:\n" << initial_state.ToString();
   tree_manager_.SetTree(std::make_unique<ui::AXTree>(initial_state));
+}
+
+// Pre-order depth first walk of tree. Skip over deleted subtrees.
+void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
+    const ui::AXNode* node,
+    ui::AXTreeUpdate& tree_update,
+    FuzzerData& fuzz_data,
+    std::set<ui::AXNodeID>& updated_nodes) {
+  // Stop traversing if we run out of fuzz data.
+  if (fuzz_data.RemainingBytes() <= kMinimumNewNodeFuzzDataSize)
+    return;
+  size_t extra_data_size =
+      fuzz_data.RemainingBytes() - kMinimumNewNodeFuzzDataSize;
+
+  AXTreeFuzzerGenerator::TreeUpdateOperation operation = kNoOperation;
+  if (!updated_nodes.count(node->id()))
+    operation = DetermineTreeUpdateOperation(node, fuzz_data.NextByte());
+
+  switch (operation) {
+    case kAddChild: {
+      // Determine where to insert the node.
+      // Create node and attach to parent.
+      ui::AXNodeData parent = node->data();
+      ui::AXNodeData child =
+          CreateChildNodeData(parent, max_assigned_node_id_++);
+
+      // Determine role.
+      child.role = GetInterestingRole(fuzz_data.NextByte(), node->GetRole());
+
+      // Add role-specific properties.
+      AddRoleSpecificProperties(
+          fuzz_data, child,
+          node->GetStringAttribute(ax::mojom::StringAttribute::kName),
+          extra_data_size);
+      // Also add inline text child if we can.
+      ui::AXNodeData inline_text_data;
+      if (ui::CanHaveInlineTextBoxChildren(child.role)) {
+        inline_text_data = CreateChildNodeData(child, max_assigned_node_id_++);
+        inline_text_data.role = ax::mojom::Role::kInlineTextBox;
+        inline_text_data.SetName(
+            child.GetStringAttribute(ax::mojom::StringAttribute::kName));
+      }
+      // Add both the current node (parent) and the child to the tree update.
+      tree_update.nodes.push_back(parent);
+      tree_update.nodes.push_back(child);
+      updated_nodes.emplace(parent.id);
+      updated_nodes.emplace(child.id);
+      if (inline_text_data.id != ui::kInvalidAXNodeID) {
+        tree_update.nodes.push_back(inline_text_data);
+        updated_nodes.emplace(inline_text_data.id);
+      }
+      break;
+    }
+    case kRemoveNode: {
+      const ui::AXNode* parent = node->GetParent();
+      if (updated_nodes.count(parent->id()))
+        break;
+      // Determine what node to delete.
+      // To delete a node, just find the parent and update the child list to
+      // no longer include this node.
+      ui::AXNodeData parent_update = parent->data();
+      parent_update.child_ids.erase(
+          std::remove(parent_update.child_ids.begin(),
+                      parent_update.child_ids.end(), node->id()),
+          parent_update.child_ids.end());
+      tree_update.nodes.push_back(parent_update);
+      updated_nodes.emplace(parent_update.id);
+
+      // This node was deleted, don't traverse to the subtree.
+      return;
+    }
+      ABSL_FALLTHROUGH_INTENDED;
+    case kTextChange: {
+      // Modify the text.
+      const ui::AXNode* child_inline_text = node->GetFirstChild();
+      if (!child_inline_text ||
+          child_inline_text->GetRole() != ax::mojom::Role::kInlineTextBox) {
+        break;
+      }
+      ui::AXNodeData static_text_data = node->data();
+      ui::AXNodeData inline_text_data = child_inline_text->data();
+      size_t text_size =
+          kMinTextFuzzDataSize + fuzz_data.NextByte() % kMaxTextFuzzDataSize;
+      if (text_size > extra_data_size)
+        text_size = extra_data_size;
+      extra_data_size -= text_size;
+      inline_text_data.SetName(
+          GenerateInterestingText(fuzz_data.NextBytes(text_size), text_size));
+      static_text_data.SetName(inline_text_data.GetStringAttribute(
+          ax::mojom::StringAttribute::kName));
+      tree_update.nodes.push_back(static_text_data);
+      tree_update.nodes.push_back(inline_text_data);
+      updated_nodes.emplace(static_text_data.id);
+      updated_nodes.emplace(inline_text_data.id);
+      break;
+    }
+    case kNoOperation:
+      break;
+  }
+
+  // Visit subtree.
+  for (auto iter = node->AllChildrenBegin(); iter != node->AllChildrenEnd();
+       ++iter) {
+    RecursiveGenerateUpdate(iter.get(), tree_update, fuzz_data, updated_nodes);
+  }
+}
+
+// When building a tree update, we must take care to not create an
+// unserializable tree. If the tree does not serialize, things like
+// TestAXTreeObserver will not be able to handle the incorrectly serialized
+// tree. This will require us to abort the fuzz run.
+bool AXTreeFuzzerGenerator::GenerateTreeUpdate(FuzzerData& fuzz_data,
+                                               size_t node_count) {
+  ui::AXTreeUpdate tree_update;
+  std::set<ui::AXNodeID> updated_nodes;
+  RecursiveGenerateUpdate(tree_manager_.GetRootAsAXNode(), tree_update,
+                          fuzz_data, updated_nodes);
+  return GetTree()->Unserialize(tree_update);
+}
+
+ui::AXNodeID AXTreeFuzzerGenerator::GetMaxAssignedID() const {
+  return max_assigned_node_id_;
+}
+
+ui::AXNodeData AXTreeFuzzerGenerator::CreateChildNodeData(
+    ui::AXNodeData& parent,
+    ui::AXNodeID new_node_id) {
+  ui::AXNodeData node;
+  node.id = new_node_id;
+  // Connect parent to this node.
+  parent.child_ids.push_back(node.id);
+  return node;
+}
+
+// Determine the relationship of the next node from fuzz data.
+AXTreeFuzzerGenerator::NextNodeRelationship
+AXTreeFuzzerGenerator::DetermineNextNodeRelationship(ax::mojom::Role role,
+                                                     unsigned char byte) {
+  // Force this to have a inline text child if it can.
+  if (ui::CanHaveInlineTextBoxChildren(role))
+    return NextNodeRelationship::kChild;
+
+  // Don't allow inline text boxes to have children or siblings.
+  if (role == ax::mojom::Role::kInlineTextBox)
+    return NextNodeRelationship::kSiblingToAncestor;
+
+  // Determine next node using fuzz data.
+  NextNodeRelationship relationship =
+      static_cast<NextNodeRelationship>(byte % 3);
+
+  // Check to ensure we can have children.
+  if (relationship == NextNodeRelationship::kChild && !CanHaveChildren(role)) {
+    return NextNodeRelationship::kSibling;
+  }
+  return relationship;
+}
+
+AXTreeFuzzerGenerator::TreeUpdateOperation
+AXTreeFuzzerGenerator::DetermineTreeUpdateOperation(const ui::AXNode* node,
+                                                    unsigned char byte) {
+  switch (byte % 4) {
+    case 0:
+      // Don't delete the following nodes:
+      // 1) The root. TODO(janewman): implement root changes in an update.
+      // 2) Inline text. We don't want to leave Static text nodes without inline
+      // text children.
+      if (ax::mojom::Role::kRootWebArea != node->GetRole())
+        return kRemoveNode;
+      ABSL_FALLTHROUGH_INTENDED;
+    case 1:
+      // Check to ensure this node can have children. Also consider that we
+      // shouldn't add children to static text, as these nodes only expect to
+      // have a inline text single child.
+      if (CanHaveChildren(node->GetRole()) && !ui::IsText(node->GetRole()))
+        return kAddChild;
+      ABSL_FALLTHROUGH_INTENDED;
+    case 2:
+      if (ax::mojom::Role::kStaticText == node->GetRole())
+        return kTextChange;
+      ABSL_FALLTHROUGH_INTENDED;
+    default:
+      return kNoOperation;
+  }
+}
+
+void AXTreeFuzzerGenerator::AddRoleSpecificProperties(
+    FuzzerData& fuzz_data,
+    ui::AXNodeData& node,
+    const std::string& parentName,
+    size_t extra_data_size) {
+  // TODO(janewman): Add ignored state.
+  // Add role-specific properties.
+  if (node.role == ax::mojom::Role::kInlineTextBox) {
+    node.SetName(parentName);
+  } else if (node.role == ax::mojom::Role::kLineBreak) {
+    node.SetName("\n");
+  } else if (ui::IsText(node.role)) {
+    size_t text_size =
+        kMinTextFuzzDataSize + fuzz_data.NextByte() % kMaxTextFuzzDataSize;
+    if (text_size > extra_data_size)
+      text_size = extra_data_size;
+    extra_data_size -= text_size;
+    node.SetName(
+        GenerateInterestingText(fuzz_data.NextBytes(text_size), text_size));
+  }
 }
 
 ax::mojom::Role AXTreeFuzzerGenerator::GetInterestingRole(
