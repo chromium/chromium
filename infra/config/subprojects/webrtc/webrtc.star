@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os")
+load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
 
 luci.bucket(
     name = "webrtc",
@@ -67,11 +67,13 @@ builder(
     name = "WebRTC Chromium Mac Builder",
     goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    xcode = xcode.x14main,
 )
 
 builder(
     name = "WebRTC Chromium Mac Tester",
     triggered_by = ["WebRTC Chromium Mac Builder"],
+    xcode = xcode.x14main,
 )
 
 builder(
