@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_changed_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -67,6 +68,7 @@ DisplayLockContext::DisplayLockContext(Element* element)
   DetermineIfSubtreeHasFocus();
   DetermineIfSubtreeHasSelection();
   DetermineIfSubtreeHasTopLayerElement();
+  DetermineIfInSharedElementTransitionChain();
 }
 
 void DisplayLockContext::SetRequestedState(EContentVisibility state) {
@@ -363,6 +365,9 @@ void DisplayLockContext::DidLayoutChildren() {
 
 bool DisplayLockContext::ShouldPrePaintChildren() const {
   return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
+         (document_->GetDisplayLockDocumentState()
+              .ActivatableDisplayLocksForced() &&
+          IsActivatable(DisplayLockActivationReason::kAny)) ||
          (element_->GetLayoutObject() &&
           element_->GetLayoutObject()->IsShapingDeferred());
 }
@@ -828,6 +833,7 @@ void DisplayLockContext::DidMoveToNewDocument(Document& old_document) {
   DetermineIfSubtreeHasFocus();
   DetermineIfSubtreeHasSelection();
   DetermineIfSubtreeHasTopLayerElement();
+  DetermineIfInSharedElementTransitionChain();
 }
 
 void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
@@ -1120,6 +1126,56 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   }
 }
 
+void DisplayLockContext::DetermineIfInSharedElementTransitionChain() {
+  ResetAndDetermineIfAncestorIsSharedElement();
+  if (ConnectedToView())
+    document_->GetDisplayLockDocumentState().UpdateSharedElementAncestorLocks();
+}
+
+void DisplayLockContext::ResetInSharedElementTransitionChain() {
+  SetRenderAffectingState(RenderAffectingState::kSharedElementTransitionChain,
+                          false);
+}
+
+void DisplayLockContext::SetInSharedElementTransitionChain() {
+  SetRenderAffectingState(RenderAffectingState::kSharedElementTransitionChain,
+                          true);
+}
+
+bool DisplayLockContext::IsInSharedElementAncestorChain() const {
+  return render_affecting_state_[static_cast<int>(
+      RenderAffectingState::kSharedElementTransitionChain)];
+}
+
+void DisplayLockContext::ResetAndDetermineIfAncestorIsSharedElement() {
+  ResetInSharedElementTransitionChain();
+  if (!ConnectedToView())
+    return;
+
+  auto* supplement = DocumentTransitionSupplement::FromIfExists(*document_);
+  if (!supplement)
+    return;
+
+  auto* transition = supplement->GetTransition();
+  bool has_shared_element_ancestor = false;
+  for (auto* candidate = element_.Get(); candidate;
+       candidate = FlatTreeTraversal::ParentElement(*candidate)) {
+    // We don't care about document element as the ancestor, since it's common
+    // to have one and it will be clipped by viewport anyway.
+    if (candidate->IsDocumentElement())
+      continue;
+
+    if (auto* layout_object = candidate->GetLayoutObject();
+        layout_object &&
+        transition->IsRepresentedViaPseudoElements(*layout_object)) {
+      has_shared_element_ancestor = true;
+      break;
+    }
+  }
+  SetRenderAffectingState(RenderAffectingState::kSharedElementTransitionChain,
+                          has_shared_element_ancestor);
+}
+
 void DisplayLockContext::ClearHasTopLayerElement() {
   // Note that this is asynchronous because it can happen during a layout detach
   // which is a bad time to relock a content-visibility auto element (since it
@@ -1241,7 +1297,8 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
         !state(RenderAffectingState::kSubtreeHasSelection) &&
         !state(RenderAffectingState::kAutoStateUnlockedUntilLifecycle) &&
         !state(RenderAffectingState::kAutoUnlockedForPrint) &&
-        !state(RenderAffectingState::kSubtreeHasTopLayerElement)));
+        !state(RenderAffectingState::kSubtreeHasTopLayerElement) &&
+        !state(RenderAffectingState::kSharedElementTransitionChain)));
 
   // For shaping-deferred boxes, we'd like to unlock permanently.
   if (IsShapingDeferred() && state_ != EContentVisibility::kVisible &&
@@ -1285,6 +1342,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "AutoUnlockedForPrint";
     case RenderAffectingState::kSubtreeHasTopLayerElement:
       return "SubtreeHasTopLayerElement";
+    case RenderAffectingState::kSharedElementTransitionChain:
+      return "SharedElementTransitionChain";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }

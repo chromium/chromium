@@ -124,6 +124,12 @@ class CORE_EXPORT DocumentTransition
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
+  // Return non-root transitioning elements.
+  VectorOf<Element> GetTransitioningElements() const {
+    return style_tracker_ ? style_tracker_->GetTransitioningElements()
+                          : VectorOf<Element>{};
+  }
+
  private:
   friend class DocumentTransitionTest;
 

@@ -1378,6 +1378,7 @@ crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/n
 crbug.com/1329180 virtual/document-transition/wpt_internal/document-transition/new-and-old-sizes-match.html [ Failure ]
 crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow-zoomed.html [ Failure ]
 crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow-zoomed.html [ Failure ]
+crbug.com/1351422 virtual/document-transition/wpt_internal/document-transition/content-visibility-auto-shared-element.html [ Failure ]
 
 crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
@@ -234,6 +235,19 @@ void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
 void DocumentTransitionStyleTracker::AddSharedElementsFromCSS() {
   DCHECK(document_ && document_->View());
 
+  // TODO(vmpstr): This needs some thought :(
+  // From khushalsagar:
+  // We have to change this such that discovering of tags happens at the end of
+  // reaching the paint phase of the lifecycle update at the next frame. So the
+  // way this would be setup is:
+  // - At the next frame, acquire the scope before dispatching raf callbacks.
+  // - When we hit paint, discover all the tags and then release the scope.
+  // We can have recursive lifecycle updates after this to invalidate the pseudo
+  // DOM but the decision for which elements will be shared is not changeable
+  // after that point.
+  auto scope =
+      document_->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
+
   // We need our paint layers, and z-order lists which is done during
   // compositing inputs update.
   document_->View()->UpdateLifecycleToCompositingInputsClean(
@@ -425,6 +439,20 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
     element_data->effect_node = nullptr;
   }
   root_effect_node_ = nullptr;
+}
+
+VectorOf<Element> DocumentTransitionStyleTracker::GetTransitioningElements()
+    const {
+  // In stable states, we don't have shared elements.
+  if (state_ == State::kIdle || state_ == State::kCaptured)
+    return {};
+
+  VectorOf<Element> result;
+  for (auto& entry : element_data_map_) {
+    if (entry.value->target_element)
+      result.push_back(entry.value->target_element);
+  }
+  return result;
 }
 
 bool DocumentTransitionStyleTracker::Start() {
@@ -940,11 +968,10 @@ void DocumentTransitionStyleTracker::InvalidateStyle() {
     // means that we should update the paint properties to update the shared
     // element id.
     object->SetNeedsPaintPropertyUpdate();
-
-    auto* box = entry.value->target_element->GetLayoutBox();
-    if (!box || !box->HasSelfPaintingLayer())
-      continue;
   }
+
+  document_->GetDisplayLockDocumentState()
+      .NotifySharedElementPseudoTreeChanged();
 }
 
 HashSet<AtomicString> DocumentTransitionStyleTracker::AllRootTags() const {

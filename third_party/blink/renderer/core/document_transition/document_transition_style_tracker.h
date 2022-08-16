@@ -127,6 +127,8 @@ class DocumentTransitionStyleTracker
   // rules based on the current phase of the transition.
   StyleRequest::RulesToInclude StyleRulesToInclude() const;
 
+  VectorOf<Element> GetTransitioningElements() const;
+
  private:
   class ImageWrapperPseudoElement;
 
