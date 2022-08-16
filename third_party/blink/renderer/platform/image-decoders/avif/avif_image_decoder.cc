@@ -158,6 +158,7 @@ media::VideoPixelFormat AvifToVideoPixelFormat(avifPixelFormat fmt,
     case AVIF_PIXEL_FORMAT_YUV444:
       return kYUV444Formats[has_alpha][depth_index];
     case AVIF_PIXEL_FORMAT_NONE:
+    case AVIF_PIXEL_FORMAT_COUNT:
       NOTREACHED();
       return media::PIXEL_FORMAT_UNKNOWN;
   }
@@ -300,6 +301,7 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
     case AVIF_PIXEL_FORMAT_YUV400:
       return cc::YUVSubsampling::kUnknown;
     case AVIF_PIXEL_FORMAT_NONE:
+    case AVIF_PIXEL_FORMAT_COUNT:
       NOTREACHED();
       return cc::YUVSubsampling::kUnknown;
   }
