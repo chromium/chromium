@@ -1052,10 +1052,6 @@
         "name": "blink_perf.paint/complex-content-slow-scroll.html"
     },
     {
-        "duration": "63.0",
-        "name": "blink_perf.paint/complex-iframe-filtered.html"
-    },
-    {
         "duration": "70.0",
         "name": "blink_perf.paint/contain-update-layer-tree.html"
     },
@@ -1086,10 +1082,6 @@
     {
         "duration": "58.0",
         "name": "blink_perf.paint/modify-selection.html"
-    },
-    {
-        "duration": "56.0",
-        "name": "blink_perf.paint/move-text-with-mask.html"
     },
     {
         "duration": "58.0",
