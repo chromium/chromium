@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
@@ -112,7 +113,6 @@ class WebGLProgram;
 class WebGLRenderbuffer;
 class WebGLShader;
 class WebGLShaderPrecisionFormat;
-class WebGLUniformLocation;
 class WebGLVertexArrayObjectBase;
 class XRSystem;
 
@@ -1561,28 +1561,119 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   virtual bool ValidateCapability(const char* function_name, GLenum);
 
   // Helper function to validate input parameters for uniform functions.
+  template <typename T>
   bool ValidateUniformParameters(const char* function_name,
-                                 const WebGLUniformLocation*,
-                                 void*,
-                                 GLsizei,
-                                 GLsizei mod,
+                                 const WebGLUniformLocation* location,
+                                 T* v,
+                                 GLsizei size,
+                                 GLsizei required_min_size,
                                  GLuint src_offset,
-                                 GLuint src_length);
+                                 GLuint src_length,
+                                 T** out_data,
+                                 GLuint* out_length) {
+    return ValidateUniformMatrixParameters(function_name, location, false, v,
+                                           size, required_min_size, src_offset,
+                                           src_length, out_data, out_length);
+  }
+
+  template <typename T>
   bool ValidateUniformMatrixParameters(const char* function_name,
-                                       const WebGLUniformLocation*,
+                                       const WebGLUniformLocation* location,
                                        GLboolean transpose,
-                                       const NADCTypedArrayView<GLfloat>&,
-                                       GLsizei mod,
+                                       const NADCTypedArrayView<GLfloat>& v,
+                                       GLsizei required_min_size,
                                        GLuint src_offset,
-                                       size_t src_length);
+                                       size_t src_length,
+                                       T** out_data,
+                                       GLuint* out_length) {
+    *out_data = nullptr;
+    *out_length = 0;
+    if (v.IsEmpty()) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name, "no array");
+      return false;
+    }
+    if (!base::CheckedNumeric<GLuint>(src_length).IsValid()) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                        "src_length exceeds the maximum supported length");
+      return false;
+    }
+    return ValidateUniformMatrixParameters(
+        function_name, location, transpose, v.Data(), v.Size(),
+        required_min_size, src_offset, static_cast<GLuint>(src_length),
+        out_data, out_length);
+  }
+
+  template <typename T>
   bool ValidateUniformMatrixParameters(const char* function_name,
-                                       const WebGLUniformLocation*,
+                                       const WebGLUniformLocation* location,
                                        GLboolean transpose,
-                                       void*,
+                                       T* v,
                                        size_t size,
-                                       GLsizei mod,
+                                       GLsizei required_min_size,
                                        GLuint src_offset,
-                                       GLuint src_length);
+                                       GLuint src_length,
+                                       T** out_data,
+                                       GLuint* out_length) {
+    *out_data = nullptr;
+    *out_length = 0;
+    DCHECK(size >= 0 && required_min_size > 0);
+    if (!location)
+      return false;
+    if (location->Program() != current_program_) {
+      SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                        "location is not from current program");
+      return false;
+    }
+    if (!v) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name, "no array");
+      return false;
+    }
+    if (!base::CheckedNumeric<GLsizei>(size).IsValid()) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                        "array exceeds the maximum supported size");
+      return false;
+    }
+    if (transpose && !IsWebGL2()) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name, "transpose not FALSE");
+      return false;
+    }
+    if (src_offset >= static_cast<GLuint>(size)) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name, "invalid srcOffset");
+      return false;
+    }
+    GLsizei actual_size = static_cast<GLsizei>(size) - src_offset;
+    if (src_length > 0) {
+      if (src_length > static_cast<GLuint>(actual_size)) {
+        SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                          "invalid srcOffset + srcLength");
+        return false;
+      }
+      actual_size = src_length;
+    }
+    if (actual_size < required_min_size || (actual_size % required_min_size)) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name, "invalid size");
+      return false;
+    }
+    // By design the command buffer has an internal (signed) 32-bit
+    // limit, so ensure that the amount of data passed down to it
+    // doesn't exceed what it can handle. Only integer or float typed
+    // arrays can be passed into the uniform*v or uniformMatrix*v
+    // functions; each has 4-byte elements.
+    base::CheckedNumeric<int32_t> total_size(actual_size);
+    total_size *= 4;
+    // Add on a fixed constant to account for internal metadata in the
+    // command buffer.
+    constexpr int32_t kExtraCommandSize = 1024;
+    total_size += kExtraCommandSize;
+    if (!total_size.IsValid()) {
+      SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                        "size * elementSize, plus a constant, is too large");
+      return false;
+    }
+    *out_data = v + src_offset;
+    *out_length = actual_size / required_min_size;
+    return true;
+  }
 
   template <typename T>
   bool ValidateUniformParameters(const char* function_name,
@@ -1590,7 +1681,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                  const NADCTypedArrayView<T>& v,
                                  GLsizei required_min_size,
                                  GLuint src_offset,
-                                 size_t src_length) {
+                                 size_t src_length,
+                                 T** out_data,
+                                 GLuint* out_length) {
     GLuint length;
     if (!base::CheckedNumeric<GLuint>(src_length).AssignIfValid(&length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
@@ -1608,7 +1701,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
     return ValidateUniformMatrixParameters(
         function_name, location, false, v.Data(), array_length,
-        required_min_size, src_offset, length);
+        required_min_size, src_offset, length, out_data, out_length);
   }
 
   // Helper function to validate the target for bufferData and
