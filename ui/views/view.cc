@@ -245,6 +245,12 @@ View::~View() {
     for (auto* child : children_) {
       child->parent_ = nullptr;
 
+      // Remove any references to |child| to avoid holding a dangling ptr.
+      if (child->previous_focusable_view_)
+        child->previous_focusable_view_->next_focusable_view_ = nullptr;
+      if (child->next_focusable_view_)
+        child->next_focusable_view_->previous_focusable_view_ = nullptr;
+
       // Since all children are removed here, it is safe to set
       // |child|'s focus list pointers to null and expect any references
       // to |child| will be removed subsequently.
