@@ -1860,7 +1860,6 @@ android_library("chrome_test_java") {
     "//content/test/data/android/media_permissions.html",
     "//content/test/data/android/midi_permissions.html",
     "//content/test/data/android/permission_navigation.html",
-    "//content/test/data/android/quota_permissions.html",
     "//content/test/data/android/webshare.html",
     "//content/test/data/android/webshare-apk.html",
     "//content/test/data/android/webshare-bmp.html",

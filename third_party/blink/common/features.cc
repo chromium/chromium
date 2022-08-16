@@ -1142,7 +1142,7 @@ const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPersistentQuotaIsTemporaryQuota{
-    "PersistentQuotaIsTemporaryQuota", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PersistentQuotaIsTemporaryQuota", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsPersistentQuotaIsTemporaryQuota() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(

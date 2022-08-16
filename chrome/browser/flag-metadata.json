@@ -5214,8 +5214,8 @@
   },
   {
     "name": "persistent-quota-is-temporary-quota",
-    "owners": [ "mek", "cfredric" ],
-    "expiry_milestone": 105
+    "owners": [ "mek", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 107
   },
   {
     "name": "personalization-hub",

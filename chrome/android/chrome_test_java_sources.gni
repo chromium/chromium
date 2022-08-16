@@ -400,7 +400,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/permissions/PermissionNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/permissions/PermissionTestRule.java",
   "javatests/src/org/chromium/chrome/browser/permissions/PermissionUpdateMessageTest.java",
-  "javatests/src/org/chromium/chrome/browser/permissions/QuotaTest.java",
   "javatests/src/org/chromium/chrome/browser/permissions/RuntimePermissionTest.java",
   "javatests/src/org/chromium/chrome/browser/permissions/RuntimePermissionTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/policy/CombinedPolicyProviderTest.java",
