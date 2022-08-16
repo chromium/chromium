@@ -752,14 +752,14 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                   kTappedFollowButton
                                 asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction("MobileMenuUnfollow"));
+  base::RecordAction(base::UserMetricsAction("MobileMenuFollow"));
 }
 
 - (void)recordUnfollowFromMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                   kTappedUnfollowButton
                                 asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction("MobileMenuFollow"));
+  base::RecordAction(base::UserMetricsAction("MobileMenuUnfollow"));
 }
 
 - (void)recordFollowConfirmationShownWithType:
