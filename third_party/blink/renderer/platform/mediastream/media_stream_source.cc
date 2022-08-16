@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -341,7 +342,6 @@ void MediaStreamSource::Dispose() {
     audio_consumer_.reset();
   }
   platform_source_.reset();
-  constraints_.Reset();
 }
 
 }  // namespace blink

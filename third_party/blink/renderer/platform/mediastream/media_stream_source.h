@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -195,7 +194,6 @@ class PLATFORM_EXPORT MediaStreamSource final
   std::unique_ptr<ConsumerWrapper> audio_consumer_
       GUARDED_BY(audio_consumer_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
-  MediaConstraints constraints_;
   Capabilities capabilities_;
   absl::optional<EchoCancellationMode> echo_cancellation_mode_;
   absl::optional<bool> auto_gain_control_;
