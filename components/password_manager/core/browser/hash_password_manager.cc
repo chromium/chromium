@@ -184,7 +184,7 @@ void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
     return;
 
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->EraseListValueIf([&](const auto& dict) {
+  update->GetList().EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), username, is_gaia_password);
   });
@@ -195,7 +195,7 @@ void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
     return;
 
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->EraseListValueIf([&](const auto& dict) {
+  update->GetList().EraseIf([&](const auto& dict) {
     return GetAndDecryptField(dict, kIsGaiaFieldKey) ==
            BooleanToString(is_gaia_password);
   });
@@ -206,7 +206,7 @@ void HashPasswordManager::ClearAllNonGmailPasswordHash() {
     return;
 
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->EraseListValueIf([](const base::Value& data) {
+  update->GetList().EraseIf([](const base::Value& data) {
     if (GetAndDecryptField(data, kIsGaiaFieldKey) == "false") {
       return false;
     }
@@ -321,7 +321,7 @@ bool HashPasswordManager::EncryptAndSave(
 
   if (num_erased == 0 && update_list.size() >= kMaxPasswordHashDataDictSize) {
     // Erase the oldest sign-in password hash data.
-    update->EraseListIter(std::min_element(
+    update_list.erase(std::min_element(
         update_list.begin(), update_list.end(),
         [](const auto& lhs, const auto& rhs) {
           return *lhs.GetDict().FindDouble(kLastSignInTimeFieldKey) <
