@@ -52,7 +52,7 @@ class CableAuthenticator {
     private static final int CTAP2_ERR_CREDENTIAL_EXCLUDED = 0x19;
     private static final int CTAP2_ERR_UNSUPPORTED_ALGORITHM = 0x26;
     private static final int CTAP2_ERR_OPERATION_DENIED = 0x27;
-    private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2D;
+    private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2B;
     private static final int CTAP2_ERR_NO_CREDENTIALS = 0x2E;
     private static final int CTAP2_ERR_OTHER = 0x7F;
 
@@ -266,7 +266,15 @@ class CableAuthenticator {
                     }
                     break;
                 case Fido2Api.NOT_ALLOWED_ERR:
-                    ctapStatus = CTAP2_ERR_OPERATION_DENIED;
+                    if (error.second.equals(
+                                "Request doesn't have a valid list of allowed credentials.")) {
+                        ctapStatus = CTAP2_ERR_NO_CREDENTIALS;
+                    } else {
+                        ctapStatus = CTAP2_ERR_OPERATION_DENIED;
+                    }
+                    break;
+                case Fido2Api.NOT_SUPPORTED_ERR:
+                    ctapStatus = CTAP2_ERR_UNSUPPORTED_OPTION;
                     break;
                 default:
                     ctapStatus = CTAP2_ERR_OTHER;

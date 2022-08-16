@@ -1359,12 +1359,6 @@ const char kEnableUseZoomForDsfChoiceDefault[] = "Default";
 const char kEnableUseZoomForDsfChoiceEnabled[] = "Enabled";
 const char kEnableUseZoomForDsfChoiceDisabled[] = "Disabled";
 
-const char kEnableWebAuthenticationCableDiscoCredsName[] =
-    "Discoverable credentials over caBLEv2";
-const char kEnableWebAuthenticationCableDiscoCredsDescription[] =
-    "Enable the creation and use of Web Authentication discoverable "
-    "credentials over the caBLEv2 transport";
-
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";
 const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =

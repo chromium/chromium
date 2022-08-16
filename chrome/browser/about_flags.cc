@@ -5841,11 +5841,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kLogNetLog)},
 
-    {"enable-web-authentication-cable-disco-creds",
-     flag_descriptions::kEnableWebAuthenticationCableDiscoCredsName,
-     flag_descriptions::kEnableWebAuthenticationCableDiscoCredsDescription,
-     kOsAll, FEATURE_VALUE_TYPE(device::kWebAuthCableDisco)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"web-authentication-permit-enterprise-attestation",
      flag_descriptions::kWebAuthenticationPermitEnterpriseAttestationName,

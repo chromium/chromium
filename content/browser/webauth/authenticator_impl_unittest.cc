@@ -9011,7 +9011,7 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, MakeDiscoverableCredential) {
   ASSERT_TRUE(did_complete_);
   ASSERT_TRUE(error_.has_value());
   EXPECT_EQ(*error_, device::cablev2::authenticator::Platform::Error::
-                         AUTHENTICATOR_SELECTION_RECEIVED);
+                         DISCOVERABLE_CREDENTIALS_REQUEST);
 }
 
 TEST_F(AuthenticatorCableV2AuthenticatorTest, EmptyAllowList) {

@@ -200,8 +200,7 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   // configured on the device. Therefore the 'uv' option is unconditionally
   // true.
   options.emplace("uv", true);
-  options.emplace("rk",
-                  base::FeatureList::IsEnabled(device::kWebAuthCableDisco));
+  options.emplace("rk", true);
 
   std::vector<cbor::Value> transports;
   transports.emplace_back("cable");
@@ -748,9 +747,6 @@ class CTAP2Processor : public Transaction {
 
         const bool rk =
             make_cred_request.resident_key && *make_cred_request.resident_key;
-        if (rk && !base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
-          return Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST;
-        }
 
         params->authenticator_selection.emplace(
             device::AuthenticatorAttachment::kPlatform,
@@ -794,7 +790,7 @@ class CTAP2Processor : public Transaction {
         platform_->MakeCredential(
             std::move(params),
             base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
-                           weak_factory_.GetWeakPtr()));
+                           weak_factory_.GetWeakPtr(), rk));
         return std::vector<uint8_t>();
       }
 
@@ -813,12 +809,6 @@ class CTAP2Processor : public Transaction {
           return Platform::Error::INVALID_CTAP;
         }
 
-        if ((!get_assertion_request.allowed_credentials ||
-             get_assertion_request.allowed_credentials->empty()) &&
-            !base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
-          return Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST;
-        }
-
         auto params = blink::mojom::PublicKeyCredentialRequestOptions::New();
         params->challenge = *get_assertion_request.client_data_hash;
         params->relying_party_id = *get_assertion_request.rp_id;
@@ -832,11 +822,11 @@ class CTAP2Processor : public Transaction {
         }
 
         transaction_received_ = true;
-        get_assertion_had_empty_allowlist_ = params->allow_credentials.empty();
+        const bool empty_allowlist = params->allow_credentials.empty();
         platform_->GetAssertion(
             std::move(params),
             base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
-                           weak_factory_.GetWeakPtr()));
+                           weak_factory_.GetWeakPtr(), empty_allowlist));
         return std::vector<uint8_t>();
       }
 
@@ -857,6 +847,7 @@ class CTAP2Processor : public Transaction {
   }
 
   void OnMakeCredentialResponse(
+      bool was_discoverable_credential_request,
       uint32_t ctap_status,
       base::span<const uint8_t> attestation_object_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -893,6 +884,13 @@ class CTAP2Processor : public Transaction {
       }
       response.insert(response.end(), response_payload->begin(),
                       response_payload->end());
+    } else if (was_discoverable_credential_request &&
+               ctap_status ==
+                   static_cast<uint8_t>(
+                       CtapDeviceResponseCode::kCtap2ErrUnsupportedOption)) {
+      have_completed_ = true;
+      platform_->OnCompleted(Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST);
+      return;
     } else {
       platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
@@ -905,12 +903,13 @@ class CTAP2Processor : public Transaction {
   }
 
   void OnGetAssertionResponse(
+      bool was_empty_allowlist_request,
       uint32_t ctap_status,
       blink::mojom::GetAssertionAuthenticatorResponsePtr auth_response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
 
-    if (auth_response && get_assertion_had_empty_allowlist_ &&
+    if (auth_response && was_empty_allowlist_request &&
         !auth_response->user_handle) {
       FIDO_LOG(ERROR)
           << "missing user id in response to discoverable credential assertion";
@@ -934,7 +933,7 @@ class CTAP2Processor : public Transaction {
                            std::move(auth_response->info->authenticator_data));
       response_map.emplace(3, std::move(auth_response->signature));
 
-      if (get_assertion_had_empty_allowlist_) {
+      if (was_empty_allowlist_request) {
         cbor::Value::MapValue user_map;
         user_map.emplace("id", std::move(*auth_response->user_handle));
         // The `name` and `displayName` fields are not present in
@@ -960,6 +959,13 @@ class CTAP2Processor : public Transaction {
       }
       response.insert(response.end(), response_payload->begin(),
                       response_payload->end());
+    } else if (was_empty_allowlist_request &&
+               ctap_status ==
+                   static_cast<uint8_t>(
+                       CtapDeviceResponseCode::kCtap2ErrNoCredentials)) {
+      have_completed_ = true;
+      platform_->OnCompleted(Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST);
+      return;
     } else {
       platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
@@ -999,7 +1005,6 @@ class CTAP2Processor : public Transaction {
   bool have_completed_ = false;
   bool transaction_received_ = false;
   bool transaction_done_ = false;
-  bool get_assertion_had_empty_allowlist_ = false;
   const std::unique_ptr<Transport> transport_;
   const std::unique_ptr<Platform> platform_;
   SEQUENCE_CHECKER(sequence_checker_);

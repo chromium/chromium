@@ -378,6 +378,11 @@ class TestPlatform : public authenticator::Platform {
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
     memcpy(request.client_data_hash.data(), params->challenge.data(),
            params->challenge.size());
+    request.resident_key_required =
+        !params->authenticator_selection
+            ? false
+            : params->authenticator_selection->resident_key ==
+                  ResidentKeyRequirement::kRequired;
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
@@ -616,6 +621,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
     cbor::Value::MapValue options;
     options.emplace("uv", true);
+    options.emplace("rk", true);
 
     cbor::Value::MapValue response_map;
     response_map.emplace(1, std::move(versions));

@@ -758,9 +758,6 @@ extern const char kEnableUseZoomForDsfChoiceDefault[];
 extern const char kEnableUseZoomForDsfChoiceEnabled[];
 extern const char kEnableUseZoomForDsfChoiceDisabled[];
 
-extern const char kEnableWebAuthenticationCableDiscoCredsName[];
-extern const char kEnableWebAuthenticationCableDiscoCredsDescription[];
-
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 
