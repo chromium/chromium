@@ -290,7 +290,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   }
 
   // Interface used for drawing. Common among different draw modes.
-  raw_ptr<SkCanvas, DanglingUntriaged> current_canvas_ = nullptr;
+  raw_ptr<SkCanvas> current_canvas_ = nullptr;
 
   class FrameResourceGpuCommandsCompletedFence;
   scoped_refptr<FrameResourceGpuCommandsCompletedFence>
@@ -325,7 +325,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   std::vector<SkMatrix> batched_cdt_matrices_;
 
   // Specific for SkDDL.
-  const raw_ptr<SkiaOutputSurface, DanglingUntriaged> skia_output_surface_;
+  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
 
   const bool is_using_raw_draw_;
 
