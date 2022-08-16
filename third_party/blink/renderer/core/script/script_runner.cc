@@ -44,56 +44,11 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace {
-
-void PostTaskWithLowPriorityUntilTimeout(
-    const base::Location& from_here,
-    base::OnceClosure task,
-    base::TimeDelta timeout,
-    scoped_refptr<base::SingleThreadTaskRunner> lower_priority_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> normal_priority_task_runner) {
-  using RefCountedOnceClosure = base::RefCountedData<base::OnceClosure>;
-  scoped_refptr<RefCountedOnceClosure> ref_counted_task =
-      base::MakeRefCounted<RefCountedOnceClosure>(std::move(task));
-
-  // |run_task_once| runs on both of |lower_priority_task_runner| and
-  // |normal_priority_task_runner|. |run_task_once| guarantees that the given
-  // |task| doesn't run more than once. |task| runs on either of
-  // |lower_priority_task_runner| and |normal_priority_task_runner| whichever
-  // comes first.
-  auto run_task_once =
-      [](scoped_refptr<RefCountedOnceClosure> ref_counted_task) {
-        if (!ref_counted_task->data.is_null())
-          std::move(ref_counted_task->data).Run();
-      };
-
-  lower_priority_task_runner->PostTask(
-      from_here, WTF::Bind(run_task_once, ref_counted_task));
-
-  normal_priority_task_runner->PostDelayedTask(
-      from_here, WTF::Bind(run_task_once, ref_counted_task), timeout);
-}
-
-}  // namespace
-
 namespace blink {
-
-void PostTaskWithLowPriorityUntilTimeoutForTesting(
-    const base::Location& from_here,
-    base::OnceClosure task,
-    base::TimeDelta timeout,
-    scoped_refptr<base::SingleThreadTaskRunner> lower_priority_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> normal_priority_task_runner) {
-  PostTaskWithLowPriorityUntilTimeout(from_here, std::move(task), timeout,
-                                      std::move(lower_priority_task_runner),
-                                      std::move(normal_priority_task_runner));
-}
 
 ScriptRunner::ScriptRunner(Document* document)
     : document_(document),
-      task_runner_(document->GetTaskRunner(TaskType::kNetworking)),
-      low_priority_task_runner_(
-          document->GetTaskRunner(TaskType::kLowPriorityScriptExecution)) {
+      task_runner_(document->GetTaskRunner(TaskType::kNetworking)) {
   DCHECK(document);
 }
 
@@ -178,18 +133,10 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
 
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
-  base::OnceClosure task =
+  task_runner_->PostTask(
+      FROM_HERE,
       WTF::Bind(&ScriptRunner::ExecutePendingScript, WrapWeakPersistent(this),
-                WrapPersistent(pending_script));
-  if (base::FeatureList::IsEnabled(
-          features::kLowPriorityAsyncScriptExecution)) {
-    PostTaskWithLowPriorityUntilTimeout(
-        FROM_HERE, std::move(task),
-        features::kTimeoutForLowPriorityAsyncScriptExecution.Get(),
-        low_priority_task_runner_, task_runner_);
-  } else {
-    task_runner_->PostTask(FROM_HERE, std::move(task));
-  }
+                WrapPersistent(pending_script)));
 }
 
 void ScriptRunner::ExecuteForceInOrderPendingScript(

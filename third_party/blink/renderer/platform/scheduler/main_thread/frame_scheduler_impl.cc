@@ -396,9 +396,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
                  : LoadingTaskQueueTraits();
     case TaskType::kNetworkingControl:
       return LoadingControlTaskQueueTraits();
-    case TaskType::kLowPriorityScriptExecution:
-      return LoadingTaskQueueTraits().SetPrioritisationType(
-          QueueTraits::PrioritisationType::kBestEffort);
     // Throttling following tasks may break existing web pages, so tentatively
     // these are unthrottled.
     // TODO(nhiroki): Throttle them again after we're convinced that it's safe
