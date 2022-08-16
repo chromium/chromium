@@ -11,9 +11,9 @@ namespace ash::string_matching {
 
 namespace {
 
-using constants::kIsFrontOfWordMultiplier;
-using constants::kIsPrefixMultiplier;
-using constants::kIsWeakHitMultiplier;
+using constants::kIsFrontOfTokenCharScore;
+using constants::kIsPrefixCharScore;
+using constants::kIsWeakHitCharScore;
 using constants::kNoMatchScore;
 
 constexpr double kAbsError = 1e-5;
@@ -38,7 +38,7 @@ TEST_F(PrefixMatcherTest, ExactMatch) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsPrefixMultiplier * 6;
+  double expected_score = kIsPrefixCharScore * 6;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -48,7 +48,7 @@ TEST_F(PrefixMatcherTest, ExactPrefixMatch) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsPrefixMultiplier * 6;
+  double expected_score = kIsPrefixCharScore * 6;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -58,7 +58,7 @@ TEST_F(PrefixMatcherTest, ExactPrefixMatchFirstToken) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsPrefixMultiplier * 2;
+  double expected_score = kIsPrefixCharScore * 2;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -68,7 +68,7 @@ TEST_F(PrefixMatcherTest, ExactPrefixMatchNonFirstToken) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsFrontOfWordMultiplier + kIsWeakHitMultiplier;
+  double expected_score = kIsFrontOfTokenCharScore + kIsWeakHitCharScore;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -78,7 +78,7 @@ TEST_F(PrefixMatcherTest, AcronymMatchConsecutiveTokensWithFirstTokenMatch) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsPrefixMultiplier + (kIsFrontOfWordMultiplier * 2);
+  double expected_score = kIsPrefixCharScore + (kIsFrontOfTokenCharScore * 2);
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -88,7 +88,7 @@ TEST_F(PrefixMatcherTest, AcronymMatchConsecutiveTokensWithNonFirstTokenMatch) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsFrontOfWordMultiplier * 3;
+  double expected_score = kIsFrontOfTokenCharScore * 3;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -112,8 +112,8 @@ TEST_F(PrefixMatcherTest, MixedAcronymAndPrefixMatching) {
   pm.Match();
   // Individual character's score contributions in order of matched letters (a,
   // d, e, f, g).
-  double expected_score = kIsPrefixMultiplier + kIsFrontOfWordMultiplier +
-                          (kIsWeakHitMultiplier * 2) + kIsFrontOfWordMultiplier;
+  double expected_score = kIsPrefixCharScore + kIsFrontOfTokenCharScore +
+                          (kIsWeakHitCharScore * 2) + kIsFrontOfTokenCharScore;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
@@ -123,7 +123,7 @@ TEST_F(PrefixMatcherTest, FinalPartialTokenConsideredMatch) {
 
   PrefixMatcher pm(query, text);
   pm.Match();
-  double expected_score = kIsPrefixMultiplier * 5;
+  double expected_score = kIsPrefixCharScore * 5;
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 

@@ -11,7 +11,7 @@
 namespace ash::string_matching {
 
 // TODO(crbug.com/1336160): Paradigm shift 1: Reconsider the value of
-// search-via-acronym, i.e. the logic around `kIsFrontOfWordMultiplier`.
+// search-via-acronym, i.e. the logic around `kIsFrontOfTokenCharScore`.
 //
 // TODO(crbug.com/1336160): Paradigm shift 2: Consider scoring matching prefixes
 // of tokens with equal value, regardless of whether the token is a first token
@@ -23,7 +23,7 @@ namespace ash::string_matching {
 // the current char of the text to be matched. Different factors are chosen
 // based on where the match happens:
 //
-// 1) `kIsPrefixMultiplier` is used when the matched portion is a prefix of both
+// 1) `kIsPrefixCharScore` is used when the matched portion is a prefix of both
 // the query and the text, which implies that the matched chars are at the same
 // position in query and text. This is the most preferred case thus it has the
 // highest score.
@@ -31,21 +31,21 @@ namespace ash::string_matching {
 // When the current char of the query and the text do not match, the algorithm
 // moves to the next token in the text and tries to match from there.
 //
-// 2) `kIsFrontOfWordMultiplier` will be used if the first char of the token
+// 2) `kIsFrontOfTokenCharScore` will be used if the first char of the token
 // matches the current char of the query.
 //
-// 3) Otherwise, the match is considered as weak, and `kIsWeakHitMultiplier` is
+// 3) Otherwise, the match is considered as weak, and `kIsWeakHitCharScore` is
 // used.
 //
 // Examples:
 //
 //   For text: 'Google Chrome'.
 //
-//   Query 'go' would yield kIsPrefixMultiplier for each char.
-//   Query 'gc' would use kIsPrefixMultiplier for 'g' and
-//       kIsFrontOfWordMultiplier for 'c'.
-//   Query 'ch' would use kIsFrontOfWordMultiplier for 'c' and
-//       kIsWeakHitMultiplier for 'h'.
+//   Query 'go' would yield kIsPrefixCharScore for each char.
+//   Query 'gc' would use kIsPrefixCharScore for 'g' and
+//       kIsFrontOfTokenCharScore for 'c'.
+//   Query 'ch' would use kIsFrontOfTokenCharScore for 'c' and
+//       kIsWeakHitCharScore for 'h'.
 
 // kNoMatchScore is a relevance score that represents no match.
 
@@ -98,11 +98,11 @@ bool PrefixMatcher::RunMatch() {
       PushState();
 
       if (query_iter_.GetArrayPos() == text_iter_.GetArrayPos())
-        current_relevance_ += constants::kIsPrefixMultiplier;
+        current_relevance_ += constants::kIsPrefixCharScore;
       else if (text_iter_.IsFirstCharOfToken())
-        current_relevance_ += constants::kIsFrontOfWordMultiplier;
+        current_relevance_ += constants::kIsFrontOfTokenCharScore;
       else
-        current_relevance_ += constants::kIsWeakHitMultiplier;
+        current_relevance_ += constants::kIsWeakHitCharScore;
 
       if (!current_match_.IsValid())
         current_match_.set_start(text_iter_.GetArrayPos());

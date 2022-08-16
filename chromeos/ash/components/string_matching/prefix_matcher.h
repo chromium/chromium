@@ -13,9 +13,9 @@ namespace ash::string_matching {
 // These are described in more detail in the .cc file.
 namespace constants {
 
-constexpr double kIsPrefixMultiplier = 1.0;
-constexpr double kIsFrontOfWordMultiplier = 0.8;
-constexpr double kIsWeakHitMultiplier = 0.6;
+constexpr double kIsPrefixCharScore = 1.0;
+constexpr double kIsFrontOfTokenCharScore = 0.8;
+constexpr double kIsWeakHitCharScore = 0.6;
 
 constexpr double kNoMatchScore = 0.0;
 
