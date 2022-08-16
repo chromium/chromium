@@ -125,6 +125,24 @@ cros_toolchain("nacl_bootstrap") {
   }
 }
 
+# This is a special toolchain needed just for the nacl_helper target for
+# building an Arm32 nacl_helper binary on Arm64 ChromeOS targets.
+cros_toolchain("nacl_helper_arm32") {
+  toolchain_args = {
+    current_cpu = "arm"
+    current_os = "chromeos"
+    use_debug_fission = false
+    use_gold = false
+    needs_gomacc_path_arg = false
+    sysroot = cros_nacl_helper_arm32_sysroot
+  }
+  ar = cros_nacl_helper_arm32_ar
+  cc = cros_nacl_helper_arm32_cc
+  cxx = cros_nacl_helper_arm32_cxx
+  ld = cros_nacl_helper_arm32_ld
+  readelf = cros_nacl_helper_arm32_readelf
+}
+
 cros_toolchain("host") {
   toolchain_args = {
     current_cpu = host_cpu

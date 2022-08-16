@@ -76,10 +76,17 @@ declare_args() {
   cros_nacl_bootstrap_extra_cppflags = ""
   cros_nacl_bootstrap_extra_cxxflags = ""
   cros_nacl_bootstrap_extra_ldflags = ""
+
+  cros_nacl_helper_arm32_ar = "ar"
+  cros_nacl_helper_arm32_cc = "gcc"
+  cros_nacl_helper_arm32_cxx = "g++"
+  cros_nacl_helper_arm32_readelf = ""
+  cros_nacl_helper_arm32_sysroot = ""
 }
 
 declare_args() {
   cros_target_ld = cros_target_cxx
   cros_host_ld = cros_host_cxx
   cros_v8_snapshot_ld = cros_v8_snapshot_cxx
+  cros_nacl_helper_arm32_ld = cros_nacl_helper_arm32_cxx
 }
