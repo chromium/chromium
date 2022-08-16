@@ -176,9 +176,7 @@ LacrosService* LacrosService::Get() {
 }
 
 LacrosService::LacrosService()
-    :  // If crosapi is disabled, use the empty params.
-       // Otherwise, read the startup data from the inherited FD.
-      never_blocking_sequence_(base::ThreadPool::CreateSequencedTaskRunner(
+    : never_blocking_sequence_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       sequenced_state_(new LacrosServiceNeverBlockingState(),
