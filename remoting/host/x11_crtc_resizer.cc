@@ -107,15 +107,60 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
   DCHECK(iter != active_crtcs_.end());
 
   iter->mode = mode;
+
+  if (new_size.width() > iter->width) {
+    // CRTCs beyond the old right edge may need to be pushed out of the way.
+    // Loop over these CRTCs and find the amount of adjustment needed for each
+    // CRTC. The final adjustment will be the max of these, and the same amount
+    // will be applied to every CRTC (beyond the old right edge), to avoid
+    // introducing any new overlaps.
+    int16_t old_right_edge = iter->x + iter->width;
+    int16_t new_right_edge = iter->x + new_size.width();
+    int16_t x_adjustment = 0;
+    for (auto& crtc : active_crtcs_) {
+      // Only consider CRTCs whose left edges lie between these values.
+      if (crtc.x >= old_right_edge && crtc.x < new_right_edge) {
+        int16_t adjustment = new_right_edge - crtc.x;
+        x_adjustment = std::max(x_adjustment, adjustment);
+      }
+    }
+    if (x_adjustment > 0) {
+      for (auto& crtc : active_crtcs_) {
+        if (crtc.x >= old_right_edge) {
+          crtc.x += x_adjustment;
+          crtc.changed = true;
+        }
+      }
+    }
+  }
   iter->width = new_size.width();
+
+  if (new_size.height() > iter->height) {
+    // Apply the same algorithm as above, but using heights and y-offsets.
+    int16_t old_bottom_edge = iter->y + iter->height;
+    int16_t new_bottom_edge = iter->y + new_size.height();
+    int16_t y_adjustment = 0;
+    for (auto& crtc : active_crtcs_) {
+      if (crtc.y >= old_bottom_edge && crtc.y < new_bottom_edge) {
+        int16_t adjustment = new_bottom_edge - crtc.y;
+        y_adjustment = std::max(y_adjustment, adjustment);
+      }
+    }
+    if (y_adjustment > 0) {
+      for (auto& crtc : active_crtcs_) {
+        if (crtc.y >= old_bottom_edge) {
+          crtc.y += y_adjustment;
+          crtc.changed = true;
+        }
+      }
+    }
+  }
   iter->height = new_size.height();
 
   // Mark it as changed so that ApplyActiveCrtcs() will apply the new |mode|.
   // The |width| and |height| are only used for computing the bounding-box,
   // they are not used by ApplyActiveCrtcs().
   iter->changed = true;
-
-  // TODO(crbug.com/1326339): Adjust the xy-offsets to avoid overlaps.
 }
 
 void X11CrtcResizer::DisableChangedCrtcs() {
