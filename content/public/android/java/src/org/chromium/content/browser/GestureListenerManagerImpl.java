@@ -259,6 +259,8 @@ public class GestureListenerManagerImpl
                 if (!consumed) break;
                 destroyPastePopup();
                 for (mIterator.rewind(); mIterator.hasNext();) {
+                    // TODO(sinansahin): Can we update the RenderCoordinates using these values
+                    // and make them available through other scroll events?
                     Point scrollOffset = getRootScrollOffsetStruct(scrollOffsetX, scrollOffsetY);
                     mIterator.next().onScrollUpdateGestureConsumed(scrollOffset);
                 }

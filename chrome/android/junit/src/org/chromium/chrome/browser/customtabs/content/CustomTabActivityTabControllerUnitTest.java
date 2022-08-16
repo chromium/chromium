@@ -22,7 +22,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.url.JUnitTestGURLs.URL_1;
+
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 
 import org.junit.After;
@@ -44,8 +47,12 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.content.browser.GestureListenerManagerImpl;
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests for {@link CustomTabActivityTabController}.
@@ -61,23 +68,30 @@ public class CustomTabActivityTabControllerUnitTest {
     @Rule
     public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
+    private static final int SCROLL_EXTENT = 100;
+
     private CustomTabActivityTabController mTabController;
 
     @Mock
     private Profile mProfile;
     @Mock
     private GestureListenerManagerImpl mGestureListenerManagerImpl;
+    @Mock
+    private RenderCoordinatesImpl mRenderCoordinatesImpl;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
+        when(mRenderCoordinatesImpl.getMaxVerticalScrollPixInt()).thenReturn(100);
         GestureListenerManagerImpl.setInstanceForTesting(mGestureListenerManagerImpl);
+        RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinatesImpl);
     }
 
     @After
     public void tearDown() {
+        RenderCoordinatesImpl.setInstanceForTesting(null);
         GestureListenerManagerImpl.setInstanceForTesting(null);
     }
 
@@ -235,11 +249,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
     public void removesGestureStateListenerWhenWebContentsWillSwap() {
         env.reachNativeInit(mTabController);
-
-        ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
-                ArgumentCaptor.forClass(GestureStateListener.class);
-        verify(mGestureListenerManagerImpl)
-                .addListener(gestureStateListenerArgumentCaptor.capture());
+        GestureStateListener listener = captureGestureStateListener();
 
         ArgumentCaptor<TabObserver> tabObserverArgumentCaptor =
                 ArgumentCaptor.forClass(TabObserver.class);
@@ -249,25 +259,20 @@ public class CustomTabActivityTabControllerUnitTest {
         for (TabObserver observer : tabObserverArgumentCaptor.getAllValues()) {
             observer.webContentsWillSwap(env.tabProvider.getTab());
         }
-        verify(mGestureListenerManagerImpl)
-                .removeListener(gestureStateListenerArgumentCaptor.getValue());
+        verify(mGestureListenerManagerImpl).removeListener(listener);
     }
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
     public void sendsSignalsForScrollStartThenEnd() {
         env.reachNativeInit(mTabController);
-
-        ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
-                ArgumentCaptor.forClass(GestureStateListener.class);
-        verify(mGestureListenerManagerImpl)
-                .addListener(gestureStateListenerArgumentCaptor.capture());
+        GestureStateListener listener = captureGestureStateListener();
 
         // Start scrolling down.
-        gestureStateListenerArgumentCaptor.getValue().onScrollStarted(0, 100, false);
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
         verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
         // End scrolling at 50%.
-        gestureStateListenerArgumentCaptor.getValue().onScrollEnded(50, 100);
+        listener.onScrollEnded(50, SCROLL_EXTENT);
         // We shouldn't make any more calls.
         verify(env.connection, times(1)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
     }
@@ -276,24 +281,251 @@ public class CustomTabActivityTabControllerUnitTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
     public void sendsSignalsForScrollStartDirectionChangeThenEnd() {
         env.reachNativeInit(mTabController);
+        GestureStateListener listener = captureGestureStateListener();
 
+        // Start by scrolling down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        // Change direction to up at 10%.
+        listener.onVerticalScrollDirectionChanged(true, .1f);
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(true));
+        // Change direction to down at 5%.
+        listener.onVerticalScrollDirectionChanged(false, .05f);
+        verify(env.connection, times(2)).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        // End scrolling at 50%.
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+        // We shouldn't make any more calls.
+        verify(env.connection, times(3)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotSendMaxScrollSignalForZeroPercent() {
+        env.reachNativeInit(mTabController);
+
+        // We shouldn't make any calls.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void onlySendsMaxScrollSignalAfterScrollEnd() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener listener = captureGestureStateListener();
+
+        // Start by scrolling down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        // Scroll down to 55%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 55));
+        // Scroll up to 30%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
+
+        // We shouldn't make any calls at this point.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+
+        // End scrolling.
+        listener.onScrollEnded(30, SCROLL_EXTENT);
+        // Now we should make the call.
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), eq(55));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void onlySendsMaxScrollSignalForFivesMultiples() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener listener = captureGestureStateListener();
+
+        // Start by scrolling down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        // Scroll down to 3%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 3));
+        // End scrolling.
+        listener.onScrollEnded(3, SCROLL_EXTENT);
+        // We shouldn't make any calls at this point.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+
+        // Start scrolling down again.
+        listener.onScrollStarted(3, SCROLL_EXTENT, false);
+        // Scroll down to 8%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 8));
+        // End scrolling.
+        listener.onScrollEnded(8, SCROLL_EXTENT);
+        // We should make a call for 5%.
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), eq(5));
+
+        // Start scrolling down again.
+        listener.onScrollStarted(8, SCROLL_EXTENT, false);
+        // Scroll down to 94%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 94));
+        // End scrolling.
+        listener.onScrollEnded(94, SCROLL_EXTENT);
+        // We should make a call for 90%.
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), eq(90));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotSendSignalForLowerPercentage() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener listener = captureGestureStateListener();
+
+        // Start by scrolling down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        // Scroll down to 63%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 63));
+        // End scrolling.
+        listener.onScrollEnded(63, SCROLL_EXTENT);
+        // We should make a call for 60%.
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), eq(60));
+        clearInvocations(env.connection);
+
+        // Now scroll back up.
+        listener.onScrollStarted(63, SCROLL_EXTENT, true);
+        // Scroll up to 30%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
+        // End scrolling.
+        listener.onScrollEnded(30, SCROLL_EXTENT);
+
+        // We shouldn't make any more calls since the max didn't change.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotSendSignalEqualToPreviousMax() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener listener = captureGestureStateListener();
+
+        // Start by scrolling down.
+        listener.onScrollStarted(0, SCROLL_EXTENT, false);
+        // Scroll down to 50%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 50));
+        // End scrolling.
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+
+        // Now scroll up, then back down to 50%.
+        listener.onScrollStarted(50, SCROLL_EXTENT, true);
+        // Scroll up to 30%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
+        // Back down to 50%.
+        listener.onScrollUpdateGestureConsumed(new Point(0, 50));
+        // End scrolling.
+        listener.onScrollEnded(50, SCROLL_EXTENT);
+
+        // There should be only one call.
+        verify(env.connection, times(1))
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), eq(50));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void resetsMaxOnNavigation_MainFrame_NewDocument() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener gestureStateListener = captureGestureStateListener();
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Scroll down to 50%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
+        gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
+
+        // Verify 50% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(50));
+        clearInvocations(env.connection);
+
+        LoadCommittedDetails details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1),
+                false, /*isSameDocument=*/false, /*isMainFrame=*/true, 200);
+        webContentsObserver.navigationEntryCommitted(details);
+
+        // Scroll down to 10%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
+        gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
+
+        // Verify 10% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(10));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotResetMaxOnNavigation_MainFrame_SameDocument() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener gestureStateListener = captureGestureStateListener();
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Scroll down to 30%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 30));
+        gestureStateListener.onScrollEnded(30, SCROLL_EXTENT);
+
+        // Verify 30% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(30));
+        clearInvocations(env.connection);
+
+        LoadCommittedDetails details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1),
+                false, /*isSameDocument=*/true, /*isMainFrame=*/true, 200);
+        webContentsObserver.navigationEntryCommitted(details);
+
+        // Scroll down to 10%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
+        gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
+
+        // Verify % isn't reported.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+    }
+
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void doesNotResetMaxOnNavigation_SubFrame_NewDocument() {
+        env.reachNativeInit(mTabController);
+        GestureStateListener gestureStateListener = captureGestureStateListener();
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+
+        // Scroll down to 90%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 90));
+        gestureStateListener.onScrollEnded(90, SCROLL_EXTENT);
+
+        // Verify 90% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(90));
+        clearInvocations(env.connection);
+
+        LoadCommittedDetails details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1),
+                false, /*isSameDocument=*/false, /*isMainFrame=*/false, 200);
+        webContentsObserver.navigationEntryCommitted(details);
+
+        // Scroll down to 50%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
+        gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
+
+        // Verify % isn't reported.
+        verify(env.connection, never())
+                .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
+    }
+
+    private GestureStateListener captureGestureStateListener() {
         ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
                 ArgumentCaptor.forClass(GestureStateListener.class);
         verify(mGestureListenerManagerImpl)
                 .addListener(gestureStateListenerArgumentCaptor.capture());
+        return gestureStateListenerArgumentCaptor.getValue();
+    }
 
-        // Start by scrolling down.
-        gestureStateListenerArgumentCaptor.getValue().onScrollStarted(0, 100, false);
-        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
-        // Change direction to up at 10%.
-        gestureStateListenerArgumentCaptor.getValue().onVerticalScrollDirectionChanged(true, .1f);
-        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(true));
-        // Change direction to down at 5%.
-        gestureStateListenerArgumentCaptor.getValue().onVerticalScrollDirectionChanged(false, .05f);
-        verify(env.connection, times(2)).notifyVerticalScrollEvent(eq(env.session), eq(false));
-        // End scrolling at 50%.
-        gestureStateListenerArgumentCaptor.getValue().onScrollEnded(50, 100);
-        // We shouldn't make any more calls.
-        verify(env.connection, times(3)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+    private WebContentsObserver captureWebContentsObserver() {
+        ArgumentCaptor<WebContentsObserver> webContentsObserverArgumentCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        WebContents webContents = env.tabProvider.getTab().getWebContents();
+        verify(webContents).addObserver(webContentsObserverArgumentCaptor.capture());
+        return webContentsObserverArgumentCaptor.getValue();
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -17,6 +19,8 @@ import org.chromium.content_public.browser.WebContents;
  * Unless stated otherwise, all coordinates are in CSS (document) coordinate space.
  */
 public class RenderCoordinatesImpl implements RenderCoordinates {
+    private static RenderCoordinatesImpl sInstanceForTesting;
+
     // Scroll offset from the native in CSS.
     private float mScrollXCss;
     private float mScrollYCss;
@@ -40,7 +44,15 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     private float mTopContentOffsetYPix;
 
     public static RenderCoordinatesImpl fromWebContents(WebContents webContents) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         return ((WebContentsImpl) webContents).getRenderCoordinates();
+    }
+
+    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
+    // available.
+    @VisibleForTesting
+    public static void setInstanceForTesting(RenderCoordinatesImpl instance) {
+        sInstanceForTesting = instance;
     }
 
     // Internally-visible set of update methods (used by WebContentsImpl).

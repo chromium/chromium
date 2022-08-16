@@ -111,10 +111,21 @@ public class MainActivity
 
         @Override
         public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
-            if (callbackName.equals("onVerticalScrollEvent") && args != null) {
+            if (args == null) return;
+
+            // CustomTabsConnection#ON_VERTICAL_SCROLL_EVENT_CALLBACK
+            if (callbackName.equals("onVerticalScrollEvent")) {
+                // CustomTabsConnection#ON_VERTICAL_SCROLL_EVENT_IS_DIRECTION_UP_EXTRA
                 Log.w(TAG,
                         "onVerticalScrollEvent: isDirectionUp = "
                                 + args.getBoolean("isDirectionUp"));
+
+                // CustomTabsConnection#ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK
+            } else if (callbackName.equals("onGreatestScrollPercentageIncreased")) {
+                // CustomTabsConnection#ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_PERCENTAGE_EXTRA
+                Log.w(TAG,
+                        "onGreatestScrollPercentageIncreased: scrollPercentage = "
+                                + args.getInt("scrollPercentage"));
             }
         }
     }

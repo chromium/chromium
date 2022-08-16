@@ -167,6 +167,10 @@ public class CustomTabsConnection {
 
     private static final String ON_VERTICAL_SCROLL_EVENT_CALLBACK = "onVerticalScrollEvent";
     private static final String ON_VERTICAL_SCROLL_EVENT_IS_DIRECTION_UP_EXTRA = "isDirectionUp";
+    private static final String ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK =
+            "onGreatestScrollPercentageIncreased";
+    private static final String ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_PERCENTAGE_EXTRA =
+            "scrollPercentage";
 
     @IntDef({ParallelRequestStatus.NO_REQUEST, ParallelRequestStatus.SUCCESS,
             ParallelRequestStatus.FAILURE_NOT_INITIALIZED,
@@ -1155,6 +1159,25 @@ public class CustomTabsConnection {
 
         if (safeExtraCallback(session, ON_VERTICAL_SCROLL_EVENT_CALLBACK, args)) {
             logCallback("extraCallback(" + ON_VERTICAL_SCROLL_EVENT_CALLBACK + ")", args);
+        }
+    }
+
+    /**
+     * Notifies the application that the scroll percentage of the page reached a new maximum.
+     * Only the values that are multiples of 5 will be reported, and every value will be reported at
+     * most once.
+     *
+     * @param session The Binder object identifying the session.
+     * @param scrollPercentage The new scroll percentage.
+     */
+    public void notifyGreatestScrollPercentageIncreased(
+            CustomTabsSessionToken session, int scrollPercentage) {
+        Bundle args = new Bundle();
+        args.putInt(ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_PERCENTAGE_EXTRA, scrollPercentage);
+
+        if (safeExtraCallback(session, ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK, args)) {
+            logCallback("extraCallback(" + ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK + ")",
+                    args);
         }
     }
 
