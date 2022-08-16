@@ -21,7 +21,7 @@ sys.path.append(PYJSON5_PATH)
 sys.path.append(DEPOT_TOOLS_PATH)
 
 import json5
-import owners_client
+import owners
 
 
 def load_metadata():
@@ -66,25 +66,19 @@ def resolve_owners(flags):
   * Passing any other type of entry through unmodified
   """
 
-  owners_db = owners_client.GetCodeOwnersClient(
-      root=ROOT_PATH,
-      upstream="",
-      host="chromium-review.googlesource.com",
-      project="chromium/src",
-      branch="main")
+  owners_db = owners.Database(ROOT_PATH, open, os.path)
 
   new_flags = []
   for f in flags:
     new_flag = f.copy()
-    new_owners = set()
+    new_owners = []
     for o in f['owners']:
-      # Assume any filepath is to an OWNERS file.
-      if '/' in o:
-        new_owners.update(set(owners_db.ListBestOwners(re.sub('//', '', o))))
+      if o.startswith('//') or '/' in o:
+        new_owners += owners_db.owners_rooted_at_file(re.sub('//', '', o))
       elif '@' not in o:
-        new_owners.add(o + '@chromium.org')
+        new_owners.append(o + '@chromium.org')
       else:
-        new_owners.add(o)
+        new_owners.append(o)
     new_flag['resolved_owners'] = new_owners
     new_flags.append(new_flag)
   return new_flags
@@ -114,9 +108,9 @@ def print_flags(flags, verbose):
   rest of the flags automation consumes most readily.
 
   >>> f1 = {'name': 'foo', 'expiry_milestone': 73, 'owners': ['bar', 'baz']}
-  >>> f1['resolved_owners'] = set('bar@c.org', 'baz@c.org')
+  >>> f1['resolved_owners'] = ['bar@c.org', 'baz@c.org']
   >>> f2 = {'name': 'bar', 'expiry_milestone': 74, 'owners': ['//quxx/OWNERS']}
-  >>> f2['resolved_owners'] = set('quxx@c.org')
+  >>> f2['resolved_owners'] = ['quxx@c.org']
   >>> print_flags([f1], False)
   foo
   >>> print_flags([f1], True) # doctest: +NORMALIZE_WHITESPACE
