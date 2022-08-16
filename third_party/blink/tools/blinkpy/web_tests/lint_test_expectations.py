@@ -26,9 +26,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import contextlib
 import json
 import logging
 import optparse
+import re
 import traceback
 
 from blinkpy.common import exit_codes
@@ -50,57 +52,61 @@ from functools import reduce
 _log = logging.getLogger(__name__)
 
 
+@contextlib.contextmanager
+def _capture_parse_error(failures):
+    try:
+        yield
+    except ParseError as error:
+        messages = str(error).strip().split('\n\n')
+        # Filename is already included in the individual error messages.
+        exclude_pattern = re.compile(
+            'Parsing file .* produced following errors')
+        failures.extend(message for message in messages
+                        if not exclude_pattern.fullmatch(message))
+
+
 def lint(host, options):
-    # lint against three major ports. This is a tradeoff between presubmit
-    # check speed and the completeness of the check.
-    full_port_names_to_lint = ["%s-%s" % (cls.port_name, cls.SUPPORTED_VERSIONS[-1])
-                               for cls in [LinuxPort, MacPort, WinPort]]
-    ports_to_lint = [
-        host.port_factory.get(name) for name in full_port_names_to_lint
-    ]
+    # The checks and list of expectation files are generally not
+    # platform-dependent. Still, we need a port to identify test types and
+    # manipulate virtual test paths.
+    port = host.port_factory.get()
 
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend(
         list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()) +
         [ANDROID_DISABLED_TESTS] + [
-            host.filesystem.join(ports_to_lint[0].web_tests_dir(),
+            host.filesystem.join(port.web_tests_dir(),
                                  'WPTOverrideExpectations'),
-            host.filesystem.join(ports_to_lint[0].web_tests_dir(),
-                                 'WebGPUExpectations'),
+            host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
         ])
-
-
-    # In general, the set of TestExpectation files should be the same for
-    # all ports. However, the method used to list expectations files is
-    # in Port, and the TestExpectations constructor takes a Port.
-    # Perhaps this function could be changed to just use one Port
-    # (the default Port for this host) and it would work the same.
 
     failures = []
     warnings = []
     all_system_specifiers = set()
-    all_build_specifiers = set(ports_to_lint[0].ALL_BUILD_TYPES)
+    all_build_specifiers = set(port.ALL_BUILD_TYPES)
 
-    for port in ports_to_lint:
-        expectations_dict = port.all_expectations_dict()
-        for path in port.extra_expectations_files():
-            if host.filesystem.exists(path):
-                expectations_dict[path] = host.filesystem.read_text_file(path)
+    expectations_dict = port.all_expectations_dict()
+    for path in port.extra_expectations_files():
+        if host.filesystem.exists(path):
+            expectations_dict[path] = host.filesystem.read_text_file(path)
 
-        for path, content in expectations_dict.items():
-            # Create a TestExpectations instance and see if an exception is raised
-            try:
-                test_expectations = TestExpectations(
-                    port, expectations_dict={path: content})
-                # Check each expectation for issues
-                f, w = _check_expectations(host, port, path,
-                                           test_expectations, options)
-                failures += f
-                warnings += w
-            except ParseError as error:
-                _log.error(str(error))
-                failures.append(str(error))
-                _log.error('')
+    # Needed for checking if a test is a slow test. Construction is somewhat
+    # expensive because it parses the main `TestExpectations` file, so reuse it
+    # across all files checked.
+    all_test_expectations = None
+    with _capture_parse_error(failures):
+        all_test_expectations = TestExpectations(port)
+
+    for path, content in expectations_dict.items():
+        # Create a TestExpectations instance and see if an exception is raised
+        with _capture_parse_error(failures):
+            test_expectations = TestExpectations(
+                port, expectations_dict={path: content})
+            # Check each expectation for issues
+            f, w = _check_expectations(host, port, path, test_expectations,
+                                       options, all_test_expectations)
+            failures += f
+            warnings += w
 
     return failures, warnings
 
@@ -122,7 +128,6 @@ def _check_test_existence(host, port, path, expectations):
             host.filesystem.basename(path), exp.lineno, exp.test)
         if not port.test_exists(test_name):
             failures.append(possible_error)
-            _log.error(possible_error)
     return failures, warnings
 
 
@@ -142,9 +147,7 @@ def _check_directory_glob(host, port, path, expectations):
                 ("%s:%d Expectation '%s' is for a directory, however "
                  "the name in the expectation does not have a glob in the end")
                 % (host.filesystem.basename(path), exp.lineno, test_name))
-            _log.error(error)
             failures.append(error)
-            _log.error('')
 
     return failures
 
@@ -199,32 +202,35 @@ def _check_redundant_virtual_expectations(host, port, path, expectations):
                     host.filesystem.basename(path), exp.lineno, exp.test,
                     base_test, base_exp.lineno)
                 # TODO(crbug.com/1080691): Change to error once it's fixed.
-                _log.warning(error)
                 failures.append(error)
 
     return failures
 
-def _check_not_slow_and_timeout(host, port, path, expectations):
+
+def _check_not_slow_and_timeout(host, port, path, expectations,
+                                all_test_expectations):
     # only do check for web tests, so that we don't impact test coverage
     # for other test suites
     if (not path.endswith('TestExpectations') and
         not path.endswith('SlowTests')):
         return []
+    # Not all default expectation files could be parsed, so this check cannot
+    # run.
+    if not all_test_expectations:
+        return []
 
     rv = []
-    test_expectations = TestExpectations(host.port_factory.get())
 
-    for i in range(len(expectations)):
-        exp = expectations[i]
-        if (ResultType.Timeout in exp.results and
-                len(exp.results) == 1 and
-                (test_expectations.get_expectations(exp.test).is_slow_test or
-                    port.is_slow_wpt_test(exp.test))):
+    for exp in expectations:
+        if (ResultType.Timeout in exp.results and len(exp.results) == 1 and
+            (all_test_expectations.get_expectations(exp.test).is_slow_test
+             or port.is_slow_wpt_test(exp.test))):
             error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test: you must add [ Skip ] (see crrev.com/c/3381301).".format(
                 host.filesystem.basename(path), exp.lineno, exp.test)
-            _log.warning(error)
             rv.append(error)
+
     return rv
+
 
 def _check_never_fix_tests(host, port, path, expectations):
     if not path.endswith('NeverFixTests'):
@@ -253,7 +259,6 @@ def _check_never_fix_tests(host, port, path, expectations):
                 and exp.results != set([ResultType.Skip])):
             error = "{}:{} Only one of [ Skip ] and [ Pass ] is allowed".format(
                 host.filesystem.basename(path), exp.lineno)
-            _log.error(error)
             failures.append(error)
             continue
         if exp.is_default_pass or exp.results != set([ResultType.Pass]):
@@ -266,19 +271,21 @@ def _check_never_fix_tests(host, port, path, expectations):
             "{}:{} {}: The [ Pass ] entry must override a previous [ Skip ]"
             " entry with a more specific test name or tags".format(
                 host.filesystem.basename(path), exp.lineno, exp.test))
-        _log.error(error)
         failures.append(error)
     return failures
 
 
-def _check_expectations(host, port, path, test_expectations, options):
+def _check_expectations(host, port, path, test_expectations, options,
+                        all_test_expectations):
     # Check for original expectation lines (from get_updated_lines) instead of
     # expectations filtered for the current port (test_expectations).
     expectations = test_expectations.get_updated_lines(path)
     failures, warnings = _check_test_existence(
         host, port, path, expectations)
     failures.extend(_check_directory_glob(host, port, path, expectations))
-    failures.extend(_check_not_slow_and_timeout(host, port, path, expectations))
+    failures.extend(
+        _check_not_slow_and_timeout(host, port, path, expectations,
+                                    all_test_expectations))
     failures.extend(_check_never_fix_tests(host, port, path, expectations))
     failures.extend(
         _check_stable_webexposed_not_disabled(host, path, expectations))
@@ -302,7 +309,6 @@ def _check_stable_webexposed_not_disabled(host, path, expectations):
                     "because it protects against API changes.".format(
                         host.filesystem.basename(path), exp.lineno, exp.to_string())
             failures.append(error)
-            _log.error(error)
 
     return failures
 
@@ -325,7 +331,6 @@ def check_virtual_test_suites(host, options):
                 if normalized_bases[i].startswith(normalized_bases[j]):
                     failure = 'Base "{}" starts with "{}" in the same virtual suite "{}", so is redundant.'.format(
                         normalized_bases[i], normalized_bases[j], prefix)
-                    _log.error(failure)
                     failures.append(failure)
 
         # A virtual test suite needs either
@@ -338,7 +343,6 @@ def check_virtual_test_suites(host, options):
             if not base:
                 failure = 'Base value in virtual suite "{}" should not be an empty string'.format(
                     prefix)
-                _log.error(failure)
                 failures.append(failure)
                 continue
             base_comps = base.split(port.TEST_PATH_SEPARATOR)
@@ -348,7 +352,6 @@ def check_virtual_test_suites(host, options):
             elif not fs.isdir(absolute_base):
                 failure = 'Base "{}" in virtual suite "{}" must refer to a real file or directory'.format(
                     base, prefix)
-                _log.error(failure)
                 failures.append(failure)
                 continue
             comps = [web_tests_dir] + suite_comps + base_comps + ['README.txt']
@@ -357,11 +360,8 @@ def check_virtual_test_suites(host, options):
                     and not fs.exists(path_to_readme_txt)):
                 failure = '"{}" and "{}" are both missing (each virtual suite must have one).'.format(
                     path_to_readme_txt, path_to_readme_md)
-                _log.error(failure)
                 failures.append(failure)
 
-    if failures:
-        _log.error('')
     return failures
 
 
@@ -387,19 +387,15 @@ def check_smoke_tests(host, options):
             line = line.split('#')[0].strip()
             if not line:
                 continue
-            failure = ''
             if line in parsed_lines:
-                failure = '%s:%d duplicate with line %d: %s' % \
-                    (smoke_tests_file, line_number, parsed_lines[line], line)
+                failures.append(
+                    '%s:%d duplicate with line %d: %s' %
+                    (smoke_tests_file, line_number, parsed_lines[line], line))
             elif not port.test_exists(line):
-                failure = '%s:%d Test does not exist: %s' % (smoke_tests_file,
-                                                             line_number, line)
-            if failure:
-                _log.error(failure)
-                failures.append(failure)
+                failures.append('%s:%d Test does not exist: %s' %
+                                (smoke_tests_file, line_number, line))
             parsed_lines[line] = line_number
-    if failures:
-        _log.error('')
+
     return failures
 
 
@@ -417,6 +413,14 @@ def run_checks(host, options):
     if options.json:
         with open(options.json, 'w') as f:
             json.dump(failures, f)
+
+    # Dedup identical errors/warnings.
+    for failure in sorted(set(failures)):
+        _log.error(failure)
+        _log.error('')
+    for warning in sorted(set(warnings)):
+        _log.warning(warning)
+        _log.warning('')
 
     if failures:
         _log.error('Lint failed.')

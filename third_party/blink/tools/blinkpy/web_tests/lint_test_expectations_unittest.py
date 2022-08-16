@@ -27,10 +27,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import optparse
+import textwrap
 import unittest
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import lint_test_expectations
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
@@ -102,14 +104,24 @@ class FakeFactory(object):
 
 
 class LintTest(LoggingTestCase):
-    @unittest.skip(
-        'crbug.com/986447, re-enable after merging crrev.com/c/1918294')
     def test_lint_test_files(self):
         options = optparse.Values({
             'additional_expectations': [],
             'platform': 'test-mac-mac10.10'
         })
         host = MockHost()
+        path_finder = PathFinder(host.filesystem)
+        host.filesystem.write_text_file(
+            path_finder.path_from_web_tests('TestExpectations'),
+            textwrap.dedent("""\
+                            # results: [ Pass Failure ]
+                            passes/text.html [ Pass ]
+                            failures/flaky/text.html [ Failure Pass ]
+                            """))
+        host.filesystem.write_text_file(
+            path_finder.path_from_web_tests('NeverFixTests'), '')
+        host.filesystem.write_text_file(
+            path_finder.path_from_web_tests('VirtualTestSuites'), '[]')
 
         host.port_factory.all_port_names = lambda platform=None: [platform]
 
@@ -135,7 +147,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        all_logs = ''.join(self.logMessages())
+        all_logs = ''.join(failures)
         self.assertIn('foo', all_logs)
         self.assertIn('bar', all_logs)
 
@@ -160,7 +172,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        all_logs = ''.join(self.logMessages())
+        all_logs = ''.join(failures)
         self.assertIn('LeakExpectations', all_logs)
 
     def test_lint_flag_specific_expectation_errors(self):
@@ -181,7 +193,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        all_logs = ''.join(self.logMessages())
+        all_logs = ''.join(failures)
         self.assertIn('flag-specific', all_logs)
         self.assertIn('does/not/exist', all_logs)
         self.assertNotIn('noproblem', all_logs)
@@ -210,10 +222,10 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        all_logs = ''.join(self.logMessages())
+        all_logs = ''.join(failures)
         self.assertIn('conflict', all_logs)
 
-    def test_lint_exsistence(self):
+    def test_lint_existence(self):
         options = optparse.Values({
             'additional_expectations': [],
             'platform': 'test',
@@ -259,7 +271,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        self.assertEquals(len(failures), 18)
+        self.assertEquals(len(failures), 6)
         expected_non_existence = [
             'test1/*',
             'test2/bar.html',
@@ -268,9 +280,8 @@ class LintTest(LoggingTestCase):
             'virtual/bar/*',
             'virtual/bar/test2/foo.html',
         ]
-        for i in range(len(failures)):
-            self.assertIn('Test does not exist', failures[i])
-            self.assertIn(expected_non_existence[i%6], failures[i])
+        for pattern, failure in zip(expected_non_existence, failures):
+            self.assertIn('Test does not exist: %s' % pattern, failure)
 
     def test_only_wpt_in_android_override_files(self):
         options = optparse.Values({
@@ -317,7 +328,7 @@ class LintTest(LoggingTestCase):
         self.assertTrue(failures)
         self.assertEqual(warnings, [])
 
-        all_logs = ''.join(self.logMessages())
+        all_logs = ''.join(failures)
         self.assertIn('directory', all_logs)
 
     def test_virtual_test_redundant_expectation(self):
@@ -363,7 +374,7 @@ class LintTest(LoggingTestCase):
         failures, warnings = lint_test_expectations.lint(host, options)
         self.assertEqual(failures, [])
 
-        self.assertEquals(len(warnings), 3)
+        self.assertEquals(len(warnings), 1)
         self.assertRegexpMatches(warnings[0], ':5 .*redundant with.* line 4$')
 
     def test_never_fix_tests(self):
@@ -401,7 +412,7 @@ class LintTest(LoggingTestCase):
         failures, warnings = lint_test_expectations.lint(host, options)
         self.assertEqual(warnings, [])
 
-        self.assertEquals(len(failures), 12)
+        self.assertEquals(len(failures), 4)
         self.assertRegexpMatches(failures[0], ':7 .*must override')
         self.assertRegexpMatches(failures[1], ':8 .*must override')
         self.assertRegexpMatches(failures[2], ':9 Only one of')
@@ -443,15 +454,10 @@ class LintTest(LoggingTestCase):
         host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
-        failures, warnings = lint_test_expectations.lint(host, options)
-        print(failures)
-        self.assertEqual(6, len(failures))
-        for i in range(3):
-            self.assertRegexpMatches(failures[0 + 2 * i],
-                                     ".*virtual/stable/webexposed/test2/.*")
-            self.assertRegexpMatches(
-                failures[1 + 2 * i],
-                ".*virtual/stable/webexposed/api\\.html.*")
+        (fail1, fail2), warnings = lint_test_expectations.lint(host, options)
+        self.assertRegexpMatches(fail1, '.*virtual/stable/webexposed/test2/.*')
+        self.assertRegexpMatches(fail2,
+                                 r'.*virtual/stable/webexposed/api\.html.*')
 
 
 class CheckVirtualSuiteTest(unittest.TestCase):
@@ -548,22 +554,38 @@ class MainTest(unittest.TestCase):
         lint_test_expectations.lint = lambda host, options: ([],
                                                              ['test warning'])
         res = lint_test_expectations.main(['--platform', 'test'], self.stderr)
-        self.assertEqual('Lint succeeded with warnings.',
-                         self.stderr.getvalue().strip())
+        self.assertEqual(
+            textwrap.dedent("""\
+                test warning
+
+                Lint succeeded with warnings.
+                """), self.stderr.getvalue())
         self.assertEqual(res, 2)
 
     def test_failure(self):
         lint_test_expectations.lint = lambda host, options: (['test failure'],
                                                              [])
         res = lint_test_expectations.main(['--platform', 'test'], self.stderr)
-        self.assertEqual('Lint failed.', self.stderr.getvalue().strip())
+        self.assertEqual(
+            textwrap.dedent("""\
+                test failure
+
+                Lint failed.
+                """), self.stderr.getvalue())
         self.assertEqual(res, 1)
 
-    def test_failure_with_warning(self):
-        lint_test_expectations.lint = lambda host, options: (['test failure'],
-                                                             ['test warning'])
+    def test_failures_with_warnings(self):
+        lint_test_expectations.lint = lambda host, options: (
+            ['test failure', 'test failure'], ['test warning', 'test warning'])
         res = lint_test_expectations.main(['--platform', 'test'], self.stderr)
-        self.assertEqual('Lint failed.', self.stderr.getvalue().strip())
+        self.assertEqual(
+            textwrap.dedent("""\
+                test failure
+
+                test warning
+
+                Lint failed.
+                """), self.stderr.getvalue())
         self.assertEqual(res, 1)
 
     def test_interrupt(self):
