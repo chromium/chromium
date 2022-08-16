@@ -31,7 +31,7 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
-            groups = "google/chrome-flakiness@google.com",
+            groups = "mdb/chrome-flakiness",
         ),
     ],
 )
