@@ -863,4 +863,44 @@ ElementContext InteractionSequence::GetElementContext(
   return element ? element->context() : context();
 }
 
+void PrintTo(InteractionSequence::StepType step_type, std::ostream* os) {
+  const char* const kStepTypeNames[] = {
+      "StepType::kShown", "StepType::kActivated", "StepType::kHidden",
+      "StepType::kCustomEvent"};
+  constexpr int kCount = sizeof(kStepTypeNames) / sizeof(kStepTypeNames[0]);
+  static_assert(kCount ==
+                static_cast<int>(InteractionSequence::StepType::kMaxValue) + 1);
+  const int value = static_cast<int>(step_type);
+  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
+                                         : kStepTypeNames[value]);
+}
+
+void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
+  const char* const kAbortedReasonNames[] = {
+      "AbortedReason::kSequenceDestroyed",
+      "AbortedReason::kElementHiddenBeforeSequenceStart",
+      "AbortedReason::kElementNotVisibleAtStartOfStep",
+      "AbortedReason::kElementHiddenDuringStep"};
+  constexpr int kCount =
+      sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
+  static_assert(
+      kCount ==
+      static_cast<int>(InteractionSequence::AbortedReason::kMaxValue) + 1);
+  const int value = static_cast<int>(reason);
+  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
+                                         : kAbortedReasonNames[value]);
+}
+
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::StepType step_type) {
+  PrintTo(step_type, &os);
+  return os;
+}
+
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::AbortedReason reason) {
+  PrintTo(reason, &os);
+  return os;
+}
+
 }  // namespace ui

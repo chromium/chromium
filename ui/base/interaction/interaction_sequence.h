@@ -74,7 +74,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Represents a custom event with a specific custom event type. You may
     // further specify a required element name or ID to filter down which
     // events you actually want to step on vs. ignore.
-    kCustomEvent
+    kCustomEvent,
+    // Update this if values are added to the enumeration.
+    kMaxValue = kCustomEvent
   };
 
   // Details why a sequence was aborted.
@@ -86,7 +88,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // An element should have been visible at the start of a step but was not.
     kElementNotVisibleAtStartOfStep,
     // An element should have remained visible during a step but did not.
-    kElementHiddenDuringStep
+    kElementHiddenDuringStep,
+    // Update this if values are added to the enumeration.
+    kMaxValue = kElementHiddenDuringStep
   };
 
   // Callback when a step in the sequence starts. If |element| is no longer
@@ -407,6 +411,21 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // and we don't want to risk a UAF if that happens.
   base::WeakPtrFactory<InteractionSequence> weak_factory_{this};
 };
+
+COMPONENT_EXPORT(UI_BASE)
+extern void PrintTo(InteractionSequence::StepType step_type, std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE)
+extern void PrintTo(InteractionSequence::AbortedReason reason,
+                    std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE)
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::StepType step_type);
+
+COMPONENT_EXPORT(UI_BASE)
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::AbortedReason reason);
 
 }  // namespace ui
 
