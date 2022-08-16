@@ -110,10 +110,11 @@ std::vector<base::ProcessId> OomScorePolicyLacros::GetUniqueSortedPids(
   std::set<base::ProcessId> pid_set;
 
   for (const auto& candidate : candidates) {
-    base::ProcessId pid = candidate.page_node()
-                              ->GetMainFrameNode()
-                              ->GetProcessNode()
-                              ->GetProcessId();
+    const FrameNode* main_frame_node =
+        candidate.page_node()->GetMainFrameNode();
+    if (!main_frame_node)
+      continue;
+    base::ProcessId pid = main_frame_node->GetProcessNode()->GetProcessId();
 
     if (pid == base::kNullProcessId || pid_set.find(pid) != pid_set.end())
       continue;
