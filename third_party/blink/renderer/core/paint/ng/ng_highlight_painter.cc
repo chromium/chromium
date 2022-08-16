@@ -264,7 +264,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
     const ComputedStyle& style,
     const absl::optional<AffineTransform>& rotation) {
   const Color color = SelectionBackgroundColor(document, style, node,
-                                               selection_style_.fill_color);
+                                               selection_style_.current_color);
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
@@ -687,7 +687,8 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
       MarkerRectForForeground(fragment_item_, text, paint_start_offset,
                               paint_end_offset),
       HighlightPaintingUtils::HighlightTextDecorationColor(
-          style_, node_,
+          layout_object_->GetDocument(), style_, node_,
+          originating_text_style_.current_color,
           marker_type == DocumentMarker::kSpelling ? kPseudoIdSpellingError
                                                    : kPseudoIdGrammarError));
 }
@@ -764,7 +765,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
       const StringView text = cursor_.CurrentText();
       Color background_color = HighlightPaintingUtils::HighlightBackgroundColor(
-          document, style_, node_, layer.text_style.fill_color,
+          document, style_, node_, layer.text_style.current_color,
           layer.id.PseudoId(), layer.id.PseudoArgument());
 
       // TODO(dazabani@igalia.com) paint rects pixel-snapped in physical space,
@@ -903,11 +904,19 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
       ClipToPartDecorations(part);
     }
 
-    if (decoration_layer_id.type == HighlightLayerType::kOriginating &&
-        part.layer.type != HighlightLayerType::kOriginating) {
-      wtf_size_t part_layer_index = layers_.Find(part.layer);
-      decoration_layer.decoration_info->SetHighlightOverrideColor(
-          layers_[part_layer_index].text_style.fill_color);
+    if (part.layer.type != HighlightLayerType::kOriginating) {
+      if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
+        wtf_size_t part_layer_index = layers_.Find(part.layer);
+        decoration_layer.decoration_info->SetHighlightOverrideColor(
+            layers_[part_layer_index].text_style.current_color);
+      } else {
+        decoration_layer.decoration_info->SetHighlightOverrideColor(
+            HighlightPaintingUtils::ResolveColor(
+                layout_object_->GetDocument(), style_,
+                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                GetCSSPropertyTextDecorationColor(),
+                layers_[decoration_layer_index - 1].text_style.current_color));
+      }
     }
 
     text_painter_.PaintDecorationsExceptLineThrough(
@@ -947,11 +956,19 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
       ClipToPartDecorations(part);
     }
 
-    if (decoration_layer_id.type == HighlightLayerType::kOriginating &&
-        part.layer.type != HighlightLayerType::kOriginating) {
-      wtf_size_t part_layer_index = layers_.Find(part.layer);
-      decoration_layer.decoration_info->SetHighlightOverrideColor(
-          layers_[part_layer_index].text_style.fill_color);
+    if (part.layer.type != HighlightLayerType::kOriginating) {
+      if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
+        wtf_size_t part_layer_index = layers_.Find(part.layer);
+        decoration_layer.decoration_info->SetHighlightOverrideColor(
+            layers_[part_layer_index].text_style.current_color);
+      } else {
+        decoration_layer.decoration_info->SetHighlightOverrideColor(
+            HighlightPaintingUtils::ResolveColor(
+                layout_object_->GetDocument(), style_,
+                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                GetCSSPropertyTextDecorationColor(),
+                layers_[decoration_layer_index - 1].text_style.current_color));
+      }
     }
 
     text_painter_.PaintDecorationsOnlyLineThrough(
@@ -993,7 +1010,8 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
                 : DocumentMarker::kGrammar,
             *marker_rect,
             HighlightPaintingUtils::HighlightTextDecorationColor(
-                style_, node_,
+                layout_object_->GetDocument(), style_, node_,
+                layers_[i - 1].text_style.current_color,
                 decoration_layer_id.type == HighlightLayerType::kSpelling
                     ? kPseudoIdSpellingError
                     : kPseudoIdGrammarError));

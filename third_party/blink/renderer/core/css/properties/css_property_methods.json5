@@ -37,7 +37,7 @@
     {
       name: "ColorIncludingFallback",
       return_type: "const blink::Color",
-      parameters: "(bool, const ComputedStyle&)",
+      parameters: "(bool, const ComputedStyle&, bool* is_current_color = nullptr)",
     },
     {
       name: "InitialValue",

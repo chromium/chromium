@@ -2720,9 +2720,6 @@ class ComputedStyle : public ComputedStyleBase,
       AccessBackgroundLayers().FillUnsetProperties();
     }
   }
-  bool IsBackgroundColorCurrentColor() const {
-    return BackgroundColor().IsCurrentColor();
-  }
   bool HasBackgroundRelatedColorReferencingCurrentColor() const {
     if (BackgroundColor().IsCurrentColor() ||
         InternalVisitedBackgroundColor().IsCurrentColor() ||
@@ -2747,8 +2744,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Color utility functions.
   CORE_EXPORT Color
-  VisitedDependentColor(const CSSProperty& color_property) const;
-  CORE_EXPORT bool VisitedDependentColorIsCurrentColor() const;
+  VisitedDependentColor(const CSSProperty& color_property,
+                        bool* is_current_color = nullptr) const;
 
   // -webkit-appearance utility functions.
   bool HasEffectiveAppearance() const {
@@ -3130,17 +3127,19 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT bool CustomPropertiesEqual(const Vector<AtomicString>& properties,
                                          const ComputedStyle& other) const;
 
-  Color GetCurrentColor() const;
-  Color GetInternalVisitedCurrentColor() const;
-  Color GetInternalForcedCurrentColor() const;
-  Color GetInternalForcedVisitedCurrentColor() const;
+  Color GetCurrentColor(bool* is_current_color = nullptr) const;
+  Color GetInternalVisitedCurrentColor(bool* is_current_color = nullptr) const;
+  Color GetInternalForcedCurrentColor(bool* is_current_color = nullptr) const;
+  Color GetInternalForcedVisitedCurrentColor(
+      bool* is_current_color = nullptr) const;
 
   // Helper for resolving a StyleColor which may contain currentColor or a
   // system color keyword. This is intended for cases where a given property
   // consists of a StyleColor plus additional information. For <color>
   // properties, prefer VisitedDependentColor() or
   // Longhand::ColorIncludingFallback() instead.
-  Color ResolvedColor(const StyleColor& color) const;
+  Color ResolvedColor(const StyleColor& color,
+                      bool* is_current_color = nullptr) const;
 
   static bool ShadowListHasCurrentColor(const ShadowList*);
 

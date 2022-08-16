@@ -50,7 +50,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static const blink::Color BorderSideColor(const ComputedStyle&,
                                             const StyleColor&,
                                             EBorderStyle,
-                                            bool visited_link);
+                                            bool visited_link,
+                                            bool* is_current_color);
   static CSSValue* ZoomAdjustedPixelValueForLength(const Length&,
                                                    const ComputedStyle&);
   static const CSSValue* BackgroundImageOrWebkitMaskImage(

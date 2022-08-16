@@ -19,6 +19,20 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 namespace blink {
+namespace {
+
+Color SelectionWebkitTextFillColor(const Document& document,
+                                   Node* node,
+                                   const ComputedStyle& originating_style) {
+  scoped_refptr<const ComputedStyle> pseudo_style =
+      HighlightPaintingUtils::HighlightPseudoStyle(node, originating_style,
+                                                   kPseudoIdSelection);
+  return HighlightPaintingUtils::ResolveColor(
+      document, originating_style, pseudo_style.get(), kPseudoIdSelection,
+      GetCSSPropertyWebkitTextFillColor(), Color::kBlack);
+}
+
+}  // namespace
 
 class HighlightPaintingUtilsTest : public SimTest {};
 
@@ -41,7 +55,6 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
 
   auto* body = GetDocument().body();
   auto* text_node = body->firstChild();
-  PaintFlags flags = PaintFlag::kNoFlag;
 
   Compositor().BeginFrame();
 
@@ -58,16 +71,14 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(255, 0, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(0, 128, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
   const ComputedStyle* active_style =
       body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
   EXPECT_TRUE(active_style);
@@ -75,9 +86,8 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(255, 0, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
@@ -100,7 +110,6 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
 
   auto* body = GetDocument().body();
   auto* text_node = body->firstChild();
-  PaintFlags flags = PaintFlag::kNoFlag;
 
   Compositor().BeginFrame();
 
@@ -120,25 +129,22 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   EXPECT_TRUE(active_style);
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(0, 128, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(0, 128, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
-                                  GetDocument(), text_style, text_node,
-                                  Color::kBlack, kPseudoIdSelection, flags));
+  EXPECT_EQ(Color(0, 128, 0),
+            SelectionWebkitTextFillColor(GetDocument(), text_node, text_style));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }

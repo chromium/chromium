@@ -80,6 +80,7 @@ class CORE_EXPORT StyleColor {
 
   Color Resolve(Color current_color,
                 mojom::blink::ColorScheme color_scheme,
+                bool* is_current_color = nullptr,
                 bool is_forced_color = false) const;
 
   // Resolve and override the resolved color's alpha channel as specified by
@@ -87,6 +88,7 @@ class CORE_EXPORT StyleColor {
   Color ResolveWithAlpha(Color current_color,
                          mojom::blink::ColorScheme color_scheme,
                          int alpha,
+                         bool* is_current_color = nullptr,
                          bool is_forced_color = false) const;
 
   bool IsNumeric() const {

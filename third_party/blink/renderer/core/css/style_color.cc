@@ -11,7 +11,10 @@ namespace blink {
 
 Color StyleColor::Resolve(Color current_color,
                           mojom::blink::ColorScheme color_scheme,
+                          bool* is_current_color,
                           bool is_forced_color) const {
+  if (is_current_color)
+    *is_current_color = IsCurrentColor();
   if (IsCurrentColor())
     return current_color;
   if (EffectiveColorKeyword() != CSSValueID::kInvalid ||
@@ -23,8 +26,10 @@ Color StyleColor::Resolve(Color current_color,
 Color StyleColor::ResolveWithAlpha(Color current_color,
                                    mojom::blink::ColorScheme color_scheme,
                                    int alpha,
+                                   bool* is_current_color,
                                    bool is_forced_color) const {
-  Color color = Resolve(current_color, color_scheme, is_forced_color);
+  Color color =
+      Resolve(current_color, color_scheme, is_current_color, is_forced_color);
   return Color(color.Red(), color.Green(), color.Blue(), alpha);
 }
 

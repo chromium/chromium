@@ -47,8 +47,10 @@ class Longhand : public CSSProperty {
     else
       ApplyInitial(state);
   }
-  virtual const blink::Color ColorIncludingFallback(bool, const ComputedStyle&)
-      const {
+  virtual const blink::Color ColorIncludingFallback(
+      bool,
+      const ComputedStyle&,
+      bool* is_current_color = nullptr) const {
     NOTREACHED();
     return Color();
   }

@@ -2,6 +2,7 @@
 <head>
 <style>
   body, svg { margin: 0px; padding: 0px; }
+  text.test::selection { background-color: transparent; }
   text#solidFill::selection, #solidFillText { fill: blue; }
   text#solidStroke::selection, #solidStrokeText { fill: none; stroke:blue; stroke-width: 1px; }
   text#gradFill::selection, #gradFillText { fill: url(#grad1); }
@@ -31,19 +32,19 @@ function runTests()
     </defs>
     <g transform="translate(10,0)">
       <!-- select with various style -->
-      <text y="30px" id="solidFill">Selected text should be filled with solid blue.</text>
-      <text y="60px" id="solidStroke">Selected text should be stroked with solid blue.</text>
-      <text y="90px" id="gradFill">Selected text should be filled with gradient.</text>
-      <text y="120px" id="gradStroke">Selected text should be stroked with gradient.</text>
-      <text y="150px" id="none">Selected text should get invisible.</text>
-      <text y="180px" id="compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="30px" id="solidFill" class="test">Selected text should be filled with solid blue.</text>
+      <text y="60px" id="solidStroke" class="test">Selected text should be stroked with solid blue.</text>
+      <text y="90px" id="gradFill" class="test">Selected text should be filled with gradient.</text>
+      <text y="120px" id="gradStroke" class="test">Selected text should be stroked with gradient.</text>
+      <text y="150px" id="none" class="test">Selected text should get invisible.</text>
+      <text y="180px" id="compound" class="test">Selected text should have both gradient fill, solid stroke and background</text>
       <!-- select various pre-styled texts with a style -->
-      <text y="240px" id="solidFillText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
-      <text y="270px" id="solidStrokeText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
-      <text y="300px" id="gradFillText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
-      <text y="330px" id="gradStrokeText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
-      <text y="360px" id="noneText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
-      <text y="390px" id="compoundText" class="compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="240px" id="solidFillText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="270px" id="solidStrokeText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="300px" id="gradFillText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="330px" id="gradStrokeText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="360px" id="noneText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
+      <text y="390px" id="compoundText" class="test compound">Selected text should have both gradient fill, solid stroke and background</text>
     </g>
   </svg>
 </body>

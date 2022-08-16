@@ -148,7 +148,10 @@ class CORE_EXPORT TextDecorationInfo {
   gfx::RectF WavyPaintRect() const;
   gfx::RectF WavyTileRect() const;
 
-  // Overrides the line color with the given topmost active highlight ‘color’.
+  // Overrides the line color with the given topmost active highlight ‘color’
+  // (for originating decorations being painted in highlight overlays), or the
+  // highlight ‘text-decoration-color’ resolved with the correct ‘currentColor’
+  // (for decorations introduced by highlight pseudos).
   void SetHighlightOverrideColor(const absl::optional<Color>&);
 
  private:

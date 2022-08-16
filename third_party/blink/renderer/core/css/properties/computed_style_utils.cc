@@ -126,7 +126,8 @@ const blink::Color ComputedStyleUtils::BorderSideColor(
     const ComputedStyle& style,
     const StyleColor& color,
     EBorderStyle border_style,
-    bool visited_link) {
+    bool visited_link,
+    bool* is_current_color) {
   Color current_color;
   if (visited_link) {
     current_color = style.GetInternalVisitedCurrentColor();
@@ -140,7 +141,8 @@ const blink::Color ComputedStyleUtils::BorderSideColor(
   } else {
     current_color = style.GetCurrentColor();
   }
-  return color.Resolve(current_color, style.UsedColorScheme());
+  return color.Resolve(current_color, style.UsedColorScheme(),
+                       is_current_color);
 }
 
 const CSSValue* ComputedStyleUtils::BackgroundImageOrWebkitMaskImage(
