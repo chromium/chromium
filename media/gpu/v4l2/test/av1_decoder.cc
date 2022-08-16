@@ -564,7 +564,7 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
       gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/10);
+      V4L2_MEMORY_MMAP, /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Av1Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
@@ -780,48 +780,59 @@ void Av1Decoder::SetupFrameParams(
                   frm_header.buffer_removal_time);
   v4l2_frame_params->refresh_frame_flags = frm_header.refresh_frame_flags;
 
+  // The first slot in |order_hints| is reserved for intra frame, so it is not
+  // used and will always be 0.
+  // Please reference more details in the below comment for this algorithm to
+  // compute |order_hints|. In summary, we are trying to get frame number here
+  // given a specific reference frame type (L0, L1, L2, G, B, A1, A2) in
+  // the reference frames list.
+  // https://b.corp.google.com/issues/242337166#comment24
   static_assert(std::size(decltype(v4l2_frame_params->order_hints){}) ==
                     libgav1::kNumReferenceFrameTypes,
                 "Invalid size of |order_hints| array");
-  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
-    v4l2_frame_params->order_hints[i] =
-        base::checked_cast<__u32>(frm_header.reference_order_hint[i]);
+  if (frm_header.frame_type != libgav1::kFrameKey) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
+      v4l2_frame_params->order_hints[i + 1] =
+          ref_frames_[frm_header.reference_frame_index[i]]->frame_number();
+    }
+  }
 
+  // These params looks duplicated with |ref_frame_idx|, but they are required
+  // and used when |frame_refs_short_signaling| is set according to the AV1
+  // spec. https://aomediacodec.github.io/av1-spec/#uncompressed-header-syntax
   v4l2_frame_params->last_frame_idx =
       frm_header.reference_frame_index[libgav1::kReferenceFrameLast];
   v4l2_frame_params->gold_frame_idx =
       frm_header.reference_frame_index[libgav1::kReferenceFrameGolden];
+
+  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
+  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
+  // Note that only 7 slots in the reference frames list are used
+  // although 8 slots are available.
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+    constexpr size_t kTimestampToNanoSecs = 1000;
+
+    // |reference_frame_ts| is needed to use previously decoded frames
+    // from reference frames list.
+    const auto reference_frame_ts =
+        ref_frames_[i] ? ref_frames_[i]->frame_number() * kTimestampToNanoSecs
+                       : kInvalidSurface;
+
+    v4l2_frame_params->reference_frame_ts[i] = reference_frame_ts;
+  }
 
   static_assert(std::size(decltype(v4l2_frame_params->ref_frame_idx){}) ==
                     libgav1::kNumInterReferenceFrameTypes,
                 "Invalid size of |ref_frame_idx| array");
   for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++)
     v4l2_frame_params->ref_frame_idx[i] =
-        base::checked_cast<__u64>(frm_header.reference_frame_index[i]);
+        base::checked_cast<__u8>(frm_header.reference_frame_index[i]);
 
   v4l2_frame_params->skip_mode_frame[0] =
       base::checked_cast<__u8>(frm_header.skip_mode_frame[0]);
   v4l2_frame_params->skip_mode_frame[1] =
       base::checked_cast<__u8>(frm_header.skip_mode_frame[1]);
-
-  // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
-  constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
-
-  for (size_t i = 0; i < std::size(frm_header.reference_frame_index); ++i) {
-    const auto idx = frm_header.reference_frame_index[i];
-    LOG_ASSERT(idx < kAv1NumRefFrames) << "Invalid reference frame index.\n";
-
-    constexpr size_t kTimestampToNanoSecs = 1000;
-
-    // |reference_frame_ts| is needed to use previously decoded frames
-    // from reference frames list.
-    const auto reference_frame_ts =
-        ref_frames_[idx]
-            ? ref_frames_[idx]->frame_number() * kTimestampToNanoSecs
-            : kInvalidSurface;
-
-    v4l2_frame_params->reference_frame_ts[idx] = reference_frame_ts;
-  }
 }
 
 std::set<int> Av1Decoder::RefreshReferenceSlots(
