@@ -670,6 +670,14 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (event.event_type == ax::mojom::Event::kLoadComplete) {
       DCHECK_EQ(event_target, GetRoot());
       DCHECK(event_target->IsPlatformDocument());
+
+      // Don't fire multiple load-complete events. One may have been added by
+      // RenderAccessibilityImpl::SendPendingAccessibilityEvents, and firing
+      // multiple events can result in screen readers double-presenting the
+      // load and/or interrupting speech. See, for instance, crbug.com/1352464.
+      if (received_load_complete_event)
+        continue;
+
       received_load_complete_event = true;
     }
 
