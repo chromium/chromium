@@ -221,8 +221,6 @@ void AudioManagerChromeOS::GetAudioDeviceNamesImpl(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
 
-  device_names->push_back(AudioDeviceName::CreateDefault());
-
   AudioDeviceList devices;
   GetAudioDevices(&devices);
 
@@ -246,6 +244,8 @@ void AudioManagerChromeOS::GetAudioDeviceNamesImpl(
       ProcessVirtualDeviceName(device_names, device_list);
     }
   }
+  if (!device_names->empty())
+    device_names->push_front(AudioDeviceName::CreateDefault());
 }
 
 void AudioManagerChromeOS::GetAudioInputDeviceNames(
@@ -439,11 +439,7 @@ AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
 
 bool AudioManagerChromeOS::IsDefault(const std::string& device_id,
                                      bool is_input) {
-  AudioDeviceNames device_names;
-  GetAudioDeviceNamesImpl(is_input, &device_names);
-  DCHECK(!device_names.empty());
-  const AudioDeviceName& device_name = device_names.front();
-  return device_name.unique_id == device_id;
+  return AudioDeviceDescription::IsDefaultDevice(device_id);
 }
 
 std::string AudioManagerChromeOS::GetHardwareDeviceFromDeviceId(

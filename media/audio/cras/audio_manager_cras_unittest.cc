@@ -70,6 +70,35 @@ TEST_F(AudioManagerCrasTest, HasAudioInputDevices) {
   EXPECT_EQ(ret, true);
 }
 
+TEST_F(AudioManagerCrasTest, CheckDefaultNoDevice) {
+  std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
+  std::vector<CrasDevice> devices;
+  AudioDeviceNames device_names;
+  EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
+      .WillOnce(testing::Return(devices));
+  EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kOutput))
+      .WillOnce(testing::Return(devices));
+  mock_manager_->SetCrasUtil(std::move(util));
+  mock_manager_->GetAudioInputDeviceNames(&device_names);
+  EXPECT_EQ(device_names.empty(), true);
+  mock_manager_->GetAudioOutputDeviceNames(&device_names);
+  EXPECT_EQ(device_names.empty(), true);
+}
+
+TEST_F(AudioManagerCrasTest, CheckDefaultDevice) {
+  std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
+  std::vector<CrasDevice> devices;
+  AudioDeviceNames device_names;
+  CrasDevice dev;
+  dev.type = DeviceType::kInput;
+  devices.emplace_back(dev);
+  EXPECT_CALL(*util, CrasGetAudioDevices(DeviceType::kInput))
+      .WillOnce(testing::Return(devices));
+  mock_manager_->SetCrasUtil(std::move(util));
+  mock_manager_->GetAudioInputDeviceNames(&device_names);
+  EXPECT_EQ(device_names.size(), 2u);
+}
+
 TEST_F(AudioManagerCrasTest, MaxChannel) {
   std::unique_ptr<MockCrasUtil> util = std::make_unique<MockCrasUtil>();
   std::vector<CrasDevice> devices;

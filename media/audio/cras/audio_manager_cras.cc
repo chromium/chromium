@@ -63,20 +63,22 @@ AudioManagerCras::~AudioManagerCras() = default;
 
 void AudioManagerCras::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
-  device_names->push_back(AudioDeviceName::CreateDefault());
   for (const auto& device :
        cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
+  if (!device_names->empty())
+    device_names->push_front(AudioDeviceName::CreateDefault());
 }
 
 void AudioManagerCras::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
-  device_names->push_back(AudioDeviceName::CreateDefault());
   for (const auto& device :
        cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
+  if (!device_names->empty())
+    device_names->push_front(AudioDeviceName::CreateDefault());
 }
 
 // Checks if a system AEC with a specific group ID is flagged to be deactivated
