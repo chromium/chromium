@@ -386,4 +386,5 @@ Refer to README.md for content description and update process.
  <item id="chrome_commerce_subscriptions_create" added_in_milestone="105" content_hash_code="076a1b98" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
  <item id="chrome_commerce_subscriptions_delete" added_in_milestone="105" content_hash_code="05f47d4b" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
  <item id="chrome_commerce_subscriptions_get" added_in_milestone="105" content_hash_code="02f49372" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
+ <item id="cryptauth_get_my_devices" added_in_milestone="106" type="partial" second_id="oauth2_api_call_flow" content_hash_code="04b33199" os_list="chromeos" file_path="ash/services/device_sync/cryptauth_device_manager_impl.cc" />
 </annotations>

@@ -820,8 +820,8 @@ void CryptAuthDeviceManagerImpl::OnSyncRequested(
           "CryptAuth."
         trigger:
           "Once every day, or by API request. Periodic calls happen because "
-          "devides that do not re-enrolled for more than X days (currently 45) "
-          "are automatically removed from the server."
+          "devices that are not re-enrolled for more than X days (currently "
+          "45) are automatically removed from the server."
         data: "OAuth 2.0 token."
         destination: GOOGLE_OWNED_SERVICE
       }
