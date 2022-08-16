@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
@@ -250,11 +249,10 @@ SequenceManagerImpl::~SequenceManagerImpl() {
   main_thread_only().queues_to_gracefully_shutdown.clear();
   main_thread_only().selector.SetTaskQueueSelectorObserver(nullptr);
 
-  // In some tests a NestingObserver may not have been registered.
+  // In the case of an early startup exits or in some tests a NestingObserver
+  // may not have been registered.
   if (main_thread_only().nesting_observer_registered_)
     controller_->RemoveNestingObserver(this);
-  else
-    CHECK_IS_TEST();
 
   // Let interested parties have one last shot at accessing this.
   for (auto& observer : main_thread_only().destruction_observers)
