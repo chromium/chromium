@@ -578,7 +578,7 @@
 
 // Returns a matcher for the subtitle of the Incognito Interstitial,
 // as it should appear when `URL` was given to the Interstitial.
-+ (id<GREYMatcher>)incognitoInterstitialSubtitleForURL:(NSString*)url;
++ (id<GREYMatcher>)incognitoInterstitialLabelForURL:(NSString*)url;
 
 // Returns a matcher for the primary action button in the Incognito
 // Interstitial.

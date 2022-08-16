@@ -20,6 +20,9 @@
 // Some URLs in the controlled view can be loaded.
 @property(nonatomic, weak) id<NewTabPageURLLoaderDelegate> URLLoaderDelegate;
 
+// URL text to display.
+@property(nonatomic, copy) NSString* URLText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_VIEW_CONTROLLER_H_

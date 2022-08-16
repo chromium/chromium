@@ -10,6 +10,9 @@
 // The accessibility identifier for the Incognito interstitial.
 extern NSString* const kIncognitoInterstitialAccessibilityIdentifier;
 
+// The accessibility identifier for the Incognito interstitial URL label.
+extern NSString* const kIncognitoInterstitialURLLabelAccessibilityIdentifier;
+
 // The accessibility identifier for the Cancel button in the Incognito
 // interstitial.
 extern NSString* const

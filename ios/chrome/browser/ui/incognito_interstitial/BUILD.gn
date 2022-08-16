@@ -22,6 +22,7 @@ source_set("incognito_interstitial_ui") {
     "resources:incognito_interstitial_screen_banner",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/elements:elements",
     "//ios/chrome/browser/ui/ntp:ntp_internal",
     "//ios/chrome/browser/ui/util:util",
     "//ios/chrome/common/ui/colors:colors",

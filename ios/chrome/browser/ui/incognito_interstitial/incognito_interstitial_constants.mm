@@ -13,6 +13,9 @@
 NSString* const kIncognitoInterstitialAccessibilityIdentifier =
     @"incognitoInterstitialAccessibilityIdentifier";
 
+NSString* const kIncognitoInterstitialURLLabelAccessibilityIdentifier =
+    @"incognitoInterstitialURLLabelAccessibilityIdentifier";
+
 NSString* const kIncognitoInterstitialCancelButtonAccessibilityIdentifier =
     @"incognitoInterstitialCancelButtonAccessibilityIdentifier";
 

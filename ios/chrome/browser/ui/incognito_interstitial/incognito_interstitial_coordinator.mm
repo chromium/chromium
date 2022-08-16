@@ -38,7 +38,7 @@
       [[IncognitoInterstitialViewController alloc] init];
   self.incognitoInterstitialViewController.delegate = self;
   self.incognitoInterstitialViewController.URLLoaderDelegate = self;
-  self.incognitoInterstitialViewController.subtitleText =
+  self.incognitoInterstitialViewController.URLText =
       base::SysUTF8ToNSString(self.urlLoadParams.web_params.url.spec());
 
   [self.baseViewController

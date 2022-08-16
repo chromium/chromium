@@ -1113,10 +1113,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kIncognitoInterstitialAccessibilityIdentifier);
 }
 
-+ (id<GREYMatcher>)incognitoInterstitialSubtitleForURL:(NSString*)url {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier),
-      grey_accessibilityLabel(url), nullptr);
++ (id<GREYMatcher>)incognitoInterstitialLabelForURL:(NSString*)url {
+  return grey_allOf(grey_accessibilityID(
+                        kIncognitoInterstitialURLLabelAccessibilityIdentifier),
+                    grey_accessibilityLabel(url), nullptr);
 }
 
 + (id<GREYMatcher>)incognitoInterstitialOpenInChromeIncognitoButton {

@@ -16,10 +16,10 @@
 #endif
 
 using chrome_test_util::IncognitoInterstitialCancelButton;
+using chrome_test_util::IncognitoInterstitialLabelForURL;
 using chrome_test_util::IncognitoInterstitialMatcher;
 using chrome_test_util::IncognitoInterstitialOpenInChromeButton;
 using chrome_test_util::IncognitoInterstitialOpenInChromeIncognitoButton;
-using chrome_test_util::IncognitoInterstitialSubtitleForURL;
 using chrome_test_util::NTPIncognitoView;
 
 @interface IncognitoInterstitialTestCase : ChromeTestCase
@@ -61,7 +61,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Open in Chrome Incognito" button.
@@ -87,7 +87,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Open in Chrome" button.
@@ -115,7 +115,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Open in Chrome" button.
@@ -144,7 +144,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Open in Chrome Incognito" button.
@@ -172,7 +172,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the Cancel button.
@@ -199,7 +199,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           destinationURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // While the Interstitial is shown, loading an alternative URL.
@@ -210,7 +210,7 @@ using chrome_test_util::NTPIncognitoView;
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialMatcher()];
   // Check the appropriate subtitle is sufficiently visible within the
   // Interstitial.
-  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialSubtitleForURL(
+  [[EarlGrey selectElementWithMatcher:IncognitoInterstitialLabelForURL(
                                           alternativeURL.spec())]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Tap the "Open in Chrome Incognito" button.

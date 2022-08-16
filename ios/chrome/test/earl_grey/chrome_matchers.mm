@@ -720,9 +720,9 @@ id<GREYMatcher> IncognitoInterstitialMatcher() {
   return [ChromeMatchersAppInterface incognitoInterstitial];
 }
 
-id<GREYMatcher> IncognitoInterstitialSubtitleForURL(const std::string& url) {
+id<GREYMatcher> IncognitoInterstitialLabelForURL(const std::string& url) {
   return [ChromeMatchersAppInterface
-      incognitoInterstitialSubtitleForURL:base::SysUTF8ToNSString(url)];
+      incognitoInterstitialLabelForURL:base::SysUTF8ToNSString(url)];
 }
 
 id<GREYMatcher> IncognitoInterstitialOpenInChromeIncognitoButton() {

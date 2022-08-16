@@ -6,6 +6,7 @@
 #import "base/check.h"
 #import "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
 #import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
@@ -26,6 +27,9 @@ namespace {
 // Opacity of navigation bar is scroll view content offset divided by this.
 const CGFloat kNavigationBarOpacityDenominator = 100;
 
+// Maximum number of lines for the URL label, before the user unfolds it.
+const int kURLLabelDefaultNumberOfLines = 3;
+
 }  // namespace
 
 @interface IncognitoInterstitialViewController ()
@@ -33,6 +37,16 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
 // The navigation bar to display at the top of the view, to contain a "Cancel"
 // button.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
+
+// Label to display the URL which is going to be opened.
+@property(nonatomic, strong) UILabel* URLLabel;
+
+// Button which allows the user to remove the limit on the number of lines
+// for `URLLabel`.
+@property(nonatomic, strong) UIButton* expandURLButton;
+
+// Whether the number of lines of `URLLabel` is unlimited.
+@property(nonatomic, assign) BOOL URLIsExpanded;
 
 @end
 
@@ -57,6 +71,16 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME);
 
+  // This needs to be called after parameters of `PromoStyleViewController` have
+  // been set, but before adding additional layout constraints, since these
+  // constraints can only be activated once the complete view hierarchy has been
+  // constructed and relevant views belong to the same hierarchy.
+  [super viewDidLoad];
+
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  self.modalInPresentation = YES;
+
+  // Creating the Incognito view (same one as NTP).
   UIScrollView* incognitoView = NULL;
   if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
     RevampedIncognitoView* revampedIncognitoView =
@@ -71,11 +95,39 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
     revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
     incognitoView = revampedIncognitoView;
   }
+  incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self.specificContentView addSubview:incognitoView];
+  // The Incognito view is put inside a container because it might try
+  // to put constraints on its superview.
+  UIView* incognitoViewContainer = [[UIView alloc] init];
+  incognitoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [incognitoViewContainer addSubview:incognitoView];
 
-  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  self.modalInPresentation = YES;
+  // A stack view is created to contain the URL label as well as the
+  // Incognito view container.
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ self.URLLabel, incognitoViewContainer ]];
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.axis = UILayoutConstraintAxisVertical;
+  [self.specificContentView addSubview:stackView];
+
+  // Create the gradient view located on the leading end of the "more" button
+  // which lets the user unfold the URL label.
+  UIView* gradientView = [[UIView alloc]
+      initWithFrame:CGRectMake(0, 0, self.URLLabel.font.lineHeight,
+                               self.URLLabel.font.lineHeight)];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  gradientView.backgroundColor = self.view.backgroundColor;
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.frame = gradientView.bounds;
+  gradientLayer.startPoint = CGPointMake(0.0, 0.0);
+  gradientLayer.endPoint = CGPointMake(1.0, 0.0);
+  gradientLayer.colors =
+      @[ (id)[UIColor clearColor].CGColor, (id)[UIColor whiteColor].CGColor ];
+  gradientView.layer.mask = gradientLayer;
+  [self.expandURLButton addSubview:gradientView];
+  // Add the "more" button to the content view.
+  [self.specificContentView addSubview:self.expandURLButton];
 
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -92,24 +144,38 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   [self.navigationBar pushNavigationItem:navigationRootItem animated:false];
   [self updateNavigationBarAppearanceWithOpacity:0.0];
 
-  // This needs to be called after parameters of `PromoStyleViewController` have
-  // been set, but before adding additional layout constraints, since these
-  // constraints can only be activated once the complete view hierarchy has been
-  // constructed and relevant views belong to the same hierarchy.
-  [super viewDidLoad];
-
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [incognitoView.leadingAnchor
+    [stackView.leadingAnchor
         constraintEqualToAnchor:self.specificContentView.leadingAnchor],
-    [incognitoView.trailingAnchor
+    [stackView.trailingAnchor
         constraintEqualToAnchor:self.specificContentView.trailingAnchor],
-    [incognitoView.topAnchor
+    [stackView.topAnchor
         constraintEqualToAnchor:self.specificContentView.topAnchor],
-    [incognitoView.bottomAnchor
+    [stackView.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
     [incognitoView.heightAnchor
         constraintEqualToAnchor:incognitoView.contentLayoutGuide.heightAnchor],
+    [incognitoViewContainer.leadingAnchor
+        constraintEqualToAnchor:incognitoView.leadingAnchor],
+    [incognitoViewContainer.trailingAnchor
+        constraintEqualToAnchor:incognitoView.trailingAnchor],
+    [incognitoViewContainer.topAnchor
+        constraintEqualToAnchor:incognitoView.topAnchor],
+    [incognitoViewContainer.bottomAnchor
+        constraintEqualToAnchor:incognitoView.bottomAnchor],
+    [gradientView.trailingAnchor
+        constraintEqualToAnchor:self.expandURLButton.leadingAnchor],
+    [gradientView.bottomAnchor
+        constraintEqualToAnchor:self.expandURLButton.bottomAnchor],
+    [gradientView.topAnchor
+        constraintEqualToAnchor:self.expandURLButton.topAnchor],
+    [gradientView.widthAnchor
+        constraintEqualToAnchor:gradientView.heightAnchor],
+    [self.expandURLButton.trailingAnchor
+        constraintEqualToAnchor:self.URLLabel.trailingAnchor],
+    [self.expandURLButton.bottomAnchor
+        constraintEqualToAnchor:self.URLLabel.bottomAnchor],
   ]];
 
   [self.view addSubview:self.navigationBar];
@@ -126,6 +192,70 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   [super traitCollectionDidChange:previousTraitCollection];
+}
+
+- (void)viewDidLayoutSubviews {
+  if (self.URLIsExpanded) {
+    self.expandURLButton.hidden = YES;
+    self.URLLabel.numberOfLines = 0;
+  } else {
+    CGRect URLLabelBoundingRect = [self.URLLabel.text
+        boundingRectWithSize:CGSizeMake(self.URLLabel.bounds.size.width,
+                                        CGFLOAT_MAX)
+                     options:NSStringDrawingUsesLineFragmentOrigin
+                  attributes:@{NSFontAttributeName : self.URLLabel.font}
+                     context:nil];
+    int expandedNumberOfLines =
+        URLLabelBoundingRect.size.height / self.URLLabel.font.lineHeight;
+    self.expandURLButton.hidden =
+        (expandedNumberOfLines <= kURLLabelDefaultNumberOfLines);
+  }
+}
+
+#pragma mark - Accessors
+
+- (UILabel*)URLLabel {
+  if (!_URLLabel) {
+    _URLLabel = [[UILabel alloc] initWithFrame:self.view.frame];
+    _URLLabel.lineBreakMode = NSLineBreakByClipping;
+    _URLLabel.text = self.URLText;
+    _URLLabel.numberOfLines = kURLLabelDefaultNumberOfLines;
+    _URLLabel.textAlignment = NSTextAlignmentCenter;
+    _URLLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _URLLabel.accessibilityIdentifier =
+        kIncognitoInterstitialURLLabelAccessibilityIdentifier;
+  }
+  return _URLLabel;
+}
+
+- (UIButton*)expandURLButton {
+  if (!_expandURLButton) {
+    __weak __typeof(self) weakSelf = self;
+    UIAction* readMoreAction = [UIAction actionWithHandler:^(id sender) {
+      [weakSelf expandURLButtonWasTapped];
+    }];
+
+    NSAttributedString* readMoreString = [[NSAttributedString alloc]
+        initWithString:l10n_util::GetNSString(
+                           IDS_IOS_INCOGNITO_INTERSTITIAL_URL_READ_MORE_BUTTON)
+            attributes:@{
+              NSFontAttributeName : _URLLabel.font,
+              NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]
+            }];
+
+    _expandURLButton =
+        [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero
+                                           primaryAction:readMoreAction];
+    [_expandURLButton setAttributedTitle:readMoreString
+                                forState:UIControlStateNormal];
+    _expandURLButton.titleEdgeInsets = UIEdgeInsetsMake(
+        CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
+    _expandURLButton.contentEdgeInsets = UIEdgeInsetsMake(
+        CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
+    _expandURLButton.backgroundColor = self.view.backgroundColor;
+    _expandURLButton.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return _expandURLButton;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -183,6 +313,12 @@ const CGFloat kNavigationBarOpacityDenominator = 100;
   }
 
   self.navigationBar.tintColor = [UIColor colorNamed:kBlueColor];
+}
+
+// Called when `expandURLButton` is tapped.
+- (void)expandURLButtonWasTapped {
+  self.URLIsExpanded = YES;
+  [self.view setNeedsLayout];
 }
 
 @end

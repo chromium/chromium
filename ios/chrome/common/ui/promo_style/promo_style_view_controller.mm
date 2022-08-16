@@ -387,11 +387,17 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (void)setShouldBannerFillTopSpace:(BOOL)shouldBannerFillTopSpace {
   _shouldBannerFillTopSpace = shouldBannerFillTopSpace;
   [self setupBannerConstraints];
+  self.imageView.image =
+      [self scaleBannerWithCurrentImage:self.imageView.image
+                                 toSize:[self computeBannerImageSize]];
 }
 
 - (void)setShouldHideBanner:(BOOL)shouldHideBanner {
   _shouldHideBanner = shouldHideBanner;
   [self setupBannerConstraints];
+  self.imageView.image =
+      [self scaleBannerWithCurrentImage:self.imageView.image
+                                 toSize:[self computeBannerImageSize]];
 }
 
 - (void)setPrimaryActionString:(NSString*)text {
@@ -489,7 +495,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
     // Use |primaryActionString| even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
-    // content height, so there is no way to know if scrolling is needed. This
+    // content height, so there is no way to knOow if scrolling is needed. This
     // label will be updated at the viewDidAppear stage if necessary.
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];

@@ -1155,6 +1155,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
         Open in Incognito?
       </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_URL_READ_MORE_BUTTON" desc="Button to unfold a URL which is being truncated, so as to let the user read more of the URL. [iOS only]">
+        more
+      </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
         Open in Chrome Incognito
       </message>

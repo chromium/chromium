@@ -551,7 +551,7 @@ id<GREYMatcher> IncognitoInterstitialMatcher();
 
 // Returns a matcher for the subtitle of the Incognito Interstitial,
 // as it should appear when `URL` was given to the Interstitial.
-id<GREYMatcher> IncognitoInterstitialSubtitleForURL(const std::string& url);
+id<GREYMatcher> IncognitoInterstitialLabelForURL(const std::string& url);
 
 // Returns a matcher for the primary action button in the Incognito
 // Interstitial.
