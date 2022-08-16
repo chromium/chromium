@@ -489,6 +489,9 @@ void AppBrowserController::AddColorMixers(
       ui::SetAlpha(kColorPwaToolbarButtonIcon, gfx::kDisabledControlAlpha);
   if (bg_color)
     mixer[kColorWebContentsBackground] = {kColorPwaBackground};
+
+  mixer[kColorInfoBarBackground] = {kColorPwaToolbarBackground};
+  mixer[kColorInfoBarForeground] = {kColorPwaToolbarButtonIcon};
 }
 
 void AppBrowserController::OnReceivedInitialURL() {
