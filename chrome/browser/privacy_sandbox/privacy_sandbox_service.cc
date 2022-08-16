@@ -325,13 +325,12 @@ void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
 
 std::vector<std::string>
 PrivacySandboxService::GetBlockedFledgeJoiningTopFramesForDisplay() const {
-  auto* pref_value =
-      pref_service_->GetDictionary(prefs::kPrivacySandboxFledgeJoinBlocked);
-  DCHECK(pref_value->is_dict());
+  const base::Value::Dict& pref_value =
+      pref_service_->GetValueDict(prefs::kPrivacySandboxFledgeJoinBlocked);
 
   std::vector<std::string> blocked_top_frames;
 
-  for (auto entry : pref_value->DictItems())
+  for (auto entry : pref_value)
     blocked_top_frames.emplace_back(entry.first);
 
   // Apply a lexographic ordering to match other settings permission surfaces.
