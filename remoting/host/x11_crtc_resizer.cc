@@ -119,40 +119,41 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
 }
 
 void X11CrtcResizer::DisableChangedCrtcs() {
-  base::ranges::for_each(active_crtcs_, [this](const CrtcInfo& crtc_info) {
+  for (const auto& crtc_info : active_crtcs_) {
     if (crtc_info.changed) {
       DisableCrtc(crtc_info.crtc);
     }
-  });
+  }
 }
 
 webrtc::DesktopSize X11CrtcResizer::GetBoundingBox() const {
   webrtc::DesktopSize result;
-  base::ranges::for_each(active_crtcs_, [&result](const CrtcInfo& crtc_info) {
+  for (const auto& crtc_info : active_crtcs_) {
     int32_t width = crtc_info.x + crtc_info.width;
     int32_t height = crtc_info.y + crtc_info.height;
     result.set(std::max(result.width(), width),
                std::max(result.height(), height));
-  });
+  }
   return result;
 }
 
 void X11CrtcResizer::ApplyActiveCrtcs() {
-  base::ranges::for_each(active_crtcs_, [this](const CrtcInfo& crtc_info) {
-    if (crtc_info.changed) {
-      x11::Time config_timestamp = resources_->config_timestamp;
-      randr_->SetCrtcConfig({
-          .crtc = crtc_info.crtc,
-          .timestamp = x11::Time::CurrentTime,
-          .config_timestamp = config_timestamp,
-          .x = crtc_info.x,
-          .y = crtc_info.y,
-          .mode = crtc_info.mode,
-          .rotation = crtc_info.rotation,
-          .outputs = crtc_info.outputs,
-      });
-    }
-  });
+  for (const auto& crtc_info : active_crtcs_) {
+    if (!crtc_info.changed)
+      continue;
+
+    x11::Time config_timestamp = resources_->config_timestamp;
+    randr_->SetCrtcConfig({
+        .crtc = crtc_info.crtc,
+        .timestamp = x11::Time::CurrentTime,
+        .config_timestamp = config_timestamp,
+        .x = crtc_info.x,
+        .y = crtc_info.y,
+        .mode = crtc_info.mode,
+        .rotation = crtc_info.rotation,
+        .outputs = crtc_info.outputs,
+    });
+  }
 }
 
 }  // namespace remoting
