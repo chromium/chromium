@@ -12,12 +12,8 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
 
 namespace signin {
 struct AccessTokenInfo;
@@ -115,12 +111,10 @@ class FamilyInfoFetcher {
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  static bool ParseMembers(const base::ListValue* list,
+  static bool ParseMembers(const base::Value::List& list,
                            std::vector<FamilyMember>* members);
-  static bool ParseMember(const base::DictionaryValue* dict,
-                          FamilyMember* member);
-  static void ParseProfile(const base::DictionaryValue* dict,
-                           FamilyMember* member);
+  static bool ParseMember(const base::Value::Dict& dict, FamilyMember* member);
+  static void ParseProfile(const base::Value::Dict& dict, FamilyMember* member);
 
   void StartFetching();
   void StartFetchingAccessToken();

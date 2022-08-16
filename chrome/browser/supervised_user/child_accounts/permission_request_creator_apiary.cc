@@ -197,10 +197,10 @@ void PermissionRequestCreatorApiary::OnAccessTokenFetchComplete(
           }
         })");
 
-  base::DictionaryValue dict;
-  dict.SetKey(kEventTypeKey, base::Value((*it)->request_type));
-  dict.SetKey(kObjectRefKey, base::Value((*it)->object_ref));
-  dict.SetKey(kStateKey, base::Value(kState));
+  base::Value::Dict dict;
+  dict.Set(kEventTypeKey, base::Value((*it)->request_type));
+  dict.Set(kObjectRefKey, base::Value((*it)->object_ref));
+  dict.Set(kStateKey, base::Value(kState));
   std::string body;
   base::JSONWriter::Write(dict, &body);
 
@@ -269,21 +269,21 @@ void PermissionRequestCreatorApiary::OnSimpleLoaderComplete(
   if (response_body)
     body = std::move(*response_body);
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(body);
-  base::DictionaryValue* dict = NULL;
-  if (!value || !value->GetAsDictionary(&dict)) {
+  absl::optional<base::Value> value = base::JSONReader::Read(body);
+  if (!value || !value->is_dict()) {
     LOG(WARNING) << "Invalid top-level dictionary";
     DispatchResult(std::move(it), false);
     return;
   }
-  base::DictionaryValue* permission_dict = NULL;
-  if (!dict->GetDictionary(kPermissionRequestKey, &permission_dict)) {
+  const base::Value::Dict& dict = value->GetDict();
+  const base::Value::Dict* permission_dict =
+      dict.FindDict(kPermissionRequestKey);
+  if (!permission_dict) {
     LOG(WARNING) << "Permission request not found";
     DispatchResult(std::move(it), false);
     return;
   }
-  std::string id;
-  if (!permission_dict->GetString(kIdKey, &id)) {
+  if (!permission_dict->FindString(kIdKey)) {
     LOG(WARNING) << "ID not found";
     DispatchResult(std::move(it), false);
     return;

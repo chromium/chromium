@@ -251,12 +251,15 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 }
 
 // static
-bool FamilyInfoFetcher::ParseMembers(const base::ListValue* list,
+bool FamilyInfoFetcher::ParseMembers(const base::Value::List& list,
                                      std::vector<FamilyMember>* members) {
-  for (const auto& entry : list->GetListDeprecated()) {
+  for (const auto& entry : list) {
     FamilyMember member;
-    const base::DictionaryValue* dict = NULL;
-    if (!entry.GetAsDictionary(&dict) || !ParseMember(dict, &member)) {
+    if (!entry.is_dict()) {
+      return false;
+    }
+    const base::Value::Dict& dict = entry.GetDict();
+    if (!ParseMember(dict, &member)) {
       return false;
     }
     members->push_back(member);
@@ -265,58 +268,72 @@ bool FamilyInfoFetcher::ParseMembers(const base::ListValue* list,
 }
 
 // static
-bool FamilyInfoFetcher::ParseMember(const base::DictionaryValue* dict,
+bool FamilyInfoFetcher::ParseMember(const base::Value::Dict& dict,
                                     FamilyMember* member) {
-  if (!dict->GetString(kIdUserId, &member->obfuscated_gaia_id))
+  const std::string* obfuscated_gaia_id = dict.FindString(kIdUserId);
+  if (!obfuscated_gaia_id)
     return false;
-  std::string role_str;
-  if (!dict->GetString(kIdRole, &role_str))
+  member->obfuscated_gaia_id = *obfuscated_gaia_id;
+  const std::string* role_str = dict.FindString(kIdRole);
+  if (!role_str)
     return false;
-  if (!StringToRole(role_str, &member->role))
+  if (!StringToRole(*role_str, &member->role))
     return false;
-  const base::DictionaryValue* profile_dict = NULL;
-  if (dict->GetDictionary(kIdProfile, &profile_dict))
-    ParseProfile(profile_dict, member);
+  const base::Value::Dict* profile_dict = dict.FindDict(kIdProfile);
+  if (profile_dict)
+    ParseProfile(*profile_dict, member);
   return true;
 }
 
 // static
-void FamilyInfoFetcher::ParseProfile(const base::DictionaryValue* dict,
+void FamilyInfoFetcher::ParseProfile(const base::Value::Dict& dict,
                                      FamilyMember* member) {
-  dict->GetString(kIdDisplayName, &member->display_name);
-  dict->GetString(kIdEmail, &member->email);
-  dict->GetString(kIdProfileUrl, &member->profile_url);
-  dict->GetString(kIdProfileImageUrl, &member->profile_image_url);
-  if (member->profile_image_url.empty())
-    dict->GetString(kIdDefaultProfileImageUrl, &member->profile_image_url);
+  const std::string* display_name = dict.FindString(kIdDisplayName);
+  if (display_name)
+    member->display_name = *display_name;
+  const std::string* email = dict.FindString(kIdEmail);
+  if (email)
+    member->email = *email;
+  const std::string* profile_url = dict.FindString(kIdProfileUrl);
+  if (profile_url)
+    member->profile_url = *profile_url;
+  const std::string* profile_image_url = dict.FindString(kIdProfileImageUrl);
+  if (profile_image_url)
+    member->profile_image_url = *profile_image_url;
+  if (member->profile_image_url.empty()) {
+    const std::string* def_profile_image_url =
+        dict.FindString(kIdDefaultProfileImageUrl);
+    if (def_profile_image_url)
+      member->profile_image_url = *def_profile_image_url;
+  }
 }
 
 void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(response);
-  const base::DictionaryValue* dict = NULL;
-  if (!value || !value->GetAsDictionary(&dict)) {
+  if (!value || !value->is_dict()) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  const base::DictionaryValue* family_dict = NULL;
-  if (!dict->GetDictionary(kIdFamily, &family_dict)) {
+  const base::Value::Dict& dict = value->GetDict();
+  const base::Value::Dict* family_dict = dict.FindDict(kIdFamily);
+  if (!family_dict) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   FamilyProfile family;
-  const std::string* id = family_dict->FindStringKey(kIdFamilyId);
+  const std::string* id = family_dict->FindString(kIdFamilyId);
   if (!id) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   family.id = *id;
-  const base::DictionaryValue* profile_dict = NULL;
-  if (!family_dict->GetDictionary(kIdProfile, &profile_dict)) {
+  const base::Value::Dict* profile_dict = family_dict->FindDict(kIdProfile);
+  if (!profile_dict) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  const std::string* name = profile_dict->FindStringKey(kIdFamilyName);
+  const std::string* name = profile_dict->FindString(kIdFamilyName);
   if (!name) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
@@ -326,20 +343,19 @@ void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
 }
 
 void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(response);
-  const base::DictionaryValue* dict = NULL;
-  if (!value || !value->GetAsDictionary(&dict)) {
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  if (!value || !value->is_dict()) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  const base::ListValue* members_list = NULL;
-  if (!dict->GetList(kIdMembers, &members_list)) {
+  const base::Value::Dict& dict = value->GetDict();
+  const base::Value::List* members_list = dict.FindList(kIdMembers);
+  if (!members_list) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   std::vector<FamilyMember> members;
-  if (!ParseMembers(members_list, &members)) {
+  if (!ParseMembers(*members_list, &members)) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
