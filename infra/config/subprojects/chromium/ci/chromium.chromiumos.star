@@ -702,7 +702,7 @@ ci.builder(
     # This builder build 2 chrome(Ash and Lacros), so it need
     # more time.
     # TODO(crbug.com/1345687): use normal machines.
-    cores = 8,
+    cores = 16,
     ssd = True,
 )
 
@@ -735,7 +735,7 @@ ci.builder(
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(crbug.com/1345687): use normal machines.
-    cores = 8,
+    cores = 16,
     ssd = True,
 )
 
@@ -801,7 +801,7 @@ ci.builder(
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(crbug.com/1345687): use normal machines.
-    cores = 8,
+    cores = 16,
     ssd = True,
 )
 
