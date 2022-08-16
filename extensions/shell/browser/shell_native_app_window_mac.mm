@@ -26,19 +26,6 @@
 
 @end
 
-// TODO(yoz): Do we need to handle commands (keyboard shortcuts)?
-// Do we need need ChromeEventProcessingWindow or UnderlayOpenGLHostingWindow?
-@interface ShellNSWindow : NSWindow
-@end
-
-@implementation ShellNSWindow
-
-- (BOOL)_isTitleHidden {
-  return YES;
-}
-
-@end
-
 namespace extensions {
 
 ShellNativeAppWindowMac::ShellNativeAppWindowMac(
@@ -51,17 +38,20 @@ ShellNativeAppWindowMac::ShellNativeAppWindowMac(
   NSRect cocoa_bounds = gfx::ScreenRectToNSRect(
       params.GetInitialWindowBounds(gfx::Insets()));
 
-  shell_window.reset(
-      [[ShellNSWindow alloc] initWithContentRect:cocoa_bounds
-                                       styleMask:style_mask
-                                         backing:NSBackingStoreBuffered
-                                           defer:NO]);
+  // TODO(yoz): Do we need to handle commands (keyboard shortcuts)?
+  // Do we need need ChromeEventProcessingWindow or UnderlayOpenGLHostingWindow?
+  shell_window.reset([[NSWindow alloc]
+      initWithContentRect:cocoa_bounds
+                styleMask:style_mask
+                  backing:NSBackingStoreBuffered
+                    defer:NO]);
   [shell_window setReleasedWhenClosed:NO];
+  [shell_window setTitleVisibility:NSWindowTitleHidden];
 
   window_controller_.reset([[ShellNativeAppWindowController alloc]
                             initWithWindow:shell_window]);
 
-  [[window_controller_ window] setDelegate:window_controller_];
+  [window() setDelegate:window_controller_];
   [window_controller_ setAppWindow:this];
 
   NSView* view = app_window->web_contents()->GetNativeView().GetNativeNSView();
@@ -101,7 +91,7 @@ bool ShellNativeAppWindowMac::IsVisible() const {
 
 void ShellNativeAppWindowMac::Activate() {
   // TODO(yoz): Activate in front of other applications.
-  [[window_controller_ window] makeKeyAndOrderFront:window_controller_];
+  [window() makeKeyAndOrderFront:window_controller_];
 }
 
 void ShellNativeAppWindowMac::Deactivate() {
@@ -124,13 +114,13 @@ gfx::Size ShellNativeAppWindowMac::GetContentMaximumSize() const {
 }
 
 void ShellNativeAppWindowMac::WindowWillClose() {
-  [window_controller_ setAppWindow:NULL];
+  [window_controller_ setAppWindow:nullptr];
   app_window()->OnNativeWindowChanged();
   app_window()->OnNativeClose();
 }
 
-ShellNSWindow* ShellNativeAppWindowMac::window() const {
-  return base::mac::ObjCCastStrict<ShellNSWindow>([window_controller_ window]);
+NSWindow* ShellNativeAppWindowMac::window() const {
+  return [window_controller_ window];
 }
 
 }  // namespace extensions

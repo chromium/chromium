@@ -60,10 +60,6 @@ const std::string kDummyWindowRestorationData = "e30=";
 - (void)setWindowStateForEnd;
 @end
 
-@interface NSWindow (PrivateAPI)
-- (BOOL)_isTitleHidden;
-@end
-
 // Test NSWindow that provides hooks via method overrides to verify behavior.
 @interface NativeWidgetMacTestWindow : NativeWidgetMacNSWindow
 @property(readonly, nonatomic) int invalidateShadowCount;
@@ -1736,33 +1732,9 @@ TEST_F(NativeWidgetMacTest, NativeProperties) {
   regular_widget->CloseNow();
 }
 
-NSData* WindowContentsAsTIFF(NSWindow* window) {
-  NSView* frame_view = [[window contentView] superview];
-  EXPECT_TRUE(frame_view);
-
-  // Inset to mask off left and right edges which vary in HighDPI.
-  NSRect bounds = NSInsetRect([frame_view bounds], 4, 0);
-
-  // On 10.6, the grippy changes appearance slightly when painted the second
-  // time in a textured window. Since this test cares about the window title,
-  // cut off the bottom of the window.
-  bounds.size.height -= 40;
-  bounds.origin.y += 40;
-
-  NSBitmapImageRep* bitmap =
-      [frame_view bitmapImageRepForCachingDisplayInRect:bounds];
-  EXPECT_TRUE(bitmap);
-
-  [frame_view cacheDisplayInRect:bounds toBitmapImageRep:bitmap];
-  NSData* tiff = [bitmap TIFFRepresentation];
-  EXPECT_TRUE(tiff);
-  return tiff;
-}
-
 class CustomTitleWidgetDelegate : public WidgetDelegate {
  public:
-  CustomTitleWidgetDelegate(Widget* widget)
-      : widget_(widget), should_show_title_(true) {}
+  explicit CustomTitleWidgetDelegate(Widget* widget) : widget_(widget) {}
 
   CustomTitleWidgetDelegate(const CustomTitleWidgetDelegate&) = delete;
   CustomTitleWidgetDelegate& operator=(const CustomTitleWidgetDelegate&) =
@@ -1780,50 +1752,8 @@ class CustomTitleWidgetDelegate : public WidgetDelegate {
  private:
   raw_ptr<Widget> widget_;
   std::u16string title_;
-  bool should_show_title_;
+  bool should_show_title_ = true;
 };
-
-// Test that undocumented title-hiding API we're using does the job.
-TEST_F(NativeWidgetMacTest, DISABLED_DoesHideTitle) {
-  // Same as CreateTopLevelPlatformWidget but with a custom delegate.
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  Widget* widget = new Widget;
-  params.native_widget =
-      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
-  CustomTitleWidgetDelegate delegate(widget);
-  params.delegate = &delegate;
-  params.bounds = gfx::Rect(0, 0, 800, 600);
-  widget->Init(std::move(params));
-  widget->Show();
-
-  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
-  // Disable color correction so we can read unmodified values from the bitmap.
-  [ns_window setColorSpace:[NSColorSpace sRGBColorSpace]];
-
-  EXPECT_EQ(std::u16string(), delegate.GetWindowTitle());
-  EXPECT_NSEQ(@"", [ns_window title]);
-  NSData* empty_title_data = WindowContentsAsTIFF(ns_window);
-
-  delegate.set_title(u"This is a title");
-  widget->UpdateWindowTitle();
-  NSData* this_title_data = WindowContentsAsTIFF(ns_window);
-
-  // The default window with a title should look different from the
-  // window with an empty title.
-  EXPECT_NSNE(empty_title_data, this_title_data);
-
-  delegate.set_should_show_title(false);
-  delegate.set_title(u"This is another title");
-  widget->UpdateWindowTitle();
-  NSData* hidden_title_data = WindowContentsAsTIFF(ns_window);
-
-  // With our magic setting, the window with a title should look the
-  // same as the window with an empty title.
-  EXPECT_TRUE([ns_window _isTitleHidden]);
-  EXPECT_NSEQ(empty_title_data, hidden_title_data);
-
-  widget->CloseNow();
-}
 
 // Test calls to invalidate the shadow when composited frames arrive.
 TEST_F(NativeWidgetMacTest, InvalidateShadow) {

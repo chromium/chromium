@@ -10,8 +10,6 @@
 #import "base/mac/scoped_nsobject.h"
 #include "extensions/shell/browser/shell_native_app_window.h"
 
-@class ShellNSWindow;
-
 namespace extensions {
 class ShellNativeAppWindowMac;
 }
@@ -61,7 +59,7 @@ class ShellNativeAppWindowMac : public ShellNativeAppWindow {
   void WindowWillClose();
 
  private:
-  ShellNSWindow* window() const;
+  NSWindow* window() const;
 
   base::scoped_nsobject<ShellNativeAppWindowController> window_controller_;
 };
