@@ -31,12 +31,6 @@ class PushNotificationManager {
         base::OnceClosure on_success,
         proto::KeyRepresentation key_representation,
         const base::flat_set<std::string>& hint_keys) = 0;
-
-    // If a cache of notifications overflowed and the set of hints to invalidate
-    // were lost, this asks the delegate to purge the whole database.
-    // TODO(crbug.com/1347657) can be removed when Android uses
-    // PushNotificationManager and not AndroidPushNotificationManager.
-    virtual void PurgeFetchedEntries(base::OnceClosure on_success) = 0;
   };
 
   // Observer interface to process HintNotificationPayload.payload. Subclasses

@@ -53,7 +53,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/price_tracking/android/price_tracking_notification_bridge.h"
-#include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
@@ -151,19 +150,13 @@ std::unique_ptr<optimization_guide::PushNotificationManager>
 OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
     Profile* profile) {
   if (optimization_guide::features::IsPushNotificationsEnabled()) {
-// TODO(crbug.com/1347657) use PushNotificationManager for Android.
-// OptimizationGuideBridge specific pieces of AndroidPushNotificationManager
-// were for Chime which went unused.
+    auto push_notification_manager =
+        std::make_unique<optimization_guide::PushNotificationManager>();
 #if BUILDFLAG(IS_ANDROID)
-    auto push_notification_manager = std::make_unique<
-        optimization_guide::android::AndroidPushNotificationManager>(
-        profile->GetPrefs());
     push_notification_manager->AddObserver(
         PriceTrackingNotificationBridge::GetForBrowserContext(profile));
-    return push_notification_manager;
-#else
-    return std::make_unique<optimization_guide::PushNotificationManager>();
 #endif
+    return push_notification_manager;
   }
   return nullptr;
 }

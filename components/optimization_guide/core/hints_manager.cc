@@ -1753,10 +1753,4 @@ void HintsManager::RemoveFetchedEntriesByHintKeys(
   hint_cache_->RemoveHintsForHosts(std::move(on_success), hint_keys);
 }
 
-void HintsManager::PurgeFetchedEntries(base::OnceClosure on_success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClearFetchedHints();
-  std::move(on_success).Run();
-}
-
 }  // namespace optimization_guide

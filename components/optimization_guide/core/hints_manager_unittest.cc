@@ -1697,43 +1697,6 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
   EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
-TEST_F(HintsManagerTest, PurgeFetchedEntries) {
-  int cache_duration_in_secs = 60;
-  GURL url("https://host.com/r/cats");
-
-  std::unique_ptr<proto::GetHintsResponse> get_hints_response =
-      std::make_unique<proto::GetHintsResponse>();
-
-  proto::Hint* hint = get_hints_response->add_hints();
-  hint->set_key(url.spec());
-  hint->set_key_representation(proto::FULL_URL);
-  hint->mutable_max_cache_duration()->set_seconds(cache_duration_in_secs);
-  proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->add_allowlisted_optimizations()->set_optimization_type(
-      proto::PERFORMANCE_HINTS);
-  page_hint->set_page_pattern("whatever/*");
-
-  hint = get_hints_response->add_hints();
-  hint->set_key_representation(proto::HOST);
-  hint->set_key(url.host());
-  page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern("anything/*");
-
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  hints_manager()->hint_cache()->UpdateFetchedHints(
-      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
-      run_loop->QuitClosure());
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
-
-  run_loop = std::make_unique<base::RunLoop>();
-  hints_manager()->PurgeFetchedEntries(run_loop->QuitClosure());
-  run_loop->Run();
-
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
-}
-
 TEST_F(HintsManagerTest, HintFetcherPrefUpdated_URL) {
   base::Time expiry = base::Time::Now() + base::Hours(1);
   HintsFetcher::AddFetchedHostForTesting(pref_service(), "host-key.com",

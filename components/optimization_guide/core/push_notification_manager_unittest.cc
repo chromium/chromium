@@ -32,10 +32,6 @@ class TestDelegate : public PushNotificationManager::Delegate {
     std::move(on_success).Run();
   }
 
-  void PurgeFetchedEntries(base::OnceClosure on_success) override {
-    // unused - will be deprecated as part of crbug.com/1347657
-  }
-
  private:
   std::vector<RemoveMultiplePair> removed_entries_;
 };

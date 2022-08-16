@@ -175,7 +175,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
       base::OnceClosure on_success,
       proto::KeyRepresentation key_representation,
       const base::flat_set<std::string>& hint_keys) override;
-  void PurgeFetchedEntries(base::OnceClosure on_success) override;
 
   // Returns true if |this| is allowed to fetch hints at the navigation time for
   // |url|.
