@@ -51,10 +51,6 @@ class TestAutofillDriver : public ContentAutofillDriver {
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-#if !BUILDFLAG(IS_IOS)
-  webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
-      override;
-#endif
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_filter_.Run(triggered_origin, field, type)` is true.
   std::vector<FieldGlobalId> FillOrPreviewForm(

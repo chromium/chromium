@@ -17,10 +17,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/webauthn/core/browser/internal_authenticator.h"
-#endif
-
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -89,12 +85,6 @@ class AutofillDriver {
 
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
-
-#if !BUILDFLAG(IS_IOS)
-  // Gets or creates a pointer to an implementation of InternalAuthenticator.
-  virtual webauthn::InternalAuthenticator*
-  GetOrCreateCreditCardInternalAuthenticator() = 0;
-#endif
 
   // Forwards |data| to the renderer which shall preview or fill the values of
   // |data|'s fields into the relevant DOM elements.

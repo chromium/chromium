@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
-#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -141,8 +140,6 @@ class ContentAutofillDriver : public AutofillDriver,
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-  webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
-      override;
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
@@ -387,9 +384,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // AutofillManager instance via which this object drives the shared Autofill
   // code.
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
-
-  // Pointer to an implementation of InternalAuthenticator.
-  std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 

@@ -263,7 +263,7 @@ class CreditCardFIDOAuthenticator
   const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Authenticator pointer to facilitate WebAuthn.
-  raw_ptr<webauthn::InternalAuthenticator> authenticator_ = nullptr;
+  std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

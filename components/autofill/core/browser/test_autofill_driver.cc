@@ -61,13 +61,6 @@ bool TestAutofillDriver::RendererIsAvailable() {
   return true;
 }
 
-#if !BUILDFLAG(IS_IOS)
-webauthn::InternalAuthenticator*
-TestAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
-  return test_authenticator_.get();
-}
-#endif
-
 std::vector<FieldGlobalId> TestAutofillDriver::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,

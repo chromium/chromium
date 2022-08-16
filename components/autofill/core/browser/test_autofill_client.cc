@@ -128,7 +128,7 @@ std::string TestAutofillClient::GetVariationConfigCountryCode() const {
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 TestAutofillClient::CreateCreditCardInternalAuthenticator(
-    content::RenderFrameHost* rfh) {
+    AutofillDriver* driver) {
   return std::make_unique<TestInternalAuthenticator>();
 }
 #endif

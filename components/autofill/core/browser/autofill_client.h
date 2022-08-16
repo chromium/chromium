@@ -36,10 +36,6 @@
 
 class PrefService;
 
-namespace content {
-class RenderFrameHost;
-}
-
 namespace signin {
 class IdentityManager;
 }
@@ -396,7 +392,7 @@ class AutofillClient : public RiskDataLoader {
   // null for platforms that don't support this, in which case standard CVC
   // authentication will be used instead.
   virtual std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh);
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver);
 #endif
 
   // Causes the Autofill settings UI to be shown. If |show_credit_card_settings|

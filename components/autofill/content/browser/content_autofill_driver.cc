@@ -115,17 +115,6 @@ bool ContentAutofillDriver::RendererIsAvailable() {
   return render_frame_host_->GetRenderViewHost() != nullptr;
 }
 
-webauthn::InternalAuthenticator*
-ContentAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
-  if (!authenticator_impl_ && autofill_manager_ &&
-      autofill_manager_->client()) {
-    authenticator_impl_ =
-        autofill_manager_->client()->CreateCreditCardInternalAuthenticator(
-            render_frame_host_);
-  }
-  return authenticator_impl_.get();
-}
-
 void ContentAutofillDriver::PopupHidden() {
   // If the unmask prompt is shown, keep showing the preview. The preview
   // will be cleared when the prompt closes.

@@ -75,8 +75,7 @@ class TestAutofillClient : public AutofillClient {
   std::string GetVariationConfigCountryCode() const override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(
-      content::RenderFrameHost* driver) override;
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 #endif
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;

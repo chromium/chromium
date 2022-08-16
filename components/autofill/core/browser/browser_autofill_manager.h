@@ -778,7 +778,6 @@ class BrowserAutofillManager : public AutofillManager,
   friend class AutofillAssistantTest;
   friend class AutofillMetricsCrossFrameFormTest;
   friend class BrowserAutofillManagerTest;
-  friend class AutofillMetricsTest;
   friend class metrics::AutofillMetricsBaseTest;
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;

@@ -824,18 +824,16 @@ void CreditCardFIDOAuthenticator::UpdateUserPref() {
 }
 
 webauthn::InternalAuthenticator* CreditCardFIDOAuthenticator::authenticator() {
-  if (authenticator_)
-    return authenticator_;
-
-  authenticator_ =
-      autofill_driver_->GetOrCreateCreditCardInternalAuthenticator();
-
-  // |authenticator_| may be null for unsupported platforms.
-  if (authenticator_) {
-    authenticator()->SetEffectiveOrigin(
-        url::Origin::Create(payments::GetBaseSecureUrl()));
+  if (!authenticator_) {
+    authenticator_ = autofill_client_->CreateCreditCardInternalAuthenticator(
+        autofill_driver_.get());
+    // `authenticator_` may be null for unsupported platforms.
+    if (authenticator_) {
+      authenticator_->SetEffectiveOrigin(
+          url::Origin::Create(payments::GetBaseSecureUrl()));
+    }
   }
-
-  return authenticator_;
+  return authenticator_.get();
 }
+
 }  // namespace autofill

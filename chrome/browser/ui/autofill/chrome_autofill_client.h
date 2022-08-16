@@ -89,7 +89,7 @@ class ChromeAutofillClient
   std::string GetVariationConfigCountryCode() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
   std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh) override;
+  CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;
   void ShowCardUnmaskOtpInputDialog(
