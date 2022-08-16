@@ -17,7 +17,10 @@ luci.bucket(
             roles = acl.BUILDBUCKET_TRIGGERER,
             # TODO(crbug/1346396) Switch this to something more sensible once
             # the builders are verified
-            users = "gbeaty@google.com",
+            users = [
+                "gbeaty@google.com",
+                "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
+            ],
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
@@ -43,7 +46,7 @@ def target_builder(*, name, dimensions):
             "bucket": "ci",
             "builder": name,
         },
-        "dimensions": dimensions,
+        "dimensions": {k: str(v) for k, v in dimensions.items()},
     }
 
 builder(
