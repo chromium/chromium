@@ -7,7 +7,7 @@
  * intentional.
  * @type {number}
  */
-/* #export */ const MOVE_THRESHOLD_PX = 5;
+export const MOVE_THRESHOLD_PX = 5;
 
 /**
  * @fileoverview 'cr-toggle' is a component for showing an on/off switch. It
@@ -15,10 +15,17 @@
  * interaction. Besides just clicking the element, its state can be changed by
  * dragging (pointerdown+pointermove) the element towards the desired direction.
  */
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import '../shared_vars_css.m.js';
+
 Polymer({
   is: 'cr-toggle',
 
-  behaviors: [Polymer.PaperRippleBehavior],
+  _template: html`{__html_template__}`,
+
+  behaviors: [PaperRippleBehavior],
 
   properties: {
     checked: {
@@ -220,11 +227,10 @@ Polymer({
   // customize the element's ripple
   _createRipple() {
     this._rippleContainer = this.$.knob;
-    const ripple = Polymer.PaperRippleBehavior._createRipple();
+    const ripple = PaperRippleBehavior._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

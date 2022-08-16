@@ -3,35 +3,20 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_toggle" ]
-}
-
-js_library("cr_toggle") {
-  deps = [ "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted" ]
-}
-
-polymer_modulizer("cr_toggle") {
-  js_file = "cr_toggle.js"
-  html_file = "cr_toggle.html"
-  html_type = "dom-module"
+html_to_js("web_components") {
+  js_files = [ "cr_toggle.js" ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_toggle.m" ]
+  deps = [ ":cr_toggle" ]
 }
 
-js_library("cr_toggle.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toggle/cr_toggle.m.js",
-  ]
+js_library("cr_toggle") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":cr_toggle_module" ]
 }

@@ -7,7 +7,7 @@
  * to provide users with assistive or expressive input options.
  */
 
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 

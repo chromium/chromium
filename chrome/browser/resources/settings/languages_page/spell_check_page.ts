@@ -9,7 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
@@ -33,13 +33,13 @@ import '../settings_vars.css.js';
 import './edit_dictionary_page.js';
 // </if>
 
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {FocusConfig} from '../focus_config.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';

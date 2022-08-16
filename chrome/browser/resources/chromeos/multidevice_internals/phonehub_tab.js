@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './browser_tabs_model_form.js';
@@ -15,11 +15,12 @@ import './notification_manager.js';
 import './shared_style.js';
 import './quick_action_controller_form.js';
 
-import { loadTimeData } from 'chrome://resources/js/load_time_data.m.js';
-import { WebUIListenerBehavior } from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import { flush, html, Polymer } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { MultidevicePhoneHubBrowserProxy } from './multidevice_phonehub_browser_proxy.js';
-import { FeatureStatus } from './types.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
+import {FeatureStatus} from './types.js';
 
 /**
  * Maps a FeatureStatus to it's title label in the dropdown.

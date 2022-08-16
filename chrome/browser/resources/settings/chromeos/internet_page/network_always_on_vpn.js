@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for displaying and modifying always-on VPN
  * settings.
  */
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
 

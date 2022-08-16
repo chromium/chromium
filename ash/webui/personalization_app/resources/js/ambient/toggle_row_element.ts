@@ -7,9 +7,9 @@
  */
 
 import '../../css/common.css.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 

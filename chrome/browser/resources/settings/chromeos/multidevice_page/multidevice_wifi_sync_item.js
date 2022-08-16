@@ -17,7 +17,7 @@
 
 import './multidevice_feature_item.js';
 import './multidevice_wifi_sync_disabled_link.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../settings_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

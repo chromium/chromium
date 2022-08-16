@@ -19,7 +19,7 @@
 
 import './multidevice_feature_item.js';
 import './multidevice_task_continuation_disabled_link.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../settings_shared.css.js';
 
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

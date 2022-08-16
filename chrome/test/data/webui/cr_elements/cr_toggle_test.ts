@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrToggleElement, MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-
+import {CrToggleElement, MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
