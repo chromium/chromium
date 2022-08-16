@@ -193,29 +193,12 @@ void SearchControllerImplNew::InvokeResultAction(
   if (!result)
     return;
 
-  // In the general case, actions are forwarded to the RemovedResultsRanker.
-  // Currently only "remove" actions are supported (and not e.g. "append"
-  // actions).
-  //
-  // In the special case, actions are delegated to the result itself. This is
-  // when, for example, supported actions can be handled by a provider backend,
-  // as is the case with some actions for some Omnibox results. At the moment we
-  // are temporarily handling Omnibox result removal requests in the general
-  // case, using RemovedResultsRanker, because the omnibox autocomplete
-  // controller supports removal of zero-state results but not of non-zero state
-  // results.
-  //
-  // TODO(crbug.com/1272361): Call result->InvokeAction(action) for all Omnibox
-  // action requests, once the autocomplete controller supports removal of
-  // non-zero state results.
   if (action == ash::SearchResultActionType::kRemove) {
     ranker_->Remove(result);
     // We need to update the currently published results to not include the
     // just-removed result. Manually set the result as filtered and re-publish.
     result->scoring().filter = true;
     Publish();
-  } else if (result->result_type() == ash::AppListSearchResultType::kOmnibox) {
-    result->InvokeAction(action);
   }
 }
 
