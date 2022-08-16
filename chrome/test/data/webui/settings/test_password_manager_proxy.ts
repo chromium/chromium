@@ -92,6 +92,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
       null = null;
   private changeSavedPasswordResponse_: number|null = null;
+  private requestCredentialDetailsResponse_:
+      chrome.passwordsPrivate.PasswordUiEntry|null = null;
 
   constructor() {
     super([
@@ -116,6 +118,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'removeSavedPassword',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
+      'requestCredentialDetails',
       'startAutomatedPasswordChange',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
@@ -206,6 +209,19 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   setPlaintextPassword(plaintextPassword: string) {
     this.plaintextPassword_ = plaintextPassword;
+  }
+
+  requestCredentialDetails(id: number) {
+    this.methodCalled('requestCredentialDetails', {id});
+    if (!this.requestCredentialDetailsResponse_) {
+      return Promise.reject(new Error('Could not obtain credential details'));
+    }
+    return Promise.resolve(this.requestCredentialDetailsResponse_);
+  }
+
+  setRequestCredentialDetailsResponse(
+      credential: chrome.passwordsPrivate.PasswordUiEntry) {
+    this.requestCredentialDetailsResponse_ = credential;
   }
 
   // Sets the return value of isOptedInForAccountStorage calls and notifies

@@ -815,7 +815,7 @@ suite('PasswordsSection', function() {
                 '#showPasswordButton')!.classList.contains('icon-visibility'));
   });
 
-  test('clickingTheRowOpensSubpageWhenViewPageEnabled', async function() {
+  test('clickingTheRowDispatchesEventWhenViewPageEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordViewPage: true});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
@@ -834,15 +834,13 @@ suite('PasswordsSection', function() {
     assertFalse(isVisible(passwordListItem.$.moreActionsButton));
     const subpageButton = passwordListItem.$.seePasswordDetails;
     assertTrue(isVisible(subpageButton));
+    passwordManager.setRequestCredentialDetailsResponse(item);
+    const PasswordViewPageRequestedEvent =
+        eventToPromise('password-view-page-requested', passwordListItem);
     subpageButton.click();
-    await flushTasks();
-
-    const router = Router.getInstance();
-    assertEquals(routes.PASSWORD_VIEW, router.getCurrentRoute());
-    const expectedParams = new URLSearchParams();
-    expectedParams.set('username', USERNAME);
-    expectedParams.set('site', URL);
-    assertDeepEquals(expectedParams, router.getQueryParameters());
+    await PasswordViewPageRequestedEvent.then((event) => {
+      assertDeepEquals(passwordListItem, event.detail);
+    });
   });
 
   // Tests that pressing 'Edit password' sets the corresponding password.

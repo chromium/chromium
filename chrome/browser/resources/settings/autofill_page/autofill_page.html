@@ -33,7 +33,8 @@
             search-label="$i18n{searchPasswords}"
             search-term="{{passwordFilter_}}">
           <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
-              focus-config="[[focusConfig_]]" prefs="{{prefs}}">
+              focus-config="[[focusConfig_]]" prefs="{{prefs}}"
+              on-password-view-page-requested="onPasswordViewPageRequested_">
           </passwords-section>
         </settings-subpage>
       </template>
@@ -45,7 +46,8 @@
             search-label="$i18n{searchPasswords}"
             search-term="{{passwordFilter_}}">
           <passwords-device-section id="passwordDeviceSection"
-              filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]">
+              filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]"
+              on-password-view-page-requested="onPasswordViewPageRequested_">
           </passwords-device-section>
         </settings-subpage>
       </template>
@@ -73,7 +75,8 @@
         <template is="dom-if" route-path="/passwords/view">
           <settings-subpage page-title="[[credential.urls.shown]]"
               favicon-site-url="[[credential.urls.link]]">
-            <password-view credential="{{credential}}">
+            <password-view credential="{{credential}}"
+                on-password-view-page-requested="onPasswordViewPageRequested_">
             </password-view>
             </settings-subpage>
         </template>
@@ -96,3 +99,10 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
+    <if expr="is_chromeos">
+      <template is="dom-if" if="[[showPasswordPromptDialog]]" restamp>
+        <settings-password-prompt-dialog on-token-obtained="onTokenObtained"
+            on-close="onPasswordPromptClose">
+        </settings-password-prompt-dialog>
+      </template>
+    </if>

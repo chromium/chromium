@@ -701,7 +701,10 @@ suite('PasswordEditDialog', function() {
     assertEquals(expectedParams.note, params.note);
 
     await dispatchedEvent.then((event) => {
-      assertEquals(43, event.detail);
+      assertEquals(43, event.detail.id);
+      assertEquals(expectedParams.username, event.detail.username);
+      assertEquals(expectedParams.password, event.detail.password);
+      assertEquals(expectedParams.note, event.detail.note);
     });
   });
 

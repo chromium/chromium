@@ -36,12 +36,12 @@ import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_p
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent, PasswordViewPageClickedEvent} from './password_list_item.js';
+import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
-import {PasswordRemovalUrlParams} from './password_view.js';
+import {PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, PasswordRemovalUrlParams, PasswordViewPageRequestedEvent} from './password_view.js';
 import {getTemplate} from './passwords_list_handler.html.js';
 
 export interface PasswordsListHandlerElement {
@@ -188,8 +188,8 @@ export class PasswordsListHandlerElement extends
         this.passwordMoreActionsClickedHandler_);
 
     this.addEventListener(
-        PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME,
-        this.onPasswordViewPageClickedEvent);
+        PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME,
+        this.onPasswordViewPageRequestedEvent);
   }
 
   override connectedCallback() {
@@ -254,7 +254,8 @@ export class PasswordsListHandlerElement extends
     this.displayRemovalNotification_(event.detail.removedFromStores);
   }
 
-  private onPasswordViewPageClickedEvent(event: PasswordViewPageClickedEvent) {
+  private onPasswordViewPageRequestedEvent(event:
+                                               PasswordViewPageRequestedEvent) {
     this.activePassword_ = event.detail;
   }
 

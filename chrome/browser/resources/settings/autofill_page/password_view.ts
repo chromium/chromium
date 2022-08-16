@@ -29,12 +29,24 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
+import {PasswordListItemElement} from './password_list_item.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {getTemplate} from './password_view.html.js';
+
+declare global {
+  interface HTMLElementEventMap {
+    [PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME]: PasswordViewPageRequestedEvent;
+  }
+}
+
+export type PasswordViewPageRequestedEvent =
+    CustomEvent<PasswordListItemElement>;
+
+export const PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME =
+    'password-view-page-requested';
 
 export interface PasswordViewElement {
   $: {
@@ -43,12 +55,11 @@ export interface PasswordViewElement {
 }
 
 const PasswordViewElementBase =
-    PasswordRemovalMixin(PasswordRequestorMixin(MergePasswordsStoreCopiesMixin(
-        RouteObserverMixin(I18nMixin(PolymerElement))))) as {
+    PasswordRemovalMixin(PasswordRequestorMixin(
+        RouteObserverMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface &
-          MergePasswordsStoreCopiesMixinInterface &
-          PasswordRequestorMixinInterface & PasswordRemovalMixinInterface,
+          RouteObserverMixinInterface & PasswordRequestorMixinInterface &
+          PasswordRemovalMixinInterface,
     };
 
 export enum PasswordRemovalUrlParams {
@@ -87,6 +98,9 @@ export enum PasswordViewPageInteractions {
 }
 
 export class PasswordViewElement extends PasswordViewElementBase {
+  // TODO(crbug/1345899): Reroute to password list when the credential is
+  // deleted or update the page when credential is updated from other sources
+  // (e.g: sync).
   static get is() {
     return 'password-view';
   }
@@ -97,8 +111,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   static get properties() {
     return {
-      id_: Number,
-
       toastText_: {
         type: String,
         value: '',
@@ -122,71 +134,70 @@ export class PasswordViewElement extends PasswordViewElementBase {
         value: false,
       },
 
-      password_: {
-        type: String,
-        value: '',
-      },
-
       showEditDialog_: {
         type: Boolean,
         value: false,
       },
-
-      // <if expr="is_chromeos">
-      showPasswordPromptDialog_: Boolean,
-      // </if>
-
-      /**
-       * Used to keep the password view page open when a credential is
-       * modified. savedPasswords may take its time to update.
-       */
-      recentlyEdited_: Boolean,
-
     };
   }
 
-  static get observers() {
-    return ['savedPasswordsChanged_(savedPasswords.splices, id_)'];
-  }
-
-  /**
-   * Valid value for id is null or number, undefined is set for early return in
-   * the observer.
-   */
-  private id_: number|null|undefined;
   private toastText_: string;
   credential: chrome.passwordsPrivate.PasswordUiEntry|null;
   private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
-  private password_: string;
-  private recentlyEdited_: boolean;
   private showEditDialog_: boolean;
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {
-      this.id_ = undefined;
-      this.recentlyEdited_ = false;
-      this.password_ = '';
-      this.credential = null;
       this.hideToast_();
+      this.credential = null;
+      this.isPasswordVisible_ = false;
+      this.showEditDialog_ = false;
       return;
     }
-    const queryParameters = Router.getInstance().getQueryParameters();
 
-    const convertToNullOrNumber = (input: string|null) => {
-      if (!input || Number.isNaN(Number(input))) {
-        return null;
-      }
-      return Number(input);
-    };
-    this.id_ = convertToNullOrNumber(
-        queryParameters.get(PasswordViewPageUrlParams.ID));
+    if (!this.credential) {
+      this.requestCredential_();
+    }
   }
 
   override onPasswordRemoveDialogPasswordsRemoved(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
     super.onPasswordRemoveDialogPasswordsRemoved(event);
     this.rerouteAndShowRemovalNotification_(event.detail.removedFromStores);
+  }
+
+  private getId_() {
+    const idInput = Router.getInstance().getQueryParameters().get(
+        PasswordViewPageUrlParams.ID);
+
+    if (!idInput || Number.isNaN(Number(idInput))) {
+      return null;
+    }
+    return Number(idInput);
+  }
+
+  // This method is responsible for requesting the credential details (password,
+  // note). If the user does not authenticate, the page will be redirected to
+  // the passwords main page.
+  // The method also is disabled when the tab is not visible to the user (e.g: a
+  // background tab) so that the native authentication dialog will not be shown.
+  private requestCredential_() {
+    const credentialId = this.getId_();
+    if (credentialId === null) {
+      return;
+    }
+
+    // wrap the id in a PasswordListItemElement:
+    const eventDetail = {entry: {id: credentialId}} as unknown as
+        PasswordListItemElement;
+
+    this.dispatchEvent(
+        new CustomEvent(PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, {
+          bubbles: true,
+          composed: true,
+          detail: eventDetail,
+        }));
   }
 
   /** Gets the title text for the show/hide icon. */
@@ -211,10 +222,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   /**
    * Show the password or a placeholder with 10 characters when password is not
-   * set.
+   * set. If the credential is a federated credential, it shows the federation
+   * text.
    */
-  private getPassword_(): string {
-    return this.password_ || ' '.repeat(10);
+  private getPasswordOrFederationText_(): string {
+    return this.credential?.password || this.credential?.federationText ||
+        ' '.repeat(10);
   }
 
   /**
@@ -274,12 +287,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     assert(!this.isFederated_());
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED);
-    this.requestPlaintextPassword(
-            this.credential!.id, chrome.passwordsPrivate.PlaintextReason.EDIT)
-        .then(password => {
-          this.credential!.password = password;
-          this.showEditDialog_ = true;
-        }, () => {});
+    this.showEditDialog_ = true;
   }
 
   private onEditDialogClosed_() {
@@ -287,13 +295,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   private onSavedPasswordEdited_(event: SavedPasswordEditedEvent) {
-    this.recentlyEdited_ = true;
     // The dialog is recently closed. Use the new IDs to update the URL.
     const newParams = Router.getInstance().getQueryParameters();
-
-    if (event.detail !== undefined) {
-      newParams.set(PasswordViewPageUrlParams.ID, String(event.detail));
-    }
+    this.credential = event.detail;
+    newParams.set(PasswordViewPageUrlParams.ID, String(event.detail.id));
     Router.getInstance().updateRouteParams(newParams);
   }
 
@@ -301,18 +306,12 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private onShowPasswordButtonClick_() {
     assert(!this.isFederated_());
     if (this.isPasswordVisible_) {
-      this.password_ = '';
       this.isPasswordVisible_ = false;
       return;
     }
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
-    this.requestPlaintextPassword(
-            this.credential!.id, chrome.passwordsPrivate.PlaintextReason.VIEW)
-        .then(password => {
-          this.password_ = password;
-          this.isPasswordVisible_ = true;
-        }, () => {});
+    this.isPasswordVisible_ = true;
   }
 
   /** Reroutes to PASSWORDS page and shows the removal notification */
@@ -325,41 +324,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
         PasswordRemovalUrlParams.REMOVED_FROM_STORES,
         removedFromStores.toString());
     Router.getInstance().navigateTo(routes.PASSWORDS, params);
-  }
-
-  private savedPasswordsChanged_() {
-    this.credential = null;
-    this.password_ = '';
-    this.isPasswordVisible_ = false;
-    // When an observed property changes, the observer will be called. Make sure
-    // that all properties are set.
-    if (!this.savedPasswords.length || this.id_ === undefined) {
-      return;
-    }
-    const item = this.savedPasswords.find(
-        (item: chrome.passwordsPrivate.PasswordUiEntry) => {
-          return item.id === this.id_;
-        });
-
-    if (!item) {
-      if (!this.recentlyEdited_) {
-        // Rerouting might have happened due to the edited username. Do not
-        // reroute back.
-        recordPasswordViewInteraction(
-            PasswordViewPageInteractions.CREDENTIAL_NOT_FOUND);
-        Router.getInstance().navigateTo(routes.PASSWORDS);
-      }
-      return;
-    }
-
-    this.credential = item;
-    if (item.federationText) {
-      this.password_ = item.federationText!;
-    }
-    this.showEditDialog_ = false;
-    this.recentlyEdited_ = false;
-    recordPasswordViewInteraction(
-        PasswordViewPageInteractions.CREDENTIAL_FOUND);
   }
 
   private hideToast_() {

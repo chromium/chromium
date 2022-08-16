@@ -1,13 +1,15 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @fileoverview PasswordRequestorMixin is the mixin which bundles the
- * |requestPlaintextPassword| API for conveniency. The mixin creates its own
- * |BlockingRequestManager| in chromeos for handling the authentication.
- * Elements implementing this mixin should include a
- * 'settings-password-prompt-dialog' for Chrome OS.
+ * |requestPlaintextPassword| and |requestCredentialDetails| APIs for
+ * conveniency. The mixin creates its own |BlockingRequestManager| in chromeos
+ * for handling the authentication. Elements implementing this mixin should
+ * include a 'settings-password-prompt-dialog' for Chrome OS.
  */
+
 // <if expr="is_chromeos">
 import {assert} from 'chrome://resources/js/assert_ts.js';
 // </if>
@@ -74,6 +76,28 @@ export const PasswordRequestorMixin = dedupingMixin(
           // </if>
         }
 
+        requestCredentialDetails(id: number):
+            Promise<chrome.passwordsPrivate.PasswordUiEntry> {
+          // <if expr="is_chromeos">
+          // If no password was found, refresh auth token and retry.
+          return new Promise((resolve, reject) => {
+            PasswordManagerImpl.getInstance()
+                .requestCredentialDetails(id)
+                .then(resolve)
+                .catch(() => {
+                  this.tokenRequestManager.request(
+                      () => PasswordManagerImpl.getInstance()
+                                .requestCredentialDetails(id)
+                                .then(resolve)
+                                .catch(reject));
+                });
+          });
+          // </if>
+          // <if expr="not is_chromeos">
+          return PasswordManagerImpl.getInstance().requestCredentialDetails(id);
+          // </if>
+        }
+
         // <if expr="is_chromeos">
         /**
          * When this event fired, it means that the password-prompt-dialog
@@ -112,6 +136,8 @@ export interface PasswordRequestorMixinInterface {
   requestPlaintextPassword(
       id: number,
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
+  requestCredentialDetails(id: number):
+      Promise<chrome.passwordsPrivate.PasswordUiEntry>;
   // <if expr="is_chromeos">
   onTokenObtained(e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void;
   onPasswordPromptClose(event: CloseEvent): void;

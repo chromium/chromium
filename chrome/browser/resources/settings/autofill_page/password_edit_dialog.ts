@@ -31,7 +31,8 @@ import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
-export type SavedPasswordEditedEvent = CustomEvent<number>;
+export type SavedPasswordEditedEvent =
+    CustomEvent<chrome.passwordsPrivate.PasswordUiEntry>;
 
 const SAVED_PASSWORD_EDITED_EVENT_NAME = 'saved-password-edited';
 
@@ -531,7 +532,14 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         .changeSavedPassword(this.existingEntry!.id, params)
         .then(newId => {
           if (this.isPasswordViewPageEnabled_) {
-            this.dispatchChangePasswordEvent_(newId);
+            const newEntry = {
+              ...this.existingEntry!,
+              username: this.username_,
+              password: this.password_,
+              note: this.note_,
+              id: newId,
+            };
+            this.dispatchChangePasswordEvent_(newEntry);
           }
         })
         .finally(() => {
@@ -539,11 +547,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         });
   }
 
-  private dispatchChangePasswordEvent_(newId: number) {
+  private dispatchChangePasswordEvent_(
+      newEntry: chrome.passwordsPrivate.PasswordUiEntry) {
     this.dispatchEvent(new CustomEvent(SAVED_PASSWORD_EDITED_EVENT_NAME, {
       bubbles: true,
       composed: true,
-      detail: newId,
+      detail: newEntry,
     }));
   }
 

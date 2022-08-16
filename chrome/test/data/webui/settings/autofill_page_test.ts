@@ -5,11 +5,11 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerImpl, PasswordsSectionElement, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, PasswordsSectionElement, PasswordListItemElement, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, Router, routes} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
@@ -303,6 +303,10 @@ function createAutofillPageSection() {
     profile: {
       password_manager_leak_detection: {},
     },
+    credentials_enable_service: {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      value: false,
+    },
   };
   document.body.innerHTML = '';
   document.body.appendChild(autofillPage);
@@ -362,24 +366,95 @@ suite('PasswordsUITest', function() {
                 '#passwordManagerSubLabel')!.innerText.trim());
   });
 
-  test('Credential urls is used in the subpage header', async function() {
-    const SHOWN_URL = 'www.google.com';
-    loadTimeData.overrideValues({enablePasswordViewPage: true});
-    Router.resetInstanceForTesting(buildRouter());
-    routes.PASSWORD_VIEW =
-        (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
-    const autofillSection = createAutofillPageSection();
+  ['passwords-section', 'password-view'].forEach(
+      testCase => test(
+          `After "password-view-page-requested" event from ${
+              testCase}, password view page is visible after auth`,
+          async function() {
+            const SHOWN_URL = 'www.google.com';
+            loadTimeData.overrideValues({enablePasswordViewPage: true});
+            Router.resetInstanceForTesting(buildRouter());
+            routes.PASSWORD_VIEW =
+                (Router.getInstance().getRoutes() as SettingsRoutes)
+                    .PASSWORD_VIEW;
+            const autofillSection = createAutofillPageSection();
 
-    Router.getInstance().navigateTo(routes.PASSWORD_VIEW);
-    await flushTasks();
-    const subpage =
-        autofillSection.shadowRoot!.querySelector('settings-subpage');
+            const entry = createPasswordEntry({url: SHOWN_URL, id: 1});
 
-    autofillSection.credential = createPasswordEntry({url: SHOWN_URL, id: 1});
-    flush();
+            if (testCase === 'passwords-section') {
+              autofillSection.shadowRoot!
+                  .querySelector<DomIf>('dom-if[route-path="/passwords"]')!.if =
+                  true;
+            } else {
+              autofillSection.shadowRoot!
+                  .querySelector<DomIf>(
+                      'dom-if[route-path="/passwords/view"]')!.if = true;
+            }
+            await flushTasks();
+            const dispatchingElement =
+                autofillSection.shadowRoot!.querySelector(testCase)!;
+            const eventDetail = document.createElement('password-list-item');
+            eventDetail.entry = entry;
 
-    assertTrue(!!subpage);
-    assertEquals(`http://${SHOWN_URL}/login`, subpage.faviconSiteUrl);
-    assertEquals(SHOWN_URL, subpage.pageTitle);
-  });
+            passwordManager.setRequestCredentialDetailsResponse(entry);
+
+            dispatchingElement.dispatchEvent(
+                new CustomEvent('password-view-page-requested', {
+                  bubbles: true,
+                  composed: true,
+                  detail: eventDetail,
+                }));
+            await flushTasks();
+
+            assertEquals(
+                routes.PASSWORD_VIEW, Router.getInstance().getCurrentRoute());
+            assertDeepEquals(entry, autofillSection.credential);
+
+            const subpage =
+                [...autofillSection.shadowRoot!.querySelectorAll(
+                     'settings-subpage')]
+                    .find(
+                        (element: HTMLElement) =>
+                            element.classList.contains('iron-selected'));
+            assertTrue(!!subpage);
+            assertEquals(`http://${SHOWN_URL}/login`, subpage.faviconSiteUrl!);
+            assertEquals(SHOWN_URL, subpage.pageTitle!);
+          }));
+
+  test(
+      `After "password-view-page-requested" event with invalid id,
+      password main page is opened`,
+      async function() {
+        loadTimeData.overrideValues({enablePasswordViewPage: true});
+        Router.resetInstanceForTesting(buildRouter());
+        routes.PASSWORD_VIEW =
+            (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
+        const autofillSection = createAutofillPageSection();
+
+        autofillSection.shadowRoot!
+            .querySelector<DomIf>('dom-if[route-path="/passwords/view"]')!.if =
+            true;
+        await flushTasks();
+        Router.getInstance().setCurrentRoute(
+            routes.PASSWORD_VIEW, new URLSearchParams('id=123'), false);
+        await flushTasks();
+
+        // <if expr="is_chromeos">
+        autofillSection.tokenRequestManager.resolve();
+        await flushTasks();
+        // </if>
+
+        const eventDetail = {entry: {id: 123}} as unknown as
+            PasswordListItemElement;
+        autofillSection.shadowRoot!.querySelector('password-view')!
+            .dispatchEvent(new CustomEvent('password-view-page-requested', {
+              bubbles: true,
+              composed: true,
+              detail: eventDetail,
+            }));
+        await flushTasks();
+
+        assertEquals(routes.PASSWORDS, Router.getInstance().getCurrentRoute());
+        assertFalse(!!autofillSection.credential);
+      });
 });

@@ -21,25 +21,17 @@ import './passwords_shared.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
-import {Router} from '../router.js';
 
 import {getTemplate} from './password_list_item.html.js';
-import {PasswordViewPageInteractions, PasswordViewPageUrlParams, recordPasswordViewInteraction} from './password_view.js';
+import {PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, PasswordViewPageInteractions, recordPasswordViewInteraction} from './password_view.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 
 declare global {
   interface HTMLElementEventMap {
     [PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME]: PasswordMoreActionsClickedEvent;
-    [PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME]: PasswordViewPageClickedEvent;
   }
 }
-
-export type PasswordViewPageClickedEvent = CustomEvent<PasswordListItemElement>;
-
-export const PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME =
-    'password-view-page-clicked';
 
 export type PasswordMoreActionsClickedEvent = CustomEvent<{
   target: HTMLElement,
@@ -132,16 +124,14 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     if (!this.shouldShowSubpageButton_) {
       return;
     }
-    const params = new URLSearchParams();
-    params.set(PasswordViewPageUrlParams.ID, this.entry.id.toString());
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
-    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
-    this.dispatchEvent(new CustomEvent(PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME, {
-      bubbles: true,
-      composed: true,
-      detail: this,
-    }));
+    this.dispatchEvent(
+        new CustomEvent(PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, {
+          bubbles: true,
+          composed: true,
+          detail: this,
+        }));
   }
 
   private onPasswordMoreActionsButtonTap_() {
