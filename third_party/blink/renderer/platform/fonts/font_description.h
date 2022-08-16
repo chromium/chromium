@@ -186,6 +186,11 @@ class PLATFORM_EXPORT FontDescription {
     return Size(KeywordSize(), SpecifiedSize(), IsAbsoluteSize());
   }
   float SpecifiedSize() const { return specified_size_; }
+  // Returns the result of applying font-size-adjust to the specified size. This
+  // is useful as an input to optical sizing and takes zooming out of the
+  // equation for determining the font size to be used for font-optical-sizing:
+  // auto;.
+  float AdjustedSpecifiedSize() const;
   float ComputedSize() const { return computed_size_; }
 
   // TODO(xiaochengh): The functions and members for size-adjust descriptor and

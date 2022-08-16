@@ -235,6 +235,14 @@ float FontDescription::EffectiveFontSize() const {
          FontCacheKey::PrecisionMultiplier();
 }
 
+float FontDescription::AdjustedSpecifiedSize() const {
+  if (HasSizeAdjust() || fields_.has_size_adjust_descriptor_) {
+    return SpecifiedSize() * (AdjustedSize() / ComputedSize());
+  } else {
+    return SpecifiedSize();
+  }
+}
+
 FontDescription FontDescription::SizeAdjustedFontDescription(
     float size_adjust) const {
   // TODO(crbug.com/451346): The font-size-adjust property and size-adjust
