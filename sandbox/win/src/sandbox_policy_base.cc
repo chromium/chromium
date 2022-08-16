@@ -130,6 +130,11 @@ PolicyGlobal* ConfigBase::policy() {
   return policy_;
 }
 
+std::vector<std::wstring>& ConfigBase::blocklisted_dlls() {
+  DCHECK(configured_);
+  return blocklisted_dlls_;
+}
+
 ConfigBase::~ConfigBase() {
   delete policy_;  // Allocated by MakeBrokerPolicyMemory.
 }
@@ -225,6 +230,11 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
     }
   }
 
+  return SBOX_ALL_OK;
+}
+
+ResultCode ConfigBase::AddDllToUnload(const wchar_t* dll_name) {
+  blocklisted_dlls_.push_back(dll_name);
   return SBOX_ALL_OK;
 }
 
@@ -502,11 +512,6 @@ ResultCode PolicyBase::SetStderrHandle(HANDLE handle) {
   if (!IsInheritableHandle(handle))
     return SBOX_ERROR_BAD_PARAMS;
   stderr_handle_ = handle;
-  return SBOX_ALL_OK;
-}
-
-ResultCode PolicyBase::AddDllToUnload(const wchar_t* dll_name) {
-  blocklisted_dlls_.push_back(dll_name);
   return SBOX_ALL_OK;
 }
 
@@ -814,7 +819,7 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
     }
   }
 
-  for (const std::wstring& dll : blocklisted_dlls_)
+  for (const std::wstring& dll : config()->blocklisted_dlls())
     manager.AddToUnloadModules(dll.c_str());
 
   if (!SetupBasicInterceptions(&manager, is_csrss_connected_))

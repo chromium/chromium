@@ -26,6 +26,7 @@ class Value;
 
 namespace sandbox {
 class BrokerServices;
+class TargetConfig;
 class TargetPolicy;
 class TargetServices;
 
@@ -123,7 +124,7 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
 SANDBOX_POLICY_EXPORT
 void BlocklistAddOneDllForTesting(const wchar_t* module_name,
                                   bool check_in_browser,
-                                  TargetPolicy* policy);
+                                  TargetConfig* config);
 
 }  // namespace policy
 }  // namespace sandbox

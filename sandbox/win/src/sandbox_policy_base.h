@@ -56,6 +56,7 @@ class ConfigBase final : public TargetConfig {
   ResultCode AddRule(SubSystem subsystem,
                      Semantics semantics,
                      const wchar_t* pattern) override;
+  ResultCode AddDllToUnload(const wchar_t* dll_name) override;
 
  private:
   // Can call Freeze()
@@ -86,12 +87,15 @@ class ConfigBase final : public TargetConfig {
 
   // Should only be called once the object is configured.
   PolicyGlobal* policy();
+  std::vector<std::wstring>& blocklisted_dlls();
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.
   std::unique_ptr<LowLevelPolicy> policy_maker_;
   // Memory structure that stores the low level policy rules for proxied calls.
   raw_ptr<PolicyGlobal> policy_;
+  // The list of dlls to unload in the target process.
+  std::vector<std::wstring> blocklisted_dlls_;
 };
 
 class PolicyBase final : public TargetPolicy {
@@ -126,7 +130,6 @@ class PolicyBase final : public TargetPolicy {
   void SetStrictInterceptions() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
-  ResultCode AddDllToUnload(const wchar_t* dll_name) override;
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
                                     const wchar_t* handle_name) override;
   void AddHandleToShare(HANDLE handle) override;
@@ -226,8 +229,6 @@ class PolicyBase final : public TargetPolicy {
   MitigationFlags mitigations_;
   MitigationFlags delayed_mitigations_;
   bool is_csrss_connected_;
-  // The list of dlls to unload in the target process.
-  std::vector<std::wstring> blocklisted_dlls_;
   // This is a map of handle-types to names that we need to close in the
   // target process. A null set means we need to close all handles of the
   // given type.

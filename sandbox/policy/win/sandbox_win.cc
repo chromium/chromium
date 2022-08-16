@@ -233,11 +233,12 @@ std::vector<std::wstring> GetShortNameVariants(const std::wstring& name) {
 // is also loaded in this process.
 void BlocklistAddOneDll(const wchar_t* module_name,
                         bool check_in_browser,
-                        TargetPolicy* policy) {
+                        TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
   if (check_in_browser) {
     HMODULE module = ::GetModuleHandleW(module_name);
     if (module) {
-      policy->AddDllToUnload(module_name);
+      config->AddDllToUnload(module_name);
       DVLOG(1) << "dll to unload found: " << module_name;
     } else {
       for (const auto& alt_name : GetShortNameVariants(module_name)) {
@@ -246,26 +247,18 @@ void BlocklistAddOneDll(const wchar_t* module_name,
         // want to make sure it is the right one.
         if (module && IsExpandedModuleName(module, module_name)) {
           // Found a match. We add both forms to the policy.
-          policy->AddDllToUnload(alt_name.c_str());
-          policy->AddDllToUnload(module_name);
+          config->AddDllToUnload(alt_name.c_str());
+          config->AddDllToUnload(module_name);
           return;
         }
       }
     }
   } else {
-    policy->AddDllToUnload(module_name);
+    config->AddDllToUnload(module_name);
     for (const auto& alt_name : GetShortNameVariants(module_name)) {
-      policy->AddDllToUnload(alt_name.c_str());
+      config->AddDllToUnload(alt_name.c_str());
     }
   }
-}
-
-// Adds policy rules for unloaded the known dlls that cause chrome to crash.
-// Eviction of injected DLLs is done by the sandbox so that the injected module
-// does not get a chance to execute any code.
-void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
-  for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
-    BlocklistAddOneDll(kTroublesomeDlls[ix], true, policy);
 }
 
 DWORD GetSessionId() {
@@ -325,8 +318,8 @@ bool ShouldSetJobLevel(bool allow_no_sandbox_job) {
   return false;
 }
 
-// Adds the generic policy rules to a sandbox TargetConfig.
-ResultCode AddGenericPolicy(sandbox::TargetConfig* config) {
+// Adds the generic config rules to a sandbox TargetConfig.
+ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   ResultCode result;
 
@@ -378,6 +371,12 @@ ResultCode AddGenericPolicy(sandbox::TargetConfig* config) {
       return result;
   }
 #endif
+
+  // Adds policy rules for unloading the known dlls that cause Chrome to crash.
+  // Eviction of injected DLLs is done by the sandbox so that the injected
+  // module does not get a chance to execute any code.
+  for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
+    BlocklistAddOneDll(kTroublesomeDlls[ix], true, config);
 
   return SBOX_ALL_OK;
 }
@@ -1077,14 +1076,12 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
 #endif
 
   if (!config->IsConfigured()) {
-    result = AddGenericPolicy(config);
+    result = AddGenericConfig(config);
     if (result != SBOX_ALL_OK) {
       NOTREACHED();
       return result;
     }
   }
-
-  AddGenericDllEvictionPolicy(policy);
 
   std::string appcontainer_id;
   if (IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
@@ -1241,8 +1238,8 @@ ResultCode SandboxWin::GetPolicyDiagnostics(
 
 void BlocklistAddOneDllForTesting(const wchar_t* module_name,
                                   bool check_in_browser,
-                                  TargetPolicy* policy) {
-  BlocklistAddOneDll(module_name, check_in_browser, policy);
+                                  TargetConfig* config) {
+  BlocklistAddOneDll(module_name, check_in_browser, config);
 }
 
 // static

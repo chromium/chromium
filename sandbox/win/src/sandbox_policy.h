@@ -78,6 +78,11 @@ class [[clang::lto_visibility_public]] TargetConfig {
   virtual ResultCode AddRule(SubSystem subsystem,
                              Semantics semantics,
                              const wchar_t* pattern) = 0;
+
+  // Adds a dll that will be unloaded in the target process before it gets
+  // a chance to initialize itself. Typically, dlls that cause the target
+  // to crash go here.
+  virtual ResultCode AddDllToUnload(const wchar_t* dll_name) = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -232,11 +237,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // file handles, but not console handles.
   virtual ResultCode SetStdoutHandle(HANDLE handle) = 0;
   virtual ResultCode SetStderrHandle(HANDLE handle) = 0;
-
-  // Adds a dll that will be unloaded in the target process before it gets
-  // a chance to initialize itself. Typically, dlls that cause the target
-  // to crash go here.
-  virtual ResultCode AddDllToUnload(const wchar_t* dll_name) = 0;
 
   // Adds a handle that will be closed in the target process after lockdown.
   // A nullptr value for handle_name indicates all handles of the specified

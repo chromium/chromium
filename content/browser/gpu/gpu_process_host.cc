@@ -437,11 +437,11 @@ class GpuSandboxedProcessLauncherDelegate
     else
       policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
 
-    // Block this DLL even if it is not loaded by the browser process.
-    policy->AddDllToUnload(L"cmsetac.dll");
-
     if (policy->GetConfig()->IsConfigured())
       return true;
+
+    // Block this DLL even if it is not loaded by the browser process.
+    policy->GetConfig()->AddDllToUnload(L"cmsetac.dll");
 
     if (cmd_line_.HasSwitch(switches::kEnableLogging)) {
       std::wstring log_file_path = logging::GetLogFileFullPath();

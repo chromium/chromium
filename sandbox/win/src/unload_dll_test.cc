@@ -72,7 +72,7 @@ std::unique_ptr<TestRunner> UnloadAvicapNoPatchingRunner() {
   auto runner = std::make_unique<TestRunner>();
   runner->SetTestState(BEFORE_REVERT);
   runner->SetTimeout(2000);
-  runner->GetPolicy()->AddDllToUnload(L"avicap32.dll");
+  runner->GetPolicy()->GetConfig()->AddDllToUnload(L"avicap32.dll");
   return runner;
 }
 
@@ -87,7 +87,7 @@ std::unique_ptr<TestRunner> UnloadAvicapWithPatchingRunner() {
   auto runner = std::make_unique<TestRunner>();
   runner->SetTestState(BEFORE_REVERT);
   runner->SetTimeout(2000);
-  runner->GetPolicy()->AddDllToUnload(L"avicap32.dll");
+  runner->GetPolicy()->GetConfig()->AddDllToUnload(L"avicap32.dll");
   // Add a couple of rules that ensures that the interception agent add EAT
   // patching on the client which makes sure that the unload dll record does
   // not interact badly with them.

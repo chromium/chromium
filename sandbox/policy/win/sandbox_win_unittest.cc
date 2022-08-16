@@ -53,6 +53,16 @@ class TestTargetConfig : public TargetConfig {
                      const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }
+  ResultCode AddDllToUnload(const wchar_t* dll_name) override {
+    blocklisted_dlls_.push_back(dll_name);
+    return SBOX_ALL_OK;
+  }
+  const std::vector<std::wstring>& blocklisted_dlls() const {
+    return blocklisted_dlls_;
+  }
+
+ private:
+  std::vector<std::wstring> blocklisted_dlls_;
 };
 
 class TestTargetPolicy : public TargetPolicy {
@@ -104,10 +114,6 @@ class TestTargetPolicy : public TargetPolicy {
   void SetStrictInterceptions() override {}
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
-  ResultCode AddDllToUnload(const wchar_t* dll_name) override {
-    blocklisted_dlls_.push_back(dll_name);
-    return SBOX_ALL_OK;
-  }
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
                                     const wchar_t* handle_name) override {
     return SBOX_ALL_OK;
@@ -139,16 +145,11 @@ class TestTargetPolicy : public TargetPolicy {
 
   void SetEffectiveToken(HANDLE token) override {}
 
-  const std::vector<std::wstring>& blocklisted_dlls() const {
-    return blocklisted_dlls_;
-  }
-
   void SetAllowNoSandboxJob() override { NOTREACHED(); }
   bool GetAllowNoSandboxJob() override { return false; }
 
  private:
   TestTargetConfig config_;
-  std::vector<std::wstring> blocklisted_dlls_;
   scoped_refptr<AppContainerBase> app_container_;
 };
 
@@ -298,15 +299,19 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
 TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
   {  // Block loaded module.
     TestTargetPolicy policy;
-    BlocklistAddOneDllForTesting(L"kernel32.dll", true, &policy);
-    EXPECT_EQ(policy.blocklisted_dlls(),
+    TestTargetConfig* config =
+        static_cast<TestTargetConfig*>(policy.GetConfig());
+    BlocklistAddOneDllForTesting(L"kernel32.dll", true, config);
+    EXPECT_EQ(config->blocklisted_dlls(),
               std::vector<std::wstring>({L"kernel32.dll"}));
   }
 
   {  // Block module which is not loaded.
     TestTargetPolicy policy;
-    BlocklistAddOneDllForTesting(L"notloaded.dll", true, &policy);
-    EXPECT_TRUE(policy.blocklisted_dlls().empty());
+    TestTargetConfig* config =
+        static_cast<TestTargetConfig*>(policy.GetConfig());
+    BlocklistAddOneDllForTesting(L"notloaded.dll", true, config);
+    EXPECT_TRUE(config->blocklisted_dlls().empty());
   }
 
   {  // Block module loaded by short name.
@@ -330,8 +335,10 @@ TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
     EXPECT_TRUE(library.is_valid());
 
     TestTargetPolicy policy;
-    BlocklistAddOneDllForTesting(full_dll_name.c_str(), true, &policy);
-    EXPECT_EQ(policy.blocklisted_dlls(),
+    TestTargetConfig* config =
+        static_cast<TestTargetConfig*>(policy.GetConfig());
+    BlocklistAddOneDllForTesting(full_dll_name.c_str(), true, config);
+    EXPECT_EQ(config->blocklisted_dlls(),
               std::vector<std::wstring>({short_dll_name, full_dll_name}));
   }
 }
@@ -339,15 +346,19 @@ TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
 TEST_F(SandboxWinTest, BlocklistAddOneDllDontCheckInBrowser) {
   {  // Block module with short name.
     TestTargetPolicy policy;
-    BlocklistAddOneDllForTesting(L"short.dll", false, &policy);
-    EXPECT_EQ(policy.blocklisted_dlls(),
+    TestTargetConfig* config =
+        static_cast<TestTargetConfig*>(policy.GetConfig());
+    BlocklistAddOneDllForTesting(L"short.dll", false, config);
+    EXPECT_EQ(config->blocklisted_dlls(),
               std::vector<std::wstring>({L"short.dll"}));
   }
 
   {  // Block module with long name.
     TestTargetPolicy policy;
-    BlocklistAddOneDllForTesting(L"thelongname.dll", false, &policy);
-    EXPECT_EQ(policy.blocklisted_dlls(),
+    TestTargetConfig* config =
+        static_cast<TestTargetConfig*>(policy.GetConfig());
+    BlocklistAddOneDllForTesting(L"thelongname.dll", false, config);
+    EXPECT_EQ(config->blocklisted_dlls(),
               std::vector<std::wstring>({L"thelongname.dll", L"thelon~1.dll",
                                          L"thelon~2.dll", L"thelon~3.dll"}));
   }
