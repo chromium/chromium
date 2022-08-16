@@ -89,6 +89,7 @@ class ReadAnythingColorsModel : public ui::ComboboxModel {
   absl::optional<size_t> GetDefaultIndex() const override;
   size_t GetItemCount() const override;
   ui::ImageModel GetIconAt(size_t index) const override;
+  ui::ImageModel GetDropDownIconAt(size_t index) const override;
   std::u16string GetItemAt(size_t index) const override;
   std::u16string GetDropDownTextAt(size_t index) const override;
 
@@ -113,8 +114,8 @@ class ReadAnythingModel {
    public:
     virtual void OnAXTreeDistilled(
         const ui::AXTreeUpdate& snapshot,
-        const std::vector<ui::AXNodeID>& content_node_ids) = 0;
-    virtual void OnThemeChanged(
+        const std::vector<ui::AXNodeID>& content_node_ids) {}
+    virtual void OnReadAnythingThemeChanged(
         read_anything::mojom::ReadAnythingThemePtr new_theme) = 0;
   };
 

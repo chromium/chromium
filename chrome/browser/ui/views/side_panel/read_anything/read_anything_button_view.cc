@@ -31,7 +31,11 @@ ReadAnythingButtonView::ReadAnythingButtonView(
   button->SetTooltipText(tooltip);
 
   // Add the button to the view.
-  AddChildView(std::move(button));
+  button_ = AddChildView(std::move(button));
+}
+
+void ReadAnythingButtonView::UpdateIcon(const gfx::ImageSkia& icon) {
+  button_->SetImage(views::Button::STATE_NORMAL, icon);
 }
 
 ReadAnythingButtonView::~ReadAnythingButtonView() = default;

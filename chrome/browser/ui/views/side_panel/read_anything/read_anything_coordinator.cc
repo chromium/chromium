@@ -87,6 +87,16 @@ void ReadAnythingCoordinator::RemoveObserver(
     ReadAnythingCoordinator::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
+void ReadAnythingCoordinator::AddModelObserver(
+    ReadAnythingModel::Observer* observer) {
+  DCHECK(model_);
+  model_->AddObserver(observer);
+}
+void ReadAnythingCoordinator::RemoveModelObserver(
+    ReadAnythingModel::Observer* observer) {
+  DCHECK(model_);
+  model_->RemoveObserver(observer);
+}
 
 void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
   DCHECK(entry->id() == SidePanelEntry::Id::kReadAnything);

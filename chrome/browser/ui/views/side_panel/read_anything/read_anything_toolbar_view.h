@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view.h"
@@ -22,6 +23,7 @@
 //  ReadAnythingContainerView. It has the same lifetime as the Side Panel view.
 //
 class ReadAnythingToolbarView : public views::View,
+                                public ReadAnythingModel::Observer,
                                 public ReadAnythingCoordinator::Observer {
  public:
   class Delegate {
@@ -38,6 +40,10 @@ class ReadAnythingToolbarView : public views::View,
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
   ReadAnythingToolbarView& operator=(const ReadAnythingToolbarView&) = delete;
   ~ReadAnythingToolbarView() override;
+
+  // ReadAnythingModel::Observer:
+  void OnReadAnythingThemeChanged(
+      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;

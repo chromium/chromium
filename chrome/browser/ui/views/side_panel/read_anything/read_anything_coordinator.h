@@ -52,6 +52,8 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   void AddObserver(ReadAnythingCoordinator::Observer* observer);
   void RemoveObserver(ReadAnythingCoordinator::Observer* observer);
+  void AddModelObserver(ReadAnythingModel::Observer* observer);
+  void RemoveModelObserver(ReadAnythingModel::Observer* observer);
 
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;

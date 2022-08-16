@@ -49,7 +49,7 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
-  void OnThemeChanged(
+  void OnReadAnythingThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // ReadAnythingCoordinator::Observer:
@@ -57,7 +57,6 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
 
  private:
   raw_ptr<ReadAnythingCoordinator> coordinator_;
-  raw_ptr<ReadAnythingModel> model_;
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
   raw_ptr<Browser> browser_;

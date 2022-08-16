@@ -47,6 +47,7 @@ ReadAnythingFontCombobox::ReadAnythingFontCombobox(
   std::unique_ptr<ComboboxMenuModel> new_model =
       std::make_unique<MenuModel>(this, GetModel());
 
+  SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   SetMenuModel(std::move(new_model));
 }
 

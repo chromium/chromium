@@ -25,6 +25,11 @@ class ReadAnythingButtonView : public views::View {
   ReadAnythingButtonView(const ReadAnythingButtonView&) = delete;
   ReadAnythingButtonView& operator=(const ReadAnythingButtonView&) = delete;
   ~ReadAnythingButtonView() override;
+
+  void UpdateIcon(const gfx::ImageSkia& icon);
+
+ private:
+  raw_ptr<views::ImageButton> button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_BUTTON_VIEW_H_

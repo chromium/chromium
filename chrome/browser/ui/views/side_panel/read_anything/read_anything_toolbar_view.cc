@@ -53,7 +53,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
-                            gfx::kGoogleGrey700),
+                            gfx::kPlaceholderColor),
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
@@ -61,7 +61,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
-                            gfx::kGoogleGrey700),
+                            gfx::kPlaceholderColor),
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
@@ -74,6 +74,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   colors_combobox->SetCallback(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
                           weak_pointer_factory_.GetWeakPtr()));
+  colors_combobox->SetShouldShowArrow(false);
+  colors_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
@@ -82,6 +84,9 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
   colors_combobox_ = AddChildView(std::move(colors_combobox));
+
+  // Start observing model after views creation so initial theme is applied.
+  coordinator_->AddModelObserver(this);
 }
 
 void ReadAnythingToolbarView::DecreaseFontSizeCallback() {
@@ -105,6 +110,23 @@ void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
   delegate_ = nullptr;
   font_combobox_->SetModel(nullptr);
+}
+
+void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
+    read_anything::mojom::ReadAnythingThemePtr new_theme) {
+  SetBackground(views::CreateSolidBackground(new_theme->background_color));
+  font_combobox_->SetBackground(
+      views::CreateSolidBackground(new_theme->background_color));
+  colors_combobox_->SetBackground(
+      views::CreateSolidBackground(new_theme->background_color));
+
+  decrease_text_size_button_->UpdateIcon(
+      gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
+                            new_theme->foreground_color));
+
+  increase_text_size_button_->UpdateIcon(
+      gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
+                            new_theme->foreground_color));
 }
 
 std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
@@ -139,5 +161,6 @@ ReadAnythingToolbarView::~ReadAnythingToolbarView() {
   // remove |this| as an observer.
   if (coordinator_) {
     coordinator_->RemoveObserver(this);
+    coordinator_->RemoveModelObserver(this);
   }
 }

@@ -26,7 +26,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                const std::vector<ui::AXNodeID>& content_node_ids),
               (override));
   MOCK_METHOD(void,
-              OnThemeChanged,
+              OnReadAnythingThemeChanged,
               (ReadAnythingThemePtr new_theme),
               (override));
 };
@@ -63,10 +63,10 @@ TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_2_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->AddObserver(&model_observer_2_);
 }
@@ -76,13 +76,13 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_2_);
 
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnThemeChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(0);
 
   EXPECT_CALL(model_observer_3_, OnAXTreeDistilled(_, _)).Times(1);
-  EXPECT_CALL(model_observer_3_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->RemoveObserver(&model_observer_2_);
   model_->AddObserver(&model_observer_3_);
@@ -91,7 +91,7 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedFontByIndex(2);
 }
@@ -109,7 +109,7 @@ TEST_F(ReadAnythingModelTest, NotifiationsOnSetDistilledAXTree) {
 TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->DecreaseTextSize();
 
@@ -119,7 +119,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
 TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->IncreaseTextSize();
 
@@ -129,7 +129,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnThemeChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedColorsByIndex(2);
 }

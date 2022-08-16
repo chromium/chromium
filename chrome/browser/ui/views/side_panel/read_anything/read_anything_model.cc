@@ -12,12 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 using read_anything::mojom::ReadAnythingTheme;
 
@@ -106,7 +108,7 @@ void ReadAnythingModel::NotifyAXTreeDistilled() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnThemeChanged(ReadAnythingTheme::New(
+    obs.OnReadAnythingThemeChanged(ReadAnythingTheme::New(
         font_name_, kReadAnythingDefaultFontSize * font_scale_,
         foreground_color_, background_color_));
   }
@@ -117,6 +119,7 @@ void ReadAnythingModel::NotifyThemeChanged() {
 ///////////////////////////////////////////////////////////////////////////////
 
 ReadAnythingFontModel::ReadAnythingFontModel() {
+  // TODO(1266555): i18n.
   font_choices_.emplace_back(u"Standard font");
   font_choices_.emplace_back(u"Sans-serif");
   font_choices_.emplace_back(u"Serif");
@@ -152,8 +155,7 @@ size_t ReadAnythingFontModel::GetItemCount() const {
 }
 
 std::u16string ReadAnythingFontModel::GetItemAt(size_t index) const {
-  // TODO(1266555): Placeholder text, replace when finalized.
-  return u"Default font";
+  return GetDropDownTextAt(index);
 }
 
 std::u16string ReadAnythingFontModel::GetDropDownTextAt(size_t index) const {
@@ -226,6 +228,13 @@ size_t ReadAnythingColorsModel::GetItemCount() const {
 }
 
 ui::ImageModel ReadAnythingColorsModel::GetIconAt(size_t index) const {
+  // The dropdown should always show the color palette icon.
+  return ui::ImageModel::FromImageSkia(
+      gfx::CreateVectorIcon(vector_icons::kPaletteIcon, kColorsIconSize,
+                            colors_choices_[index].foreground));
+}
+
+ui::ImageModel ReadAnythingColorsModel::GetDropDownIconAt(size_t index) const {
   const gfx::ImageSkia* icon_skia_asset =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           colors_choices_[index].icon_asset);
@@ -238,8 +247,8 @@ ui::ImageModel ReadAnythingColorsModel::GetIconAt(size_t index) const {
 }
 
 std::u16string ReadAnythingColorsModel::GetItemAt(size_t index) const {
-  // Only display the icon choice in the toolbar, so suppress name here.
-  return u"";
+  // Only display the icon choice in the toolbar, so return empty string here.
+  return std::u16string();
 }
 
 std::u16string ReadAnythingColorsModel::GetDropDownTextAt(size_t index) const {
