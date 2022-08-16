@@ -47,8 +47,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "extensions/browser/api/management/management_api_constants.h"
-#include "extensions/common/error_utils.h"
 #endif
 
 using extensions::mojom::ManifestLocation;

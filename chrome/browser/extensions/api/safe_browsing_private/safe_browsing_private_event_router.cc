@@ -58,7 +58,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #else
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif

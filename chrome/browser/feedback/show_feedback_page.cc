@@ -27,7 +27,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/bind.h"
-#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"

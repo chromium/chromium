@@ -18,7 +18,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #endif
 
 namespace system_logs {
