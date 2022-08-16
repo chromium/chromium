@@ -4612,6 +4612,87 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
   EXPECT_TRUE(ShelfModel::Get()->items().empty());
 }
 
+TEST_P(AppsGridViewDragTest, MousePointerIsGrabbingDuringDrag) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  auto previous_cursor_type = cursor_manager->GetCursor().type();
+
+  // Populate the apps grid and start dragging one of the items.
+  model_->PopulateApps(3);
+  UpdateLayout();
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+
+  // Ensure the cursor type is set to grabbing during the drag.
+  EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
+            cursor_manager->GetCursor().type());
+
+  // Release the left mouse button to cancel the drag and verify that the cursor
+  // type is reset.
+  generator->ReleaseLeftButton();
+  EXPECT_EQ(previous_cursor_type, cursor_manager->GetCursor().type());
+}
+
+TEST_P(AppsGridViewDragTest, MousePointerIsResetOnCanceledDrag) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  auto previous_cursor_type = cursor_manager->GetCursor().type();
+
+  // Populate the apps grid and start dragging one of the items.
+  model_->PopulateApps(3);
+  UpdateLayout();
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+
+  // The cursor type should be set to grabbing during the drag.
+  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+            cursor_manager->GetCursor().type());
+
+  // Cancel the drag without releasing the left mouse button and verify that the
+  // cursor is still reset in this case.
+  generator->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_EQ(previous_cursor_type, cursor_manager->GetCursor().type());
+}
+
+// Verify the cursor type when dragging one item over another item and back.
+TEST_P(AppsGridViewDragTest, MouseDragItemToOtherItemAndBack) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  model_->PopulateApps(3);
+  UpdateLayout();
+
+  // Start dragging the first item.
+  AppListItemView* const item0 = GetItemViewInTopLevelGrid(0);
+  gfx::Point starting_point = item0->GetBoundsInScreen().CenterPoint();
+  AppListItemView* const item1 = GetItemViewInTopLevelGrid(1);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(starting_point);
+  generator->PressLeftButton();
+  item0->FireMouseDragTimerForTest();
+
+  // Verify the cursor is grabbing now that the drag has started.
+  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+            cursor_manager->GetCursor().type());
+
+  // Move the first item on top of the second item as if to create a folder, but
+  // don't actually create a folder.
+  generator->MoveMouseTo(item1->GetBoundsInScreen().CenterPoint());
+
+  // Verify the cursor is still grabbing in this state.
+  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+            cursor_manager->GetCursor().type());
+
+  // Move the first item back to its original position.
+  generator->MoveMouseTo(starting_point);
+
+  // The cursor should still be grabbing.
+  EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
+            cursor_manager->GetCursor().type());
+}
+
 TEST_P(AppsGridViewTabletTest, Basic) {
   base::HistogramTester histogram_tester;
 

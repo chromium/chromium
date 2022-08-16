@@ -50,6 +50,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -414,13 +415,17 @@ void AppListItemView::SetUIState(UIState ui_state) {
   switch (ui_state) {
     case UI_STATE_NORMAL:
       title_->SetVisible(true);
-      if (ui_state_ == UI_STATE_DRAGGING)
+      if (ui_state_ == UI_STATE_DRAGGING) {
+        GetWidget()->SetCursor(ui::mojom::CursorType::kNull);
         ScaleAppIcon(false);
+      }
       break;
     case UI_STATE_DRAGGING:
       title_->SetVisible(false);
-      if (ui_state_ == UI_STATE_NORMAL && !in_cardified_grid_)
+      if (ui_state_ == UI_STATE_NORMAL && !in_cardified_grid_) {
+        GetWidget()->SetCursor(ui::mojom::CursorType::kGrabbing);
         ScaleAppIcon(true);
+      }
       break;
     case UI_STATE_DROPPING_IN_FOLDER:
       break;
