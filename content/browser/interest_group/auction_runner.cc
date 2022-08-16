@@ -57,8 +57,8 @@ void AuctionRunner::FailAuction() {
   UpdateInterestGroupsPostAuction();
 
   std::move(callback_).Run(
-      this, /*render_url=*/absl::nullopt,
-      /*winning_group_key=*/absl::nullopt,
+      this, /*winning_group_key=*/absl::nullopt,
+      /*render_url=*/absl::nullopt,
       /*ad_component_urls=*/{},
       /*report_urls=*/{}, std::move(debug_loss_report_urls),
       std::move(debug_win_report_urls),
