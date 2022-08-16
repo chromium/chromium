@@ -21,10 +21,6 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     return 'accelerator-subsection';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       title: {
@@ -115,6 +111,10 @@ export class AcceleratorSubsectionElement extends PolymerElement {
       tempAccelContainer.push(accel);
     });
     this.acceleratorContainer = tempAccelContainer;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

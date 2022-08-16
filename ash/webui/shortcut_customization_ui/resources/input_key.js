@@ -26,10 +26,6 @@ export class InputKeyElement extends PolymerElement {
     return 'input-key';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       key: {
@@ -43,6 +39,10 @@ export class InputKeyElement extends PolymerElement {
         reflectToAttribute: true,
       },
     };
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

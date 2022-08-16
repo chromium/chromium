@@ -26,10 +26,6 @@ export class AcceleratorRowElement extends PolymerElement {
     return 'accelerator-row';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       description: {
@@ -108,6 +104,10 @@ export class AcceleratorRowElement extends PolymerElement {
           },
         },
         ));
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

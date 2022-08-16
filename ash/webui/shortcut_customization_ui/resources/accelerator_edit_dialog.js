@@ -24,10 +24,6 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     return 'accelerator-edit-dialog';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       description: {
@@ -150,6 +146,10 @@ export class AcceleratorEditDialogElement extends PolymerElement {
   /** @protected */
   onRestoreDefaultButtonClicked_() {
     // TODO(jimmyxgong): Implement this function.
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

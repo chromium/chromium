@@ -26,10 +26,6 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     return 'shortcut-customization-app';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       /** @private */
@@ -217,6 +213,10 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   /** @protected */
   closeRestoreAllDialog_() {
     this.showRestoreAllDialog_ = false;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

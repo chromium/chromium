@@ -23,10 +23,6 @@ export class ShortcutsPageElement extends PolymerElement {
     return 'shortcuts-page';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       /**
@@ -83,6 +79,10 @@ export class ShortcutsPageElement extends PolymerElement {
     for (const subsection of subsections) {
       subsection.updateSubsection();
     }
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

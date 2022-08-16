@@ -75,10 +75,6 @@ export class AcceleratorViewElement extends PolymerElement {
     return 'accelerator-view';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       /** @type {!AcceleratorInfo} */
@@ -533,6 +529,10 @@ export class AcceleratorViewElement extends PolymerElement {
 
     // Always end input capturing if an update event was fired.
     this.endCapture_();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

@@ -27,10 +27,6 @@ export class AcceleratorEditViewElement extends PolymerElement {
     return 'accelerator-edit-view';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
       /** @type {!AcceleratorInfo} */
@@ -157,6 +153,10 @@ export class AcceleratorEditViewElement extends PolymerElement {
    */
   computeIsAddView_() {
     return this.viewState === ViewState.ADD;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
