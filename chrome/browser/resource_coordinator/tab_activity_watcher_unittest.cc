@@ -11,7 +11,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"

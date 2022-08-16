@@ -202,7 +202,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"

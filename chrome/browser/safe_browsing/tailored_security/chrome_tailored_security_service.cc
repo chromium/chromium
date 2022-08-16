@@ -24,7 +24,6 @@
 #else
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog.h"
 #endif
 
