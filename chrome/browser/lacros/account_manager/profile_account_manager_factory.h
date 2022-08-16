@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_PROFILE_ACCOUNT_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_PROFILE_ACCOUNT_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 #include "base/no_destructor.h"
 
@@ -17,7 +17,7 @@ namespace content {
 class BrowserContext;
 }
 
-class ProfileAccountManagerFactory : public BrowserContextKeyedServiceFactory {
+class ProfileAccountManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static ProfileAccountManagerFactory* GetInstance();
   static ProfileAccountManager* GetForProfile(Profile* profile);

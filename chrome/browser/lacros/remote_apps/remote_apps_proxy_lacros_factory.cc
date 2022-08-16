@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router_factory.h"
 
@@ -29,9 +28,7 @@ RemoteAppsProxyLacrosFactory* RemoteAppsProxyLacrosFactory::GetInstance() {
 }
 
 RemoteAppsProxyLacrosFactory::RemoteAppsProxyLacrosFactory()
-    : BrowserContextKeyedServiceFactory(
-          "RemoteAppsProxyLacros",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("RemoteAppsProxyLacros") {
   DependsOn(extensions::EventRouterFactory::GetInstance());
 }
 

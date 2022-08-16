@@ -6,7 +6,6 @@
 
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -30,9 +29,7 @@ NavigationPredictorKeyedServiceFactory::GetInstance() {
 }
 
 NavigationPredictorKeyedServiceFactory::NavigationPredictorKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NavigationPredictorKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("NavigationPredictorKeyedService") {}
 
 NavigationPredictorKeyedServiceFactory::
     ~NavigationPredictorKeyedServiceFactory() {}

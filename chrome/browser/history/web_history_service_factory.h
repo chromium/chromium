@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace history {
 class WebHistoryService;
@@ -15,7 +15,7 @@ class WebHistoryService;
 
 // Used for creating and fetching a per-profile instance of the
 // WebHistoryService.
-class WebHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
+class WebHistoryServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Get the singleton instance of the factory.
   static WebHistoryServiceFactory* GetInstance();

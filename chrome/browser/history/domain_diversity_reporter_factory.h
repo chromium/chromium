@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class DomainDiversityReporter;
 class Profile;
@@ -17,8 +17,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class DomainDiversityReporterFactory
-    : public BrowserContextKeyedServiceFactory {
+class DomainDiversityReporterFactory : public ProfileKeyedServiceFactory {
  public:
   static DomainDiversityReporter* GetForProfile(Profile* profile);
 
@@ -45,8 +44,6 @@ class DomainDiversityReporterFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };

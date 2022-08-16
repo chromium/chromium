@@ -7,10 +7,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/origin.h"
@@ -72,9 +70,9 @@ UkmBackgroundRecorderService* UkmBackgroundRecorderFactory::GetForProfile(
 }
 
 UkmBackgroundRecorderFactory::UkmBackgroundRecorderFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "UkmBackgroundRecorderService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 
@@ -83,11 +81,6 @@ UkmBackgroundRecorderFactory::~UkmBackgroundRecorderFactory() = default;
 KeyedService* UkmBackgroundRecorderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new UkmBackgroundRecorderService(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* UkmBackgroundRecorderFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace ukm

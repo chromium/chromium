@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class PhotosService;
 class Profile;
 
-class PhotosServiceFactory : BrowserContextKeyedServiceFactory {
+class PhotosServiceFactory : ProfileKeyedServiceFactory {
  public:
   static PhotosService* GetForProfile(Profile* profile);
   static PhotosServiceFactory* GetInstance();

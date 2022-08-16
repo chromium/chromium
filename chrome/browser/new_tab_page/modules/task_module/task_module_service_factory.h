@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class TaskModuleService;
 
 // Factory to access the task module service for the current profile.
-class TaskModuleServiceFactory : public BrowserContextKeyedServiceFactory {
+class TaskModuleServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static TaskModuleService* GetForProfile(Profile* profile);
   static TaskModuleServiceFactory* GetInstance();

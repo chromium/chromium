@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class OneGoogleBarService;
 class Profile;
 
-class OneGoogleBarServiceFactory : public BrowserContextKeyedServiceFactory {
+class OneGoogleBarServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the OneGoogleBarService for |profile|.
   static OneGoogleBarService* GetForProfile(Profile* profile);

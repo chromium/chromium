@@ -23,7 +23,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -85,9 +84,8 @@ void NearbySharingServiceFactory::
 }
 
 NearbySharingServiceFactory::NearbySharingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          kServiceName,
-          BrowserContextDependencyManager::GetInstance()) {
+    // Nearby Sharing features are disabled in incognito.
+    : ProfileKeyedServiceFactory(kServiceName) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ash::nearby::NearbyProcessManagerFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
@@ -121,15 +119,6 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
       std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
       std::make_unique<WifiNetworkConfigurationHandler>());
-}
-
-content::BrowserContext* NearbySharingServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Nearby Sharing features are disabled in incognito.
-  if (context->IsOffTheRecord())
-    return nullptr;
-
-  return context;
 }
 
 void NearbySharingServiceFactory::RegisterProfilePrefs(

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -19,8 +19,7 @@ namespace media_history {
 
 class MediaHistoryKeyedService;
 
-class MediaHistoryKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class MediaHistoryKeyedServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static MediaHistoryKeyedService* GetForProfile(Profile* profile);
   static MediaHistoryKeyedServiceFactory* GetInstance();
@@ -40,9 +39,6 @@ class MediaHistoryKeyedServiceFactory
   ~MediaHistoryKeyedServiceFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

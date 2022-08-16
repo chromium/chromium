@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -23,8 +23,7 @@ class ProfileInvalidationProvider;
 // may be completely different on different platforms; this class should help to
 // hide this complexity. It also exposes some factory methods that are useful
 // for setting up tests that rely on invalidations.
-class ProfileInvalidationProviderFactory
-    : public BrowserContextKeyedServiceFactory {
+class ProfileInvalidationProviderFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the ProfileInvalidationProvider for the given |profile|, lazily
   // creating one first if required. If |profile| does not support invalidation

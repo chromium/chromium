@@ -9,8 +9,6 @@
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -28,9 +26,7 @@ ProfileAccountManager* ProfileAccountManagerFactory::GetForProfile(
 }
 
 ProfileAccountManagerFactory::ProfileAccountManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ProfileAccountManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ProfileAccountManager") {}
 
 ProfileAccountManagerFactory::~ProfileAccountManagerFactory() = default;
 

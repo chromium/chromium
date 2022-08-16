@@ -7,13 +7,12 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 class NotificationMetricsLogger;
 
-class NotificationMetricsLoggerFactory
-    : public BrowserContextKeyedServiceFactory {
+class NotificationMetricsLoggerFactory : public ProfileKeyedServiceFactory {
  public:
   static NotificationMetricsLogger* GetForBrowserContext(
       content::BrowserContext* browser_context);
@@ -31,8 +30,6 @@ class NotificationMetricsLoggerFactory
 
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

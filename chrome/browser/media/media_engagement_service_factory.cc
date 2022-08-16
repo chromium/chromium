@@ -7,9 +7,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 MediaEngagementService* MediaEngagementServiceFactory::GetForProfile(
@@ -24,9 +22,9 @@ MediaEngagementServiceFactory* MediaEngagementServiceFactory::GetInstance() {
 }
 
 MediaEngagementServiceFactory::MediaEngagementServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "MediaEngagementServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
@@ -36,9 +34,4 @@ MediaEngagementServiceFactory::~MediaEngagementServiceFactory() {}
 KeyedService* MediaEngagementServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new MediaEngagementService(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* MediaEngagementServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

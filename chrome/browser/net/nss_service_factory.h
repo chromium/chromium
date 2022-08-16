@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NET_NSS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -14,7 +14,7 @@ class BrowserContext;
 
 class NssService;
 
-class NssServiceFactory : public BrowserContextKeyedServiceFactory {
+class NssServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the NssService for `context`.
   static NssService* GetForContext(content::BrowserContext* context);
@@ -28,8 +28,6 @@ class NssServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // `BrowserContextKeyedServiceFactory` implementation:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

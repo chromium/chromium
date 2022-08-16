@@ -4,9 +4,7 @@
 
 #include "chrome/browser/language/accept_languages_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -25,9 +23,9 @@ AcceptLanguagesServiceFactory::GetForBrowserContext(
 }
 
 AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AcceptLanguagesService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
 
@@ -36,9 +34,4 @@ KeyedService* AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return new language::AcceptLanguagesService(
       profile->GetPrefs(), language::prefs::kAcceptLanguages);
-}
-
-content::BrowserContext* AcceptLanguagesServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

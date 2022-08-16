@@ -5,7 +5,6 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -24,9 +23,7 @@ UrlLanguageHistogramFactory::GetForBrowserContext(
 }
 
 UrlLanguageHistogramFactory::UrlLanguageHistogramFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UrlLanguageHistogram",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("UrlLanguageHistogram") {}
 
 UrlLanguageHistogramFactory::~UrlLanguageHistogramFactory() {}
 

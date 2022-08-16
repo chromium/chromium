@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_LANGUAGE_URL_LANGUAGE_HISTOGRAM_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -20,7 +20,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class UrlLanguageHistogramFactory : public BrowserContextKeyedServiceFactory {
+class UrlLanguageHistogramFactory : public ProfileKeyedServiceFactory {
  public:
   static UrlLanguageHistogramFactory* GetInstance();
   static language::UrlLanguageHistogram* GetForBrowserContext(

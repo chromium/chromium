@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_KEYED_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 
@@ -18,7 +18,7 @@ namespace webrtc_event_logging {
 
 // Produces WebRtcEventLogManagerKeyedService-s for non-incognito profiles.
 class WebRtcEventLogManagerKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static WebRtcEventLogManagerKeyedServiceFactory* GetInstance();
 

@@ -8,7 +8,6 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -22,9 +21,7 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
 }
 
 PhotosServiceFactory::PhotosServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PhotosService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PhotosService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

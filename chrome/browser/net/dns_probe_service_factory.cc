@@ -22,8 +22,6 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -407,21 +405,16 @@ DnsProbeServiceFactory* DnsProbeServiceFactory::GetInstance() {
 }
 
 DnsProbeServiceFactory::DnsProbeServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "DnsProbeService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Create separate service for incognito profiles.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 DnsProbeServiceFactory::~DnsProbeServiceFactory() {}
 
 KeyedService* DnsProbeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new DnsProbeServiceImpl(context);
-}
-
-content::BrowserContext* DnsProbeServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Create separate service for incognito profiles.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 // static

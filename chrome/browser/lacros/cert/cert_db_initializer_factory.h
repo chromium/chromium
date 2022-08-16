@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_LACROS_CERT_CERT_DB_INITIALIZER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class CertDbInitializer;
 
@@ -27,7 +27,7 @@ class CertDbInitializer;
 // individual tests or they can create their own instances of the service.
 // * In unittests: CertDbInitializer is not created by default (see
 // `ServiceIsNULLWhileTesting()`).
-class CertDbInitializerFactory : public BrowserContextKeyedServiceFactory {
+class CertDbInitializerFactory : public ProfileKeyedServiceFactory {
  public:
   static CertDbInitializerFactory* GetInstance();
   static CertDbInitializer* GetForBrowserContext(
@@ -50,8 +50,6 @@ class CertDbInitializerFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 
   bool should_create_with_browser_context_ = true;
 };

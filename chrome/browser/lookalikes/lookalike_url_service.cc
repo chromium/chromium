@@ -17,9 +17,8 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -33,7 +32,7 @@ namespace {
 
 constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
 
-class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
+class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static LookalikeUrlService* GetForProfile(Profile* profile) {
     return static_cast<LookalikeUrlService*>(
@@ -53,9 +52,9 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // LookalikeUrlServiceFactory();
   LookalikeUrlServiceFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "LookalikeUrlServiceFactory",
-            BrowserContextDependencyManager::GetInstance()) {
+            ProfileSelections::BuildForRegularAndIncognito()) {
     DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   }
 
@@ -65,11 +64,6 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {
     return new LookalikeUrlService(static_cast<Profile*>(profile));
-  }
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
 };
 

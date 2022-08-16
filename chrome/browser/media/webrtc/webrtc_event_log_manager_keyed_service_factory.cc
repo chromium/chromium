@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace webrtc_event_logging {
@@ -19,9 +18,7 @@ WebRtcEventLogManagerKeyedServiceFactory::GetInstance() {
 
 WebRtcEventLogManagerKeyedServiceFactory::
     WebRtcEventLogManagerKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "WebRtcEventLogManagerKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("WebRtcEventLogManagerKeyedService") {}
 
 WebRtcEventLogManagerKeyedServiceFactory::
     ~WebRtcEventLogManagerKeyedServiceFactory() = default;

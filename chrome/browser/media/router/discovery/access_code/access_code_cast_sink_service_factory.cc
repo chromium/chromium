@@ -8,7 +8,6 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_router/browser/media_router_factory.h"
 
 namespace media_router {
@@ -50,9 +49,7 @@ AccessCodeCastSinkServiceFactory::GetInstance() {
 }
 
 AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccessCodeSinkService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AccessCodeSinkService") {
   // TODO(b/238212430): Add a browsertest case to ensure that all media router
   // objects are created before the ACCSS.
   DependsOn(media_router::ChromeMediaRouterFactory::GetInstance());

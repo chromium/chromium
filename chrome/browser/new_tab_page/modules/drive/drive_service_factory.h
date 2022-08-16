@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_DRIVE_DRIVE_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class DriveService;
 class Profile;
 
-class DriveServiceFactory : BrowserContextKeyedServiceFactory {
+class DriveServiceFactory : ProfileKeyedServiceFactory {
  public:
   static DriveService* GetForProfile(Profile* profile);
   static DriveServiceFactory* GetInstance();

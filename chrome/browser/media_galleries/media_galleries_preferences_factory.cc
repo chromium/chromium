@@ -5,9 +5,7 @@
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
 
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 // static
@@ -24,9 +22,9 @@ MediaGalleriesPreferencesFactory::GetInstance() {
 }
 
 MediaGalleriesPreferencesFactory::MediaGalleriesPreferencesFactory()
-    : BrowserContextKeyedServiceFactory(
-        "MediaGalleriesPreferences",
-        BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory(
+          "MediaGalleriesPreferences",
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 MediaGalleriesPreferencesFactory::~MediaGalleriesPreferencesFactory() {}
 
@@ -38,10 +36,4 @@ KeyedService* MediaGalleriesPreferencesFactory::BuildServiceInstanceFor(
 void MediaGalleriesPreferencesFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* prefs) {
   MediaGalleriesPreferences::RegisterProfilePrefs(prefs);
-}
-
-content::BrowserContext*
-MediaGalleriesPreferencesFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

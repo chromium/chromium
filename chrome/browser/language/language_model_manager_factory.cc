@@ -10,10 +10,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/content/browser/geo_language_model.h"
 #include "components/language/content/browser/geo_language_provider.h"
@@ -150,9 +148,10 @@ LanguageModelManagerFactory::GetForBrowserContext(
 }
 
 LanguageModelManagerFactory::LanguageModelManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "LanguageModelManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Use the original profile's language model even in Incognito mode.
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
 
@@ -163,10 +162,4 @@ KeyedService* LanguageModelManagerFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), g_browser_process->GetApplicationLocale());
   PrepareLanguageModels(profile, manager);
   return manager;
-}
-
-content::BrowserContext* LanguageModelManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Use the original profile's language model even in Incognito mode.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

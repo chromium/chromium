@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -35,9 +34,10 @@ HistoryClustersServiceFactory& HistoryClustersServiceFactory::GetInstance() {
 }
 
 HistoryClustersServiceFactory::HistoryClustersServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "HistoryClustersService",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Give incognito its own isolated service.
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
@@ -64,10 +64,4 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
-}
-
-content::BrowserContext* HistoryClustersServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Give incognito its own isolated service.
-  return context;
 }

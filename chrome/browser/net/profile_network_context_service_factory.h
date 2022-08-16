@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class ProfileNetworkContextService;
@@ -15,8 +15,7 @@ namespace content {
 class BrowserContext;
 }
 
-class ProfileNetworkContextServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class ProfileNetworkContextServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the ProfileNetworkContextService that supports NetworkContexts for
   // |browser_context|.
@@ -41,8 +40,6 @@ class ProfileNetworkContextServiceFactory
   // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

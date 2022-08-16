@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PREFERENCES_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class MediaGalleriesPreferences;
 class Profile;
 
 // Singleton that owns all MediaGalleriesPreferences and associates them with
 // Profiles.
-class MediaGalleriesPreferencesFactory
-    : public BrowserContextKeyedServiceFactory {
+class MediaGalleriesPreferencesFactory : public ProfileKeyedServiceFactory {
  public:
   // Use MediaFileSystemRegistry::GetPreferences() to get
   // MediaGalleriesPreferences.
@@ -38,8 +37,6 @@ class MediaGalleriesPreferencesFactory
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_PREFERENCES_FACTORY_H_

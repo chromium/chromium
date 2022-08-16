@@ -8,7 +8,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -24,9 +23,7 @@ TaskModuleServiceFactory* TaskModuleServiceFactory::GetInstance() {
 }
 
 TaskModuleServiceFactory::TaskModuleServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "TaskModuleService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("TaskModuleService") {
   DependsOn(CookieSettingsFactory::GetInstance());
 }
 

@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_LACROS_REMOTE_APPS_REMOTE_APPS_PROXY_LACROS_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace chromeos {
 
 class RemoteAppsProxyLacros;
 
 // Factory for the `RemoteAppsProxyLacros` KeyedService.
-class RemoteAppsProxyLacrosFactory : public BrowserContextKeyedServiceFactory {
+class RemoteAppsProxyLacrosFactory : public ProfileKeyedServiceFactory {
  public:
   static RemoteAppsProxyLacros* GetForBrowserContext(
       content::BrowserContext* browser_context);

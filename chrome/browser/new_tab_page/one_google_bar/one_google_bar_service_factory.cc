@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -35,9 +34,7 @@ OneGoogleBarServiceFactory* OneGoogleBarServiceFactory::GetInstance() {
 }
 
 OneGoogleBarServiceFactory::OneGoogleBarServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OneGoogleBarService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("OneGoogleBarService") {
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

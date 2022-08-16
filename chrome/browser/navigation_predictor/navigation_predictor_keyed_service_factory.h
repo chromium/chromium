@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_KEYED_SERVICE_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -18,7 +18,7 @@ class Profile;
 // LazyInstance that owns all NavigationPredictorKeyedServices and associates
 // them with Profiles.
 class NavigationPredictorKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Gets the NavigationPredictorKeyedService instance for |profile|.
   static NavigationPredictorKeyedService* GetForProfile(Profile* profile);

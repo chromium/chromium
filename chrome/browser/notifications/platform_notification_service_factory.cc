@@ -12,9 +12,7 @@
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 PlatformNotificationServiceImpl*
@@ -30,9 +28,9 @@ PlatformNotificationServiceFactory::GetInstance() {
 }
 
 PlatformNotificationServiceFactory::PlatformNotificationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PlatformNotificationService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(NotificationMetricsLoggerFactory::GetInstance());
@@ -43,10 +41,4 @@ KeyedService* PlatformNotificationServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new PlatformNotificationServiceImpl(
       Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext*
-PlatformNotificationServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

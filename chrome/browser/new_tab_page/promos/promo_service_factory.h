@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class PromoService;
 class Profile;
 
-class PromoServiceFactory : public BrowserContextKeyedServiceFactory {
+class PromoServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the PromoService for |profile|.
   static PromoService* GetForProfile(Profile* profile);

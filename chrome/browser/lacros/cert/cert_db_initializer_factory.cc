@@ -7,11 +7,9 @@
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_impl.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 class CertDbInitializer;
 
@@ -29,9 +27,9 @@ CertDbInitializer* CertDbInitializerFactory::GetForBrowserContext(
 }
 
 CertDbInitializerFactory::CertDbInitializerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "CertDbInitializerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -55,9 +53,4 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
 
 bool CertDbInitializerFactory::ServiceIsNULLWhileTesting() const {
   return true;
-}
-
-content::BrowserContext* CertDbInitializerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

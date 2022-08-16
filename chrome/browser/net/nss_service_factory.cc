@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
@@ -20,9 +19,10 @@ NssService* NssServiceFactory::GetForContext(
 }
 
 NssServiceFactory::NssServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NssServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Create separate service for incognito profiles.
+          ProfileSelections::BuildForRegularAndIncognito()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DependsOn(CertDbInitializerFactory::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -38,10 +38,4 @@ NssServiceFactory* NssServiceFactory::GetInstance() {
 KeyedService* NssServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new NssService(context);
-}
-
-content::BrowserContext* NssServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Create separate service for incognito profiles.
-  return context;
 }
