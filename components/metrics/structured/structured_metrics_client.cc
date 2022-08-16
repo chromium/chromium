@@ -22,8 +22,15 @@ StructuredMetricsClient* StructuredMetricsClient::Get() {
 }
 
 void StructuredMetricsClient::Record(Event&& event) {
-  if (delegate_ && delegate_->IsReadyToRecord())
+  if (delegate_ && delegate_->IsReadyToRecord()) {
+    delegating_events_processor_.OnEventsRecord(&event);
     delegate_->RecordEvent(std::move(event));
+  }
+}
+
+void StructuredMetricsClient::AddEventsProcessor(
+    std::unique_ptr<EventsProcessorInterface> events_processor) {
+  delegating_events_processor_.AddEventsProcessor(std::move(events_processor));
 }
 
 void StructuredMetricsClient::SetDelegate(RecordingDelegate* delegate) {

@@ -39,9 +39,12 @@ static_library("structured") {
 
 static_library("events") {
   sources = [
+    "delegating_events_processor.cc",
+    "delegating_events_processor.h",
     "enums.h",
     "event.cc",
     "event.h",
+    "events_processor_interface.h",
     "structured_metrics_client.cc",
     "structured_metrics_client.h",
   ]
