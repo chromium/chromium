@@ -607,6 +607,9 @@ void View::SetVisible(bool visible) {
 
     // Notify all other subscriptions of the change.
     OnPropertyChanged(&visible_, kPropertyEffectsPaint);
+
+    if (was_visible)
+      UpdateTooltip();
   }
 
   if (parent_) {
