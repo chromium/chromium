@@ -34,7 +34,6 @@ using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
-using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
@@ -1135,10 +1134,8 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   button1->is_virtual_node = true;
   SetProperty(button1, AXStringProperty::CLASS_NAME, ui::kAXButtonClassname);
   SetProperty(button1, AXBooleanProperty::VISIBLE_TO_USER, true);
-  SetProperty(
-      button1, AXIntListProperty::STANDARD_ACTION_IDS,
-      std::vector<int>({static_cast<int>(AXActionType::NEXT_HTML_ELEMENT),
-                        static_cast<int>(AXActionType::FOCUS)}));
+  AddStandardAction(button1, AXActionType::NEXT_HTML_ELEMENT);
+  AddStandardAction(button1, AXActionType::FOCUS);
   SetProperty(button1, AXStringProperty::CONTENT_DESCRIPTION, "button1");
 
   event->node_data.push_back(AXNodeInfoData::New());
@@ -1148,10 +1145,8 @@ TEST_F(AXTreeSourceArcTest, SerializeVirtualNode) {
   button2->is_virtual_node = true;
   SetProperty(button2, AXStringProperty::CLASS_NAME, ui::kAXButtonClassname);
   SetProperty(button2, AXBooleanProperty::VISIBLE_TO_USER, true);
-  SetProperty(
-      button2, AXIntListProperty::STANDARD_ACTION_IDS,
-      std::vector<int>({static_cast<int>(AXActionType::NEXT_HTML_ELEMENT),
-                        static_cast<int>(AXActionType::FOCUS)}));
+  AddStandardAction(button2, AXActionType::NEXT_HTML_ELEMENT);
+  AddStandardAction(button2, AXActionType::FOCUS);
   SetProperty(button2, AXStringProperty::CONTENT_DESCRIPTION, "button2");
 
   CallNotifyAccessibilityEvent(event.get());

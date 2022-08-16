@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 24
+// Next MinVersion: 25
 
 module arc.mojom;
 
@@ -169,10 +169,11 @@ enum AccessibilityIntProperty {
 [Extensible]
 enum AccessibilityIntListProperty {
   CHILD_NODE_IDS,
-  CUSTOM_ACTION_IDS,
-  STANDARD_ACTION_IDS
+  CUSTOM_ACTION_IDS_DEPRECATED,
+  STANDARD_ACTION_IDS_DEPRECATED
 };
 
+// Deprecated
 // These fields are taken from List<String> instance members of
 // AccessibilityNodeInfo.
 [Extensible]
@@ -287,6 +288,14 @@ enum AccessibilityWindowType {
   TYPE_SYSTEM,
 };
 
+// AccessibilityActionInAndroid is a struct to send information of
+// available AccessibilityAction in Android to Chrome.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction.html
+struct AccessibilityActionInAndroid {
+  int32 id;
+  string? label;
+};
+
 // AccessibilityNodeInfoData is a struct to contain info of
 // AccessibilityNodeInfo in Android.
 struct AccessibilityNodeInfoData {
@@ -298,7 +307,7 @@ struct AccessibilityNodeInfoData {
   [MinVersion=1]
       map<AccessibilityIntListProperty, array<int32>>? int_list_properties;
   [MinVersion=3] map<AccessibilityStringListProperty, array<string>>?
-      string_list_properties;
+      string_list_properties; // Deprecated
   [MinVersion=5] map<AccessibilityStringProperty, array<SpanEntry>>?
       spannable_string_properties;
   [MinVersion=5] AccessibilityCollectionInfoData? collection_info;
@@ -306,6 +315,8 @@ struct AccessibilityNodeInfoData {
   [MinVersion=5] AccessibilityRangeInfoData? range_info;
   [MinVersion=12] int32 window_id;
   [MinVersion=20] bool is_virtual_node;
+  [MinVersion=24] array<AccessibilityActionInAndroid>? standard_actions;
+  [MinVersion=24] array<AccessibilityActionInAndroid>? custom_actions;
 };
 
 // AccessibilityWindowInfoData is a struct to contain info about
@@ -418,9 +429,8 @@ struct AccessibilityEventData {
       map<AccessibilityEventIntListProperty, array<int32>>? int_list_properties;
 };
 
-// AccessibilityActionData is a struct to contain info of AccessibilityAction in
-// Android.
-// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction.html
+// AccessibilityActionData is a struct to send action information when Chrome
+// invokes an action.
 struct AccessibilityActionData {
   int32 node_id;
 

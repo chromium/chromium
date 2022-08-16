@@ -463,14 +463,30 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
   }
 
   // Custom actions.
-  std::vector<int32_t> custom_action_ids;
-  if (GetProperty(AXIntListProperty::CUSTOM_ACTION_IDS, &custom_action_ids)) {
+  if (node_ptr_->custom_actions) {
+    std::vector<int32_t> custom_action_ids;
+    std::vector<std::string> custom_action_descriptions;
+
+    for (auto& action : node_ptr_->custom_actions.value()) {
+      custom_action_ids.push_back(action->id);
+      custom_action_descriptions.push_back(action->label.value());
+    }
+
+    out_data->AddAction(ax::mojom::Action::kCustomAction);
+    out_data->AddIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds,
+                                  custom_action_ids);
+    out_data->AddStringListAttribute(
+        ax::mojom::StringListAttribute::kCustomActionDescriptions,
+        custom_action_descriptions);
+  } else if (std::vector<int32_t> custom_action_ids;
+             GetProperty(AXIntListProperty::CUSTOM_ACTION_IDS_DEPRECATED,
+                         &custom_action_ids)) {
     std::vector<std::string> custom_action_descriptions;
 
     CHECK(GetProperty(AXStringListProperty::CUSTOM_ACTION_DESCRIPTIONS,
                       &custom_action_descriptions));
-    CHECK(!custom_action_ids.empty());
-    CHECK_EQ(custom_action_ids.size(), custom_action_descriptions.size());
+    DCHECK(!custom_action_ids.empty());
+    DCHECK_EQ(custom_action_ids.size(), custom_action_descriptions.size());
 
     out_data->AddAction(ax::mojom::Action::kCustomAction);
     out_data->AddIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds,
@@ -599,11 +615,19 @@ bool AccessibilityNodeInfoDataWrapper::GetProperty(
 
 bool AccessibilityNodeInfoDataWrapper::HasStandardAction(
     AXActionType action) const {
+  if (node_ptr_->standard_actions) {
+    for (const auto& supported_action : node_ptr_->standard_actions.value()) {
+      if (static_cast<AXActionType>(supported_action->id) == action)
+        return true;
+    }
+    return false;
+  }
+
   if (!node_ptr_->int_list_properties)
     return false;
 
   auto itr = node_ptr_->int_list_properties->find(
-      AXIntListProperty::STANDARD_ACTION_IDS);
+      AXIntListProperty::STANDARD_ACTION_IDS_DEPRECATED);
   if (itr == node_ptr_->int_list_properties->end())
     return false;
 
