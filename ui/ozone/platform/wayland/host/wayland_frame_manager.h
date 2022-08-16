@@ -178,8 +178,6 @@ class WaylandFrameManager {
   // frame must not be used for the further submission.
   bool EnsureWlBuffersExist(WaylandFrame& frame);
 
-  bool IsSurfaceConfigured() const;
-
   const raw_ptr<WaylandWindow> window_;
 
   // When RecordFrame() is called, a Frame is pushed to |pending_frames_|. See

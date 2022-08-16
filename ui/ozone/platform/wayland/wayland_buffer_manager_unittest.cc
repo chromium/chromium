@@ -1119,19 +1119,6 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(1346534): Lacros fractional scale is still buggy, at least until
-// migration of WaylandWindow to use DIP instead of pixels to store window
-// bounds (see crbug.com/1306688). Rounding issues may lead to bounds
-// mismatches when processing visual updates (i.e: set_geometry/ack_configure
-// are not sent). Enable this back once those issues get fixed.
-#define MAYBE_CommitBufferConditionsWithDeferredAckConfigure \
-  DISABLED_CommitBufferConditionsWithDeferredAckConfigure
-#else
-#define MAYBE_CommitBufferConditionsWithDeferredAckConfigure \
-  CommitBufferConditionsWithDeferredAckConfigure
-#endif
-
 // Verifies toplevel surfaces do not have buffers attached until configured,
 // even when the initial configure sequence is not acked in response to
 // xdg_surface.configure event, i.e: done asynchronously when UpdateVisualSize()
@@ -1139,7 +1126,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 //
 // Regression test for https://crbug.com/1313023.
 TEST_P(WaylandBufferManagerTest,
-       MAYBE_CommitBufferConditionsWithDeferredAckConfigure) {
+       CommitBufferConditionsWithDeferredAckConfigure) {
   constexpr gfx::Rect kNormalBounds{800, 800};
   constexpr gfx::Rect kRestoredBounds{500, 500};
   constexpr uint32_t kDmabufBufferId = 1;

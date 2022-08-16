@@ -117,8 +117,6 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
 
   // Window is still neither configured nor has pending configure bounds, need
   // to wait. Probably happens only in early stages of window initialization.
-  // TODO(crbug.com/1313023): Check whether this is still needed, otherwise
-  // move/merge into the block after UpdateVisualSize() call below.
   if (!window_->received_configure_event())
     return;
 
@@ -156,7 +154,7 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   //    is still out-of-sync with the pending configure sequences received from
   //    the Wayland compositor. This avoids protocol errors as observed in
   //    https://crbug.com/1313023.
-  if (frame->buffer_lost || !IsSurfaceConfigured())
+  if (frame->buffer_lost || !window_->IsSurfaceConfigured())
     DiscardFrame(std::move(pending_frames_.front()));
   else
     PlayBackFrame(std::move(pending_frames_.front()));
@@ -174,7 +172,7 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
 
 void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   DCHECK(!frame->buffer_lost);
-  DCHECK(IsSurfaceConfigured());
+  DCHECK(window_->IsSurfaceConfigured());
 
   auto* root_surface = frame->root_surface.get();
   auto& root_config = frame->root_config;
@@ -682,21 +680,6 @@ void WaylandFrameManager::ClearStates(bool closing) {
          (submitted_frames_.size() == 1 &&
           submitted_frames_.back()->submission_acked &&
           submitted_frames_.back()->presentation_acked));
-}
-
-bool WaylandFrameManager::IsSurfaceConfigured() const {
-  // TODO(crbug.com/1346534): Lacros fractional scale is still buggy, at least
-  // until migration of WaylandWindow to use DIP instead of pixels to store
-  // window bounds (see crbug.com/1306688). Rounding issues may lead to bounds
-  // mismatches when processing visual updates (i.e: set_geometry/ack_configure
-  // are not sent). As of now, however, Exo does not send protocol error when
-  // attaching buffers to non-configured surfaces. Thus, return
-  // received_configure_event until it gets fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return window_->received_configure_event();
-#else
-  return window_->IsSurfaceConfigured();
-#endif
 }
 
 }  // namespace ui
