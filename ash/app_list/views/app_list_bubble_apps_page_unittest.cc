@@ -11,6 +11,7 @@
 #include "ash/app_list/test/test_focus_change_listener.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
@@ -151,6 +152,40 @@ TEST_F(AppListBubbleAppsPageTest, AppsPageVisibleAfterQuicklyClearingSearch) {
   LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
   EXPECT_TRUE(apps_page->GetVisible());
   EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
+}
+
+// Regression test for https://crbug.com/1349833
+TEST_F(AppListBubbleAppsPageTest,
+       AppsPageVisibleAfterQuicklyHidingAndShowingLauncherFromSearchPage) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->GetVisible());
+
+  // Type a key to trigger the animation to transition to the search page.
+  PressAndReleaseKey(ui::VKEY_A);
+  EXPECT_FALSE(apps_page->GetVisible());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  helper->GetBubbleView()->StartHideAnimation(/*is_side_shelf=*/false,
+                                              base::DoNothing());
+  helper->GetBubbleView()->StartShowAnimation(/*is_side_shelf=*/false);
+  apps_page->AbortAllAnimations();
+
+  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+
+  EXPECT_TRUE(apps_page->GetVisible());
+  EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
+  EXPECT_EQ(gfx::Transform(),
+            apps_page->scroll_view()->contents()->layer()->transform());
 }
 
 TEST_F(AppListBubbleAppsPageTest, AnimateHidePage) {

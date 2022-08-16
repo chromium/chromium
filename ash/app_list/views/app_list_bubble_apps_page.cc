@@ -392,9 +392,25 @@ void AppListBubbleAppsPage::AnimateShowPage() {
   gfx::Transform translate_down;
   translate_down.Translate(0, kShowPageAnimationVerticalOffset);
 
+  // Update view visibility when the animation is done. Needed to ensure
+  // the view has the correct opacity and transform when the animation is
+  // aborted.
+  auto set_visible_true = base::BindRepeating(
+      [](base::WeakPtr<AppListBubbleAppsPage> self) {
+        if (!self)
+          return;
+        self->SetVisible(true);
+        ui::Layer* layer = self->scroll_view()->contents()->layer();
+        layer->SetOpacity(1.f);
+        layer->SetTransform(gfx::Transform());
+      },
+      weak_factory_.GetWeakPtr());
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(set_visible_true)
+      .OnAborted(set_visible_true)
       .Once()
       .SetOpacity(scroll_contents, 0.f)
       .SetTransform(scroll_contents, translate_down)
