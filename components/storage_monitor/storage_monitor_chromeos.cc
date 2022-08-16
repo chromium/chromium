@@ -56,7 +56,7 @@ std::string MakeDeviceUniqueId(const Disk& disk) {
 
 // Returns whether the requested device is valid. On success |info| will contain
 // device information.
-bool GetDeviceInfo(const DiskMountManager::MountPointInfo& mount_info,
+bool GetDeviceInfo(const DiskMountManager::MountPoint& mount_info,
                    bool has_dcim,
                    StorageInfo* info) {
   DCHECK(info);
@@ -196,7 +196,7 @@ void StorageMonitorCros::OnBootDeviceDiskEvent(
 void StorageMonitorCros::OnMountEvent(
     DiskMountManager::MountEvent event,
     ash::MountError error_code,
-    const DiskMountManager::MountPointInfo& mount_info) {
+    const DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Ignore mount points that are not devices.
@@ -318,7 +318,7 @@ StorageMonitorCros::media_transfer_protocol_manager() {
 }
 
 void StorageMonitorCros::AddMountedPath(
-    const DiskMountManager::MountPointInfo& mount_info,
+    const DiskMountManager::MountPoint& mount_info,
     bool has_dcim) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

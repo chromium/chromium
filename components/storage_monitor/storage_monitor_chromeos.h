@@ -59,7 +59,7 @@ class StorageMonitorCros : public StorageMonitor,
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
       ash::MountError error_code,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const ash::disks::DiskMountManager::MountPoint& mount_info) override;
 
   // StorageMonitor implementation.
   bool GetStorageInfoForPath(const base::FilePath& path,
@@ -80,7 +80,7 @@ class StorageMonitorCros : public StorageMonitor,
   // device attach notification. |has_dcim| is true if the attached device has
   // a DCIM folder.
   void AddMountedPath(
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info,
+      const ash::disks::DiskMountManager::MountPoint& mount_info,
       bool has_dcim);
 
   // Adds the mount point in |disk| to |mount_map_| and send a device
