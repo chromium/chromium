@@ -500,6 +500,27 @@
             ]
         }
     ],
+    "ArcEnableTTSCacheSetup": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcEnableTTSCacheSetup"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ArcEnableTTSCacheSetup"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcEnableTTSCaching": [
         {
             "platforms": [
