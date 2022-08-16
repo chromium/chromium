@@ -2256,6 +2256,27 @@
             ]
         }
     ],
+    "CSSOverflowForReplacedElements": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "android_weblayer",
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CSSOverflowForReplacedElements"
+                    ]
+                }
+            ]
+        }
+    ],
     "CWPCollectsETM": [
         {
             "platforms": [
