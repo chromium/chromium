@@ -198,7 +198,7 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::ASCIIToUTF16(fake_result_), 1.0));
+      base::UTF8ToUTF16(fake_result_), 1.0));
   // If `is_provisional` is true, then the result is an interim result that
   // could be changed. Otherwise, it's a final result. Consequently,
   // `is_provisional` is the converse of `is_final`.

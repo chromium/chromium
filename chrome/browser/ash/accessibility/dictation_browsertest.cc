@@ -791,6 +791,14 @@ IN_PROC_BROWSER_TEST_P(DictationI18NTest, NoSmartSpacingOrCapitalization) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationI18NTest, DictatesNonAsciiCharacters) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}
