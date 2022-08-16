@@ -154,7 +154,9 @@ class _VersionTest(unittest.TestCase):
   def testBuildOutputAndroidChromeArchInput(self):
     """Assert it raises an exception when using an invalid architecture input"""
     new_args = _ReplaceArgs(self._EXAMPLE_ANDROID_ARGS, ['-a', 'foobar'])
-    with self.assertRaises(SystemExit) as cm:
+    # Mock sys.stderr because argparse will print to stderr when we pass
+    # the invalid '-a' value.
+    with self.assertRaises(SystemExit) as cm, mock.patch('sys.stderr'):
       self._RunBuildOutput(get_new_args=lambda args: new_args)
 
     self.assertEqual(cm.exception.code, 2)
