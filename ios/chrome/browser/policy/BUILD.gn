@@ -318,6 +318,8 @@ source_set("eg_test_support+eg2") {
     "policy_app_interface_stub.mm",
     "policy_earl_grey_utils.h",
     "policy_earl_grey_utils.mm",
+    "scoped_policy_list.cc",
+    "scoped_policy_list.h",
   ]
   deps = [
     "//base",

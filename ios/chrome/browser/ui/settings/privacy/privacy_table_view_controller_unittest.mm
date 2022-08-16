@@ -19,6 +19,7 @@
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -57,12 +58,13 @@ BOOL DeviceSupportsAuthentication() {
                               error:nil];
 }
 
-// Bitset
-typedef NS_ENUM(NSUInteger, PrivacyTableViewControllerTestConfig) {
+struct PrivacyTableViewControllerTestConfig {
   // Tests should run with Enhanced Protection flag enabled.
-  PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled = 1 << 0,
+  bool enhancedProtectionEnabled;
   // Tests should run with Third-party intents in Incognito flag enabled.
-  PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled = 1 << 1,
+  bool thirdPartyIntentsInIncognitoEnabled;
+  // Available of Incognito mode tests should run with.
+  IncognitoModePrefs incognitoModeAvailability;
 };
 
 // `ScopedFeatureList` wrapper so `PrivacyTableViewControllerTest` can ensure
@@ -93,8 +95,7 @@ class PrivacyTableViewControllerTest
         enabledDisabledFeatures;
 
     // Explicitly enable/disable Enhanced Protection flag.
-    if (GetParam() &
-        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled) {
+    if (GetParam().enhancedProtectionEnabled) {
       enabledDisabledFeatures.first.push_back(
           safe_browsing::kEnhancedProtection);
     } else {
@@ -103,8 +104,7 @@ class PrivacyTableViewControllerTest
     }
 
     // Explicitly enable/disable Third-party intents in Incognito flag.
-    if (GetParam() &
-        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled) {
+    if (GetParam().thirdPartyIntentsInIncognitoEnabled) {
       enabledDisabledFeatures.first.push_back(kIOS3PIntentsInIncognito);
     } else {
       enabledDisabledFeatures.second.push_back(kIOS3PIntentsInIncognito);
@@ -117,7 +117,6 @@ class PrivacyTableViewControllerTest
     ChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(CreatePrefService());
     test_cbs_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockSyncService));
@@ -129,6 +128,12 @@ class PrivacyTableViewControllerTest
     initialValueForSpdyProxyEnabled_ =
         [[defaults valueForKey:kSpdyProxyEnabled] copy];
     [defaults setValue:@"Disabled" forKey:kSpdyProxyEnabled];
+
+    // Set Incognito Mode availability depending on test config.
+    chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+        prefs::kIncognitoModeAvailability,
+        std::make_unique<base::Value>(
+            static_cast<int>(GetParam().incognitoModeAvailability)));
   }
 
   void TearDown() override {
@@ -141,15 +146,6 @@ class PrivacyTableViewControllerTest
           removeObjectForKey:kSpdyProxyEnabled];
     }
     ChromeTableViewControllerTest::TearDown();
-  }
-
-  // Makes a PrefService to be used by the test.
-  std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
-    scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-        new user_prefs::PrefRegistrySyncable);
-    RegisterBrowserStatePrefs(registry.get());
-    sync_preferences::PrefServiceMockFactory factory;
-    return factory.CreateSyncable(registry.get());
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -335,10 +331,29 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacyTableViewControllerTestAllConfigs,
     PrivacyTableViewControllerTest,
     testing::Values(
-        0,
-        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled,
-        PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled,
-        PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled |
-            PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled));
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ false,
+            /* thirdPartyIntentsInIncognitoEnabled= */ false,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kEnabled},
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ true,
+            /* thirdPartyIntentsInIncognitoEnabled= */ false,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kEnabled},
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ false,
+            /* thirdPartyIntentsInIncognitoEnabled= */ true,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kEnabled},
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ true,
+            /* thirdPartyIntentsInIncognitoEnabled= */ true,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kEnabled},
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ true,
+            /* thirdPartyIntentsInIncognitoEnabled= */ true,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kDisabled},
+        PrivacyTableViewControllerTestConfig{
+            /* enhancedProtectionEnabled= */ true,
+            /* thirdPartyIntentsInIncognitoEnabled= */ true,
+            /* incognitoModeAvailability= */ IncognitoModePrefs::kForced}));
 
 }  // namespace

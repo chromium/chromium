@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/scoped_policy_list.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -25,7 +29,9 @@ using chrome_test_util::NTPIncognitoView;
 @interface IncognitoInterstitialTestCase : ChromeTestCase
 @end
 
-@implementation IncognitoInterstitialTestCase
+@implementation IncognitoInterstitialTestCase {
+  ScopedPolicyList scopedPolicies;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -38,10 +44,16 @@ using chrome_test_util::NTPIncognitoView;
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kIncognitoInterstitialEnabled];
 
+  // Set Incognito Mode to "available",
+  // as this is an assumption for most of these tests.
+  scopedPolicies.SetPolicy(static_cast<int>(IncognitoModePrefs::kEnabled),
+                           policy::key::kIncognitoModeAvailability);
+
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
 - (void)tearDown {
+  scopedPolicies.Reset();
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kIncognitoInterstitialEnabled];
   [super tearDown];
@@ -223,6 +235,58 @@ using chrome_test_util::NTPIncognitoView;
   // Wait for the expected page content to be displayed.
   [ChromeEarlGrey waitForWebStateContainingText:
                       "Page with some text and the chromium logo image."];
+  // Wait for the Incognito tab count to be one, as expected.
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+}
+
+// Test the interstitial is not presented when Incognito Mode is disabled
+// through Enterprise policy.
+- (void)testInterstitialIsNotPresentedWhenIncognitoModeIsDisabled {
+  // Disabling Incognito mode.
+  ScopedPolicyList scopedIncognitoModeDisabled;
+  scopedIncognitoModeDisabled.SetPolicy(
+      static_cast<int>(IncognitoModePrefs::kDisabled),
+      policy::key::kIncognitoModeAvailability);
+
+  // Close the NTP to go to the tab switcher.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Starting from NTP, loading a new URL.
+  GURL destinationURL = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey sceneOpenURL:destinationURL];
+  // Wait for the expected page content to be displayed.
+  double timeout = 10.0;
+  if (@available(iOS 16.0, *)) {
+    timeout = 20.0;
+  }
+  [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
+                                        timeout:timeout];
+  // Wait for the Incognito tab count to be one, as expected.
+  [ChromeEarlGrey waitForMainTabCount:1];
+}
+
+// Test the interstitial is not presented when Incognito Mode is forced
+// through Enterprise policy.
+- (void)testInterstitialIsNotPresentedWhenIncognitoModeIsForced {
+  // Forcing Incognito mode.
+  ScopedPolicyList scopedIncognitoModeForced;
+  scopedIncognitoModeForced.SetPolicy(
+      static_cast<int>(IncognitoModePrefs::kForced),
+      policy::key::kIncognitoModeAvailability);
+
+  // Close the NTP to go to the tab switcher.
+  [ChromeEarlGrey closeCurrentTab];
+
+  // Starting from NTP, loading a new URL.
+  GURL destinationURL = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey sceneOpenURL:destinationURL];
+  // Wait for the expected page content to be displayed.
+  double timeout = 10.0;
+  if (@available(iOS 16.0, *)) {
+    timeout = 20.0;
+  }
+  [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
+                                        timeout:timeout];
   // Wait for the Incognito tab count to be one, as expected.
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 }
