@@ -1544,6 +1544,7 @@ crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled
 # CSS Text failures
 crbug.com/316409 external/wpt/css/css-text/text-justify/text-justify-and-trailing-spaces-003.html [ Failure ]
 crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-105.html [ Failure ]
+crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-018.html [ Pass Failure ]
 crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-026.html [ Failure ]
 crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-028.html [ Failure ]
 crbug.com/602434 external/wpt/css/css-text/text-transform/text-transform-tailoring-001.html [ Failure ]
