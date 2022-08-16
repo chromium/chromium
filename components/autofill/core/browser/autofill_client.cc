@@ -51,6 +51,14 @@ AutofillClient::GetSingleFieldFormFillRouter() {
       GetAutocompleteHistoryManager(), GetMerchantPromoCodeManager());
 }
 
+CreditCardCVCAuthenticator* AutofillClient::GetCVCAuthenticator() {
+  return nullptr;
+}
+
+CreditCardOtpAuthenticator* AutofillClient::GetOtpAuthenticator() {
+  return nullptr;
+}
+
 AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
   return nullptr;
 }

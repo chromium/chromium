@@ -70,7 +70,9 @@ enum class AutofillProgressDialogType;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class CreditCard;
+class CreditCardCVCAuthenticator;
 enum class CreditCardFetchResult;
+class CreditCardOtpAuthenticator;
 class FormDataImporter;
 class FormStructure;
 class LogManager;
@@ -326,6 +328,10 @@ class AutofillClient : public RiskDataLoader {
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).
   virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
+
+  // Can be null on unsupported platforms.
+  virtual CreditCardCVCAuthenticator* GetCVCAuthenticator();
+  virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
 
   // Creates and returns a SingleFieldFormFillRouter using the
   // AutocompleteHistoryManager instance associated with the client.

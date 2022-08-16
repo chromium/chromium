@@ -17,6 +17,8 @@
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/payments/test_strike_database.h"
@@ -53,6 +55,8 @@ class TestAutofillClient : public AutofillClient {
   TestPersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  CreditCardCVCAuthenticator* GetCVCAuthenticator() override;
+  CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -71,7 +75,8 @@ class TestAutofillClient : public AutofillClient {
   std::string GetVariationConfigCountryCode() const override;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh) override;
+  CreateCreditCardInternalAuthenticator(
+      content::RenderFrameHost* driver) override;
 #endif
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;
@@ -194,6 +199,16 @@ class TestAutofillClient : public AutofillClient {
     test_personal_data_manager_ = std::move(pdm);
   }
 
+  void set_cvc_authenticator(
+      std::unique_ptr<CreditCardCVCAuthenticator> authenticator) {
+    cvc_authenticator_ = std::move(authenticator);
+  }
+
+  void set_otp_authenticator(
+      std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
+    otp_authenticator_ = std::move(authenticator);
+  }
+
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
@@ -309,6 +324,8 @@ class TestAutofillClient : public AutofillClient {
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
   std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 
   // AutofillOfferManager and TestFormDataImporter must be destroyed before
   // TestPersonalDataManager, because the former's destructors refer to the

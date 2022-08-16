@@ -676,8 +676,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                        const std::string& real_pan,
                        bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
-        browser_autofill_manager_->credit_card_access_manager_
-            ->cvc_authenticator_->full_card_request_.get();
+        browser_autofill_manager_->client()
+            ->GetCVCAuthenticator()
+            ->full_card_request_.get();
     DCHECK(full_card_request);
 
     // Mock user response.
@@ -697,8 +698,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   // Convenience method to cast the FullCardRequest into a CardUnmaskDelegate.
   CardUnmaskDelegate* full_card_unmask_delegate() {
     payments::FullCardRequest* full_card_request =
-        browser_autofill_manager_->credit_card_access_manager_
-            ->GetOrCreateCVCAuthenticator()
+        browser_autofill_manager_->client()
+            ->GetCVCAuthenticator()
             ->full_card_request_.get();
     DCHECK(full_card_request);
     return static_cast<CardUnmaskDelegate*>(full_card_request);

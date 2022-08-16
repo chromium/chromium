@@ -19,9 +19,25 @@
 
 namespace autofill_assistant {
 
+namespace {
+
+autofill::CreditCardCVCAuthenticator* GetCVCAuthenticator(
+    content::WebContents* web_contents) {
+  auto* factory =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
+  if (!factory)
+    return nullptr;
+  autofill::AutofillClient* client = factory->client();
+  if (!client)
+    return nullptr;
+  return client->GetCVCAuthenticator();
+}
+
+}  // namespace
+
 using autofill::payments::FullCardRequest;
 
-FullCardRequester::FullCardRequester() {}
+FullCardRequester::FullCardRequester() = default;
 
 void FullCardRequester::GetFullCard(
     content::WebContents* web_contents,
@@ -30,24 +46,12 @@ void FullCardRequester::GetFullCard(
   DCHECK(card);
   callback_ = std::move(callback);
 
-  autofill::ContentAutofillDriverFactory* factory =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
-  if (!factory) {
-    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
-    return;
-  }
-
-  autofill::ContentAutofillDriver* driver =
-      factory->DriverForFrame(web_contents->GetPrimaryMainFrame());
-  if (!driver) {
-    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
-    return;
-  }
-
   autofill::CreditCardCVCAuthenticator* cvc_authenticator =
-      driver->autofill_manager()
-          ->GetCreditCardAccessManager()
-          ->GetOrCreateCVCAuthenticator();
+      GetCVCAuthenticator(web_contents);
+  if (!cvc_authenticator) {
+    OnFullCardRequestFailed(FullCardRequest::FailureType::GENERIC_FAILURE);
+    return;
+  }
   cvc_authenticator->GetFullCardRequest()->GetFullCard(
       *card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(),

@@ -142,9 +142,7 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
     }
 
     CreditCardCVCAuthenticator* cvc_authenticator =
-        driver->autofill_manager()
-            ->GetCreditCardAccessManager()
-            ->GetOrCreateCVCAuthenticator();
+        driver->autofill_manager()->client()->GetCVCAuthenticator();
     cvc_authenticator->GetFullCardRequest()->GetFullCard(
         *card_, AutofillClient::UnmaskCardReason::kPaymentRequest, AsWeakPtr(),
         cvc_authenticator->GetAsFullCardRequestUIDelegate());

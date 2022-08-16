@@ -145,10 +145,10 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
     const std::string& real_pan,
     bool is_virtual_card) {
-  payments::FullCardRequest* full_card_request =
-      autofill_manager()
-          .credit_card_access_manager_->GetOrCreateCVCAuthenticator()
-          ->full_card_request_.get();
+  payments::FullCardRequest* full_card_request = autofill_manager()
+                                                     .client()
+                                                     ->GetCVCAuthenticator()
+                                                     ->full_card_request_.get();
   DCHECK(full_card_request);
 
   // Fake user response.
@@ -164,10 +164,10 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
-  payments::FullCardRequest* full_card_request =
-      autofill_manager()
-          .credit_card_access_manager_->GetOrCreateCVCAuthenticator()
-          ->full_card_request_.get();
+  payments::FullCardRequest* full_card_request = autofill_manager()
+                                                     .client()
+                                                     ->GetCVCAuthenticator()
+                                                     ->full_card_request_.get();
   DCHECK(full_card_request);
 
   // Fake user response.

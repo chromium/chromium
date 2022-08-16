@@ -159,14 +159,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Returns true if a |unmasked_cards_cache| contains an entry for the card.
   bool IsCardPresentInUnmaskedCache(const CreditCard& card) const;
 
-  // Accessors to different authenticators. They will first create the
-  // authenticators if they do not exist. Otherwise the accessors will simply
-  // return references to the authenticators.
-  CreditCardCVCAuthenticator* GetOrCreateCVCAuthenticator();
 #if !BUILDFLAG(IS_IOS)
   CreditCardFIDOAuthenticator* GetOrCreateFIDOAuthenticator();
 #endif
-  CreditCardOtpAuthenticator* GetOrCreateOtpAuthenticator();
 
  private:
   // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
@@ -208,9 +203,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            RiskBasedVirtualCardUnmasking_FlowCancelled);
-  friend class AutofillAssistantTest;
-  friend class BrowserAutofillManagerTest;
-  friend class AutofillMetricsTest;
   friend class metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
 
@@ -220,10 +212,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
     fido_authenticator_ = std::move(fido_authenticator);
   }
 #endif
-  void set_otp_authenticator_for_testing(
-      std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator) {
-    otp_authenticator_ = std::move(otp_authenticator);
-  }
 
 #if defined(UNIT_TEST)
   // Mocks that a virtual card was selected, so unit tests that don't run the
@@ -417,9 +405,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
   absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
 
-  // Authenticators for card unmasking.
-  std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
-  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<CreditCardFIDOAuthenticator> fido_authenticator_;
 

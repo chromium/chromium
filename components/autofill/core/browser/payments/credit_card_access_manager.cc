@@ -493,7 +493,7 @@ void CreditCardAccessManager::Authenticate() {
       // authentication flow since the card unmask prompt will pop up.
       client_->CloseWebauthnDialog();
 #endif
-      GetOrCreateCVCAuthenticator()->Authenticate(
+      client_->GetCVCAuthenticator()->Authenticate(
           card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_);
       break;
     }
@@ -522,7 +522,7 @@ void CreditCardAccessManager::Authenticate() {
       // Delegate the task to CreditCardOtpAuthenticator.
       CardUnmaskChallengeOption selected_challenge_option =
           *card_unmask_challenge_options_it;
-      GetOrCreateOtpAuthenticator()->OnChallengeOptionSelected(
+      client_->GetOtpAuthenticator()->OnChallengeOptionSelected(
           card_.get(), selected_challenge_option,
           weak_ptr_factory_.GetWeakPtr(),
           virtual_card_unmask_response_details_.context_token,
@@ -537,13 +537,6 @@ void CreditCardAccessManager::Authenticate() {
   }
 }
 
-CreditCardCVCAuthenticator*
-CreditCardAccessManager::GetOrCreateCVCAuthenticator() {
-  if (!cvc_authenticator_)
-    cvc_authenticator_ = std::make_unique<CreditCardCVCAuthenticator>(client_);
-  return cvc_authenticator_.get();
-}
-
 #if !BUILDFLAG(IS_IOS)
 CreditCardFIDOAuthenticator*
 CreditCardAccessManager::GetOrCreateFIDOAuthenticator() {
@@ -553,13 +546,6 @@ CreditCardAccessManager::GetOrCreateFIDOAuthenticator() {
   return fido_authenticator_.get();
 }
 #endif
-
-CreditCardOtpAuthenticator*
-CreditCardAccessManager::GetOrCreateOtpAuthenticator() {
-  if (!otp_authenticator_)
-    otp_authenticator_ = std::make_unique<CreditCardOtpAuthenticator>(client_);
-  return otp_authenticator_.get();
-}
 
 void CreditCardAccessManager::OnCVCAuthenticationComplete(
     const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
@@ -1127,7 +1113,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     // Virtual Card Unmask request, so we need to reset the state of the
     // CreditCardOtpAuthenticator as well to ensure the flow does not continue,
     // as continuing the flow can cause a crash.
-    GetOrCreateOtpAuthenticator()->Reset();
+    client_->GetOtpAuthenticator()->Reset();
   }
 
   AutofillMetrics::VirtualCardUnmaskFlowType flow_type;

@@ -212,8 +212,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     auto otp_authenticator =
         std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client_);
     otp_authenticator_ = otp_authenticator.get();
-    credit_card_access_manager_->set_otp_authenticator_for_testing(
-        std::move(otp_authenticator));
+    autofill_client_.set_otp_authenticator(std::move(otp_authenticator));
   }
 
   void TearDown() override {
@@ -265,7 +264,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   }
 
   CreditCardCVCAuthenticator* GetCVCAuthenticator() {
-    return credit_card_access_manager_->GetOrCreateCVCAuthenticator();
+    return autofill_client_.GetCVCAuthenticator();
   }
 
   void MockUserResponseForCvcAuth(std::u16string cvc, bool enable_fido) {
