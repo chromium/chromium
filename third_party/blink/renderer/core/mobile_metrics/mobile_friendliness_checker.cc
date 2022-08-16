@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -419,7 +420,9 @@ MobileFriendlinessChecker* MobileFriendlinessChecker::Create(
   // it's not useful to generate mobile friendliness metrics for
   // devtools, svg, etc.
   if (!frame_view.GetFrame().Client()->IsLocalFrameClientImpl() ||
-      !frame_view.GetFrame().IsOutermostMainFrame()) {
+      !frame_view.GetFrame().IsOutermostMainFrame() ||
+      !frame_view.GetPage()->GetSettings().GetViewportEnabled() ||
+      !frame_view.GetPage()->GetSettings().GetViewportMetaEnabled()) {
     return nullptr;
   }
   return MakeGarbageCollected<MobileFriendlinessChecker>(frame_view);
