@@ -6,6 +6,7 @@
 import copy
 import os
 import tempfile
+from typing import MutableMapping, Optional
 import unittest
 
 import binary_size_differ
@@ -50,20 +51,18 @@ _EXAMPLE_BLOBS_BEFORE = """
 
 
 class BinarySizeDifferTest(unittest.TestCase):
-  def ChangeBlobSize(self, blobs, package, name, increase):
-    original_blob = blobs[package][name]
-    new_blob = binary_sizes.Blob(name=original_blob.name,
-                                 hash=original_blob.hash,
-                                 uncompressed=original_blob.uncompressed,
-                                 compressed=original_blob.compressed + increase,
-                                 is_counted=original_blob.is_counted)
-    blobs[package][name] = new_blob
-
-  def ChangePackageSize(self, packages, name, increase):
+  def ChangePackageSize(
+      self,
+      packages: MutableMapping[str, binary_sizes.PackageSizes],
+      name: str,
+      compressed_increase: int,
+      uncompressed_increase: Optional[int] = None):
+    if uncompressed_increase is None:
+      uncompressed_increase = compressed_increase
     original_package = packages[name]
     new_package = binary_sizes.PackageSizes(
-        compressed=original_package.compressed + increase,
-        uncompressed=original_package.uncompressed)
+        compressed=original_package.compressed + compressed_increase,
+        uncompressed=original_package.uncompressed + uncompressed_increase)
     packages[name] = new_package
 
   def testComputePackageDiffs(self):
@@ -104,6 +103,43 @@ class BinarySizeDifferTest(unittest.TestCase):
                                                         after_file.name)
         self.assertEqual(growth['status_code'], 1)
         self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
+
+        # Increase beyond the limit, but compressed does not increase.
+        binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
+        self.ChangePackageSize(other_sizes,
+                               'web_engine',
+                               16 * 1024 + 1,
+                               uncompressed_increase=0)
+        binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
+        growth = binary_size_differ.ComputePackageDiffs(before_file.name,
+                                                        after_file.name)
+        self.assertEqual(growth['uncompressed']['web_engine'], 0)
+        self.assertEqual(growth['status_code'], 0)
+        self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
+
+        # Increase beyond the limit, but compressed goes down.
+        binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
+        self.ChangePackageSize(other_sizes,
+                               'web_engine',
+                               16 * 1024 + 1,
+                               uncompressed_increase=-4 * 1024)
+        binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
+        growth = binary_size_differ.ComputePackageDiffs(before_file.name,
+                                                        after_file.name)
+        self.assertEqual(growth['status_code'], 0)
+        self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
+
+        # Increase beyond the second limit. Fails, regardless of uncompressed.
+        binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
+        self.ChangePackageSize(other_sizes,
+                               'web_engine',
+                               100 * 1024 + 1,
+                               uncompressed_increase=-4 * 1024)
+        binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
+        growth = binary_size_differ.ComputePackageDiffs(before_file.name,
+                                                        after_file.name)
+        self.assertEqual(growth['status_code'], 1)
+        self.assertEqual(growth['compressed']['web_engine'], 100 * 1024 + 1)
       finally:
         os.remove(after_file.name)
 

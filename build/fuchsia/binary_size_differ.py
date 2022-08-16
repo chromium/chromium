@@ -26,7 +26,13 @@ from common import SDK_ROOT, DIR_SOURCE_ROOT
 from binary_sizes import ReadPackageSizesJson
 from binary_sizes import PACKAGES_SIZES_FILE
 
-_MAX_DELTA_BYTES = 12 * 1024  # 12 KiB
+# Eng is not responsible for changes that cause "reasonable growth" if the
+# uncompressed binary size does not grow.
+# First-warning will fail the test if the uncompressed and compressed size
+# grow, while always-fail will fail the test regardless of uncompressed growth
+# (solely based on compressed growth).
+_FIRST_WARNING_DELTA_BYTES = 12 * 1024  # 12 KiB
+_ALWAYS_FAIL_DELTA_BYTES = 100 * 1024  # 100 KiB
 _TRYBOT_DOC = 'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/fuchsia_binary_size_trybot.md'
 
 
@@ -38,7 +44,7 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file):
   assert before_sizes.keys() == after_sizes.keys(), (
       'Package files cannot'
       ' be compared with different packages: '
-      '%s vs %s' % (before_sizes.keys(), after_sizes.keys()))
+      '{} vs {}'.format(before_sizes.keys(), after_sizes.keys()))
 
   growth = {'compressed': {}, 'uncompressed': {}}
   status_code = 0
@@ -49,17 +55,22 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file):
     growth['uncompressed'][package_name] = (
         after_sizes[package_name].uncompressed -
         before_sizes[package_name].uncompressed)
-    if growth['compressed'][package_name] >= _MAX_DELTA_BYTES:
-      if status_code == 1 and not summary:
-        summary = 'Size check failed! The following package(s) are affected:\n'
+    # Developers are only responsible if uncompressed increases.
+    if ((growth['compressed'][package_name] >= _FIRST_WARNING_DELTA_BYTES
+         and growth['uncompressed'][package_name] > 0)
+        # However, if compressed growth is unusually large, fail always.
+        or growth['compressed'][package_name] >= _ALWAYS_FAIL_DELTA_BYTES):
+      if not summary:
+        summary = ('Size check failed! The following package(s) are affected:'
+                   '<br>')
       status_code = 1
-      summary += ('- %s grew by %d bytes\n' %
-                  (package_name, growth['compressed'][package_name]))
+      summary += ('- {} grew by {} bytes<br>'.format(
+          package_name, growth['compressed'][package_name]))
 
   growth['status_code'] = status_code
-  summary += ('\nSee the following document for more information about'
-              ' this trybot:\n%s' % _TRYBOT_DOC)
-  growth['summary'] = summary.replace('\n', '<br>')
+  summary += ('<br>See the following document for more information about'
+              ' this trybot:<br>{}'.format(_TRYBOT_DOC))
+  growth['summary'] = summary
 
   # TODO(crbug.com/1266085): Investigate using these fields.
   growth['archive_filenames'] = []
@@ -101,8 +112,9 @@ def main():
       print('  {}: {}'.format(var, getattr(args, var) or ''))
 
   if not os.path.isdir(args.before_dir) or not os.path.isdir(args.after_dir):
-    raise Exception('Could not find build output directory "%s" or "%s".' %
-                    (args.before_dir, args.after_dir))
+    raise Exception(
+        'Could not find build output directory "{}" or "{}".'.format(
+            args.before_dir, args.after_dir))
 
   test_name = 'sizes'
   before_sizes_file = os.path.join(args.before_dir, test_name,
@@ -110,12 +122,12 @@ def main():
   after_sizes_file = os.path.join(args.after_dir, test_name,
                                   PACKAGES_SIZES_FILE)
   if not os.path.isfile(before_sizes_file):
-    raise Exception('Could not find before sizes file: "%s"' %
-                    (before_sizes_file))
+    raise Exception(
+        'Could not find before sizes file: "{}"'.format(before_sizes_file))
 
   if not os.path.isfile(after_sizes_file):
-    raise Exception('Could not find after sizes file: "%s"' %
-                    (after_sizes_file))
+    raise Exception(
+        'Could not find after sizes file: "{}"'.format(after_sizes_file))
 
   test_completed = False
   try:
