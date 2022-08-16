@@ -140,6 +140,8 @@ def DownloadUrl(url, output_file):
           e, urllib.error.HTTPError) and e.code == 404:
         raise e
       num_retries -= 1
+      output_file.seek(0)
+      output_file.truncate()
       print('Retrying in %d s ...' % retry_wait_s)
       sys.stdout.flush()
       time.sleep(retry_wait_s)
