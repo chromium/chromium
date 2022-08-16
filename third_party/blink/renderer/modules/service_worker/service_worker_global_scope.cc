@@ -383,6 +383,9 @@ void ServiceWorkerGlobalScope::DidEvaluateScript() {
   DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
+  base::UmaHistogramCounts1000(
+      "ServiceWorker.NumberOfRegisteredFetchHandlers",
+      NumberOfEventListeners(event_type_names::kFetch));
   event_queue_->Start();
 }
 

@@ -713,6 +713,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.NumberOfRegisteredFetchHandlers"
+    units="handlers" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The number of fetch handlers registered in a service worker script. This
+    metrics is recorded every time a service worker starts and only includes
+    fetch event handlers registered at script evaluation time.
+  </summary>
+</histogram>
+
 <histogram
     name="ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl.Time"
     units="ms" expires_after="2023-02-12">
