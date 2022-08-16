@@ -97,6 +97,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     AnchorValue anchor_value,
     LayoutUnit available_size,
     const WritingModeConverter& container_converter,
+    const PhysicalOffset& offset_to_padding_box,
     bool is_y_axis,
     bool is_right_or_bottom) const {
   const NGLogicalAnchorReference* reference = AnchorReference(anchor_name);
@@ -109,22 +110,28 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     case AnchorValue::kLeft:
       if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      value = anchor.X();
+      // Make the offset relative to the padding box, because the containing
+      // block is formed by the padding edge.
+      // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
+      value = anchor.X() - offset_to_padding_box.left;
       break;
     case AnchorValue::kRight:
       if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      value = anchor.Right();
+      // See |AnchorValue::kLeft|.
+      value = anchor.Right() - offset_to_padding_box.left;
       break;
     case AnchorValue::kTop:
       if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      value = anchor.Y();
+      // See |AnchorValue::kLeft|.
+      value = anchor.Y() - offset_to_padding_box.top;
       break;
     case AnchorValue::kBottom:
       if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      value = anchor.Bottom();
+      // See |AnchorValue::kLeft|.
+      value = anchor.Bottom() - offset_to_padding_box.top;
       break;
     default:
       NOTREACHED();
@@ -188,9 +195,9 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const AtomicString& anchor_name,
     AnchorValue anchor_value) const {
   has_anchor_functions_ = true;
-  return anchor_query_.EvaluateAnchor(anchor_name, anchor_value,
-                                      available_size_, container_converter_,
-                                      is_y_axis_, is_right_or_bottom_);
+  return anchor_query_.EvaluateAnchor(
+      anchor_name, anchor_value, available_size_, container_converter_,
+      offset_to_padding_box_, is_y_axis_, is_right_or_bottom_);
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(

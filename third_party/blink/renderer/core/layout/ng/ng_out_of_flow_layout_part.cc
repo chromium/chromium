@@ -1448,6 +1448,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
       container_writing_direction, node_info.container_physical_content_size);
   NGAnchorEvaluatorImpl anchor_evaluator(
       container_builder_->AnchorQuery(), container_converter,
+      container_converter.ToPhysical(node_info.container_info.rect).offset,
       candidate_writing_direction.GetWritingMode());
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),

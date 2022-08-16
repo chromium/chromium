@@ -97,6 +97,7 @@ class CORE_EXPORT NGLogicalAnchorQuery {
       AnchorValue anchor_value,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
+      const PhysicalOffset& offset_to_padding_box,
       bool is_y_axis,
       bool is_right_or_bottom) const;
   absl::optional<LayoutUnit> EvaluateSize(const AtomicString& anchor_name,
@@ -116,9 +117,11 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
  public:
   NGAnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
                         const WritingModeConverter& container_converter,
+                        const PhysicalOffset& offset_to_padding_box,
                         WritingMode self_writing_mode)
       : anchor_query_(anchor_query),
         container_converter_(container_converter),
+        offset_to_padding_box_(offset_to_padding_box),
         self_writing_mode_(self_writing_mode) {}
 
   // Returns true if this evaluator was invoked for `anchor()` or
@@ -144,6 +147,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
  private:
   const NGLogicalAnchorQuery& anchor_query_;
   const WritingModeConverter& container_converter_;
+  PhysicalOffset offset_to_padding_box_;
   WritingMode self_writing_mode_;
   LayoutUnit available_size_;
   bool is_y_axis_ = false;

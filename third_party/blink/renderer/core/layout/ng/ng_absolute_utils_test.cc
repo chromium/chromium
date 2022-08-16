@@ -106,6 +106,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
         anchor_query, container_converter,
+        /* offset_to_padding_box */
+        PhysicalOffset(),
         /* self_writing_mode */ WritingMode::kHorizontalTb);
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
@@ -131,6 +133,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
         anchor_query, container_converter,
+        /* offset_to_padding_box */
+        PhysicalOffset(),
         /* self_writing_mode */ WritingMode::kHorizontalTb);
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
