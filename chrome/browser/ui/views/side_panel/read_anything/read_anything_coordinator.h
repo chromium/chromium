@@ -58,7 +58,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   friend class ReadAnythingCoordinatorTest;
 
   // Used during construction to initialize the model with saved user prefs.
-  void InitModelWithUserPrefs(Browser* browser);
+  void InitModelWithUserPrefs();
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;

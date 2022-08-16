@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/views/view.h"
 
@@ -31,8 +30,5 @@ class ReadAnythingContainerView : public views::View {
   ReadAnythingContainerView& operator=(const ReadAnythingContainerView&) =
       delete;
   ~ReadAnythingContainerView() override;
-
- private:
-  base::WeakPtrFactory<ReadAnythingContainerView> weak_pointer_factory_{this};
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTAINER_VIEW_H_
