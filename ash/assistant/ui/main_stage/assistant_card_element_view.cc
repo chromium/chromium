@@ -203,9 +203,6 @@ void AssistantCardElementView::InitLayout() {
   // Contents view.
   contents_view_ = AddChildView(
       const_cast<AssistantCardElement*>(card_element_)->MoveContentsView());
-
-  // OverrideDescription() doesn't work. Only names are read automatically.
-  GetViewAccessibility().OverrideName(card_element_->fallback());
 }
 
 std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
