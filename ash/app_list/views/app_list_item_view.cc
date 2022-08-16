@@ -23,6 +23,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dot_indicator.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -42,9 +43,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
-#include "ui/gfx/skia_paint_util.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -164,54 +163,6 @@ bool IsIndexOnRightEdge(GridIndex index, int cols) {
 }
 
 }  // namespace
-
-// The badge which is activated when the app corresponding with this
-// AppListItemView receives a notification.
-class AppListItemView::AppNotificationIndicatorView : public views::View {
- public:
-  explicit AppNotificationIndicatorView(SkColor indicator_color)
-      : shadow_values_(gfx::ShadowValue::MakeMdShadowValues(2)),
-        indicator_color_(indicator_color) {}
-  AppNotificationIndicatorView(const AppNotificationIndicatorView& other) =
-      delete;
-  AppNotificationIndicatorView& operator=(
-      const AppNotificationIndicatorView& other) = delete;
-  ~AppNotificationIndicatorView() override = default;
-
-  void OnPaint(gfx::Canvas* canvas) override {
-    gfx::ScopedCanvas scoped(canvas);
-
-    canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
-
-    DCHECK_EQ(width(), height());
-    const float dsf = canvas->UndoDeviceScaleFactor();
-
-    float radius = width() * kNotificationIndicatorWidthRatio / 2.0f;
-    float padding = width() * kNotificationIndicatorPaddingRatio;
-
-    float center_x =
-        base::i18n::IsRTL() ? padding + radius : width() - radius - padding;
-    float center_y = padding + radius;
-    gfx::PointF center = gfx::PointF(center_x, center_y);
-    center.Scale(dsf);
-
-    // Fill the center.
-    cc::PaintFlags flags;
-    flags.setLooper(gfx::CreateShadowDrawLooper(shadow_values_));
-    flags.setColor(indicator_color_);
-    flags.setAntiAlias(true);
-    canvas->DrawCircle(center, dsf * radius, flags);
-  }
-
-  void SetColor(SkColor new_color) {
-    indicator_color_ = new_color;
-    SchedulePaint();
-  }
-
- private:
-  const gfx::ShadowValues shadow_values_;
-  SkColor indicator_color_;
-};
 
 // ImageView for the item icon.
 class AppListItemView::IconImageView : public views::ImageView {
@@ -354,11 +305,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
                             false /*animate*/);
   }
 
-  notification_indicator_ =
-      AddChildView(std::make_unique<AppNotificationIndicatorView>(
-          item->GetNotificationBadgeColor()));
-  notification_indicator_->SetPaintToLayer();
-  notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
+  notification_indicator_ = AddChildView(
+      std::make_unique<DotIndicator>(item->GetNotificationBadgeColor()));
   notification_indicator_->SetVisible(item->has_notification_badge());
 
   title_ = AddChildView(std::move(title));
@@ -896,7 +844,18 @@ void AppListItemView::Layout() {
         kNewInstallDotSize, kNewInstallDotSize);
   }
 
-  notification_indicator_->SetBoundsRect(icon_bounds);
+  const float indicator_size =
+      icon_bounds.width() * kNotificationIndicatorWidthRatio;
+  const float indicator_padding =
+      icon_bounds.width() * kNotificationIndicatorPaddingRatio;
+
+  const float indicator_x =
+      icon_bounds.right() - indicator_size - indicator_padding;
+  const float indicator_y = icon_bounds.y() + indicator_padding;
+
+  const gfx::Rect indicator_bounds = gfx::ToRoundedRect(
+      gfx::RectF(indicator_x, indicator_y, indicator_size, indicator_size));
+  notification_indicator_->SetIndicatorBounds(indicator_bounds);
 }
 
 gfx::Size AppListItemView::CalculatePreferredSize() const {

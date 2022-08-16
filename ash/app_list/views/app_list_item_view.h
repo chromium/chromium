@@ -41,6 +41,7 @@ class AppListConfig;
 class AppListItem;
 class AppListMenuModelAdapter;
 class AppListViewDelegate;
+class DotIndicator;
 
 namespace test {
 class AppsGridViewTest;
@@ -258,7 +259,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   friend class test::AppsGridViewTest;
 
   class IconImageView;
-  class AppNotificationIndicatorView;
 
   enum UIState {
     UI_STATE_NORMAL,              // Normal UI (icon + label)
@@ -461,7 +461,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  AppNotificationIndicatorView* notification_indicator_ = nullptr;
+  DotIndicator* notification_indicator_ = nullptr;
 
   // Indicates the context in which this view is shown.
   const Context context_;

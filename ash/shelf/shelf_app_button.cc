@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/dot_indicator.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
@@ -42,7 +43,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
-#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -61,7 +61,7 @@ constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 
 // The size of the notification indicator circle padding over the size of the
 // icon.
-constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
+constexpr float kNotificationIndicatorPaddingRatio = 5.0f / 64.0f;
 
 constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
 constexpr SkAlpha kInactiveIndicatorOpacity = 0x80;
@@ -373,8 +373,8 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
 
   AddChildView(indicator_);
   AddChildView(icon_view_);
-  notification_indicator_ = views::DotIndicator::Install(this);
-  SetNotificationBadgeColor(kDefaultIndicatorColor);
+  notification_indicator_ =
+      AddChildView(std::make_unique<DotIndicator>(kDefaultIndicatorColor));
 
   views::InkDrop::Get(this)->GetInkDrop()->AddObserver(this);
 
@@ -442,7 +442,7 @@ void ShelfAppButton::AddState(State state) {
       indicator_->ShowActiveStatus(true);
 
     if (state & STATE_NOTIFICATION)
-      notification_indicator_->Show();
+      notification_indicator_->SetVisible(true);
 
     if (state & STATE_DRAGGING)
       ScaleAppIcon(true);
@@ -459,7 +459,7 @@ void ShelfAppButton::ClearState(State state) {
       indicator_->ShowActiveStatus(false);
 
     if (state & STATE_NOTIFICATION)
-      notification_indicator_->Hide();
+      notification_indicator_->SetVisible(false);
 
     if (state & STATE_DRAGGING)
       ScaleAppIcon(false);
@@ -736,10 +736,10 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
 gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
   gfx::Rect scaled_icon_view_bounds =
       GetIconViewBounds(GetContentsBounds(), icon_scale);
-  float diameter = std::ceil(kNotificationIndicatorWidthRatio *
-                             scaled_icon_view_bounds.width());
-  float padding = std::ceil(kNotificationIndicatorPaddingRatio *
-                            scaled_icon_view_bounds.width());
+  float diameter =
+      kNotificationIndicatorWidthRatio * scaled_icon_view_bounds.width();
+  float padding =
+      kNotificationIndicatorPaddingRatio * scaled_icon_view_bounds.width();
   return gfx::ToRoundedRect(
       gfx::RectF(scaled_icon_view_bounds.right() - diameter - padding,
                  scaled_icon_view_bounds.y() + padding, diameter, diameter));
@@ -755,7 +755,7 @@ void ShelfAppButton::Layout() {
 
   icon_view_->SetBoundsRect(icon_view_bounds);
 
-  notification_indicator_->SetBoundsRect(
+  notification_indicator_->SetIndicatorBounds(
       GetNotificationIndicatorBounds(icon_scale_));
 
   // The indicators should be aligned with the icon, not the icon + shadow.
@@ -1022,8 +1022,7 @@ void ShelfAppButton::SetInkDropAnimationStarted(bool started) {
 
 void ShelfAppButton::SetNotificationBadgeColor(SkColor color) {
   if (notification_indicator_)
-    notification_indicator_->SetColor(
-        /*dot_color=*/color, /*border_color=*/SkColorSetA(SK_ColorBLACK, 0x4D));
+    notification_indicator_->SetColor(color);
 }
 
 void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {

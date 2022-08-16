@@ -17,12 +17,12 @@
 #include "ui/views/animation/ink_drop_state.h"
 
 namespace views {
-class DotIndicator;
 class ImageView;
 }  // namespace views
 
 namespace ash {
 struct ShelfItem;
+class DotIndicator;
 class ShelfView;
 
 // Button used for app shortcuts on the shelf..
@@ -201,7 +201,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  views::DotIndicator* notification_indicator_ = nullptr;
+  DotIndicator* notification_indicator_ = nullptr;
 
   // The current application state, a bitfield of State enum values.
   int state_ = STATE_NORMAL;
