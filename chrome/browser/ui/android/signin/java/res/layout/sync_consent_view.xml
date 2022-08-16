@@ -48,26 +48,28 @@
                 android:layout_marginBottom="16dp"
                 tools:ignore="ContentDescription" />
 
-            <TextView
+            <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/sync_consent_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                app:leading="@dimen/headline_size_leading" />
 
             <TextView
                 android:id="@+id/sync_consent_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading" />
 
             <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+                style="@style/MaterialCardStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="24dp"
-                android:paddingVertical="16dp"
-                style="@style/MaterialCardStyle">
+                android:paddingVertical="16dp">
 
                 <LinearLayout
                     android:id="@+id/sync_data_types"
@@ -158,7 +160,8 @@
         android:id="@+id/sync_consent_details_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading" />
 </org.chromium.chrome.browser.ui.signin.SyncConsentView>
