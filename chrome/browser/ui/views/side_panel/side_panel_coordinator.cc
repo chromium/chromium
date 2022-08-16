@@ -369,6 +369,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   DCHECK(header_combobox_);
   header_combobox_->SetSelectedIndex(
       combobox_model_->GetIndexForId(entry->id()));
+  header_combobox_->SchedulePaint();
 
   auto* content_wrapper =
       GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
@@ -522,6 +523,7 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
   if (GetContentView()) {
     header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
         GetLastActiveEntryId().value_or(kDefaultEntry)));
+    header_combobox_->SchedulePaint();
   }
 }
 
@@ -531,6 +533,7 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
   if (GetContentView()) {
     header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
         GetLastActiveEntryId().value_or(kDefaultEntry)));
+    header_combobox_->SchedulePaint();
   }
 
   // If the active global entry is the entry being deregistered, reset
@@ -580,6 +583,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
   if (GetContentView()) {
     header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
         GetLastActiveEntryId().value_or(kDefaultEntry)));
+    header_combobox_->SchedulePaint();
 
     if ((!new_contextual_registry ||
          !new_contextual_registry->active_entry().has_value()) &&
