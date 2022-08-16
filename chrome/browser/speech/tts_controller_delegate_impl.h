@@ -7,13 +7,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
+#include "base/values.h"
 #include "content/public/browser/tts_controller_delegate.h"
 
 class PrefService;
-
-namespace base {
-class Value;
-}
 
 // Singleton class that manages Chrome side logic for TTS and TTS engine
 // extension APIs. This is only used on ChromeOS.
@@ -44,7 +41,7 @@ class TtsControllerDelegateImpl : public content::TtsControllerDelegate {
 
   virtual const PrefService* GetPrefService(content::TtsUtterance* utterance);
 
-  const base::Value* GetLangToVoicePref(content::TtsUtterance* utterance);
+  const base::Value::Dict* GetLangToVoicePref(content::TtsUtterance* utterance);
 
   friend struct base::DefaultSingletonTraits<TtsControllerDelegateImpl>;
 };

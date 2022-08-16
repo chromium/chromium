@@ -22,10 +22,10 @@
 namespace {
 
 absl::optional<content::TtsControllerDelegate::PreferredVoiceId>
-PreferredVoiceIdFromString(const base::Value* pref,
+PreferredVoiceIdFromString(const base::Value::Dict& pref,
                            const std::string& pref_key) {
   const std::string* voice_id =
-      pref->FindStringPath(l10n_util::GetLanguage(pref_key));
+      pref.FindStringByDottedPath(l10n_util::GetLanguage(pref_key));
   if (!voice_id || voice_id->empty())
     return absl::nullopt;
 
@@ -64,7 +64,7 @@ TtsControllerDelegateImpl::~TtsControllerDelegateImpl() = default;
 std::unique_ptr<content::TtsControllerDelegate::PreferredVoiceIds>
 TtsControllerDelegateImpl::GetPreferredVoiceIdsForUtterance(
     content::TtsUtterance* utterance) {
-  const base::Value* lang_to_voice_pref = GetLangToVoicePref(utterance);
+  const base::Value::Dict* lang_to_voice_pref = GetLangToVoicePref(utterance);
   if (!lang_to_voice_pref)
     return nullptr;
 
@@ -73,15 +73,15 @@ TtsControllerDelegateImpl::GetPreferredVoiceIdsForUtterance(
 
   if (!utterance->GetLang().empty()) {
     preferred_ids->lang_voice_id = PreferredVoiceIdFromString(
-        lang_to_voice_pref, l10n_util::GetLanguage(utterance->GetLang()));
+        *lang_to_voice_pref, l10n_util::GetLanguage(utterance->GetLang()));
   }
 
   const std::string app_lang = g_browser_process->GetApplicationLocale();
   preferred_ids->locale_voice_id = PreferredVoiceIdFromString(
-      lang_to_voice_pref, l10n_util::GetLanguage(app_lang));
+      *lang_to_voice_pref, l10n_util::GetLanguage(app_lang));
 
   preferred_ids->any_locale_voice_id =
-      PreferredVoiceIdFromString(lang_to_voice_pref, "noLanguageCode");
+      PreferredVoiceIdFromString(*lang_to_voice_pref, "noLanguageCode");
   return preferred_ids;
 }
 
@@ -118,10 +118,10 @@ const PrefService* TtsControllerDelegateImpl::GetPrefService(
   return profile ? profile->GetPrefs() : nullptr;
 }
 
-const base::Value* TtsControllerDelegateImpl::GetLangToVoicePref(
+const base::Value::Dict* TtsControllerDelegateImpl::GetLangToVoicePref(
     content::TtsUtterance* utterance) {
   const PrefService* prefs = GetPrefService(utterance);
   return prefs == nullptr
              ? nullptr
-             : prefs->GetDictionary(prefs::kTextToSpeechLangToVoiceName);
+             : &prefs->GetValueDict(prefs::kTextToSpeechLangToVoiceName);
 }
