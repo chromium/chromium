@@ -14,16 +14,15 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/size.h"
 
-// This is used only for video PiP. Document PiP is handled by the window
-// controller internally.
-class PictureInPictureWindowManager::ContentsObserver final
+// This web contents observer is used only for video PiP.
+class PictureInPictureWindowManager::VideoWebContentsObserver final
     : public content::WebContentsObserver {
  public:
-  ContentsObserver(PictureInPictureWindowManager* owner,
-                   content::WebContents* web_contents)
+  VideoWebContentsObserver(PictureInPictureWindowManager* owner,
+                           content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents), owner_(owner) {}
 
-  ~ContentsObserver() final = default;
+  ~VideoWebContentsObserver() final = default;
 
   void PrimaryPageChanged(content::Page& page) final {
     // Closes the active Picture-in-Picture window if user navigates away.
@@ -31,6 +30,23 @@ class PictureInPictureWindowManager::ContentsObserver final
   }
 
   void WebContentsDestroyed() final { owner_->CloseWindowInternal(); }
+
+ private:
+  // Owns |this|.
+  raw_ptr<PictureInPictureWindowManager> owner_ = nullptr;
+};
+
+// This web contents observer is used only for document PiP.
+class PictureInPictureWindowManager::DocumentWebContentsObserver final
+    : public content::WebContentsObserver {
+ public:
+  DocumentWebContentsObserver(PictureInPictureWindowManager* owner,
+                              content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents), owner_(owner) {}
+
+  ~DocumentWebContentsObserver() final = default;
+
+  void WebContentsDestroyed() final { owner_->DocumentWebContentsDestroyed(); }
 
  private:
   // Owns |this|.
@@ -62,6 +78,10 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   // valid.
   if (pip_window_controller_)
     CloseWindowInternal();
+
+  // Start observing the parent web contents.
+  document_web_contents_observer_ =
+      std::make_unique<DocumentWebContentsObserver>(this, parent_web_contents);
 
   auto* controller = content::PictureInPictureWindowController::
       GetOrCreateDocumentPictureInPictureController(parent_web_contents);
@@ -106,7 +126,8 @@ content::WebContents* PictureInPictureWindowManager::GetWebContents() {
 
 void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
-  contents_observer_ = std::make_unique<ContentsObserver>(this, web_contents);
+  video_web_contents_observer_ =
+      std::make_unique<VideoWebContentsObserver>(this, web_contents);
   pip_window_controller_ = content::PictureInPictureWindowController::
       GetOrCreateVideoPictureInPictureController(web_contents);
 }
@@ -114,9 +135,18 @@ void PictureInPictureWindowManager::CreateWindowInternal(
 void PictureInPictureWindowManager::CloseWindowInternal() {
   DCHECK(pip_window_controller_);
 
-  contents_observer_.reset();
+  video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
   pip_window_controller_ = nullptr;
+}
+
+void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
+  // Document PiP window controller also observes the parent and child web
+  // contents, so we only need to forget the controller here when user closes
+  // the parent web contents with the PiP window open.
+  document_web_contents_observer_.reset();
+  if (pip_window_controller_)
+    pip_window_controller_ = nullptr;
 }
 
 PictureInPictureWindowManager::PictureInPictureWindowManager() = default;

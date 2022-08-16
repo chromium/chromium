@@ -58,7 +58,8 @@ class PictureInPictureWindowManager {
 
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;
-  class ContentsObserver;
+  class VideoWebContentsObserver;
+  class DocumentWebContentsObserver;
 
   // Create a Picture-in-Picture window and register it in order to be closed
   // when needed.
@@ -71,10 +72,15 @@ class PictureInPictureWindowManager {
   // This is suffixed with "Internal" to keep consistency with the method above.
   void CloseWindowInternal();
 
+  // Called when the document PiP parent web contents is being destroyed.
+  void DocumentWebContentsDestroyed();
+
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();
 
-  std::unique_ptr<ContentsObserver> contents_observer_;
+  std::unique_ptr<VideoWebContentsObserver> video_web_contents_observer_;
+  std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
+
   raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
       nullptr;
 };

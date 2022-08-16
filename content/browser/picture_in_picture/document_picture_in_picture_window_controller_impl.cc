@@ -80,7 +80,7 @@ void DocumentPictureInPictureWindowControllerImpl::Show() {
   // confident that somebody has set it already.
   DCHECK(child_contents_);
 
-  // Start observering our WebContents. Note that this is safe, since we're
+  // Start observing our WebContents. Note that this is safe, since we're
   // owned by the opener WebContents.
   Observe(opener_web_contents_);
 
@@ -121,11 +121,10 @@ WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
 }
 
 void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
-  // The opener is being destroyed.
-
-  // Stop observing, and forget `opener_web_contents_`. This will also prevent
-  // `NotifyAndStopObserving` not to try to send messages to the opener, which
-  // is not safe during teardown.
+  // The opener web contents are being destroyed. Stop observing, and forget
+  // `opener_web_contents_`. This will also prevent `NotifyAndStopObserving`
+  // from trying to send messages to the opener, which is not safe during
+  // teardown.
   Observe(/*web_contents=*/nullptr);
   opener_web_contents_ = nullptr;
   Close(/*should_pause_video=*/true);
