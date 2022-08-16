@@ -53,7 +53,9 @@ class PasswordGenerationFrameHelper {
   // Determines current state of password generation
   // |log_debug_data| determines whether log entries are sent to the
   // autofill::SavePasswordProgressLogger.
-  bool IsGenerationEnabled(bool log_debug_data) const;
+  //
+  // Virtual for testing
+  virtual bool IsGenerationEnabled(bool log_debug_data) const;
 
   // Returns a randomly generated password that should (but is not guaranteed
   // to) match the requirements of the site.

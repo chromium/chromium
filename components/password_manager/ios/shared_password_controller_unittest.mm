@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -111,17 +112,33 @@ class MockPasswordManager : public PasswordManagerInterface {
               (override));
 };
 
+class MockPasswordGenerationFrameHelper
+    : public password_manager::PasswordGenerationFrameHelper {
+ public:
+  MOCK_METHOD(std::u16string,
+              GeneratePassword,
+              (const GURL& last_committed_url,
+               autofill::FormSignature form_signature,
+               autofill::FieldSignature field_signature,
+               uint32_t max_length));
+
+  MOCK_METHOD(bool, IsGenerationEnabled, (bool), (const));
+
+  explicit MockPasswordGenerationFrameHelper()
+      : PasswordGenerationFrameHelper(nullptr, nullptr) {}
+};
+
 class TestPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   explicit TestPasswordManagerDriver(PasswordManagerClient* client)
-      : password_generation_helper_(client, this) {}
+      : password_generation_helper_() {}
 
-  PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override {
+  MockPasswordGenerationFrameHelper* GetPasswordGenerationHelper() override {
     return &password_generation_helper_;
   }
 
  private:
-  PasswordGenerationFrameHelper password_generation_helper_;
+  MockPasswordGenerationFrameHelper password_generation_helper_;
 };
 
 class SharedPasswordControllerTest : public PlatformTest {
@@ -137,6 +154,9 @@ class SharedPasswordControllerTest : public PlatformTest {
         passwordManagerClient];
     [[[delegate_ stub] andReturnValue:OCMOCK_VALUE(driver_ptr)]
         passwordManagerDriver];
+    ON_CALL(*password_manager_driver_->GetPasswordGenerationHelper(),
+            IsGenerationEnabled(::testing::_))
+        .WillByDefault(testing::Return(true));
     form_helper_ = OCMStrictClassMock([PasswordFormHelper class]);
     suggestion_helper_ = OCMStrictClassMock([PasswordSuggestionHelper class]);
     OCMExpect([form_helper_ setDelegate:[OCMArg any]]);
@@ -358,9 +378,6 @@ TEST_F(SharedPasswordControllerTest,
       retrieveSuggestionsWithFormID:form_query.uniqueFormID
                     fieldIdentifier:form_query.uniqueFieldID
                           fieldType:form_query.fieldType];
-  EXPECT_CALL(*password_manager_client_.GetPasswordFeatureManager(),
-              IsGenerationEnabled)
-      .WillOnce(Return(true));
 
   autofill::PasswordFormGenerationData form_generation_data = {
       form_query.uniqueFormID, form_query.uniqueFieldID,
@@ -385,10 +402,39 @@ TEST_F(SharedPasswordControllerTest,
 // Tests that accepting a "Suggest a password" suggestion will give a suggested
 // password to the delegate.
 TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
-  autofill::FormRendererId form_id(0);
-  autofill::FieldRendererId field_id(1);
+  GURL origin("https://www.google.com/login");
+  const uint64_t max_length = 10;
+
+  autofill::FormData form_data;
+  form_data.url = origin;
+  form_data.action = origin;
+  form_data.name = u"login_form";
+  form_data.unique_renderer_id = autofill::test::MakeFormRendererId();
+
+  autofill::FormFieldData field;
+  field.name = u"Username";
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.value = u"googleuser";
+  field.form_control_type = "text";
+  field.unique_renderer_id = autofill::test::MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  field.name = u"Passwd";
+  field.id_attribute = field.name;
+  field.name_attribute = field.name;
+  field.value = u"p4ssword";
+  field.form_control_type = "password";
+  field.unique_renderer_id = autofill::test::MakeFieldRendererId();
+  field.max_length = max_length;
+  form_data.fields.push_back(field);
+
+  autofill::FormFieldData password_field_data = form_data.fields.back();
+  autofill::FormRendererId form_id = form_data.unique_renderer_id;
+  autofill::FieldRendererId field_id = password_field_data.unique_renderer_id;
   autofill::PasswordFormGenerationData form_generation_data = {
-      form_id, field_id, field_id};
+      form_id, field_id,
+      /*confirmation_field=*/autofill::FieldRendererId(0)};
   [controller_ formEligibleForGenerationFound:form_generation_data];
 
   FormSuggestion* suggestion = [FormSuggestion
@@ -402,6 +448,24 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
                                decisionHandler:[OCMArg any]];
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
+
+  id extract_completion_handler_arg = [OCMArg
+      checkWithBlock:^(void (^completion_handler)(BOOL, autofill::FormData)) {
+        completion_handler(/*found=*/YES, form_data);
+        return YES;
+      }];
+  [[form_helper_ expect]
+      extractPasswordFormData:form_id
+            completionHandler:extract_completion_handler_arg];
+
+  // Verify the parameters that |GeneratePassword| receives.
+  autofill::FormSignature form_signature =
+      autofill::CalculateFormSignature(form_data);
+  autofill::FieldSignature field_signature =
+      autofill::CalculateFieldSignatureForField(password_field_data);
+  EXPECT_CALL(*password_manager_driver_->GetPasswordGenerationHelper(),
+              GeneratePassword(web_state_.GetLastCommittedURL(), form_signature,
+                               field_signature, max_length));
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
@@ -509,6 +573,16 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
                                decisionHandler:[OCMArg any]];
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
+
+  autofill::FormData form_data = test_helpers::MakeSimpleFormData();
+  id extract_completion_handler_arg = [OCMArg
+      checkWithBlock:^(void (^completion_handler)(BOOL, autofill::FormData)) {
+        completion_handler(/*found=*/YES, form_data);
+        return YES;
+      }];
+  [[form_helper_ expect]
+      extractPasswordFormData:params.unique_form_id
+            completionHandler:extract_completion_handler_arg];
 
   [controller_ triggerPasswordGeneration];
 
