@@ -119,16 +119,24 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {
 }
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM) && !BUILDFLAG(IS_IOS)
-// Don't enable this test when compiling for iOS. For some yet unknown reason
-// the test crashes on iOS due to invalid malloc zone. It is yet unclear whether
-// this is an incomplete setup or a bug.
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 struct AllocatorShimAllocator {
   void* Alloc(size_t size) { return base::allocator::UncheckedAlloc(size); }
   void Free(void* data) { base::allocator::UncheckedFree(data); }
 };
 
-TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingAllocatorShim) {
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Disable the test when running on any of Apple's OSs without PartitionAlloc
+// being the default allocator. In this case, all allocations are routed to
+// MallocImpl, which then causes the test to terminate unexpectedly.
+#define MAYBE_VerifyNotificationUsingAllocatorShim \
+  DISABLED_VerifyNotificationUsingAllocatorShim
+#else
+#define MAYBE_VerifyNotificationUsingAllocatorShim \
+  VerifyNotificationUsingAllocatorShim
+#endif
+
+TEST_F(BaseAllocatorDispatcherTest, MAYBE_VerifyNotificationUsingAllocatorShim) {
   AllocatorShimAllocator allocator;
   DoBasicTest(allocator);
 }
