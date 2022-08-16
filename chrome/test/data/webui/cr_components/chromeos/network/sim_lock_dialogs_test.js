@@ -261,7 +261,8 @@ suite('NetworkSimLockDialogsTest', function() {
 
     const pinInput = enterPinDialog.querySelector('#enterPin');
     pinInput.value = '1111111';
-    pinInput.fire('enter', {path: [pinInput]});
+    pinInput.dispatchEvent(new CustomEvent(
+        'enter', {bubbles: true, composed: true, detail: {path: [pinInput]}}));
     await flushAsync();
 
     deviceState =
@@ -285,7 +286,8 @@ suite('NetworkSimLockDialogsTest', function() {
     assertTrue(!!enterPinDialog);
     assertTrue(enterPinDialog.open);
     assertTrue(simLockDialog.isDialogOpen);
-    enterPinDialog.fire('cancel');
+    enterPinDialog.dispatchEvent(
+        new CustomEvent('cancel', {bubbles: true, composed: true}));
     await flushAsync();
     assertFalse(enterPinDialog.open);
     assertFalse(simLockDialog.isDialogOpen);
@@ -307,7 +309,9 @@ suite('NetworkSimLockDialogsTest', function() {
     const enterPin = async function(pin) {
       const pinInput = enterPinDialog.querySelector('#enterPin');
       pinInput.value = pin;
-      pinInput.fire('enter', {path: [pinInput]});
+      pinInput.dispatchEvent(new CustomEvent(
+          'enter',
+          {bubbles: true, composed: true, detail: {path: [pinInput]}}));
       await flushAsync();
     };
 

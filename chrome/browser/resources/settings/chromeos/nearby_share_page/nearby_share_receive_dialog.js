@@ -20,7 +20,6 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../prefs/prefs.js';
 import '../../shared/nearby_onboarding_one_page.js';
 import '../../shared/nearby_onboarding_page.js';
@@ -29,6 +28,7 @@ import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
