@@ -209,8 +209,6 @@
 #include "content/public/browser/android/java_interfaces.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
-#else
-#include "content/browser/hid/hid_service.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -5289,14 +5287,5 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
           },
           std::move(allocator)));
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void RenderProcessHostImpl::BindHidService(
-    const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::HidService::Create(GetBrowserContext(), origin, std::move(receiver));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

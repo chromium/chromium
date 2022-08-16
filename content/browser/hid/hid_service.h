@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/public/browser/hid_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,7 +31,8 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
                                   public device::mojom::HidConnectionWatcher,
                                   public HidDelegate::Observer {
  public:
-  HidService(BrowserContext*, const url::Origin&, RenderFrameHostImpl*);
+  explicit HidService(RenderFrameHostImpl*);
+  HidService(base::WeakPtr<ServiceWorkerContextCore>, const url::Origin&);
   HidService(HidService&) = delete;
   HidService& operator=(HidService&) = delete;
   ~HidService() override;
@@ -41,7 +43,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
 
   // Use this when creating from a service worker, which doesn't have
   // RenderFrameHost.
-  static void Create(BrowserContext*,
+  static void Create(base::WeakPtr<ServiceWorkerContextCore>,
                      const url::Origin&,
                      mojo::PendingReceiver<blink::mojom::HidService>);
 
@@ -70,6 +72,10 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
+  HidService(RenderFrameHostImpl* render_frame_host,
+             base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+             const url::Origin& origin);
+
   void OnWatcherRemoved(bool cleanup_watcher_ids);
   void IncrementActiveFrameCount();
   void DecrementActiveFrameCount();
@@ -83,14 +89,19 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
       ConnectCallback callback,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
 
-  // The BrowserContext pointed by |browser_context_| always outlives
-  // HidService itself.
-  const raw_ptr<BrowserContext> browser_context_;
+  // Get the BrowserContext this HidService belongs to. It returns nullptr if
+  // the BrowserContext is destroyed.
+  BrowserContext* GetBrowserContext();
 
   // When RenderFrameHost pointed by |render_frame_host| is destroyed, the
   // bound HidService will be destroyed first. It should be safe to access
   // |render_frame_host_| whenever it is not null.
   const raw_ptr<RenderFrameHostImpl> render_frame_host_;
+
+  // The ServiceWorkerContextCore of the service worker this HidService belongs
+  // to.
+  const base::WeakPtr<content::ServiceWorkerContextCore>
+      service_worker_context_;
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;

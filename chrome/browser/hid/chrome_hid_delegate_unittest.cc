@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/hid/chrome_hid_delegate.h"
+
 #include "base/guid.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
@@ -761,3 +763,18 @@ TEST_F(ChromeHidDelegateTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   EXPECT_TRUE(web_contents()->IsConnectedToHidDevice());
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
+  ChromeHidDelegate chrome_hid_delegate;
+  url::Origin origin = url::Origin::Create(GURL(kDefaultTestUrl));
+  EXPECT_FALSE(chrome_hid_delegate.CanRequestDevicePermission(
+      /*browser_context=*/nullptr, origin));
+  EXPECT_FALSE(chrome_hid_delegate.HasDevicePermission(
+      /*browser_context=*/nullptr, origin, device::mojom::HidDeviceInfo()));
+  EXPECT_EQ(nullptr,
+            chrome_hid_delegate.GetHidManager(/*browser_context=*/nullptr));
+  EXPECT_EQ(nullptr, chrome_hid_delegate.GetDeviceInfo(
+                         /*browser_context=*/nullptr, base::GenerateGUID()));
+  EXPECT_FALSE(chrome_hid_delegate.IsFidoAllowedForOrigin(
+      /*browser_context=*/nullptr, origin));
+}

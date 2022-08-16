@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 
+#include <cstddef>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -137,38 +138,49 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
 bool ChromeHidDelegate::CanRequestDevicePermission(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  return GetChooserContext(browser_context)->CanRequestObjectPermission(origin);
+  return browser_context &&
+         GetChooserContext(browser_context)->CanRequestObjectPermission(origin);
 }
 
 bool ChromeHidDelegate::HasDevicePermission(
     content::BrowserContext* browser_context,
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  return GetChooserContext(browser_context)
-      ->HasDevicePermission(origin, device);
+  return browser_context && GetChooserContext(browser_context)
+                                ->HasDevicePermission(origin, device);
 }
 
 void ChromeHidDelegate::RevokeDevicePermission(
     content::BrowserContext* browser_context,
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  return GetChooserContext(browser_context)
-      ->RevokeDevicePermission(origin, device);
+  if (browser_context) {
+    GetChooserContext(browser_context)->RevokeDevicePermission(origin, device);
+  }
 }
 
 device::mojom::HidManager* ChromeHidDelegate::GetHidManager(
     content::BrowserContext* browser_context) {
+  if (!browser_context) {
+    return nullptr;
+  }
   return GetChooserContext(browser_context)->GetHidManager();
 }
 
 void ChromeHidDelegate::AddObserver(content::BrowserContext* browser_context,
                                     Observer* observer) {
+  if (!browser_context) {
+    return;
+  }
   GetContextObserver(browser_context)->AddObserver(observer);
 }
 
 void ChromeHidDelegate::RemoveObserver(
     content::BrowserContext* browser_context,
     content::HidDelegate::Observer* observer) {
+  if (!browser_context) {
+    return;
+  }
   DCHECK(base::Contains(observations_, browser_context));
   GetContextObserver(browser_context)->RemoveObserver(observer);
 }
@@ -177,6 +189,9 @@ const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
     content::BrowserContext* browser_context,
     const std::string& guid) {
   auto* chooser_context = GetChooserContext(browser_context);
+  if (!chooser_context) {
+    return nullptr;
+  }
   return chooser_context->GetDeviceInfo(guid);
 }
 
@@ -184,7 +199,7 @@ bool ChromeHidDelegate::IsFidoAllowedForOrigin(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   auto* chooser_context = GetChooserContext(browser_context);
-  return chooser_context->IsFidoAllowedForOrigin(origin);
+  return chooser_context && chooser_context->IsFidoAllowedForOrigin(origin);
 }
 
 bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
@@ -202,6 +217,7 @@ bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
 
 ChromeHidDelegate::ContextObservation* ChromeHidDelegate::GetContextObserver(
     content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
   if (!base::Contains(observations_, browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));

@@ -59,6 +59,10 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/hid/hid_service.h"
+#endif
+
 // TODO(crbug.com/824858): Much of this file, which dealt with thread hops
 // between UI and IO, can likely be simplified when the service worker core
 // thread moves to the UI thread.
@@ -780,7 +784,7 @@ void EmbeddedWorkerInstance::BindHidService(
     return;
   }
   if (hid_delegate->IsServiceWorkerAllowedForOrigin(origin)) {
-    rph->BindHidService(origin, std::move(receiver));
+    HidService::Create(context_, origin, std::move(receiver));
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
