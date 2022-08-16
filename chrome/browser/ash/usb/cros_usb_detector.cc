@@ -610,7 +610,7 @@ void CrosUsbDetector::OnVmStateChanged(
 void CrosUsbDetector::OnMountEvent(
     disks::DiskMountManager::MountEvent event,
     MountError error_code,
-    const disks::DiskMountManager::MountPointInfo& mount_info) {
+    const disks::DiskMountManager::MountPoint& mount_info) {
   if (mount_info.mount_type != MountType::kDevice ||
       error_code != MountError::kNone) {
     return;

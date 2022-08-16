@@ -288,9 +288,8 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
                         MountError mount_error = MountError::kNone) {
     // In theory we should also clear the mounted flag from the disk, but we
     // don't rely on that.
-    disks::DiskMountManager::MountPointInfo info(
-        "/dev/" + name, "/mount/" + name, MountType::kDevice,
-        disks::MOUNT_CONDITION_NONE);
+    disks::DiskMountManager::MountPoint info{"/dev/" + name, "/mount/" + name,
+                                             MountType::kDevice};
     mock_disk_mount_manager_->NotifyMountEvent(event, mount_error, info);
   }
 

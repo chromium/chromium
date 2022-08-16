@@ -29,7 +29,7 @@ class ScopedVolume {
       std::string display_name,
       std::string mount_label,
       base::FilePath remote_path,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info,
+      const ash::disks::DiskMountManager::MountPoint& mount_info,
       VmType vm_type)
       : profile_(profile), mount_label_(mount_label) {
     base::FilePath mount_path = base::FilePath(mount_info.mount_path);
@@ -125,7 +125,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
       RealCallback callback,
       base::FilePath remote_path,
       ash::MountError error_code,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
+      const ash::disks::DiskMountManager::MountPoint& mount_info) {
     if (error_code != ash::MountError::kNone) {
       LOG(ERROR) << "Error mounting Guest OS container: error_code="
                  << error_code << ", source_path=" << mount_info.source_path

@@ -127,9 +127,9 @@ class CrostiniSshfsHelperTest : public testing::Test {
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
     auto code = ash::MountError::kNone;
-    auto info = DiskMountManager::MountPointInfo(
+    DiskMountManager::MountPoint info{
         "sshfs://username@hostname:", "/media/fuse/" + kMountName,
-        ash::MountType::kNetworkStorage, ash::disks::MOUNT_CONDITION_NONE);
+        ash::MountType::kNetworkStorage};
     disk_manager_->NotifyMountEvent(event, code, info);
     std::move(callback).Run(code, info);
   }

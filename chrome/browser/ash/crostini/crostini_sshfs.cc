@@ -166,7 +166,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
 
 void CrostiniSshfs::OnMountEvent(
     ash::MountError error_code,
-    const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
+    const ash::disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error_code != ash::MountError::kNone) {

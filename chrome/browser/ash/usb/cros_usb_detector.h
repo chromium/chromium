@@ -180,7 +180,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   void OnMountEvent(
       disks::DiskMountManager::MountEvent event,
       MountError error_code,
-      const disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const disks::DiskMountManager::MountPoint& mount_info) override;
 
   // Called after USB device access has been checked.
   void OnDeviceChecked(device::mojom::UsbDeviceInfoPtr device,
