@@ -172,9 +172,6 @@ config("default_sanitizer_ldflags") {
     if (is_ubsan || is_ubsan_security) {
       ldflags += [ "-fsanitize=undefined" ]
     }
-    if (is_ubsan_null) {
-      ldflags += [ "-fsanitize=null" ]
-    }
     if (is_ubsan_vptr) {
       ldflags += [ "-fsanitize=vptr" ]
     }
@@ -486,12 +483,6 @@ config("ubsan_security_flags") {
   }
 }
 
-config("ubsan_null_flags") {
-  if (is_ubsan_null) {
-    cflags = [ "-fsanitize=null" ]
-  }
-}
-
 config("ubsan_vptr_flags") {
   if (is_ubsan_vptr) {
     if (!defined(ubsan_vptr_ignorelist_path)) {
@@ -523,7 +514,6 @@ all_sanitizer_configs = [
   ":tsan_flags",
   ":ubsan_flags",
   ":ubsan_no_recover",
-  ":ubsan_null_flags",
   ":ubsan_security_flags",
   ":ubsan_vptr_flags",
   ":fuzzing_build_mode",

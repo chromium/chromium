@@ -34,9 +34,6 @@ declare_args() {
   # Halt the program if a problem is detected.
   is_ubsan_no_recover = false
 
-  # Compile for Undefined Behaviour Sanitizer's null pointer checks.
-  is_ubsan_null = false
-
   # Track where uninitialized memory originates from. From fastest to slowest:
   # 0 - no tracking, 1 - track only the initial allocation site, 2 - track the
   # chain of stores leading from allocation site to use site.
@@ -130,7 +127,6 @@ if (!is_a_target_toolchain) {
   is_msan = false
   is_tsan = false
   is_ubsan = false
-  is_ubsan_null = false
   is_ubsan_no_recover = false
   is_ubsan_security = false
   is_ubsan_vptr = false
@@ -189,9 +185,9 @@ if (use_fuzzing_engine && sanitizer_coverage_flags == "") {
 # Whether we are linking against a sanitizer runtime library. Among other
 # things, this changes the default symbol level and other settings in order to
 # prepare to create stack traces "live" using the sanitizer runtime.
-using_sanitizer = is_asan || is_hwasan || is_lsan || is_tsan || is_msan ||
-                  is_ubsan || is_ubsan_null || is_ubsan_vptr ||
-                  is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
+using_sanitizer =
+    is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
+    is_ubsan_vptr || is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
 
 assert(!using_sanitizer || is_clang,
        "Sanitizers (is_*san) require setting is_clang = true in 'gn args'")
@@ -223,7 +219,7 @@ if (use_libfuzzer && (is_linux || is_chromeos)) {
 # unsupported or unadvisable configurations.
 #
 # For one-off testing, just comment this assertion out.
-assert(!is_debug || !(is_msan || is_ubsan || is_ubsan_null || is_ubsan_vptr),
+assert(!is_debug || !(is_msan || is_ubsan || is_ubsan_vptr),
        "Sanitizers should generally be used in release (set is_debug=false).")
 
 assert(!is_msan || ((is_linux || is_chromeos) && current_cpu == "x64"),
