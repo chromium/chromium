@@ -23,7 +23,8 @@ extern const char kAboutThisSiteWebContentsUserDataKey[];
 // |MaybeCreateAboutThisSiteThrottleFor| will check if this UserData is present
 // and if it is present, intercepts navigations if |IsNavigationAllowed|
 // and opens them using |OpenUrlInBrowser| instead.
-struct AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
+class AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
+ public:
   class Delegate {
    public:
     virtual void OpenUrlInBrowser(const content::OpenURLParams& params) = 0;

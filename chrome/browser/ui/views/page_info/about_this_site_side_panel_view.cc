@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -75,7 +76,11 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
 }
 
 void AboutThisSiteSidePanelView::LoadProgressChanged(double progress) {
-  SetContentVisible(progress == 1.0);
+  // Ignore the initial load progress since the navigation might be intercepted
+  // by AboutThisSiteSidePanelThrottle.
+  if (progress == blink::kInitialLoadProgress)
+    return;
+  SetContentVisible(progress == blink::kFinalLoadProgress);
 }
 
 void AboutThisSiteSidePanelView::OpenUrl(const content::OpenURLParams& params) {
