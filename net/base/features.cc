@@ -286,8 +286,8 @@ const base::Feature kPartitionedCookies{"PartitionedCookies",
 const base::Feature kPartitionedCookiesBypassOriginTrial{
     "PartitionedCookiesBypassOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kNoncedPartitionedCookies{
-    "NoncedPartitionedCookies", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNoncedPartitionedCookies{"NoncedPartitionedCookies",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kExtraCookieValidityChecks{
     "ExtraCookieValidityChecks", base::FEATURE_ENABLED_BY_DEFAULT};
