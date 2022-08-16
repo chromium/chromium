@@ -4165,6 +4165,7 @@ TEST_F(WebFrameTest, DontZoomInOnFocusedInTouchAction) {
 }
 
 TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
+  RegisterMockedHttpURLLoad("Ahem.ttf");
   RegisterMockedHttpURLLoad("get_scale_for_zoom_into_editable_test.html");
 
   const bool kAutoZoomToLegibleScale = true;
