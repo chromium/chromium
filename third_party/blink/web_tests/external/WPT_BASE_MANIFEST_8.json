@@ -2061,6 +2061,13 @@
         {}
        ]
       ],
+      "nested-with-multicol-table-caption.html": [
+       "7ef78394e6213849deb7e9a660f55ccf7e291639",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-with-multicol-table-cell.html": [
        "abb99c6201dee7b45170791e0eab6915d692552a",
        [
@@ -2147,6 +2154,13 @@
       ],
       "remove-spanner-after-spanner-in-inline-before-inline.html": [
        "0836ef1a91ef921194209a6a4642b67d90a02b3a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "repeated-section-in-nested-table-nested-multicol.html": [
+       "e48854a36bd964ed056e2ec43aa9c94fd413e2f7",
        [
         null,
         {}
@@ -196146,19 +196160,21 @@
        {}
       ]
      ],
-     "no-transition-from-ua-to-blocking-stylesheet.html": [
-      "4967eabda86bf42be467b826f8782e91a115748e",
-      [
-       null,
+     "render-blocking": {
+      "no-transition-from-ua-to-blocking-stylesheet.html": [
+       "d59118c66f942d1192ad5e311e0c00a1985d4e60",
        [
+        null,
         [
-         "/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet-ref.html",
-         "=="
-        ]
-       ],
-       {}
+         [
+          "/css/css-transitions/render-blocking/no-transition-from-ua-to-blocking-stylesheet-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
-     ],
+     },
      "root-color-transition.html": [
       "c9f2ca4ba7210504dd2d0d480e982521cd67c455",
       [
@@ -292760,13 +292776,15 @@
       "b7a5824836e157f21649fabe12a701b860e04c9f",
       []
      ],
-     "no-transition-from-ua-to-blocking-stylesheet-ref.html": [
-      "93b4ae982e80d31df4cb0eac448ceb3341c57a81",
-      []
-     ],
      "reference": {
       "transition-test-ref.html": [
        "d9d91ec9da9e90feaf164632b22cb285f10a76ca",
+       []
+      ]
+     },
+     "render-blocking": {
+      "no-transition-from-ua-to-blocking-stylesheet-ref.html": [
+       "93b4ae982e80d31df4cb0eac448ceb3341c57a81",
        []
       ]
      },
@@ -332145,6 +332163,18 @@
       ]
      }
     },
+    "focus-navigation": {
+     "resources": {
+      "focus-utils.js": [
+       "c23581a15ecf26edfa453049bae2e737cdb59a3f",
+       []
+      ],
+      "shadow-dom.js": [
+       "442fde241fa87c95c7d0fac72b3456f2c5dc916e",
+       []
+      ]
+     }
+    },
     "imperative-slot-layout-invalidation-001-ref.html": [
      "98bc61ba4d16ccd8c91f4f6eb3ede84fe8c03386",
      []
@@ -342621,7 +342651,7 @@
     ],
     "url": {
      "cross-global-revoke.sub.html": [
-      "21b8c5bb1986d59e9a8ed85f0b9cfcd78358a92f",
+      "ce9d680709e05811712b76e491336e7c38832f0b",
       [
        null,
        {}
@@ -427890,7 +427920,7 @@
        ]
       ],
       "scheme-blob.sub.any.js": [
-       "eaf01ebdf296296e6e40b6d8757a426ccfc38207",
+       "cfa99506af6f0dbe3375c25fcbe96996e11703f3",
        [
         "fetch/api/basic/scheme-blob.sub.any.html",
         {
@@ -480870,7 +480900,7 @@
        ]
       ],
       "popup-events.tentative.html": [
-       "b82e1c7c483e753871cfde02da602083f87be3bc",
+       "4e2051f275dcc8108da2a091ad6cbd1e2de2c37e",
        [
         null,
         {}
@@ -530674,6 +530704,15 @@
        }
       ]
      ],
+     "focus-method-with-delegatesFocus.html": [
+      "8caea8ccda475916a5a62b93610b8f997b9d257d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-pseudo-matches-on-shadow-host.html": [
       "34f8c0129456b38fc46a10c9247ed304abfd9715",
       [
@@ -530683,6 +530722,13 @@
      ],
      "focus-selector-delegatesFocus.html": [
       "bbc1346a460a13f17a82046ea2cfacaca5e6e1cf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "focus-shadowhost-display-none.html": [
+      "40f1b01f6644bb3061f82dbff05d1a924fcf631d",
       [
        null,
        {}
@@ -530816,6 +530862,179 @@
      ],
      "focus-tabindex-order-shadow-zero.html": [
       "d8b12ed8ac6e24553f0cccced7f1616bb588413e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
+    "focus-navigation": {
+     "delegatesFocus-highlight-sibling.html": [
+      "dde18128ad8247f21c7e86d20fbe409de29ca6e5",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-fallback-default-tabindex.html": [
+      "e8e0293e77bd28aba469bccffcb8d6c4245a7691",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-fallback.html": [
+      "8b29558b50475719484ff221c8c7ef95a3b7cc43",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-nested-2levels.html": [
+      "59f0e4f0cb7e026c9766c68a3149b52c4220ee20",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-nested-delegatesFocus.html": [
+      "94d8ce8e1f04b963151edcab4a9989e75b28d05c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-nested-fallback.html": [
+      "93a6240fe3e8f1452303d3d1075240bccc2d33d6",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-nested.html": [
+      "7bfe5dc7844040902b499874e2cf6a72e03af9f6",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-shadow-in-fallback.html": [
+      "7192a42584b1f77759b1ce4222bc032b73b5c8f1",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-shadow-in-slot.html": [
+      "4f320574ed58fad6d4e6b01504e434bf1ce3bb2d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slot-with-tabindex.html": [
+      "880fb83130bbf23adb2196300743ca58fc76bb89",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slots-in-slot.html": [
+      "025a4e0f52f7a78fc1cb3aa36cf35bb351a50455",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-slots.html": [
+      "f2de50f6eba190a81390bda953625bf4f125eecf",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation-with-delegatesFocus.html": [
+      "e09726152678e20721fd28925fb27e372dee1535",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-navigation.html": [
+      "fabcf881708d337f81611bbdf7ff939b0dfeb492",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-nested-slots.html": [
+      "747a8a1262fad5ad9e06bc6b1f7d547009df0344",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-reverse-unassignable-slot.html": [
+      "cacf94f4121167e252a9caaaf240a1515cc01747",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-reverse-unassigned-slot.html": [
+      "e19ea44288bc2741c8bcb78ab66661a64a9a3349",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-unassignable-slot.html": [
+      "135569d94ccbe664e2e83ca0892ebfc36cba6e6b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-with-negative-index.html": [
+      "95dc98fc02dc61f0414d6e43bd9ac212e0ae773c",
       [
        null,
        {
