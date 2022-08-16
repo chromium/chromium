@@ -144,6 +144,7 @@ i like that.")
   a duplicate of is public, remove the **Restrict-View-SecurityTeam** label.
 * **If the report is primarily a privacy issue**, send it to the privacy team:
   * Add the **Privacy** component so that it enters their triage queue.
+  * Change **Type-Bug-Security** to **Type-Bug**.
   * CC any security team members, including yourself, who may be interested in
     the privacy issue.
 	* Change the **Restrict-View-SecurityTeam** label to
