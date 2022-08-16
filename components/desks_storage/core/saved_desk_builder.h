@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "components/app_restore/restore_data.h"
 #include "url/gurl.h"
@@ -71,7 +72,7 @@ class SavedDeskBuilder {
                                         const std::string app_id);
 
  private:
-  std::string desk_uuid_;
+  base::GUID desk_uuid_;
   std::string desk_name_;
   ash::DeskTemplateSource desk_source_;
   ash::DeskTemplateType desk_type_;

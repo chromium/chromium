@@ -17,7 +17,7 @@ SavedDeskBuilder::SavedDeskBuilder()
       desk_source_(ash::DeskTemplateSource::kUser),
       desk_type_(ash::DeskTemplateType::kTemplate),
       restore_data_(std::make_unique<app_restore::RestoreData>()) {
-  desk_uuid_ = base::GUID::GenerateRandomV4().AsLowercaseString();
+  desk_uuid_ = base::GUID::GenerateRandomV4();
   created_time_ = base::Time::Now();
 };
 
@@ -33,7 +33,7 @@ std::unique_ptr<ash::DeskTemplate> SavedDeskBuilder::Build() {
 }
 
 SavedDeskBuilder& SavedDeskBuilder::SetUuid(const std::string& uuid) {
-  desk_uuid_ = uuid;
+  desk_uuid_ = base::GUID::ParseCaseInsensitive(uuid);
   return *this;
 }
 

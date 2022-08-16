@@ -903,8 +903,8 @@ DeskSyncBridge::~DeskSyncBridge() = default;
 
 std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
     const sync_pb::WorkspaceDeskSpecifics& pb_entry) {
-  const std::string uuid(pb_entry.uuid());
-  if (uuid.empty() || !base::GUID::ParseCaseInsensitive(uuid).is_valid())
+  base::GUID uuid = base::GUID::ParseCaseInsensitive(pb_entry.uuid());
+  if (!uuid.is_valid())
     return nullptr;
 
   const base::Time created_time = desk_template_conversion::ProtoTimeToTime(
@@ -920,9 +920,9 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
   }
 
   // Protobuf parsing enforces UTF-8 encoding for all strings.
-  auto desk_template =
-      std::make_unique<DeskTemplate>(uuid, ash::DeskTemplateSource::kUser,
-                                     pb_entry.name(), created_time, desk_type);
+  auto desk_template = std::make_unique<DeskTemplate>(
+      std::move(uuid), ash::DeskTemplateSource::kUser, pb_entry.name(),
+      created_time, desk_type);
 
   if (pb_entry.has_updated_time_windows_epoch_micros()) {
     desk_template->set_updated_time(desk_template_conversion::ProtoTimeToTime(

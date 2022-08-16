@@ -135,9 +135,8 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
   Call& call = call_it->second;
 
   auto desk_template = std::make_unique<DeskTemplate>(
-      base::GUID::GenerateRandomV4().AsLowercaseString(),
-      DeskTemplateSource::kUser, call.template_name, base::Time::Now(),
-      call.template_type);
+      base::GUID::GenerateRandomV4(), DeskTemplateSource::kUser,
+      call.template_name, base::Time::Now(), call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
 
   if (!call.unsupported_apps.empty() &&

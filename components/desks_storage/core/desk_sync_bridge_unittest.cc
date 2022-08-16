@@ -1242,9 +1242,9 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {
 
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>(
-          kTestUuid1.AsLowercaseString(), DeskTemplateSource::kUser,
-          "template 1", AdvanceAndGetTime(), DeskTemplateType::kTemplate),
+      std::make_unique<DeskTemplate>(kTestUuid1, DeskTemplateSource::kUser,
+                                     "template 1", AdvanceAndGetTime(),
+                                     DeskTemplateType::kTemplate),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
         loop.Quit();
@@ -1264,9 +1264,9 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
 
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>(
-          kTestUuid1.AsLowercaseString(), DeskTemplateSource::kUser,
-          "template 1", AdvanceAndGetTime(), DeskTemplateType::kTemplate),
+      std::make_unique<DeskTemplate>(kTestUuid1, DeskTemplateSource::kUser,
+                                     "template 1", AdvanceAndGetTime(),
+                                     DeskTemplateType::kTemplate),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
         loop.Quit();
@@ -1425,8 +1425,7 @@ TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {
 
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
-                                     DeskTemplateSource::kUser,
+      std::make_unique<DeskTemplate>(kTestUuid1, DeskTemplateSource::kUser,
                                      "updated template 1", AdvanceAndGetTime(),
                                      DeskTemplateType::kTemplate),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {

@@ -1038,7 +1038,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
     return nullptr;
 
   int version;
-  std::string uuid;
+  std::string uuid_str;
   std::string name;
   std::string created_time_usec_str;
   std::string updated_time_usec_str;
@@ -1046,15 +1046,18 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
   int64_t updated_time_usec;
   const base::Value* desk = policy_json.FindDictKey(kDesk);
   if (!desk || !GetInt(policy_json, kVersion, &version) ||
-      !GetString(policy_json, kUuid, &uuid) ||
+      !GetString(policy_json, kUuid, &uuid_str) ||
       !GetString(policy_json, kName, &name) ||
       !GetString(policy_json, kCreatedTime, &created_time_usec_str) ||
       !base::StringToInt64(created_time_usec_str, &created_time_usec) ||
       !GetString(policy_json, kUpdatedTime, &updated_time_usec_str) ||
       !base::StringToInt64(updated_time_usec_str, &updated_time_usec) ||
-      uuid.empty() || !base::GUID::ParseCaseInsensitive(uuid).is_valid() ||
       name.empty() || created_time_usec_str.empty() ||
       updated_time_usec_str.empty())
+    return nullptr;
+
+  base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
+  if (!uuid.is_valid())
     return nullptr;
 
   // Set default value for the desk type to template.
@@ -1070,7 +1073,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          uuid, source, name, created_time,
+          std::move(uuid), source, name, created_time,
           GetDeskTypeFromString(desk_type_string));
 
   desk_template->set_updated_time(updated_time);

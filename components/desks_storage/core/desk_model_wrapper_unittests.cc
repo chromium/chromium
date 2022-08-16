@@ -107,8 +107,9 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
       base::StringPrintf(kTemplateNameFormat, index);
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          template_uuid, ash::DeskTemplateSource::kUser, template_name,
-          base::Time::Now(), type);
+          base::GUID::ParseCaseInsensitive(template_uuid),
+          ash::DeskTemplateSource::kUser, template_name, base::Time::Now(),
+          type);
   desk_template->set_desk_restore_data(
       std::make_unique<app_restore::RestoreData>());
   return desk_template;
@@ -121,7 +122,8 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
     const std::string& name,
     const base::Time created_time) {
   auto entry = std::make_unique<ash::DeskTemplate>(
-      uuid, source, name, created_time, ash::DeskTemplateType::kTemplate);
+      base::GUID::ParseCaseInsensitive(uuid), source, name, created_time,
+      ash::DeskTemplateType::kTemplate);
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
   return entry;
 }
@@ -132,8 +134,8 @@ std::unique_ptr<ash::DeskTemplate> MakeTestSaveAndRecallDesk(
     const std::string& name,
     const base::Time created_time) {
   auto entry = std::make_unique<ash::DeskTemplate>(
-      uuid, ash::DeskTemplateSource::kUser, name, created_time,
-      ash::DeskTemplateType::kSaveAndRecall);
+      base::GUID::ParseCaseInsensitive(uuid), ash::DeskTemplateSource::kUser,
+      name, created_time, ash::DeskTemplateType::kSaveAndRecall);
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
   return entry;
 }

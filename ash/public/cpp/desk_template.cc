@@ -34,12 +34,12 @@ std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
 
 }  // namespace
 
-DeskTemplate::DeskTemplate(const std::string& uuid,
+DeskTemplate::DeskTemplate(base::GUID uuid,
                            DeskTemplateSource source,
                            const std::string& name,
                            const base::Time created_time,
                            DeskTemplateType type)
-    : uuid_(base::GUID::ParseCaseInsensitive(uuid)),
+    : uuid_(std::move(uuid)),
       source_(source),
       type_(type),
       created_time_(created_time),
@@ -71,8 +71,7 @@ constexpr char DeskTemplate::kIncognitoWindowIdentifier[];
 
 std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
-      uuid_.AsLowercaseString(), source_, base::UTF16ToUTF8(template_name_),
-      created_time_, type_);
+      uuid_, source_, base::UTF16ToUTF8(template_name_), created_time_, type_);
   if (WasUpdatedSinceCreation())
     desk_template->set_updated_time(updated_time_);
   if (desk_restore_data_)

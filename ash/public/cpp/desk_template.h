@@ -48,7 +48,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
  public:
   // This constructor is used to instantiate DeskTemplate with a specific
   // source.
-  DeskTemplate(const std::string& uuid,
+  DeskTemplate(base::GUID uuid,
                DeskTemplateSource source,
                const std::string& name,
                const base::Time created_time,
