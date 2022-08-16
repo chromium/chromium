@@ -19,119 +19,96 @@
  * width/height (as well as other available mixins to style other parts of the
  * dialog contents).
  */
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+import {CrContainerShadowBehavior} from '../cr_container_shadow_behavior.m.js';
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icons_css.m.js';
 import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+Polymer({
+  is: 'cr-dialog',
 
-import {assert} from '../../js/assert.m.js';
-import {CrContainerShadowMixin} from '../cr_container_shadow_mixin.js';
+  _template: html`{__html_template__}`,
 
-class CrContainerShadowMixinInterface {
-  /** @param {boolean} enable */
-  enableShadowBehavior(enable) {}
+  behaviors: [CrContainerShadowBehavior],
 
-  showDropShadows() {}
-}
+  properties: {
+    open: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrContainerShadowMixinInterface}
- */
-const CrDialogElementBase = CrContainerShadowMixin(PolymerElement);
+    /**
+     * Alt-text for the dialog close button.
+     */
+    closeText: String,
 
-/** @polymer */
-export class CrDialogElement extends CrDialogElementBase {
-  static get is() {
-    return 'cr-dialog';
-  }
+    /**
+     * True if the dialog should remain open on 'popstate' events. This is used
+     * for navigable dialogs that have their separate navigation handling code.
+     */
+    ignorePopstate: {
+      type: Boolean,
+      value: false,
+    },
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+    /**
+     * True if the dialog should ignore 'Enter' keypresses.
+     */
+    ignoreEnterKey: {
+      type: Boolean,
+      value: false,
+    },
 
-  static get properties() {
-    return {
-      open: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
+    /**
+     * True if the dialog should consume 'keydown' events. If ignoreEnterKey
+     * is true, 'Enter' key won't be consumed.
+     */
+    consumeKeydownEvent: {
+      type: Boolean,
+      value: false,
+    },
 
-      /**
-       * Alt-text for the dialog close button.
-       */
-      closeText: String,
+    /**
+     * True if the dialog should not be able to be cancelled, which will prevent
+     * 'Escape' key presses from closing the dialog.
+     */
+    noCancel: {
+      type: Boolean,
+      value: false,
+    },
 
-      /**
-       * True if the dialog should remain open on 'popstate' events. This is
-       * used for navigable dialogs that have their separate navigation handling
-       * code.
-       */
-      ignorePopstate: {
-        type: Boolean,
-        value: false,
-      },
+    // True if dialog should show the 'X' close button.
+    showCloseButton: {
+      type: Boolean,
+      value: false,
+    },
 
-      /**
-       * True if the dialog should ignore 'Enter' keypresses.
-       */
-      ignoreEnterKey: {
-        type: Boolean,
-        value: false,
-      },
+    showOnAttach: {
+      type: Boolean,
+      value: false,
+    },
+  },
 
-      /**
-       * True if the dialog should consume 'keydown' events. If ignoreEnterKey
-       * is true, 'Enter' key won't be consumed.
-       */
-      consumeKeydownEvent: {
-        type: Boolean,
-        value: false,
-      },
+  listeners: {
+    'pointerdown': 'onPointerdown_',
+  },
 
-      /**
-       * True if the dialog should not be able to be cancelled, which will
-       * prevent 'Escape' key presses from closing the dialog.
-       */
-      noCancel: {
-        type: Boolean,
-        value: false,
-      },
+  /** @private {?IntersectionObserver} */
+  intersectionObserver_: null,
 
-      // True if dialog should show the 'X' close button.
-      showCloseButton: {
-        type: Boolean,
-        value: false,
-      },
+  /** @private {?MutationObserver} */
+  mutationObserver_: null,
 
-      showOnAttach: {
-        type: Boolean,
-        value: false,
-      },
-    };
-  }
-
-  constructor() {
-    super();
-
-    /** @private {?IntersectionObserver} */
-    this.intersectionObserver_ = null;
-
-    /** @private {?MutationObserver} */
-    this.mutationObserver_ = null;
-
-    /** @private {?Function} */
-    this.boundKeydown_ = null;
-  }
+  /** @private {?Function} */
+  boundKeydown_: null,
 
   /** @override */
   ready() {
-    super.ready();
-
     // If the active history entry changes (i.e. user clicks back button),
     // all open dialogs should be cancelled.
     window.addEventListener('popstate', function() {
@@ -143,14 +120,10 @@ export class CrDialogElement extends CrDialogElementBase {
     if (!this.ignoreEnterKey) {
       this.addEventListener('keypress', this.onKeypress_.bind(this));
     }
-    this.addEventListener(
-        'pointerdown',
-        e => this.onPointerdown_(/** @type {!PointerEvent} */ (e)));
-  }
+  },
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
+  attached() {
     const mutationObserverCallback = function() {
       if (this.$.dialog.open) {
         this.enableShadowBehavior(true);
@@ -173,17 +146,16 @@ export class CrDialogElement extends CrDialogElementBase {
     if (this.showOnAttach) {
       this.showModal();
     }
-  }
+  },
 
   /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  detached() {
     this.removeKeydownListener_();
     if (this.mutationObserver_) {
       this.mutationObserver_.disconnect();
       this.mutationObserver_ = null;
     }
-  }
+  },
 
   /** @private */
   addKeydownListener_() {
@@ -199,7 +171,7 @@ export class CrDialogElement extends CrDialogElementBase {
     // will bypass cr-dialog. We should consume those events too in order to
     // behave modally. This prevents accidentally triggering keyboard commands.
     document.body.addEventListener('keydown', this.boundKeydown_);
-  }
+  },
 
   /** @private */
   removeKeydownListener_() {
@@ -210,29 +182,27 @@ export class CrDialogElement extends CrDialogElementBase {
     this.removeEventListener('keydown', this.boundKeydown_);
     document.body.removeEventListener('keydown', this.boundKeydown_);
     this.boundKeydown_ = null;
-  }
+  },
 
   showModal() {
     this.$.dialog.showModal();
     assert(this.$.dialog.open);
     this.open = true;
-    this.dispatchEvent(
-        new CustomEvent('cr-dialog-open', {bubbles: true, composed: true}));
-  }
+    this.fire('cr-dialog-open');
+  },
 
   cancel() {
-    this.dispatchEvent(
-        new CustomEvent('cancel', {bubbles: true, composed: true}));
+    this.fire('cancel');
     this.$.dialog.close();
     assert(!this.$.dialog.open);
     this.open = false;
-  }
+  },
 
   close() {
     this.$.dialog.close('success');
     assert(!this.$.dialog.open);
     this.open = false;
-  }
+  },
 
   /**
    * Set the title of the dialog for a11y reader.
@@ -241,7 +211,7 @@ export class CrDialogElement extends CrDialogElementBase {
   setTitleAriaLabel(title) {
     this.$.dialog.removeAttribute('aria-labelledby');
     this.$.dialog.setAttribute('aria-label', title);
-  }
+  },
 
   /**
    * @private
@@ -251,7 +221,7 @@ export class CrDialogElement extends CrDialogElementBase {
     // Because the dialog may have a default Enter key handler, prevent
     // keypress events from bubbling up from this element.
     e.stopPropagation();
-  }
+  },
 
   /**
    * @param {!Event} e
@@ -265,9 +235,8 @@ export class CrDialogElement extends CrDialogElementBase {
 
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
-    this.dispatchEvent(
-        new CustomEvent('close', {bubbles: true, composed: true}));
-  }
+    this.fire('close');
+  },
 
   /**
    * @param {!Event} e
@@ -290,9 +259,8 @@ export class CrDialogElement extends CrDialogElementBase {
 
     // Catch and re-fire the native 'cancel' event such that it bubbles across
     // Shadow DOM v1.
-    this.dispatchEvent(
-        new CustomEvent('cancel', {bubbles: true, composed: true}));
-  }
+    this.fire('cancel');
+  },
 
   /**
    * Expose the inner native <dialog> for some rare cases where it needs to be
@@ -302,7 +270,7 @@ export class CrDialogElement extends CrDialogElementBase {
    */
   getNative() {
     return /** @type {!HTMLDialogElement} */ (this.$.dialog);
-  }
+  },
 
   /**
    * @param {!Event} e
@@ -330,7 +298,7 @@ export class CrDialogElement extends CrDialogElementBase {
       actionButton.click();
       e.preventDefault();
     }
-  }
+  },
 
   /**
    * @param {!Event} e
@@ -349,7 +317,7 @@ export class CrDialogElement extends CrDialogElementBase {
 
     // Stop propagation to behave modally.
     e.stopPropagation();
-  }
+  },
 
   /** @param {!PointerEvent} e */
   onPointerdown_(e) {
@@ -375,11 +343,9 @@ export class CrDialogElement extends CrDialogElementBase {
     // Prevent any text from being selected within the dialog when clicking in
     // the backdrop area.
     e.preventDefault();
-  }
+  },
 
   focus() {
-    this.shadowRoot.querySelector('.title-container').focus();
-  }
-}
-
-customElements.define(CrDialogElement.is, CrDialogElement);
+    this.$$('.title-container').focus();
+  },
+});

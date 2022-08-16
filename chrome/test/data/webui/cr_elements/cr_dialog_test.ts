@@ -339,13 +339,11 @@ suite('cr-dialog', function() {
 
     const dialog = document.body.querySelector('cr-dialog')!;
     assertFalse(dialog.open);
-    const bodyContainer = dialog.shadowRoot!.querySelector('.body-container');
+    const bodyContainer = dialog.$$('.body-container');
     assertTrue(!!bodyContainer);
-    const topShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-top');
+    const topShadow = dialog.$$('#cr-container-shadow-top');
     assertTrue(!!topShadow);
-    const bottomShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-bottom');
+    const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
     return flushTasks().then(() => {
@@ -367,11 +365,9 @@ suite('cr-dialog', function() {
     const bodyContainer =
         dialog.shadowRoot!.querySelector<HTMLElement>('.body-container');
     assertTrue(!!bodyContainer);
-    const topShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-top');
+    const topShadow = dialog.$$('#cr-container-shadow-top');
     assertTrue(!!topShadow);
-    const bottomShadow =
-        dialog.shadowRoot!.querySelector('#cr-container-shadow-bottom');
+    const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
     dialog.showModal();  // Attach the dialog for the first time here.
