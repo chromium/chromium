@@ -86,8 +86,6 @@ const std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
         {kFakeMerchant, kFakeProto},
         {kMockMerchantB, kMockProtoB},
 };
-const std::vector<SessionProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kEmptyExpected = {};
 }  // namespace
 
 class CartHandlerTest : public testing::Test {
