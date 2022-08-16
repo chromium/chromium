@@ -165,12 +165,14 @@ class ContextProviderCommandBuffer
   std::unique_ptr<gpu::CommandBufferHelper> helper_;
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
 
-  // Owned by either gles2_impl_ or raster_interface_, not both.
-  raw_ptr<gpu::ImplementationBase, DanglingUntriaged> impl_;
   std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl_;
   std::unique_ptr<gpu::gles2::GLES2TraceImplementation> trace_impl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
   std::unique_ptr<gpu::webgpu::WebGPUInterface> webgpu_interface_;
+
+  // Owned by one of gles2_impl_, raster_interface_, or webgpu_interface_. It
+  // must be declared last and cleared first.
+  raw_ptr<gpu::ImplementationBase> impl_;
 
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 #if BUILDFLAG(SKIA_USE_DAWN)
