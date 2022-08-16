@@ -283,7 +283,7 @@ def _code_coverage_property(
 
     return code_coverage or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if not instance:
@@ -303,6 +303,13 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
                 fail("Environment variables in rewrapper_env must start with " +
                      "'RBE_', got '%s'" % k)
         reclient["rewrapper_env"] = rewrapper_env
+    bootstrap_env = defaults.get_value("reclient_bootstrap_env", bootstrap_env)
+    if bootstrap_env:
+        for k in bootstrap_env:
+            if not k.startswith("RBE_"):
+                fail("Environment variables in bootstrap_env must start with " +
+                     "'RBE_', got '%s'" % k)
+        reclient["bootstrap_env"] = bootstrap_env
     profiler_service = defaults.get_value("reclient_profiler_service", profiler_service)
     if profiler_service:
         reclient["profiler_service"] = profiler_service
@@ -354,6 +361,7 @@ defaults = args.defaults(
     reclient_service = None,
     reclient_jobs = None,
     reclient_rewrapper_env = None,
+    reclient_bootstrap_env = None,
     reclient_profiler_service = None,
     reclient_publish_trace = None,
     reclient_cache_silo = None,
@@ -411,6 +419,7 @@ def builder(
         reclient_service = args.DEFAULT,
         reclient_jobs = args.DEFAULT,
         reclient_rewrapper_env = args.DEFAULT,
+        reclient_bootstrap_env = args.DEFAULT,
         reclient_profiler_service = args.DEFAULT,
         reclient_publish_trace = args.DEFAULT,
         reclient_cache_silo = None,
@@ -574,6 +583,9 @@ def builder(
         reclient_rewrapper_env: a map that sets the rewrapper flags via the
             environment variables. All such vars must start with the "RBE_"
             prefix. Has no effect if reclient_instance is not set.
+        reclient_bootstrap_env: a map that sets the bootstrap flags via the
+            environment variables. All such vars must start with the "RBE_"
+            prefix. Has no effect if reclient_instance is not set.
         reclient_profiler_service: a string indicating service name for
             re-client's cloud profiler. Has no effect if reclient_instance is
             not set.
@@ -725,6 +737,7 @@ def builder(
         service = reclient_service,
         jobs = reclient_jobs,
         rewrapper_env = reclient_rewrapper_env,
+        bootstrap_env = reclient_bootstrap_env,
         profiler_service = reclient_profiler_service,
         publish_trace = reclient_publish_trace,
         cache_silo = reclient_cache_silo,
