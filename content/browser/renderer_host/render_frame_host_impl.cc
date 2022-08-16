@@ -11931,7 +11931,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   }
 
   CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
-      frame_tree_node_);
+      navigation_request->frame_tree_node());
 
   // Reset the salt so that media device IDs are reset for the new document
   // if necessary.
