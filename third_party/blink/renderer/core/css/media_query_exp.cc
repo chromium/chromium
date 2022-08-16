@@ -95,10 +95,8 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
   if (media_feature == media_feature_names::kPrefersReducedMotionMediaFeature)
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
 
-  if (RuntimeEnabledFeatures::CSSDynamicRangeMediaQueriesEnabled()) {
-    if (media_feature == media_feature_names::kDynamicRangeMediaFeature)
-      return ident == CSSValueID::kStandard || ident == CSSValueID::kHigh;
-  }
+  if (media_feature == media_feature_names::kDynamicRangeMediaFeature)
+    return ident == CSSValueID::kStandard || ident == CSSValueID::kHigh;
 
   if (RuntimeEnabledFeatures::CSSVideoDynamicRangeMediaQueriesEnabled()) {
     if (media_feature == media_feature_names::kVideoDynamicRangeMediaFeature)

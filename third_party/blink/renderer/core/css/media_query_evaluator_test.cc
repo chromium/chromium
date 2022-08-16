@@ -642,11 +642,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
                     media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }
@@ -661,11 +658,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
                     media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }
@@ -681,11 +675,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }
@@ -699,11 +690,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }
@@ -716,11 +704,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }
@@ -733,11 +718,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
     // Test again with the feature disabled
-    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
     ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
         false};
-    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
-                    media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
   }

@@ -534,10 +534,6 @@
       implied_by: ["CSSContainerQueries"]
     },
     {
-      name: "CSSDynamicRangeMediaQueries",
-      status: "stable"
-    },
-    {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
       // https://crbug.com/949807
       name: "CSSEnumeratedCustomProperties",
