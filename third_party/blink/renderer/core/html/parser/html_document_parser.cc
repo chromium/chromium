@@ -165,7 +165,10 @@ PreloadProcessingMode GetPreloadProcessingMode() {
           &features::kThreadedPreloadScanner, "preload-processing-mode",
           PreloadProcessingMode::kImmediate, &kPreloadProcessingModeOptions};
 
-  return kPreloadProcessingModeParam.Get();
+  // Cache the value to avoid parsing the param string more than once.
+  static const PreloadProcessingMode kPreloadProcessingModeValue =
+      kPreloadProcessingModeParam.Get();
+  return kPreloadProcessingModeValue;
 }
 
 bool IsPreloadScanningEnabled(Document* document) {
