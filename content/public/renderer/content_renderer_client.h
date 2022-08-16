@@ -183,6 +183,11 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider();
 
+  // Called immediately after the sandbox is initialized on the main thread.
+  // (If the renderer is run with --no-sandbox, it is still called in
+  // RendererMain at about the same time.)
+  virtual void PostSandboxInitialized() {}
+
   // Called on the main-thread immediately after the io thread is
   // created.
   virtual void PostIOThreadCreated(

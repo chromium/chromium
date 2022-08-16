@@ -126,6 +126,7 @@ class ChromeContentRendererClient
   bool DeferMediaLoad(content::RenderFrame* render_frame,
                       bool has_played_media_before,
                       base::OnceClosure closure) override;
+  void PostSandboxInitialized() override;
   void PostIOThreadCreated(
       base::SingleThreadTaskRunner* io_thread_task_runner) override;
   void PostCompositorThreadCreated(

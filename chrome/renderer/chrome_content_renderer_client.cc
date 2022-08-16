@@ -361,7 +361,16 @@ ChromeContentRendererClient::ChromeContentRendererClient()
 #if BUILDFLAG(IS_WIN)
       remote_module_watcher_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif
-      main_thread_profiler_(ThreadProfiler::CreateAndStartOnMainThread()) {
+      main_thread_profiler_(
+#if BUILDFLAG(IS_CHROMEOS)
+          // The profiler can't start before the sandbox is initialized on
+          // ChromeOS due to ChromeOS's sandbox initialization code's use of
+          // AssertSingleThreaded().
+          nullptr
+#else
+          ThreadProfiler::CreateAndStartOnMainThread()
+#endif
+      ) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EnsureExtensionsClientInitialized();
   extensions::ExtensionsRendererClient::Set(
@@ -1331,6 +1340,13 @@ void ChromeContentRendererClient::PrepareErrorPageForHttpStatusError(
       ->PrepareErrorPage(error_page::Error::HttpError(error.url(), http_status),
                          http_method == "POST",
                          std::move(alternative_error_page_info), error_html);
+}
+
+void ChromeContentRendererClient::PostSandboxInitialized() {
+#if BUILDFLAG(IS_CHROMEOS)
+  DCHECK(!main_thread_profiler_);
+  main_thread_profiler_ = ThreadProfiler::CreateAndStartOnMainThread();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeContentRendererClient::PostIOThreadCreated(
