@@ -16,8 +16,6 @@
 #include "content/public/test/browser_test.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#else
-#include "content/public/browser/browser_accessibility_state.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
