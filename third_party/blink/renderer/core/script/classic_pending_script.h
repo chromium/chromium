@@ -86,6 +86,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
     not_streamed_reason_ = reason;
   }
 
+  // Check if this script is eligible for DelayAsyncScriptExecution
+  // (see crbug/1340837).
   bool IsEligibleForDelay() const override;
 
  private:
@@ -138,6 +140,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   const bool is_external_;
   ReadyState ready_state_;
   bool integrity_failure_;
+  // Describes if this script is eligible for DelayAsyncScriptExecution
+  // (see crbug/1340837).
   const bool is_eligible_for_delay_;
 
   // The request is intervened by document.write() intervention.
