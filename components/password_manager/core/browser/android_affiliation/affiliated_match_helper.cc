@@ -168,10 +168,9 @@ void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     FacetURI facet_uri =
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
     if (IsFacetValidForAffiliation(facet_uri))
-      affiliation_service_->Prefetch(facet_uri, base::Time::Max());
-
-    facets.push_back(std::move(facet_uri));
+      facets.push_back(std::move(facet_uri));
   }
+  affiliation_service_->KeepPrefetchForFacets(facets);
   affiliation_service_->TrimUnusedCache(std::move(facets));
 }
 
