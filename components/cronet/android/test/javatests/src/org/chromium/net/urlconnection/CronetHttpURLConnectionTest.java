@@ -32,6 +32,7 @@ import org.chromium.net.CronetException;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CompareDefaultWithCronet;
 import org.chromium.net.CronetTestRule.OnlyRunCronetHttpURLConnection;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.MockUrlRequestJobFactory;
@@ -1376,6 +1377,7 @@ public class CronetHttpURLConnectionTest {
     @SmallTest
     @Feature({"Cronet"})
     @RequiresMinApi(9) // Tagging support added in API level 9: crrev.com/c/chromium/src/+/930086
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M) // crbug/1301957
     public void testTagging() throws Exception {
         if (!CronetTestUtil.nativeCanGetTaggedBytes()) {
             Log.i(TAG, "Skipping test - GetTaggedBytes unsupported.");

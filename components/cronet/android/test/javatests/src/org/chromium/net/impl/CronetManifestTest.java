@@ -6,8 +6,6 @@ package org.chromium.net.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Answers.RETURNS_DEFAULTS;
-import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -24,11 +22,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -41,23 +37,15 @@ public class CronetManifestTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private Context mMockContext;
-    @Mock(answer = RETURNS_DEFAULTS)
-    private PackageManager mMockPackageManager;
     private Bundle mMetadata;
     private ApplicationInfo mAppInfo;
 
     @Before
     public void setUp() throws Exception {
+        mAppInfo = new ApplicationInfo();
         mMockContext = new MockContext(getContext());
         mMetadata = new Bundle();
-        mAppInfo = new ApplicationInfo();
-        doReturn(mAppInfo)
-                .when(mMockPackageManager)
-                .getApplicationInfo(mMockContext.getPackageName(), PackageManager.GET_META_DATA);
     }
 
     @Test
@@ -112,7 +100,13 @@ public class CronetManifestTest {
 
         @Override
         public PackageManager getPackageManager() {
-            return mMockPackageManager;
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public ApplicationInfo getApplicationInfo(String packageName, int flags)
+                        throws PackageManager.NameNotFoundException {
+                    return mAppInfo;
+                }
+            };
         }
     }
 }

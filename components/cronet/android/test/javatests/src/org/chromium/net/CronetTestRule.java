@@ -119,7 +119,8 @@ public class CronetTestRule implements TestRule {
 
     int getMaximumAvailableApiLevel() {
         // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
-        if (ApiVersion.getCronetVersion().compareTo("59") < 0) {
+        int cronetMajorVersion = Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
+        if (cronetMajorVersion < 59) {
             return 3;
         }
         return ApiVersion.getMaximumAvailableApiLevel();
