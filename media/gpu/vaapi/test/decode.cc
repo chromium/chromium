@@ -48,34 +48,42 @@ using media_gpu_vaapi::kModuleVa_prot;
 #endif
 using media_gpu_vaapi::StubPathMap;
 
-#define fourcc(a, b, c, d)                                             \
-  ((static_cast<uint32_t>(a) << 0) | (static_cast<uint32_t>(b) << 8) | \
-   (static_cast<uint32_t>(c) << 16) | (static_cast<uint32_t>(d) << 24))
-
 namespace {
 
 constexpr char kUsageMsg[] =
     "usage: decode_test\n"
     "           --video=<video path>\n"
+    "           --codec=<codec name>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--fetch=<derive|get>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
     "           [--md5]\n"
     "           [--visible]\n"
     "           [--loop]\n"
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    "           [--h265]\n"
-#endif
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified video\n"
     "<profile> via thinly wrapped libva calls.\n"
-    "Supported codecs: VP8, VP9 (profiles 0, 2), AV1 (profile 0), and H265\n"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    "Supported codecs: VP8, VP9 (profiles 0, 2), AV1 (profile 0), H264, and\n"
+    "H265.\n"
+#else
+    "Supported codecs: VP8, VP9 (profiles 0, 2), AV1 (profile 0), H264.\n"
+#endif
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted or HEVC-formatted video.\n"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    "    --codec=<codec name>\n"
+    "        Required. The case-insensitive name of the codec to be used for\n"
+    "        decoding. Valid codec names are VP8, VP9, AV1, H264, and H265.\n"
+#else
+    "    --codec=<codec name>\n"
+    "        Required. The case-insensitive name of the codec to be used for\n"
+    "        decoding. Valid codec names are VP8, VP9, AV1, and H264.\n"
+#endif
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
@@ -110,50 +118,28 @@ constexpr char kHelpMsg[] =
     "        If specified with --frames, loops decoding that number of\n"
     "        leading frames. If specified with --out-prefix, loops decoding,\n"
     "        but only saves the first iteration of decoded frames.\n"
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    "    --h265\n"
-    "        Required for H.265 files. If specified, assumes the input video\n"
-    "        is in H.265 format and selects the H.265 decoder. This is used\n"
-    "        to distinguish H.264 and H.265 videos (b/239719493).\n"
-#endif
     "    --help\n"
     "        Display this help message and exit.\n";
 
-// Returns string representation of |fourcc|.
-std::string FourccStr(uint32_t fourcc) {
-  std::stringstream s;
-  s << static_cast<char>(fourcc & 0xFF)
-    << static_cast<char>((fourcc >> 8) & 0xFF)
-    << static_cast<char>((fourcc >> 16) & 0xFF)
-    << static_cast<char>((fourcc >> 24) & 0xFF);
-  return s.str();
-}
-
-// Creates the appropriate decoder for |stream_data| which is expected to point
-// to H264 Annex B data of length |stream_len|. The decoder will use
-// |va_device| to issue VAAPI calls. Returns nullptr on failure.
+// Creates the decoder for |stream_data| based on the user-provided
+// value. If the user requests a valid codec that is not suitable
+// for decoding |stream_data| the behavior will be undefined. Returns
+// nullptr on failure.
 std::unique_ptr<VideoDecoder> CreateDecoder(
+    const std::string& codec,
     const VaapiDevice& va_device,
     SharedVASurface::FetchPolicy fetch_policy,
     const uint8_t* stream_data,
     size_t stream_len) {
-  // TODO(b/239719493): Update how we are selecting the correct decoder.
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch("h265")) {
-    return std::make_unique<H265Decoder>(stream_data, stream_len, va_device,
-                                         fetch_policy);
-  }
-#endif
-
-  if (*reinterpret_cast<const uint32_t*>(stream_data) == fourcc(0, 0, 0, 1) ||
-      ((*reinterpret_cast<const uint32_t*>(stream_data)) & 0x00FFFFFF) ==
-          fourcc(0, 0, 1, 0)) {
+  if (codec == "H264")
     return std::make_unique<H264Decoder>(stream_data, stream_len, va_device,
                                          fetch_policy);
-  }
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  if (codec == "H265")
+    return std::make_unique<H265Decoder>(stream_data, stream_len, va_device,
+                                         fetch_policy);
+#endif
 
-  // Set up video parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
   if (!ivf_parser->Initialize(stream_data, stream_len, &file_header)) {
@@ -161,22 +147,17 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
     return nullptr;
   }
 
-  // Create appropriate decoder for codec.
-  VLOG(1) << "Creating decoder with codec " << FourccStr(file_header.fourcc);
-  // When adding a new format, keep fourccs alphabetical.
-  if (file_header.fourcc == fourcc('A', 'V', '0', '1')) {
+  if (codec == "AV1")
     return std::make_unique<Av1Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
-  } else if (file_header.fourcc == fourcc('V', 'P', '8', '0')) {
+  if (codec == "VP8")
     return std::make_unique<Vp8Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
-  } else if (file_header.fourcc == fourcc('V', 'P', '9', '0')) {
+  if (codec == "VP9")
     return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
-  }
 
-  LOG(ERROR) << "Codec " << FourccStr(file_header.fourcc) << " not supported.\n"
-             << kUsageMsg;
+  LOG(ERROR) << "Invalid codec requested: " << codec;
   return nullptr;
 }
 
@@ -226,6 +207,13 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  const std::string codec =
+      base::ToUpperASCII(cmd->GetSwitchValueASCII("codec"));
+  if (codec.empty()) {
+    std::cout << "No codec string was provided.\n" << kUsageMsg;
+    return EXIT_FAILURE;
+  }
+
   std::string output_prefix = cmd->GetSwitchValueASCII("out-prefix");
 
   const std::string frames = cmd->GetSwitchValueASCII("frames");
@@ -270,8 +258,8 @@ int main(int argc, char** argv) {
   }
 
   do {
-    const std::unique_ptr<VideoDecoder> dec =
-        CreateDecoder(va_device, *fetch_policy, stream.data(), stream.length());
+    const std::unique_ptr<VideoDecoder> dec = CreateDecoder(
+        codec, va_device, *fetch_policy, stream.data(), stream.length());
     if (!dec) {
       LOG(ERROR) << "Failed to create decoder for file: " << video_path;
       return EXIT_FAILURE;
