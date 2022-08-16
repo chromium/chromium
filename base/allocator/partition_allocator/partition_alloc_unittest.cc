@@ -4540,11 +4540,14 @@ TEST_P(PartitionAllocTest, PartitionTagBasic) {
       static_cast<partition_alloc::PartitionTag>(0xA3C4);
 
   partition_alloc::internal::PartitionTagSetValue(
-      ptr1, slot_span->bucket->slot_size, kTag1);
+      allocator.root()->ObjectToSlotStart(ptr1), slot_span->bucket->slot_size,
+      kTag1);
   partition_alloc::internal::PartitionTagSetValue(
-      ptr2, slot_span->bucket->slot_size, kTag2);
+      allocator.root()->ObjectToSlotStart(ptr2), slot_span->bucket->slot_size,
+      kTag2);
   partition_alloc::internal::PartitionTagSetValue(
-      ptr3, slot_span->bucket->slot_size, kTag3);
+      allocator.root()->ObjectToSlotStart(ptr3), slot_span->bucket->slot_size,
+      kTag3);
 
   memset(ptr1, 0, alloc_size);
   memset(ptr2, 0, alloc_size);

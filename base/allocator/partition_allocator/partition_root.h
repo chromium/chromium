@@ -1191,10 +1191,8 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
 
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   if (!root->IsDirectMappedBucket(slot_span->bucket)) {
-    size_t slot_size_less_extras =
-        root->AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
     partition_alloc::internal::PartitionTagIncrementValue(
-        object, slot_size_less_extras);
+        slot_start, slot_span->bucket->slot_size);
   }
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
