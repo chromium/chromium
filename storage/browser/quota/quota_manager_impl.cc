@@ -1804,7 +1804,7 @@ QuotaManagerImpl::~QuotaManagerImpl() {
   proxy_->InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>());
 
   if (database_)
-    db_runner_->DeleteSoon(FROM_HERE, database_.get());
+    db_runner_->DeleteSoon(FROM_HERE, database_.ExtractAsDangling().get());
 }
 
 QuotaManagerImpl::EvictionContext::EvictionContext() = default;
