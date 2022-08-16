@@ -25081,6 +25081,20 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Font Editor opened"/>
 </enum>
 
+<enum name="DevToolsCSSHintShown">
+  <int value="0" label="Other"/>
+  <int value="1" label="AlignContent"/>
+  <int value="2" label="FlexItem"/>
+  <int value="3" label="FlexContainer"/>
+  <int value="4" label="GridContainer"/>
+  <int value="5" label="GridItem"/>
+  <int value="6" label="FlexGrid"/>
+  <int value="7" label="MulticolFlexGrid"/>
+  <int value="8" label="Padding"/>
+  <int value="9" label="Position"/>
+  <int value="10" label="ZIndex"/>
+</enum>
+
 <enum name="DevToolsDeveloperResourceLoaded">
   <int value="0" label="LoadThroughPageViaTarget"/>
   <int value="1" label="LoadThroughPageViaFrame"/>
