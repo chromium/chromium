@@ -71202,6 +71202,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="NTP Promo link clicked"/>
 </enum>
 
+<enum name="NtpPromoDismissAction">
+  <int value="0" label="NTP Promo dismissed"/>
+  <int value="1" label="NTP Promo restored"/>
+</enum>
+
 <enum name="NtpRequestThrottlerStatus">
   <int value="0" label="Interactive request - quota granted"/>
   <int value="1" label="Background request - quota granted"/>

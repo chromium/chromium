@@ -19,6 +19,22 @@ import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
+ * List of possible Promo Dismiss actions. This enum must match with the
+ * numbering for NtpPromoDismissAction in histogram/enums.xml. These values are
+ * persisted to logs. Entries should not be renumbered, removed or reused.
+ */
+export enum PromoDismissAction {
+  DISMISS = 0,
+  RESTORE = 1,
+}
+
+export function recordPromoDismissAction(action: PromoDismissAction) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.Promos.DismissAction', action,
+      Object.keys(PromoDismissAction).length);
+}
+
+/**
  * If a promo exists with content and can be shown, an element containing
  * the rendered promo is returned with an id #promoContainer. Otherwise, null is
  * returned.
@@ -200,6 +216,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
     NewTabPageProxy.getInstance().handler.blocklistPromo(
         this.middleSlotPromoId_);
     this.$.dismissPromoButtonToast.show();
+    recordPromoDismissAction(PromoDismissAction.DISMISS);
   }
 
   private onUndoDismissPromoButtonClick_() {
@@ -208,6 +225,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
         this.middleSlotPromoId_);
     this.$.promoAndDismissContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
+    recordPromoDismissAction(PromoDismissAction.RESTORE);
   }
 }
 

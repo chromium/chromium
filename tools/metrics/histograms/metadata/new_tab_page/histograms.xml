@@ -1502,6 +1502,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Promos.DismissAction" enum="NtpPromoDismissAction"
+    expires_after="2023-08-11">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs when action is taken on promo e.g. dismissal or restoration. Only
+    logged on the 1P NTP. Note that even if the user has Google as their default
+    search engine, Incognito and Guest mode NTPs are not considered 1P and don't
+    log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Promos.LinkClicked" units="count"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->

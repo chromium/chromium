@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {MiddleSlotPromoElement} from 'chrome://new-tab-page/lazy_load.js';
+import {MiddleSlotPromoElement, PromoDismissAction} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BrowserCommandProxy, CrAutoImgElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -15,18 +15,20 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
+import {fakeMetricsPrivate, MetricsTracker} from './metrics_test_support.js';
 import {installMock} from './test_support.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
   let newTabPageHandler: TestBrowserProxy;
   let promoBrowserCommandHandler: TestBrowserProxy;
+  let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = '';
+    metrics = fakeMetricsPrivate();
     newTabPageHandler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-
     promoBrowserCommandHandler = installMock(
         CommandHandlerRemote,
         mock => BrowserCommandProxy.setInstance({handler: mock}));
@@ -208,9 +210,13 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
       assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.DISMISS));
     });
 
-    test(`clicking dismiss button dismisses promo`, async () => {
+    test(`clicking undo button restores promo`, async () => {
       const canShowPromo = true;
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertHasContent(canShowPromo, middleSlotPromo);
@@ -220,9 +226,17 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
       assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.DISMISS));
 
       middleSlotPromo.$.undoDismissPromoButton.click();
       assertEquals(false, middleSlotPromo.$.promoAndDismissContainer.hidden);
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
     });
   });
 });
