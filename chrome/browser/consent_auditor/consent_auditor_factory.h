@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_
 #define CHROME_BROWSER_CONSENT_AUDITOR_CONSENT_AUDITOR_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -22,7 +22,7 @@ class PrefRegistrySyncable;
 
 class Profile;
 
-class ConsentAuditorFactory : public BrowserContextKeyedServiceFactory {
+class ConsentAuditorFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the singleton instance of ChromeConsentAuditorFactory.
   static ConsentAuditorFactory* GetInstance();

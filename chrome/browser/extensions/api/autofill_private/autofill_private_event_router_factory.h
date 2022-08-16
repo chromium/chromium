@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
@@ -15,8 +15,7 @@ class AutofillPrivateEventRouter;
 // This is a factory class used by the BrowserContextDependencyManager
 // to instantiate the autofillPrivate event router per profile (since the
 // extension event router is per profile).
-class AutofillPrivateEventRouterFactory
-    : public BrowserContextKeyedServiceFactory {
+class AutofillPrivateEventRouterFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the AutofillPrivateEventRouter for |profile|, creating it if
   // it is not yet created.
@@ -33,8 +32,6 @@ class AutofillPrivateEventRouterFactory
 
  protected:
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:

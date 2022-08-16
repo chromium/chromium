@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_DRIVE_DRIVE_NOTIFICATION_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -18,8 +18,7 @@ class DriveNotificationManager;
 
 // Singleton that owns all DriveNotificationManager and associates them with
 // browser contexts.
-class DriveNotificationManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class DriveNotificationManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the |DriveNotificationManager| for |context| if one exists or NULL
   // otherwise.

@@ -9,8 +9,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_reporting {
@@ -31,8 +29,6 @@ CloudProfileReportingServiceFactory::GetForProfile(Profile* profile) {
 KeyedService* CloudProfileReportingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile->IsRegularProfile())
-    return nullptr;
 
   return new CloudProfileReportingService(
       profile,
@@ -46,9 +42,8 @@ bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 CloudProfileReportingServiceFactory::CloudProfileReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "CloudProfileReporting",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("CloudProfileReporting",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 CloudProfileReportingServiceFactory::~CloudProfileReportingServiceFactory() =
     default;

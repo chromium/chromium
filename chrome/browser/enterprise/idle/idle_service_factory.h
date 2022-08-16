@@ -7,11 +7,11 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/idle/idle_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace enterprise_idle {
 
-class IdleServiceFactory : public BrowserContextKeyedServiceFactory {
+class IdleServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static IdleService* GetForBrowserContext(content::BrowserContext* context);
   static IdleServiceFactory* GetInstance();
@@ -30,9 +30,6 @@ class IdleServiceFactory : public BrowserContextKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace enterprise_idle

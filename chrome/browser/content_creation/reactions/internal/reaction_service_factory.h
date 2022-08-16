@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CONTENT_CREATION_REACTIONS_INTERNAL_REACTION_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -16,7 +16,7 @@ namespace content_creation {
 class ReactionService;
 
 // Factory to create and retrieve a ReactionService per profile.
-class ReactionServiceFactory : public BrowserContextKeyedServiceFactory {
+class ReactionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ReactionServiceFactory* GetInstance();
   static content_creation::ReactionService* GetForProfile(Profile* profile);

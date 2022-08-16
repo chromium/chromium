@@ -6,9 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -28,9 +26,12 @@ RealtimeReportingClientFactory* RealtimeReportingClientFactory::GetInstance() {
 }
 
 RealtimeReportingClientFactory::RealtimeReportingClientFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "RealtimeReportingClient",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -42,15 +43,6 @@ RealtimeReportingClientFactory::~RealtimeReportingClientFactory() = default;
 KeyedService* RealtimeReportingClientFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new RealtimeReportingClient(context);
-}
-
-content::BrowserContext* RealtimeReportingClientFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile || profile->IsSystemProfile()) {
-    return nullptr;
-  }
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool RealtimeReportingClientFactory::ServiceIsCreatedWithBrowserContext()

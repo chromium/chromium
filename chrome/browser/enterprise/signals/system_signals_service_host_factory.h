@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNALS_SYSTEM_SIGNALS_SERVICE_HOST_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNALS_SYSTEM_SIGNALS_SERVICE_HOST_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -21,8 +21,7 @@ class SystemSignalsServiceHost;
 namespace enterprise_signals {
 
 // Singleton that owns a single SystemSignalsServiceHost instance.
-class SystemSignalsServiceHostFactory
-    : public BrowserContextKeyedServiceFactory {
+class SystemSignalsServiceHostFactory : public ProfileKeyedServiceFactory {
  public:
   static SystemSignalsServiceHostFactory* GetInstance();
   static device_signals::SystemSignalsServiceHost* GetForProfile(

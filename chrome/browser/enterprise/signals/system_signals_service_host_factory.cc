@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/services/system_signals/public/cpp/browser/system_signals_service_host_impl.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -28,9 +27,7 @@ SystemSignalsServiceHostFactory::GetForProfile(Profile* profile) {
 }
 
 SystemSignalsServiceHostFactory::SystemSignalsServiceHostFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SystemSignalsServiceHost",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SystemSignalsServiceHost") {}
 
 SystemSignalsServiceHostFactory::~SystemSignalsServiceHostFactory() = default;
 

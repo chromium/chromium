@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_AGGREGATOR_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_AGGREGATOR_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -21,7 +21,7 @@ class SignalsAggregator;
 namespace enterprise_signals {
 
 // Singleton that owns a single SignalsAggregator instance.
-class SignalsAggregatorFactory : public BrowserContextKeyedServiceFactory {
+class SignalsAggregatorFactory : public ProfileKeyedServiceFactory {
  public:
   static SignalsAggregatorFactory* GetInstance();
   static device_signals::SignalsAggregator* GetForProfile(Profile* profile);

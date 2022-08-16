@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -49,9 +48,7 @@ bool DeviceTrustConnectorServiceFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DeviceTrustConnectorService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("DeviceTrustConnectorService") {}
 
 DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
     default;

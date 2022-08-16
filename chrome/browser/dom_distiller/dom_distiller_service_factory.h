@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -37,7 +37,7 @@ class DomDistillerContextKeyedService : public KeyedService,
   ~DomDistillerContextKeyedService() override {}
 };
 
-class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {
+class DomDistillerServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static DomDistillerServiceFactory* GetInstance();
   static DomDistillerContextKeyedService* GetForBrowserContext(
@@ -50,9 +50,6 @@ class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {
   ~DomDistillerServiceFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

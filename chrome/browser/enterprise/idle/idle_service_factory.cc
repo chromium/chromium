@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace enterprise_idle {
@@ -24,9 +23,10 @@ IdleServiceFactory* IdleServiceFactory::GetInstance() {
 }
 
 IdleServiceFactory::IdleServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "IdleService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // TODO(crbug.com/1316511): Can we support Guest profiles?
+          ProfileSelections::BuildForRegularProfile()) {}
 
 // BrowserContextKeyedServiceFactory:
 KeyedService* IdleServiceFactory::BuildServiceInstanceFor(
@@ -42,17 +42,6 @@ void IdleServiceFactory::RegisterProfilePrefs(
 
 bool IdleServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
-}
-
-content::BrowserContext* IdleServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-
-  // TODO(crbug.com/1316511): Can we support Guest profiles?
-  if (profile->IsSystemProfile() || profile->IsGuestSession())
-    return nullptr;
-
-  return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
 
 }  // namespace enterprise_idle

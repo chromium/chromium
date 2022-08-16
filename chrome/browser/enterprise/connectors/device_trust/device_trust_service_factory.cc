@@ -17,7 +17,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -49,9 +48,7 @@ DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
 }
 
 DeviceTrustServiceFactory::DeviceTrustServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DeviceTrustService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("DeviceTrustService") {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(PolicyBlocklistFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());

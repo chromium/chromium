@@ -8,9 +8,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 DownloadCoreService* DownloadCoreServiceFactory::GetForBrowserContext(
@@ -25,9 +23,9 @@ DownloadCoreServiceFactory* DownloadCoreServiceFactory::GetInstance() {
 }
 
 DownloadCoreServiceFactory::DownloadCoreServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "DownloadCoreService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
@@ -44,9 +42,4 @@ KeyedService* DownloadCoreServiceFactory::BuildServiceInstanceFor(
   // use of service.
 
   return service;
-}
-
-content::BrowserContext* DownloadCoreServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

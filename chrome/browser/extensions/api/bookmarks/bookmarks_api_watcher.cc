@@ -6,13 +6,12 @@
 
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 namespace {
 
-class BookmarksApiWatcherFactory : public BrowserContextKeyedServiceFactory {
+class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
  public:
   static BookmarksApiWatcher* GetForBrowserContext(
       content::BrowserContext* context) {
@@ -25,20 +24,15 @@ class BookmarksApiWatcherFactory : public BrowserContextKeyedServiceFactory {
   }
 
   BookmarksApiWatcherFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "BookmarksApiWatcher",
-            BrowserContextDependencyManager::GetInstance()) {}
+            ProfileSelections::BuildForRegularAndIncognito()) {}
 
  private:
   // BrowserContextKeyedServiceFactory overrides
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
     return new BookmarksApiWatcher();
-  }
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return context;
   }
 };
 

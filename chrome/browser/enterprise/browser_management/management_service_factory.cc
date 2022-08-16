@@ -8,10 +8,8 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
@@ -49,16 +47,11 @@ ManagementService* ManagementServiceFactory::GetForProfile(Profile* profile) {
 }
 
 ManagementServiceFactory::ManagementServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "EnterpriseManagementService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 ManagementServiceFactory::~ManagementServiceFactory() = default;
-
-content::BrowserContext* ManagementServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
 
 KeyedService* ManagementServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

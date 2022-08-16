@@ -17,7 +17,6 @@
 #include "components/consent_auditor/consent_auditor_impl.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/consent_auditor/consent_sync_bridge_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -43,9 +42,7 @@ consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
 }
 
 ConsentAuditorFactory::ConsentAuditorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ConsentAuditor",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ConsentAuditor") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

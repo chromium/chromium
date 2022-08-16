@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_CLOUD_PROFILE_REPORTING_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,8 +14,7 @@ namespace enterprise_reporting {
 
 class CloudProfileReportingService;
 
-class CloudProfileReportingServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class CloudProfileReportingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static CloudProfileReportingServiceFactory* GetInstance();
 

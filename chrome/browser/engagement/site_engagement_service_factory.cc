@@ -8,9 +8,7 @@
 #include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace site_engagement {
 
@@ -36,9 +34,9 @@ SiteEngagementServiceFactory* SiteEngagementServiceFactory::GetInstance() {
 }
 
 SiteEngagementServiceFactory::SiteEngagementServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SiteEngagementService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
@@ -54,11 +52,6 @@ KeyedService* SiteEngagementServiceFactory::BuildServiceInstanceFor(
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context), ServiceAccessType::IMPLICIT_ACCESS);
   return new HistoryAwareSiteEngagementService(context, history);
-}
-
-content::BrowserContext* SiteEngagementServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 SiteEngagementService* SiteEngagementServiceFactory::GetSiteEngagementService(

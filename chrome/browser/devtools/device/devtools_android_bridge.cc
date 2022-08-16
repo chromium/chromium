@@ -38,7 +38,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
@@ -86,9 +85,7 @@ DevToolsAndroidBridge* DevToolsAndroidBridge::Factory::GetForProfile(
 }
 
 DevToolsAndroidBridge::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "DevToolsAndroidBridge",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("DevToolsAndroidBridge") {}
 
 DevToolsAndroidBridge::Factory::~Factory() {}
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class OfflineItemModelManager;
 
@@ -21,8 +21,7 @@ class BrowserContext;
 // This class is the main access point for an OfflineItemModelManager.  It is
 // responsible for building the OfflineItemModelManager and associating it with
 // a particular content::BrowserContext.
-class OfflineItemModelManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class OfflineItemModelManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns a singleton instance of an OfflineItemModelManagerFactory.
   static OfflineItemModelManagerFactory* GetInstance();
@@ -45,8 +44,6 @@ class OfflineItemModelManagerFactory
 
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

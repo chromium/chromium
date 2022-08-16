@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,7 +39,7 @@ class TCPDeviceProvider;
 
 class DevToolsAndroidBridge : public KeyedService {
  public:
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     // Returns singleton instance of DevToolsAndroidBridge.
     static Factory* GetInstance();

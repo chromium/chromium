@@ -7,8 +7,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 DIPSService* DIPSServiceFactory::GetForBrowserContext(
@@ -22,18 +20,13 @@ DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
 }
 
 DIPSServiceFactory::DIPSServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "DIPSService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 DIPSServiceFactory::~DIPSServiceFactory() = default;
 
 KeyedService* DIPSServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new DIPSService(context);
-}
-
-content::BrowserContext* DIPSServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

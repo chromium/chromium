@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_DISPLAY_HELPER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,7 +15,7 @@ namespace extensions {
 class ExtensionNotificationDisplayHelper;
 
 class ExtensionNotificationDisplayHelperFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   ExtensionNotificationDisplayHelperFactory(
       const ExtensionNotificationDisplayHelperFactory&) = delete;
@@ -31,8 +31,6 @@ class ExtensionNotificationDisplayHelperFactory
  protected:
   // Overridden from BrowserContextKeyedServiceFactory.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
  private:

@@ -26,9 +26,9 @@ ExtensionNotificationDisplayHelperFactory::GetForProfile(Profile* profile) {
 
 ExtensionNotificationDisplayHelperFactory::
     ExtensionNotificationDisplayHelperFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ExtensionNotificationDisplayHelperFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 ExtensionNotificationDisplayHelperFactory::
     ~ExtensionNotificationDisplayHelperFactory() {}
@@ -38,12 +38,6 @@ ExtensionNotificationDisplayHelperFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new ExtensionNotificationDisplayHelper(profile);
-}
-
-content::BrowserContext*
-ExtensionNotificationDisplayHelperFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace extensions
