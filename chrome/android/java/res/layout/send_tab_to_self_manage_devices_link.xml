@@ -3,43 +3,22 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/rectangle_surface_1">
-
-  <View
-        style="@style/HorizontalDivider"
-        android:layout_width="match_parent" />
-
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:paddingTop="10dp"
-      android:paddingBottom="10dp"
-      android:paddingStart="29dp"
-      android:paddingEnd="34dp">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/account_avatar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical" />
+        android:layout_height="wrap_content"/>
 
     <!-- The default android:breakStrategy is "high_quality", which tries to be
-         smart and ends up splitting email addresses containing ".". So use
-         "simple" instead. -->
+          smart and ends up splitting email addresses containing ".". So use
+          "simple" instead. -->
     <TextView
         android:id="@+id/manage_devices_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:gravity="center_vertical"
         android:breakStrategy="simple"
-        android:paddingStart="20dp" />
+        android:paddingStart="8dp" />
 
-  </LinearLayout>
-</LinearLayout>
+</merge>

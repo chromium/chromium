@@ -14,7 +14,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.base.IntentUtils;
@@ -32,12 +32,8 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View containing the sharing account's avatar, email and a link to manage its target devices. */
-public class ManageAccountDevicesLinkView extends FrameLayout {
+public class ManageAccountDevicesLinkView extends LinearLayout {
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
-
-    public ManageAccountDevicesLinkView(Context context) {
-        this(context, null);
-    }
 
     public ManageAccountDevicesLinkView(Context context, AttributeSet attrs) {
         super(context, attrs);

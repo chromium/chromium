@@ -68,7 +68,8 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        listView.addFooterView(new ManageAccountDevicesLinkView(mContext));
+        listView.addFooterView(LayoutInflater.from(mContext).inflate(
+                R.layout.send_tab_to_self_device_picker_footer, null));
     }
 
     @Override
