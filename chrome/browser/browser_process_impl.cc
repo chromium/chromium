@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -825,7 +826,12 @@ bool BrowserProcessImpl::IsShuttingDown() {
 
 printing::PrintJobManager* BrowserProcessImpl::print_job_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(ENABLE_PRINTING)
   return print_job_manager_.get();
+#else
+  NOTREACHED();
+  return nullptr;
+#endif
 }
 
 printing::PrintPreviewDialogController*

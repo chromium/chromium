@@ -341,8 +341,10 @@ class BrowserProcessImpl : public BrowserProcess,
 
   bool tearing_down_ = false;
 
+#if BUILDFLAG(ENABLE_PRINTING)
   // Ensures that all the print jobs are finished before closing the browser.
   std::unique_ptr<printing::PrintJobManager> print_job_manager_;
+#endif
 
   std::string locale_;
 
