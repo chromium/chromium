@@ -13,6 +13,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
 namespace content {
@@ -90,24 +91,26 @@ class FileSystemAccessPermissionContext {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class SensitiveDirectoryResult {
-    kAllowed = 0,   // Access to directory is okay.
-    kTryAgain = 1,  // User should pick a different directory.
+  enum class SensitiveEntryResult {
+    kAllowed = 0,   // Access to entry is okay.
+    kTryAgain = 1,  // User should pick a different entry.
     kAbort = 2,     // Abandon entirely, as if picking was cancelled.
     kMaxValue = kAbort
   };
-  // Checks if access to the given |path| should be allowed or blocked. This is
+  // Checks if access to the given `path` should be allowed or blocked. This is
   // used to implement blocks for certain sensitive directories such as the
   // "Windows" system directory, as well as the root of the "home" directory.
-  // Calls |callback| with the result of the check, after potentially showing
-  // some UI to the user if the path should not be accessed.
-  virtual void ConfirmSensitiveDirectoryAccess(
+  // For downloads ("Save as") it also checks the file extension. Calls
+  // `callback` with the result of the check, after potentially showing some UI
+  // to the user if the path is dangerous or should not be accessed.
+  virtual void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
+      ui::SelectFileDialog::Type dialog_type,
       GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) = 0;
+      base::OnceCallback<void(SensitiveEntryResult)> callback) = 0;
 
   enum class AfterWriteCheckResult { kAllow, kBlock };
   // Runs a recently finished write operation through checks such as malware

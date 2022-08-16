@@ -33,7 +33,7 @@ class FileSystemAccessRestrictedDirectoryDialogView
   METADATA_HEADER(FileSystemAccessRestrictedDirectoryDialogView);
 
   using SensitiveDirectoryResult =
-      content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
+      content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
   FileSystemAccessRestrictedDirectoryDialogView(
       const FileSystemAccessRestrictedDirectoryDialogView&) = delete;
@@ -41,7 +41,7 @@ class FileSystemAccessRestrictedDirectoryDialogView
       const FileSystemAccessRestrictedDirectoryDialogView&) = delete;
   ~FileSystemAccessRestrictedDirectoryDialogView() override;
 
-  // Creates and shows the dialog. The |callback| is called when the dialog is
+  // Creates and shows the dialog. `callback` is called when the dialog is
   // dismissed.
   static views::Widget* ShowDialog(
       const url::Origin& origin,

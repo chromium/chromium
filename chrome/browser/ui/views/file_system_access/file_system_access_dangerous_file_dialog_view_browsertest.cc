@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog_view.h"
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -16,14 +16,12 @@
 using SensitiveEntryResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
-class FileSystemAccessRestrictedDirectoryDialogViewTest
-    : public DialogBrowserTest {
+class FileSystemAccessDangerousFileDialogViewTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    widget_ = FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
-        kTestOrigin, base::FilePath(FILE_PATH_LITERAL("/foo/bar")),
-        content::FileSystemAccessPermissionContext::HandleType::kDirectory,
+    widget_ = FileSystemAccessDangerousFileDialogView::ShowDialog(
+        kTestOrigin, base::FilePath(FILE_PATH_LITERAL("bar.swf")),
         base::BindLambdaForTesting([&](SensitiveEntryResult result) {
           callback_called_ = true;
           callback_result_ = result;
@@ -41,16 +39,16 @@ class FileSystemAccessRestrictedDirectoryDialogViewTest
   SensitiveEntryResult callback_result_ = SensitiveEntryResult::kAllowed;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDangerousFileDialogViewTest,
                        AcceptRunsCallback) {
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
   EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SensitiveEntryResult::kTryAgain, callback_result_);
+  EXPECT_EQ(SensitiveEntryResult::kAllowed, callback_result_);
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDangerousFileDialogViewTest,
                        CancelRunsCallback) {
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
@@ -59,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDangerousFileDialogViewTest,
                        InvokeUi_default) {
   ShowAndVerifyUi();
 }

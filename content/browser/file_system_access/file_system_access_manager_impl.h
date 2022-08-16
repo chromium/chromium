@@ -418,7 +418,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       bool request_directory_write_access,
       ChooseEntriesCallback callback,
       std::vector<FileSystemChooser::ResultEntry> entries,
-      FileSystemAccessPermissionContext::SensitiveDirectoryResult result);
+      FileSystemAccessPermissionContext::SensitiveEntryResult result);
   void DidCreateAndTruncateSaveFile(const BindingContext& binding_context,
                                     const FileSystemChooser::ResultEntry& entry,
                                     const storage::FileSystemURL& url,

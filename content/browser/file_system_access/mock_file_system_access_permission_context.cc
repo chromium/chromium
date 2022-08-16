@@ -11,15 +11,16 @@ MockFileSystemAccessPermissionContext::MockFileSystemAccessPermissionContext() =
 MockFileSystemAccessPermissionContext::
     ~MockFileSystemAccessPermissionContext() = default;
 
-void MockFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
+void MockFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
     PathType path_type,
     const base::FilePath& path,
     HandleType handle_type,
+    ui::SelectFileDialog::Type dialog_type,
     GlobalRenderFrameHostId frame_id,
-    base::OnceCallback<void(SensitiveDirectoryResult)> callback) {
-  ConfirmSensitiveDirectoryAccess_(origin, path_type, path, handle_type,
-                                   frame_id, callback);
+    base::OnceCallback<void(SensitiveEntryResult)> callback) {
+  ConfirmSensitiveEntryAccess_(origin, path_type, path, handle_type,
+                               dialog_type, frame_id, callback);
 }
 
 void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(

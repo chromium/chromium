@@ -53,6 +53,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -1307,13 +1308,14 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
 
   EXPECT_CALL(
       permission_context_,
-      ConfirmSensitiveDirectoryAccess_(
+      ConfirmSensitiveEntryAccess_(
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
+          ui::SelectFileDialog::Type::SELECT_OPEN_FILE,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
-                                       SensitiveDirectoryResult::kAllowed));
+      .WillOnce(RunOnceCallback<6>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
@@ -1392,13 +1394,14 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
 
   EXPECT_CALL(
       permission_context_,
-      ConfirmSensitiveDirectoryAccess_(
+      ConfirmSensitiveEntryAccess_(
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
+          ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
-                                       SensitiveDirectoryResult::kAllowed));
+      .WillOnce(RunOnceCallback<6>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(
@@ -1473,13 +1476,14 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   EXPECT_CALL(
       permission_context_,
-      ConfirmSensitiveDirectoryAccess_(
+      ConfirmSensitiveEntryAccess_(
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_dir,
           FileSystemAccessPermissionContext::HandleType::kDirectory,
+          ui::SelectFileDialog::Type::SELECT_FOLDER,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
-      .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
-                                       SensitiveDirectoryResult::kAllowed));
+      .WillOnce(RunOnceCallback<6>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context_,
               GetReadPermissionGrant(

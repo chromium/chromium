@@ -357,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
-  const base::FilePath test_file = temp_dir_.GetPath().AppendASCII("test.exe");
+  const std::string file_name("test.pdf");
+  const base::FilePath test_file = temp_dir_.GetPath().AppendASCII(file_name);
 
   std::string expected_hash;
   ASSERT_TRUE(base::HexStringToString(
@@ -388,9 +389,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
                     EXPECT_EQ(request->url(), expected_url);
                     EXPECT_EQ(request->digests().sha256(), expected_hash);
                     EXPECT_EQ(request->length(), 3);
-                    EXPECT_EQ(request->file_basename(), "test.exe");
+                    EXPECT_EQ(request->file_basename(), file_name);
                     EXPECT_EQ(request->download_type(),
-                              ClientDownloadRequest::WIN_EXECUTABLE);
+                              ClientDownloadRequest::DOCUMENT);
 
                     ASSERT_GE(request->resources_size(), 2);
 

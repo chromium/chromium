@@ -80,13 +80,14 @@ class ChromeFileSystemAccessPermissionContext
                           const base::FilePath& path,
                           HandleType handle_type,
                           UserAction user_action) override;
-  void ConfirmSensitiveDirectoryAccess(
+  void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
+      ui::SelectFileDialog::Type dialog_type,
       content::GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
+      base::OnceCallback<void(SensitiveEntryResult)> callback) override;
   void PerformAfterWriteChecks(
       std::unique_ptr<content::FileSystemAccessWriteItem> item,
       content::GlobalRenderFrameHostId frame_id,
@@ -194,8 +195,9 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
+      ui::SelectFileDialog::Type dialog_type,
       content::GlobalRenderFrameHostId frame_id,
-      base::OnceCallback<void(SensitiveDirectoryResult)> callback,
+      base::OnceCallback<void(SensitiveEntryResult)> callback,
       bool should_block);
 
   void MaybeMigrateOriginToNewSchema(const url::Origin& origin);
