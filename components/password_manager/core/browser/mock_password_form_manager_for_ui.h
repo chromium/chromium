@@ -40,7 +40,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetInteractionsStats,
               (),
               (const override));
-  MOCK_METHOD(const std::vector<const PasswordForm*>&,
+  MOCK_METHOD(std::vector<const PasswordForm*>,
               GetInsecureCredentials,
               (),
               (const override));

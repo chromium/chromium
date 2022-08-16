@@ -46,8 +46,7 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  const std::vector<const PasswordForm*>& GetInsecureCredentials()
-      const override;
+  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
@@ -91,7 +90,7 @@ class FormFetcherImpl : public FormFetcher,
   std::vector<std::unique_ptr<PasswordForm>> federated_;
 
   // List of insecure credentials for the current domain.
-  std::vector<const PasswordForm*> insecure_credentials_;
+  std::vector<std::unique_ptr<PasswordForm>> insecure_credentials_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.

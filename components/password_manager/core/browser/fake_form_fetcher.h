@@ -42,8 +42,7 @@ class FakeFormFetcher : public FormFetcher {
   State GetState() const override;
 
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  const std::vector<const PasswordForm*>& GetInsecureCredentials()
-      const override;
+  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;

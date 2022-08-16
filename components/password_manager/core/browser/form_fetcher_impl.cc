@@ -148,9 +148,9 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-const std::vector<const PasswordForm*>&
-FormFetcherImpl::GetInsecureCredentials() const {
-  return insecure_credentials_;
+std::vector<const PasswordForm*> FormFetcherImpl::GetInsecureCredentials()
+    const {
+  return MakeWeakCopies(insecure_credentials_);
 }
 
 std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
@@ -230,7 +230,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
       &result->preferred_match_);
 
   result->interactions_stats_ = interactions_stats_;
-  result->insecure_credentials_ = insecure_credentials_;
+  result->insecure_credentials_ = MakeCopies(insecure_credentials_);
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
 
@@ -271,7 +271,7 @@ void FormFetcherImpl::SplitResults(
       }
     } else {
       if (!form->password_issues.empty())
-        insecure_credentials_.push_back(form.get());
+        insecure_credentials_.push_back(std::make_unique<PasswordForm>(*form));
       if (form->IsFederatedCredential()) {
         federated_.push_back(std::move(form));
       } else {

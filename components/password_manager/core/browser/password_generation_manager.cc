@@ -47,8 +47,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  const std::vector<const PasswordForm*>& GetInsecureCredentials()
-      const override;
+  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;
@@ -67,7 +66,6 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
  private:
   PasswordForm pending_form_;
   std::vector<const PasswordForm*> matches_;
-  std::vector<const PasswordForm*> insecure_credentials_;
   const std::vector<PasswordForm> federated_matches_;
   const std::vector<PasswordForm> non_federated_matches_;
 
@@ -127,9 +125,9 @@ base::span<const InteractionsStats> PasswordDataForUI::GetInteractionsStats()
   return {};
 }
 
-const std::vector<const PasswordForm*>&
-PasswordDataForUI::GetInsecureCredentials() const {
-  return insecure_credentials_;
+std::vector<const PasswordForm*> PasswordDataForUI::GetInsecureCredentials()
+    const {
+  return {};
 }
 
 bool PasswordDataForUI::IsBlocklisted() const {
