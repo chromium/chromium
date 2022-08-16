@@ -646,22 +646,26 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 }
 
 void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
-  // Start prefetch requests iff no non-prefetch request is in progress. Though
-  // not likely, it is possible for the providers to have an active non-prefetch
-  // request when a prefetch request is about to be started. In such scenarios,
-  // starting a prefetch request will cause the providers to invalidate their
-  // active non-prefetch requests and never get a chance to notify the
-  // controller of their status; thus resulting in the controller to remain in
-  // an invalid state.
-  if (!done_) {
-    return;
-  }
+  TRACE_EVENT1("omnibox", "AutocompleteController::StartPrefetch", "text",
+               base::UTF16ToUTF8(input.text()));
 
   for (auto provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
+
+    // Avoid starting a prefetch request if a non-prefetch request is in
+    // progress. Though explicitly discouraged as per documentation in
+    // AutocompleteProvider::StartPrefetch(), a provider may still cancel its
+    // in-flight non-prefetch request when a prefetch request is started. This
+    // may cause the provider to never get a chance to notify the controller of
+    // its status; resulting in the controller to remain in an invalid state.
+    if (!provider->done()) {
+      continue;
+    }
 
     provider->StartPrefetch(input);
+    DCHECK(provider->done());
   }
 }
 

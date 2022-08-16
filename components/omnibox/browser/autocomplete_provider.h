@@ -190,6 +190,21 @@ class AutocompleteProvider
   void AddListener(AutocompleteProviderListener* listener);
   void NotifyListeners(bool updated_matches) const;
 
+  // Called on page load. Used start a prefetch request to warm up the
+  // provider's underlying service(s) and/or optionally cache the provider's
+  // otherwise async response. A prefetch request must conform to the following:
+  // - It must be posted on a sequence to minimize contention on page load.
+  // - It must *not* depend on or affect the provider's state.
+  // - It must *not* stop the provider.
+  // - It need *not* stop when the provider is stopped.
+  // - It must *not* call NotifyListeners() after completing a prefetch request.
+  // - It must make prefetched response accessible to other instances of the
+  //   provider, e.g., via user prefs or a keyed service, if applicable.
+  // The default implementation DCHECKs whether async requests are allowed.
+  // Overridden functions must call `AutocompleteProvider::StartPrefetch()` with
+  // the same arguments passed to the function.
+  virtual void StartPrefetch(const AutocompleteInput& input);
+
   // Called to start an autocomplete query.  The provider is responsible for
   // tracking its matches for this query and whether it is done processing the
   // query.  When new matches are available or the provider finishes, it
@@ -211,12 +226,6 @@ class AutocompleteProvider
   // AutocompleteController::Start().
   virtual void Start(const AutocompleteInput& input, bool minimal_changes) = 0;
 
-  // Similar to Start(), but used to perform prefetch requests. Providers can
-  // override this method and perform a prefetch request in order to cache the
-  // response. Providers should *not* call NotifyListeners() after completing a
-  // prefetch request.
-  virtual void StartPrefetch(const AutocompleteInput& input) {}
-
   // Advises the provider to stop processing.  This may be called even if the
   // provider is already done.  If the provider caches any results, it should
   // clear the cache based on the value of `clear_cached_results`.  Normally,
@@ -234,7 +243,7 @@ class AutocompleteProvider
   // The default implementation sets `done_` to true and clears `matches_` if
   // `clear_cached_results` is true. Overridden functions must call
   // `AutocompleteProvider::Stop()` with the same arguments passed to the
-  // function unless there is a good and well-documented reason not to do so.
+  // function.
   virtual void Stop(bool clear_cached_results, bool due_to_user_inactivity);
 
   // Returns the enum equivalent to the name of this provider.

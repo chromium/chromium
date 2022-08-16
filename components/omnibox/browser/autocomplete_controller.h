@@ -126,8 +126,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Made virtual for mocking in tests.
   virtual void Start(const AutocompleteInput& input);
 
-  // Simply calls StartPrefetch() on all providers so those providers that
-  // override it could perform a prefetch request and populate their caches.
+  // Calls StartPrefetch() on all eligible providers so that they can optionally
+  // perform a prefetch request to warm up their underlying service(s) and/or
+  // optionally cache their otherwise async response.
   // Made virtual for mocking in tests.
   virtual void StartPrefetch(const AutocompleteInput& input);
 

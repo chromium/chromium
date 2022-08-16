@@ -382,14 +382,11 @@ void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
+  AutocompleteProvider::StartPrefetch(input);
+
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::StartPrefetch");
 
   if (!AllowZeroPrefixSuggestions(client(), input)) {
-    return;
-  }
-
-  // Do not start a request if async requests are disallowed.
-  if (input.omit_asynchronous_matches()) {
     return;
   }
 
@@ -539,6 +536,8 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     ResultType result_type,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
+  TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnURLLoadComplete");
+
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
@@ -591,6 +590,8 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     ResultType result_type,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
+  TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnPrefetchURLLoadComplete");
+
   DCHECK_EQ(prefetch_loader_.get(), source);
 
   const bool response_received =

@@ -93,6 +93,10 @@ void AutocompleteProvider::NotifyListeners(bool updated_matches) const {
     listener->OnProviderUpdate(updated_matches, this);
 }
 
+void AutocompleteProvider::StartPrefetch(const AutocompleteInput& input) {
+  DCHECK(!input.omit_asynchronous_matches());
+}
+
 void AutocompleteProvider::Stop(bool clear_cached_results,
                                 bool due_to_user_inactivity) {
   done_ = true;
