@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
@@ -162,6 +163,31 @@ void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
   offsets.push_back(value.ToDouble());
 }
 
+bool ValidateClipPathValue(const Element* element,
+                           const CSSValue* value,
+                           const InterpolableValue* interpolable_value) {
+  if (value) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+    // Don't try to composite animations with clip-path: none, as this is not
+    // compatible with the method used to paint composite clip path animations:
+    // A mask image would potentially clip content unless if it was the size of
+    // the entire viewport.
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kNone) {
+      return false;
+    }
+
+    return true;
+  } else if (interpolable_value) {
+    // There is no need to check for clip-path: none here, as transitions are
+    // not defined for this non-interpolable value. See
+    // CSSAnimations::CalculateTransitionUpdateForPropertyHandle and
+    // basic_shape_interpolation_functions::MaybeConvertBasicShape
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 template <>
@@ -181,7 +207,8 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 // background-color and clip-path animations.
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  return GetAnimationForProperty(element, GetCSSPropertyClipPath());
+  return GetAnimationForProperty(element, GetCSSPropertyClipPath(),
+                                 ValidateClipPathValue);
 }
 
 // static
