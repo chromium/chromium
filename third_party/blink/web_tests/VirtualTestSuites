@@ -1042,14 +1042,6 @@
              "--disable-features=HTMLPopupAttribute"]
   },
   {
-    "prefix": "dialogfocus-old-behavior",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/interactive-elements/the-dialog-element"
-    ],
-    "args": ["--disable-features=DialogFocusNewSpecBehavior"]
-  },
-  {
     "prefix": "object-param-url",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/embedded-content/the-object-element/object-param-url.html"],

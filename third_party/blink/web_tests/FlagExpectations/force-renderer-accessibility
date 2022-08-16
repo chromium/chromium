@@ -19,7 +19,6 @@ external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-cras
 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/detach-locked-slot-children-crash.html [ Crash ]
 # ax_object.cc#2792 -- IsInert():
 crbug.com/1350162 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
-crbug.com/1350162 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
 # Should not receive unincluded child:
 external/wpt/inert/dynamic-inert-on-focused-element.html [ Crash ]
 # Unknown cause:

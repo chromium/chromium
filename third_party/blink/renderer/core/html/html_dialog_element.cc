@@ -153,8 +153,7 @@ void HTMLDialogElement::close(const String& return_value) {
 
   // We should call focus() last since it will fire a focus event which could
   // modify this element.
-  if (RuntimeEnabledFeatures::DialogFocusNewSpecBehaviorEnabled() &&
-      previously_focused_element_) {
+  if (previously_focused_element_) {
     FocusOptions* focus_options = FocusOptions::Create();
     focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;

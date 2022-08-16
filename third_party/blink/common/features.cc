@@ -1105,13 +1105,6 @@ const base::Feature kBrowsingTopicsBypassIPIsPubliclyRoutableCheck{
     "BrowsingTopicsBypassIPIsPubliclyRoutableCheck",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When <dialog>s are closed, this focuses the "previously focused" element
-// which had focus when the <dialog> was first opened.
-// TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
-// the feature is in stable with no issues.
-const base::Feature kDialogFocusNewSpecBehavior{
-    "DialogFocusNewSpecBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Makes autofill look across shadow boundaries when collecting form controls to
 // fill.
 const base::Feature kAutofillShadowDOM{"AutofillShadowDOM",

@@ -349,10 +349,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"DeferredShaping", blink::features::kDeferredFontShaping},
           {"DesktopPWAsSubApps", blink::features::kDesktopPWAsSubApps},
           {"DocumentTransition", blink::features::kDocumentTransition},
-          // TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
-          // the feature is in stable with no issues.
-          {"DialogFocusNewSpecBehavior",
-           blink::features::kDialogFocusNewSpecBehavior},
           {"EditContext", blink::features::kEditContext},
           {"ElementSuperRareData", blink::features::kElementSuperRareData},
           {"FileHandling", blink::features::kFileHandlingAPI},
