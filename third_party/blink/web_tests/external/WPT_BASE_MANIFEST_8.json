@@ -406938,6 +406938,15 @@
        {}
       ]
      ],
+     "no-focus-events-at-clicking-editable-content-in-link.html": [
+      "dc08636c467fdfa23caedc2cccb1e5f570a90b82",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "non-cancelable-when-passive": {
       "non-passive-mousewheel-event-listener-on-body.html": [
        "4c40291aa0a7159f3f5569f8535730fa4b20f52f",
