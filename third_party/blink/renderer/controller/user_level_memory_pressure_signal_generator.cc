@@ -12,8 +12,8 @@
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -113,13 +113,15 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator()
   DCHECK(!std::isinf(memory_threshold_mb_));
 
   MemoryUsageMonitor::Instance().AddObserver(this);
-  ThreadScheduler::Current()->AddRAILModeObserver(this);
+  ThreadScheduler::Current()->ToMainThreadScheduler()->AddRAILModeObserver(
+      this);
 }
 
 UserLevelMemoryPressureSignalGenerator::
     ~UserLevelMemoryPressureSignalGenerator() {
   MemoryUsageMonitor::Instance().RemoveObserver(this);
-  ThreadScheduler::Current()->RemoveRAILModeObserver(this);
+  ThreadScheduler::Current()->ToMainThreadScheduler()->RemoveRAILModeObserver(
+      this);
 }
 
 void UserLevelMemoryPressureSignalGenerator::SetTickClockForTesting(

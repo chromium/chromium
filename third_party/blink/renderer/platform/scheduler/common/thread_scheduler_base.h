@@ -8,11 +8,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
-#include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {

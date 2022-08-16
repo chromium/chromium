@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 
 namespace blink {
 
@@ -37,7 +37,8 @@ bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
     return false;
 
   auto* scheduler = ThreadScheduler::Current();
-  auto info = scheduler->GetPendingUserInputInfo(options->includeContinuous());
+  auto info = scheduler->ToMainThreadScheduler()->GetPendingUserInputInfo(
+      options->includeContinuous());
 
   for (const auto& attribution : info) {
     if (window->GetFrame()->CanAccessEvent(attribution)) {

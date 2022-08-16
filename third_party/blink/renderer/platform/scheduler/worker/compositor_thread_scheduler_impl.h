@@ -54,8 +54,6 @@ class PLATFORM_EXPORT CompositorThreadSchedulerImpl
                            Thread::IdleTask) override;
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override;
-  void AddRAILModeObserver(RAILModeObserver*) override {}
-  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;

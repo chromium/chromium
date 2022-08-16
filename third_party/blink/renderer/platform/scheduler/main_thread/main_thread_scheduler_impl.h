@@ -443,7 +443,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   };
 
   // WebThreadScheduler private implementation:
-  WebThreadScheduler* GetWebMainThreadScheduler() override;
+  WebThreadScheduler* ToWebMainThreadScheduler() override;
 
   // ThreadSchedulerBase overrides
   base::SequencedTaskRunner* GetVirtualTimeTaskRunner() override;

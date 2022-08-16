@@ -9,13 +9,8 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_input_event_attribution.h"
-#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace v8 {
 class Isolate;
@@ -29,12 +24,9 @@ namespace blink {
 
 class CompositorThreadScheduler;
 class MainThreadScheduler;
-class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
 // the platform's scheduler.
-// TODO(dtapuska): Move methods that are intended only for the main thread
-// scheduler into MainThreadScheduler.
 class PLATFORM_EXPORT ThreadScheduler {
  public:
   // Return the current thread's ThreadScheduler.
@@ -75,10 +67,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual void PostNonNestableIdleTask(const base::Location&,
                                        Thread::IdleTask) = 0;
 
-  virtual void AddRAILModeObserver(RAILModeObserver* observer) = 0;
-
-  virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
-
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
@@ -101,14 +89,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual void AddTaskObserver(base::TaskObserver* task_observer) = 0;
   virtual void RemoveTaskObserver(base::TaskObserver* task_observer) = 0;
 
-  // Returns a list of all unique attributions that are marked for event
-  // dispatch. If |include_continuous| is true, include event types from
-  // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
-  virtual Vector<WebInputEventAttribution> GetPendingUserInputInfo(
-      bool include_continuous) const {
-    return {};
-  }
-
   // Associates |isolate| to the scheduler.
   virtual void SetV8Isolate(v8::Isolate* isolate) = 0;
 
@@ -125,17 +105,6 @@ class PLATFORM_EXPORT ThreadScheduler {
 
   virtual void InitializeTaskAttributionTracker(
       std::unique_ptr<scheduler::TaskAttributionTracker>) {}
-
- private:
-  // For GetWebMainThreadScheduler().
-  friend class scheduler::WebThreadScheduler;
-
-  // Return a reference to an underlying main thread WebThreadScheduler object.
-  // Can be null if there is no underlying main thread WebThreadScheduler
-  // (e.g. worker threads).
-  virtual scheduler::WebThreadScheduler* GetWebMainThreadScheduler() {
-    return nullptr;
-  }
 };
 
 }  // namespace blink

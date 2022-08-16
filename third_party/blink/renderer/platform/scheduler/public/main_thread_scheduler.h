@@ -5,9 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_MAIN_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_MAIN_THREAD_SCHEDULER_H_
 
+#include <memory>
+
+#include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace scheduler {
+class WebAgentGroupScheduler;
+class WebThreadScheduler;
+}  // namespace scheduler
+
+class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
 // the platform's main thread scheduler.
@@ -47,6 +58,29 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   // returns nullptr in task observers.
   virtual scheduler::WebAgentGroupScheduler*
   GetCurrentAgentGroupScheduler() = 0;
+
+  virtual void AddRAILModeObserver(RAILModeObserver* observer) = 0;
+
+  virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
+
+  // Returns a list of all unique attributions that are marked for event
+  // dispatch. If |include_continuous| is true, include event types from
+  // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
+  virtual Vector<WebInputEventAttribution> GetPendingUserInputInfo(
+      bool include_continuous) const {
+    return {};
+  }
+
+ private:
+  // For ToWebMainThreadScheduler().
+  friend class scheduler::WebThreadScheduler;
+
+  // Return a reference to an underlying main thread WebThreadScheduler object.
+  // Can be null if there is no underlying main thread WebThreadScheduler
+  // (e.g. worker threads).
+  virtual scheduler::WebThreadScheduler* ToWebMainThreadScheduler() {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

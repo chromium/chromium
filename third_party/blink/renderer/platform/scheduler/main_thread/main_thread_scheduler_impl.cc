@@ -379,11 +379,15 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
 WebThreadScheduler* WebThreadScheduler::MainThreadScheduler() {
   auto* main_thread = Thread::MainThread();
   // Enforce that this is not called before the main thread is initialized.
-  DCHECK(main_thread && main_thread->Scheduler());
+  DCHECK(main_thread);
+  DCHECK(main_thread->Scheduler());
+  DCHECK(main_thread->Scheduler()->ToMainThreadScheduler());
 
   // This can return nullptr if the main thread scheduler is not a
   // MainThreadSchedulerImpl, which can happen in tests.
-  return main_thread->Scheduler()->GetWebMainThreadScheduler();
+  return main_thread->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ToWebMainThreadScheduler();
 }
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
@@ -2246,7 +2250,7 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
   main_thread_only().agent_group_scheduler_scope_stack.pop_back();
 }
 
-WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {
+WebThreadScheduler* MainThreadSchedulerImpl::ToWebMainThreadScheduler() {
   return this;
 }
 
