@@ -72,6 +72,8 @@ class RasterInterface : public InterfaceBase {
   // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
   // source of the copy is split into `planes_yuv_color_space` which converts
   // into full range RGB, and `planes_rgb_color_space` which an RGB color space.
+  // If `planes_rgb_color_space` is nullptr, then disable conversion to
+  // `dest_mailbox`'s color space.
   virtual void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,

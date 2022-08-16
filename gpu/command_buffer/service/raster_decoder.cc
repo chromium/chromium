@@ -3081,6 +3081,12 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
           source_scoped_access[i]->promise_image_texture()->backendTexture();
     }
 
+    // Disable color space conversion if no source color space was specified.
+    if (!src_rgb_color_space) {
+      if (auto dest_color_space = dest_surface->imageInfo().refColorSpace())
+        src_rgb_color_space = std::move(dest_color_space);
+    }
+
     SkISize dest_size =
         SkISize::Make(dest_surface->width(), dest_surface->height());
     SkYUVAInfo yuva_info(dest_size, src_plane_config, src_subsampling,

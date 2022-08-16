@@ -1262,15 +1262,16 @@ void RasterImplementation::ConvertYUVAMailboxesToRGB(
     SkYUVAInfo::PlaneConfig plane_config,
     SkYUVAInfo::Subsampling subsampling,
     const gpu::Mailbox yuva_plane_mailboxes[]) {
-  if (!planes_rgb_color_space) {
-    SetGLError(GL_INVALID_VALUE, "ConvertYUVAMailboxesToRGB",
-               "invalid color space");
-    return;
-  }
   skcms_Matrix3x3 primaries = {{{0}}};
   skcms_TransferFunction transfer = {0};
-  planes_rgb_color_space->toXYZD50(&primaries);
-  planes_rgb_color_space->transferFn(&transfer);
+  if (planes_rgb_color_space) {
+    planes_rgb_color_space->toXYZD50(&primaries);
+    planes_rgb_color_space->transferFn(&transfer);
+  } else {
+    // Specify an invalid transfer function exponent, to ensure that when
+    // SkColorSpace::MakeRGB is called in the decoder, the result is nullptr.
+    transfer.g = -99;
+  }
 
   constexpr size_t kByteSize = sizeof(gpu::Mailbox) * (kNumMailboxes) +
                                sizeof(skcms_TransferFunction) +
