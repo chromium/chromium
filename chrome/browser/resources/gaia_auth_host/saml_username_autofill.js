@@ -9,18 +9,6 @@
 cr.define('samlUsernameAutofill', function() {
   /* #ignore */ 'use strict';
 
-  // Regular expressions used to check for 3P IdP-related hosts
-  const AZURE_AD_HOST = /login\.microsoftonline\.com$/;
-  const OKTA_HOST = /\.okta\.com$/;
-
-  /**
-   * Check url's host to determine if it comes from a supported IdP
-   * @param {URL?} url
-   */
-  function isIdPSupported_(url) {
-    return Boolean(url.host.match(AZURE_AD_HOST) || url.host.match(OKTA_HOST));
-  }
-
   /**
    * Try to autofill email on login page for supported identity providers
    * @param {string} url Url of IdP login page
@@ -43,9 +31,7 @@ cr.define('samlUsernameAutofill', function() {
     if (!email) {
       return null;
     }
-    if (!isIdPSupported_(new URL(url))) {
-      return null;
-    }
+
     url = appendParam(url, urlParameterNameToAutofillUsername, email);
     return url;
   }
