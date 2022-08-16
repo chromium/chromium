@@ -887,8 +887,16 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const LogicalSize& border_spacing) {
   const NGTableBreakTokenData* incoming_table_break_data = nullptr;
   LogicalBoxSides border_padding_sides_to_include;
+  const LayoutUnit fragmentainer_space_at_start =
+      FragmentainerSpaceAtBfcStart(ConstraintSpace());
   LayoutUnit previously_consumed_block_size;
   LayoutUnit previously_consumed_table_box_block_size;
+
+  // border-spacing that is to be added before the first table section (if any)
+  // in this fragment. We will omit this when resuming table box layout in a
+  // subsequent fragment.
+  LayoutUnit border_spacing_before_first_section = border_spacing.block_size;
+
   bool is_past_table_box = false;
   if (BreakToken()) {
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
@@ -900,8 +908,11 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       minimal_table_grid_block_size -=
           incoming_table_break_data->consumed_table_box_block_size;
       is_past_table_box = incoming_table_break_data->is_past_table_box;
-      if (incoming_table_break_data->has_entered_table_box)
+      if (incoming_table_break_data->has_entered_table_box) {
         border_padding_sides_to_include.block_start = false;
+
+        border_spacing_before_first_section = LayoutUnit();
+      }
       if (is_past_table_box)
         border_padding_sides_to_include.block_end = false;
     }
@@ -917,11 +928,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   // The current layout position.
   LayoutUnit child_block_offset;
-
-  // border-spacing that was added before the first table section in this
-  // fragment. We may want to omit it in some cases, in which case it will be
-  // set to 0.
-  LayoutUnit border_spacing_before_first_section;
 
   // border-spacing to add after the last table section in this fragment. We may
   // want to omit it in some cases, in which case it will be set to 0.
@@ -1128,8 +1134,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // We're done with the table box if it fits inside the fragmentainer.
         is_past_table_box =
             !ConstraintSpace().HasKnownFragmentainerBlockSize() ||
-            table_box_extent->end <=
-                FragmentainerSpaceAtBfcStart(ConstraintSpace());
+            table_box_extent->end <= fragmentainer_space_at_start;
       }
 
       LogicalSize available_size(container_builder_.InlineSize(),
@@ -1164,9 +1169,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // box" starts.
         new_table_box_extent =
             BeginTableBoxLayout(child_block_offset, BlockStartBorderPadding());
-        // Only include border-spacing if we're at the start of the section.
-        if (!IsResumingLayout(child_break_token))
-          border_spacing_before_first_section = border_spacing.block_size;
         child_block_offset += BlockStartBorderPadding();
 
         // We need to lay the section out before we can tell whether it should
@@ -1379,10 +1381,17 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     if (broke_inside) {
       if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
         table_box_extent->end =
-            std::max(table_box_extent->end,
-                     FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+            std::max(table_box_extent->end, fragmentainer_space_at_start);
       }
       border_spacing_after_last_section = LayoutUnit();
+    } else if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+      // Truncate trailing border-spacing to fit within the fragmentainer.
+      border_spacing_after_last_section =
+          std::min(border_spacing_after_last_section,
+                   fragmentainer_space_at_start - child_block_offset -
+                       border_padding.block_end);
+      border_spacing_after_last_section =
+          border_spacing_after_last_section.ClampNegativeToZero();
     }
 
     if (!has_ended_table_box_layout) {
@@ -1395,8 +1404,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // If the table box fits inside the fragmentainer, we're past it.
         is_past_table_box =
             !ConstraintSpace().HasKnownFragmentainerBlockSize() ||
-            table_box_extent->end <=
-                FragmentainerSpaceAtBfcStart(ConstraintSpace());
+            table_box_extent->end <= fragmentainer_space_at_start;
       }
     }
   }
@@ -1432,9 +1440,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIsTableNGPart();
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    NGBreakStatus status = FinishFragmentation(
-        Node(), ConstraintSpace(), border_padding.block_end,
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+    NGBreakStatus status =
+        FinishFragmentation(Node(), ConstraintSpace(), border_padding.block_end,
+                            fragmentainer_space_at_start, &container_builder_);
     if (status == NGBreakStatus::kNeedsEarlierBreak)
       return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
 
