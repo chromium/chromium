@@ -95,9 +95,9 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   const bool is_scroll_event =
       event.find(breadcrumbs::kBreadcrumbScroll) != std::string::npos;
   if (!is_scroll_event) {
-    // |sequentially_scrolled_| is incremented for each scroll event and reset
+    // `sequentially_scrolled_` is incremented for each scroll event and reset
     // here when non-scrolling event is logged. The user can scroll multiple
-    // times and |sequentially_scrolled_| will allow to throttle the logs to
+    // times and `sequentially_scrolled_` will allow to throttle the logs to
     // avoid polluting breadcrumbs.
     sequentially_scrolled_ = 0;
   }

@@ -76,7 +76,7 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for
-// the associated |browser_state_|.
+// the associated `browser_state_`.
 TEST_F(BreadcrumbManagerBrowserAgentTest, LogEvent) {
   ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
 
@@ -89,13 +89,13 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, LogEvent) {
 
 // Tests that events logged through BrowserAgents associated with different
 // Browser instances are returned with events for the associated
-// |browser_state_| and are uniquely identifiable.
+// `browser_state_` and are uniquely identifiable.
 TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
 
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
-  // Insert WebState into |browser|.
+  // Insert WebState into `browser`.
   InsertWebState(browser_.get());
 
   // Create and setup second Browser.
@@ -103,7 +103,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
       std::make_unique<TestBrowser>(browser_state_.get());
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser2.get());
 
-  // Insert WebState into |browser2|.
+  // Insert WebState into `browser2`.
   InsertWebState(browser2.get());
 
   std::list<std::string> events = breadcrumb_service_->GetEvents(0);
@@ -115,8 +115,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   std::size_t browser2_split_pos = events.back().find("Insert");
   // The start of the string must be unique to differentiate the associated
   // Browser object by including the BreadcrumbManagerBrowserAgent's
-  // |unique_id_|.
-  // (The Timestamp will match due to TimeSource::MOCK_TIME in the |task_env_|.)
+  // `unique_id_`.
+  // (The Timestamp will match due to TimeSource::MOCK_TIME in the `task_env_`.)
   std::string browser1_start = events.front().substr(browser1_split_pos);
   std::string browser2_start = events.back().substr(browser2_split_pos);
   EXPECT_STRNE(browser1_start.c_str(), browser2_start.c_str());

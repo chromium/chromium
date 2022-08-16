@@ -21,27 +21,27 @@ class WebStateList;
 // Name of Overlay initial presentation event.
 extern const char kBreadcrumbOverlay[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay was re-activated rather
+// Appended to `kBreadcrumbOverlay` event if overlay was re-activated rather
 // than presented for the first time (f.e. the user has switched to a tab with
 // an overlay).
 extern const char kBreadcrumbOverlayActivated[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is Http Authentication.
+// Appended to `kBreadcrumbOverlay` event if overlay is Http Authentication.
 extern const char kBreadcrumbOverlayHttpAuth[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is generic app dialog.
+// Appended to `kBreadcrumbOverlay` event if overlay is generic app dialog.
 extern const char kBreadcrumbOverlayAlert[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is app launch confirmation.
+// Appended to `kBreadcrumbOverlay` event if overlay is app launch confirmation.
 extern const char kBreadcrumbOverlayAppLaunch[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is JavaScript alert.
+// Appended to `kBreadcrumbOverlay` event if overlay is JavaScript alert.
 extern const char kBreadcrumbOverlayJsAlert[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is JavaScript confirm.
+// Appended to `kBreadcrumbOverlay` event if overlay is JavaScript confirm.
 extern const char kBreadcrumbOverlayJsConfirm[];
 
-// Appended to |kBreadcrumbOverlay| event if overlay is JavaScript prompt.
+// Appended to `kBreadcrumbOverlay` event if overlay is JavaScript prompt.
 extern const char kBreadcrumbOverlayJsPrompt[];
 
 class BreadcrumbManagerBrowserAgent

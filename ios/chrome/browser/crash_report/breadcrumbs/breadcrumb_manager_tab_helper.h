@@ -15,7 +15,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Handles logging of Breadcrumb events associated with |web_state_|.
+// Handles logging of Breadcrumb events associated with `web_state_`.
 class BreadcrumbManagerTabHelper
     : public breadcrumbs::BreadcrumbManagerTabHelper,
       public web::WebStateObserver,
