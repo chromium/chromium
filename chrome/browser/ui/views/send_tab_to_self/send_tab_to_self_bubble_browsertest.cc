@@ -96,8 +96,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_ShowSigninPromo) {
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest,
                        InvokeUi_ShowNoTargetDevicePromo) {
-  // Last updated in crrev.com/c/3776623.
-  set_baseline("3776623");
+  // Last updated in crrev.com/c/3832669.
+  set_baseline("3832669");
   ShowAndVerifyUi();
 }
 

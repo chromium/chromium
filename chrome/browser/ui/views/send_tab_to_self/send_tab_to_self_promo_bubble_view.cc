@@ -70,13 +70,13 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
   }
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  auto* link_view =
-      AddChildView(BuildManageAccountDevicesLinkView(controller_));
+  auto* link_view = AddChildView(
+      BuildManageAccountDevicesLinkView(/*show_link=*/false, controller_));
   link_view->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(provider->GetDistanceMetric(
-                            views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
-                        0, 0, 0));
+      gfx::Insets::VH(provider->GetDistanceMetric(
+                          views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+                      0));
 }
 
 SendTabToSelfPromoBubbleView::~SendTabToSelfPromoBubbleView() {
