@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wchar.h>
 #include <windows.h>
 
 #include <string>
@@ -13,12 +14,13 @@ extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 int WINAPI wWinMain(HINSTANCE /* instance */,
                     HINSTANCE /* previous_instance */,
-                    LPWSTR /* command_line */,
+                    LPWSTR command_line,
                     int /* command_show */) {
   updater::ProcessExitResult result =
       updater::WMain(reinterpret_cast<HMODULE>(&__ImageBase));
 
-  if (result.exit_code != updater::SUCCESS_EXIT_CODE) {
+  if (result.exit_code != updater::SUCCESS_EXIT_CODE &&
+      wcslen(command_line) == 0) {
     std::wstring error = L"Updater error ";
     error.append(std::to_wstring(result.exit_code));
     ::MessageBoxEx(nullptr, error.c_str(), nullptr, 0, 0);
