@@ -28,19 +28,6 @@
           </cr-policy-indicator>
         </template>
       </cr-link-row>
-
-      <!-- Ambient mode -->
-      <template is="dom-if" if="[[isAmbientModeEnabled_]]">
-        <cr-link-row
-            class="hr"
-            id="ambientModeRow"
-            label="$i18n{ambientModeTitle}"
-            sub-label="[[getAmbientModeRowSubLabel_(
-                prefs.settings.ambient_mode.enabled.value)]]"
-            on-click="navigateToAmbientMode_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </template>
     </template>
   </div>
 
@@ -48,22 +35,5 @@
     <settings-subpage page-title="$i18n{changePictureTitle}">
       <settings-change-picture></settings-change-picture>
     </settings-subpage>
-  </template>
-
-  <template is="dom-if" if="[[isAmbientModeEnabled_]]">
-    <template is="dom-if" route-path="/ambientMode">
-      <settings-subpage page-title="$i18n{ambientModeTitle}">
-        <settings-ambient-mode-page prefs="{{prefs}}">
-        </settings-ambient-mode-page>
-      </settings-subpage>
-    </template>
-
-    <template is="dom-if" route-path="/ambientMode/photos">
-      <settings-subpage>
-        <settings-ambient-mode-photos-page>
-        </settings-ambient-mode-photos-page>
-      </settings-subpage>
-    </template>
-
   </template>
 </settings-animated-pages>

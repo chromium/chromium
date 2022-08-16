@@ -289,16 +289,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
 [['AccessibilityPage', 'os_a11y_page_tests.js'],
  ['AboutPage', 'os_about_page_tests.js'],
  ['AccountsPage', 'add_users_tests.js'],
- [
-   'AmbientModePage',
-   'ambient_mode_page_test.js',
-   {disabled: ['ash::features::kPersonalizationHub']},
- ],
- [
-   'AmbientModePhotosPage',
-   'ambient_mode_photos_page_test.js',
-   {disabled: ['ash::features::kPersonalizationHub']},
- ],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
@@ -463,7 +453,9 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.js'],
- ['TextToSpeechPage', 'text_to_speech_page_tests.js',
+ [
+   'TextToSpeechPage',
+   'text_to_speech_page_tests.js',
    {enabled: ['features::kAccessibilityOSSettingsVisibility']},
  ],
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],

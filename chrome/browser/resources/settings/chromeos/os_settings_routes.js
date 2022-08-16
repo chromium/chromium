@@ -18,8 +18,6 @@ import {Route} from '../router.js';
  *   ACCOUNTS: !Route,
  *   ACCOUNT_MANAGER: !Route,
  *   ADVANCED: !Route,
- *   AMBIENT_MODE: !Route,
- *   AMBIENT_MODE_PHOTOS: !Route,
  *   APP_NOTIFICATIONS: !Route,
  *   APP_MANAGEMENT: !Route,
  *   APP_MANAGEMENT_DETAIL: !Route,

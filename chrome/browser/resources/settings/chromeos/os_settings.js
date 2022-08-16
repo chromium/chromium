@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '../prefs/prefs.js';
-import './ambient_mode_page/ambient_mode_page.js';
 import './bluetooth_page/bluetooth_device_list_item.js';
 import './bluetooth_page/bluetooth_page.js';
 import './bluetooth_page/bluetooth_subpage.js';
@@ -126,8 +125,6 @@ export {Route, Router} from '../router.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.js';
-export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_browser_proxy.js';
-export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.js';
 export {BluetoothPageBrowserProxyImpl} from './bluetooth_page/bluetooth_page_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';

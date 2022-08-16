@@ -118,19 +118,6 @@ suite('PersonalizationHandler', function() {
     assertEquals(routes.CHANGE_PICTURE, Router.getInstance().getCurrentRoute());
   });
 
-  test('ambientMode', function() {
-    const isGuest = loadTimeData.getBoolean('isGuest');
-    const isAmbientModeEnabled = loadTimeData.getBoolean('isAmbientModeEnabled');
-
-    if(!isGuest && isAmbientModeEnabled){
-      const row =
-          personalizationPage.shadowRoot.querySelector('#ambientModeRow');
-      assertTrue(!!row);
-      row.click();
-      assertEquals(routes.AMBIENT_MODE, Router.getInstance().getCurrentRoute());
-    }
-  });
-
   test('Deep link to change account picture', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '503');

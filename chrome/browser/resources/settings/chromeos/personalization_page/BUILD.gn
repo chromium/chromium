@@ -54,7 +54,6 @@ js_library("personalization_page") {
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
-    "../ambient_mode_page:ambient_mode_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

@@ -6,8 +6,6 @@
  * 'settings-personalization-page' is the settings page containing
  * personalization settings.
  */
-import '../ambient_mode_page/ambient_mode_page.js';
-import '../ambient_mode_page/ambient_mode_photos_page.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './change_picture.js';
 import '../../settings_page/settings_animated_pages.js';
@@ -62,15 +60,6 @@ class SettingsPersonalizationPageElement extends
       isWallpaperPolicyControlled_: {type: Boolean, value: true},
 
       /** @private */
-      isAmbientModeEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAmbientModeEnabled');
-        },
-        readOnly: true,
-      },
-
-      /** @private */
       isPersonalizationHubEnabled_: {
         type: Boolean,
         value() {
@@ -86,8 +75,6 @@ class SettingsPersonalizationPageElement extends
           const map = new Map();
           if (routes.CHANGE_PICTURE) {
             map.set(routes.CHANGE_PICTURE.path, '#changePictureRow');
-          } else if (routes.AMBIENT_MODE) {
-            map.set(routes.AMBIENT_MODE.path, '#ambientModeRow');
           }
 
           return map;
@@ -159,21 +146,6 @@ class SettingsPersonalizationPageElement extends
   /** @private */
   navigateToChangePicture_() {
     Router.getInstance().navigateTo(routes.CHANGE_PICTURE);
-  }
-
-  /** @private */
-  navigateToAmbientMode_() {
-    Router.getInstance().navigateTo(routes.AMBIENT_MODE);
-  }
-
-  /**
-   * @param {boolean} toggleValue
-   * @return {string}
-   * @private
-   */
-  getAmbientModeRowSubLabel_(toggleValue) {
-    return this.i18n(
-        toggleValue ? 'ambientModeEnabled' : 'ambientModeDisabled');
   }
 }
 
