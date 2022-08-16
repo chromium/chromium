@@ -39,6 +39,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permissions_client.h"
 #include "components/vector_icons/vector_icons.h"
@@ -178,19 +179,6 @@ LocalDataContainer* GetLocalDataContainerForNode(CookieTreeNode* node) {
   CHECK_EQ(host->GetDetailedInfo().node_type,
            CookieTreeNode::DetailedInfo::TYPE_HOST);
   return node->GetModel()->data_container();
-}
-
-bool IsHttps(net::CookieSourceScheme cookie_source_scheme) {
-  switch (cookie_source_scheme) {
-    case net::CookieSourceScheme::kSecure:
-      return true;
-    case net::CookieSourceScheme::kNonSecure:
-      return false;
-    case net::CookieSourceScheme::kUnset:
-      // Older cookies don't have a source scheme. Associate them with https
-      // since the majority of pageloads are https.
-      return true;
-  }
 }
 
 }  // namespace
@@ -1451,10 +1439,12 @@ void CookiesTreeModel::PopulateCookieInfoWithFilter(
   notifier->StartBatchUpdate();
   for (auto it = container->cookie_list_.begin();
        it != container->cookie_list_.end(); ++it) {
-    GURL source = (it->Domain() == ".")
-                      ? GURL("http://./")
-                      : net::cookie_util::CookieOriginToURL(
-                            it->Domain(), IsHttps(it->SourceScheme()));
+    GURL source =
+        (it->Domain() == ".")
+            ? GURL("http://./")
+            : net::cookie_util::CookieOriginToURL(
+                  it->Domain(),
+                  browsing_data::IsHttpsCookieSourceScheme(it->SourceScheme()));
 
     if (filter.empty() || (CookieTreeHostNode::TitleForUrl(source).find(
                                filter) != std::u16string::npos)) {

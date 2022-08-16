@@ -20,6 +20,7 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
@@ -90,126 +91,77 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
     const GURL& origin) const {
   size_t count = 0;
 
-  // Count all cookies that have the same domain as the provided |origin|. This
-  // means count all cookies that have been set by a host that is not considered
-  // to be a third party regarding the domain of the provided |origin|. E.g. if
-  // the origin is "http://foo.com" then all cookies with domain foo.com,
-  // a.foo.com, b.a.foo.com or *.foo.com will be counted.
-  for (const auto& cookie : cookies()->origin_cookie_set()) {
-    // The |domain_url| is only created in order to use the
-    // SameDomainOrHost method below. It does not matter which scheme is
-    // used as the scheme is ignored by the SameDomainOrHost method.
-    GURL domain_url = net::cookie_util::CookieOriginToURL(cookie.Domain(),
-                                                          false /* is_https */);
+  auto origins = GetObjectCountPerOriginMap();
 
-    if (origin.SchemeIsHTTPOrHTTPS() && SameDomainOrHost(origin, domain_url))
-      ++count;
-  }
-
-  // Count local storages for the domain of the given `storage_key`.
-  for (const auto& storage_key : local_storages()->GetStorageKeys()) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
-      ++count;
-  }
-
-  // Count session storages for the domain of the given `storage_key`.
-  for (const auto& storage_key : session_storages()->GetStorageKeys()) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
-      ++count;
-  }
-
-  // Count indexed dbs for the domain of the given `storage_key`.
-  for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
-      ++count;
-  }
-
-  // Count service workers for the domain of the given |origin|.
-  for (const auto& storage_origin : service_workers()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
-      ++count;
-  }
-
-  // Count shared workers for the domain of the given |origin|.
-  typedef SharedWorkerHelper::SharedWorkerInfo SharedWorkerInfo;
-  const std::set<SharedWorkerInfo>& shared_worker_info =
-      shared_workers()->GetSharedWorkerInfo();
-  for (const auto& it : shared_worker_info) {
-    if (SameDomainOrHost(origin, it.worker))
-      ++count;
-  }
-
-  // Count cache storages for the domain of the given |origin|.
-  for (const auto& storage_origin : cache_storages()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
-      ++count;
-  }
-
-  // Count filesystems for the domain of the given |origin|.
-  for (const auto& storage_origin : file_systems()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
-      ++count;
-  }
-
-  // Count databases for the domain of the given |origin|.
-  for (const auto& storage_origin : databases()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
-      ++count;
+  for (const auto& it_origin : origins) {
+    if (SameDomainOrHost(origin, it_origin.first.GetURL()))
+      count += it_origin.second;
   }
 
   return count;
 }
 
-size_t LocalSharedObjectsContainer::GetDomainCount() const {
-  std::set<base::StringPiece> hosts;
+size_t LocalSharedObjectsContainer::GetHostCountForDomain(
+    const GURL& registrable_domain) const {
+  auto origins = GetObjectCountPerOriginMap();
+  std::set<std::string> hosts;
 
+  for (const auto& it_origin : origins) {
+    if (SameDomainOrHost(registrable_domain, it_origin.first.GetURL()))
+      hosts.insert(it_origin.first.host());
+  }
+  return hosts.size();
+}
+
+size_t LocalSharedObjectsContainer::GetHostCount() const {
+  auto origins = GetObjectCountPerOriginMap();
+  std::set<std::string> hosts;
+
+  for (const auto& it_origin : origins)
+    hosts.insert(it_origin.first.host());
+  return hosts.size();
+}
+
+std::map<url::Origin, int>
+LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
+  std::map<url::Origin, int> origins;
   for (const auto& cookie : cookies()->origin_cookie_set()) {
-    hosts.insert(cookie.Domain());
+    GURL domain_url = net::cookie_util::CookieOriginToURL(
+        cookie.Domain(), IsHttpsCookieSourceScheme(cookie.SourceScheme()));
+    origins[url::Origin::Create(domain_url)]++;
   }
 
   for (const auto& storage_key : local_storages()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    hosts.insert(storage_key.origin().host());
+    origins[storage_key.origin()]++;
   }
 
   for (const auto& storage_key : session_storages()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    hosts.insert(storage_key.origin().host());
+    origins[storage_key.origin()]++;
   }
 
   for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
-    hosts.insert(storage_key.origin().host());
+    origins[storage_key.origin()]++;
   }
 
   for (const auto& origin : service_workers()->GetOrigins())
-    hosts.insert(origin.host());
+    origins[origin]++;
 
   for (const auto& info : shared_workers()->GetSharedWorkerInfo())
-    hosts.insert(info.storage_key.origin().host());
+    origins[info.storage_key.origin()]++;
 
   for (const auto& origin : cache_storages()->GetOrigins())
-    hosts.insert(origin.host());
+    origins[origin]++;
 
   for (const auto& origin : file_systems()->GetOrigins())
-    hosts.insert(origin.host());
+    origins[origin]++;
 
   for (const auto& origin : databases()->GetOrigins())
-    hosts.insert(origin.host());
+    origins[origin]++;
 
-  std::set<std::string> domains;
-  for (const base::StringPiece& host : hosts) {
-    std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-        host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (!domain.empty())
-      domains.insert(std::move(domain));
-    else
-      domains.insert(std::string(host));
-  }
-  return domains.size();
+  return origins;
 }
 
 void LocalSharedObjectsContainer::UpdateIgnoredEmptyStorageKeys(

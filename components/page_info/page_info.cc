@@ -1142,7 +1142,9 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   if (is_cookies_subpage_enabled) {
     // Add allowed sites count.
     PageInfoUI::CookiesNewInfo cookies_info;
-    cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesCount();
+    cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
+    cookies_info.blocked_sites_count =
+        GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
 
     // TODO(crbug.com/1346305): Add dummy function for FPS information.
     if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
@@ -1353,11 +1355,21 @@ int PageInfo::GetFirstPartyAllowedCookiesCount(const GURL& site_url) {
       site_url);
 }
 
-int PageInfo::GetSitesWithAllowedCookiesCount() {
+int PageInfo::GetSitesWithAllowedCookiesAccessCount() {
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return 0;
-  return settings->allowed_local_shared_objects().GetDomainCount();
+  return settings->allowed_local_shared_objects().GetHostCount();
+}
+
+int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(
+    const GURL& site_url) {
+  auto* settings = GetPageSpecificContentSettings();
+  if (!settings)
+    return 0;
+  return settings->blocked_local_shared_objects().GetHostCount() -
+         settings->blocked_local_shared_objects().GetHostCountForDomain(
+             site_url);
 }
 
 int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {

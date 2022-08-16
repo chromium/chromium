@@ -385,4 +385,17 @@ BrowsingDataType GetDataTypeFromDeletionPreference(
   return iter->second;
 }
 
+bool IsHttpsCookieSourceScheme(net::CookieSourceScheme cookie_source_scheme) {
+  switch (cookie_source_scheme) {
+    case net::CookieSourceScheme::kSecure:
+      return true;
+    case net::CookieSourceScheme::kNonSecure:
+      return false;
+    case net::CookieSourceScheme::kUnset:
+      // Older cookies don't have a source scheme. Associate them with https
+      // since the majority of pageloads are https.
+      return true;
+  }
+}
+
 }  // namespace browsing_data

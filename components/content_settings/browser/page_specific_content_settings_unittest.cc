@@ -412,9 +412,6 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://localhost")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://example.com")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://192.168.0.1")));
-  // google.com, youtube.com, localhost, example.com and 192.168.0.1 should be
-  // counted as domains.
-  EXPECT_EQ(5u, objects.GetDomainCount());
 
   // The localStorage storage keys (http://maps.google.com:8080 and
   // http://example.com) should be ignored since they are empty.
@@ -424,7 +421,6 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
   EXPECT_EQ(5u, objects.GetObjectCount());
   EXPECT_EQ(2u, objects.GetObjectCountForDomain(GURL("http://google.com")));
   EXPECT_EQ(0u, objects.GetObjectCountForDomain(GURL("http://example.com")));
-  EXPECT_EQ(4u, objects.GetDomainCount());
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
@@ -470,7 +466,6 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
   const auto& objects = content_settings->allowed_local_shared_objects();
   EXPECT_EQ(5u, objects.GetObjectCount());
   EXPECT_EQ(5u, objects.GetObjectCountForDomain(GURL("http://google.com")));
-  EXPECT_EQ(1u, objects.GetDomainCount());
 }
 
 TEST_F(PageSpecificContentSettingsTest,

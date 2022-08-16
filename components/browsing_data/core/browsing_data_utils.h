@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace browsing_data {
 
@@ -78,6 +79,8 @@ bool GetDeletionPreferenceFromDataType(
 
 BrowsingDataType GetDataTypeFromDeletionPreference(
     const std::string& pref_name);
+
+bool IsHttpsCookieSourceScheme(net::CookieSourceScheme cookie_source_scheme);
 
 }  // namespace browsing_data
 

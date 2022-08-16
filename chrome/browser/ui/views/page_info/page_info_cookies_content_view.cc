@@ -126,9 +126,6 @@ void PageInfoCookiesContentView::SetCookieInfo(
   InitBlockingThirdPartyCookiesRow();
   InitCookiesDialogButton();
 
-  // Update the text displaying the number of allowed sites.
-  cookies_dialog_button_->SetSubtitleText(num_allowed_sites_text);
-
   // Update the text displaying the number of blocked sites.
   blocking_third_party_cookies_subtitle_label_->SetText(num_blocked_sites_text);
 
@@ -145,6 +142,12 @@ void PageInfoCookiesContentView::SetCookieInfo(
     fps_button_->SetTitleText(fps_button_title);
     fps_button_->SetSubtitleText(fps_button_subtitle);
   }
+
+  // Update the text displaying the number of allowed sites.
+  cookies_dialog_button_->SetSubtitleText(num_allowed_sites_text);
+
+  // Update the text displaying the number of blocked sites.
+  blocking_third_party_cookies_subtitle_label_->SetText(num_blocked_sites_text);
 
   PreferredSizeChanged();
 }
