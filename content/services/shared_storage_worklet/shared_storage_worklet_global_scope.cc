@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/shared_storage_worklet/console.h"
 #include "content/services/shared_storage_worklet/module_script_downloader.h"
+#include "content/services/shared_storage_worklet/private_aggregation.h"
 #include "content/services/shared_storage_worklet/shared_storage.h"
 #include "content/services/shared_storage_worklet/unnamed_operation_handler.h"
 #include "content/services/shared_storage_worklet/url_selection_operation_handler.h"
@@ -48,6 +50,7 @@ void SharedStorageWorkletGlobalScope::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     mojom::SharedStorageWorkletServiceClient* client,
+    content::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
     mojom::SharedStorageWorkletService::AddModuleCallback callback) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
@@ -56,12 +59,14 @@ void SharedStorageWorkletGlobalScope::AddModule(
   module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
       url_loader_factory.get(), script_source_url,
       base::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(), client, script_source_url,
+                     weak_ptr_factory_.GetWeakPtr(), client,
+                     private_aggregation_host, script_source_url,
                      std::move(callback)));
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     mojom::SharedStorageWorkletServiceClient* client,
+    content::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
     mojom::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
@@ -106,6 +111,15 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
       ->Set(context, gin::StringToSymbol(Isolate(), "console"),
             console_->GetWrapper(Isolate()).ToLocalChecked())
       .Check();
+
+  if (private_aggregation_host) {
+    private_aggregation_ =
+        std::make_unique<PrivateAggregation>(*private_aggregation_host);
+    global
+        ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
+              private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())
+        .Check();
+  }
 
   global
       ->Set(context, gin::StringToSymbol(Isolate(), "register"),

@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 
 #include "content/common/content_export.h"
+#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -22,6 +23,7 @@ namespace shared_storage_worklet {
 class UrlSelectionOperationHandler;
 class UnnamedOperationHandler;
 class Console;
+class PrivateAggregation;
 class SharedStorage;
 class ModuleScriptDownloader;
 
@@ -38,11 +40,13 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       mojom::SharedStorageWorkletServiceClient* client,
+      content::mojom::PrivateAggregationHost* private_aggregation_host,
       const GURL& script_source_url,
       mojom::SharedStorageWorkletService::AddModuleCallback callback);
 
   void OnModuleScriptDownloaded(
       mojom::SharedStorageWorkletServiceClient* client,
+      content::mojom::PrivateAggregationHost* private_aggregation_host,
       const GURL& script_source_url,
       mojom::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
@@ -75,6 +79,7 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
   v8::Global<v8::Context> global_context_;
 
   std::unique_ptr<Console> console_;
+  std::unique_ptr<PrivateAggregation> private_aggregation_;
   std::unique_ptr<SharedStorage> shared_storage_;
 
   std::unique_ptr<UrlSelectionOperationHandler>

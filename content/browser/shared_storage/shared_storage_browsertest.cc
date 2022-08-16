@@ -6,14 +6,19 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
+#include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -33,9 +38,11 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
 
@@ -2735,5 +2742,175 @@ INSTANTIATE_TEST_SUITE_P(
         blink::features::FencedFramesImplementationType::kShadowDOM,
         blink::features::FencedFramesImplementationType::kMPArch),
     &SharedStorageReportEventBrowserTest::DescribeParams);
+
+class SharedStoragePrivateAggregationDisabledBrowserTest
+    : public SharedStorageBrowserTest {
+ public:
+  SharedStoragePrivateAggregationDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
+                       PrivateAggregationNotDefined) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+    )");
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("ReferenceError: privateAggregation is not defined",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[0].log_level);
+}
+
+class SharedStoragePrivateAggregationEnabledBrowserTest
+    : public SharedStorageBrowserTest {
+ public:
+  // TODO(alexmt): Consider factoring out along with FLEDGE definition.
+  class TestPrivateAggregationManagerImpl
+      : public PrivateAggregationManagerImpl {
+   public:
+    TestPrivateAggregationManagerImpl(
+        std::unique_ptr<PrivateAggregationBudgeter> budgeter,
+        std::unique_ptr<PrivateAggregationHost> host)
+        : PrivateAggregationManagerImpl(std::move(budgeter),
+                                        std::move(host),
+                                        /*storage_partition=*/nullptr) {}
+  };
+
+  SharedStoragePrivateAggregationEnabledBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(content::kPrivateAggregationApi);
+  }
+
+  void SetUpOnMainThread() override {
+    SharedStorageBrowserTest::SetUpOnMainThread();
+
+    a_test_origin_ = https_server()->GetOrigin("a.test");
+
+    private_aggregation_host_ = new PrivateAggregationHost(
+        /*on_report_request_received=*/mock_callback_.Get());
+
+    static_cast<StoragePartitionImpl*>(shell()
+                                           ->web_contents()
+                                           ->GetBrowserContext()
+                                           ->GetDefaultStoragePartition())
+        ->OverridePrivateAggregationManagerForTesting(
+            std::make_unique<TestPrivateAggregationManagerImpl>(
+                std::make_unique<MockPrivateAggregationBudgeter>(),
+                base::WrapUnique<PrivateAggregationHost>(
+                    private_aggregation_host_)));
+
+    EXPECT_TRUE(NavigateToURL(
+        shell(), https_server()->GetURL("a.test", kSimplePagePath)));
+  }
+
+  const base::MockRepeatingCallback<void(AggregatableReportRequest,
+                                         PrivateAggregationBudgetKey)>&
+  mock_callback() {
+    return mock_callback_;
+  }
+
+ protected:
+  url::Origin a_test_origin_;
+
+ private:
+  PrivateAggregationHost* private_aggregation_host_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::MockRepeatingCallback<void(AggregatableReportRequest,
+                                   PrivateAggregationBudgetKey)>
+      mock_callback_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       BasicTest) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+        run_loop.Quit();
+      }));
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+    )");
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       RejectedTest) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: -1, value: 2});
+    )");
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("TypeError: Bucket must be either an integer Number or BigInt",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[0].log_level);
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       MultipleRequests) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+      }))
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 3);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 4);
+        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+        EXPECT_EQ(budget_key.origin(), a_test_origin_);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kSharedStorage);
+        run_loop.Quit();
+      }));
+
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+    )");
+
+  EXPECT_TRUE(console_observer.messages().empty());
+
+  run_loop.Run();
+}
 
 }  // namespace content
