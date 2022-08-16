@@ -1789,11 +1789,25 @@ views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
 }
 
 void TabStrip::Layout() {
-  views::View::Layout();
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    // With tab scrolling, our bounds are driven solely by our TabContainer.
-    SetBoundsRect(tab_container_->bounds());
+    // With tab scrolling, the TabStrip is solely responsible for its own width
+    // (It's the contents view of a ScrollView, and with sizing freedom comes
+    // sizing responsibility).
+
+    // We can figure out our width based on the preferences of our TabContainer
+    // and the available width in the tab strip region:
+    // We should never be larger than our container's preferred width.
+    const int max_width = tab_container_->CalculatePreferredSize().width();
+    // We should never be smaller than our container's minimum width.
+    const int min_width = tab_container_->GetMinimumSize().width();
+    // If we can, we should fit within the tab strip region to avoid scrolling.
+    const int available_width =
+        tab_container_->GetAvailableWidthForTabContainer();
+    // Be as wide as possible subject to the above constraints.
+    const int width = std::min(max_width, std::max(min_width, available_width));
+    SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
   }
+  views::View::Layout();
 
   // drag_context_ isn't part of normal layout since it overlays the tabstrip.
   drag_context_->Layout();

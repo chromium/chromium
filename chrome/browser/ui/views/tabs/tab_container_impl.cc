@@ -649,21 +649,6 @@ gfx::Rect TabContainerImpl::GetIdealBounds(tab_groups::TabGroupId group) const {
 }
 
 void TabContainerImpl::Layout() {
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    // With tab scrolling, the tab container is solely responsible for its own
-    // width.
-    // It should never be larger than its preferred width.
-    const int max_width = CalculatePreferredSize().width();
-    // It should never be smaller than its minimum width.
-    const int min_width = GetMinimumSize().width();
-    // If it can, it should fit within the tab strip region.
-    const int available_width = GetAvailableWidthForTabContainer();
-    // It should be as wide as possible subject to the above constraints.
-    const int width = std::min(max_width, std::max(min_width, available_width));
-    SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
-    SetTabSlotVisibility();
-  }
-
   if (IsAnimating()) {
     // Hide tabs that have animated at least partially out of the clip region.
     SetTabSlotVisibility();
