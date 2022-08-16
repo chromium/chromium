@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -16,6 +17,46 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash::quick_start {
+
+namespace {
+
+// Endpoint Info version number, currently version 1.
+constexpr uint8_t kEndpointInfoVersion = 1;
+
+// Smart Setup verification style, e.g. shapes, pin, etc.
+// 0 = "Default", since there isn't yet a QR code option.
+// Values come from this enum:
+// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=876;rcl=458110957
+constexpr uint8_t kEndpointInfoVerificationStyle = 0;
+
+// Device Type for Smart Setup, e.g. phone, tablet.
+// 0 = "Unknown", since there isn't yet a Chromebook option.
+// Values come from this enum:
+// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=961;rcl=458110957
+constexpr uint8_t kEndpointInfoDeviceType = 0;
+
+// Boolean field indicating to Smart Setup whether the client is Quick Start.
+constexpr uint8_t kEndpointInfoIsQuickStart = 1;
+
+constexpr char kEndpointInfoDefaultDisplayName[] = "Chromebook";
+
+// The display name must:
+// - Be a variable-length string of utf-8 bytes
+// - Be at most 18 bytes
+// - If less than 18 bytes, must be null-terminated
+std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
+    RandomSessionId session_id) {
+  // TODO(b/234655072): Append session id to display name, vary name based on
+  // device type, e.g. Chromebook, Chromebox, Chromebase, Chromebit, etc.
+  std::string display_name = kEndpointInfoDefaultDisplayName;
+  std::vector<uint8_t> display_name_bytes(display_name.begin(),
+                                          display_name.end());
+  display_name_bytes.push_back(0);
+
+  return display_name_bytes;
+}
+
+}  // namespace
 
 void TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
     GetAdapter(device::BluetoothAdapterFactory::AdapterCallback callback) {
@@ -150,6 +191,35 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
     base::OnceClosure callback) {
   fast_pair_advertiser_.reset();
   std::move(callback).Run();
+}
+
+// The EndpointInfo consists of the following fields:
+// - EndpointInfo version number, 1 byte
+// - Display name, max 18 bytes (see GetEndpointInfoDisplayNameBytes())
+// - Advertisement data, 13 bytes:
+//   - Verification Style, byte[0]
+//   - Device Type, byte[1]
+//   - Advertising Id, byte[2-11], 10 bytes. (See RandomSessionId)
+//   - isQuickStart, byte[12], =1 for Quick Start.
+std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
+  base::span<const uint8_t, RandomSessionId::kLength> session_id_bytes =
+      random_session_id_.AsBytes();
+  std::vector<uint8_t> display_name_bytes =
+      GetEndpointInfoDisplayNameBytes(random_session_id_);
+
+  std::vector<uint8_t> endpoint_info;
+  endpoint_info.reserve(32);
+
+  endpoint_info.push_back(kEndpointInfoVersion);
+  endpoint_info.insert(endpoint_info.end(), display_name_bytes.begin(),
+                       display_name_bytes.end());
+  endpoint_info.push_back(kEndpointInfoVerificationStyle);
+  endpoint_info.push_back(kEndpointInfoDeviceType);
+  endpoint_info.insert(endpoint_info.end(), session_id_bytes.begin(),
+                       session_id_bytes.end());
+  endpoint_info.push_back(kEndpointInfoIsQuickStart);
+
+  return endpoint_info;
 }
 
 }  // namespace ash::quick_start

@@ -53,10 +53,16 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
  private:
+  friend class TargetDeviceConnectionBrokerImplTest;
+
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void OnStartFastPairAdvertisingError(ResultCallback callback);
   void OnStopFastPairAdvertising(base::OnceClosure callback);
+
+  // The EndpointInfo is the set of bytes that SmartSetup on Android expects to
+  // be in the Nearby Connections advertisement.
+  std::vector<uint8_t> GenerateEndpointInfo();
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::OnceClosure deferred_start_advertising_callback_;
