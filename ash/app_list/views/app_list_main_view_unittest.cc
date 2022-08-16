@@ -256,6 +256,11 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
 TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+  // This test is flaky when ProductivityLauncher is false. Skip the test in
+  // that case. http://crbug.com/1351834
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
