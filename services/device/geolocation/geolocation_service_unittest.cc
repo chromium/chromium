@@ -51,7 +51,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
  protected:
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::shill_clients::InitializeFakes();
+    ash::shill_clients::InitializeFakes();
     ash::NetworkHandler::Initialize();
 #endif
     network_change_notifier_ = net::NetworkChangeNotifier::CreateMockIfNeeded();
@@ -74,7 +74,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::NetworkHandler::Shutdown();
-    chromeos::shill_clients::Shutdown();
+    ash::shill_clients::Shutdown();
 #endif
 
     // Let the GeolocationImpl destruct earlier than GeolocationProviderImpl to

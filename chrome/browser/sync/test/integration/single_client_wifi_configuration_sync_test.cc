@@ -144,7 +144,7 @@ class SingleClientWifiConfigurationSyncTest : public SyncTest {
   void SetupShill() {
     // TODO(crbug.com/1077152): figure out where |userhash| is hardcoded and use
     // some shared constant here.
-    chromeos::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
+    ash::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
         GetProfile(0)->GetPath().value(), /*userhash=*/"test-user");
   }
 

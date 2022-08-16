@@ -19,7 +19,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class to hold onto a reference to a ShillClientHelper. This class
 // is owned by callbacks and released once the callback completes.
@@ -545,4 +545,4 @@ void ShillClientHelper::OnPropertyChanged(dbus::Signal* signal) {
     observer.OnPropertyChanged(name, value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

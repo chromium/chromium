@@ -283,7 +283,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
 };
 
 class VpnServiceForExtensionAsh::VpnConfiguration
-    : public chromeos::ShillThirdPartyVpnObserver {
+    : public ash::ShillThirdPartyVpnObserver {
  public:
   virtual const std::string& configuration_name() const = 0;
   virtual const std::string& key() const = 0;

@@ -34,7 +34,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1269,11 +1269,11 @@ void FakeShillManagerClient::ParseCommandLineSwitch() {
 
   // Parse additional options
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kShillStub))
+  if (!command_line->HasSwitch(chromeos::switches::kShillStub))
     return;
 
   std::string option_str =
-      command_line->GetSwitchValueASCII(switches::kShillStub);
+      command_line->GetSwitchValueASCII(chromeos::switches::kShillStub);
   VLOG(1) << "Parsing command line:" << option_str;
   base::StringPairs string_pairs;
   base::SplitStringIntoKeyValuePairs(option_str, '=', ',', &string_pairs);
@@ -1438,4 +1438,4 @@ std::string FakeShillManagerClient::GetInitialStateForType(
   return result;
 }
 
-}  // namespace chromeos
+}  // namespace ash

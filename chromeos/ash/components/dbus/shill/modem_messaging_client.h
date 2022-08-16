@@ -17,7 +17,7 @@ class Bus;
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // ModemMessagingClient is used to communicate with the
 // org.freedesktop.ModemManager1.Modem.Messaging service.  All methods
@@ -87,11 +87,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ModemMessagingClient {
   virtual ~ModemMessagingClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::ModemMessagingClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_MODEM_MESSAGING_CLIENT_H_

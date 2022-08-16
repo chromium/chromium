@@ -614,7 +614,7 @@ class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
 };
 
 TestShillControllerAsh::TestShillControllerAsh() {
-  chromeos::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
+  ash::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
       "/network/test", ash::ProfileHelper::GetUserIdHashFromProfile(
                            ProfileManager::GetPrimaryUserProfile()));
 }
@@ -630,8 +630,7 @@ void TestShillControllerAsh::OnPacketReceived(
   const std::string shill_key = shill::kObjectPathBase + key;
   // On linux ShillThirdPartyVpnDriverClient is initialized as Fake and
   // therefore exposes a testing interface.
-  auto* client =
-      chromeos::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
+  auto* client = ash::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
   CHECK(client);
   client->OnPacketReceived(shill_key,
                            std::vector<char>(data.begin(), data.end()));
@@ -646,8 +645,7 @@ void TestShillControllerAsh::OnPlatformMessage(
   const std::string shill_key = shill::kObjectPathBase + key;
   // On linux ShillThirdPartyVpnDriverClient is initialized as Fake and
   // therefore exposes a testing interface.
-  auto* client =
-      chromeos::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
+  auto* client = ash::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
   CHECK(client);
   client->OnPlatformMessage(shill_key, message);
 }
@@ -662,13 +660,13 @@ void ShillClientTestInterfaceAsh::AddDevice(const std::string& device_path,
                                             const std::string& type,
                                             const std::string& name,
                                             AddDeviceCallback callback) {
-  auto* device_test = chromeos::ShillDeviceClient::Get()->GetTestInterface();
+  auto* device_test = ash::ShillDeviceClient::Get()->GetTestInterface();
   device_test->AddDevice(device_path, type, name);
   std::move(callback).Run();
 }
 
 void ShillClientTestInterfaceAsh::ClearDevices(ClearDevicesCallback callback) {
-  auto* device_test = chromeos::ShillDeviceClient::Get()->GetTestInterface();
+  auto* device_test = ash::ShillDeviceClient::Get()->GetTestInterface();
   device_test->ClearDevices();
   std::move(callback).Run();
 }
@@ -679,7 +677,7 @@ void ShillClientTestInterfaceAsh::SetDeviceProperty(
     ::base::Value value,
     bool notify_changed,
     SetDevicePropertyCallback callback) {
-  auto* device_test = chromeos::ShillDeviceClient::Get()->GetTestInterface();
+  auto* device_test = ash::ShillDeviceClient::Get()->GetTestInterface();
   device_test->SetDeviceProperty(device_path, name, value, notify_changed);
   std::move(callback).Run();
 }
@@ -687,7 +685,7 @@ void ShillClientTestInterfaceAsh::SetDeviceProperty(
 void ShillClientTestInterfaceAsh::SetSimLocked(const std::string& device_path,
                                                bool enabled,
                                                SetSimLockedCallback callback) {
-  auto* device_test = chromeos::ShillDeviceClient::Get()->GetTestInterface();
+  auto* device_test = ash::ShillDeviceClient::Get()->GetTestInterface();
   device_test->SetSimLocked(device_path, enabled);
   std::move(callback).Run();
 }
@@ -700,14 +698,14 @@ void ShillClientTestInterfaceAsh::AddService(
     const std::string& state,
     bool visible,
     SetDevicePropertyCallback callback) {
-  auto* service_test = chromeos::ShillServiceClient::Get()->GetTestInterface();
+  auto* service_test = ash::ShillServiceClient::Get()->GetTestInterface();
   service_test->AddService(service_path, guid, name, type, state, visible);
   std::move(callback).Run();
 }
 
 void ShillClientTestInterfaceAsh::ClearServices(
     ClearServicesCallback callback) {
-  auto* service_test = chromeos::ShillServiceClient::Get()->GetTestInterface();
+  auto* service_test = ash::ShillServiceClient::Get()->GetTestInterface();
   service_test->ClearServices();
   std::move(callback).Run();
 }
@@ -717,7 +715,7 @@ void ShillClientTestInterfaceAsh::SetServiceProperty(
     const std::string& property,
     base::Value value,
     SetServicePropertyCallback callback) {
-  auto* service_test = chromeos::ShillServiceClient::Get()->GetTestInterface();
+  auto* service_test = ash::ShillServiceClient::Get()->GetTestInterface();
   service_test->SetServiceProperty(service_path, property, value);
   std::move(callback).Run();
 }
@@ -725,7 +723,7 @@ void ShillClientTestInterfaceAsh::SetServiceProperty(
 void ShillClientTestInterfaceAsh::AddProfile(const std::string& profile_path,
                                              const std::string& userhash,
                                              AddProfileCallback callback) {
-  auto* profile_test = chromeos::ShillProfileClient::Get()->GetTestInterface();
+  auto* profile_test = ash::ShillProfileClient::Get()->GetTestInterface();
   profile_test->AddProfile(profile_path, userhash);
   std::move(callback).Run();
 }
@@ -734,7 +732,7 @@ void ShillClientTestInterfaceAsh::AddServiceToProfile(
     const std::string& profile_path,
     const std::string& service_path,
     AddServiceToProfileCallback callback) {
-  auto* profile_test = chromeos::ShillProfileClient::Get()->GetTestInterface();
+  auto* profile_test = ash::ShillProfileClient::Get()->GetTestInterface();
   profile_test->AddService(profile_path, service_path);
   std::move(callback).Run();
 }
@@ -742,8 +740,7 @@ void ShillClientTestInterfaceAsh::AddServiceToProfile(
 void ShillClientTestInterfaceAsh::AddIPConfig(const std::string& ip_config_path,
                                               ::base::Value properties,
                                               AddIPConfigCallback callback) {
-  auto* ip_config_test =
-      chromeos::ShillIPConfigClient::Get()->GetTestInterface();
+  auto* ip_config_test = ash::ShillIPConfigClient::Get()->GetTestInterface();
   ip_config_test->AddIPConfig(ip_config_path, properties);
   std::move(callback).Run();
 }

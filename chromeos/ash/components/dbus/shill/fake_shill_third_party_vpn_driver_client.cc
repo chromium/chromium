@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeShillThirdPartyVpnDriverClient::FakeShillThirdPartyVpnDriverClient() =
     default;
@@ -95,4 +95,4 @@ FakeShillThirdPartyVpnDriverClient::GetTestInterface() {
   return this;
 }
 
-}  // namespace chromeos
+}  // namespace ash

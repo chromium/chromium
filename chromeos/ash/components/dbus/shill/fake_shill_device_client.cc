@@ -30,7 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -613,4 +613,4 @@ void FakeShillDeviceClient::SetScanning(const dbus::ObjectPath& device_path,
                       /*notify_changed=*/true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

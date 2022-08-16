@@ -17,7 +17,7 @@
 
 using testing::_;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -201,4 +201,4 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SendPacket) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

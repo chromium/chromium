@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeModemMessagingClient::FakeModemMessagingClient() = default;
 FakeModemMessagingClient::~FakeModemMessagingClient() = default;
@@ -69,4 +69,4 @@ void FakeModemMessagingClient::ReceiveSms(const dbus::ObjectPath& object_path,
   sms_received_handlers_[object_path].Run(sms_path, true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

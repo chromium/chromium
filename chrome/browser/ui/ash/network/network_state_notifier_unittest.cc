@@ -124,8 +124,8 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     NetworkHandler::Get()
         ->network_state_handler()
         ->set_stub_cellular_networks_provider(nullptr);
-    ShillServiceClient::TestInterface* service_test =
-        ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
     service_test->ClearServices();
 
     hermes_manager_test_ = HermesManagerClient::Get()->GetTestInterface();
@@ -147,7 +147,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void SetCellularDeviceLocked(bool is_locked) {
-    ShillDeviceClient::TestInterface* device_test =
+    ash::ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
 
     std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
@@ -160,11 +160,11 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void SetupDefaultShillState() {
-    ShillDeviceClient::TestInterface* device_test =
+    ash::ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
     device_test->ClearDevices();
 
-    ShillServiceClient::TestInterface* service_test =
+    ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
 
@@ -276,8 +276,8 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
                 IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
                 l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
-  ShillServiceClient::TestInterface* service_test =
-      ShillServiceClient::Get()->GetTestInterface();
+  ash::ShillServiceClient::TestInterface* service_test =
+      ash::ShillServiceClient::Get()->GetTestInterface();
   service_test->SetServiceProperty(
       kCellularEsimServicePath, shill::kConnectableProperty, base::Value(true));
 

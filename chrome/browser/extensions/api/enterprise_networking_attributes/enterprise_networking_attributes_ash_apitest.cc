@@ -77,14 +77,14 @@ class EnterpriseNetworkingAttributesTest
                                                  std::get<1>(GetParam())) {}
 
   void SetupDisconnectedNetwork() {
-    chromeos::ShillDeviceClient::TestInterface* shill_device_client =
-        chromeos::ShillDeviceClient::Get()->GetTestInterface();
-    chromeos::ShillIPConfigClient::TestInterface* shill_ipconfig_client =
-        chromeos::ShillIPConfigClient::Get()->GetTestInterface();
-    chromeos::ShillServiceClient::TestInterface* shill_service_client =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
-    chromeos::ShillProfileClient::TestInterface* shill_profile_client =
-        chromeos::ShillProfileClient::Get()->GetTestInterface();
+    ash::ShillDeviceClient::TestInterface* shill_device_client =
+        ash::ShillDeviceClient::Get()->GetTestInterface();
+    ash::ShillIPConfigClient::TestInterface* shill_ipconfig_client =
+        ash::ShillIPConfigClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* shill_service_client =
+        ash::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillProfileClient::TestInterface* shill_profile_client =
+        ash::ShillProfileClient::Get()->GetTestInterface();
 
     shill_service_client->ClearServices();
     shill_device_client->ClearDevices();
@@ -125,14 +125,14 @@ class EnterpriseNetworkingAttributesTest
         kWifiServicePath, shill::kConnectableProperty, base::Value(true));
 
     shill_profile_client->AddService(
-        chromeos::ShillProfileClient::GetSharedProfilePath(), kWifiServicePath);
+        ash::ShillProfileClient::GetSharedProfilePath(), kWifiServicePath);
 
     base::RunLoop().RunUntilIdle();
   }
 
   void ConnectNetwork() {
-    chromeos::ShillServiceClient::TestInterface* shill_service_client =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* shill_service_client =
+        ash::ShillServiceClient::Get()->GetTestInterface();
     shill_service_client->SetServiceProperty(kWifiServicePath,
                                              shill::kStateProperty,
                                              base::Value(shill::kStateOnline));

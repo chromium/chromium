@@ -99,8 +99,7 @@ class ServiceConnectedWaiter {
 
 // Records all values that shill service property had during the lifetime of
 // ServicePropertyValueWatcher. Only supports string properties at the moment.
-class ServicePropertyValueWatcher
-    : public chromeos::ShillPropertyChangedObserver {
+class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
  public:
   ServicePropertyValueWatcher(
       ash::ShillServiceClient::TestInterface* shill_service_client_test,

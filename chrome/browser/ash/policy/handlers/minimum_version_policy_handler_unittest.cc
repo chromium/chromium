@@ -111,7 +111,7 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
   network_handler_test_helper_ =
       std::make_unique<ash::NetworkHandlerTestHelper>();
 
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ash::ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",

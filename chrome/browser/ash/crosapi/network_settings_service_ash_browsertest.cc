@@ -138,10 +138,10 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
   }
 
   void SetupNetworkEnvironment() {
-    chromeos::ShillProfileClient::TestInterface* profile_test =
-        chromeos::ShillProfileClient::Get()->GetTestInterface();
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillProfileClient::TestInterface* profile_test =
+        ash::ShillProfileClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
 
     profile_test->AddProfile(kUserProfilePath, "user");
 
@@ -160,8 +160,8 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
   void ConnectWifiNetworkService(const std::string& service_path,
                                  const std::string& guid,
                                  const std::string& ssid) {
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
 
     service_test->AddService(service_path, guid, ssid, shill::kTypeWifi,
                              shill::kStateOnline, true /* add_to_visible */);

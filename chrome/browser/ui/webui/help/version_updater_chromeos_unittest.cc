@@ -71,7 +71,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   }
 
   void SetEthernetService() {
-    ShillServiceClient::TestInterface* service_test =
+    ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
     service_test->AddService("/service/eth",
@@ -83,7 +83,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   }
 
   void SetCellularService() {
-    ShillServiceClient::TestInterface* service_test =
+    ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
     service_test->AddService("/service/cell", "cell" /* guid */, "cell",

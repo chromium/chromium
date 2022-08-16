@@ -228,7 +228,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_TwoNetworks) {
 TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Error) {
   base::HistogramTester histogram_tester;
   network_state_helper()->manager_test()->SetSimulateConfigurationResult(
-      chromeos::FakeShillSimulatedResult::kFailure);
+      FakeShillSimulatedResult::kFailure);
 
   updater()->AddOrUpdateNetwork(GenerateTestWifiSpecifics(fred_network_id()));
   EXPECT_TRUE(tracker()->GetPendingUpdateById(fred_network_id()));
@@ -252,7 +252,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Error) {
 TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Timeout) {
   base::HistogramTester histogram_tester;
   network_state_helper()->manager_test()->SetSimulateConfigurationResult(
-      chromeos::FakeShillSimulatedResult::kTimeout);
+      FakeShillSimulatedResult::kTimeout);
 
   updater()->AddOrUpdateNetwork(GenerateTestWifiSpecifics(fred_network_id()));
   EXPECT_TRUE(tracker()->GetPendingUpdateById(fred_network_id()));
@@ -285,7 +285,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Timeout) {
 TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Timeout_ThenSucceed) {
   base::HistogramTester histogram_tester;
   network_state_helper()->manager_test()->SetSimulateConfigurationResult(
-      chromeos::FakeShillSimulatedResult::kTimeout);
+      FakeShillSimulatedResult::kTimeout);
 
   updater()->AddOrUpdateNetwork(GenerateTestWifiSpecifics(fred_network_id()));
   EXPECT_TRUE(tracker()->GetPendingUpdateById(fred_network_id()));
@@ -301,7 +301,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Timeout_ThenSucceed) {
   EXPECT_EQ(1, tracker()->GetCompletedAttempts(fred_network_id()));
 
   network_state_helper()->manager_test()->SetSimulateConfigurationResult(
-      chromeos::FakeShillSimulatedResult::kSuccess);
+      FakeShillSimulatedResult::kSuccess);
 
   timer_factory()->FireAll();
   base::RunLoop().RunUntilIdle();
@@ -318,7 +318,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestFailToAdd_Timeout_ThenSucceed) {
 TEST_F(SyncedNetworkUpdaterImplTest, TestFailToRemove) {
   base::HistogramTester histogram_tester;
   network_state_helper()->profile_test()->SetSimulateDeleteResult(
-      chromeos::FakeShillSimulatedResult::kFailure);
+      FakeShillSimulatedResult::kFailure);
   updater()->AddOrUpdateNetwork(GenerateTestWifiSpecifics(fred_network_id()));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(FindLocalNetworkById(fred_network_id()));

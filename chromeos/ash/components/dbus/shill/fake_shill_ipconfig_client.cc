@@ -19,7 +19,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeShillIPConfigClient::FakeShillIPConfigClient() {}
 
@@ -85,4 +85,4 @@ void FakeShillIPConfigClient::AddIPConfig(const std::string& ip_config_path,
   ipconfigs_.SetKey(ip_config_path, properties.Clone());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -18,7 +18,7 @@ class Bus;
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 class ShillPropertyChangedObserver;
 
@@ -269,13 +269,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   virtual ~ShillManagerClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ShillManagerClient;
-using ::chromeos::ShillPropertyChangedObserver;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ShillManagerClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_MANAGER_CLIENT_H_

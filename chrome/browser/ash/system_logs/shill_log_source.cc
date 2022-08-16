@@ -70,7 +70,7 @@ void ShillLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(callback_.is_null());
   callback_ = std::move(callback);
 
-  chromeos::ShillManagerClient::Get()->GetProperties(base::BindOnce(
+  ash::ShillManagerClient::Get()->GetProperties(base::BindOnce(
       &ShillLogSource::OnGetManagerProperties, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -89,7 +89,7 @@ void ShillLogSource::OnGetManagerProperties(
       if (path.empty())
         continue;
       device_paths_.insert(path);
-      chromeos::ShillDeviceClient::Get()->GetProperties(
+      ash::ShillDeviceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillLogSource::OnGetDevice,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -103,7 +103,7 @@ void ShillLogSource::OnGetManagerProperties(
       if (path.empty())
         continue;
       service_paths_.insert(path);
-      chromeos::ShillServiceClient::Get()->GetProperties(
+      ash::ShillServiceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillLogSource::OnGetService,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -140,7 +140,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
     if (ip_config_path.empty())
       continue;
     ip_config_paths_.insert(ip_config_path);
-    chromeos::ShillIPConfigClient::Get()->GetProperties(
+    ash::ShillIPConfigClient::Get()->GetProperties(
         dbus::ObjectPath(ip_config_path),
         base::BindOnce(&ShillLogSource::OnGetIPConfig,
                        weak_ptr_factory_.GetWeakPtr(), device_path,

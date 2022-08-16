@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ShillDeviceClient.
 // Implemented: Stub cellular device for SMS testing.
@@ -171,11 +171,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   base::WeakPtrFactory<FakeShillDeviceClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::FakeShillDeviceClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::FakeShillDeviceClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_DEVICE_CLIENT_H_

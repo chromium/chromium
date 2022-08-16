@@ -45,7 +45,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   void SetUp() override {
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
-    chromeos::shill_clients::InitializeFakes();
+    shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
     NetworkHandler::Initialize();
     network_config_helper_ = std::make_unique<
@@ -68,7 +68,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     network_config_helper_.reset();
     NetworkHandler::Shutdown();
     hermes_clients::Shutdown();
-    chromeos::shill_clients::Shutdown();
+    shill_clients::Shutdown();
     NetworkCertLoader::Shutdown();
     SystemTokenCertDbStorage::Shutdown();
   }

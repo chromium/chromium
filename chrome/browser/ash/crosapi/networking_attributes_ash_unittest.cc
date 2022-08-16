@@ -74,8 +74,7 @@ void ShillErrorCallbackFunction(const std::string& error_name,
 
 class NetworkingAttributesAshTest : public testing::Test {
  public:
-  class MockPropertyChangeObserver
-      : public chromeos::ShillPropertyChangedObserver {
+  class MockPropertyChangeObserver : public ash::ShillPropertyChangedObserver {
    public:
     MockPropertyChangeObserver() = default;
     ~MockPropertyChangeObserver() override = default;
@@ -147,8 +146,7 @@ class NetworkingAttributesAshTest : public testing::Test {
               shill::kStateOnline);
 
     base::RunLoop device_client_mac_address_run_loop;
-    chromeos::ShillDeviceClient* shill_device_client =
-        chromeos::ShillDeviceClient::Get();
+    ash::ShillDeviceClient* shill_device_client = ash::ShillDeviceClient::Get();
     shill_device_client->SetProperty(
         dbus::ObjectPath(kWifiDevicePath), shill::kAddressProperty,
         base::Value(kFormattedMacAddress),
@@ -164,8 +162,8 @@ class NetworkingAttributesAshTest : public testing::Test {
     device_client_ip_config_run_loop.Run();
 
     testing::StrictMock<MockPropertyChangeObserver> observer;
-    chromeos::ShillServiceClient* shill_service_client =
-        chromeos::ShillServiceClient::Get();
+    ash::ShillServiceClient* shill_service_client =
+        ash::ShillServiceClient::Get();
     shill_service_client->AddPropertyChangedObserver(
         dbus::ObjectPath(kWifiServicePath), &observer);
 

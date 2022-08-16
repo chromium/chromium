@@ -11,8 +11,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
-namespace shill_clients {
+namespace ash::shill_clients {
 
 // Initialize Shill and modemmanager related dbus clients.
 COMPONENT_EXPORT(SHILL_CLIENT) void Initialize(dbus::Bus* system_bus);
@@ -23,13 +22,6 @@ COMPONENT_EXPORT(SHILL_CLIENT) void InitializeFakes();
 // Shut down Shill and modemmanager related dbus clients.
 COMPONENT_EXPORT(SHILL_CLIENT) void Shutdown();
 
-}  // namespace shill_clients
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::shill_clients {
-using ::chromeos::shill_clients::InitializeFakes;
-using ::chromeos::shill_clients::Shutdown;
 }  // namespace ash::shill_clients
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_CLIENTS_H_

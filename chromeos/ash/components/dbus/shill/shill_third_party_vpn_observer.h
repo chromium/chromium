@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace chromeos {
+namespace ash {
 
 // This is a base class for observers which handle signals sent by the
 // ThirdPartyVpnAdaptor in Shill.
@@ -24,6 +24,6 @@ class ShillThirdPartyVpnObserver {
   virtual ~ShillThirdPartyVpnObserver() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_THIRD_PARTY_VPN_OBSERVER_H_

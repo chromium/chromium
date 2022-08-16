@@ -117,7 +117,7 @@ class MobileDataNotificationsTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     // Create a cellular device with provider.
-    chromeos::ShillDeviceClient::TestInterface* device_test =
+    ash::ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_.device_test();
     device_test->ClearDevices();
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
@@ -130,7 +130,7 @@ class MobileDataNotificationsTest : public testing::Test {
                                    /*notify_changed=*/true);
 
     // Create a cellular network and activate it.
-    chromeos::ShillServiceClient::TestInterface* service_test =
+    ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_.service_test();
     service_test->ClearServices();
     service_test->AddService(kCellularServicePath, kCellularGuid,

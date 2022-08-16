@@ -37,8 +37,7 @@ void OnGetProperties(bool* success_out,
 std::string GetAlwaysOnPackageName() {
   bool success = false;
   std::string package_name;
-  chromeos::ShillManagerClient* shill_manager =
-      chromeos::ShillManagerClient::Get();
+  ash::ShillManagerClient* shill_manager = ash::ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
       base::BindOnce(&OnGetProperties, base::Unretained(&success),

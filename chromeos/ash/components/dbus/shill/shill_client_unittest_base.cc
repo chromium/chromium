@@ -25,7 +25,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -433,4 +433,4 @@ void ShillClientUnittestBase::OnCallMethodWithErrorCallback(
   OnCallMethod(method_call, timeout_ms, response_callback);
 }
 
-}  // namespace chromeos
+}  // namespace ash

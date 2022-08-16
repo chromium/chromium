@@ -19,7 +19,7 @@
 using testing::_;
 using testing::ByRef;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -172,4 +172,4 @@ TEST_F(ShillIPConfigClientTest, Remove) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

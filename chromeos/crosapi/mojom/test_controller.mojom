@@ -67,10 +67,10 @@ interface TestShillController {
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to access the TestInterfaces
-// of chromeos::Shill*Client classes.
+// of ash::Shill*Client classes.
 [Stable, Uuid="12d5dbb4-e974-4f41-820e-6d92c2215452"]
 interface ShillClientTestInterface {
-  // From chromeos::ShillDeviceClient::TestInterface:
+  // From ash::ShillDeviceClient::TestInterface:
 
   // Adds a fake networking device.
   AddDevice@0(string device_path, string type,string name) => ();
@@ -84,7 +84,7 @@ interface ShillClientTestInterface {
   // Sets whether the SIM in the given fake device should be locked.
   SetSimLocked@3(string device_path, bool enabled) => ();
 
-  // From chromeos::ShillServiceClient::TestInterface:
+  // From ash::ShillServiceClient::TestInterface:
 
   // Adds a Service to the Manager and Service stubs.
   AddService@4(string service_path,
@@ -99,7 +99,7 @@ interface ShillClientTestInterface {
   SetServiceProperty@6(string service_path, string property,
       mojo_base.mojom.Value value) => ();
 
-  // From chromeos::ShillProfileClient::TestInterface:
+  // From ash::ShillProfileClient::TestInterface:
 
   // Adds a profile.
   AddProfile@7(string profile_path, string userhash) => ();
@@ -107,7 +107,7 @@ interface ShillClientTestInterface {
   // ShillServiceClient entry matching |service_path|.
   AddServiceToProfile@8(string profile_path, string service_path) => ();
 
-  // From chromeos::ShillIPConfigClient::TestInterface:
+  // From ash::ShillIPConfigClient::TestInterface:
 
   // Adds an IPConfig entry.
   AddIPConfig@9(string ip_config_path, mojo_base.mojom.Value properties) => ();

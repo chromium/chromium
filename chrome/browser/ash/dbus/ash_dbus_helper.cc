@@ -130,7 +130,7 @@ void InitializeDBus() {
   // Initialize Chrome dbus clients.
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
 
-  chromeos::shill_clients::Initialize(bus);
+  shill_clients::Initialize(bus);
 
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
@@ -328,7 +328,7 @@ void ShutdownDBus() {
   ArcAppfuseProviderClient::Shutdown();
   AnomalyDetectorClient::Shutdown();
 
-  chromeos::shill_clients::Shutdown();
+  shill_clients::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();
 }

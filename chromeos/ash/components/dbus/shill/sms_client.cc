@@ -21,7 +21,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -180,4 +180,4 @@ SMSClient* SMSClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

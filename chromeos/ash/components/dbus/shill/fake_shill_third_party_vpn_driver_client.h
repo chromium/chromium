@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ShillThirdPartyVpnDriverClient.
 // The client can generate fake DBus signals when
@@ -65,6 +65,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
   ObserverMap observer_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_THIRD_PARTY_VPN_DRIVER_CLIENT_H_

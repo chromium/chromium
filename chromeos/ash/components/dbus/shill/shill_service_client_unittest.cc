@@ -19,7 +19,7 @@
 using testing::_;
 using testing::ByRef;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -374,4 +374,4 @@ TEST_F(ShillServiceClientTest, ResetTrafficCounters) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

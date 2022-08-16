@@ -27,7 +27,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -228,4 +228,4 @@ TEST_F(ModemMessagingClientTest, List) {
   EXPECT_EQ(kExpectedResult, result);
 }
 
-}  // namespace chromeos
+}  // namespace ash

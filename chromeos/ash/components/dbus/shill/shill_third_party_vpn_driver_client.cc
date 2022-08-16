@@ -21,7 +21,7 @@
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -370,4 +370,4 @@ ShillThirdPartyVpnDriverClient* ShillThirdPartyVpnDriverClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

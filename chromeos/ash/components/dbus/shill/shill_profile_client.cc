@@ -18,7 +18,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -207,4 +207,4 @@ std::string ShillProfileClient::GetSharedProfilePath() {
   return std::string(kSharedProfilePath);
 }
 
-}  // namespace chromeos
+}  // namespace ash

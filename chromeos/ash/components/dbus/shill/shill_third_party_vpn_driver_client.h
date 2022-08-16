@@ -21,7 +21,7 @@ namespace dbus {
 class Bus;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 class ShillThirdPartyVpnObserver;
 
@@ -106,6 +106,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
   virtual ~ShillThirdPartyVpnDriverClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_THIRD_PARTY_VPN_DRIVER_CLIENT_H_

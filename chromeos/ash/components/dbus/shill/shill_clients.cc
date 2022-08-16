@@ -13,8 +13,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/sms_client.h"
 
-namespace chromeos {
-namespace shill_clients {
+namespace ash::shill_clients {
 
 void Initialize(dbus::Bus* system_bus) {
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -56,5 +55,4 @@ void Shutdown() {
   ModemMessagingClient::Shutdown();
 }
 
-}  // namespace shill_clients
-}  // namespace chromeos
+}  // namespace ash::shill_clients

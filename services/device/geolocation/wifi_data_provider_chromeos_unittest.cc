@@ -58,7 +58,7 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   scoped_refptr<WifiDataProviderChromeOs> provider_;
-  chromeos::ShillManagerClient::TestInterface* manager_test_;
+  ash::ShillManagerClient::TestInterface* manager_test_;
   WifiData::AccessPointDataSet ap_data_;
 };
 

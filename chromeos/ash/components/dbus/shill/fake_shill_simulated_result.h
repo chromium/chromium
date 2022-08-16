@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 enum class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillSimulatedResult {
   kSuccess,
@@ -15,11 +15,6 @@ enum class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillSimulatedResult {
   kTimeout
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::FakeShillSimulatedResult;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_SIMULATED_RESULT_H_

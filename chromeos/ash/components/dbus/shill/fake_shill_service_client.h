@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ShillServiceClient. This works in close coordination
 // with FakeShillManagerClient and is not intended to be used independently.
@@ -181,6 +181,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   base::WeakPtrFactory<FakeShillServiceClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_SERVICE_CLIENT_H_

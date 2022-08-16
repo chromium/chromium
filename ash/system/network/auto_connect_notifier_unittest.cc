@@ -64,7 +64,7 @@ class AutoConnectNotifierTest : public AshTestBase {
         ->auto_connect_->set_timer_for_testing(
             base::WrapUnique(mock_notification_timer_));
 
-    chromeos::ShillServiceClient::Get()->GetTestInterface()->AddService(
+    ShillServiceClient::Get()->GetTestInterface()->AddService(
         kTestServicePath, kTestServiceGuid, kTestServiceName, shill::kTypeWifi,
         shill::kStateIdle, true /* visible*/);
     // Ensure fake DBus service initialization completes.
@@ -87,9 +87,9 @@ class AutoConnectNotifierTest : public AshTestBase {
   }
 
   void SuccessfullyJoinWifiNetwork() {
-    chromeos::ShillServiceClient::Get()->Connect(
-        dbus::ObjectPath(kTestServicePath), base::BindOnce([]() {}),
-        chromeos::ShillServiceClient::ErrorCallback());
+    ShillServiceClient::Get()->Connect(dbus::ObjectPath(kTestServicePath),
+                                       base::BindOnce([]() {}),
+                                       ShillServiceClient::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

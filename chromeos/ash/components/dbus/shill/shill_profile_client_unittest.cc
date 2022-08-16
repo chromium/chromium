@@ -19,7 +19,7 @@
 
 using testing::_;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -183,4 +183,4 @@ TEST_F(ShillProfileClientTest, DeleteEntry) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

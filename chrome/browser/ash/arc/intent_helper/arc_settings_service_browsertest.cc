@@ -277,8 +277,8 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
 
  protected:
   void DisconnectNetworkService(const std::string& service_path) {
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
     base::Value value(shill::kStateIdle);
     service_test->SetServiceProperty(service_path, shill::kStateProperty,
                                      value);
@@ -288,8 +288,8 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   void ConnectWifiNetworkService(const std::string& service_path,
                                  const std::string& guid,
                                  const std::string& ssid) {
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
 
     service_test->AddService(service_path, guid, ssid, shill::kTypeWifi,
                              shill::kStateOnline, true /* add_to_visible */);
@@ -314,10 +314,10 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
 
  private:
   void SetupNetworkEnvironment() {
-    chromeos::ShillProfileClient::TestInterface* profile_test =
-        chromeos::ShillProfileClient::Get()->GetTestInterface();
-    chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::ShillServiceClient::Get()->GetTestInterface();
+    ash::ShillProfileClient::TestInterface* profile_test =
+        ash::ShillProfileClient::Get()->GetTestInterface();
+    ash::ShillServiceClient::TestInterface* service_test =
+        ash::ShillServiceClient::Get()->GetTestInterface();
 
     profile_test->AddProfile(kUserProfilePath, "user");
 
@@ -862,8 +862,8 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   RunUntilIdle();
   const char kWebProxyAutodetectionUrl[] = "www.proxyurl.com:443";
 
-  chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
-      chromeos::ShillIPConfigClient::Get()->GetTestInterface();
+  ash::ShillIPConfigClient::TestInterface* ip_config_client =
+      ash::ShillIPConfigClient::Get()->GetTestInterface();
 
   // Set the WPAD DHCP URL. This should now have precedence over the PAC URL set
   // via DNS.
@@ -873,8 +873,8 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   const std::string kIPConfigPath = "test_ip_config";
   ip_config_client->AddIPConfig(kIPConfigPath, wpad_config);
 
-  chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::ShillServiceClient::Get()->GetTestInterface();
+  ash::ShillServiceClient::TestInterface* service_test =
+      ash::ShillServiceClient::Get()->GetTestInterface();
 
   service_test->SetServiceProperty(kDefaultServicePath,
                                    shill::kIPConfigProperty,

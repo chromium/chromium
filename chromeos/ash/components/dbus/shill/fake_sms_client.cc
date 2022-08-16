@@ -17,7 +17,7 @@
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeSMSClient::FakeSMSClient() = default;
 
@@ -41,4 +41,4 @@ void FakeSMSClient::GetAll(const std::string& service_name,
       FROM_HERE, base::BindOnce(std::move(callback), std::move(sms)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

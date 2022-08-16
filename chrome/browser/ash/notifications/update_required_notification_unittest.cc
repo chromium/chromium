@@ -125,7 +125,7 @@ void UpdateRequiredNotificationTest::SetUp() {
   fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();
   service_test->ClearServices();
   service_test->AddService("/service/eth", "eth" /* guid */, "eth",
@@ -194,7 +194,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
 
   // Disconnect all networks
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper()->service_test();
   service_test->ClearServices();
 
@@ -233,7 +233,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
 
 TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   // Connect to metered network
-  chromeos::ShillServiceClient::TestInterface* service_test =
+  ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper()->service_test();
   service_test->ClearServices();
   service_test->AddService(kCellularServicePath,

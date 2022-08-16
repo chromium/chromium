@@ -503,7 +503,7 @@ class TetherServiceTest : public testing::Test {
     shutdown_reason_verified_ = true;
   }
 
-  chromeos::ShillManagerClient::TestInterface* manager_test() {
+  ShillManagerClient::TestInterface* manager_test() {
     return network_handler_test_helper_.manager_test();
   }
 

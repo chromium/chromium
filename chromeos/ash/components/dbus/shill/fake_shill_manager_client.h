@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ShillManagerClient. This works in close coordination
 // with FakeShillServiceClient. FakeShillDeviceClient, and
@@ -201,12 +201,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   base::WeakPtrFactory<FakeShillManagerClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeShillManagerClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_MANAGER_CLIENT_H_

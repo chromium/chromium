@@ -9,7 +9,7 @@
 
 #include "chromeos/ash/components/dbus/shill/sms_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class FakeSMSClient : public SMSClient {
  public:
@@ -26,6 +26,6 @@ class FakeSMSClient : public SMSClient {
               GetAllCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SMS_CLIENT_H_

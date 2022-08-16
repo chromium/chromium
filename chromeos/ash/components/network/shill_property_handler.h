@@ -13,8 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_state.h"
@@ -22,7 +20,11 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::internal {
+namespace ash {
+
+class ShillManagerClient;
+
+namespace internal {
 
 class ShillPropertyObserver;
 
@@ -273,6 +275,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   std::set<std::string> uninitialized_technologies_;
 };
 
-}  // namespace ash::internal
+}  // namespace internal
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_HANDLER_H_

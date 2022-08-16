@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A stub implementation of ShillProfileClient.
 class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
@@ -96,6 +96,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
       FakeShillSimulatedResult::kSuccess;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_PROFILE_CLIENT_H_

@@ -417,28 +417,28 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetGatewayForIPConfig(const std::string& gateway) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kGatewayProperty,
         base::Value(gateway), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetIPAddressForIPConfig(const std::string& ip_address) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kAddressProperty,
         base::Value(ip_address), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetNameServersForIPConfig(const base::ListValue& dns_servers) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
-        dns_servers, base::DoNothing());
+    ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
+                                            shill::kNameServersProperty,
+                                            dns_servers, base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetRoutingPrefixForIPConfig(int routing_prefix) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
+    ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kPrefixlenProperty,
         base::Value(routing_prefix), base::DoNothing());
     base::RunLoop().RunUntilIdle();

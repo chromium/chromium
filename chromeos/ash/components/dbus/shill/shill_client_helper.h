@@ -30,7 +30,7 @@ class Signal;
 
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // A class to help implement Shill clients.
 class ShillClientHelper {
@@ -165,6 +165,6 @@ class ShillClientHelper {
   base::WeakPtrFactory<ShillClientHelper> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_CLIENT_HELPER_H_

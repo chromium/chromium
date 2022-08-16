@@ -127,7 +127,7 @@ class VpnConfigurationImpl
     pepper_vpn_proxy_observer_.Bind(std::move(pepper_vpn_proxy_observer));
   }
 
-  // chromeos::ShillThirdPartyVpnObserver:
+  // ash::ShillThirdPartyVpnObserver:
   void OnPacketReceived(const std::vector<char>& data) override;
   void OnPlatformMessage(uint32_t platform_message) override;
 
@@ -296,7 +296,7 @@ void VpnServiceForExtensionAsh::SetParameters(base::Value::Dict parameters,
   }
 
   auto [success, failure] = AdaptCallback(std::move(callback));
-  chromeos::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
+  ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
       active_configuration_->object_path(), base::Value(std::move(parameters)),
       base::BindOnce(&RunWarningCallback, std::move(success)),
       std::move(failure));
@@ -317,7 +317,7 @@ void VpnServiceForExtensionAsh::SendPacket(const std::vector<uint8_t>& data,
   }
 
   auto [success, failure] = AdaptCallback(std::move(callback));
-  chromeos::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
+  ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
       active_configuration_->object_path(),
       std::vector<char>(data.begin(), data.end()), std::move(success),
       std::move(failure));
@@ -333,7 +333,7 @@ void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
   }
 
   auto [success, failure] = AdaptCallback(std::move(callback));
-  chromeos::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
+  ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
       active_configuration_->object_path(),
       connection_success
           ? api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_CONNECTED
@@ -439,9 +439,8 @@ void VpnServiceForExtensionAsh::CreateConfigurationWithServicePath(
       CreateConfigurationInternal(configuration_name);
   configuration->set_service_path(service_path);
   service_path_to_configuration_map_[service_path] = configuration;
-  chromeos::ShillThirdPartyVpnDriverClient::Get()
-      ->AddShillThirdPartyVpnObserver(configuration->object_path(),
-                                      configuration);
+  ash::ShillThirdPartyVpnDriverClient::Get()->AddShillThirdPartyVpnObserver(
+      configuration->object_path(), configuration);
 }
 
 void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
@@ -501,7 +500,7 @@ void VpnServiceForExtensionAsh::DestroyConfigurationInternal(
 
   if (const absl::optional<std::string>& service_path =
           configuration->service_path()) {
-    chromeos::ShillThirdPartyVpnDriverClient::Get()
+    ash::ShillThirdPartyVpnDriverClient::Get()
         ->RemoveShillThirdPartyVpnObserver(configuration->object_path());
     service_path_to_configuration_map_.erase(*service_path);
   }
@@ -514,9 +513,8 @@ void VpnServiceForExtensionAsh::OnCreateConfigurationSuccess(
     const std::string& guid) {
   configuration->set_service_path(service_path);
   service_path_to_configuration_map_[service_path] = configuration;
-  chromeos::ShillThirdPartyVpnDriverClient::Get()
-      ->AddShillThirdPartyVpnObserver(configuration->object_path(),
-                                      configuration);
+  ash::ShillThirdPartyVpnDriverClient::Get()->AddShillThirdPartyVpnObserver(
+      configuration->object_path(), configuration);
   std::move(callback).Run();
 }
 

@@ -38,7 +38,7 @@ class MessageReader;
 
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // A gmock matcher for base::Value types, so we can match them in expectations.
 class ValueMatcher : public MatcherInterface<const base::Value&> {
@@ -226,6 +226,6 @@ class ShillClientUnittestBase : public testing::Test {
   ArgumentCheckCallback argument_checker_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_CLIENT_UNITTEST_BASE_H_

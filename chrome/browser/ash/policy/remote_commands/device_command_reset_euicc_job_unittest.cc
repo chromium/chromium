@@ -148,7 +148,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
 
 TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
   // Simulate a failure by removing the cellular device.
-  chromeos::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
+  ash::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(/*profile=*/nullptr);

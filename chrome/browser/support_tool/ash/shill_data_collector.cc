@@ -142,7 +142,7 @@ void ShillDataCollector::CollectDataAndDetectPII(
   data_collector_done_callback_ = std::move(on_data_collected_callback);
   task_runner_for_redaction_tool_ = std::move(task_runner_for_redaction_tool);
   redaction_tool_container_ = std::move(redaction_tool_container);
-  chromeos::ShillManagerClient::Get()->GetProperties(
+  ash::ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&ShillDataCollector::OnGetManagerProperties,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -170,7 +170,7 @@ void ShillDataCollector::OnGetManagerProperties(
       if (path.empty())
         continue;
       ++num_entries_left_;
-      chromeos::ShillDeviceClient::Get()->GetProperties(
+      ash::ShillDeviceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillDataCollector::OnGetDevice,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -185,7 +185,7 @@ void ShillDataCollector::OnGetManagerProperties(
       if (path.empty())
         continue;
       ++num_entries_left_;
-      chromeos::ShillServiceClient::Get()->GetProperties(
+      ash::ShillServiceClient::Get()->GetProperties(
           dbus::ObjectPath(path),
           base::BindOnce(&ShillDataCollector::OnGetService,
                          weak_ptr_factory_.GetWeakPtr(), path));
@@ -225,7 +225,7 @@ void ShillDataCollector::AddDeviceAndRequestIPConfigs(
     if (ip_config_path.empty())
       continue;
     ++num_entries_left_;
-    chromeos::ShillIPConfigClient::Get()->GetProperties(
+    ash::ShillIPConfigClient::Get()->GetProperties(
         dbus::ObjectPath(ip_config_path),
         base::BindOnce(&ShillDataCollector::OnGetIPConfig,
                        weak_ptr_factory_.GetWeakPtr(), device_path,

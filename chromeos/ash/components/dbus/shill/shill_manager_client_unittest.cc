@@ -23,7 +23,7 @@
 using testing::_;
 using testing::ByRef;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -370,4 +370,4 @@ TEST_F(ShillManagerClientTest, CheckTetheringReadiness) {
   run_loop.RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

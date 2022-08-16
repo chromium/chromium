@@ -22,7 +22,7 @@ class Bus;
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // ShillServiceClient is used to communicate with the Shill Service
 // service.
@@ -251,12 +251,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   virtual ~ShillServiceClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ShillServiceClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_SERVICE_CLIENT_H_

@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of ShillIPConfigClient.
 class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
@@ -58,6 +58,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
   base::WeakPtrFactory<FakeShillIPConfigClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_SHILL_IPCONFIG_CLIENT_H_

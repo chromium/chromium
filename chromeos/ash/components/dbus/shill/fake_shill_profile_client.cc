@@ -23,7 +23,7 @@
 #include "dbus/values_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 struct FakeShillProfileClient::ProfileProperties {
   std::string profile_path;
@@ -315,4 +315,4 @@ FakeShillProfileClient::ProfileProperties* FakeShillProfileClient::GetProfile(
   return nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

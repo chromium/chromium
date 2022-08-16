@@ -92,8 +92,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
   void SetUpNetworks() {
     profile_test()->AddProfile(kUserProfilePath, kUserHash);
-    profile_test()->AddProfile(
-        chromeos::ShillProfileClient::GetSharedProfilePath(), "");
+    profile_test()->AddProfile(ash::ShillProfileClient::GetSharedProfilePath(),
+                               "");
 
     device_test()->AddDevice(kWifiDevicePath, shill::kTypeWifi, "wifi_device1");
 
@@ -110,10 +110,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         kSharedWifiServicePath, shill::kPriorityProperty, base::Value(2));
     service_test()->SetServiceProperty(
         kSharedWifiServicePath, shill::kProfileProperty,
-        base::Value(chromeos::ShillProfileClient::GetSharedProfilePath()));
-    profile_test()->AddService(
-        chromeos::ShillProfileClient::GetSharedProfilePath(),
-        kSharedWifiServicePath);
+        base::Value(ash::ShillProfileClient::GetSharedProfilePath()));
+    profile_test()->AddService(ash::ShillProfileClient::GetSharedProfilePath(),
+                               kSharedWifiServicePath);
 
     service_test()->AddService(kPrivateWifiServicePath, kPrivateWifiGuid,
                                kPrivateWifiName, shill::kTypeWifi,
@@ -346,13 +345,13 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return true;
   }
 
-  chromeos::ShillServiceClient::TestInterface* service_test() {
+  ash::ShillServiceClient::TestInterface* service_test() {
     return network_handler_test_helper_.service_test();
   }
-  chromeos::ShillDeviceClient::TestInterface* device_test() {
+  ash::ShillDeviceClient::TestInterface* device_test() {
     return network_handler_test_helper_.device_test();
   }
-  chromeos::ShillProfileClient::TestInterface* profile_test() {
+  ash::ShillProfileClient::TestInterface* profile_test() {
     return network_handler_test_helper_.profile_test();
   }
 
@@ -1181,7 +1180,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetSharedNetwork) {
   base::RunLoop().RunUntilIdle();
   std::string profile_path;
   EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
-  EXPECT_EQ(chromeos::ShillProfileClient::GetSharedProfilePath(), profile_path);
+  EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
 TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetwork) {
@@ -1261,7 +1260,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetDevicePolicyNetworkWebUI) {
               base::StringPrintf(R"(["%s"])", kManagedDeviceWifiGuid));
 
   EXPECT_TRUE(GetServiceProfile(network->path(), &profile_path));
-  EXPECT_EQ(chromeos::ShillProfileClient::GetSharedProfilePath(), profile_path);
+  EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
 // Tests that forgetNetwork in case there is a network config in both user and
@@ -1277,7 +1276,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfiles) {
               base::StringPrintf(R"(["%s"])", kSharedWifiGuid));
 
   EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
-  EXPECT_EQ(chromeos::ShillProfileClient::GetSharedProfilePath(), profile_path);
+  EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
 TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfilesWebUI) {

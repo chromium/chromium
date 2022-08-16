@@ -29,7 +29,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -866,4 +866,4 @@ void FakeShillServiceClient::SetTimeGetterForTest(
   time_getter_ = std::move(time_getter);
 }
 
-}  // namespace chromeos
+}  // namespace ash

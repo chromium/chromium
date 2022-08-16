@@ -3854,11 +3854,11 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
   void SetUp() override {
     RestartStatusCollector();
 
-    chromeos::ShillDeviceClient::TestInterface* device_client =
+    ash::ShillDeviceClient::TestInterface* device_client =
         network_handler_test_helper_.device_test();
-    chromeos::ShillServiceClient::TestInterface* service_client =
+    ash::ShillServiceClient::TestInterface* service_client =
         network_handler_test_helper_.service_test();
-    chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
+    ash::ShillIPConfigClient::TestInterface* ip_config_client =
         network_handler_test_helper_.ip_config_test();
 
     device_client->ClearDevices();
@@ -3967,9 +3967,9 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
   void TearDown() override { DeviceStatusCollectorTest::TearDown(); }
 
   void ClearNetworkData() {
-    chromeos::ShillDeviceClient::TestInterface* device_client =
+    ash::ShillDeviceClient::TestInterface* device_client =
         network_handler_test_helper_.device_test();
-    chromeos::ShillServiceClient::TestInterface* service_client =
+    ash::ShillServiceClient::TestInterface* service_client =
         network_handler_test_helper_.service_test();
 
     device_client->ClearDevices();

@@ -89,7 +89,7 @@ void DoNothingSuccessCallback(const std::string& service_path,
 // Records the number of calls and their parameters. Always replies successfully
 // to calls.
 class TestShillThirdPartyVpnDriverClient
-    : public FakeShillThirdPartyVpnDriverClient {
+    : public ash::FakeShillThirdPartyVpnDriverClient {
  public:
   void SetParameters(const std::string& object_path_value,
                      const base::Value& parameters,
@@ -309,7 +309,7 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
   bool HasService(const std::string& service_path) const {
     std::string profile_path;
     base::Value properties =
-        ShillProfileClient::Get()->GetTestInterface()->GetService(
+        ash::ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     return properties.is_dict();
   }
@@ -325,15 +325,15 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
   }
 
   void ClearNetworkProfiles() {
-    ShillProfileClient::Get()->GetTestInterface()->ClearProfiles();
+    ash::ShillProfileClient::Get()->GetTestInterface()->ClearProfiles();
     // ShillProfileClient doesn't notify NetworkProfileHandler that profiles got
     // cleared, therefore we have to call ShillManagerClient explicitly.
-    ShillManagerClient::Get()->GetTestInterface()->ClearProfiles();
+    ash::ShillManagerClient::Get()->GetTestInterface()->ClearProfiles();
   }
 
  protected:
   void AddNetworkProfileForUser() {
-    ShillProfileClient::Get()->GetTestInterface()->AddProfile(
+    ash::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
         kNetworkProfilePath,
         ash::ProfileHelper::GetUserIdHashFromProfile(profile()));
     content::RunAllPendingInMessageLoop();

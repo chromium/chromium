@@ -11,7 +11,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This is a base class for observers which handle the PropertyChanged signal
 // sent from Shill.
@@ -24,11 +24,6 @@ class ShillPropertyChangedObserver {
   virtual ~ShillPropertyChangedObserver() {}
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::ShillPropertyChangedObserver;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_PROPERTY_CHANGED_OBSERVER_H_

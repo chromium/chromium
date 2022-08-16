@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
     : public ModemMessagingClient,
@@ -50,6 +50,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
   std::map<dbus::ObjectPath, std::vector<dbus::ObjectPath>> message_paths_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_FAKE_MODEM_MESSAGING_CLIENT_H_

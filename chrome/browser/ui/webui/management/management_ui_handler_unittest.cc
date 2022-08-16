@@ -1113,8 +1113,8 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
       false,  // visible_only,
       0,      // no limit to number of results
       &networks);
-  chromeos::ShillServiceClient::TestInterface* service =
-      chromeos::ShillServiceClient::Get()->GetTestInterface();
+  ash::ShillServiceClient::TestInterface* service =
+      ash::ShillServiceClient::Get()->GetTestInterface();
   for (const auto* const network : networks) {
     service->SetServiceProperty(network->path(), shill::kStateProperty,
                                 base::Value(shill::kStateOffline));

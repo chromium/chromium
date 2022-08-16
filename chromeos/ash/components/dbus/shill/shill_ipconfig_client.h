@@ -20,7 +20,7 @@ class Bus;
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 class ShillPropertyChangedObserver;
 
@@ -99,11 +99,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   virtual ~ShillIPConfigClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::ShillIPConfigClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_IPCONFIG_CLIENT_H_

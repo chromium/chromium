@@ -46,8 +46,7 @@ void OnGetProperties(bool* success_out,
 std::map<std::string, std::string> GetDOHProviders() {
   bool success = false;
   std::map<std::string, std::string> props;
-  chromeos::ShillManagerClient* shill_manager =
-      chromeos::ShillManagerClient::Get();
+  ShillManagerClient* shill_manager = ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
       base::BindOnce(&OnGetProperties, base::Unretained(&success),

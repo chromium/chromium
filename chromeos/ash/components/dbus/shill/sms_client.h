@@ -20,7 +20,7 @@ class Bus;
 class ObjectPath;
 }
 
-namespace chromeos {
+namespace ash {
 
 // SMSMessageClient is used to communicate with the
 // org.freedesktop.ModemManager1.SMS service.  All methods should be
@@ -61,11 +61,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
   virtual ~SMSClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::SMSClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SMS_CLIENT_H_
