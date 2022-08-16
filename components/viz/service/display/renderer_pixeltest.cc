@@ -231,14 +231,14 @@ void CreateTestTwoColoredTextureDrawQuad(
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_one.toSkColor())
           : SkPackARGB32NoCheck(
-                255 * texel_color_one.fR, 255 * texel_color_one.fG,
-                255 * texel_color_one.fB, 255 * texel_color_one.fA);
+                255 * texel_color_one.fA, 255 * texel_color_one.fR,
+                255 * texel_color_one.fG, 255 * texel_color_one.fB);
   SkPMColor pixel_color_two =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_two.toSkColor())
           : SkPackARGB32NoCheck(
-                255 * texel_color_two.fR, 255 * texel_color_two.fG,
-                255 * texel_color_two.fB, 255 * texel_color_two.fA);
+                255 * texel_color_two.fA, 255 * texel_color_two.fR,
+                255 * texel_color_two.fG, 255 * texel_color_two.fB);
   // The default color is texel_color_one
   std::vector<uint32_t> pixels(rect.size().GetArea(), pixel_color_one);
   if (half_and_half) {
@@ -977,9 +977,9 @@ TEST_P(RendererPixelTest, PremultipliedTextureWithoutBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColor4f::FromColor(SkColorSetARGB(128, 0, 255, 0)),  // Texel color.
-      SkColors::kTransparent,  // Background color.
-      true,                    // Premultiplied alpha.
+      {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
+      SkColors::kTransparent,    // Background color.
+      true,                      // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
@@ -1417,19 +1417,15 @@ TEST_P(IntersectingQuadPixelTest, SolidColorQuads) {
 TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
   this->SetupQuadStateAndRenderPass();
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_,
-      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
-      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 255)),
-      SkColors::kTransparent, true /* premultiplied_alpha */,
+      !is_software_renderer(), this->quad_rect_, SkColors::kBlack,
+      SkColors::kBlue, SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       this->front_quad_state_, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, this->render_pass_.get());
   CreateTestTwoColoredTextureDrawQuad(
-      !is_software_renderer(), this->quad_rect_,
-      SkColor4f::FromColor(SkColorSetARGB(255, 0, 255, 0)),
-      SkColor4f::FromColor(SkColorSetARGB(255, 0, 0, 0)),
-      SkColors::kTransparent, true /* premultiplied_alpha */,
+      !is_software_renderer(), this->quad_rect_, SkColors::kGreen,
+      SkColors::kBlack, SkColors::kTransparent, true /* premultiplied_alpha */,
       false /* flipped_texture_quad */, false /* half_and_half */,
       this->back_quad_state_, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
@@ -1659,9 +1655,9 @@ TEST_P(GPURendererPixelTest, NonPremultipliedTextureWithoutBackground) {
 
   CreateTestTextureDrawQuad(
       !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColor4f::FromColor(SkColorSetARGB(128, 0, 255, 0)),  // Texel color.
-      SkColors::kTransparent,  // Background color.
-      false,                   // Premultiplied alpha.
+      {0.0f, 1.0f, 0.0f, 0.5f},  // Texel color.
+      SkColors::kTransparent,    // Background color.
+      false,                     // Premultiplied alpha.
       shared_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());

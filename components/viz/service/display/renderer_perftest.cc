@@ -493,7 +493,7 @@ class RendererPerfTest : public VizPerfTest {
     ResourceId resource_id;
     resource_list_.push_back(CreateTestTexture(
         kTextureSize,
-        /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
+        /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
         /*premultiplied_alpha=*/false, child_resource_provider_.get(),
         child_context_provider_));
     resource_id = resource_list_.back().id;
@@ -538,7 +538,7 @@ class RendererPerfTest : public VizPerfTest {
       // A single tiled resource referenced by each TileDrawQuad
       resource_list_.push_back(CreateTestTexture(
           kTextureSize,
-          /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
+          /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
           /*premultiplied_alpha=*/false, child_resource_provider_.get(),
           child_context_provider_));
     } else {
@@ -546,7 +546,7 @@ class RendererPerfTest : public VizPerfTest {
       for (int i = 0; i < tile_count; ++i) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
-            /*texel_color=*/SkColor4f{0.5f, 0.0f, 1.0f, 0.0f},
+            /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
             /*premultiplied_alpha=*/false, child_resource_provider_.get(),
             child_context_provider_));
       }
