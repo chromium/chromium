@@ -55838,6 +55838,7 @@ from previous Chrome versions.
   <int value="-2075870708" label="MediaRemotingEncrypted:disabled"/>
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
+  <int value="-2075607807" label="CSSOverflowForReplacedElements:disabled"/>
   <int value="-2074080173" label="NightLight:disabled"/>
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
@@ -60599,6 +60600,7 @@ from previous Chrome versions.
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
   <int value="872509587" label="ArcWindowPredictor:enabled"/>
   <int value="873323760" label="MediaFoundationClearPlayback:disabled"/>
+  <int value="874614410" label="CSSOverflowForReplacedElements:enabled"/>
   <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>

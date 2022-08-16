@@ -355,6 +355,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.DOCUMENT_TRANSITION,
                     "Enables the experimental Shared Element Transitions API."
                             + " See https://github.com/WICG/shared-element-transitions/blob/main/explainer.md."),
+            Flag.baseFeature(BlinkFeatures.CSS_OVERFLOW_FOR_REPLACED_ELEMENTS,
+                    "Enables respecting the CSS overflow property on replaced elements."
+                            + " See https://chromestatus.com/feature/5137515594383360."),
 
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.

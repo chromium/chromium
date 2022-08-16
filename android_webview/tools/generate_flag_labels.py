@@ -61,6 +61,7 @@ KNOWN_MISTAKES = {
     'webview-mp-arch-fenced-frames': 'webview-mparch-fenced-frames',
     'ThrottleIntersectionObserverUma': 'ThrottleIntersectionObserverUMA',
     'RemoveCanceledTasksInTaskQueue': 'RemoveCanceledTasksInTaskQueue2',
+    'CssOverflowForReplacedElements': 'CSSOverflowForReplacedElements',
     # The final entry should have a trailing comma for cleaner diffs. You may
     # remove the entry from this dictionary when it's time to delete the
     # corresponding base::Feature or commandline switch.
