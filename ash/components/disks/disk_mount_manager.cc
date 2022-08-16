@@ -1069,37 +1069,6 @@ bool DiskMountManager::AddDiskForTest(std::unique_ptr<Disk> disk) {
 bool DiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {
   return false;
 }
-
-// static
-std::string DiskMountManager::MountConditionToString(MountCondition condition) {
-  switch (condition) {
-    case MOUNT_CONDITION_NONE:
-      return "";
-    case MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
-      return "unknown_filesystem";
-    case MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
-      return "unsupported_filesystem";
-  }
-  NOTREACHED();
-  return "";
-}
-
-// static
-std::string DiskMountManager::DeviceTypeToString(DeviceType type) {
-  switch (type) {
-    case DeviceType::kUSB:
-      return "usb";
-    case DeviceType::kSD:
-      return "sd";
-    case DeviceType::kOpticalDisc:
-      return "optical";
-    case DeviceType::kMobile:
-      return "mobile";
-    default:
-      return "unknown";
-  }
-}
-
 // static
 void DiskMountManager::Initialize() {
   if (g_disk_mount_manager) {

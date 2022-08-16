@@ -273,12 +273,6 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   virtual bool AddDiskForTest(std::unique_ptr<Disk> disk);
   virtual bool AddMountPointForTest(const MountPoint& mount_point);
 
-  // Returns corresponding string to |type| like "unknown_filesystem".
-  static std::string MountConditionToString(MountCondition type);
-
-  // Returns corresponding string to |type|, like "sd", "usb".
-  static std::string DeviceTypeToString(DeviceType type);
-
   // Creates the global DiskMountManager instance.
   static void Initialize();
 
