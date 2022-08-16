@@ -95,6 +95,12 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
     BrowserAccessibility* node,
     RetargetEventType type) const {
+  // TODO(crbug.com/1350627): Node should not be null. But this seems to be
+  // happening in the wild for reasons not yet determined. Make this a
+  // DCHECK.
+  if (!node)
+    return nullptr;
+
   // Sometimes we get events on nodes in our internal accessibility tree
   // that aren't exposed on Android. Get |updated| to point to the lowest
   // ancestor that is exposed.
