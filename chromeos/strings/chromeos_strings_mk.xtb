@@ -335,6 +335,7 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
+<translation id="3913541166352922049">Системот ќе се исклучи за <ph name="DELAY_DURATION" /> секунди.</translation>
 <translation id="3923184630988645767">Интернет</translation>
 <translation id="3924044641767672375">Се препорачува да се поврзете на Wi-Fi за да го олесните процесот на поправка. Вашата мрежа ќе биде зачувана.</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
@@ -520,6 +521,7 @@
 <translation id="5346687412805619883">Локална мрежа</translation>
 <translation id="5358174242040570474">Нешто тргна наопаку. Обидете се повторно да изберете тапет или повторно отворете ја апликацијата.</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
+<translation id="5376136733560434719">Се подготвува за исклучување…</translation>
 <translation id="5376354385557966694">Автоматски светол режим</translation>
 <translation id="537872351913703572">Уредот ќе се префрли на друг корисник или организација</translation>
 <translation id="5389159777326897627">Тапети и стил</translation>
@@ -749,6 +751,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
+<translation id="7478405245077383528">Системот ќе се рестартира за <ph name="DELAY_DURATION" /> секунди.</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>

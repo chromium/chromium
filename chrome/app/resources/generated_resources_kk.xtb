@@ -595,6 +595,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (қонақ)</translation>
 <translation id="1572266655485775982">Wi-Fi желісін қосу</translation>
 <translation id="1572876035008611720">Электрондық пошта мекенжайын енгізіңіз</translation>
+<translation id="1573117025466282241">Телефонмен QR кодын сканерлеңіз.</translation>
 <translation id="1575741822946219011">Тілдер және енгізу әдістері</translation>
 <translation id="1576594961618857597">Әдепкі ақ түсті аватар</translation>
 <translation id="1578558981922970608">Қолмен жабу</translation>
@@ -1740,6 +1741,7 @@
 <translation id="2602501489742255173">Бастау үшін жоғары қарай сырғытыңыз.</translation>
 <translation id="2603115962224169880">Компьютерді тазалау</translation>
 <translation id="2603355571917519942">Voice Match дайын</translation>
+<translation id="2604129989323098489">Сайттар әдетте терезелерді өз бетімен аша және орналастыра алуы, соның ішінде құжаттарды көрсетуі немесе мазмұнды толық экранға шығаруы үшін дисплейлер туралы ақпарат сұрайды.</translation>
 <translation id="2604255671529671813">Желімен байланыс қатесі</translation>
 <translation id="2605668923777146443">Better Together опцияларын көру үшін <ph name="LINK_BEGIN" />Параметрлер<ph name="LINK_END" /> бөліміне өтіңіз.</translation>
 <translation id="2606246518223360146">Деректерді байланыстыру</translation>
@@ -5368,6 +5370,7 @@
 <translation id="6130692320435119637">Wi-Fi желісін қосу</translation>
 <translation id="6130887916931372608">Перне</translation>
 <translation id="6135823405800500595">Телефоныңыз жақын тұрғанына, оның құлпы ашық және Bluetooth, Wi-Fi функциясы қосулы екеніне көз жеткізіңіз.</translation>
+<translation id="6135826623269483856">Барлық дисплейде терезелерді басқаруға рұқсат берілмейді.</translation>
 <translation id="6136114942382973861">Жүктеп алынғандар жолағын жабу</translation>
 <translation id="6136287496450963112">Қауіпсіздік кілтіңіз PIN кодымен қорғалмаған. Саусақ іздерін басқару үшін алдымен PIN кодын жасаңыз.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA, SHA-384 алгоритмімен қол қою</translation>
@@ -7373,6 +7376,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8076835018653442223">Әкімші құрылғыңызда жергілікті файлдарға кіруге тыйым салған</translation>
+<translation id="80798452873915119">Сайттар барлық дисплейде терезелерді басқаруды сұрай алады.</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Сеансты <ph name="MANAGER_NAME" /> басқарады. Әкімшілер профильді жоя және желі трафигін қадағалай алады.</translation>
 <translation id="8081989000209387414">ADB түзетуін өшіру қажет пе?</translation>
@@ -7512,6 +7516,7 @@
 <translation id="820568752112382238">Көп кіретін сайттар</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Ұялы</translation>
+<translation id="8208216423136871611">Сақтамау</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Файл жүктеп алынуда}other{Файлдар жүктеп алынуда}}</translation>
 <translation id="8213449224684199188">Фото режимі қосылды</translation>
@@ -7677,6 +7682,7 @@
 <translation id="8371695176452482769">Айта беріңіз</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Сайттың дыбысын өшіру}other{Сайттардың дыбысын өшіру}}</translation>
 <translation id="8373652277231415614">Crostini ортақ каталогтері</translation>
+<translation id="8374243500935816406">Сайттарға барлық дисплейде терезелерді басқаруға рұқсат бермеу</translation>
 <translation id="8376137163494131156">Google Cast құрылғысына не болып жатқанын хабарлаңыз</translation>
 <translation id="8376384591331888629">Осы сайттағы үшінші тараптың cookie файлдарын қоса</translation>
 <translation id="8376451933628734023">Егер бұл веб-қолданба өзінің басқа қолданба екеніне сізді сендіргісі келсе, оны жойып тастаңыз.</translation>
@@ -7971,6 +7977,7 @@
 <translation id="8670537393737592796">Осы жерге жылдам оралу үшін орнату түймесін басып, <ph name="APP_NAME" /> қолданбасын орнатыңыз.</translation>
 <translation id="867085395664725367">Серверде уақытша қате шықты.</translation>
 <translation id="8673026256276578048">Ғаламтордан іздеу…</translation>
+<translation id="867329473311423817">Барлық дисплейде терезелерді басқаруға рұқсат беріледі.</translation>
 <translation id="8673383193459449849">Сервер ақауы</translation>
 <translation id="8674903726754070732">Өкінішке орай, компьютеріңіз бұзылған жабдық идентификаторымен конфигурацияланған. Бұл жайт ChromeOS жүйесінің соңғы қауіпсіздік түзетулерімен жаңартылуына кедергі жасайды және компьютеріңіз <ph name="BEGIN_BOLD" />зиянды шабуылдардан қорғана алмауы мүмкін<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Орнатушы <ph name="DEVICE_OS" /> орнату үшін белгіленген жарамды жер таба алмады.</translation>

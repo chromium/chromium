@@ -53,6 +53,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1225748608451425081">Je Chromebook is vergrendeld vanwege een bekend probleem. Je kunt inloggen over: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Selecteren stoppen</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
+<translation id="1240638468526743569">Een app</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
 <translation id="1247519845643687288">Recente apps</translation>
@@ -446,6 +447,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3593039967545720377">Je opent je klembordgeschiedenis door op <ph name="SHORTCUT_KEY_NAME" /> + V te drukken. Daarna kun je kopiëren wat je nodig hebt.</translation>
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
+<translation id="3596012367874587041">App-instellingen</translation>
 <translation id="3600061223661453002">Uit</translation>
 <translation id="3604801046548457007">Bureaublad <ph name="DESK_TITILE" /> gemaakt</translation>
 <translation id="3606978283550408104">Braillescherm gekoppeld.</translation>
@@ -685,6 +687,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="490788395437447240">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
+<translation id="4919841137949306064"><ph name="APP_NAME" /> gebruikt momenteel je camera</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
@@ -914,6 +917,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
+<translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
 <translation id="6259254695169772643">Gebruik je stylus om te selecteren</translation>
@@ -1129,6 +1133,7 @@ Nieuwe installatie</translation>
 <translation id="7544300628205093162">Achtergrondverlichting van toetsenbord staat aan</translation>
 <translation id="7548434653388805669">Bedtijd</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
+<translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>

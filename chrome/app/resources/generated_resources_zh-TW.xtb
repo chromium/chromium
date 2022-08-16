@@ -510,6 +510,7 @@
 <translation id="1480663089572535854">你可以返回變更「選取」的指派設定，而且隨時都能前往設定頁面關閉自動掃描功能。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤...</translation>
+<translation id="1482772681918035149">編輯密碼</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484979925941077974">網站正在使用藍牙</translation>
 <translation id="1485015260175968628">新的可用權限：</translation>
@@ -524,6 +525,7 @@
 <translation id="1500801317528437432">進一步瞭解不支援的 Chrome 應用程式</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
+<translation id="1505494256539862015">匯出密碼</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取你的攝影機。</translation>
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
@@ -598,6 +600,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
 <translation id="1572876035008611720">請輸入您的電子郵件</translation>
+<translation id="1573117025466282241">使用手機掃描 QR 圖碼</translation>
 <translation id="1575741822946219011">語言和輸入法</translation>
 <translation id="1576594961618857597">預設的白色顯示圖片</translation>
 <translation id="1578558981922970608">強制關閉</translation>
@@ -2960,6 +2963,7 @@
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
 <translation id="3781742599892759500">Linux 麥克風存取權</translation>
+<translation id="3783889407390048282">請釋出空間，以免無法存取 Android。</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
 <translation id="3785727820640310185">已儲存這個網站的密碼</translation>
@@ -4271,6 +4275,7 @@
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
 <translation id="5067399438976153555">一律啟用</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
+<translation id="5068553687099139861">顯示密碼</translation>
 <translation id="5068918910148307423">禁止最近關閉的網站完成資料收發作業</translation>
 <translation id="5068919226082848014">披薩</translation>
 <translation id="5070710277167211639">將瀏覽路徑升級至 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
@@ -6419,6 +6424,7 @@
 <translation id="7152478047064750137">這個擴充功能不需要特殊權限</translation>
 <translation id="7154130902455071009">將你的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">現有的相機相片或圖庫相片</translation>
+<translation id="7159953856712257647">已安裝 (預設)</translation>
 <translation id="7160182524506337403">你現在可以查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟用代碼…</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和聲音檔具有讀取權限。</translation>
@@ -7519,6 +7525,7 @@
 <translation id="820568752112382238">最常造訪的網站</translation>
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">手機</translation>
+<translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8213449224684199188">已進入相片模式</translation>
@@ -7631,6 +7638,7 @@
 <translation id="8314835274931377415">要開始設定切換控制功能嗎？</translation>
 <translation id="8317582043908962055">識別 P&amp;DF 文字</translation>
 <translation id="8317671367883557781">新增網路連線</translation>
+<translation id="8317965619823678157">複製密碼</translation>
 <translation id="8318266828739827371">使用分割畫面檢視模式查看畫面放大的區域。使用搜尋鍵 + Ctrl + D 鍵即可開啟或關閉置頂放大鏡。</translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
 <translation id="8321837372750396788">這部 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
@@ -8558,6 +8566,7 @@
 <translation id="929117907539171075">已安裝應用程式中的離線資料也將遭到清除</translation>
 <translation id="930268624053534560">詳細時間戳記</translation>
 <translation id="930893132043726269">目前處於漫遊狀態</translation>
+<translation id="93140074055951850">Android 應用程式已停止</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="932508678520956232">無法初始化列印作業。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{這個檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}other{部分檔案的大小過大，無法進行安全性檢查。可上傳的檔案大小上限為 50 MB。}}</translation>

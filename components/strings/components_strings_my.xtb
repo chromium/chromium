@@ -1242,6 +1242,7 @@
 <translation id="4329871760342656885">မူဝါဒခွဲခြမ်းစိတ်ဖြာမှု အမှား- <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">စီထည့်သည့်ပုံး ၅</translation>
 <translation id="4331708818696583467">လုံခြုံမှုမရှိပါ</translation>
+<translation id="4333561522337981382">သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများစီမံခြင်း</translation>
 <translation id="4340575312453649552">ဤကြော်ငြာသည် သင့်စက်ပစ္စည်းမှ အရင်းအမြစ်များစွာကို အသုံးပြုထားသည့်အတွက် Chrome က ၎င်းကို ဖယ်ရှားထားသည်။</translation>
 <translation id="4340982228985273705">ဤကွန်ပျူတာကို စီးပွားရေးလုပ်ငန်းတစ်ခုက ကြီးကြပ်မထားကြောင်း တွေ့ရှိရသောကြောင့် မူဝါဒသည် Chrome Webstore တွင် တင်ထားသည့် နောက်ဆက်တွဲများကိုသာ အလိုအလျောက် ထည့်သွင်းနိုင်ပါသည်။ Chrome Webstore အပ်ဒိတ် URL သည် "<ph name="CWS_UPDATE_URL" />" ဖြစ်သည်။</translation>
 <translation id="4346197816712207223">အသုံးပြုနိုင်သည့် ခရက်ဒစ်ကတ်များ</translation>
@@ -1457,6 +1458,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab ကိုနှိပ်ပြီးနောက် Enter နှိပ်၍ ရှာဖွေပါ</translation>
 <translation id="4930153903256238152">သိုလှောင်နိုင်မှု မြင့်သည်</translation>
+<translation id="4934780484581617878">ဝင်းဒိုး စီမံရန်</translation>
 <translation id="4936134414789135531">ထည့်သွင်းထားသော <ph name="VALUE_NAME" /> ကို ရှာမတွေ့ပါ။</translation>
 <translation id="4936675324097895694">ငွေကြေးဆိုင်ရာ</translation>
 <translation id="4940163644868678279">Chrome ရှိ ရုပ်ဖျက်မုဒ်</translation>
@@ -1469,6 +1471,7 @@
 <translation id="4958444002117714549">စာရင်းကို ချဲ့ပါ။</translation>
 <translation id="4964505745997821360">ကျန်းမာရေးအာမခံ</translation>
 <translation id="4968522289500246572">ဤအက်ပ်ကို မိုဘိုင်းအတွက် ထုတ်လုပ်ထားသဖြင့် ကောင်းစွာ အရွယ်အစားပြန်ပြင်နိုင်မည် မဟုတ်ပါ။ အက်ပ်တွင် ပြဿနာများ ဖြစ်နိုင်သည် (သို့) ပြန်စနိုင်သည်။</translation>
+<translation id="4968665849807487749">သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများစီမံရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="4969341057194253438">ဖမ်းယူမှုဖိုင်ကို ဖျက်ရန်</translation>
 <translation id="4973922308112707173">ထိပ်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="4976702386844183910"><ph name="DATE" /> က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
@@ -1974,6 +1977,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် လုံခြုံသော DNS စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ဘယ်ဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
+<translation id="6374865374745447009">ဝင်းဒိုး စီမံခြင်း</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် ၁ ခု</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">အခကြေးငွေ ပေးရနိုင်ခြေရှိသည်။</translation>

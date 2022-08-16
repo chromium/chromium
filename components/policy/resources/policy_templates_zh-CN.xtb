@@ -1330,6 +1330,7 @@
 <translation id="2341509917222115272">如果此政策已启用或未设置，用户便可让客户端和主机在连接时自动配对，无需每次都输入 PIN 码。
 
       如果此政策已停用，用户则无法使用该功能。</translation>
+<translation id="2342066287156668839">启用永久配额。</translation>
 <translation id="2345547870894930157">启用 DNS-over-HTTPS，且禁止改用不安全的查询</translation>
 <translation id="2349117476121456297">将此政策设为 True 时，系统会让键盘顶行中的各个键充当功能键命令。按搜索键可将这些键的行为改回媒体键。
 
@@ -1686,11 +1687,6 @@
       如果此政策已启用，系统将会安装数据洞见扩展程序并报告指标。
 
       如果此政策未设置或已停用，系统将不会安装数据洞见扩展程序，也不会报告指标。</translation>
-<translation id="2723692978495226412">如果此政策已启用，系统便会推荐用户曾在其他设备上安装的应用。如果用户未输入任何搜索文字，系统将在启动器中显示推荐应用（位于推荐的本地应用后面）。
-
-      如果此政策已停用或未设置，系统便不会显示推荐应用。
-
-      如果您设置了此政策，用户便无法更改相关设置。</translation>
 <translation id="2724313944474873275">如果此政策已启用或未设置，<ph name="PRODUCT_OS_NAME" />设备便可使用远程认证（已验证的访问权限）来获取由 <ph name="PRODUCT_OS_NAME" /> CA 颁发的证书，以证明该设备有资格播放受保护内容。此过程涉及向 <ph name="PRODUCT_OS_NAME" /> CA 发送用于唯一标识设备的硬件背书信息。
 
       如果此政策已停用，设备将不会使用远程认证来保护内容，并且可能无法播放受保护内容。</translation>
@@ -2648,6 +2644,7 @@
 
       如果此政策已停用或未设置，<ph name="PRODUCT_OS_NAME" />会允许用户将设备关机。</translation>
 <translation id="3763515772647897871">应在每周的哪一天（以设备的本地时区表示）检查是否有可用更新。仅在“频率”设为“WEEKLY”时使用。</translation>
+<translation id="376375951585423504">停用永久配额。</translation>
 <translation id="3765260570442823273">待机退出警告讯息的持续时间</translation>
 <translation id="3770407495263198786">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
@@ -5484,6 +5481,10 @@
       注意：屏蔽内部 chrome://* 网址和 chrome-trusted://* 网址可能会导致意外错误，或者可能会在特殊情况下被规避。您最好查看是否存在更多的具体政策，而不是屏蔽某些内部网址。对于常见情况：请使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />，而不要屏蔽 chrome://settings/certificates。请使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />，而不要屏蔽 chrome-trusted://crosh。</translation>
 <translation id="6894178810167845842">在新标签页中打开的页面网址</translation>
 <translation id="6897730193187922386">禁止显示 <ph name="CLOUD_PRINT_NAME" />弃用消息</translation>
+<translation id="6899495066226330266">从 M106 开始，永久配额将不再受支持。此政策用于重新启用永久配额功能，直至 M107。
+      如果此政策已启用，设有“永久”类型的 webkitRequestFileSystem 将使用永久配额运行。
+      如果此政策未设置或已停用，设有“永久”类型的 webkitRequestFileSystem 将使用临时配额运行。
+      </translation>
 <translation id="6899705656741990703">自动检测代理设置</translation>
 <translation id="6902561336084511004">提供可用打印服务器的配置。
 
@@ -6736,6 +6737,7 @@
 <translation id="8229912067600517877">启用开发者工具</translation>
 <translation id="8238421250255592181">一个布尔值标记，用于表明屏幕键盘能否提供自动填充功能。</translation>
 <translation id="8239109177194627162">禁止使用“自动填充”功能填写信用卡信息</translation>
+<translation id="8239143983379015783">强制启用永久配额</translation>
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
 <translation id="8245574649143980200">如果此政策未设置或已启用，用户便可以在上下文菜单中查看和使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。如果此政策已停用，而且系统支持 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索，用户将不会在上下文菜单中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。</translation>

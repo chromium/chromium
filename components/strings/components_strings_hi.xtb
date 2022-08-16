@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
+<translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
@@ -1407,7 +1408,9 @@
 <translation id="4798078619018708837">अपने कार्ड का ब्यौरा अपडेट करने के लिए <ph name="CREDIT_CARD" /> की खत्म होने की तारीख और कार्ड वेरीफ़िकेशन कोड (सीवीसी) डालें. आपके पुष्टि करने के बाद, आपके Google खाते के कार्ड का ब्यौरा इस साइट के साथ शेयर किया जाएगा.</translation>
 <translation id="4800132727771399293">अपने क्रेडिट कार्ड की समय सीमा खत्म होने की तारीख और कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचें और फिर से कोशिश करें</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Use Touch ID</translation>
 <translation id="4809079943450490359">आपके डिवाइस के एडमिन से मिले निर्देश:</translation>
+<translation id="4811450222531576619">इस पेज के स्रोत और विषय के बारे में जानें</translation>
 <translation id="4812751092864334025">पहने जाने वाले डिवाइस</translation>
 <translation id="4813512666221746211">नेटवर्क गड़बड़ी</translation>
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
@@ -1680,6 +1683,7 @@
 <translation id="5509780412636533143">प्रबंधित बुकमार्क</translation>
 <translation id="5510481203689988000">इस सेटिंग को कुकी की सेटिंग में कंट्रोल किया जाता है.</translation>
 <translation id="5510766032865166053">हो सकता है कि उसे ले जाया गया हो या हटा दिया गया हो.</translation>
+<translation id="5513528801833998679">Use device sign-in</translation>
 <translation id="5518670652865028077">कला और मनोरंजन</translation>
 <translation id="5519516356611866228">किए गए बदलावों के साथ दस्तावेज़ डाउनलोड करें</translation>
 <translation id="5523118979700054094">नीति का नाम</translation>
@@ -1707,6 +1711,7 @@
 <translation id="5571083550517324815">इस पते से पिक अप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="557886905979275351">रेज़र और शेवर</translation>
 <translation id="5580958916614886209">अपने क्रेडिट कार्ड की समय सीमा खत्म होने का महीना जांचें और फिर से कोशिश करें</translation>
+<translation id="558420943003240152">Manage passwords and passkeys…</translation>
 <translation id="5586446728396275693">कोई सहेजा गया पता नहीं है</translation>
 <translation id="5587987780934666589">प्लैटफ़ॉर्म का उपयोगकर्ता</translation>
 <translation id="5593349413089863479">कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
@@ -1771,6 +1776,7 @@
 <translation id="5765072501007116331">वितरण के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="57689295674415555">वर्चुअल कार्ड नंबर नहीं भरा गया?</translation>
 <translation id="5776313857861697733">प्राथमिकता</translation>
+<translation id="5778389256418062749">Use A Passkey On A Different Device</translation>
 <translation id="5781136890105823427">परफ़ॉर्मेंस जांचना चालू है</translation>
 <translation id="578305955206182703">ऐंबर</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
@@ -2529,6 +2535,7 @@
 <translation id="7880146494886811634">पता सेव करें</translation>
 <translation id="7882421473871500483">भूरा</translation>
 <translation id="7882995332186050355">कार्गो ट्रक और ट्रेलर</translation>
+<translation id="788679692472636252">Manage Passwords And Passkeys…</translation>
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888575728750733395">प्रिंट रेंडरिंग इंटेंट</translation>

@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
+<translation id="1435940442311036198">在其他裝置上使用密碼金鑰</translation>
 <translation id="1436185428532214179">可以要求編輯裝置上的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對折</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -1407,7 +1408,9 @@
 <translation id="4798078619018708837">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼，以更新信用卡詳細資料。你確認後，這個網站就會取得你 Google 帳戶中的信用卡詳細資料。</translation>
 <translation id="4800132727771399293">請檢查您的有效期限和信用卡驗證碼，然後再試一次</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">使用 TouchID</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
+<translation id="4811450222531576619">瞭解來源和主題</translation>
 <translation id="4812751092864334025">穿戴式裝置</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
 <translation id="4816492930507672669">依頁面大小自動調整</translation>
@@ -1680,6 +1683,7 @@
 <translation id="5509780412636533143">受管理書籤</translation>
 <translation id="5510481203689988000">你可以在 Cookie 設定中控管這項設定。</translation>
 <translation id="5510766032865166053">檔案可能已移至其他位置或遭到刪除。</translation>
+<translation id="5513528801833998679">使用裝置登入功能</translation>
 <translation id="5518670652865028077">藝術與娛樂</translation>
 <translation id="5519516356611866228">包含你所做的變更</translation>
 <translation id="5523118979700054094">政策名稱</translation>
@@ -1707,6 +1711,7 @@
 <translation id="5571083550517324815">無法在這個地址取件，請改用其他地址。</translation>
 <translation id="557886905979275351">剃刀與刮鬍刀</translation>
 <translation id="5580958916614886209">請檢查信用卡到期月份，然後再試一次</translation>
+<translation id="558420943003240152">管理密碼和密碼金鑰…</translation>
 <translation id="5586446728396275693">沒有已儲存的地址</translation>
 <translation id="5587987780934666589">平台使用者</translation>
 <translation id="5593349413089863479">連線可能有安全漏洞</translation>
@@ -1771,6 +1776,7 @@
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
 <translation id="5776313857861697733">優先順序</translation>
+<translation id="5778389256418062749">在其他裝置上使用密碼金鑰</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
 <translation id="578305955206182703">琥珀色</translation>
 <translation id="57838592816432529">靜音</translation>
@@ -2529,6 +2535,7 @@
 <translation id="7880146494886811634">儲存地址</translation>
 <translation id="7882421473871500483">棕色</translation>
 <translation id="7882995332186050355">貨櫃卡車與拖車</translation>
+<translation id="788679692472636252">管理密碼和密碼金鑰…</translation>
 <translation id="7887683347370398519">請檢查您的信用卡驗證碼，然後再試一次</translation>
 <translation id="7887885240995164102">進入子母畫面</translation>
 <translation id="7888575728750733395">列印算繪方式</translation>

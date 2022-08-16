@@ -1726,11 +1726,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Enabled, l'estensione Insights verrà installata e segnalerà le metriche.
 
       Se non viene configurato o se viene impostato su Disabled, l'estensione Insights non verrà installata e non segnalerà le metriche.</translation>
-<translation id="2723692978495226412">Se il criterio viene impostato su Attivato, vengono visualizzati dei consigli per le app precedentemente installate dall'utente su altri dispositivi. Questi consigli vengono visualizzati in Avvio app in seguito ai consigli sulle app locali, se non viene inserito alcun testo di ricerca.
-
-      Se il criterio viene impostato su Disattivato o se non viene configurato, questi consigli non vengono visualizzati.
-
-      Se viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="2724313944474873275">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi <ph name="PRODUCT_OS_NAME" /> possono utilizzare l'attestazione da remoto (Accesso verificato) per ricevere un certificato emesso dall'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> in cui si afferma che il dispositivo è idoneo alla riproduzione di contenuti protetti. Questo processo comporta l'invio all'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> di informazioni di approvazione dell'hardware che identificano in modo univoco il dispositivo.
 
       Se il criterio viene impostato su Disattivato, il dispositivo non utilizza l'attestazione da remoto per la protezione dei contenuti e non può riprodurre contenuti protetti.</translation>

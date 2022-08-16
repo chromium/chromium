@@ -1724,11 +1724,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for ativada, a extensão de insights será instalada e vai relatar métricas.
 
       Se ela for desativada ou deixada sem definição, a extensão de insights não será instalada e não vai relatar métricas.</translation>
-<translation id="2723692978495226412">Se a política for definida como "Ativada", haverá recomendações para apps instalados anteriormente pelo usuário ou em outros dispositivos. Se nenhum texto de pesquisa tiver sido inserido, essas recomendações aparecerão no acesso rápido depois das recomendações de apps locais.
-
-      Se a política for definida como "Desativada" ou não for definida, essas recomendações não serão exibidas.
-
-      Se a política for definida, os usuários não poderão mudá-la.</translation>
 <translation id="2724313944474873275">Se a política for definida como "Ativada" ou deixada sem definição, dispositivos <ph name="PRODUCT_OS_NAME" /> poderão usar atestados remotos (acesso verificado) para receber um certificado emitido pela CA do <ph name="PRODUCT_OS_NAME" />, que declara que o dispositivo está qualificado para reproduzir conteúdo protegido. Esse processo envolve o envio de informações de endosso de hardware para a CA do <ph name="PRODUCT_OS_NAME" /> que identificam de forma exclusiva o dispositivo.
 
       Se a política for definida como "Desativada", o dispositivo não usará o atestado remoto para proteção de conteúdo e não poderá reproduzir conteúdo protegido.</translation>

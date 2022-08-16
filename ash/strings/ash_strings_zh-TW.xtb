@@ -53,6 +53,7 @@
 <translation id="1225748608451425081">你的 Chromebook 因為已知問題遭到鎖定。你可以在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
+<translation id="1240638468526743569">某個應用程式</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內部)</translation>
 <translation id="1247519845643687288">最近使用的應用程式</translation>
@@ -446,6 +447,7 @@
 <translation id="3593039967545720377">按下 <ph name="SHORTCUT_KEY_NAME" /> + V 鍵查看剪貼簿，藉此存取剪貼簿歷史記錄。複製任一項目即可開始。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
+<translation id="3596012367874587041">應用程式設定</translation>
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
@@ -685,6 +687,7 @@
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
+<translation id="4919841137949306064">「<ph name="APP_NAME" />」正在使用你的攝影機</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
 <translation id="4945196315133970626">關閉通知</translation>
@@ -914,6 +917,7 @@
 <translation id="6220928844947387476">你現在可以同時錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
+<translation id="6232891689835436217">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已鎖定為水平畫面</translation>
 <translation id="6259254695169772643">請使用觸控筆選取</translation>
@@ -1131,6 +1135,7 @@
 <translation id="7544300628205093162">鍵盤背光功能已開啟</translation>
 <translation id="7548434653388805669">就寢時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
+<translation id="7557816257942363084">「<ph name="APP_NAME" />」正在使用你的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>

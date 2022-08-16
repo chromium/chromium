@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1432187715652018471">səhifə xidmət işləyici quraşdırmaq istəyir.</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
+<translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
@@ -1403,7 +1404,9 @@
 <translation id="4798078619018708837">Kart məlumatlarını yeniləmək üçün <ph name="CREDIT_CARD" /> kartının bitmə tarixini və CVC-ni daxil edin. Təsdiqlədikdən sonra Google Hesabındakı kart məlumatları bu saytda paylaşılacaq.</translation>
 <translation id="4800132727771399293">Bitmə tarixi və CVC nömrəsini yoxlayın və yenidən cəhd edin</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4806051791961048632">Toxunuş ID-sindən istifadə edin</translation>
 <translation id="4809079943450490359">Cihaz adminindən təlimatlar:</translation>
+<translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="4812751092864334025">Daşına bilən texnologiya</translation>
 <translation id="4813512666221746211">Şəbəkə xətası</translation>
 <translation id="4816492930507672669">Səhifəyə uyğunlaşsın</translation>
@@ -1676,6 +1679,7 @@
 <translation id="5509780412636533143">İdarə olunan əlfəcinlər</translation>
 <translation id="5510481203689988000">Bu ayar Kuki ayarlarında idarə edilir.</translation>
 <translation id="5510766032865166053">Köçürülmüş və ya silinmiş ola bilər.</translation>
+<translation id="5513528801833998679">Cihaz girişindən istifadə edin</translation>
 <translation id="5518670652865028077">İncəsənət və əyləncə</translation>
 <translation id="5519516356611866228">Dəyişikliklərlə</translation>
 <translation id="5523118979700054094">Siyasət adı</translation>
@@ -1703,6 +1707,7 @@
 <translation id="5571083550517324815">Bu ünvandan götürmək mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="557886905979275351">Ülgüclər və təraş aparatları</translation>
 <translation id="5580958916614886209">Bitmə ayını yoxlayın və yenidən cəhd edin</translation>
+<translation id="558420943003240152">Parolları və şifrələri idarə edin…</translation>
 <translation id="5586446728396275693">Yadda saxlanılmış ünvan yoxdur</translation>
 <translation id="5587987780934666589">Platforma istifadəçisi</translation>
 <translation id="5593349413089863479">Bağlantı tam güvənli deyil</translation>
@@ -1767,6 +1772,7 @@
 <translation id="5765072501007116331">Çatdırılma üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="57689295674415555">Virtual kart nömrəsi daxil edilməyib?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
+<translation id="5778389256418062749">Fərqli Cihazda Şifrə İstifadə edin</translation>
 <translation id="5781136890105823427">Sınaq aktiv edildi</translation>
 <translation id="578305955206182703">Kəhrəba</translation>
 <translation id="57838592816432529">Səssiz</translation>
@@ -2525,6 +2531,7 @@
 <translation id="7880146494886811634">Ünvanın Yadda Saxlanması</translation>
 <translation id="7882421473871500483">Qəhvəyi</translation>
 <translation id="7882995332186050355">Karqo maşınları və treyleri</translation>
+<translation id="788679692472636252">Parolları və Şifrələri idarə edin…</translation>
 <translation id="7887683347370398519">CVC kodunuzu yoxlayın və yenidən cəhd edin</translation>
 <translation id="7887885240995164102">Şəkildə şəkil xüsusiyyətinə daxil olun</translation>
 <translation id="7888575728750733395">Çapın göstərilmə məqsədi</translation>

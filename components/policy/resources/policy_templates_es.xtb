@@ -1730,11 +1730,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si la política se habilita, la extensión de estadísticas se instalará e informará sobre las métricas.
 
       Si la política no se establece o se inhabilita, la extensión de estadísticas no se instalará ni informará sobre las métricas.</translation>
-<translation id="2723692978495226412">Si se habilita esta política, se mostrarán recomendaciones de aplicaciones instaladas anteriormente por el usuario en otros dispositivos. Si no se ha introducido ningún texto de búsqueda, estas recomendaciones se mostrarán en el menú de aplicaciones después de las recomendaciones de aplicaciones locales.
-
-      Si se inhabilita esta política o no se le asigna ningún valor, no se mostrarán estas recomendaciones.
-
-      Si se asigna un valor a esta política, los usuarios no podrán cambiarlo.</translation>
 <translation id="2724313944474873275">Si se habilita esta política o no se le asigna ningún valor, los dispositivos <ph name="PRODUCT_OS_NAME" /> contarán con atestación remota (acceso verificado) para obtener un certificado emitido por la entidad emisora de certificados de <ph name="PRODUCT_OS_NAME" /> que confirme que el dispositivo cumple los requisitos para reproducir contenido protegido. Este proceso implica enviar información de aprobación del hardware a la entidad emisora de certificados de <ph name="PRODUCT_OS_NAME" /> que identifica de forma única al dispositivo.
 
       Si se inhabilita esta política, el dispositivo no usará la atestación remota para la protección del contenido y es posible que el dispositivo no pueda reproducir contenido protegido.</translation>

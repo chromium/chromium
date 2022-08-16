@@ -1239,6 +1239,7 @@
 <translation id="4329871760342656885">Саясатты талдоо катасы: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5-төшөгүч</translation>
 <translation id="4331708818696583467">Коопсуз эмес</translation>
+<translation id="4333561522337981382">Бардык экрандардагы терезелерди тескөө</translation>
 <translation id="4340575312453649552">Бул жарнама түзмөгүңүздүн ресурстарын ашыкча колдонуп жаткандыктан Chrome аны өчүрүп койду.</translation>
 <translation id="4340982228985273705">Бул компьютер ишкана тарабынан башкарылбаганы аныкталды, андыктан саясат Chrome Желе дүкөнүндө жайгашкан кеңейтүүлөрдү гана автоматтык түрдө орното алат. Chrome Желе дүкөнүн жаңыртуучу URL: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Кабыл алынган насыя карточкалары</translation>
@@ -1452,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Издөө үчүн Tab, андан соң Enter баскычтарын басыңыз</translation>
 <translation id="4930153903256238152">Сыйымдуулугу чоң</translation>
+<translation id="4934780484581617878">Терезени тескөө</translation>
 <translation id="4936134414789135531">Киргизилген <ph name="VALUE_NAME" /> табылган жок.</translation>
 <translation id="4936675324097895694">Каржы</translation>
 <translation id="4940163644868678279">Chrome'догу жашыруун өтмөк</translation>
@@ -1464,6 +1466,7 @@
 <translation id="4958444002117714549">Тизмени жайып көрсөтүү</translation>
 <translation id="4964505745997821360">Ден соолукту камсыздандыруу</translation>
 <translation id="4968522289500246572">Бул колдонмо мобилдик түзмөк үчүн түзүлгөндүктөн, өлчөмү туура өзгөрбөшү мүмкүн. Колдонмодо маселелер келип чыгышы же өчүп күйүшү мүмкүн.</translation>
+<translation id="4968665849807487749">Бардык экрандардагы терезелерди тескөөнү сурана алат</translation>
 <translation id="4969341057194253438">Жаздырууну өчүрүү</translation>
 <translation id="4973922308112707173">Жогорку жагын эки жолу тешүү</translation>
 <translation id="4976702386844183910">Акыркы жолу кирген: <ph name="DATE" /></translation>
@@ -1967,6 +1970,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, брандауэр жана DNS конфигурациясын текшерип көрүңүз<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Сол жагын эки жолу илмек менен бекитүү</translation>
+<translation id="6374865374745447009">терезени тескөө</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" сурамы боюнча 1 жыйынтык табылды</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Акы алынышы мүмкүн.</translation>

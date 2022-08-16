@@ -742,6 +742,11 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen zulässig sind. Der Wert "<ph name="ALL_EXTENSIONS" />" für "<ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" />" gibt an, dass alle Erweiterungen gesperrt sind. Nutzer können nur Erweiterungen installieren, die ausdrücklich zugelassen sind. Standardmäßig können alle Erweiterungen installiert werden. Wurden jedoch alle Erweiterungen durch eine Richtlinie auf die Sperrliste gesetzt, kann diese Richtlinie mithilfe der Zulassungsliste außer Kraft gesetzt werden.</translation>
 <translation id="1781356041596378058">Diese Richtlinie steuert zudem den Zugriff auf Android-Entwickleroptionen. Wenn du diese Richtlinie auf "true" setzt, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn du diese Richtlinie auf "false" setzt oder nicht konfigurierst, können Nutzer auf die Entwickleroptionen zugreifen, indem sie siebenmal auf die Build-Nummer in der Android-App "Einstellungen" tippen.</translation>
+<translation id="1783412593566930189">
+      Wenn die Richtlinie aktiviert (auf „True“ gesetzt) ist, bittet <ph name="PRODUCT_NAME" /> vor der Freigabe von Gerätesignalen auf nicht verwalteten Geräten verwaltete Nutzer um Einwilligung.
+
+      Ist die Richtlinie deaktiviert (auf „False“ gesetzt) oder nicht konfiguriert, darf <ph name="PRODUCT_NAME" /> keine Gerätesignale erfassen.
+      Beispiele für Gerätesignale sind unter anderem Betriebssysteminformationen, Registry-Daten und ob bestimmte Dateien vorhanden sind.</translation>
 <translation id="1787790976045065845">Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" />“ auf „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />“ oder „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />“ eingestellt ist und ein Nutzer, der sich mit einer Smartcard authentifiziert hat, diese entfernt. Dann legt diese Richtlinie fest, wie viele Sekunden lang eine Benachrichtigung angezeigt wird, die den Nutzer über bevorstehende Aktionen informiert. Diese Benachrichtigung blockiert den Bildschirm. Die Aktion beginnt erst nach dem Ablauf der Benachrichtigung. Der Nutzer kann die Aktion unterbinden, wenn die Smartcard vor dem Ablauf der Benachrichtigung wieder eingeführt wird. Wenn für diese Richtlinie „0“ konfiguriert ist, wird keine Benachrichtigung angezeigt und die Aktion sofort ausgeführt.</translation>
 <translation id="1793346220873697538">PIN-Druckmodus standardmäßig deaktivieren</translation>
 <translation id="1794457906032475749">Wenn die Richtlinie aktiviert ist, ist die Option zum Beibehalten bestehender Browserdaten beim Erstellen eines Unternehmensprofils standardmäßig aktiviert.
@@ -1699,11 +1704,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn diese Richtlinie aktiviert ist, wird die Erweiterung „Insights“ installiert und sie sendet Messwerte.
 
       Ist diese Richtlinie nicht konfiguriert oder deaktiviert, wird die Erweiterung „Insights“ nicht installiert und sie sendet keine Messwerte.</translation>
-<translation id="2723692978495226412">Wenn diese Richtlinie aktiviert ist, erhält der Nutzer Empfehlungen für Apps, die er schon auf anderen Geräten installiert hat. Sie werden im Launcher nach den lokalen App-Empfehlungen angezeigt, wenn kein Suchtext eingegeben wurde.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden diese Empfehlungen nicht angezeigt.
-
-      Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="2724313944474873275">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können <ph name="PRODUCT_OS_NAME" />-Geräte mithilfe der Remote-Attestierung (bestätigter Zugriff) von der <ph name="PRODUCT_OS_NAME" />-Zertifizierungsstelle ein Zertifikat erhalten, das die Berechtigung des Geräts für die Wiedergabe geschützter Inhalte nachweist. Bei diesem Vorgang werden Informationen zur Bestätigung der Hardware an die <ph name="PRODUCT_OS_NAME" />-Zertifizierungsstelle gesendet, anhand derer das Gerät eindeutig identifiziert werden kann.
 
       Wenn die Richtlinie deaktiviert ist, verwendet das Gerät keine Remote-Attestierung für geschützte Inhalte, sodass darauf möglicherweise keine geschützten Inhalte wiedergegeben werden können.</translation>
@@ -5124,6 +5124,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
 <translation id="6520802717075138474">Suchmaschinen bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="6521971538031711337">Verwaltetem Nutzer nicht erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
+<translation id="6523079496775454310">Einwilligung für Gerätesignale für verwaltete Nutzer auf nicht verwalteten Geräten aktivieren</translation>
 <translation id="652593254122955308">Zeitlimit bis zur Schließung des inaktiven Profils</translation>
 <translation id="6532026122543921610">Wenn die automatische Zeitzonenerkennung nicht durch die Richtlinie "<ph name="SYSTEM_TIMEZONE_POLICY_NAME" />" deaktiviert ist, wird durch das Konfigurieren der Richtlinie die Methode zur Zeitzonenerkennung festgelegt. Diese kann von Nutzern nicht geändert werden.
 
@@ -5215,6 +5216,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
 <translation id="6593350713192882944">„Schnellinfo“ aktivieren</translation>
 <translation id="6594372503585248865">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Remote-Host-Desktop während einer aktiven Verbindung aktivieren</translation>
+<translation id="65947892191748867">Einwilligung für Gerätesignale für verwaltete Nutzer auf nicht verwalteten Geräten deaktivieren</translation>
 <translation id="6596675965208703569">Diese Richtlinie gibt an, wie lange (in Sekunden) ein Übertragungsgerät, das über einen Zugriffscode oder QR-Code ausgewählt wurde, im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte zu sehen ist.
       Die Lebensdauer eines Eintrags beginnt mit der ersten Eingabe des Zugriffscodes oder dem ersten Scannen des QR-Codes.
       Während dieses Zeitraums erscheint das Übertragungsgerät im <ph name="PRODUCT_NAME" />-Menü für Übertragungsgeräte.
@@ -6455,6 +6457,7 @@ werden abgelehnt.</translation>
 
       Die empfohlene Vorgehensweise ist, die Bildschirmsperre im Ruhemodus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Ruhemodus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre erheblich früher als der Ruhemodus eintreten oder der Ruhemodus bei Inaktivität gar nicht erfolgen soll.</translation>
 <translation id="7895553628261067384">Remotezugriff</translation>
+<translation id="7899952578398457262">Verwaltete Nutzer auf nicht verwalteten Geräten für die Freigabe von Gerätesignalen um Einwilligung bitten</translation>
 <translation id="7900469325540540107">Beim Erstellen eines Unternehmensprofils Browserdaten standardmäßig beibehalten</translation>
 <translation id="7902040092815978832">Numerische Tastatur für Passwort anzeigen</translation>
 <translation id="7904177352786629708">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.

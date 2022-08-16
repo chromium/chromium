@@ -335,6 +335,7 @@
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
+<translation id="3913541166352922049">ระบบจะปิดใน <ph name="DELAY_DURATION" /> วินาที</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
 <translation id="3924044641767672375">ขอแนะนำให้เชื่อมต่อ Wi-Fi เพื่อให้ขั้นตอนการซ่อมง่ายขึ้น ระบบจะบันทึกเครือข่ายของคุณ</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
@@ -520,6 +521,7 @@
 <translation id="5346687412805619883">เครือข่ายภายใน</translation>
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
+<translation id="5376136733560434719">กำลังเตรียมการปิด...</translation>
 <translation id="5376354385557966694">โหมดสว่างอัตโนมัติ</translation>
 <translation id="537872351913703572">อุปกรณ์จะไปอยู่กับผู้ใช้หรือองค์กรใหม่</translation>
 <translation id="5389159777326897627">วอลเปเปอร์และสไตล์</translation>
@@ -749,6 +751,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
+<translation id="7478405245077383528">ระบบจะรีสตาร์ทใน <ph name="DELAY_DURATION" /> วินาที</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>

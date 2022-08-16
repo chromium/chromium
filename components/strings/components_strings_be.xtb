@@ -1239,6 +1239,7 @@
 <translation id="4329871760342656885">Памылка пры аналізе палітыкі: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Укладчык 5</translation>
 <translation id="4331708818696583467">Небяспечнае змесціва</translation>
+<translation id="4333561522337981382">Кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="4340575312453649552">Гэта рэклама выкарыстоўвала занадта многа рэсурсаў прылады, таму Chrome выдаліў яе.</translation>
 <translation id="4340982228985273705">Не ўстаноўлена, што гэты камп'ютар знаходзіцца пад карпаратыўным кіраваннем, таму палітыка дазваляе аўтаматычна ўсталёўваць толькі пашырэнні з Chrome Webstore. URL-адрас абнаўлення ў Chrome Webstore: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Якія крэдытныя карткі прымаюцца</translation>
@@ -1452,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, для пошуку націсніце Tab, затым Enter</translation>
 <translation id="4930153903256238152">Вялікая ёмістасць</translation>
+<translation id="4934780484581617878">Кіраванне вокнамі</translation>
 <translation id="4936134414789135531">Устаўленае значэнне "<ph name="VALUE_NAME" />" не знойдзена.</translation>
 <translation id="4936675324097895694">Фінансы</translation>
 <translation id="4940163644868678279">Рэжым інкогніта ў браўзеры Chrome</translation>
@@ -1464,6 +1466,7 @@
 <translation id="4958444002117714549">Разгарнуць спіс</translation>
 <translation id="4964505745997821360">Медыцынскае страхаванне</translation>
 <translation id="4968522289500246572">Гэта праграма створана для мабільных прылад, таму змяненне яе памеру можа выклікаць памылкі. Праграма можа працаваць няправільна або перазапусціцца.</translation>
+<translation id="4968665849807487749">Сайт можа запытваць дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="4969341057194253438">Выдаліць запіс</translation>
 <translation id="4973922308112707173">Дзве дзіркі зверху</translation>
 <translation id="4976702386844183910">Апошняе наведванне: <ph name="DATE" /></translation>
@@ -1967,6 +1970,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS, проксі-сервера і брандмаўэра.<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Дзве скабы злева</translation>
+<translation id="6374865374745447009">кіраванне вокнамі</translation>
 <translation id="6377268785556383139">1 вынік па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">На сайце, на які вы збіраецеся перайсці, магчыма спагнанне сродкаў.</translation>

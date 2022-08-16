@@ -955,6 +955,7 @@
 <translation id="1864400682872660285">Поладни</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1865769994591826607">Само врски од истиот сајт</translation>
+<translation id="186594096341696655">Намали ја фреквенцијата</translation>
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ може да чита слики, видео и аудиодатотеки на означените локации.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> е подготвен да ја комплетира инсталацијата</translation>
 <translation id="1868553836791672080">Проверката на лозинки не е достапна во Chromium</translation>
@@ -1146,6 +1147,7 @@
 <translation id="2048554637254265991">Грешка при стартувањето на управувачот со контејнери. Обидете се повторно.</translation>
 <translation id="2048653237708779538">Дејството не е достапно</translation>
 <translation id="2050339315714019657">Портрет</translation>
+<translation id="2051943168842512672">{NUM_PASSWORDS,plural, =1{1 лозинка е увезена во вашиот Google Password Manager (<ph name="USER_EMAIL" />)}one{{NUM_PASSWORDS} лозинка се увезени во вашиот Google Password Manager (<ph name="USER_EMAIL" />)}other{{NUM_PASSWORDS} лозинки се увезени во вашиот Google Password Manager (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="2052572566310583903">Инсталирана на вашите други уреди</translation>
 <translation id="2053105195397337973">Истражуваме начини како да го намалиме следењето, а притоа да им овозможуваме на сајтовите да ги сопрат спамот и измамите со реклами.</translation>
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
@@ -1919,6 +1921,7 @@
 <translation id="2742448780373473567">Инсталирањето на <ph name="DEVICE_OS" /> ќе ги презапише сите податоци на вашиот уред.</translation>
 <translation id="274290345632688601">Се враќаат апликациите и датотеките на Linux</translation>
 <translation id="274318651891194348">Се пребарува тастатура</translation>
+<translation id="2743301740238894839">Започни</translation>
 <translation id="2743387203779672305">Копирај на клип-табла</translation>
 <translation id="2745080116229976798">Квалификувана подреденост на Microsoft</translation>
 <translation id="2747266560080989517">Датотекава содржи чувствителни или опасни содржини. Побарајте од сопственикот да ја поправи.</translation>
@@ -2431,6 +2434,7 @@
 <translation id="3255355328033513170">Сите податоци складирани од <ph name="SITE_GROUP_NAME" /> и сите подредени сајтови ќе се избришат. Ова ги опфаќа и колачињата. Ќе ве одјавиме од овие сајтови, вклучително и од отворените картички.</translation>
 <translation id="3257733480216378006">Да се дозволи <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="3259723213051400722">Обидете се повторно.</translation>
+<translation id="3261090393424563833">Зголеми ја фреквенцијата</translation>
 <translation id="3261268979727295785">За постари деца, може да додадете родителски контроли откако ќе завршите со поставувањето. Информации за родителските контроли ќе најдете во апликацијата Explore.</translation>
 <translation id="3262986719682892278">Преголема</translation>
 <translation id="3264544094376351444">Фонт Sans-Serif</translation>
@@ -2940,6 +2944,7 @@
 <translation id="3747077776423672805">За да ги отстраните апликациите, одете во „Поставки &gt; Google Play Store &gt; Управувајте со поставките за Android &gt; Апликации“ или „Управникот со апликации“. Потоа допрете ја апликацијата што сакате да ја деинсталирате (можеби ќе треба да повлечете десно или лево за да ја најдете). Потоа допрете „Деинсталирај“ или „Оневозможи“.</translation>
 <translation id="3747603683749989726">Да се вклучи подобрената безбедност?</translation>
 <translation id="3748706263662799310">Пријавете грешка</translation>
+<translation id="3750304496241836236">За да ги увезете лозинките во вашиот Google Password Manager, изберете CSV-датотека</translation>
 <translation id="3750562496035670393">Chrome ја зачува лозинката на уредов, но може да ја зачувате на вашата сметка на Google наместо тоа. Потоа, сите лозинки во вашата сметка на Google ќе бидат исто така достапни додека сте најавени.</translation>
 <translation id="3752253558646317685">Кажете му на детето постојано да го крева прстот за да се зачува отпачатокот</translation>
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
@@ -4112,6 +4117,7 @@
 <translation id="4871370605780490696">Додајте обележувач</translation>
 <translation id="4871568871368204250">Исклучување синхронизација</translation>
 <translation id="4871719318659334896">Затвори ја групата</translation>
+<translation id="4872192066608821120">За да ги увезете лозинките, изберете CSV-датотека</translation>
 <translation id="4873312501243535625">Проверувач на медиумска датотека</translation>
 <translation id="4876273079589074638">Помогнете им на нашите инженери да го истражат и поправат падот. Наведете ги прецизните чекори ако можете. Сите детали се важни.</translation>
 <translation id="4876895919560854374">Заклучи го и отклучи го екранот</translation>
@@ -5456,6 +5462,7 @@
 <translation id="6206199626856438589">Ќе ве одјавиме од прикажаните сајтови, вклучително и од отворените картички.</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слика</translation>
 <translation id="6207200176136643843">Ресетирај на стандардно ниво на зумирање</translation>
+<translation id="6207806976844244951">Зачувај во Google Password Manager (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">Држава/Регион</translation>
 <translation id="6208382900683142153">Токените за доверба ја подобруваат приватноста на интернет и не може да се користат за ваша идентификација.</translation>
 <translation id="6208521041562685716">Мобилниот интернет се активира</translation>
@@ -5695,6 +5702,7 @@
 <translation id="6436610005579237680">За да добивате одговори што се приспособени на вас, дозволете му на „Помошникот на Google“ да пристапува до она што е на вашиот екран кога поставувате прашања. Вашиот „Помошник“ може да користи и податоци за песните или видеата што се пуштени.</translation>
 <translation id="6436778875248895551">Екстензијата „<ph name="EXTENSION_NAME" />“ е блокирана од администраторот</translation>
 <translation id="6438234780621650381">Ресетирај ги поставките</translation>
+<translation id="6438475350605608554">Веќе ги увезувате лозинките во друга картичка</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - пуштено е аудио</translation>
 <translation id="6442187272350399447">Супер</translation>
 <translation id="6442445294758185945">Не може да се преземе ажурирањето. Обидете се подоцна.</translation>
@@ -5705,6 +5713,7 @@
 <translation id="6446213738085045933">Создајте кратенка за работна површина</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6450876761651513209">Променете ги поставките поврзани со приватноста</translation>
+<translation id="645119363824354176">За да ги увезете лозинките на овој уред, изберете CSV-датотека</translation>
 <translation id="6451344358166983408">Сајт или страница</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> и уште 1 картичка}one{<ph name="PAGE_TITLE" /> и уште # картичка}other{<ph name="PAGE_TITLE" /> и уште # картички}}</translation>
 <translation id="6451689256222386810">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />ресетирајте го синхронизирањето<ph name="END_LINK" /></translation>
@@ -5970,6 +5979,7 @@
 <translation id="6691936601825168937">&amp;Напред</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}other{{COUNT} страници}}</translation>
 <translation id="6694430008315398925">Се поставува Steam</translation>
+<translation id="6697172646384837537">Изберете каде да се увезат лозинките</translation>
 <translation id="6697492270171225480">Прикажувај предлози за слични страници кога страницата не може да се најде</translation>
 <translation id="6697690052557311665">За да споделите, кликнете со десен клик на папка во апликацијата „Папки“, потоа изберете „Сподели со Linux“.</translation>
 <translation id="6698810901424468597">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
@@ -6067,6 +6077,7 @@
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Автоматското скенирање ви дозволува да се движите автоматски низ ставките на екранот. Кога некоја ставка е нагласена, притиснете „Избери“ за да ја активирате.</translation>
 <translation id="6795884519221689054">Панда</translation>
+<translation id="6796509790850723820">Прикажи</translation>
 <translation id="6797493596609571643">Упс, нешто не е во ред.</translation>
 <translation id="6798420440063423019">Безбедносниот клуч е заклучен бидејќи внесовте погрешен PIN премногу пати. Ќе треба да го ресетирате безбедносниот клуч.</translation>
 <translation id="679845623837196966">Прикажи го списокот за читање</translation>
@@ -6610,6 +6621,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> е на цел екран сега.</translation>
 <translation id="7340650977506865820">Сајтот го споделува вашиот екран</translation>
 <translation id="7340757554212515731">Автоматски испраќа извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google</translation>
+<translation id="734088800888587319">Метрика на мрежата</translation>
 <translation id="7341834142292923918">Сака пристап до сајтов</translation>
 <translation id="7343372807593926528">Опишете го проблемот пред да испратите повратни информации.</translation>
 <translation id="7344585835349671209">Управувајте со сертификатите за HTTPS/SSL на уредот</translation>
@@ -7547,6 +7559,7 @@
 <translation id="820568752112382238">Најпосетувани веб-сајтови</translation>
 <translation id="8206745257863499010">Блузист</translation>
 <translation id="8206859287963243715">Мобилен</translation>
+<translation id="8208216423136871611">Не зачувувај</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>
 <translation id="8213449224684199188">Влеговте во режим на фотографија</translation>
@@ -8457,6 +8470,7 @@
 <translation id="9088917181875854783">Потврдете дали оваа лозинка е прикажана на „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9089416786594320554">Влезни методи</translation>
 <translation id="9090044809052745245">Како вашиот уред се појавува кај другите</translation>
+<translation id="9093470422440389061">Метрика за изведбата на Wi-Fi</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9094038138851891550">Погрешно корисничко име</translation>
 <translation id="9094859731829297286">Дали сигурно сакате да резервирате фиксна големина на дискот за Linux?</translation>

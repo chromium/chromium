@@ -196,6 +196,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1174391930667737831">Privaatsuskeskus</translation>
 <translation id="117445914942805388">Sirvimisandmete kustutamiseks kõigist sünkroonitud seadmetest ja oma Google'i kontolt <ph name="BEGIN_LINK" />avage sünkroonimisseaded<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Prindi...</translation>
+<translation id="1176378369905028399">Selle konto parool on teie Google'i paroolihaldurisse (<ph name="USER_EMAIL" />) juba talletatud</translation>
 <translation id="1176471985365269981">Pole lubatud muuta teie seadmes olevaid faile ega kaustu</translation>
 <translation id="1177863135347784049">Kohandatud</translation>
 <translation id="1178581264944972037">Peata</translation>
@@ -600,6 +601,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Külaline)</translation>
 <translation id="1572266655485775982">WiFi lubamine</translation>
 <translation id="1572876035008611720">Sisestage oma e-posti aadress</translation>
+<translation id="1573117025466282241">Telefoni kasutamine QR-koodiga</translation>
 <translation id="1575741822946219011">Keeled ja sisestusmeetodid</translation>
 <translation id="1576594961618857597">Valge vaikeavatar</translation>
 <translation id="1578558981922970608">Sundpeata</translation>
@@ -797,6 +799,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1745732479023874451">Kontaktide haldamine</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Kas soovite selles veebirakenduses # faili avada ja neid redigeerida?}}</translation>
 <translation id="1748563609363301860">Saate selle parooli salvestada oma Google'i kontole või ainult sellesse seadmesse</translation>
+<translation id="1749733017156547309">Parool on nõutav</translation>
 <translation id="1750172676754093297">Teie turvavõtmele ei saa sõrmejälgi salvestada</translation>
 <translation id="1751249301761991853">Isiklik</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> saab muuta kaustas <ph name="FOLDERNAME" /> olevaid faile, kuni sulgete kõik selle saidi vahelehed</translation>
@@ -1793,6 +1796,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2645047101481282803">Teie seadet haldab <ph name="PROFILE_NAME" /></translation>
 <translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 parool imporditi sellesse seadmesse}other{{NUM_PASSWORDS} parooli imporditi sellesse seadmesse}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2645515095874728277">Selle konto parool on sellesse seadmesse juba talletatud</translation>
 <translation id="2649045351178520408">Base64 kodeeritud ASCII, sertifikaadiahel</translation>
 <translation id="2652129567809778422">Parooli valimine</translation>
 <translation id="2653033005692233957">Otsing ebaõnnestus</translation>
@@ -2153,6 +2157,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2972581237482394796">&amp;Tee uuesti</translation>
 <translation id="2973324205039581528">Vaigista sait</translation>
 <translation id="2973537811036309675">Külgpaneel</translation>
+<translation id="2975761176769946178">URL on nõutav</translation>
 <translation id="2976557544729462544">Mõni seade nõuab õigesti töötamiseks või maksimaalse jõudluse pakkumiseks, et keelaksite andmetele juurdepääsu kaitse.</translation>
 <translation id="2977480621796371840">Grupist eemaldamine</translation>
 <translation id="2979639724566107830">Ava uues aknas</translation>
@@ -2394,6 +2399,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
 <translation id="3233271424239923319">Linuxi rakenduste ja failide varundamine</translation>
+<translation id="3234251228180563751">Kasutajanimi on pikem kui 1000 tähemärki</translation>
 <translation id="3234978181857588512">Salvesta seadmesse</translation>
 <translation id="3238192140106069382">Ühendamine ja kinnitamine</translation>
 <translation id="3239373508713281971">Rakenduse <ph name="APP_NAME" /> ajapiirang eemaldati</translation>
@@ -5211,6 +5217,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5975792506968920132">Aku laetuse protsent</translation>
 <translation id="5976160379964388480">Muud</translation>
 <translation id="5978277834170881274">&amp;Kasuta lihtsat õigekirjakontrolli</translation>
+<translation id="5978493744931296692">Teie administraator on muud profiilid keelanud</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Lülitasite 1 potentsiaalselt ohtliku laienduse uuesti sisse}other{Lülitasite {NUM_EXTENSIONS} potentsiaalselt ohtlikku laiendust uuesti sisse}}</translation>
 <translation id="5979353814339191480">See valik rakendub Chromebookidele, millel on andmesidepakett või mobiilsidevõrgu tongel, või kui võrguühendust jagatakse mobiilse kuumkohaga</translation>
@@ -7523,6 +7530,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="820568752112382238">Enim külastatavad saidid</translation>
 <translation id="8206745257863499010">Bluusilik</translation>
 <translation id="8206859287963243715">Mobiil</translation>
+<translation id="8208216423136871611">Ära salvesta</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uus märguanne}other{# uut märguannet}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Allalaadimine on pooleli}other{Allalaadimised on pooleli}}</translation>
 <translation id="8213449224684199188">Fotorežiim aktiveeriti</translation>
@@ -8004,6 +8012,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8683081248374354009">Lähtesta grupp</translation>
 <translation id="8688672835843460752">Saadaval</translation>
 <translation id="8690129572193755009">Saidid saavad küsida luba protokollide käsitlemiseks</translation>
+<translation id="8692107307702113268">Parool on pikem kui 1000 tähemärki</translation>
 <translation id="8695139659682234808">Lisage vanemlik järelevalve pärast seadistamist</translation>
 <translation id="8695825812785969222">Ava a&amp;sukoht ...</translation>
 <translation id="8698269656364382265">Eelmisele ekraanikuvale naasmiseks pühkige vasakust servast.</translation>
@@ -8284,6 +8293,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8960638196855923532">Saate nüüd vaadata oma telefoni märguandeid ja rakendusi</translation>
 <translation id="8962051932294470566">Saate korraga jagada ainult ühte faili. Proovige uuesti, kui praegune ülekanne on lõpetatud.</translation>
 <translation id="8962083179518285172">Üksikasjade peitmine</translation>
+<translation id="8962863356073277855">URL-i vorming peab olema https://www.example.com</translation>
 <translation id="8962918469425892674">Sait kasutab liikumis- või valgusandureid.</translation>
 <translation id="8965037249707889821">Sisestage vana parool</translation>
 <translation id="89667524227025535">Skannige QR-kood seadme kaameraga või sisestage operaatorilt saadud aktiveerimiskood</translation>
@@ -8554,6 +8564,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9220525904950070496">Konto eemaldamine</translation>
 <translation id="9220820413868316583">Tõstke sõrm andurilt ja proovige uuesti.</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
+<translation id="9222839025964079645">Paroole ei imporditud (<ph name="COUNT" />)</translation>
 <translation id="923467487918828349">Kuva kõik</translation>
 <translation id="924818813611903184">Hallake keeli Chrome OS-i seadetes</translation>
 <translation id="929117907539171075">Kustutatakse ka installitud rakenduse võrguühenduseta andmed</translation>

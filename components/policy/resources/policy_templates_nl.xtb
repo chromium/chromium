@@ -1689,11 +1689,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Als het beleid aanstaat, wordt de extensie voor inzichten geïnstalleerd en rapporteert deze statistieken.
 
       Als het beleid niet is ingesteld of uitstaat, wordt de extensie voor inzichten niet geïnstalleerd en rapporteert deze geen statistieken.</translation>
-<translation id="2723692978495226412">Als je dit beleid toepast, worden aanbevelingen gedaan voor apps die de gebruiker eerder heeft geïnstalleerd op andere apparaten. Deze aanbevelingen worden in de Launcher getoond na de aanbevelingen voor lokale apps als er geen zoektekst is ingevoerd.
-
-      Als je het beleid niet toepast of niet instelt, worden deze aanbevelingen niet getoond.
-
-      Als dit beleid is ingesteld, kunnen gebruikers het niet wijzigen.</translation>
 <translation id="2724313944474873275">Als je het beleid toepast of niet instelt, kunnen <ph name="PRODUCT_OS_NAME" />-apparaten externe attesten (Geverifieerde toegang) gebruiken om een certificaat door <ph name="PRODUCT_OS_NAME" /> te laten uitgeven. Hiermee wordt bevestigd dat het apparaat geschikt is om beschermde content af te spelen. Met dit proces wordt de informatie over hardwaregoedkeuring naar de <ph name="PRODUCT_OS_NAME" />-certificeringsinstantie gestuurd die het apparaat uniek identificeert.
 
       Als je dit beleid niet toepast, gebruikt het apparaat geen externe bevestiging voor contentbescherming en kan het apparaat geen beschermde content afspelen.</translation>

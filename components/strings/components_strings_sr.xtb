@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1432187715652018471">Страница жели да инсталира обрађивача услуге.</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
+<translation id="1435940442311036198">Користите приступни кôд на другом уређају</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
 <translation id="1442987760062738829">Бушење</translation>
@@ -1407,7 +1408,9 @@
 <translation id="4798078619018708837">Унесите рок трајања и CVC за картицу <ph name="CREDIT_CARD" /> да бисте ажурирали податке о картици. Када будете потврдили, подаци о картици са Google налога ће се делити са овим сајтом.</translation>
 <translation id="4800132727771399293">Проверите датум истека и CVC и покушајте поново</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4806051791961048632">Користи TouchID</translation>
 <translation id="4809079943450490359">Упутства администратора уређаја:</translation>
+<translation id="4811450222531576619">Сазнајте више о њеном извору и теми</translation>
 <translation id="4812751092864334025">Носива технологија</translation>
 <translation id="4813512666221746211">Грешка на мрежи</translation>
 <translation id="4816492930507672669">Уклопи у страницу</translation>
@@ -1680,6 +1683,7 @@
 <translation id="5509780412636533143">Обележивачи којим се управља</translation>
 <translation id="5510481203689988000">Ово подешавање се контролише у подешавањима колачића.</translation>
 <translation id="5510766032865166053">Можда је премештен или избрисан.</translation>
+<translation id="5513528801833998679">Користите пријављивање на уређају</translation>
 <translation id="5518670652865028077">Уметност и забава</translation>
 <translation id="5519516356611866228">Са променама</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
@@ -1707,6 +1711,7 @@
 <translation id="5571083550517324815">Преузимање са ове адресе није могуће. Изаберите другу адресу.</translation>
 <translation id="557886905979275351">Бријачи и апарати за бријање</translation>
 <translation id="5580958916614886209">Проверите месец истека и пробајте поново</translation>
+<translation id="558420943003240152">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="5586446728396275693">Нема сачуваних адреса</translation>
 <translation id="5587987780934666589">Корисник платформе</translation>
 <translation id="5593349413089863479">Веза није потпуно безбедна</translation>
@@ -1771,6 +1776,7 @@
 <translation id="5765072501007116331">Да бисте видели начине и захтеве за испоруку, изаберите адресу</translation>
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
+<translation id="5778389256418062749">Користите приступни кôд на другом уређају</translation>
 <translation id="5781136890105823427">Експеримент је омогућен</translation>
 <translation id="578305955206182703">Окер</translation>
 <translation id="57838592816432529">Искључи звук</translation>
@@ -2528,6 +2534,7 @@
 <translation id="7880146494886811634">Сачувајте адресу</translation>
 <translation id="7882421473871500483">Браон</translation>
 <translation id="7882995332186050355">Теретни камиони и приколице</translation>
+<translation id="788679692472636252">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
 <translation id="7887885240995164102">Покрени режим слике у слици</translation>
 <translation id="7888575728750733395">Намера рендеровања штампања</translation>

@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1432187715652018471">Էջը ծառայության մշակիչ է ուզում տեղադրել։</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
+<translation id="1435940442311036198">Օգտագործել անցաբառ մեկ այլ սարքում</translation>
 <translation id="1436185428532214179">Կարող է հայցել ձեր սարքի ֆայլերն ու պանակները փոփոխելու թույլտվություն</translation>
 <translation id="1442386063175183758">Աջ քառորդի ծալում</translation>
 <translation id="1442987760062738829">Անցք</translation>
@@ -1240,6 +1241,7 @@
 <translation id="4329871760342656885">Կանոնների վերլուծման սխալ՝ <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Շեղջիչ 5</translation>
 <translation id="4331708818696583467">Անվտանգ չէ</translation>
+<translation id="4333561522337981382">Կառավարել պատուհանները ձեր բոլոր էկրաններին</translation>
 <translation id="4340575312453649552">Այս գովազդը չափազանց շատ ռեսուրս է օգտագործել ձեր սարքում, այդ պատճառով Chrome-ը հեռացրել է այն։</translation>
 <translation id="4340982228985273705">Այս համակարգիչը կազմակերպության կողմից կառավարվող համակարգիչ չէ: Համաձայն կանոնի՝ ավտոմատ կարող են տեղադրվել միայն Chrome Web Store-ի ընդլայնումները: Chrome Web Store-ի թարմացման URL-ն է՝ «<ph name="CWS_UPDATE_URL" />»:</translation>
 <translation id="4346197816712207223">Վարկային քարտեր, որոնցով կարելի է վճարել</translation>
@@ -1406,7 +1408,9 @@
 <translation id="4798078619018708837">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի վավերականության ժամկետն ու CVC կոդը՝ ձեր քարտի տվյալները թարմացնելու համար։ Հաստատումից հետո ձեր Google հաշվին կցված քարտի տվյալները կօգտագործվեն այս կայքի կողմից։</translation>
 <translation id="4800132727771399293">Ստուգեք սպառման ժամկետն ու CVC կոդը և նորից փորձեք</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Օգտագործել Touch ID</translation>
 <translation id="4809079943450490359">Հրահանգներ ձեր սարքի ադմինիստրատորի կողմից՝</translation>
+<translation id="4811450222531576619">Իմացեք ավելին աղբյուրի և թեմայի մասին</translation>
 <translation id="4812751092864334025">Կրելի սարքերի տեխնոլոգիաներ</translation>
 <translation id="4813512666221746211">Ցանցի սխալ</translation>
 <translation id="4816492930507672669">Հարմարեցնել էջին</translation>
@@ -1453,6 +1457,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Որոնելու համար սեղմեք Tab, ապա՝ Enter</translation>
 <translation id="4930153903256238152">Մեծ տարողություն</translation>
+<translation id="4934780484581617878">Պատուհանների կառավարում</translation>
 <translation id="4936134414789135531">Մուտքագրված «<ph name="VALUE_NAME" />» արժեքը չի գտնվել։</translation>
 <translation id="4936675324097895694">Ֆինանսներ</translation>
 <translation id="4940163644868678279">Ինկոգնիտո ռեժիմը Chrome-ում</translation>
@@ -1465,6 +1470,7 @@
 <translation id="4958444002117714549">Ընդարձակել ցանկը</translation>
 <translation id="4964505745997821360">Առողջության ապահովագրություն</translation>
 <translation id="4968522289500246572">Այս հավելվածը նախատեսված է բջջային սարքերի համար։ Չափսը փոխելուց հետո հավելվածը կարող է սխալներով աշխատել։</translation>
+<translation id="4968665849807487749">Կարող է հայցել պատուհանները բոլոր էկրաններին կառավարելու թույլտվություն</translation>
 <translation id="4969341057194253438">Ջնջել տեսագրությունը
 </translation>
 <translation id="4973922308112707173">Երկու անցք վերևում</translation>
@@ -1678,6 +1684,7 @@
 <translation id="5509780412636533143">Կառավարվող էջանիշներ</translation>
 <translation id="5510481203689988000">Այս պարամետրը կարող եք կառավարել քուքիների կարգավորումներում։</translation>
 <translation id="5510766032865166053">Հնարավոր է, որ այն տեղափոխվել կամ ջնջվել է:</translation>
+<translation id="5513528801833998679">Օգտագործել սարքի մուտքը</translation>
 <translation id="5518670652865028077">Արվեստ և զվարճանք</translation>
 <translation id="5519516356611866228">Ձեր կատարած փոփոխություններով</translation>
 <translation id="5523118979700054094">Կանոնի անունը</translation>
@@ -1705,6 +1712,7 @@
 <translation id="5571083550517324815">Տվյալ հասցեից առաքման ընդունում հնարավոր չէ: Ընտրեք այլ հասցե:</translation>
 <translation id="557886905979275351">Ածելիներ և սափրիչներ</translation>
 <translation id="5580958916614886209">Ստուգեք սպառման ամիսը և նորից փորձեք</translation>
+<translation id="558420943003240152">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
 <translation id="5586446728396275693">Պահված հասցեներ չկան</translation>
 <translation id="5587987780934666589">Հարթակի օգտատեր</translation>
 <translation id="5593349413089863479">Կապը լիովին պաշտպանված չէ</translation>
@@ -1769,6 +1777,7 @@
 <translation id="5765072501007116331">Առաքման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="57689295674415555">Վիրտուալ քարտի համարը չի՞ լրացվել</translation>
 <translation id="5776313857861697733">Առաջնահերթություն</translation>
+<translation id="5778389256418062749">Օգտագործել անցաբառ մեկ այլ սարքում</translation>
 <translation id="5781136890105823427">Փորձարկումը միացված է</translation>
 <translation id="578305955206182703">Սաթ</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
@@ -1969,6 +1978,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Երկու ամրակ ձախ կողմում</translation>
+<translation id="6374865374745447009">պատուհանների կառավարում</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Կարող են վճարներ գանձվել</translation>
@@ -2526,6 +2536,7 @@
 <translation id="7880146494886811634">Պահել հասցեն</translation>
 <translation id="7882421473871500483">Շագանակագույն</translation>
 <translation id="7882995332186050355">Բեռնատարներ և քարշակներ</translation>
+<translation id="788679692472636252">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
 <translation id="7887683347370398519">Ստուգեք ձեր CVC կոդը և նորից փորձեք</translation>
 <translation id="7887885240995164102">Անցնել «նկար նկարի մեջ» ռեժիմի</translation>
 <translation id="7888575728750733395">Գույները վերահաշվելու եղանակ տպման համար</translation>

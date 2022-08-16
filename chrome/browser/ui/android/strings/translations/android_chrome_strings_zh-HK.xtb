@@ -105,7 +105,6 @@
 <translation id="1474893630593443211">更全面控制系統顯示的廣告</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
-<translation id="1488775391433859242">您可在正在顯示此 QR 碼的電腦上使用此手機來登入。</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1493287004536771723">您正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="1502010315804028179">如要管理密碼，請更新 Google Play 服務</translation>
@@ -283,7 +282,6 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2549516196460093976">您可在正在顯示此 QR 碼的電腦上使用此平板電腦來登入。</translation>
 <translation id="2558569818338050235">您的瀏覽記錄會影響系統顯示的廣告</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
@@ -475,6 +473,7 @@
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="3560491354538957576">網站可以定義興趣</translation>
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
+<translation id="3566639033325271639">更新設定</translation>
 <translation id="3566923219790363270">Chrome 仍在準備 VR。請稍後再重新啟動 Chrome。</translation>
 <translation id="3568688522516854065">如要取得其他裝置上的分頁，請登入並開啟同步處理功能</translation>
 <translation id="357465026686164600">使用手機作為安全密鑰</translation>
@@ -569,6 +568,7 @@
 <translation id="4116038641877404294">下載網頁，以便在離線時使用</translation>
 <translation id="4135200667068010335">要共用分頁嘅裝置清單閂咗。</translation>
 <translation id="4137746084635924146">目前的裝置語言</translation>
+<translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
 <translation id="4141536112466364990">瞭解 Chrome</translation>
 <translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
 <translation id="4165986682804962316">網站設定</translation>

@@ -217,6 +217,27 @@
 <translation id="1223789468190631420">Trạng thái bật tính năng Duyệt web an toàn cho các nguồn đáng tin cậy</translation>
 <translation id="123018742985150697">Yêu cầu so khớp người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa</translation>
 <translation id="123081309365616809">Bật tính năng truyền nội dung đến thiết bị</translation>
+<translation id="1233477540349246382">
+Chế độ mặc định (Không đặt chính sách)
+Khi một tài khoản được thêm vào vùng nội dung, một hộp thoại nhỏ có thể xuất hiện yêu cầu người dùng tạo hồ sơ mới.  Bạn có thể đóng hộp thoại này.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Nếu người dùng lần đầu đăng nhập vào một dịch vụ của Google trong trình duyệt <ph name="PRODUCT_NAME" />, một hộp thoại sẽ xuất hiện yêu cầu người dùng tạo hồ sơ mới cho tài khoản doanh nghiệp của họ. Người dùng có thể nhấp vào Huỷ và đăng xuất hoặc nhấp vào Tiếp tục để tạo hồ sơ mới. Mọi dữ liệu duyệt web hiện có sẽ không được thêm vào hồ sơ mới.   Hồ sơ mới tạo được phép có nhiều tài khoản phụ, chẳng hạn như người dùng có thể đăng nhập vào một tài khoản khác trong vùng nội dung.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ngoại trừ việc hồ sơ mới tạo không được phép có tài khoản phụ.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ngoại trừ việc hộp thoại có thêm hộp đánh dấu để cho phép người dùng giữ lại dữ liệu duyệt web trên thiết bị.
+Nếu người dùng đánh dấu vào hộp này, thì dữ liệu hồ sơ hiện có sẽ được liên kết với Tài khoản được quản lý.
+– Tất cả dữ liệu duyệt web hiện có sẽ xuất hiện trong hồ sơ mới.
+– Dữ liệu này bao gồm dấu trang, nhật ký, mật khẩu, dữ liệu tự động điền, thẻ đang mở, cookie, bộ nhớ đệm, bộ nhớ web, tiện ích, v.v.
+Nếu người dùng không đánh dấu vào hộp:
+– Hồ sơ cũ sẽ tiếp tục tồn tại, dữ liệu sẽ không bị mất.
+– Một hồ sơ mới sẽ được tạo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, ngoại trừ việc hồ sơ mới tạo không được phép có tài khoản phụ.</translation>
 <translation id="1239526922294123540">Kiểm soát việc có cho phép các trang web gửi yêu cầu theo cách không an toàn đến các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.
 
           Khi chính sách này được đặt thành đúng, mọi quy trình kiểm tra <ph name="PRIVATE_NETWORK_ACCESS" /> đều bị tắt cho mọi nguồn gốc. Việc này có thể cho phép kẻ xấu thực hiện các cuộc tấn công <ph name="CSRF" /> trên máy chủ mạng riêng tư.
@@ -1731,11 +1752,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu chính sách này được đặt thành bật, tiện ích thông tin chi tiết sẽ được cài đặt và báo cáo các chỉ số.
 
       Nếu chính sách này không được đặt hoặc được đặt thành tắt, tiện ích thông tin chi tiết sẽ không được cài đặt và không báo cáo các chỉ số.</translation>
-<translation id="2723692978495226412">Việc đặt chính sách này thành Bật sẽ tạo ra các đề xuất cho những ứng dụng mà trước đó người dùng đã cài đặt trên các thiết bị khác. Các đề xuất này sẽ xuất hiện trong trình chạy sau các đề xuất ứng dụng trên thiết bị nếu người dùng chưa nhập nội dung tìm kiếm nào.
-
-      Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, các đề xuất này sẽ không xuất hiện.
-
-      Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi.</translation>
 <translation id="2724313944474873275">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, các thiết bị <ph name="PRODUCT_OS_NAME" /> có thể sử dụng quy trình chứng thực từ xa (Quyền truy cập đã xác minh) để nhận chứng chỉ do <ph name="PRODUCT_OS_NAME" /> CA phát hành khẳng định rằng thiết bị đủ điều kiện để phát nội dung được bảo vệ. Quy trình này bao gồm gửi thông tin chứng thực phần cứng tới <ph name="PRODUCT_OS_NAME" /> CA xác định duy nhất thiết bị.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị sẽ không sử dụng quy trình chứng thực từ xa để bảo vệ nội dung và thiết bị không thể phát nội dung được bảo vệ.</translation>

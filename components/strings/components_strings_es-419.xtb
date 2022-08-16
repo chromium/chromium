@@ -1241,6 +1241,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4329871760342656885">Se produjo un error al analizar la política: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Apilador 5</translation>
 <translation id="4331708818696583467">No seguro</translation>
+<translation id="4333561522337981382">Administrar ventanas en todas tus pantallas</translation>
 <translation id="4340575312453649552">Chrome quitó este anuncio porque usó demasiados recursos en tu dispositivo.</translation>
 <translation id="4340982228985273705">Esta computadora no se detectó como una empresa administrada, por lo que la política solo puede instalar automáticamente las extensiones alojadas en Chrome Web Store. La URL de actualización de Chrome Web Store es "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Tarjetas de crédito aceptadas</translation>
@@ -1454,6 +1455,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para realizar una búsqueda</translation>
 <translation id="4930153903256238152">Gran capacidad</translation>
+<translation id="4934780484581617878">Administración de ventanas</translation>
 <translation id="4936134414789135531">No se pudo encontrar el <ph name="VALUE_NAME" /> insertado.</translation>
 <translation id="4936675324097895694">Finanzas</translation>
 <translation id="4940163644868678279">Modo Incógnito en Chrome</translation>
@@ -1466,6 +1468,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="4964505745997821360">Seguro médico</translation>
 <translation id="4968522289500246572">Esta app está diseñada para dispositivos móviles y es posible que el cambio de tamaño no funcione correctamente. Posiblemente la app se reiniciará o presentará problemas.</translation>
+<translation id="4968665849807487749">Puede solicitar permiso para administrar ventanas en todas tus pantallas</translation>
 <translation id="4969341057194253438">Borrar grabación</translation>
 <translation id="4973922308112707173">Perforación doble en la parte superior</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
@@ -1969,6 +1972,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Grapas dobles a la izquierda</translation>
+<translation id="6374865374745447009">administración de ventanas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Es posible que se cobren cargos.</translation>

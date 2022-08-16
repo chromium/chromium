@@ -286,10 +286,12 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
+<translation id="3495810061346586977">הקובץ הזה סודי וכפוף להגבלות של מדיניות האדמין. <ph name="BEGIN_LINK_HELP" />מידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
+<translation id="3548125359243647069">הוזן קוד אימות שגוי יותר מדי פעמים.</translation>
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
@@ -619,6 +621,7 @@
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>
 <translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
+<translation id="6295542640242147836">‏נעילת כרטיס ה-SIM</translation>
 <translation id="6296410173147755564">‏ה-PUK לא תקין</translation>
 <translation id="6312403991423642364">שגיאת רשת לא ידועה</translation>
 <translation id="6317608858038767920">שרת שמות בהתאמה אישית <ph name="INPUT_INDEX" /></translation>
@@ -727,6 +730,7 @@
 <translation id="7189874332498648577">‎<ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">שמירה בשם</translation>
 <translation id="7229570126336867161">‏יש צורך ב-EVDO</translation>
+<translation id="7230898482850090046">‏לבקשת האדמין, עליך להשבית את ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="7238097264433196391">שם התקן האחסון</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, פרטים</translation>
 <translation id="7246947237293279874">‏שרת proxy של FTP</translation>
@@ -759,6 +763,7 @@
 <translation id="7505167922889582512">הצגת קבצים מוסתרים</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="751507702149411736">ביילורוסית</translation>
+<translation id="7521790570754130607">נדרש קוד אימות לשימוש בחבילת הגלישה</translation>
 <translation id="7532029025027028521">תעתיק פרסית</translation>
 <translation id="7544830582642184299">‏הענקת הרשאת גישה לאפליקציות Linux לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="7547009467130558110">נעל ספורט</translation>
@@ -783,6 +788,7 @@
 <translation id="76959938259365003">ריקון האשפה נכשל.</translation>
 <translation id="770015031906360009">יוונית</translation>
 <translation id="7705251383879779343">ההעתקה של <ph name="FILE_NAME" /> הסתיימה.</translation>
+<translation id="7708271999969613024">‏כדי להשתמש ברשת הזו, עליך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שמקבלים מהספק.</translation>
 <translation id="7711920809702896782">פרטי התמונה</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7730494089396812859">הצגת פרטים של גיבוי בענן</translation>
@@ -877,6 +883,7 @@
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8452135315243592079">‏כרטיס SIM חסר</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>
+<translation id="8457767749626250697">‏כרטיס ה-SIM שלך נעול</translation>
 <translation id="8459404855768962328">לאחר העתקת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על הקובץ ולבחור באפשרות "הצמדה למדף".</translation>
 <translation id="8461914792118322307">‏שרת proxy</translation>

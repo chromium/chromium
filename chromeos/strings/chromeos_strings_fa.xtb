@@ -335,6 +335,7 @@
 <translation id="3866249974567520381">توضیح</translation>
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
 <translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
+<translation id="3913541166352922049">سیستم تا <ph name="DELAY_DURATION" /> ثانیه دیگر خاموش خواهد شد.</translation>
 <translation id="3923184630988645767">مصرف داده</translation>
 <translation id="3924044641767672375">‏برای آسان‌تر شدن فرایند تعمیر، توصیه می‌شود به Wi-Fi متصل شوید. شبکه‌تان ذخیره خواهد شد.</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
@@ -520,6 +521,7 @@
 <translation id="5346687412805619883">شبکه محلی</translation>
 <translation id="5358174242040570474">مشکلی پیش آمد. دوباره کاغذدیواری را انتخاب کنید یا برنامه را مجدداً باز کنید.</translation>
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
+<translation id="5376136733560434719">درحال آماده‌سازی برای خاموش شدن…</translation>
 <translation id="5376354385557966694">حالت روشن خودکار</translation>
 <translation id="537872351913703572">دستگاه به کاربر یا سازمان دیگری منتقل خواهد شد</translation>
 <translation id="5389159777326897627">کاغذدیواری و سبک</translation>
@@ -749,6 +751,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
+<translation id="7478405245077383528">سیستم تا <ph name="DELAY_DURATION" /> ثانیه دیگر بازراه‌اندازی خواهد شد.</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7487067081878637334">فناوری</translation>
 <translation id="7490813197707563893">نشانی واد</translation>

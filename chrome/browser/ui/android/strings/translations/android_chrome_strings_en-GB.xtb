@@ -105,7 +105,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1474893630593443211">More control over the ads that you see</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="148482509007564431">Bookmark save flow</translation>
-<translation id="1488775391433859242">You can use this phone to sign in on the computer that’s displaying this QR code.</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">To manage your passwords, update Google Play services</translation>
@@ -283,7 +282,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
-<translation id="2549516196460093976">You can use this tablet to sign in on the computer that’s displaying this QR code.</translation>
 <translation id="2558569818338050235">Your browsing history affects the ads that you see</translation>
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
@@ -475,6 +473,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3557336313807607643">Add to contacts</translation>
 <translation id="3560491354538957576">Site can define Interests</translation>
 <translation id="3563767357928833671">Clipboard contents shown</translation>
+<translation id="3566639033325271639">Update settings</translation>
 <translation id="3566923219790363270">Chrome is still preparing for VR. Restart Chrome later.</translation>
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
 <translation id="357465026686164600">Phone as a security key</translation>
@@ -569,6 +568,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="4116038641877404294">Download pages to use them offline</translation>
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>
+<translation id="414128724510021958">Desktop sites requested by default</translation>
 <translation id="4141536112466364990">Learn Chrome</translation>
 <translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4165986682804962316">Site settings</translation>

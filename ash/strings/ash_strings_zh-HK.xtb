@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1210557957257435379">螢幕錄影</translation>
 <translation id="121097972571826261">往前一個字詞</translation>
+<translation id="1217633719248931900">前往應用程式</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，「Play 商店」應用程式</translation>
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
@@ -447,6 +448,7 @@
 <translation id="3593039967545720377">如要存取剪貼簿記錄，按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。複製項目即可開始使用。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕，即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已滿</translation>
+<translation id="3596012367874587041">應用程式設定</translation>
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>

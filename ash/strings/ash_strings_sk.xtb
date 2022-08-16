@@ -53,6 +53,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1225748608451425081">Váš Chromebook je uzamknutý pre známy problém. Prihlásiť sa budete môcť po uplynutí tohto času: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončiť výber</translation>
 <translation id="1239161794459865856">Funkcia <ph name="FEATURE_NAME" /> je pripojená.</translation>
+<translation id="1240638468526743569">Aplikácia</translation>
 <translation id="1246890715821376239">Nepodporované aplikácie</translation>
 <translation id="1247372569136754018">Mikrofón (vnútorný)</translation>
 <translation id="1247519845643687288">Nedávne aplikácie</translation>
@@ -446,6 +447,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3593039967545720377">Do histórie schránky môžete prejsť po zobrazení schránky stlačením klávesovej skratky <ph name="SHORTCUT_KEY_NAME" /> + V. Začnite skopírovaním položky.</translation>
 <translation id="3593646411856133110">Otvorené aplikácie zobrazíte potiahnutím nahor a pridržaním</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
+<translation id="3596012367874587041">Nastavenia aplikácie</translation>
 <translation id="3600061223661453002">Vypnuté</translation>
 <translation id="3604801046548457007">Bola vytvorená plocha <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Bola pripojená Braillova obrazovka.</translation>
@@ -685,6 +687,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4918086044614829423">Prijať</translation>
+<translation id="4919841137949306064"><ph name="APP_NAME" /> momentálne používa kameru</translation>
 <translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
 <translation id="4938176435186993759">Skryť všetky návrhy</translation>
 <translation id="4945196315133970626">Vypnúť upozornenia</translation>
@@ -914,6 +917,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
+<translation id="6232891689835436217"><ph name="APP_NAME" /> momentálne používa kameru a mikrofón</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
@@ -1132,6 +1136,7 @@ Nová inštalácia</translation>
 <translation id="7544300628205093162">Podsvietenie klávesnice je zapnuté</translation>
 <translation id="7548434653388805669">Je čas ísť do postele</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
+<translation id="7557816257942363084"><ph name="APP_NAME" /> momentálne používa mikrofón</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>

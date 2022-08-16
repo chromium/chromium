@@ -335,6 +335,7 @@
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
+<translation id="3913541166352922049">Систем <ph name="DELAY_DURATION" /> секундийн дараа унтарна.</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
 <translation id="3924044641767672375">Засварын явцыг илүү хялбар болгохын тулд Wi-Fi-д холбогдохыг зөвлөж байна. Таны сүлжээг хадгална.</translation>
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
@@ -520,6 +521,7 @@
 <translation id="5346687412805619883">Дотоод сүлжээ</translation>
 <translation id="5358174242040570474">Алдаа гарлаа. Дэлгэцийн зураг дахин сонгох эсвэл аппыг дахин нээж үзнэ үү.</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
+<translation id="5376136733560434719">Унтраахаар бэлтгэж байна...</translation>
 <translation id="5376354385557966694">Автомат гэрэлтэй горим</translation>
 <translation id="537872351913703572">Төхөөрөмж өөр хэрэглэгч эсвэл байгууллага руу очих болно</translation>
 <translation id="5389159777326897627">Дэлгэцийн зураг &amp; стиль</translation>
@@ -749,6 +751,7 @@
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
+<translation id="7478405245077383528">Систем <ph name="DELAY_DURATION" /> секундийн дараа дахин эхэлнэ.</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Технологи</translation>
 <translation id="7490813197707563893">MAC хаяг</translation>

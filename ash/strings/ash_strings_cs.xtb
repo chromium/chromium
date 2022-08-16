@@ -53,6 +53,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
 <translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
+<translation id="1240638468526743569">Aplikace</translation>
 <translation id="1246890715821376239">Nepodporované aplikace</translation>
 <translation id="1247372569136754018">Mikrofon (interní)</translation>
 <translation id="1247519845643687288">Poslední aplikace</translation>
@@ -446,6 +447,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3593039967545720377">Stisknutím kláves <ph name="SHORTCUT_KEY_NAME" /> + V zobrazíte schránku a najdete její historii. Začněte tím, že zkopírujete položku.</translation>
 <translation id="3593646411856133110">Přejetím nahoru a podržením zobrazíte otevřené aplikace</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
+<translation id="3596012367874587041">Nastavení aplikace</translation>
 <translation id="3600061223661453002">Vypnuto</translation>
 <translation id="3604801046548457007">Byla vytvořena plocha <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Je připojen hmatový displej.</translation>
@@ -685,6 +687,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4918086044614829423">Přijmout</translation>
+<translation id="4919841137949306064">Aplikace <ph name="APP_NAME" /> používá vaši kameru</translation>
 <translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
 <translation id="4938176435186993759">Skrýt všechny návrhy</translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
@@ -914,6 +917,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
 <translation id="622484624075952240">Dolů</translation>
 <translation id="6231419273573514727">Výkon periferního zařízení může být omezen</translation>
+<translation id="6232891689835436217">Aplikace <ph name="APP_NAME" /> používá vaši kameru a mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Uzamknuto na šířku</translation>
 <translation id="6259254695169772643">K výběru použijte dotykové pero</translation>
@@ -1132,6 +1136,7 @@ Nová instalace</translation>
 <translation id="7544300628205093162">Podsvícení klávesnice je zapnuté</translation>
 <translation id="7548434653388805669">Čas jít spát</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
+<translation id="7557816257942363084">Aplikace <ph name="APP_NAME" /> používá váš mikrofon</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
 <translation id="7564874036684306347">Přesunutí oken na jinou plochu může vést k neočekávanému chování. Následná oznámení, okna a dialogy mohou být rozděleny mezi plochy.</translation>
 <translation id="7569509451529460200">Jsou zapnuty funkce Braille a ChromeVox</translation>

@@ -593,6 +593,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
+<translation id="1573117025466282241">使用手机扫描二维码</translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1578558981922970608">强制关闭</translation>
@@ -7508,6 +7509,7 @@
 <translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
+<translation id="8208216423136871611">不保存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{有 1 项下载正在进行中}other{有多项下载正在进行中}}</translation>
 <translation id="8213449224684199188">已进入照片模式</translation>

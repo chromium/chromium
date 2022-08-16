@@ -53,6 +53,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1225748608451425081">Chromebook je zaključan zbog poznatog problema. Moći ćete da se prijavite za: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Izađi iz režima biranja</translation>
 <translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
+<translation id="1240638468526743569">Aplikacija</translation>
 <translation id="1246890715821376239">Nepodržane aplikacije</translation>
 <translation id="1247372569136754018">Mikrofon (interni)</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
@@ -446,6 +447,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3593039967545720377">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da biste pristupili istoriji privremene memorije. Kopirajte neku stavku da biste započeli.</translation>
 <translation id="3593646411856133110">Prevucite nagore i zadržite da biste videli otvorene aplikacije</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
+<translation id="3596012367874587041">Podešavanja aplikacije</translation>
 <translation id="3600061223661453002">Isključi</translation>
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je napravljena</translation>
 <translation id="3606978283550408104">Povezan je ekran sa Brajevom azbukom.</translation>
@@ -686,6 +688,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="490788395437447240">Nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918086044614829423">Prihvati</translation>
+<translation id="4919841137949306064"><ph name="APP_NAME" /> trenutno koristi kameru</translation>
 <translation id="4925542575807923399">Administrator za ovaj nalog zahteva da ovaj nalog bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="4938176435186993759">Sakrij sve predloge</translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
@@ -915,6 +918,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6220928844947387476">Sada istovremeno možete da snimate sebe i ekran</translation>
 <translation id="622484624075952240">Nadole</translation>
 <translation id="6231419273573514727">Učinak perifernih uređaja će možda biti ograničen</translation>
+<translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno koristi kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Horizontalni prikaz je zaključan</translation>
 <translation id="6259254695169772643">Izaberite pomoću pisaljke</translation>
@@ -1133,6 +1137,7 @@ Novo instaliranje</translation>
 <translation id="7544300628205093162">Pozadinsko osvetljenje tastature je uključeno</translation>
 <translation id="7548434653388805669">Vreme je za spavanje</translation>
 <translation id="7551643184018910560">Zakači na policu</translation>
+<translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno koristi mikrofon</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="7564874036684306347">Premeštanje prozora na drugi računar može da dovede do neočekivanog ponašanja. Naknadna obaveštenja, prozori i dijalozi će možda biti podeljeni između računara.</translation>
 <translation id="7569509451529460200">Brajeva azbuka i ChromeVox su omogućeni</translation>

@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1432187715652018471">сторінка хоче встановити обробник сервісів.</translation>
 <translation id="1432581352905426595">Керувати пошуковими системами</translation>
+<translation id="1435940442311036198">Використати ключ доступу на іншому пристрої</translation>
 <translation id="1436185428532214179">Може просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="1442386063175183758">Зігнути за типом "ворота праворуч"</translation>
 <translation id="1442987760062738829">Пробити отвір</translation>
@@ -1407,7 +1408,9 @@
 <translation id="4798078619018708837">Введіть дату закінчення терміну дії та код CVC картки <ph name="CREDIT_CARD" />, щоб оновити її дані. Щойно ви підтвердите дані картки в обліковому записі Google, цей сайт отримає доступ до них.</translation>
 <translation id="4800132727771399293">Перевірте дату закінчення терміну дії та код CVC та повторіть спробу</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4806051791961048632">Використати Touch ID</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
+<translation id="4811450222531576619">Докладніше про джерело й тему</translation>
 <translation id="4812751092864334025">Гаджети</translation>
 <translation id="4813512666221746211">Помилка мережі</translation>
 <translation id="4816492930507672669">За розміром сторінки</translation>
@@ -1680,6 +1683,7 @@
 <translation id="5509780412636533143">Закладки, якими керує адміністратор</translation>
 <translation id="5510481203689988000">Цим параметром можна керувати в налаштуваннях файлів cookie.</translation>
 <translation id="5510766032865166053">Можливо, його переміщено або видалено.</translation>
+<translation id="5513528801833998679">Здійснити вхід на пристрої</translation>
 <translation id="5518670652865028077">Мистецтво та розваги</translation>
 <translation id="5519516356611866228">Зі змінами</translation>
 <translation id="5523118979700054094">Назва правила</translation>
@@ -1707,6 +1711,7 @@
 <translation id="5571083550517324815">Адреса отримання не підтримується. Укажіть іншу адресу.</translation>
 <translation id="557886905979275351">Станки для гоління й електробритви</translation>
 <translation id="5580958916614886209">Перевірте місяць закінчення терміну дії та повторіть спробу</translation>
+<translation id="558420943003240152">Керувати паролями та ключами доступу…</translation>
 <translation id="5586446728396275693">Немає збережених адрес</translation>
 <translation id="5587987780934666589">Користувач платформи</translation>
 <translation id="5593349413089863479">З'єднання не повністю захищене</translation>
@@ -1771,6 +1776,7 @@
 <translation id="5765072501007116331">Укажіть адресу, щоб переглянути способи доставки та вимоги.</translation>
 <translation id="57689295674415555">Номер віртуальної картки не заповнено?</translation>
 <translation id="5776313857861697733">Пріоритет</translation>
+<translation id="5778389256418062749">Використати ключ доступу на іншому пристрої</translation>
 <translation id="5781136890105823427">Експеримент увімкнено</translation>
 <translation id="578305955206182703">Бурштиновий</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
@@ -2529,6 +2535,7 @@
 <translation id="7880146494886811634">Збережіть адресу</translation>
 <translation id="7882421473871500483">Коричневий</translation>
 <translation id="7882995332186050355">Вантажні автомобілі й трейлери</translation>
+<translation id="788679692472636252">Керувати паролями та ключами доступу…</translation>
 <translation id="7887683347370398519">Перевірте код CVC й повторіть спробу</translation>
 <translation id="7887885240995164102">Увімкнути режим "Картинка в картинці"</translation>
 <translation id="7888575728750733395">Команда обробки друку</translation>
