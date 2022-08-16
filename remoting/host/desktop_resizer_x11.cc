@@ -14,14 +14,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/x11_util.h"
+#include "remoting/host/x11_crtc_resizer.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/scoped_ignore_errors.h"
 
 // On Linux, we use the xrandr extension to change the desktop resolution. In
-// curtain mode, we do exact resize where supported (currently only using a
-// patched Xvfb server). Otherwise, we try to pick the best resolution from the
-// existing modes.
+// curtain mode, we do exact resize where supported. Otherwise, we try to pick
+// the best resolution from the existing modes.
 //
 // Xrandr has a number of restrictions that make exact resize more complex:
 //
@@ -30,14 +30,28 @@
 //   2. It's not possible to delete a mode that's in use.
 //   3. Errors are communicated via Xlib's spectacularly unhelpful mechanism
 //      of terminating the process unless you install an error handler.
+//   4. The root window size must always enclose any enabled Outputs (that is,
+//      any output which is attached to a CRTC).
+//   5. An Output cannot be given properties (xy-offsets, mode) which would
+//      extend its rectangle beyond the root window size.
 //
-// Since we want the current mode name to be consistent, the approach is as
-// follows:
+// Since we want the current mode name to be consistent (for each Output), the
+// approach is as follows:
 //
-//   1. Disable the RANDR Output.
-//   2. Delete the CRD mode, if it exists.
-//   3. Create the CRD mode at the new resolution.
-//   4. Set the Output to the CRD mode (which re-enables it).
+//   1. Fetch information about all the active (enabled) CRTCs.
+//   2. Disable the RANDR Output being resized.
+//   3. Delete the CRD mode, if it exists.
+//   4. Create the CRD mode at the new resolution, and add it to the Output's
+//      list of modes.
+//   5. Adjust the properties (in memory) of any CRTCs to be modified:
+//      * Width/height (mode) of the CRTC being resized.
+//      * xy-offsets to avoid overlapping CRTCs.
+//   6. Disable any CRTCs that might prevent changing the root window size.
+//   7. Compute the bounding rectangle of all CRTCs (after adjustment), and set
+//      it as the new root window size.
+//   8. Apply all adjusted CRTC properties to the CRTCs. This will set the
+//      Output being resized to the new CRD mode (which re-enables it), and it
+//      will re-enable any other CRTCs that were disabled.
 
 namespace {
 
@@ -237,20 +251,59 @@ void DesktopResizerX11::SetResolutionNewMode(
   HOST_LOG << "Changing desktop size to " << resolution.dimensions().width()
            << "x" << resolution.dimensions().height();
 
-  // TODO(lambroslambrou): Use the DPI from client size information.
-  uint32_t width_mm =
-      PixelsToMillimeters(resolution.dimensions().width(), kDefaultDPI);
-  uint32_t height_mm =
-      PixelsToMillimeters(resolution.dimensions().height(), kDefaultDPI);
-  SwitchToMode(output, std::string());
-  randr_->SetScreenSize(
-      {root_, static_cast<uint16_t>(resolution.dimensions().width()),
-       static_cast<uint16_t>(resolution.dimensions().height()), width_mm,
-       height_mm});
+  X11CrtcResizer resizer(resources_.get(), randr_);
+
+  resizer.FetchActiveCrtcs();
+  auto crtc = resizer.GetCrtcForOutput(output);
+
+  if (crtc == kDisabledCrtc) {
+    // This is not expected to happen. Disabled Outputs are not expected to
+    // have any Monitor, but |output| was found in the RRGetMonitors response,
+    // so it should have a CRTC attached.
+    LOG(ERROR) << "No CRTC found for output: " << base::to_underlying(output);
+    return;
+  }
+
+  // Disable the output now, so that the old mode can be deleted and the new
+  // mode created and added to the output's available modes. The previous size
+  // and offsets will be stored in |resizer|.
+  resizer.DisableCrtc(crtc);
+
   DeleteMode(output, mode_name);
-  CreateMode(output, mode_name, resolution.dimensions().width(),
-             resolution.dimensions().height());
-  SwitchToMode(output, mode_name);
+  auto mode = CreateMode(output, mode_name, resolution.dimensions().width(),
+                         resolution.dimensions().height());
+  if (mode == kInvalidMode) {
+    // The CRTC is disabled, but there's no easy way to recover it here
+    // (the mode it was attached to has gone).
+    LOG(ERROR) << "Failed to create new mode.";
+    return;
+  }
+
+  // Update |active_crtcs_| with new sizes and offsets.
+  resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
+
+  // Disable any CRTCs that have been changed, so that the root window can be
+  // safely resized to the bounding-box of the new CRTCs.
+  // This is non-optimal: the only CRTCs that need disabling are those whose
+  // original rectangles don't fit into the new root window - they are the ones
+  // that would prevent resizing the root window. But figuring these out would
+  // involve keeping track of all the original rectangles as well as the new
+  // ones. So, to keep the implementation simple (and working for any arbitrary
+  // layout algorithm), all changed CRTCs are disabled here.
+  resizer.DisableChangedCrtcs();
+
+  // Get the dimensions to resize the root window to.
+  auto dimensions = resizer.GetBoundingBox();
+
+  // TODO(lambroslambrou): Use the DPI from client size information.
+  uint32_t width_mm = PixelsToMillimeters(dimensions.width(), kDefaultDPI);
+  uint32_t height_mm = PixelsToMillimeters(dimensions.height(), kDefaultDPI);
+  randr_->SetScreenSize({root_, static_cast<uint16_t>(dimensions.width()),
+                         static_cast<uint16_t>(dimensions.height()), width_mm,
+                         height_mm});
+
+  // Apply the new CRTCs, which will re-enable any that were disabled.
+  resizer.ApplyActiveCrtcs();
 }
 
 void DesktopResizerX11::SetResolutionExistingMode(
@@ -275,10 +328,10 @@ void DesktopResizerX11::SetResolutionExistingMode(
   }
 }
 
-void DesktopResizerX11::CreateMode(x11::RandR::Output output,
-                                   const std::string& name,
-                                   int width,
-                                   int height) {
+x11::RandR::Mode DesktopResizerX11::CreateMode(x11::RandR::Output output,
+                                               const std::string& name,
+                                               int width,
+                                               int height) {
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
@@ -286,16 +339,17 @@ void DesktopResizerX11::CreateMode(x11::RandR::Output output,
   randr_->CreateMode({root_, mode, name.c_str()});
 
   if (!resources_.Refresh(randr_, root_))
-    return;
+    return kInvalidMode;
   x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
   if (mode_id == kInvalidMode) {
     LOG(ERROR) << "No ID found for mode: " << name;
-    return;
+    return kInvalidMode;
   }
   randr_->AddOutputMode({
       output,
       mode_id,
   });
+  return mode_id;
 }
 
 void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
@@ -306,60 +360,6 @@ void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
     randr_->DestroyMode({mode_id});
     resources_.Refresh(randr_, root_);
   }
-}
-
-void DesktopResizerX11::SwitchToMode(x11::RandR::Output output,
-                                     const std::string& name) {
-  auto mode_id = kInvalidMode;
-  std::vector<x11::RandR::Output> outputs;
-  if (!name.empty()) {
-    mode_id = resources_.GetIdForMode(name);
-    if (mode_id == kInvalidMode) {
-      LOG(ERROR) << "No ID found for mode: " << name;
-      return;
-    }
-
-    // The case where a CRTC has multiple outputs is unsupported here. With
-    // Xvfb, there exists only 1 output. With Xorg+video-dummy, there are
-    // several outputs, but each one has a separate CRTC it can attach to.
-    outputs = {output};
-  }
-
-  x11::Time config_timestamp = resources_.get()->config_timestamp;
-  auto output_info = randr_->GetOutputInfo({output, config_timestamp}).Sync();
-  if (!output_info)
-    return;
-
-  x11::RandR::Crtc crtc = output_info->crtc;
-  if (crtc == kDisabledCrtc) {
-    // The output is disabled. If |name| is empty, the caller requested the
-    // output be disabled, so there is nothing further to do.
-    if (name.empty())
-      return;
-
-    // |crtcs| is the set of CRTCs that this output is allowed to attach to.
-    if (output_info->crtcs.size() != 1) {
-      // |crtcs| should always be non-empty. To properly handle the size() > 1
-      // case, the code should step through |crtcs| and fetch the outputs using
-      // GetCrtcInfo(), stopping when a CRTC is found with empty outputs. With
-      // Xorg+video-dummy, this case never happens - the driver allocates a
-      // single CRTC for each output.
-      LOG(ERROR) << "Unexpected #crtcs: " << output_info->crtcs.size();
-      return;
-    }
-    crtc = output_info->crtcs[0];
-  }
-
-  randr_->SetCrtcConfig({
-      .crtc = crtc,
-      .timestamp = x11::Time::CurrentTime,
-      .config_timestamp = config_timestamp,
-      .x = 0,
-      .y = 0,
-      .mode = mode_id,
-      .rotation = x11::RandR::Rotation::Rotate_0,
-      .outputs = outputs,
-  });
 }
 
 // static

@@ -487,6 +487,8 @@ static_library("common") {
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
       "input_injector_x11.cc",
+      "x11_crtc_resizer.cc",
+      "x11_crtc_resizer.h",
     ]
     deps += [
       "//remoting/host/linux:x11",
