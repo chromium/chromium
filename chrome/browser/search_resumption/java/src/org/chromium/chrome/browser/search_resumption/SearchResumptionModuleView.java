@@ -39,13 +39,13 @@ public class SearchResumptionModuleView extends LinearLayout {
                 !SharedPreferencesManager.getInstance().readBoolean(
                         ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                         false) /* shouldExpand */,
-                false /* isAnimationEnabled */);
+                true /* isFirstSetup */);
     }
 
     void setExpandCollapseCallback(Callback<Boolean> callback) {
         mHeaderView.setOnClickListener(v -> {
             boolean shouldExpand = mTileContainerView.isExpanded() ? false : true;
-            configureExpandedCollapsed(shouldExpand, true /* isAnimationEnabled */);
+            configureExpandedCollapsed(shouldExpand, false /* isFirstSetup */);
             callback.onResult(shouldExpand);
         });
     }
@@ -57,21 +57,24 @@ public class SearchResumptionModuleView extends LinearLayout {
     /**
      * Configures expanding or collapsing the suggest sections.
      */
-    private void configureExpandedCollapsed(boolean shouldExpand, boolean isAnimationEnabled) {
-        if (mTileContainerView.isExpanded() == shouldExpand) return;
-
-        if (shouldExpand) {
-            mOptionView.setImageResource(org.chromium.ui.R.drawable.ic_expand_less_black_24dp);
-        } else {
-            mOptionView.setImageResource(org.chromium.ui.R.drawable.ic_expand_more_black_24dp);
+    private void configureExpandedCollapsed(boolean shouldExpand, boolean isFirstSetup) {
+        if (isFirstSetup || mTileContainerView.isExpanded() != shouldExpand) {
+            if (shouldExpand) {
+                mOptionView.setImageResource(org.chromium.ui.R.drawable.ic_expand_less_black_24dp);
+            } else {
+                mOptionView.setImageResource(org.chromium.ui.R.drawable.ic_expand_more_black_24dp);
+            }
+            String collapseOrExpandedText = getContext().getResources().getString(shouldExpand
+                            ? R.string.accessibility_expanded
+                            : R.string.accessibility_collapsed);
+            String description = getContext().getResources().getString(
+                    R.string.search_resumption_module_title_short);
+            mHeaderView.setContentDescription(description + collapseOrExpandedText);
         }
 
-        String collapseOrExpandedText = getContext().getResources().getString(
-                shouldExpand ? R.string.accessibility_expanded : R.string.accessibility_collapsed);
-        String description = getContext().getResources().getString(
-                R.string.search_resumption_module_title_short);
-        mHeaderView.setContentDescription(description + collapseOrExpandedText);
+        if (mTileContainerView.isExpanded() == shouldExpand) return;
 
-        mTileContainerView.configureExpandedCollapsed(shouldExpand, isAnimationEnabled);
+        mTileContainerView.configureExpandedCollapsed(
+                shouldExpand, !isFirstSetup /* isAnimationEnabled */);
     }
 }
