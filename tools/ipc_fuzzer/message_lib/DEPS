@@ -13,5 +13,4 @@ include_rules = [
   "+extensions/common",
   "+gpu/ipc/common",
   "+media/gpu/ipc",
-  "+remoting/host",
 ]

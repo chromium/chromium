@@ -9,7 +9,6 @@ source_set("base") {
     "//remoting/host/*",
     "//remoting/test/*",
     "//remoting/tools/*",
-    "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
 
   public = [

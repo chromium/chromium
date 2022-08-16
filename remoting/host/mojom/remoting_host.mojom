@@ -12,13 +12,6 @@ import "services/network/public/mojom/ip_endpoint.mojom";
 // The remote for this interface is owned in the high-privilege daemon process
 // and the receiver is bound in the low-privilege network process.
 interface RemotingHostControl {
-  // Instructs the network process to crash itself. This is called when a higher
-  // privilege process detects abnormal behavior in the host process. After
-  // crashing, the daemon process will automatically restart the network
-  // process.
-  [EnableIf=is_win]
-  CrashHostProcess(string function_name, string file_name, int32 line_number);
-
   // Provides host configuration details to the network process such as the
   // owner email and robot account to use for authentication to service APIs.
   // This method may be called multiple times as changes are detected in the

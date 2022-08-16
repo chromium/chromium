@@ -15,7 +15,6 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/base/host_exit_codes.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
 using base::win::ScopedHandle;
@@ -59,10 +58,9 @@ WorkerProcessLauncher::WorkerProcessLauncher(
     : ipc_handler_(ipc_handler),
       launcher_delegate_(std::move(launcher_delegate)),
       exit_code_(CONTROL_C_EXIT),
-      ipc_enabled_(false),
       kill_process_timeout_(base::Seconds(kKillProcessTimeoutSeconds)),
       launch_backoff_(&kDefaultBackoffPolicy) {
-  DCHECK(ipc_handler_ != nullptr);
+  DCHECK(ipc_handler_);
 
   LaunchWorker();
 }
@@ -78,15 +76,10 @@ void WorkerProcessLauncher::Crash(const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ask the worker process to crash voluntarily if it is still connected.
-  if (ipc_enabled_) {
-    Send(new ChromotingDaemonMsg_Crash(location.function_name(),
-                                       location.file_name(),
-                                       location.line_number()));
-  }
+  launcher_delegate_->CrashProcess(location);
 
-  // Close the channel and ignore any not yet processed messages.
+  // Close the channel and ignore pending messages.
   launcher_delegate_->CloseChannel();
-  ipc_enabled_ = false;
 
   // Give the worker process some time to crash.
   if (!kill_process_timer_.IsRunning()) {
@@ -95,26 +88,14 @@ void WorkerProcessLauncher::Crash(const base::Location& location) {
   }
 }
 
-void WorkerProcessLauncher::Send(IPC::Message* message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (ipc_enabled_) {
-    launcher_delegate_->Send(message);
-  } else {
-    delete message;
-  }
-}
-
 void WorkerProcessLauncher::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
-  DCHECK(ipc_enabled_);
   launcher_delegate_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 void WorkerProcessLauncher::OnProcessLaunched(
     base::win::ScopedHandle worker_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!ipc_enabled_);
   DCHECK(!launch_timer_.IsRunning());
   DCHECK(!process_watcher_.GetWatchedObject());
   DCHECK(!worker_process_.IsValid());
@@ -124,7 +105,6 @@ void WorkerProcessLauncher::OnProcessLaunched(
     return;
   }
 
-  ipc_enabled_ = true;
   worker_process_ = std::move(worker_process);
 }
 
@@ -134,21 +114,8 @@ void WorkerProcessLauncher::OnFatalError() {
   StopWorker();
 }
 
-bool WorkerProcessLauncher::OnMessageReceived(
-  const IPC::Message& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!ipc_enabled_)
-    return false;
-
-  return ipc_handler_->OnMessageReceived(message);
-}
-
 void WorkerProcessLauncher::OnChannelConnected(int32_t peer_pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!ipc_enabled_)
-    return;
 
   // This can result in |this| being deleted, so this call must be the last in
   // this method.
@@ -174,9 +141,6 @@ void WorkerProcessLauncher::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ipc_enabled_)
-    return;
-
   ipc_handler_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
 }
 
@@ -198,7 +162,6 @@ void WorkerProcessLauncher::OnObjectSignaled(HANDLE object) {
 
 void WorkerProcessLauncher::LaunchWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!ipc_enabled_);
   DCHECK(!kill_process_timer_.IsRunning());
   DCHECK(!launch_timer_.IsRunning());
   DCHECK(!process_watcher_.GetWatchedObject());
@@ -254,9 +217,6 @@ void WorkerProcessLauncher::StopWorker() {
     launch_backoff_.InformOfRequest(false);
     launch_result_timer_.Stop();
   }
-
-  // Ignore any remaining IPC messages.
-  ipc_enabled_ = false;
 
   // Stop monitoring the worker process.
   process_watcher_.StopWatching();

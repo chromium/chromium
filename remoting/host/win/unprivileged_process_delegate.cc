@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -324,16 +325,6 @@ void UnprivilegedProcessDelegate::LaunchProcess(
   ReportProcessLaunched(std::move(worker_process));
 }
 
-void UnprivilegedProcessDelegate::Send(IPC::Message* message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (channel_) {
-    channel_->Send(message);
-  } else {
-    delete message;
-  }
-}
-
 void UnprivilegedProcessDelegate::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   channel_->GetRemoteAssociatedInterface(std::move(receiver));
@@ -341,7 +332,16 @@ void UnprivilegedProcessDelegate::GetRemoteAssociatedInterface(
 
 void UnprivilegedProcessDelegate::CloseChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  worker_process_control_.reset();
   channel_.reset();
+}
+
+void UnprivilegedProcessDelegate::CrashProcess(const base::Location& location) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (worker_process_control_) {
+    worker_process_control_->CrashProcess(
+        location.function_name(), location.file_name(), location.line_number());
+  }
 }
 
 void UnprivilegedProcessDelegate::KillProcess() {
@@ -359,8 +359,8 @@ void UnprivilegedProcessDelegate::KillProcess() {
 bool UnprivilegedProcessDelegate::OnMessageReceived(
     const IPC::Message& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return event_handler_->OnMessageReceived(message);
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
+  return false;
 }
 
 void UnprivilegedProcessDelegate::OnChannelConnected(int32_t peer_pid) {
@@ -374,6 +374,8 @@ void UnprivilegedProcessDelegate::OnChannelConnected(int32_t peer_pid) {
     ReportFatalError();
     return;
   }
+
+  channel_->GetRemoteAssociatedInterface(&worker_process_control_);
 
   event_handler_->OnChannelConnected(peer_pid);
 }

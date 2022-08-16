@@ -23,4 +23,3 @@
 #endif
 #include "content/common/all_messages.h"
 #include "extensions/common/extension_message_generator.h"
-#include "remoting/host/chromoting_messages.h"

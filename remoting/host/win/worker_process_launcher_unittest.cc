@@ -21,12 +21,12 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
@@ -56,12 +56,12 @@ class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
 
   // WorkerProcessLauncher::Delegate interface.
   MOCK_METHOD(void, LaunchProcess, (WorkerProcessLauncher*), (override));
-  MOCK_METHOD(void, Send, (IPC::Message*), (override));
   MOCK_METHOD(void,
               GetRemoteAssociatedInterface,
               (mojo::GenericPendingAssociatedReceiver),
               (override));
   MOCK_METHOD(void, CloseChannel, (), (override));
+  MOCK_METHOD(void, CrashProcess, (const base::Location&), (override));
   MOCK_METHOD(void, KillProcess, (), (override));
 };
 
@@ -76,7 +76,6 @@ class MockIpcDelegate : public WorkerProcessIpcDelegate {
 
   // WorkerProcessIpcDelegate interface.
   MOCK_METHOD(void, OnChannelConnected, (int32_t), (override));
-  MOCK_METHOD(bool, OnMessageReceived, (const IPC::Message&), (override));
   MOCK_METHOD(void, OnPermanentError, (int), (override));
   MOCK_METHOD(void, OnWorkerProcessStopped, (), (override));
   MOCK_METHOD(void,
@@ -87,7 +86,8 @@ class MockIpcDelegate : public WorkerProcessIpcDelegate {
 
 };
 
-class MockWorkerListener : public IPC::Listener {
+class MockWorkerListener : public IPC::Listener,
+                           public mojom::WorkerProcessControl {
  public:
   MockWorkerListener() {}
 
@@ -96,22 +96,39 @@ class MockWorkerListener : public IPC::Listener {
 
   ~MockWorkerListener() override {}
 
-  MOCK_METHOD(void, OnCrash, (const std::string&, const std::string&, int));
+  // mojom::WorkerProcessControl mock.
+  MOCK_METHOD(void,
+              CrashProcess,
+              (const std::string&, const std::string&, int),
+              (override));
 
-  // IPC::Listener implementation
+  // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
+
+ private:
+  mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
+      this};
 };
 
 bool MockWorkerListener::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(MockWorkerListener, message)
-    IPC_MESSAGE_HANDLER(ChromotingDaemonMsg_Crash, OnCrash)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
+  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
+  return false;
+}
 
-  EXPECT_TRUE(handled);
-
-  return handled;
+void MockWorkerListener::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  ASSERT_EQ(interface_name, mojom::WorkerProcessControl::Name_);
+  mojo::PendingAssociatedReceiver<mojom::WorkerProcessControl> pending_receiver(
+      std::move(handle));
+  worker_process_control_.Bind(std::move(pending_receiver));
+  // Reset the receiver when the channel is closed to prevent any additional
+  // tasks from being posted. If we don't reset the receiver, many of the tests
+  // will appear to hang while waiting for the task runner to exit.
+  worker_process_control_.reset_on_disconnect();
 }
 
 }  // namespace
@@ -124,7 +141,6 @@ class WorkerProcessLauncherTest
   ~WorkerProcessLauncherTest() override;
 
   void SetUp() override;
-  void TearDown() override;
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -138,6 +154,7 @@ class WorkerProcessLauncherTest
       WorkerProcessLauncher* event_handler);
   void FailLaunchAndStopWorker(
       WorkerProcessLauncher* event_handler);
+  void CrashProcess(const base::Location& location);
   void KillProcess();
 
   void TerminateWorker(DWORD exit_code);
@@ -199,6 +216,7 @@ class WorkerProcessLauncherTest
 
   mojo::AssociatedRemote<mojom::DesktopSessionStateHandler>
       desktop_session_state_handler_;
+  mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
   // An event that is used to emulate the worker process's handle.
   ScopedHandle worker_process_;
@@ -217,29 +235,23 @@ void WorkerProcessLauncherTest::SetUp() {
       base::BindOnce(&WorkerProcessLauncherTest::QuitMainMessageLoop,
                      base::Unretained(this)));
 
-  // Set up process launcher delegate
+  // Set up process launcher delegate.
   launcher_delegate_ = std::make_unique<MockProcessLauncherDelegate>();
-  EXPECT_CALL(*launcher_delegate_, Send(_))
-      .Times(AnyNumber())
-      .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::SendToProcess));
   EXPECT_CALL(*launcher_delegate_, CloseChannel())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this,
                              &WorkerProcessLauncherTest::DisconnectServer));
+  EXPECT_CALL(*launcher_delegate_, CrashProcess(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::CrashProcess));
   EXPECT_CALL(*launcher_delegate_, KillProcess())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::KillProcess));
-
-  // Set up IPC delegate.
-  EXPECT_CALL(server_listener_, OnMessageReceived(_))
-      .Times(0);
-}
-
-void WorkerProcessLauncherTest::TearDown() {
 }
 
 bool WorkerProcessLauncherTest::OnMessageReceived(const IPC::Message& message) {
-  return event_handler_->OnMessageReceived(message);
+  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
+  return false;
 }
 
 void WorkerProcessLauncherTest::OnChannelConnected(int32_t peer_pid) {
@@ -281,6 +293,11 @@ void WorkerProcessLauncherTest::FailLaunchAndStopWorker(
                                         base::Unretained(this)));
 }
 
+void WorkerProcessLauncherTest::CrashProcess(const base::Location& location) {
+  worker_process_control_->CrashProcess(
+      location.function_name(), location.file_name(), location.line_number());
+}
+
 void WorkerProcessLauncherTest::KillProcess() {
   event_handler_ = nullptr;
 
@@ -305,6 +322,9 @@ void WorkerProcessLauncherTest::ConnectClient() {
   channel_client_->GetRemoteAssociatedInterface(
       &desktop_session_state_handler_);
 
+  worker_process_control_.reset();
+  channel_server_->GetRemoteAssociatedInterface(&worker_process_control_);
+
   // Pretend that |kLaunchSuccessTimeoutSeconds| passed since launching
   // the worker process. This will make the backoff algorithm think that this
   // launch attempt was successful and it will not delay the next launch.
@@ -315,8 +335,8 @@ void WorkerProcessLauncherTest::DisconnectClient() {
   if (channel_client_) {
     channel_client_->Close();
     channel_client_.reset();
-    desktop_session_state_handler_.reset();
   }
+  desktop_session_state_handler_.reset();
 }
 
 void WorkerProcessLauncherTest::DisconnectServer() {
@@ -324,15 +344,7 @@ void WorkerProcessLauncherTest::DisconnectServer() {
     channel_server_->Close();
     channel_server_.reset();
   }
-}
-
-void WorkerProcessLauncherTest::SendToProcess(IPC::Message* message) {
-  if (channel_server_) {
-    channel_server_->Send(message);
-    return;
-  }
-
-  delete message;
+  worker_process_control_.reset();
 }
 
 void WorkerProcessLauncherTest::SendFakeMessageToLauncher() {
@@ -356,7 +368,7 @@ void WorkerProcessLauncherTest::StopWorker() {
   launcher_.reset();
   DisconnectClient();
   client_channel_handle_.reset();
-  channel_server_.reset();
+  DisconnectServer();
   task_runner_ = nullptr;
 }
 
@@ -379,12 +391,12 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
   PROCESS_INFORMATION temp_process_info = {};
   ASSERT_TRUE(CreateProcess(nullptr,
                             notepad,
-                            nullptr,   // default process attributes
-                            nullptr,   // default thread attributes
-                            FALSE,  // do not inherit handles
+                            nullptr,  // default process attributes
+                            nullptr,  // default thread attributes
+                            FALSE,    // do not inherit handles
                             CREATE_SUSPENDED,
-                            nullptr,   // no environment
-                            nullptr,   // default current directory
+                            nullptr,  // no environment
+                            nullptr,  // default current directory
                             &startup_info,
                             &temp_process_info));
   base::win::ScopedProcessInformation process_information(temp_process_info);
@@ -530,7 +542,7 @@ TEST_F(WorkerProcessLauncherTest, Crash) {
       .WillOnce(InvokeWithoutArgs(this,
                                   &WorkerProcessLauncherTest::StopWorker));
 
-  EXPECT_CALL(client_listener_, OnCrash(_, _, _))
+  EXPECT_CALL(client_listener_, CrashProcess(_, _, _))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs([=]() { TerminateWorker(EXCEPTION_BREAKPOINT); }));
@@ -557,7 +569,7 @@ TEST_F(WorkerProcessLauncherTest, CrashAnyway) {
                                   &WorkerProcessLauncherTest::StopWorker));
 
   // Ignore the crash request and try send another message to the launcher.
-  EXPECT_CALL(client_listener_, OnCrash(_, _, _))
+  EXPECT_CALL(client_listener_, CrashProcess(_, _, _))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(
           this, &WorkerProcessLauncherTest::SendFakeMessageToLauncher));

@@ -26,7 +26,6 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_process.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
@@ -116,12 +115,8 @@ void MockDaemonListener::Disconnect() {
 }
 
 bool MockNetworkListener::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-
-  // TODO(alexeypa): handle received messages here.
-
-  EXPECT_TRUE(handled);
-  return handled;
+  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
+  return false;
 }
 
 }  // namespace
@@ -177,6 +172,7 @@ class DesktopProcessTest : public testing::Test {
 
   mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_;
   mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+  mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
   // Runs the daemon's end of the channel.
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -255,6 +251,7 @@ void DesktopProcessTest::DisconnectChannels() {
   daemon_listener_.Disconnect();
   desktop_session_agent_.reset();
   desktop_session_control_.reset();
+  worker_process_control_.reset();
 
   network_channel_.reset();
   io_task_runner_ = nullptr;
@@ -298,6 +295,8 @@ void DesktopProcessTest::RunDesktopProcess() {
                                  io_task_runner_, std::move(pipe.handle1));
   EXPECT_TRUE(desktop_process.Start(std::move(desktop_environment_factory)));
 
+  daemon_channel_->GetRemoteAssociatedInterface(&worker_process_control_);
+
   ui_task_runner = nullptr;
   run_loop.Run();
 }
@@ -316,8 +315,8 @@ void DesktopProcessTest::RunDeathTest() {
 
 void DesktopProcessTest::SendCrashRequest() {
   base::Location location = FROM_HERE;
-  daemon_channel_->Send(new ChromotingDaemonMsg_Crash(
-      location.function_name(), location.file_name(), location.line_number()));
+  worker_process_control_->CrashProcess(
+      location.function_name(), location.file_name(), location.line_number());
 }
 
 void DesktopProcessTest::SendStartSessionAgent() {

@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/ip_endpoint.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/protocol/transport.h"
 

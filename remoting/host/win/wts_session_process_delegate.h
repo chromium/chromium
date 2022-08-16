@@ -19,10 +19,6 @@ class CommandLine;
 class SingleThreadTaskRunner;
 } // namespace base
 
-namespace IPC {
-class Message;
-} // namespace base
-
 namespace remoting {
 
 // Implements logic for launching and monitoring a worker process in a different
@@ -46,10 +42,10 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
 
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
-  void Send(IPC::Message* message) override;
   void GetRemoteAssociatedInterface(
       mojo::GenericPendingAssociatedReceiver receiver) override;
   void CloseChannel() override;
+  void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
 
  private:

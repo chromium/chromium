@@ -4,7 +4,6 @@
 
 import("//components/nacl/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
-import("//remoting/remoting_enable.gni")
 
 static_library("ipc_message_lib") {
   testonly = true
@@ -35,7 +34,6 @@ static_library("ipc_message_lib") {
   if (enable_ppapi) {
     public_deps += [ "//ppapi/proxy:ipc" ]
   }
-  deps = [ "//remoting/host/base" ]
   sources = [
     "all_messages.h",
     "message_cracker.h",
@@ -48,8 +46,5 @@ static_library("ipc_message_lib") {
   ]
   if (enable_nacl) {
     public_deps += [ "//components/nacl/common" ]
-  }
-  if (enable_remoting) {
-    public_deps += [ "//remoting/host" ]
   }
 }

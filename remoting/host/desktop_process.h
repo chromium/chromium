@@ -34,7 +34,8 @@ class DesktopEnvironmentFactory;
 class DesktopSessionAgent;
 
 class DesktopProcess : public DesktopSessionAgent::Delegate,
-                       public IPC::Listener {
+                       public IPC::Listener,
+                       public mojom::WorkerProcessControl {
  public:
   DesktopProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                  scoped_refptr<AutoThreadTaskRunner> input_task_runner,
@@ -55,6 +56,14 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
+
+  // mojom::WorkerProcessControl implementation.
+  void CrashProcess(const std::string& function_name,
+                    const std::string& file_name,
+                    int line_number) override;
 
   // Injects Secure Attention Sequence.
   void InjectSas();
@@ -68,13 +77,6 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
       std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory);
 
  private:
-  // Crashes the process in response to a daemon's request. The daemon passes
-  // the location of the code that detected the fatal error resulted in this
-  // request. See the declaration of ChromotingDaemonMsg_Crash message.
-  void OnCrash(const std::string& function_name,
-               const std::string& file_name,
-               const int& line_number);
-
   // Task runner on which public methods of this class should be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;
 
@@ -100,6 +102,9 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
 
   mojo::AssociatedRemote<mojom::DesktopSessionRequestHandler>
       desktop_session_request_handler_;
+
+  mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
+      this};
 
   base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
 };

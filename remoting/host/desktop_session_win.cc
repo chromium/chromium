@@ -28,12 +28,9 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_platform_file.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/host_main.h"
@@ -604,15 +601,6 @@ void DesktopSessionWin::OnChannelConnected(int32_t peer_pid) {
   ReportElapsedTime("channel connected");
 
   VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
-}
-
-bool DesktopSessionWin::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  LOG(ERROR) << "Received unexpected IPC type: " << message.type();
-  CrashDesktopProcess(FROM_HERE);
-
-  return false;
 }
 
 void DesktopSessionWin::OnPermanentError(int exit_code) {

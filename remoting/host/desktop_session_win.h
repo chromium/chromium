@@ -96,7 +96,6 @@ class DesktopSessionWin : public DesktopSession,
 
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnPermanentError(int exit_code) override;
   void OnWorkerProcessStopped() override;
   void OnAssociatedInterfaceRequest(

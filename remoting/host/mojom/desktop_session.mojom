@@ -566,3 +566,13 @@ interface DesktopSessionStateHandler {
   // calling this method.
   DisconnectSession(ProtocolErrorCode error_code);
 };
+
+// Allows the worker process launcher to send messages to a child process.
+// The remote for this interface is owned in the high-privilege daemon process
+// which uses the WorkerProcessLauncher class to spawn the low-privilege network
+// process or high-privilege desktop integration process. The receiver is bound
+// in the child process.
+interface WorkerProcessControl {
+  // Instructs the receiving process to crash itself.
+  CrashProcess(string function_name, string file_name, int32 line_number);
+};

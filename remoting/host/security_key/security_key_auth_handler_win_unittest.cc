@@ -15,7 +15,6 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/security_key/fake_security_key_ipc_client.h"
 #include "remoting/host/security_key/fake_security_key_ipc_server.h"

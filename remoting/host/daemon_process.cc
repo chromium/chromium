@@ -23,7 +23,6 @@
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/branding.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/host_event_logger.h"
@@ -82,15 +81,6 @@ void DaemonProcess::OnChannelConnected(int32_t peer_pid) {
   SendHostConfigToNetworkProcess(serialized_config_);
 }
 
-bool DaemonProcess::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-
-  LOG(ERROR) << "Received unexpected IPC type: " << message.type();
-  CrashNetworkProcess(FROM_HERE);
-
-  return false;
-}
-
 void DaemonProcess::OnPermanentError(int exit_code) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
   DCHECK(kMinPermanentErrorExitCode <= exit_code &&
@@ -113,7 +103,7 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
   // multiple times as that would indicate a logic error (or that the calling
   // process had possibly been compromised). In the case of the network process,
   // which handles network traffic and encoding, it's possible that there is a
-  // protocol error or OS driver fault which cases the process to crash. When
+  // protocol error or OS driver fault which causes the process to crash. When
   // that occurs, the daemon process will launch a new instance of the network
   // process (which is handled outside of this class) and that new instance will
   // attempt to retrieve the set of associated interfaces it needs to do its
