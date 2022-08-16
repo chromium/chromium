@@ -8744,7 +8744,8 @@ void RenderFrameHostImpl::CommitNavigation(
 
   bool is_srcdoc = common_params->url.IsAboutSrcdoc();
   if (is_srcdoc) {
-    commit_params->srcdoc_value = frame_tree_node_->srcdoc_value();
+    commit_params->srcdoc_value =
+        navigation_request->frame_tree_node()->srcdoc_value();
     // Main frame srcdoc navigation are meaningless. They are blocked whenever a
     // navigation attempt is made. It shouldn't reach CommitNavigation.
     CHECK(!is_main_frame());
@@ -9131,7 +9132,9 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(container_info), std::move(prefetch_loader_factory),
         manifest_policy, std::move(policy_container),
         devtools_navigation_token);
-    frame_tree_node_->navigator().LogCommitNavigationSent();
+    navigation_request->frame_tree_node()
+        ->navigator()
+        .LogCommitNavigationSent();
 
     // |remote_object| is an associated interface ptr, so calls can't be made on
     // it until its request endpoint is sent. Now that the request endpoint was
