@@ -1206,18 +1206,19 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", email_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_beta);
-  dict.SetStringKey("email", email_beta);
-  dict.SetStringKey("gaia", gaia_beta);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", email_beta);
+  dict.Set("email", email_beta);
+  dict.Set("gaia", gaia_beta);
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1252,18 +1253,19 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", email_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_beta);
-  dict.SetStringKey("email", email_beta);
-  dict.SetStringKey("gaia", "");
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", email_beta);
+  dict.Set("email", email_beta);
+  dict.Set("gaia", "");
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1299,25 +1301,26 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", email_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_beta);
-  dict.SetStringKey("email", email_beta);
-  dict.SetStringKey("gaia", gaia_beta);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", email_beta);
+  dict.Set("email", email_beta);
+  dict.Set("gaia", gaia_beta);
+  update_list.Append(std::move(dict));
 
   // Succeed miggrated account.
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", gaia_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", gaia_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1653,18 +1656,19 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", gaia_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", gaia_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", gaia_beta);
-  dict.SetStringKey("email", email_beta);
-  dict.SetStringKey("gaia", gaia_beta);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", gaia_beta);
+  dict.Set("email", email_beta);
+  dict.Set("gaia", gaia_beta);
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1682,18 +1686,19 @@ TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", email_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_beta);
-  dict.SetStringKey("email", email_beta);
-  dict.SetStringKey("gaia", gaia_beta);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", email_beta);
+  dict.Set("email", email_beta);
+  dict.Set("gaia", gaia_beta);
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1711,20 +1716,21 @@ TEST_F(AccountTrackerServiceTest,
   const std::string gaia_foobar = AccountKeyToGaiaId(kAccountKeyFooDotBar);
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  base::Value::List& update_list = update->GetList();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_alpha);
-  dict.SetStringKey("email", email_alpha);
-  dict.SetStringKey("gaia", gaia_alpha);
-  update->Append(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("account_id", email_alpha);
+  dict.Set("email", email_alpha);
+  dict.Set("gaia", gaia_alpha);
+  update_list.Append(std::move(dict));
 
   // This account is invalid because the account_id is a non-canonicalized
   // version of the email.
-  dict = base::Value(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email_foobar);
-  dict.SetStringKey("email", email_foobar);
-  dict.SetStringKey("gaia", gaia_foobar);
-  update->Append(std::move(dict));
+  dict = base::Value::Dict();
+  dict.Set("account_id", email_foobar);
+  dict.Set("email", email_foobar);
+  dict.Set("gaia", gaia_foobar);
+  update_list.Append(std::move(dict));
 
   base::HistogramTester tester;
   ResetAccountTracker();
@@ -1756,20 +1762,21 @@ TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .capabilities.can_offer_extended_chrome_sync_promos());
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  ASSERT_FALSE(update->GetListDeprecated().empty());
-  base::Value& dict = update->GetListDeprecated()[0];
-  ASSERT_TRUE(dict.is_dict());
+  base::Value::List& update_list = update->GetList();
+  ASSERT_FALSE(update_list.empty());
+  base::Value::Dict* dict = update_list[0].GetIfDict();
+  ASSERT_TRUE(dict);
   const char kDeprecatedCapabilityKey[] =
       "accountcapabilities.can_offer_extended_chrome_sync_promos";
   const char kNewCapabilityKey[] =
       "accountcapabilities.accountcapabilities/gi2tklldmfya";
   // The deprecated key is not set.
-  EXPECT_FALSE(dict.FindIntPath(kDeprecatedCapabilityKey));
-  EXPECT_TRUE(dict.FindIntPath(kNewCapabilityKey));
+  EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
+  EXPECT_TRUE(dict->FindIntByDottedPath(kNewCapabilityKey));
 
   // Set the capability using the deprecated key, and reload the account.
-  dict.SetIntPath(kDeprecatedCapabilityKey, 1);
-  dict.RemovePath(kNewCapabilityKey);
+  dict->SetByDottedPath(kDeprecatedCapabilityKey, 1);
+  dict->RemoveByDottedPath(kNewCapabilityKey);
   ClearAccountTrackerEvents();
   ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
   EXPECT_TRUE(CheckAccountTrackerEvents(
@@ -1785,9 +1792,9 @@ TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
   EXPECT_EQ(signin::Tribool::kTrue,
             infos[0].capabilities.can_offer_extended_chrome_sync_promos());
   // The deprecated key has been removed.
-  EXPECT_FALSE(dict.FindIntPath(kDeprecatedCapabilityKey));
+  EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
   // The new key has been written.
-  absl::optional<int> new_key = dict.FindIntPath(kNewCapabilityKey);
+  absl::optional<int> new_key = dict->FindIntByDottedPath(kNewCapabilityKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }

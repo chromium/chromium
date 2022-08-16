@@ -44,23 +44,23 @@
 #endif
 
 namespace {
-const char kAccountKeyPath[] = "account_id";
-const char kAccountEmailPath[] = "email";
-const char kAccountGaiaPath[] = "gaia";
-const char kAccountHostedDomainPath[] = "hd";
-const char kAccountFullNamePath[] = "full_name";
-const char kAccountGivenNamePath[] = "given_name";
-const char kAccountLocalePath[] = "locale";
-const char kAccountPictureURLPath[] = "picture_url";
-const char kLastDownloadedImageURLWithSizePath[] =
+const char kAccountKeyKey[] = "account_id";
+const char kAccountEmailKey[] = "email";
+const char kAccountGaiaKey[] = "gaia";
+const char kAccountHostedDomainKey[] = "hd";
+const char kAccountFullNameKey[] = "full_name";
+const char kAccountGivenNameKey[] = "given_name";
+const char kAccountLocaleKey[] = "locale";
+const char kAccountPictureURLKey[] = "picture_url";
+const char kLastDownloadedImageURLWithSizeKey[] =
     "last_downloaded_image_url_with_size";
-const char kAccountChildAttributePath[] = "is_supervised_child";
-const char kAdvancedProtectionAccountStatusPath[] =
+const char kAccountChildAttributeKey[] = "is_supervised_child";
+const char kAdvancedProtectionAccountStatusKey[] =
     "is_under_advanced_protection";
 
 // This key is deprecated since 2021/07 and should be removed after migration.
-// It was replaced by kAccountChildAttributePath.
-const char kDeprecatedChildStatusPath[] = "is_child_account";
+// It was replaced by kAccountChildAttributeKey.
+const char kDeprecatedChildStatusKey[] = "is_child_account";
 
 // This key is deprecated since 2022/02 and should be removed after migration.
 // It was replaced by GetCapabilityPrefPath(capability_name) method that derives
@@ -121,11 +121,11 @@ std::string GetCapabilityPrefPath(base::StringPiece capability_name) {
   return base::StrCat({"accountcapabilities.", capability_name});
 }
 
-void SetAccountCapabilityState(base::Value* value,
+void SetAccountCapabilityState(base::Value::Dict& value,
                                base::StringPiece capability_name,
                                signin::Tribool state) {
-  value->SetIntPath(GetCapabilityPrefPath(capability_name),
-                    static_cast<int>(state));
+  value.SetByDottedPath(GetCapabilityPrefPath(capability_name),
+                        static_cast<int>(state));
 }
 
 signin::Tribool ParseTribool(absl::optional<int> int_value) {
@@ -144,17 +144,17 @@ signin::Tribool ParseTribool(absl::optional<int> int_value) {
   }
 }
 
-signin::Tribool FindAccountCapabilityState(const base::Value& value,
+signin::Tribool FindAccountCapabilityState(const base::Value::Dict& dict,
                                            base::StringPiece name) {
   absl::optional<int> capability =
-      value.FindIntPath(GetCapabilityPrefPath(name));
+      dict.FindIntByDottedPath(GetCapabilityPrefPath(name));
   return ParseTribool(capability);
 }
 
-void GetString(const base::Value& dict,
+void GetString(const base::Value::Dict& dict,
                base::StringPiece key,
                std::string& result) {
-  if (const std::string* value = dict.FindStringKey(key)) {
+  if (const std::string* value = dict.FindString(key)) {
     result = *value;
   }
 }
@@ -555,15 +555,15 @@ void AccountTrackerService::OnAccountImageUpdated(
   if (!success || !pref_service_)
     return;
 
-  base::DictionaryValue* dict = nullptr;
+  base::Value::Dict* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetListDeprecated().size();
-       ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetListDeprecated()[i];
-    if (dict_value.is_dict()) {
-      dict = static_cast<base::DictionaryValue*>(&dict_value);
-      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+  base::Value::List& list = update->GetList();
+  for (base::Value& value : list) {
+    base::Value::Dict* maybe_dict = value.GetIfDict();
+    if (maybe_dict) {
+      const std::string* account_key = maybe_dict->FindString(kAccountKeyKey);
       if (account_key && *account_key == account_id.ToString()) {
+        dict = maybe_dict;
         break;
       }
     }
@@ -572,7 +572,7 @@ void AccountTrackerService::OnAccountImageUpdated(
   if (!dict) {
     return;
   }
-  dict->SetString(kLastDownloadedImageURLWithSizePath, image_url_with_size);
+  dict->Set(kLastDownloadedImageURLWithSizeKey, image_url_with_size);
 }
 
 void AccountTrackerService::RemoveAccountImageFromDisk(
@@ -588,12 +588,9 @@ void AccountTrackerService::LoadFromPrefs() {
       pref_service_->GetValueList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
   for (size_t i = 0; i < list.size(); ++i) {
-    const base::Value& dict_value = list[i];
-    if (dict_value.is_dict()) {
-      const base::DictionaryValue& dict =
-          base::Value::AsDictionaryValue(dict_value);
-      if (const std::string* account_key =
-              dict.FindStringKey(kAccountKeyPath)) {
+    const base::Value::Dict* dict = list[i].GetIfDict();
+    if (dict) {
+      if (const std::string* account_key = dict->FindString(kAccountKeyKey)) {
         // Ignore incorrectly persisted non-canonical account ids.
         if (account_key->find('@') != std::string::npos &&
             *account_key != gaia::CanonicalizeEmail(*account_key)) {
@@ -605,58 +602,55 @@ void AccountTrackerService::LoadFromPrefs() {
         StartTrackingAccount(account_id);
         AccountInfo& account_info = accounts_[account_id];
 
-        GetString(dict, kAccountGaiaPath, account_info.gaia);
-        GetString(dict, kAccountEmailPath, account_info.email);
-        GetString(dict, kAccountHostedDomainPath, account_info.hosted_domain);
-        GetString(dict, kAccountFullNamePath, account_info.full_name);
-        GetString(dict, kAccountGivenNamePath, account_info.given_name);
-        GetString(dict, kAccountLocalePath, account_info.locale);
-        GetString(dict, kAccountPictureURLPath, account_info.picture_url);
-        GetString(dict, kLastDownloadedImageURLWithSizePath,
+        GetString(*dict, kAccountGaiaKey, account_info.gaia);
+        GetString(*dict, kAccountEmailKey, account_info.email);
+        GetString(*dict, kAccountHostedDomainKey, account_info.hosted_domain);
+        GetString(*dict, kAccountFullNameKey, account_info.full_name);
+        GetString(*dict, kAccountGivenNameKey, account_info.given_name);
+        GetString(*dict, kAccountLocaleKey, account_info.locale);
+        GetString(*dict, kAccountPictureURLKey, account_info.picture_url);
+        GetString(*dict, kLastDownloadedImageURLWithSizeKey,
                   account_info.last_downloaded_image_url_with_size);
 
         if (absl::optional<bool> is_child_status =
-                dict.FindBoolKey(kDeprecatedChildStatusPath)) {
+                dict->FindBool(kDeprecatedChildStatusKey)) {
           account_info.is_child_account = is_child_status.value()
                                               ? signin::Tribool::kTrue
                                               : signin::Tribool::kFalse;
-          // Migrate to kAccountChildAttributePath.
+          // Migrate to kAccountChildAttributeKey.
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value* update_dict = &update->GetListDeprecated()[i];
-          DCHECK(update_dict->is_dict());
-          update_dict->SetIntPath(
-              kAccountChildAttributePath,
-              static_cast<int>(account_info.is_child_account));
-          update_dict->RemoveKey(kDeprecatedChildStatusPath);
+          base::Value::Dict& update_dict = update->GetList()[i].GetDict();
+          update_dict.Set(kAccountChildAttributeKey,
+                          static_cast<int>(account_info.is_child_account));
+          update_dict.Remove(kDeprecatedChildStatusKey);
         } else {
           account_info.is_child_account =
-              ParseTribool(dict.FindIntPath(kAccountChildAttributePath));
+              ParseTribool(dict->FindInt(kAccountChildAttributeKey));
         }
 
         absl::optional<bool> is_under_advanced_protection =
-            dict.FindBoolKey(kAdvancedProtectionAccountStatusPath);
+            dict->FindBool(kAdvancedProtectionAccountStatusKey);
         if (is_under_advanced_protection.has_value()) {
           account_info.is_under_advanced_protection =
               is_under_advanced_protection.value();
         }
 
         if (absl::optional<int> can_offer_extended_chrome_sync_promos =
-                dict.FindIntPath(
+                dict->FindIntByDottedPath(
                     kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
           // Migrate to Capability names based pref paths.
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value* update_dict = &update->GetListDeprecated()[i];
-          DCHECK(update_dict->is_dict());
+          base::Value::Dict& update_dict = update->GetList()[i].GetDict();
           SetAccountCapabilityState(
               update_dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
               ParseTribool(can_offer_extended_chrome_sync_promos));
-          update_dict->RemovePath(
+          update_dict.RemoveByDottedPath(
               kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
         }
 
         for (const std::string& name :
              AccountCapabilities::GetSupportedAccountCapabilityNames()) {
-          switch (FindAccountCapabilityState(dict, name)) {
+          switch (FindAccountCapabilityState(*dict, name)) {
             case signin::Tribool::kUnknown:
               account_info.capabilities.capabilities_map_.erase(name);
               break;
@@ -708,47 +702,45 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   if (!pref_service_)
     return;
 
-  base::DictionaryValue* dict = nullptr;
+  base::Value::Dict* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetListDeprecated().size();
-       ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetListDeprecated()[i];
-    if (dict_value.is_dict()) {
-      dict = static_cast<base::DictionaryValue*>(&dict_value);
-      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+  base::Value::List& list = update->GetList();
+  for (base::Value& value : list) {
+    base::Value::Dict* maybe_dict = value.GetIfDict();
+    if (maybe_dict) {
+      const std::string* account_key = maybe_dict->FindString(kAccountKeyKey);
       if (account_key && *account_key == account_info.account_id.ToString()) {
+        dict = maybe_dict;
         break;
       }
     }
   }
 
   if (!dict) {
-    update->Append(base::Value(base::Value::Type::DICTIONARY));
-    base::Value& dict_value = update->GetListDeprecated().back();
-    DCHECK(dict_value.is_dict());
-    dict = static_cast<base::DictionaryValue*>(&dict_value);
-    dict->SetString(kAccountKeyPath, account_info.account_id.ToString());
+    list.Append(base::Value::Dict());
+    dict = &list.back().GetDict();
+    dict->Set(kAccountKeyKey, account_info.account_id.ToString());
   }
 
-  dict->SetString(kAccountEmailPath, account_info.email);
-  dict->SetString(kAccountGaiaPath, account_info.gaia);
-  dict->SetString(kAccountHostedDomainPath, account_info.hosted_domain);
-  dict->SetString(kAccountFullNamePath, account_info.full_name);
-  dict->SetString(kAccountGivenNamePath, account_info.given_name);
-  dict->SetString(kAccountLocalePath, account_info.locale);
-  dict->SetString(kAccountPictureURLPath, account_info.picture_url);
-  dict->SetIntPath(kAccountChildAttributePath,
-                   static_cast<int>(account_info.is_child_account));
-  dict->SetBoolean(kAdvancedProtectionAccountStatusPath,
-                   account_info.is_under_advanced_protection);
-  // |kLastDownloadedImageURLWithSizePath| should only be set after the GAIA
+  dict->Set(kAccountEmailKey, account_info.email);
+  dict->Set(kAccountGaiaKey, account_info.gaia);
+  dict->Set(kAccountHostedDomainKey, account_info.hosted_domain);
+  dict->Set(kAccountFullNameKey, account_info.full_name);
+  dict->Set(kAccountGivenNameKey, account_info.given_name);
+  dict->Set(kAccountLocaleKey, account_info.locale);
+  dict->Set(kAccountPictureURLKey, account_info.picture_url);
+  dict->Set(kAccountChildAttributeKey,
+            static_cast<int>(account_info.is_child_account));
+  dict->Set(kAdvancedProtectionAccountStatusKey,
+            account_info.is_under_advanced_protection);
+  // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
-  // |kLastDownloadedImageURLWithSizePath| matches the picture on disk.
+  // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.
   for (const std::string& name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     signin::Tribool capability_state =
         account_info.capabilities.GetCapabilityByName(name);
-    SetAccountCapabilityState(dict, name, capability_state);
+    SetAccountCapabilityState(*dict, name, capability_state);
   }
 }
 
@@ -758,10 +750,10 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
 
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   const std::string account_id = account_info.account_id.ToString();
-  update->EraseListValueIf([&account_id](const base::Value& value) {
+  update->GetList().EraseIf([&account_id](const base::Value& value) {
     if (!value.is_dict())
       return false;
-    const std::string* account_key = value.FindStringKey(kAccountKeyPath);
+    const std::string* account_key = value.GetDict().FindString(kAccountKeyKey);
     return account_key && *account_key == account_id;
   });
 }
