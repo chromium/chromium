@@ -58,6 +58,9 @@ enum ShellWindowId {
   // The wallpaper (desktop background) window.
   kShellWindowId_WallpaperContainer,
 
+  // The glanceables ("welcome back") window container.
+  kShellWindowId_GlanceablesContainer,
+
   // The containers for standard top-level windows per active desks.
   // * Notes:
   //   - There are no direct mapping between `kShellWindowId_DeskContainerA` and

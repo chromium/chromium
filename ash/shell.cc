@@ -33,6 +33,7 @@
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/dbus/ash_dbus_services.h"
@@ -66,6 +67,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
@@ -588,6 +590,10 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       native_cursor_manager_(nullptr) {
   AccelerometerReader::GetInstance()->Initialize();
 
+  if (features::AreGlanceablesEnabled()) {
+    glanceables_controller_ = std::make_unique<GlanceablesController>();
+  }
+
   login_screen_controller_ =
       std::make_unique<LoginScreenController>(system_tray_notifier_.get());
   display_manager_ = ScreenAsh::CreateDisplayManager();
@@ -712,6 +718,11 @@ Shell::~Shell() {
 
   // Accelerometer file reader stops listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StopListenToTabletModeController();
+
+  if (features::AreGlanceablesEnabled()) {
+    // Close all glanceables so that all widgets are destroyed.
+    glanceables_controller_->DestroyUi();
+  }
 
   // Destroy |ambient_controller_| before |assistant_controller_|.
   ambient_controller_.reset();
@@ -1596,6 +1607,12 @@ void Shell::OnFirstSessionStarted() {
   // the session starts.
   app_list_feature_usage_metrics_ =
       std::make_unique<AppListFeatureUsageMetrics>();
+
+  if (features::AreGlanceablesEnabled()) {
+    // Show glanceables after signin.
+    // TODO(crbug.com/1353119): Show only when session restore would trigger.
+    glanceables_controller_->CreateUi();
+  }
 }
 
 void Shell::OnSessionStateChanged(session_manager::SessionState state) {
