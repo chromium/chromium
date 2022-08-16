@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -324,8 +325,12 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
-    if (const CSSValue* value =
-            CSSVariableParser::ParseDeclarationValue({range}, false, context)) {
+    CSSTokenizedValue tokenized_value{range};
+    if (CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value)) {
+      return absl::nullopt;
+    }
+    if (const CSSValue* value = CSSVariableParser::ParseDeclarationValue(
+            tokenized_value, false, context)) {
       while (!range.AtEnd())
         range.Consume();
       return MediaQueryExpValue(*value);

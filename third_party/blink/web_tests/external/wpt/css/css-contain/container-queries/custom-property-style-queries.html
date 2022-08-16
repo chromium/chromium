@@ -94,3 +94,23 @@
   test_evaluation('outer style(--outer-space-after:true )', true);
   test_evaluation('outer style(--outer-space-after: true )', true);
 </script>
+
+<style>
+  #important {
+    --foo: bar;
+  }
+  @container style(--foo: bar) {
+    #important-child { color: green; }
+  }
+  @container style(--foo: bar !important) {
+    #important-child { color: red; }
+  }
+</style>
+<div id="important">
+  <div id="important-child"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#important-child")).color, "rgb(0, 128, 0)");
+  }, "Query custom property with !important declaration");
+</script>

@@ -1571,13 +1571,14 @@ bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
       tokenized_value.range = tokenized_value.range.MakeSubRange(first, last);
 
       // Truncate the text to remove the delimiter and everything after it.
-      DCHECK_NE(tokenized_value.text.ToString().find('!'), kNotFound);
-      unsigned truncated_length = tokenized_value.text.length() - 1;
-      while (tokenized_value.text[truncated_length] != '!')
-        --truncated_length;
-      tokenized_value.text =
-          StringView(tokenized_value.text, 0, truncated_length);
-
+      if (!tokenized_value.text.IsEmpty()) {
+        DCHECK_NE(tokenized_value.text.ToString().find('!'), kNotFound);
+        unsigned truncated_length = tokenized_value.text.length() - 1;
+        while (tokenized_value.text[truncated_length] != '!')
+          --truncated_length;
+        tokenized_value.text =
+            StringView(tokenized_value.text, 0, truncated_length);
+      }
       return true;
     }
   }
