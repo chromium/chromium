@@ -29,7 +29,6 @@ WORKER_TEST_GLOB_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                                      'third_party', 'dawn', 'webgpu-cts',
                                      'worker_test_globs.txt')
 
-MULTI_PAYLOAD_TIMEOUT = 0.5
 TEST_RUNS_BETWEEN_CLEANUP = 1000
 WEBSOCKET_PORT_TIMEOUT_SECONDS = 10
 WEBSOCKET_SETUP_TIMEOUT_SECONDS = 5
@@ -37,6 +36,11 @@ DEFAULT_TEST_TIMEOUT = 5
 SLOW_MULTIPLIER = 5
 ASAN_MULTIPLIER = 4
 BACKEND_VALIDATION_MULTIPLIER = 6
+
+# In most cases, this should be very fast, but the first test run after a page
+# load can be slow.
+MESSAGE_TIMEOUT_TEST_STARTED = 10
+MESSAGE_TIMEOUT_TEST_LOG = 0.5
 
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
@@ -296,17 +300,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       log_str)
       elif status == 'fail':
         self.fail(log_str)
-    except asyncio.TimeoutError:
-      if JAVASCRIPT_DURATION not in self.additionalTags:
-        self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % timeout
-      raise
     except websockets.exceptions.ConnectionClosedOK as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
     finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
-  def HandleMessageLoop(self, timeout: float) -> WebGpuTestResult:
+  def HandleMessageLoop(self, test_timeout: float) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
 
     See //docs/gpu/webgpu_cts_harness_message_protocol.md for more information
@@ -316,8 +316,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     heartbeat mechanism is implemented.
 
     Args:
-      timeout: A float denoting the number of seconds to the test is allowed
-          to wait between test messages before timing out.
+      test_timeout: A float denoting the number of seconds to wait for the test
+          to finish before timing out.
 
     Returns:
       A filled WebGpuTestResult instance.
@@ -328,47 +328,62 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         MESSAGE_TYPE_TEST_STATUS: False,
         MESSAGE_TYPE_TEST_LOG: False,
     }
+    timeout = MESSAGE_TIMEOUT_TEST_STARTED
     # Loop until we receive a message saying that the test is finished. This
     # currently has no practical effect, but it is an intermediate step to
     # supporting a heartbeat mechanism. See crbug.com/1340602.
-    while True:
-      future = asyncio.run_coroutine_threadsafe(
-          asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(), timeout),
-          WebGpuCtsIntegrationTest.event_loop)
-      response = future.result()
-      response = json.loads(response)
-      response_type = response['type']
+    try:
+      while True:
+        future = asyncio.run_coroutine_threadsafe(
+            asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
+                             timeout), WebGpuCtsIntegrationTest.event_loop)
+        response = future.result()
+        response = json.loads(response)
+        response_type = response['type']
 
-      if response_type == MESSAGE_TYPE_TEST_STARTED:
-        # If we ever want the adapter information from WebGPU, we would
-        # retrieve it from the message here. However, to avoid pylint
-        # complaining about unused variables, don't grab it until we actually
-        # need it.
-        VerifyMessageOrderTestStarted(message_state)
+        if response_type == MESSAGE_TYPE_TEST_STARTED:
+          # If we ever want the adapter information from WebGPU, we would
+          # retrieve it from the message here. However, to avoid pylint
+          # complaining about unused variables, don't grab it until we actually
+          # need it.
+          VerifyMessageOrderTestStarted(message_state)
+          timeout = test_timeout
 
-      elif response_type == MESSAGE_TYPE_TEST_HEARTBEAT:
-        VerifyMessageOrderTestHeartbeat(message_state)
-        continue
+        elif response_type == MESSAGE_TYPE_TEST_HEARTBEAT:
+          VerifyMessageOrderTestHeartbeat(message_state)
+          continue
 
-      elif response_type == MESSAGE_TYPE_TEST_STATUS:
-        VerifyMessageOrderTestStatus(message_state)
-        result.status = response['status']
-        js_duration = response['js_duration_ms'] / 1000
-        # Specify the precision to avoid scientific notation. Nanoseconds
-        # should be more precision than we need anyways.
-        self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
+        elif response_type == MESSAGE_TYPE_TEST_STATUS:
+          VerifyMessageOrderTestStatus(message_state)
+          result.status = response['status']
+          js_duration = response['js_duration_ms'] / 1000
+          # Specify the precision to avoid scientific notation. Nanoseconds
+          # should be more precision than we need anyways.
+          self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
+          timeout = MESSAGE_TIMEOUT_TEST_LOG
 
-      elif response_type == MESSAGE_TYPE_TEST_LOG:
-        VerifyMessageOrderTestLog(message_state)
-        result.log_pieces.append(response['log'])
+        elif response_type == MESSAGE_TYPE_TEST_LOG:
+          VerifyMessageOrderTestLog(message_state)
+          result.log_pieces.append(response['log'])
 
-      elif response_type == MESSAGE_TYPE_TEST_FINISHED:
-        VerifyMessageOrderTestFinished(message_state)
-        break
+        elif response_type == MESSAGE_TYPE_TEST_FINISHED:
+          VerifyMessageOrderTestFinished(message_state)
+          break
 
-      else:
-        raise WebGpuMessageProtocolError('Received unknown message type %s' %
-                                         response_type)
+        else:
+          raise WebGpuMessageProtocolError('Received unknown message type %s' %
+                                           response_type)
+    except asyncio.TimeoutError as e:
+      # Report the max timeout if the JavaScript code actually timed out (i.e.
+      # we were between TEST_STARTED and TEST_STATUS), otherwise don't modify
+      # anything.
+      if (message_state[MESSAGE_TYPE_TEST_STARTED]
+          and not message_state[MESSAGE_TYPE_TEST_STATUS]
+          and JAVASCRIPT_DURATION not in self.additionalTags):
+        self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % test_timeout
+      raise WebGpuTimeoutError(
+          'Timed out waiting %.3f seconds for a message. Message state: %s' %
+          (timeout, message_state)) from e
     return result
 
   @classmethod
@@ -447,6 +462,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
 
 class WebGpuMessageProtocolError(RuntimeError):
+  pass
+
+
+class WebGpuTimeoutError(RuntimeError):
   pass
 
 
