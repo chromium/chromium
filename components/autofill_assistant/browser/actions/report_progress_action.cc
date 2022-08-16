@@ -5,9 +5,22 @@
 #include "components/autofill_assistant/browser/actions/report_progress_action.h"
 
 #include "base/callback.h"
+#include "base/metrics/field_trial.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 
 namespace autofill_assistant {
+
+namespace {
+
+// When starting a report progress action, a synthetic field trial is recorded.
+// This is used to allow tracking stability metrics as we start using this new
+// action. Note there is no control group - this is purely for stability
+// tracking.
+const char kReportProgressSyntheticFieldTrialName[] =
+    "AutofillAssistantReportProgressAction";
+const char kReportProgressEnabledGroup[] = "Enabled";
+
+}  // namespace
 
 ReportProgressAction::ReportProgressAction(ActionDelegate* delegate,
                                            const ActionProto& proto)
@@ -17,6 +30,8 @@ ReportProgressAction::~ReportProgressAction() = default;
 
 void ReportProgressAction::InternalProcessAction(
     ProcessActionCallback callback) {
+  base::FieldTrialList::CreateFieldTrial(kReportProgressSyntheticFieldTrialName,
+                                         kReportProgressEnabledGroup);
   delegate_->ReportProgress(
       proto_.report_progress().payload(),
       base::BindOnce(&ReportProgressAction::OnReportProgress,
