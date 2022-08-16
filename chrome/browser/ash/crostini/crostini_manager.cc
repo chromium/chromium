@@ -2048,6 +2048,11 @@ void CrostiniManager::LaunchContainerApplication(
       files.begin(), files.end(),
       google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
 
+  std::vector<vm_tools::cicerone::ContainerFeature> container_features =
+      GetContainerFeatures();
+  request.mutable_container_features()->Add(container_features.begin(),
+                                            container_features.end());
+
   GetCiceroneClient()->LaunchContainerApplication(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnLaunchContainerApplication,

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -99,6 +100,9 @@ void LaunchCrostiniAppWithIntent(
     apps::IntentPtr intent,
     const std::vector<LaunchArg>& args = {},
     CrostiniSuccessCallback callback = base::DoNothing());
+
+// Determine features to enable in the container on app/terminal launches.
+std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures();
 
 // Retrieves cryptohome_id from profile.
 std::string CryptohomeIdForProfile(Profile* profile);

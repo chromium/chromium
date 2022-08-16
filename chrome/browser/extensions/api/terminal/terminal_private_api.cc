@@ -95,6 +95,7 @@ const char kSwitchVmName[] = "vm_name";
 const char kSwitchTargetContainer[] = "target_container";
 const char kSwitchStartupId[] = "startup_id";
 const char kSwitchCurrentWorkingDir[] = "cwd";
+const char kSwitchContainerFeatures[] = "container_features";
 
 const char kCwdTerminalIdPrefix[] = "terminal_id:";
 
@@ -179,6 +180,19 @@ std::string GetSwitch(const base::CommandLine& src,
                            : default_value;
   if (!result.empty()) {
     dst->AppendSwitchASCII(switch_name, result);
+  }
+  return result;
+}
+
+std::string GetContainerFeaturesArg() {
+  std::string result;
+  // There are only a few available features so concatenating strings is
+  // sufficient.
+  for (vm_tools::cicerone::ContainerFeature feature :
+       crostini::GetContainerFeatures()) {
+    if (!result.empty())
+      result += ",";
+    result += base::NumberToString(static_cast<int>(feature));
   }
   return result;
 }
@@ -323,6 +337,13 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
     guest_id_ = std::make_unique<guest_os::GuestId>(guest_os::VmType::UNKNOWN,
                                                     vm_name, container_name);
+
+    // Unlike the other switches, this is computed here directly rather than
+    // taken from |args|.
+    std::string container_features = GetContainerFeaturesArg();
+    if (!container_features.empty())
+      cmdline.AppendSwitchASCII(kSwitchContainerFeatures, container_features);
+
     VLOG(1) << "Starting " << *guest_id_
             << ", cmdline=" << cmdline.GetCommandLineString();
 

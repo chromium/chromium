@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -333,6 +334,20 @@ void LaunchCrostiniApp(Profile* profile,
                        CrostiniSuccessCallback callback) {
   LaunchCrostiniAppWithIntent(profile, app_id, display_id, nullptr, args,
                               std::move(callback));
+}
+
+std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures() {
+  std::vector<vm_tools::cicerone::ContainerFeature> result;
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
+    result.push_back(
+        vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
+    if (base::FeatureList::IsEnabled(
+            ash::features::kCrostiniVirtualKeyboardSupport)) {
+      result.push_back(vm_tools::cicerone::ContainerFeature::
+                           ENABLE_VIRTUAL_KEYBOARD_SUPPORT);
+    }
+  }
+  return result;
 }
 
 std::string CryptohomeIdForProfile(Profile* profile) {
