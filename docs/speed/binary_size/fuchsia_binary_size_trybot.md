@@ -68,10 +68,6 @@ package size.
   }
 }
 ```
-  - If the compressed size grew by less than 100kB, and the
-    uncompressed size decreased, then **ignore** this failure. Add a
-    [footer](#skipping-the-check) to
-    the CL (see below) to document this (and ignore this failure).
   - If `cast_runner` grew in size, you may need assistance from
   the Chrome-Fuchsia team (fuchsia-dev@chromium.org).
 - If you are writing a new feature or including a new library, consider:
@@ -109,8 +105,7 @@ include the following comment and bug
 
 Add a **footer** to the commit description along the lines of:
 
-- `Fuchsia-Binary-Size: Size increase is unavoidable (see above).`
-- `Fuchsia-Binary-Size: Uncompressed size actually decreased.`
+- `Fuchsia-Binary-Size: Size increase is unavoidable.`
 - `Fuchsia-Binary-Size: Increase is temporary.`
 - `Fuchsia-Binary-Size: See commit description.` <-- use this if longer
 than one line.
