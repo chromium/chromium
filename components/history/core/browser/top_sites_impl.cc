@@ -185,9 +185,7 @@ void TopSitesImpl::SyncWithHistory() {
 }
 
 bool TopSitesImpl::HasBlockedUrls() const {
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && !blocked_urls->DictEmpty();
+  return !pref_service_->GetValueDict(kBlockedUrlsPrefsKey).empty();
 }
 
 void TopSitesImpl::AddBlockedUrl(const GURL& url) {
@@ -216,9 +214,8 @@ void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
 
 bool TopSitesImpl::IsBlocked(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return blocked_urls && blocked_urls->FindKey(GetURLHash(url));
+  return pref_service_->GetValueDict(kBlockedUrlsPrefsKey)
+      .contains(GetURLHash(url));
 }
 
 void TopSitesImpl::ClearBlockedUrls() {
@@ -517,9 +514,8 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
 int TopSitesImpl::num_results_to_request_from_history() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  const base::Value* blocked_urls =
-      pref_service_->GetDictionary(kBlockedUrlsPrefsKey);
-  return kTopSitesNumber + (blocked_urls ? blocked_urls->DictSize() : 0);
+  return kTopSitesNumber +
+         pref_service_->GetValueDict(kBlockedUrlsPrefsKey).size();
 }
 
 void TopSitesImpl::MoveStateToLoaded() {
