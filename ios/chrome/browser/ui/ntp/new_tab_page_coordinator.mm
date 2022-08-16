@@ -610,6 +610,10 @@ namespace {
 }
 
 - (void)selectFeedType:(FeedType)feedType {
+  if (!self.started) {
+    self.selectedFeed = feedType;
+    return;
+  }
   [self handleFeedSelected:feedType];
 }
 
@@ -653,8 +657,6 @@ namespace {
 
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.ntpViewController scrollPosition];
-
-  [self.feedMetricsRecorder recordFeedSelected:feedType];
 
   if (feedType == FeedTypeFollowing) {
     // Clears dot and notifies service that the Following feed content has
