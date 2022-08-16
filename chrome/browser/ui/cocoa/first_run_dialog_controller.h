@@ -11,8 +11,7 @@
 // dialog's content view.
 @interface FirstRunDialogViewController : NSViewController
 
-- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked
-                        defaultBrowserCheckboxVisible:(BOOL)visible;
+- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked;
 
 - (NSString*)windowTitle;
 

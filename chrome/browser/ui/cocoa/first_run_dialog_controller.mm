@@ -85,14 +85,11 @@ void CenterVertically(NSView* view) {
   NSView* _view;
 
   BOOL _statsCheckboxInitiallyChecked;
-  BOOL _defaultBrowserCheckboxVisible;
 }
 
-- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked
-                        defaultBrowserCheckboxVisible:(BOOL)visible {
+- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked {
   if ((self = [super init])) {
     _statsCheckboxInitiallyChecked = checked;
-    _defaultBrowserCheckboxVisible = visible;
   }
   return self;
 }
@@ -139,8 +136,6 @@ void CenterVertically(NSView* view) {
   [_defaultBrowserCheckbox
       setFrame:NSMakeRect(45, 107, kDialogWidth - 2 * 45, 18)];
   [_defaultBrowserCheckbox setState:NSOnState];
-  if (!_defaultBrowserCheckboxVisible)
-    [_defaultBrowserCheckbox setHidden:YES];
 
   _statsCheckbox = [NSButton
       checkboxWithTitle:NSStringWithProductName(
@@ -215,19 +210,6 @@ void CenterVertically(NSView* view) {
   if (base::i18n::IsRTL())
     frame.origin.x = kDialogWidth - NSMaxX(frame);
   [startChromeButton setFrame:frame];
-
-  // Lastly, if the default browser checkbox is actually invisible, move the
-  // views above it downward so that there's not a big open space in the content
-  // view, and resize the content view itself so there isn't extra space.
-  if (!_defaultBrowserCheckboxVisible) {
-    CGFloat delta = NSHeight([_defaultBrowserCheckbox frame]);
-    MoveViewsVertically(@[ topBox, topSeparator ], -delta);
-    NSRect frame = [self.view frame];
-    frame.size.height -= delta;
-    [self.view setAutoresizesSubviews:NO];
-    [self.view setFrame:frame];
-    [self.view setAutoresizesSubviews:YES];
-  }
 }
 
 - (NSString*)windowTitle {

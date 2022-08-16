@@ -106,9 +106,7 @@ void ShowFirstRunDialogCocoa(Profile* profile) {
 
 - (instancetype)init {
   _viewController.reset([[FirstRunDialogViewController alloc]
-      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()
-              defaultBrowserCheckboxVisible:shell_integration::
-                                                CanSetAsDefaultBrowser()]);
+      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()]);
 
   // Create the content view controller (and the content view) *before* the
   // window, so that we can find out what the content view's frame is supposed
