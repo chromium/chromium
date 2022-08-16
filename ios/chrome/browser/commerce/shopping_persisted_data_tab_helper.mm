@@ -226,7 +226,7 @@ payments::CurrencyFormatter*
 ShoppingPersistedDataTabHelper::GetCurrencyFormatter(
     const std::string& currency_code,
     const std::string& locale_name) {
-  // Create a currency formatter for |currency_code|, or if already created
+  // Create a currency formatter for `currency_code`, or if already created
   // return the cached version.
   std::pair<std::map<std::string, payments::CurrencyFormatter>::iterator, bool>
       emplace_result = currency_formatter_map_.emplace(
