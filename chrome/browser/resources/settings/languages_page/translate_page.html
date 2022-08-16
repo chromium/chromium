@@ -43,6 +43,7 @@
         <div class="list-item">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
+              disabled="[[isLanguageRemoveDisabled_()]]"
               on-click="onRemoveNeverTranslateLanguageClick_">
           </cr-icon-button>
         </div>
