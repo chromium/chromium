@@ -1019,20 +1019,7 @@
           'shards': 50,
         },
       },
-      'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
-        ],
-      },
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
-        ],
-      },
       'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.browser_tests.filter',
-        ],
         'swarming': {
           'quickrun_shards': 20,
         },
@@ -1514,24 +1501,6 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
-      # https://crbug.com/1111979,
-      'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.components_unittests.filter',
-        ],
-      },
     },
   },
   'compositor_unittests': {
@@ -1734,27 +1703,9 @@
           'shards': 12,
         },
       },
-      # https://crbug.com/1111979,
-      'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.content_browsertests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.content_browsertests.filter',
-        ],
-      },
       # https://crbug.com/1111979
       'linux-lacros-tester-fyi-rel': {
         'experiment_percentage': 100,
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.content_browsertests.filter',
-        ],
       },
       'mac-code-coverage': {
         'args': [
@@ -2416,24 +2367,6 @@
         'swarming': {
           'shards': 10,
         },
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
-        ],
       },
       'mac-code-coverage': {
         'args': [
@@ -3263,22 +3196,6 @@
           'shards': 4,
         },
       },
-      # https://crbug.com/1199909,
-      'linux-lacros-code-coverage': {
-        'args': [
-           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
-        ]
-      },
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
-        ],
-      },
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.sync_integration_tests.filter',
-        ],
-      },
       'mac-code-coverage': {
         'args': [
           '--coverage-continuous-mode=1',
@@ -3516,24 +3433,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.unit_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-dbg-tests-fyi': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.unit_tests.filter',
-        ],
-      },
-      # https://crbug.com/1111979,
-      'linux-lacros-tester-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.unit_tests.filter',
-        ],
       },
     },
   },

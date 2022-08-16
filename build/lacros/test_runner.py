@@ -113,6 +113,19 @@ _TARGETS_REQUIRE_MOJO_CROSAPI = [
     'lacros_chrome_browsertests_run_in_series'
 ]
 
+# Default test filter file for each target. These filter files will be
+# used by default if no other filter file get specified.
+_DEFAULT_FILTER_FILES_MAPPING = {
+    'browser_tests': 'linux-lacros.browser_tests.filter',
+    'components_unittests': 'linux-lacros.components_unittests.filter',
+    'content_browsertests': 'linux-lacros.content_browsertests.filter',
+    'interactive_ui_tests': 'linux-lacros.interactive_ui_tests.filter',
+    'lacros_chrome_browsertests':
+    'linux-lacros.lacros_chrome_browsertests.filter',
+    'sync_integration_tests': 'linux-lacros.sync_integration_tests.filter',
+    'unit_tests': 'linux-lacros.unit_tests.filter',
+}
+
 
 def _GetAshChromeDirPath(version):
   """Returns a path to the dir storing the downloaded version of ash-chrome."""
@@ -547,6 +560,16 @@ def _HandleSignal(sig, _):
   sys.exit(128 + sig)
 
 
+def _ExpandFilterFileIfNeeded(test_target, forward_args):
+  if (test_target in _DEFAULT_FILTER_FILES_MAPPING.keys() and not any(
+      [arg.startswith('--test-launcher-filter-file') for arg in forward_args])):
+    file_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', '..', 'testing',
+                     'buildbot', 'filters',
+                     _DEFAULT_FILTER_FILES_MAPPING[test_target]))
+    forward_args.append(f'--test-launcher-filter-file={file_path}')
+
+
 def _RunTest(args, forward_args):
   """Runs tests with given args.
 
@@ -562,13 +585,15 @@ def _RunTest(args, forward_args):
     raise RuntimeError('Specified test command: "%s" doesn\'t exist' %
                        args.command)
 
+  test_target = os.path.basename(args.command)
+  _ExpandFilterFileIfNeeded(test_target, forward_args)
+
   # |_TARGETS_REQUIRE_ASH_CHROME| may not always be accurate as it is updated
   # with a best effort only, therefore, allow the invoker to override the
   # behavior with a specified ash-chrome version, which makes sure that
   # automated CI/CQ builders would always work correctly.
   requires_ash_chrome = any(
-      re.match(t, os.path.basename(args.command))
-      for t in _TARGETS_REQUIRE_ASH_CHROME)
+      re.match(t, test_target) for t in _TARGETS_REQUIRE_ASH_CHROME)
   if not requires_ash_chrome and not args.ash_chrome_version:
     return _RunTestDirectly(args, forward_args)
 
