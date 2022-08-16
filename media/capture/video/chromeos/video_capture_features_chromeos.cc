@@ -32,7 +32,7 @@ bool ShouldEnableAutoFraming() {
   // TODO(pihsun): Migrate the flag to use base::Feature.
   std::string value =
       command_line->GetSwitchValueASCII(media::switches::kAutoFramingOverride);
-  return value != media::switches::kAutoFramingForceDisabled;
+  return value == media::switches::kAutoFramingForceEnabled;
 }
 
 }  // namespace media
