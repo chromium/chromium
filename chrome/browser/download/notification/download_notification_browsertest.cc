@@ -41,6 +41,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -301,6 +302,9 @@ class DownloadNotificationTestBase
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled());
+#else
+    scoped_feature_list_.InitWithFeatures(
+        {}, {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2});
 #endif
   }
 

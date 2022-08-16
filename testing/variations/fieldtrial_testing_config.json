@@ -4049,21 +4049,31 @@
     "DownloadUXRedesign": [
         {
             "platforms": [
-                "windows"
+                "windows",
+                "mac",
+                "chromeos_lacros",
+                "linux"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220616",
+                    "name": "Enabled_New_20220816",
                     "enable_features": [
                         "DownloadBubble"
                     ]
                 },
                 {
-                    "name": "Enabled_20220727",
+                    "name": "Enabled_20220816",
                     "enable_features": [
                         "DownloadBubble"
                     ],
                     "disable_features": [
+                        "DownloadBubbleV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_V2_20220816",
+                    "enable_features": [
+                        "DownloadBubble",
                         "DownloadBubbleV2"
                     ]
                 }
