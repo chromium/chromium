@@ -120,6 +120,16 @@ jinja_template("chrome_public_android_manifest") {
   ]
 }
 
+jinja_template("chrome_public_android_feature_vr_manifest") {
+  input = "features/vr/java/AndroidManifest.xml"
+  output = feature_module_vr_android_manifest_path
+  variables = chrome_public_jinja_variables
+  variables += [
+    "min_sdk_version=$default_min_sdk_version",
+    "target_sdk_version=$android_sdk_version",
+  ]
+}
+
 jinja_template("trichrome_library_android_manifest") {
   input = "java/AndroidManifest_trichrome_library.xml"
   output = trichrome_library_android_manifest

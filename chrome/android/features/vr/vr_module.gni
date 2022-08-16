@@ -9,8 +9,14 @@ assert(enable_vr)
 
 vr_module_desc = {
   name = "vr"
+
+  # The manifest file needs to be preprocessed before use. See the
+  # jinja_template definition in chrome/android/BUILD.gn .
+  android_manifest_dep =
+      "//chrome/android:chrome_public_android_feature_vr_manifest"
+  android_manifest = feature_module_vr_android_manifest_path
+
   java_deps = [ "//chrome/android/features/vr:java" ]
-  android_manifest = "//chrome/android/features/vr/java/AndroidManifest.xml"
   native_deps = [ "//chrome/browser/vr:vr_ui" ]
   native_entrypoints = "//chrome/browser/vr/module_exports.lst"
 

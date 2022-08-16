@@ -10,3 +10,6 @@ import("//device/vr/buildflags/buildflags.gni")
 # If true, lld is used to partition feature code into separate libraries, which
 # in turn are included in Dynamic Feature Modules.
 use_native_partitions = is_android && is_clang && use_lld && !is_component_build
+
+feature_module_vr_android_manifest_path =
+    "$root_gen_dir/chrome/android/chrome_public_features/vr/AndroidManifest.xml"
