@@ -9,8 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "components/metrics/structured/structured_mojo_events.h"
 
 namespace metrics {
 namespace structured {

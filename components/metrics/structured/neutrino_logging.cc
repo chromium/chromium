@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/metrics/structured/event_base.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace {
 
