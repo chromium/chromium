@@ -44,7 +44,11 @@ if (is_fuchsia) {
 if (make_partition_alloc_standalone) {
   partition_alloc_target_type = "component"
 } else {
-  partition_alloc_target_type = "source_set"
+  if (is_component_build) {
+    partition_alloc_target_type = "source_set"
+  } else {
+    partition_alloc_target_type = "static_library"
+  }
 }
 
 target(partition_alloc_target_type, "partition_alloc") {
