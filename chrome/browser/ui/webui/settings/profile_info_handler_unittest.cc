@@ -72,22 +72,22 @@ class ProfileInfoHandlerTest : public testing::Test {
   }
 
   void VerifyProfileInfo(const base::Value* call_argument) {
-    const base::DictionaryValue* response = nullptr;
-    ASSERT_TRUE(call_argument->GetAsDictionary(&response));
+    ASSERT_TRUE(call_argument->is_dict());
+    const base::Value::Dict& dict = call_argument->GetDict();
 
-    std::string name;
-    std::string icon_url;
-    ASSERT_TRUE(response->GetString("name", &name));
-    ASSERT_TRUE(response->GetString("iconUrl", &icon_url));
+    const std::string* name = dict.FindString("name");
+    const std::string* icon_url = dict.FindString("iconUrl");
+    ASSERT_TRUE(name);
+    ASSERT_TRUE(icon_url);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_EQ(fake_id, name);
-    EXPECT_FALSE(icon_url.empty());
+    EXPECT_EQ(fake_id, *name);
+    EXPECT_FALSE(icon_url->empty());
 #else
-    EXPECT_EQ("Profile 1", name);
+    EXPECT_EQ("Profile 1", *name);
 
     std::string mime, charset, data;
-    EXPECT_TRUE(net::DataURL::Parse(GURL(icon_url), &mime, &charset, &data));
+    EXPECT_TRUE(net::DataURL::Parse(GURL(*icon_url), &mime, &charset, &data));
 
     EXPECT_EQ("image/png", mime);
     SkBitmap bitmap;
