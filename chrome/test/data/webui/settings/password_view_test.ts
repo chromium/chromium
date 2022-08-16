@@ -66,11 +66,11 @@ suite('PasswordViewTest', function() {
   let passwordManager: TestPasswordManagerProxy;
 
   async function loadViewPage(
-      credential: chrome.passwordsPrivate.PasswordUiEntry, id?: number) {
+      credential?: chrome.passwordsPrivate.PasswordUiEntry, id?: number) {
     let requestedId;
     if (id !== undefined) {
       requestedId = id;
-    } else if (credential.id !== undefined) {
+    } else if (!!credential && credential.id !== undefined) {
       requestedId = id;
     } else {
       requestedId = -1;
@@ -78,7 +78,9 @@ suite('PasswordViewTest', function() {
     const params = new URLSearchParams({id: String(requestedId)});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
     const page = document.createElement('password-view');
-    page.credential = credential;
+    if (credential) {
+      page.credential = credential;
+    }
     document.body.appendChild(page);
 
     await flushTasks();
@@ -373,4 +375,29 @@ suite('PasswordViewTest', function() {
     await flushTasks();
     assertTrue(page.$.toast.open);
   });
+
+  test(
+      'When visibility state is hidden on page load, ' +
+          'credential is not requested until the page becomes visible',
+      async function() {
+        let eventCount = 0;
+        const eventHandler = (_event: any) => {
+          eventCount += 1;
+        };
+        document.addEventListener('password-view-page-requested', eventHandler);
+        Object.defineProperty(
+            document, 'visibilityState', {value: 'hidden', writable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+
+        const page = await loadViewPage();
+
+        assertEquals(0, eventCount);
+        assertFalse(!!page.credential);
+
+        Object.defineProperty(
+            document, 'visibilityState', {value: 'visible', writable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+        await flushTasks();
+        assertEquals(1, eventCount);
+      });
 });

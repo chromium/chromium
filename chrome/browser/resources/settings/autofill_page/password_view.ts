@@ -146,6 +146,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
   private showEditDialog_: boolean;
+  private visibilityChangedListener_: () => void;
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {
@@ -160,6 +161,25 @@ export class PasswordViewElement extends PasswordViewElementBase {
       this.requestCredential_();
     }
   }
+
+  override ready() {
+    super.ready();
+
+    if (document.visibilityState !== 'visible') {
+      this.visibilityChangedListener_ = () => {
+        if (document.visibilityState === 'visible' &&
+            Router.getInstance().getCurrentRoute() === routes.PASSWORD_VIEW &&
+            !this.credential) {
+          this.requestCredential_();
+          document.removeEventListener(
+              'visibilitychange', this.visibilityChangedListener_);
+        }
+      };
+      document.addEventListener(
+          'visibilitychange', this.visibilityChangedListener_);
+    }
+  }
+
 
   override onPasswordRemoveDialogPasswordsRemoved(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
@@ -184,7 +204,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   // background tab) so that the native authentication dialog will not be shown.
   private requestCredential_() {
     const credentialId = this.getId_();
-    if (credentialId === null) {
+    if (credentialId === null || document.visibilityState !== 'visible') {
       return;
     }
 
