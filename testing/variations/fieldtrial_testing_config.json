@@ -6210,6 +6210,21 @@
             ]
         }
     ],
+    "MojoAvoidRandomPipeId": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoAvoidRandomPipeId"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
