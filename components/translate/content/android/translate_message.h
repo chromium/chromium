@@ -33,15 +33,17 @@ class TranslateMessage {
  public:
   TranslateMessage(content::WebContents* web_contents,
                    const base::WeakPtr<TranslateManager>& translate_manager,
-                   base::OnceCallback<void()> on_dismiss_callback);
+                   base::RepeatingCallback<void()> on_dismiss_callback);
+
+  TranslateMessage(const TranslateMessage&) = delete;
+  TranslateMessage& operator=(const TranslateMessage&) = delete;
 
   // Dismiss message on destruction if it is shown.
   ~TranslateMessage();
 
   // Show the Translate message UI in the specified state, or update an
   // existing visible message to have the specified state if one is already
-  // visible. Note that once a TranslateMessage has been dismissed, it must not
-  // be shown again - construct a new TranslateMessage instead.
+  // visible.
   void ShowTranslateStep(TranslateStep step,
                          const std::string& source_language,
                          const std::string& target_language);
@@ -116,7 +118,7 @@ class TranslateMessage {
   // Test-only constructor with a custom JavaMethodCaller.
   TranslateMessage(content::WebContents* web_contents,
                    const base::WeakPtr<TranslateManager>& translate_manager,
-                   base::OnceCallback<void()> on_dismiss_callback,
+                   base::RepeatingCallback<void()> on_dismiss_callback,
                    std::unique_ptr<Bridge> bridge);
 
   // This enum is only visible for testing purposes - the Java TranslateMessage
@@ -131,6 +133,16 @@ class TranslateMessage {
   };
 
  private:
+  enum class State {
+    kDismissed,
+
+    kBeforeTranslate,
+    kTranslating,
+    kAfterTranslate,
+
+    kAfterTranslateWithAutoAlwaysConfirmation,
+  };
+
   void RevertTranslationAndUpdateMessage();
 
   base::android::ScopedJavaLocalRef<jobjectArray> ConstructLanguagePickerMenu(
@@ -141,13 +153,21 @@ class TranslateMessage {
 
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TranslateManager> translate_manager_;
-  base::OnceCallback<void()> on_dismiss_callback_;
+  base::RepeatingCallback<void()> on_dismiss_callback_;
 
   std::unique_ptr<Bridge> bridge_;
 
   // Constructed the first time ShowTranslateStep is called.
   std::unique_ptr<TranslateUIDelegate> ui_delegate_;
-  TranslateStep translate_step_ = TRANSLATE_STEP_TRANSLATE_ERROR;
+  State state_ = State::kDismissed;
+
+  // Keeps track of whether or not this TranslateMessage has ever been
+  // interacted with in any way aside from dismissing it.
+  bool has_been_interacted_with_ = false;
+
+  // Keeps track of whether or not a translation is in progress that could
+  // trigger automatically setting "always translate language".
+  bool is_translation_eligible_for_auto_always_translate_ = false;
 };
 
 }  // namespace translate

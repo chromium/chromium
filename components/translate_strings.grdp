@@ -113,6 +113,9 @@
       <message name="IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. Imperative.">
         Never translate pages in <ph name="SOURCE_LANGUAGE">$1<ex>French</ex></ph>
       </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AUTO_ALWAYS_TRANSLATE_LANGUAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know that pages in the source language will be automatically translated to the target language from now on.">
+        Pages in <ph name="source_language">$1<ex>French</ex></ph> will be translated to <ph name="target_language">$2<ex>English</ex></ph> from now on
+      </message>
   </if>
 
   <!-- Translate Notifications -->

@@ -146,10 +146,6 @@ class ChromeTranslateClient
       bool is_user_gesture);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  void OnTranslateMessageDismissed();
-#endif
-
   std::unique_ptr<translate::ContentTranslateDriver> translate_driver_;
   std::unique_ptr<translate::PerFrameContentTranslateDriver>
       per_frame_translate_driver_;

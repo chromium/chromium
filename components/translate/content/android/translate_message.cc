@@ -102,6 +102,16 @@ int GetDismissalDurationSeconds() {
   return kDismissalDuration.Get();
 }
 
+base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
+    JNIEnv* env,
+    const std::u16string& source_language_display_name,
+    const std::u16string& target_language_display_name) {
+  return base::android::ConvertUTF16ToJavaString(
+      env, l10n_util::GetStringFUTF16(IDS_TRANSLATE_MESSAGE_DESCRIPTION,
+                                      source_language_display_name,
+                                      target_language_display_name));
+}
+
 }  // namespace
 
 const base::Feature kTranslateMessageUI("TranslateMessageUI",
@@ -112,7 +122,7 @@ TranslateMessage::Bridge::~Bridge() = default;
 TranslateMessage::TranslateMessage(
     content::WebContents* web_contents,
     const base::WeakPtr<TranslateManager>& translate_manager,
-    base::OnceCallback<void()> on_dismiss_callback,
+    base::RepeatingCallback<void()> on_dismiss_callback,
     std::unique_ptr<Bridge> bridge)
     : web_contents_(web_contents),
       translate_manager_(translate_manager),
@@ -124,7 +134,7 @@ TranslateMessage::TranslateMessage(
 TranslateMessage::TranslateMessage(
     content::WebContents* web_contents,
     const base::WeakPtr<TranslateManager>& translate_manager,
-    base::OnceCallback<void()> on_dismiss_callback)
+    base::RepeatingCallback<void()> on_dismiss_callback)
     : TranslateMessage(web_contents,
                        translate_manager,
                        std::move(on_dismiss_callback),
@@ -135,15 +145,16 @@ TranslateMessage::~TranslateMessage() {
   // destruction. This prevents a possible use-after-free if the callback points
   // to a method on the owner of |this|.
   on_dismiss_callback_.Reset();
-  if (bridge_)
-    bridge_->Dismiss(base::android::AttachCurrentThread());
+  if (bridge_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    bridge_->Dismiss(env);
+    bridge_->ClearNativePointer(env);
+  }
 }
 
 void TranslateMessage::ShowTranslateStep(TranslateStep step,
                                          const std::string& source_language,
                                          const std::string& target_language) {
-  // Once the TranslateMessage has been dismissed, ShowTranslateStep() should
-  // not be called again on it.
   DCHECK(!on_dismiss_callback_.is_null());
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -165,6 +176,20 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
     ui_delegate_->UpdateTargetLanguage(target_language);
 
   if (step == TRANSLATE_STEP_TRANSLATE_ERROR) {
+    // Prevent auto-always-translate from triggering if an error occurs.
+    is_translation_eligible_for_auto_always_translate_ = false;
+
+    // Count an error as an interaction so that the translation ignored/denied
+    // counts don't rise in response to errors. For example, suppose a user
+    // wants to translate a webpage that's in Hindi, and has "Always translate
+    // pages in Hindi" turned on, but for some reason repeatedly gets
+    // translation errors and repeatedly swipes away the message and refreshes
+    // the page trying to make translation work. If these are counted as
+    // translations being denied, then this could affect decisions made by the
+    // translate ranker or cause auto-never-translate-language to trigger
+    // inadvertently.
+    has_been_interacted_with_ = true;
+
     bridge_->ShowTranslateError(env, web_contents_);
 
     // Since an error occurred, show the UI in the last good state.
@@ -174,25 +199,39 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
     else
       step = TRANSLATE_STEP_BEFORE_TRANSLATE;
   }
-  translate_step_ = step;
+
+  const std::u16string& source_language_display_name =
+      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetSourceLanguageIndex());
+  const std::u16string& target_language_display_name =
+      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetTargetLanguageIndex());
 
   base::android::ScopedJavaLocalRef<jstring> title;
+  base::android::ScopedJavaLocalRef<jstring> description;
   base::android::ScopedJavaLocalRef<jstring> primary_button_text;
 
-  switch (translate_step_) {
+  switch (step) {
     case TRANSLATE_STEP_BEFORE_TRANSLATE:
       title = base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
                    IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE));
+      description = GetDefaultMessageDescription(
+          env, source_language_display_name, target_language_display_name);
       primary_button_text = base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_TRANSLATE_BUTTON));
+
+      state_ = State::kBeforeTranslate;
+      is_translation_eligible_for_auto_always_translate_ = false;
       break;
 
     case TRANSLATE_STEP_TRANSLATING:
       title = base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
                    IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE));
+      description = GetDefaultMessageDescription(
+          env, source_language_display_name, target_language_display_name);
       primary_button_text = nullptr;
+
+      state_ = State::kTranslating;
       break;
 
     case TRANSLATE_STEP_AFTER_TRANSLATE:
@@ -201,6 +240,25 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
                    IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE));
       primary_button_text = base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_TRANSLATE_MESSAGE_UNDO_BUTTON));
+
+      if (is_translation_eligible_for_auto_always_translate_ &&
+          ui_delegate_->ShouldAutoAlwaysTranslate()) {
+        ui_delegate_->SetAlwaysTranslate(true);
+
+        description = base::android::ConvertUTF16ToJavaString(
+            env,
+            l10n_util::GetStringFUTF16(
+                IDS_TRANSLATE_MESSAGE_AUTO_ALWAYS_TRANSLATE_LANGUAGE_DESCRIPTION,
+                source_language_display_name, target_language_display_name));
+
+        state_ = State::kAfterTranslateWithAutoAlwaysConfirmation;
+      } else {
+        description = GetDefaultMessageDescription(
+            env, source_language_display_name, target_language_display_name);
+        state_ = State::kAfterTranslate;
+      }
+
+      is_translation_eligible_for_auto_always_translate_ = false;
       break;
 
     default:
@@ -208,38 +266,30 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
   }
 
-  const std::u16string& source_language_display_name =
-      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetSourceLanguageIndex());
-  const std::u16string& target_language_display_name =
-      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetTargetLanguageIndex());
-  base::android::ScopedJavaLocalRef<jstring> description =
-      base::android::ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringFUTF16(IDS_TRANSLATE_MESSAGE_DESCRIPTION,
-                                          source_language_display_name,
-                                          target_language_display_name));
-
   bridge_->ShowMessage(env, std::move(title), std::move(description),
                        std::move(primary_button_text));
 }
 
 void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
-  switch (translate_step_) {
-    case TRANSLATE_STEP_BEFORE_TRANSLATE:
+  has_been_interacted_with_ = true;
+  is_translation_eligible_for_auto_always_translate_ = false;
+
+  switch (state_) {
+    case State::kBeforeTranslate:
+      is_translation_eligible_for_auto_always_translate_ = true;
       ui_delegate_->ReportUIInteraction(UIInteraction::kTranslate);
       ui_delegate_->Translate();
       break;
 
-    case TRANSLATE_STEP_AFTER_TRANSLATE:
+    case State::kAfterTranslateWithAutoAlwaysConfirmation:
+      // The user clicked "Undo" on a translated page when the
+      // auto-always-translate confirmation message was showing, so turn off
+      // "always translate language" before reverting the translation.
+      ui_delegate_->SetAlwaysTranslate(false);
+      [[fallthrough]];
+    case State::kAfterTranslate:
       ui_delegate_->ReportUIInteraction(UIInteraction::kRevert);
       RevertTranslationAndUpdateMessage();
-      break;
-
-    case TRANSLATE_STEP_TRANSLATING:
-      // TODO(crbug.com/1304118): Once the TRANSLATE_STEP_TRANSLATING state
-      // replaces the primary action button with a spinning progress indicator
-      // (and thus there is no longer a clickable primary button), fall through
-      // to the |default| NOTREACHED handler below. Until then, do nothing in
-      // this case.
       break;
 
     default:
@@ -250,11 +300,9 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
 
 void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
   switch (static_cast<messages::DismissReason>(dismiss_reason)) {
-    case messages::DismissReason::PRIMARY_ACTION:
-    case messages::DismissReason::SECONDARY_ACTION:
     case messages::DismissReason::GESTURE:
-      ui_delegate_->ReportUIInteraction(UIInteraction::kCloseUIExplicitly);
       ui_delegate_->OnUIClosedByUser();
+      ui_delegate_->ReportUIInteraction(UIInteraction::kCloseUIExplicitly);
       break;
 
     case messages::DismissReason::TAB_SWITCHED:
@@ -268,24 +316,46 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
       ui_delegate_->ReportUIInteraction(UIInteraction::kCloseUITimerRanOut);
       break;
 
+    case messages::DismissReason::PRIMARY_ACTION:
+    case messages::DismissReason::SECONDARY_ACTION:
+      // These dismiss reasons should not be possible for a TranslateMessage,
+      // since clicking the primary or secondary buttons doesn't dismiss the
+      // message.
+      NOTREACHED();
+      break;
+
     default:
       break;
   }
 
-  bridge_->ClearNativePointer(env);
-  bridge_.reset();
+  if (!has_been_interacted_with_ && state_ == State::kBeforeTranslate) {
+    ui_delegate_->TranslationDeclined(
+        static_cast<messages::DismissReason>(dismiss_reason) ==
+        messages::DismissReason::GESTURE);
+  }
+
+  state_ = State::kDismissed;
 
   // The only time |on_dismiss_callback_| will be null is during the destruction
   // of |this|.
   if (!on_dismiss_callback_.is_null()) {
     // Note that this callback can destroy |this|, so this method shouldn't do
     // anything afterwards.
-    std::move(on_dismiss_callback_).Run();
+    on_dismiss_callback_.Run();
   }
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
 TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
+  has_been_interacted_with_ = true;
+
+  // If the overflow menu is open when auto-always-translate triggers, then the
+  // "Always translate language" option in the menu would remain unchecked even
+  // if auto-always-translate triggers and changes that setting. To avoid this
+  // inconsistency, don't try to turn on auto-always-translate if the user
+  // opened the overflow menu mid-translation.
+  is_translation_eligible_for_auto_always_translate_ = false;
+
   // |titles| must have the capacity to fit the maximum number of menu items in
   // the overflow menu, including dividers.
   std::u16string titles[1U +  // Change target language.
@@ -379,6 +449,13 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     jint overflow_menu_item_id,
     const base::android::JavaRef<jstring>& language_code,
     jboolean had_checkmark) {
+  has_been_interacted_with_ = true;
+
+  // Interacting with the secondary menu can cause the page to be translated or
+  // an existing translation to be reverted, so to avoid these edge cases, don't
+  // try to turn on auto-always-translate.
+  is_translation_eligible_for_auto_always_translate_ = false;
+
   std::string language_code_utf8 = ConvertJavaStringToUTF8(env, language_code);
   if (!language_code_utf8.empty()) {
     switch (static_cast<OverflowMenuItemId>(overflow_menu_item_id)) {
@@ -429,10 +506,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       if (ui_delegate_->ShouldAlwaysTranslate() != desired_toggle_value)
         ui_delegate_->SetAlwaysTranslate(desired_toggle_value);
 
-      if (desired_toggle_value &&
-          translate_step_ == TRANSLATE_STEP_BEFORE_TRANSLATE) {
+      if (desired_toggle_value && state_ == State::kBeforeTranslate)
         ui_delegate_->Translate();
-      }
       break;
 
     case OverflowMenuItemId::kToggleNeverTranslateLanguage:
@@ -441,8 +516,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         ui_delegate_->SetLanguageBlocked(desired_toggle_value);
 
       if (desired_toggle_value &&
-          (translate_step_ == TRANSLATE_STEP_TRANSLATING ||
-           translate_step_ == TRANSLATE_STEP_AFTER_TRANSLATE)) {
+          (state_ == State::kTranslating || state_ == State::kAfterTranslate ||
+           state_ == State::kAfterTranslateWithAutoAlwaysConfirmation)) {
         RevertTranslationAndUpdateMessage();
       }
       break;
@@ -453,8 +528,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         ui_delegate_->SetNeverPromptSite(desired_toggle_value);
 
       if (desired_toggle_value &&
-          (translate_step_ == TRANSLATE_STEP_TRANSLATING ||
-           translate_step_ == TRANSLATE_STEP_AFTER_TRANSLATE)) {
+          (state_ == State::kTranslating || state_ == State::kAfterTranslate ||
+           state_ == State::kAfterTranslateWithAutoAlwaysConfirmation)) {
         RevertTranslationAndUpdateMessage();
       }
       break;
