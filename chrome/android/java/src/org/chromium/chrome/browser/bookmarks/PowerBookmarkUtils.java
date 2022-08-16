@@ -159,23 +159,26 @@ public class PowerBookmarkUtils {
             boolean enabled, Callback<Integer> callback) {
         if (bookmarkId == null || subscriptionsManager == null) return;
 
-        PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
-        if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return;
+        bookmarkBridge.finishLoadingBookmarkModel(() -> {
+            PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
+            if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return;
 
-        CommerceSubscription subscription = createCommerceSubscriptionForPowerBookmarkMeta(meta);
-        Callback<Integer> wrapperCallback = (status) -> {
-            if (bookmarkBridge.isDestroyed()) return;
-            if (status == SubscriptionsManager.StatusCode.OK) {
-                setPriceTrackingEnabledInMetadata(bookmarkBridge, bookmarkId, enabled);
+            CommerceSubscription subscription =
+                    createCommerceSubscriptionForPowerBookmarkMeta(meta);
+            Callback<Integer> wrapperCallback = (status) -> {
+                if (bookmarkBridge.isDestroyed()) return;
+                if (status == SubscriptionsManager.StatusCode.OK) {
+                    setPriceTrackingEnabledInMetadata(bookmarkBridge, bookmarkId, enabled);
+                }
+                callback.onResult(status);
+            };
+
+            if (enabled) {
+                subscriptionsManager.subscribe(subscription, wrapperCallback);
+            } else {
+                subscriptionsManager.unsubscribe(subscription, wrapperCallback);
             }
-            callback.onResult(status);
-        };
-
-        if (enabled) {
-            subscriptionsManager.subscribe(subscription, wrapperCallback);
-        } else {
-            subscriptionsManager.unsubscribe(subscription, wrapperCallback);
-        }
+        });
     }
 
     /**
