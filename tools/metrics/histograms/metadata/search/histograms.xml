@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.All.Searches"
-    enum="BooleanBottomSearchKind" expires_after="2022-12-11">
+    enum="BooleanBottomSearchKind" expires_after="2023-02-12">
 <!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
@@ -1580,7 +1580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselLastVisibleItemPosition"
-    units="position" expires_after="2022-12-11">
+    units="position" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
@@ -1633,7 +1633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked2"
-    units="selected" expires_after="2022-12-11">
+    units="selected" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1659,7 +1659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1670,7 +1670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedSuggestionIndex"
-    units="position" expires_after="2022-12-11">
+    units="position" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>

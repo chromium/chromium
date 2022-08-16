@@ -1388,7 +1388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TimeToTakeOwnership" units="ms"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>yich@google.com</owner>
   <owner>cylai@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1399,7 +1399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TpmManagerSecretStatus"
-    enum="TpmManagerSecretStatus" expires_after="2022-12-13">
+    enum="TpmManagerSecretStatus" expires_after="2023-02-12">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
