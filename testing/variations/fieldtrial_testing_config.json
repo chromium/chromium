@@ -4848,52 +4848,6 @@
             ]
         }
     ],
-    "HappinessTrackingSurveysForDesktopPrivacyGuide": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "EwTBYAUeU0ugnJ3q1cK0VNYBFfQr",
-                        "probability": "1.0",
-                        "settings-time": "5s",
-                        "survey": "privacy-guide"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDesktopPrivacyGuide"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HappinessTrackingSurveysForDesktopSettingsPrivacy": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "JcjxgSDnh0ugnJ3q1cK0UVkwDj1o",
-                        "no-guide": "true",
-                        "probability": "1.0",
-                        "survey": "settings-privacy"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDesktopSettingsPrivacy"
-                    ]
-                }
-            ]
-        }
-    ],
     "HappinessTrackingSystemPerformance": [
         {
             "platforms": [
@@ -7502,6 +7456,47 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrivacyGuide2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacyGuideHats": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PrivacyGuide",
+                    "params": {
+                        "en_site_id": "EwTBYAUeU0ugnJ3q1cK0VNYBFfQr",
+                        "probability": "1.0",
+                        "settings-time": "5s",
+                        "survey": "privacy-guide"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopPrivacyGuide"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopSettingsPrivacy"
+                    ]
+                },
+                {
+                    "name": "PrivacySettings",
+                    "params": {
+                        "en_site_id": "JcjxgSDnh0ugnJ3q1cK0UVkwDj1o",
+                        "no-guide": "true",
+                        "probability": "1.0",
+                        "survey": "settings-privacy"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDesktopSettingsPrivacy"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopPrivacyGuide"
                     ]
                 }
             ]
