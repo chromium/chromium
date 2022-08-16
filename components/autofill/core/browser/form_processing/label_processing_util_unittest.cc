@@ -10,108 +10,53 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-
-namespace {
-
-std::vector<base::StringPiece16> StringsToStringPieces(
-    const std::vector<std::u16string>& strings) {
-  std::vector<base::StringPiece16> string_pieces;
-  for (const auto& s : strings) {
-    string_pieces.emplace_back(base::StringPiece16(s));
-  }
-  return string_pieces;
-}
-
-}  // namespace
-
 namespace autofill {
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(u"Street & House Number");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
+  std::vector<base::StringPiece16> labels{u"City", u"Street & House Number",
+                                          u"", u"Zip"};
+  auto expectation = absl::make_optional(
+      std::vector<std::u16string>{u"City", u"Street", u"House Number", u"Zip"});
+  EXPECT_EQ(GetParseableLabels(labels), expectation);
 
-  auto expectation = absl::make_optional(std::vector<std::u16string>());
-  expectation->push_back(u"City");
-  expectation->push_back(u"Street");
-  expectation->push_back(u"House Number");
-  expectation->push_back(u"Zip");
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  // The label is also split when consecutive fields share the same label.
+  labels[2] = labels[1];
+  EXPECT_EQ(GetParseableLabels(labels), expectation);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_ThreeComponents) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(u"Street & House Number & Floor");
-  labels.push_back(u"");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
-
-  auto expectation = absl::make_optional(std::vector<std::u16string>());
-  expectation->push_back(u"City");
-  expectation->push_back(u"Street");
-  expectation->push_back(u"House Number");
-  expectation->push_back(u"Floor");
-  expectation->push_back(u"Zip");
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  EXPECT_EQ(GetParseableLabels(
+                {u"City", u"Street & House Number & Floor", u"", u"", u"Zip"}),
+            absl::make_optional(std::vector<std::u16string>{
+                u"City", u"Street", u"House Number", u"Floor", u"Zip"}));
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooManyComponents) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(u"Street & House Number & Floor & Stairs");
-  labels.push_back(u"");
-  labels.push_back(u"");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
-
-  absl::optional<std::vector<std::u16string>> expectation = absl::nullopt;
-  ;
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  EXPECT_EQ(
+      GetParseableLabels({u"City", u"Street & House Number & Floor & Stairs",
+                          u"", u"", u"", u"Zip"}),
+      absl::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_UnmachtingComponents) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(u"Street & House Number & Floor");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
-
-  absl::optional<std::vector<std::u16string>> expectation = absl::nullopt;
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  EXPECT_EQ(GetParseableLabels(
+                {u"City", u"Street & House Number & Floor", u"", u"Zip"}),
+            absl::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_SplitableLabelAtEnd) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
-  labels.push_back(u"Street & House Number & Floor");
-
-  absl::optional<std::vector<std::u16string>> expectation = absl::nullopt;
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  EXPECT_EQ(GetParseableLabels(
+                {u"City", u"", u"Zip", u"Street & House Number & Floor"}),
+            absl::nullopt);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
-  std::vector<std::u16string> labels;
-  labels.push_back(u"City");
-  labels.push_back(
-      u"Street & House Number with a lot of additional text that exceeds 40 "
-      u"characters by far");
-  labels.push_back(u"");
-  labels.push_back(u"Zip");
-
-  absl::optional<std::vector<std::u16string>> expectation = absl::nullopt;
-
-  EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
+  EXPECT_EQ(GetParseableLabels({u"City",
+                                u"Street & House Number with a lot of "
+                                u"additional text that exceeds 40 "
+                                u"characters by far",
+                                u"", u"Zip"}),
+            absl::nullopt);
 }
 
 }  // namespace autofill
