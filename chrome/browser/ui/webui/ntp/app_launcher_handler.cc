@@ -367,7 +367,9 @@ base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
            !extension->is_platform_app() && is_locally_installed);
 
   // Any locally installed app can have shortcuts created.
-  dict.Set("mayCreateShortcuts", is_locally_installed);
+  dict.Set(
+      "mayCreateShortcuts",
+      is_locally_installed && extension->id() != extensions::kWebStoreAppId);
   dict.Set("isLocallyInstalled", is_locally_installed);
 
   auto icon_size = extension_misc::EXTENSION_ICON_LARGE;
