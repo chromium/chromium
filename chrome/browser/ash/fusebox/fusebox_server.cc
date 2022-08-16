@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -159,8 +160,7 @@ void RunReadCallbackFailure(Server::ReadCallback callback,
                             base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::move(callback).Run(base::File::Error::FILE_ERROR_INVALID_URL, nullptr,
-                          0);
+  std::move(callback).Run(FileErrorToErrno(error_code), nullptr, 0);
 }
 
 void RunReadCallbackTypical(
@@ -172,10 +172,10 @@ void RunReadCallbackTypical(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (length < 0) {
-    std::move(callback).Run(storage::NetErrorToFileError(length), nullptr, 0);
+    std::move(callback).Run(NetErrorToErrno(length), nullptr, 0);
   } else {
-    std::move(callback).Run(base::File::Error::FILE_OK,
-                            reinterpret_cast<uint8_t*>(buffer->data()), length);
+    std::move(callback).Run(0, reinterpret_cast<uint8_t*>(buffer->data()),
+                            length);
   }
 
   auto task_runner = content::GetIOThreadTaskRunner({});
@@ -237,7 +237,8 @@ void RunReadDirCallback(
     proto->set_name(entry.name.value());
   }
 
-  callback.Run(cookie, error_code, std::move(protos), has_more);
+  callback.Run(cookie, FileErrorToErrno(error_code), std::move(protos),
+               has_more);
 }
 
 void RunStatCallback(
@@ -248,7 +249,7 @@ void RunStatCallback(
     const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::move(callback).Run(error_code, info, read_only);
+  std::move(callback).Run(FileErrorToErrno(error_code), info, read_only);
 }
 
 }  // namespace
@@ -322,13 +323,13 @@ void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(common.error_code);
+    std::move(callback).Run(FileErrorToErrno(common.error_code));
     return;
   }
 
   // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
   // implement MTP device writing.
-  std::move(callback).Run(base::File::Error::FILE_ERROR_INVALID_OPERATION);
+  std::move(callback).Run(ENOTSUP);
 }
 
 void Server::Open(std::string fs_url_as_string, OpenCallback callback) {
@@ -336,13 +337,13 @@ void Server::Open(std::string fs_url_as_string, OpenCallback callback) {
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(common.error_code);
+    std::move(callback).Run(FileErrorToErrno(common.error_code));
     return;
   }
 
   // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
   // implement MTP device writing.
-  std::move(callback).Run(base::File::Error::FILE_ERROR_INVALID_OPERATION);
+  std::move(callback).Run(ENOTSUP);
 }
 
 void Server::Read(std::string fs_url_as_string,
@@ -353,7 +354,7 @@ void Server::Read(std::string fs_url_as_string,
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(common.error_code, nullptr, 0);
+    std::move(callback).Run(FileErrorToErrno(common.error_code), nullptr, 0);
     return;
   }
 
@@ -372,8 +373,8 @@ void Server::ReadDir(std::string fs_url_as_string,
   if (common.is_moniker_root ||
       (common.error_code != base::File::Error::FILE_OK)) {
     constexpr bool has_more = false;
-    callback.Run(cookie, common.error_code, fusebox::DirEntryListProto(),
-                 has_more);
+    callback.Run(cookie, FileErrorToErrno(common.error_code),
+                 fusebox::DirEntryListProto(), has_more);
     return;
   }
 
@@ -397,7 +398,8 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
 
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.error_code != base::File::Error::FILE_OK) {
-    std::move(callback).Run(common.error_code, base::File::Info(), false);
+    std::move(callback).Run(FileErrorToErrno(common.error_code),
+                            base::File::Info(), false);
     return;
   }
 

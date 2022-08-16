@@ -28,28 +28,28 @@ void OnExportedCallback(const std::string& interface_name,
 
 void ReplyToClose(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender sender,
-                  base::File::Error error_code) {
+                  int32_t posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendInt32(posix_error_code);
 
   std::move(sender).Run(std::move(response));
 }
 
 void ReplyToOpen(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
-                 base::File::Error error_code) {
+                 int32_t posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendInt32(posix_error_code);
   // For historical reasons, append a second parameter that's no longer used.
   writer.AppendUint64(0);
 
@@ -58,7 +58,7 @@ void ReplyToOpen(dbus::MethodCall* method_call,
 
 void ReplyToRead(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
-                 base::File::Error error_code,
+                 int32_t posix_error_code,
                  const uint8_t* data_ptr,
                  size_t data_len) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -67,7 +67,7 @@ void ReplyToRead(dbus::MethodCall* method_call,
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendInt32(posix_error_code);
   writer.AppendArrayOfBytes(data_ptr, data_len);
 
   std::move(sender).Run(std::move(response));
@@ -86,33 +86,33 @@ void ReplyToRead(dbus::MethodCall* method_call,
 
 void ReplyToReadDir(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender sender,
-                    base::File::Error error_code) {
+                    int32_t posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendInt32(posix_error_code);
 
   std::move(sender).Run(std::move(response));
 }
 
 void CallReverseReplyToReadDir(uint64_t cookie,
-                               base::File::Error error_code,
+                               int32_t posix_error_code,
                                fusebox::DirEntryListProto protos,
                                bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (auto* client = FuseBoxReverseClient::Get(); client) {
-    client->ReplyToReadDir(cookie, static_cast<int32_t>(error_code),
-                           std::move(protos), has_more);
+    client->ReplyToReadDir(cookie, posix_error_code, std::move(protos),
+                           has_more);
   }
 }
 
 void ReplyToStat(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
-                 base::File::Error error_code,
+                 int32_t posix_error_code,
                  const base::File::Info& info,
                  bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -124,7 +124,7 @@ void ReplyToStat(dbus::MethodCall* method_call,
   int32_t mode_bits = info.is_directory ? S_IFDIR : S_IFREG;
   mode_bits |= read_only ? 0550 : 0770;  // "r-xr-x---" versus "rwxrwx---".
 
-  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendInt32(posix_error_code);
   writer.AppendInt32(mode_bits);
   writer.AppendInt64(info.size);
   writer.AppendDouble(info.last_accessed.ToDoubleT());
@@ -201,8 +201,7 @@ void FuseBoxServiceProvider::Close(
   dbus::MessageReader reader(method_call);
   std::string fs_url_as_string;
   if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToClose(method_call, std::move(sender),
-                 base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    ReplyToClose(method_call, std::move(sender), EINVAL);
     return;
   }
 
@@ -217,8 +216,7 @@ void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
   dbus::MessageReader reader(method_call);
   std::string fs_url_as_string;
   if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToOpen(method_call, std::move(sender),
-                base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    ReplyToOpen(method_call, std::move(sender), EINVAL);
     return;
   }
 
@@ -236,8 +234,7 @@ void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
   int32_t length = 0;
   if (!reader.PopString(&fs_url_as_string) || !reader.PopInt64(&offset) ||
       !reader.PopInt32(&length)) {
-    ReplyToRead(method_call, std::move(sender),
-                base::File::Error::FILE_ERROR_INVALID_OPERATION, nullptr, 0);
+    ReplyToRead(method_call, std::move(sender), EINVAL, nullptr, 0);
     return;
   }
 
@@ -254,15 +251,14 @@ void FuseBoxServiceProvider::ReadDir(
   std::string fs_url_as_string;
   uint64_t cookie = 0;
   if (!reader.PopString(&fs_url_as_string) || !reader.PopUint64(&cookie)) {
-    ReplyToReadDir(method_call, std::move(sender),
-                   base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    ReplyToReadDir(method_call, std::move(sender), EINVAL);
     return;
   }
 
   // The ReadDir D-Bus method call deserves a reply, even if we don't have any
   // directory entries yet. Those entries will be sent back separately, in
   // batches, by CallReverseReplyToReadDir.
-  ReplyToReadDir(method_call, std::move(sender), base::File::Error::FILE_OK);
+  ReplyToReadDir(method_call, std::move(sender), 0);
 
   server_.ReadDir(fs_url_as_string, cookie,
                   base::BindRepeating(&CallReverseReplyToReadDir));
@@ -275,9 +271,8 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
   dbus::MessageReader reader(method_call);
   std::string fs_url_as_string;
   if (!reader.PopString(&fs_url_as_string)) {
-    ReplyToStat(method_call, std::move(sender),
-                base::File::Error::FILE_ERROR_INVALID_OPERATION,
-                base::File::Info(), false);
+    ReplyToStat(method_call, std::move(sender), EINVAL, base::File::Info(),
+                false);
     return;
   }
 

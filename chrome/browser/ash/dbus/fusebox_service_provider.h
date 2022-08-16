@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_FUSEBOX_SERVICE_PROVIDER_H_
 
-#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"

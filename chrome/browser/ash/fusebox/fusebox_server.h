@@ -56,19 +56,18 @@ class Server {
   // Close is a placeholder and is not implemented yet.
   //
   // TODO(crbug.com/1249754) implement MTP device writing.
-  using CloseCallback = base::OnceCallback<void(base::File::Error error_code)>;
+  using CloseCallback = base::OnceCallback<void(int32_t posix_error_code)>;
   void Close(std::string fs_url_as_string, CloseCallback callback);
 
   // Open is a placeholder and is not implemented yet.
   //
   // TODO(crbug.com/1249754) implement MTP device writing.
-  using OpenCallback = base::OnceCallback<void(base::File::Error error_code)>;
+  using OpenCallback = base::OnceCallback<void(int32_t posix_error_code)>;
   void Open(std::string fs_url_as_string, OpenCallback callback);
 
   // Read returns the file's byte contents at the given offset and length.
-  using ReadCallback = base::OnceCallback<void(base::File::Error error_code,
-                                               const uint8_t* data_ptr,
-                                               size_t data_len)>;
+  using ReadCallback = base::OnceCallback<
+      void(int32_t posix_error_code, const uint8_t* data_ptr, size_t data_len)>;
   void Read(std::string fs_url_as_string,
             int64_t offset,
             int32_t length,
@@ -78,7 +77,7 @@ class Server {
   // multiple RPC messages, each with the same client-chosen cookie value.
   using ReadDirCallback =
       base::RepeatingCallback<void(uint64_t cookie,
-                                   base::File::Error error_code,
+                                   int32_t posix_error_code,
                                    fusebox::DirEntryListProto dir_entry_list,
                                    bool has_more)>;
   void ReadDir(std::string fs_url_as_string,
@@ -86,7 +85,7 @@ class Server {
                ReadDirCallback callback);
 
   // Stat returns the file or directory's metadata.
-  using StatCallback = base::OnceCallback<void(base::File::Error error_code,
+  using StatCallback = base::OnceCallback<void(int32_t posix_error_code,
                                                const base::File::Info& info,
                                                bool read_only)>;
   void Stat(std::string fs_url_as_string, StatCallback callback);
