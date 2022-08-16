@@ -59,13 +59,6 @@ void FlossDBusClient::WriteDBusParam(
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(
-    dbus::MessageWriter* writer,
-    const FlossSocketManager::SocketType& type) {
-  WriteDBusParamIntoVariant(writer, static_cast<uint32_t>(type));
-}
-
-template <>
 bool FlossDBusClient::ReadDBusParam(
     dbus::MessageReader* reader,
     FlossSocketManager::FlossListeningSocket* socket) {
@@ -232,17 +225,6 @@ void FlossDBusClient::WriteDBusParam(
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(
-    dbus::MessageWriter* writer,
-    const FlossSocketManager::FlossSocket& socket) {
-  dbus::MessageWriter variant(nullptr);
-
-  writer->OpenVariant("a{sv}", &variant);
-  WriteDBusParam(&variant, socket);
-  writer->CloseContainer(&variant);
-}
-
-template <>
 bool FlossDBusClient::ReadDBusParam(
     dbus::MessageReader* reader,
     FlossSocketManager::SocketResult* socket_result) {
@@ -296,6 +278,18 @@ void FlossDBusClient::WriteDBusParam(
   WriteDictEntry(&array, kResultPropId, socket_result.id);
 
   writer->CloseContainer(&array);
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<FlossSocketManager::SocketType>() {
+  static DBusTypeInfo info{"u", "SocketType"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<FlossSocketManager::FlossSocket>() {
+  static DBusTypeInfo info{"a{sv}", "FlossSocket"};
+  return info;
 }
 
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket() = default;
