@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/fast_pair_advertiser.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
@@ -107,9 +108,7 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
-  if (!random_session_id_) {
-    random_session_id_ = base::UnguessableToken::Create();
-  }
+  VLOG(1) << "Starting advertising with session id " << random_session_id_;
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);

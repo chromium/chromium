@@ -14,7 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -171,7 +171,7 @@ class FastPairAdvertiserTest : public testing::Test {
                        base::Unretained(this)),
         base::BindOnce(&FastPairAdvertiserTest::OnStartAdvertisingError,
                        base::Unretained(this)),
-        base::UnguessableToken::Create());
+        RandomSessionId());
     auto service_uuid_list =
         std::make_unique<device::BluetoothAdvertisement::UUIDList>();
     service_uuid_list->push_back(kFastPairServiceUuid);
@@ -201,7 +201,7 @@ class FastPairAdvertiserTest : public testing::Test {
   bool called_on_stop_advertising() { return called_on_stop_advertising_; }
 
   std::vector<uint8_t> GetManufacturerMetadata(
-      const base::UnguessableToken& random_id) {
+      const RandomSessionId& random_id) {
     return fast_pair_advertiser_->GenerateManufacturerMetadata(random_id);
   }
 
@@ -245,7 +245,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   fast_pair_advertiser_->StartAdvertising(
       base::DoNothing(),
       base::BindLambdaForTesting([&]() { fast_pair_advertiser_.reset(); }),
-      base::UnguessableToken::Create());
+      RandomSessionId());
 
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::
@@ -301,13 +301,14 @@ TEST_F(FastPairAdvertiserTest, TestAdvertisementReleased) {
 }
 
 TEST_F(FastPairAdvertiserTest, TestGenerateManufacturerMetadata) {
-  auto random_id = base::UnguessableToken::Create();
-  base::span<const uint8_t, 16> random_id_bytes = random_id.AsBytes();
+  RandomSessionId random_id;
+  base::span<const uint8_t, RandomSessionId::kLength> random_id_bytes =
+      random_id.AsBytes();
   std::vector<uint8_t> manufacturer_metadata =
       GetManufacturerMetadata(random_id);
 
   EXPECT_EQ(random_id_bytes.size(), manufacturer_metadata.size());
-  for (int i = 0; i < 16; i++) {
+  for (size_t i = 0; i < random_id_bytes.size(); i++) {
     EXPECT_EQ(random_id_bytes[i], manufacturer_metadata[i]);
   }
 }

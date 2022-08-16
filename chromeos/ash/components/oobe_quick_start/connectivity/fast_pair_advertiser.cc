@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/unguessable_token.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
 
 namespace ash::quick_start {
 
@@ -112,7 +112,7 @@ void FastPairAdvertiser::AdvertisementReleased(
 void FastPairAdvertiser::StartAdvertising(
     base::OnceCallback<void()> callback,
     base::OnceCallback<void()> error_callback,
-    const base::UnguessableToken& random_session_id) {
+    const RandomSessionId& random_session_id) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
   RegisterAdvertisement(std::move(callback), std::move(error_callback),
@@ -132,7 +132,7 @@ void FastPairAdvertiser::StopAdvertising(base::OnceCallback<void()> callback) {
 void FastPairAdvertiser::RegisterAdvertisement(
     base::OnceClosure callback,
     base::OnceClosure error_callback,
-    const base::UnguessableToken& random_session_id) {
+    const RandomSessionId& random_session_id) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
@@ -213,8 +213,9 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
 }
 
 std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata(
-    const base::UnguessableToken& random_session_id) {
-  base::span<const uint8_t, 16> id = random_session_id.AsBytes();
+    const RandomSessionId& random_session_id) {
+  base::span<const uint8_t, RandomSessionId::kLength> id =
+      random_session_id.AsBytes();
   std::vector<uint8_t> metadata(std::begin(id), std::end(id));
   return metadata;
 }

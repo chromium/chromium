@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/fast_pair_advertiser.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -22,6 +23,7 @@ using TargetDeviceConnectionBroker =
 using TargetDeviceConnectionBrokerImpl =
     ash::quick_start::TargetDeviceConnectionBrokerImpl;
 using FastPairAdvertiser = ash::quick_start::FastPairAdvertiser;
+using RandomSessionId = ash::quick_start::RandomSessionId;
 
 // Allows us to delay returning a Bluetooth adapter until after ReturnAdapter()
 // is called. Used for testing how the connection broker behaves before the
@@ -63,10 +65,9 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
     std::move(on_destroy_callback_).Run();
   }
 
-  void StartAdvertising(
-      base::OnceCallback<void()> callback,
-      base::OnceCallback<void()> error_callback,
-      const base::UnguessableToken& random_session_id) override {
+  void StartAdvertising(base::OnceCallback<void()> callback,
+                        base::OnceCallback<void()> error_callback,
+                        const RandomSessionId& random_session_id) override {
     ++start_advertising_call_count_;
     if (should_succeed_on_start_)
       std::move(callback).Run();

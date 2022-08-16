@@ -10,11 +10,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace ash::quick_start {
+
+class RandomSessionId;
 
 // FastPairAdvertiser broadcasts advertisements with the service UUID
 // 0xFE2C and model ID 0x41C0D9. When the remote device detects this
@@ -47,10 +48,9 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   FastPairAdvertiser& operator=(const FastPairAdvertiser&) = delete;
 
   // Begin broadcasting Fast Pair advertisement.
-  virtual void StartAdvertising(
-      base::OnceClosure callback,
-      base::OnceClosure error_callback,
-      const base::UnguessableToken& random_session_id);
+  virtual void StartAdvertising(base::OnceClosure callback,
+                                base::OnceClosure error_callback,
+                                const RandomSessionId& random_session_id);
 
   // Stop broadcasting Fast Pair advertisement.
   virtual void StopAdvertising(base::OnceClosure callback);
@@ -64,7 +64,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
 
   void RegisterAdvertisement(base::OnceClosure callback,
                              base::OnceClosure error_callback,
-                             const base::UnguessableToken& random_session_id);
+                             const RandomSessionId& random_session_id);
   void OnRegisterAdvertisement(
       base::OnceClosure callback,
       scoped_refptr<device::BluetoothAdvertisement> advertisement);
@@ -78,7 +78,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
 
   // Returns metadata in format [ random_session_id (16 bytes) ].
   std::vector<uint8_t> GenerateManufacturerMetadata(
-      const base::UnguessableToken& random_session_id);
+      const RandomSessionId& random_session_id);
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;

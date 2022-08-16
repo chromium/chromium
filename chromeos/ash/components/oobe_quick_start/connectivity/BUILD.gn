@@ -17,6 +17,8 @@ source_set("connectivity") {
   sources = [
     "fast_pair_advertiser.cc",
     "fast_pair_advertiser.h",
+    "random_session_id.cc",
+    "random_session_id.h",
     "target_device_connection_broker.cc",
     "target_device_connection_broker.h",
     "target_device_connection_broker_factory.cc",
