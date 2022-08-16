@@ -12344,7 +12344,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Shutdown.BrowserExit.Time" units="ms" expires_after="M107">
+<histogram name="Shutdown.BrowserExit.Time" units="ms" expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -12352,8 +12352,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Shutdown.EndSession.Time" units="ms"
-    expires_after="2023-01-01">
+<histogram name="Shutdown.EndSession.Time" units="ms" expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -12362,7 +12361,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Shutdown.NotValid.Time" units="ms" expires_after="M107">
+<histogram name="Shutdown.NotValid.Time" units="ms" expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -12373,7 +12372,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Shutdown.Renderers.Slow" units="renderers"
-    expires_after="M107">
+    expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -12383,7 +12382,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Shutdown.Renderers.Total" units="renderers"
-    expires_after="M107">
+    expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -12392,20 +12391,19 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Shutdown.ShutdownType" enum="ShutdownType"
-    expires_after="2022-12-18">
+    expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>The type of the last shutdown.</summary>
 </histogram>
 
-<histogram name="Shutdown.SilentExit.Time" units="ms" expires_after="M107">
+<histogram name="Shutdown.SilentExit.Time" units="ms" expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Time for shutdown for a silent exit.</summary>
 </histogram>
 
-<histogram name="Shutdown.WindowClose.Time" units="ms"
-    expires_after="2022-12-18">
+<histogram name="Shutdown.WindowClose.Time" units="ms" expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
