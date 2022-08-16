@@ -37,16 +37,6 @@
 
 @implementation BrowserViewControllerTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
-  // Enable arm that does not hide shortcuts.
-  config.features_enabled.push_back(kTrendingQueriesModule);
-  config.variations_enabled = {3350760};
-  return config;
-}
-
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {

@@ -137,11 +137,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   config.features_enabled.push_back(kDiscoverFeedInNtp);
-
-  config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
-  // Enable arm that does not hide shortcuts.
-  config.features_enabled.push_back(kTrendingQueriesModule);
-  config.variations_enabled = {3350760};
   return config;
 }
 
@@ -189,6 +184,17 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #define MAYBE_testCollectionShortcuts testCollectionShortcuts
 #endif
 - (void)MAYBE_testCollectionShortcuts {
+  // Relaunch the app with trending queries disabled, to ensure that the
+  // shortcuts module is always present.
+  // TODO(crbug.com/1350826): Trending queries is configured as a
+  // first-run trial, and one of the arms removes the Shortcuts
+  // module. Fix these tests to force an appropriate configuration or
+  // otherwise support the various possible experiment arms.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kTrendingQueriesModule);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   // Check the Bookmarks.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -522,29 +528,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [NewTabPageAppInterface resetWhatsNewPromo];
 }
 
-// Tests that the trending queries module header is visible and all four
-// trending queries are interactable.
-- (void)testTrendingQueries {
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID([NSString
-              stringWithFormat:
-                  @"%@",
-                  l10n_util::GetNSString(
-                      IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE)])]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  for (int index = 0; index < 4; index++) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID([NSString
-                stringWithFormat:@"%@%i",
-                                 kQuerySuggestionViewA11yIdentifierPrefix,
-                                 index])]
-        assertWithMatcher:grey_interactable()];
-  }
-}
-
 // Tests that the position of the collection view is restored when navigating
 // back to the NTP.
 // TODO(crbug.com/1299362): Re-enable test after fixing flakiness.
@@ -748,6 +731,17 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #define MAYBE_testFavicons testFavicons
 #endif
 - (void)MAYBE_testFavicons {
+  // Relaunch the app with trending queries disabled, to ensure that the
+  // shortcuts module is always present.
+  // TODO(crbug.com/1350826): Trending queries is configured as a
+  // first-run trial, and one of the arms removes the Shortcuts
+  // module. Fix these tests to force an appropriate configuration or
+  // otherwise support the various possible experiment arms.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_disabled.push_back(kTrendingQueriesModule);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -757,19 +751,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  // Scroll down if the shortcuts may not be completely in view due to Trending
-  // Queries.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityID([NSString
-                  stringWithFormat:
-                      @"%@0",
-                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix]),
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -802,19 +783,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  // Scroll down if the shortcuts may not be completely in view due to Trending
-  // Queries.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_accessibilityID([NSString
-                  stringWithFormat:
-                      @"%@0",
-                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix]),
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -1383,7 +1351,18 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kIOSOmniboxUpdatedPopupUI.name) + "<" +
+      std::string(kIOSOmniboxUpdatedPopupUI.name));
+
+  config.additional_args.push_back(
+      "--force-fieldtrials=" + std::string(kIOSOmniboxUpdatedPopupUI.name) +
+      "/Test");
+
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" +
+      std::string(kIOSOmniboxUpdatedPopupUI.name) + ".Test:" +
+      std::string(kIOSOmniboxUpdatedPopupUIVariationName) + "/" + _variant);
 
   return config;
 }
@@ -1413,14 +1392,6 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
   [super setUp];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  config.variations_enabled.push_back(3348486);
-
-  return config;
-}
-
 // This is currently needed to prevent this test case from being ignored.
 // TODO(crbug.com/1339419): Test fails on device.
 #if !TARGET_IPHONE_SIMULATOR
@@ -1447,14 +1418,6 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
   // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  config.variations_enabled.push_back(3348487);
-
-  return config;
 }
 
 // This is currently needed to prevent this test case from being ignored.

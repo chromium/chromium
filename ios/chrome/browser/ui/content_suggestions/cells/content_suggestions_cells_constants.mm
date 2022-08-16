@@ -12,6 +12,3 @@ const CGSize kReturnToRecentTabSize = {/*width=*/343, /*height=*/72};
 
 NSString* const kContentSuggestionsWhatsNewIdentifier =
     @"ContentSuggestionsWhatsNewIdentifier";
-
-NSString* const kQuerySuggestionViewA11yIdentifierPrefix =
-    @"QuerySuggestionViewA11yIdentifierPrefix";
