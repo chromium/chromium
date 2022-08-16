@@ -79,6 +79,19 @@
   promise_test(async () => {
     assert_false(popup1.matches(':top-layer'));
     popup1.showPopUp();
+    await waitForRender();
+    assert_true(popup1.matches(':top-layer'));
+    outside.dispatchEvent(new Event('mousedown'));
+    await waitForRender();
+    assert_true(popup1.matches(':top-layer'),'mousedown (outside the pop-up) should not hide the pop-up');
+    outside.dispatchEvent(new Event('mouseup'));
+    await waitForRender();
+    assert_false(popup1.matches(':top-layer'),'mouseup (outside the pop-up) should trigger light dismiss');
+  },'Pop-ups close on mouseup, not mousedown');
+
+  promise_test(async () => {
+    assert_false(popup1.matches(':top-layer'));
+    popup1.showPopUp();
     await clickOn(inside1After);
     assert_true(popup1.matches(':top-layer'));
     await sendTab();

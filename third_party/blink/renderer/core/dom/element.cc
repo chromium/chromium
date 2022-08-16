@@ -3033,19 +3033,27 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   DCHECK(document.TopmostPopupAutoOrHint());
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kMousedown) {
-    // - Hide everything up to the clicked element. We do this on mousedown,
-    //   rather than mouseup/click, for two reasons:
-    //    1. This mirrors typical platform popups, which dismiss on mousedown.
-    //    2. This allows a mouse-drag that starts on a popup and finishes off
-    //       the popup, without light-dismissing the popup.
-
-    // For a clicked node, hide all pop-ups outside the clicked pop-up tree,
-    // including unrelated pop-ups.
-    HideAllPopupsUntil(
-        NearestOpenAncestralPopup(target_node, /*inclusive*/ true), document,
-        HidePopupFocusBehavior::kNone,
-        HidePopupForcingLevel::kHideAfterAnimations,
-        HidePopupIndependence::kHideUnrelated);
+    document.SetPopUpMousedownTarget(
+        NearestOpenAncestralPopup(target_node, /*inclusive*/ true));
+  } else if (event_type == event_type_names::kMouseup) {
+    // Hide everything up to the clicked element. We do this on mouseup,
+    // rather than mousedown or click, primarily for accessibility concerns.
+    // See https://www.w3.org/WAI/WCAG21/Understanding/pointer-cancellation.html
+    // for more information on why it is better to perform potentially
+    // destructive actions (including hiding a pop-up) on mouse-up rather than
+    // mouse-down. To properly handle the use case where a user starts a
+    // mouse-drag on a pop-up, and finishes off the pop-up (to highlight text),
+    // the ancestral pop-up is stored in mousedown and compared here.
+    auto* ancestor_pop_up =
+        NearestOpenAncestralPopup(target_node, /*inclusive*/ true);
+    bool same_target = ancestor_pop_up == document.PopUpMousedownTarget();
+    document.SetPopUpMousedownTarget(nullptr);
+    if (same_target) {
+      HideAllPopupsUntil(ancestor_pop_up, document,
+                         HidePopupFocusBehavior::kNone,
+                         HidePopupForcingLevel::kHideAfterAnimations,
+                         HidePopupIndependence::kHideUnrelated);
+    }
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {

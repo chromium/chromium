@@ -7318,6 +7318,13 @@ Element* Document::TopmostPopupAutoOrHint() const {
   return PopupStack().back();
 }
 
+void Document::SetPopUpMousedownTarget(const Element* pop_up) {
+  DCHECK(
+      RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(GetExecutionContext()));
+  DCHECK(!pop_up || pop_up->HasValidPopupAttribute());
+  pop_up_mousedown_target_ = pop_up;
+}
+
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -8071,6 +8078,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(top_layer_elements_);
   visitor->Trace(popup_hint_showing_);
   visitor->Trace(popup_stack_);
+  visitor->Trace(pop_up_mousedown_target_);
   visitor->Trace(popups_waiting_to_hide_);
   visitor->Trace(all_open_pop_ups_);
   visitor->Trace(load_event_delay_timer_);
