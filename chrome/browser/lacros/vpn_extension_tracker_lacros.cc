@@ -71,3 +71,9 @@ void VpnExtensionTrackerLacros::OnExtensionUnloaded(
   }
   GetVpnExtensionObserver()->OnLacrosVpnExtensionUnloaded(extension->id());
 }
+
+void VpnExtensionTrackerLacros::OnShutdown(
+    extensions::ExtensionRegistry* registry) {
+  DCHECK(extension_registry_observer_.IsObservingSource(registry));
+  extension_registry_observer_.Reset();
+}

@@ -26,6 +26,7 @@ class VpnExtensionTrackerLacros : public extensions::ExtensionRegistryObserver {
   void OnExtensionUnloaded(content::BrowserContext*,
                            const extensions::Extension*,
                            extensions::UnloadedExtensionReason) override;
+  void OnShutdown(extensions::ExtensionRegistry*) override;
 
  private:
   base::ScopedObservation<extensions::ExtensionRegistry,
