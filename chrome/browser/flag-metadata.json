@@ -4659,6 +4659,13 @@
     "expiry_milestone": 86
   },
   {
+    "name": "omaha-min-sdk-version-android",
+    "owners": [ "nyquist", "waffles" ],
+    // Provides a way for changing how Chrome behaves on old and new Android SDK
+    // versions. Exists in about:flags so QA can more easily test behavior.
+    "expiry_milestone": -1
+  },
+  {
     "name": "omit-cors-client-cert",
     "owners": [ "toyoshim", "loading-dev" ],
     "expiry_milestone": 110

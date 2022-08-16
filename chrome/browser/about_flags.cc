@@ -481,6 +481,20 @@ const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
     {flag_descriptions::kUpdateMenuTypeUnsupportedOSVersion,
      switches::kForceUpdateMenuType, "unsupported_os_version"},
 };
+
+const FeatureEntry::FeatureParam kOmahaMinSdkVersionAndroidMinSdk1[] = {
+    {"min_sdk_version", "1"}};
+const FeatureEntry::FeatureParam kOmahaMinSdkVersionAndroidMinSdk1000[] = {
+    {"min_sdk_version", "1000"}};
+const FeatureEntry::FeatureVariation kOmahaMinSdkVersionAndroidVariations[] = {
+    {flag_descriptions::kOmahaMinSdkVersionAndroidMinSdk1Description,
+     kOmahaMinSdkVersionAndroidMinSdk1,
+     std::size(kOmahaMinSdkVersionAndroidMinSdk1), nullptr},
+    {flag_descriptions::kOmahaMinSdkVersionAndroidMinSdk1000Description,
+     kOmahaMinSdkVersionAndroidMinSdk1000,
+     std::size(kOmahaMinSdkVersionAndroidMinSdk1000), nullptr},
+};
+
 #else   // BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kReaderModeOfferInSettings[] = {
     {switches::kReaderModeDiscoverabilityParamName,
@@ -4690,6 +4704,12 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kMarketUrlForTesting,
                                  "https://play.google.com/store/apps/"
                                  "details?id=com.android.chrome")},
+    {"omaha-min-sdk-version-android",
+     flag_descriptions::kOmahaMinSdkVersionAndroidName,
+     flag_descriptions::kOmahaMinSdkVersionAndroidDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kOmahaMinSdkVersionAndroid,
+                                    kOmahaMinSdkVersionAndroidVariations,
+                                    "OmahaMinSdkVersionAndroidStudy")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-tls13-early-data", flag_descriptions::kEnableTLS13EarlyDataName,
      flag_descriptions::kEnableTLS13EarlyDataDescription, kOsAll,

@@ -113,6 +113,7 @@ extern const base::Feature kNewInstanceFromDraggedLink;
 extern const base::Feature kNewTabPageTilesTitleWrapAround;
 extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kNotificationPermissionVariant;
+extern const base::Feature kOmahaMinSdkVersionAndroid;
 extern const base::Feature kOmniboxModernizeVisualUpdate;
 extern const base::Feature kOptimizeGeolocationHeaderGeneration;
 extern const base::Feature kPageAnnotationsService;

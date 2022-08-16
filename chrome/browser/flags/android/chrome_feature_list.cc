@@ -259,6 +259,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kBackGestureRefactorAndroid,
+    &kOmahaMinSdkVersionAndroid,
     &kOmniboxModernizeVisualUpdate,
     &kOptimizeGeolocationHeaderGeneration,
     &kOptimizeLayoutsForPullRefresh,
@@ -744,6 +745,9 @@ const base::Feature kBookmarksRefresh{"BookmarksRefresh",
 
 const base::Feature kBackGestureRefactorAndroid{
     "BackGestureRefactorAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOmahaMinSdkVersionAndroid{
+    "OmahaMinSdkVersionAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOmniboxModernizeVisualUpdate{
     "OmniboxModernizeVisualUpdate", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -91,6 +91,7 @@
   "memlog",
   "memlog-sampling-rate",
   "memlog-stack-mode",
+  "omaha-min-sdk-version-android",
   "overlay-strategies",
   "password-import",
   "reader-mode-heuristics",
