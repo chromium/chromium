@@ -42,9 +42,10 @@ class ScriptRegexp;
 class BaseTextInputType : public TextFieldInputType {
  public:
   void Trace(Visitor* visitor) const override;
+  bool PatternMismatch(const String&) const;
 
  protected:
-  BaseTextInputType(HTMLInputElement&);
+  BaseTextInputType(Type, HTMLInputElement&);
   ~BaseTextInputType() override;
 
  private:
@@ -54,7 +55,6 @@ class BaseTextInputType : public TextFieldInputType {
                 TextControlElement::NeedsToCheckDirtyFlag) const final;
   int MaxLength() const final;
   int MinLength() const final;
-  bool PatternMismatch(const String&) const final;
   bool SupportsPlaceholder() const final;
   bool SupportsSelectionAPI() const override;
 
@@ -62,6 +62,13 @@ class BaseTextInputType : public TextFieldInputType {
   // cache.
   mutable Member<ScriptRegexp> regexp_;
   mutable AtomicString pattern_for_regexp_;
+};
+
+template <>
+struct DowncastTraits<BaseTextInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsBaseTextInputType();
+  }
 };
 
 }  // namespace blink

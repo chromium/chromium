@@ -37,13 +37,21 @@ namespace blink {
 
 class ButtonInputType final : public BaseButtonInputType {
  public:
-  ButtonInputType(HTMLInputElement& element) : BaseButtonInputType(element) {}
+  ButtonInputType(HTMLInputElement& element)
+      : BaseButtonInputType(Type::kButton, element) {}
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
   bool SupportsValidation() const override;
   bool IsTextButton() const override;
+};
+
+template <>
+struct DowncastTraits<ButtonInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsButtonInputType();
+  }
 };
 
 }  // namespace blink

@@ -156,7 +156,7 @@ bool EmailInputType::IsValidEmailAddress(const ScriptRegexp& regexp,
 }
 
 EmailInputType::EmailInputType(HTMLInputElement& element)
-    : BaseTextInputType(element) {}
+    : BaseTextInputType(Type::kEmail, element) {}
 
 void EmailInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeEmail);

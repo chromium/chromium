@@ -41,8 +41,8 @@
 
 namespace blink {
 
-BaseButtonInputType::BaseButtonInputType(HTMLInputElement& element)
-    : InputType(element), KeyboardClickableInputTypeView(element) {}
+BaseButtonInputType::BaseButtonInputType(Type type, HTMLInputElement& element)
+    : InputType(type, element), KeyboardClickableInputTypeView(element) {}
 
 void BaseButtonInputType::Trace(Visitor* visitor) const {
   KeyboardClickableInputTypeView::Trace(visitor);

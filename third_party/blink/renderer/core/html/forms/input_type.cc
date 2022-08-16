@@ -144,6 +144,70 @@ bool InputType::IsTextField() const {
   return false;
 }
 
+template <typename T>
+bool ValidateInputType(const T& input_type, const String& value) {
+  if (!input_type.CanSetStringValue()) {
+    NOTREACHED();
+    return false;
+  }
+  return !input_type.TypeMismatchFor(value) &&
+         !input_type.StepMismatch(value) && !input_type.RangeUnderflow(value) &&
+         !input_type.RangeOverflow(value) &&
+         !input_type.PatternMismatch(value) && !input_type.ValueMissing(value);
+}
+
+// Do not use virtual function for performance reason.
+bool InputType::IsValidValue(const String& value) const {
+  switch (type_) {
+    case Type::kButton:
+      return ValidateInputType(To<ButtonInputType>(*this), value);
+    case Type::kCheckbox:
+      return ValidateInputType(To<CheckboxInputType>(*this), value);
+    case Type::kColor:
+      return ValidateInputType(To<ColorInputType>(*this), value);
+    case Type::kDate:
+      return ValidateInputType(To<DateInputType>(*this), value);
+    case Type::kDateTimeLocal:
+      return ValidateInputType(To<DateTimeLocalInputType>(*this), value);
+    case Type::kEmail:
+      return ValidateInputType(To<EmailInputType>(*this), value);
+    case Type::kFile:
+      return ValidateInputType(To<FileInputType>(*this), value);
+    case Type::kHidden:
+      return ValidateInputType(To<HiddenInputType>(*this), value);
+    case Type::kImage:
+      return ValidateInputType(To<ImageInputType>(*this), value);
+    case Type::kMonth:
+      return ValidateInputType(To<MonthInputType>(*this), value);
+    case Type::kNumber:
+      return ValidateInputType(To<NumberInputType>(*this), value);
+    case Type::kPassword:
+      return ValidateInputType(To<PasswordInputType>(*this), value);
+    case Type::kRadio:
+      return ValidateInputType(To<RadioInputType>(*this), value);
+    case Type::kRange:
+      return ValidateInputType(To<RangeInputType>(*this), value);
+    case Type::kReset:
+      return ValidateInputType(To<ResetInputType>(*this), value);
+    case Type::kSearch:
+      return ValidateInputType(To<SearchInputType>(*this), value);
+    case Type::kSubmit:
+      return ValidateInputType(To<SubmitInputType>(*this), value);
+    case Type::kTelephone:
+      return ValidateInputType(To<TelephoneInputType>(*this), value);
+    case Type::kTime:
+      return ValidateInputType(To<TimeInputType>(*this), value);
+    case Type::kURL:
+      return ValidateInputType(To<URLInputType>(*this), value);
+    case Type::kWeek:
+      return ValidateInputType(To<WeekInputType>(*this), value);
+    case Type::kText:
+      return ValidateInputType(To<TextInputType>(*this), value);
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool InputType::ShouldSaveAndRestoreFormControlState() const {
   return true;
 }
@@ -198,7 +262,39 @@ bool InputType::SupportsValidation() const {
   return true;
 }
 
-bool InputType::TypeMismatchFor(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::TypeMismatchFor(const String& value) const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+      return To<BaseTemporalInputType>(*this).TypeMismatchFor(value);
+    case Type::kColor:
+      return To<ColorInputType>(*this).TypeMismatchFor(value);
+    case Type::kEmail:
+      return To<EmailInputType>(*this).TypeMismatchFor(value);
+    case Type::kRange:
+      return To<RangeInputType>(*this).TypeMismatchFor(value);
+    case Type::kURL:
+      return To<URLInputType>(*this).TypeMismatchFor(value);
+    case Type::kNumber:
+    case Type::kButton:
+    case Type::kCheckbox:
+    case Type::kFile:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kPassword:
+    case Type::kRadio:
+    case Type::kReset:
+    case Type::kSearch:
+    case Type::kSubmit:
+    case Type::kTelephone:
+    case Type::kText:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -211,7 +307,39 @@ bool InputType::SupportsRequired() const {
   return SupportsValidation();
 }
 
-bool InputType::ValueMissing(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::ValueMissing(const String& value) const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+      return To<BaseTemporalInputType>(*this).ValueMissing(value);
+    case Type::kCheckbox:
+      return To<CheckboxInputType>(*this).ValueMissing(value);
+    case Type::kFile:
+      return To<FileInputType>(*this).ValueMissing(value);
+    case Type::kRadio:
+      return To<RadioInputType>(*this).ValueMissing(value);
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+    case Type::kNumber:
+      return To<TextFieldInputType>(*this).ValueMissing(value);
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -225,7 +353,35 @@ bool InputType::TooShort(const String&,
   return false;
 }
 
-bool InputType::PatternMismatch(const String&) const {
+// Do not use virtual function for performance reason.
+bool InputType::PatternMismatch(const String& value) const {
+  switch (type_) {
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+      return To<BaseTextInputType>(*this).PatternMismatch(value);
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kCheckbox:
+    case Type::kFile:
+    case Type::kRadio:
+    case Type::kNumber:
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 
@@ -501,8 +657,37 @@ Locale& InputType::GetLocale() const {
   return GetElement().GetLocale();
 }
 
+// Do not use virtual function for performance reason.
 bool InputType::CanSetStringValue() const {
-  return true;
+  switch (type_) {
+    case Type::kRadio:
+    case Type::kCheckbox:
+      return To<BaseCheckableInputType>(*this).CanSetStringValue();
+    case Type::kFile:
+      return To<FileInputType>(*this).CanSetStringValue();
+    case Type::kEmail:
+    case Type::kPassword:
+    case Type::kSearch:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kNumber:
+    case Type::kColor:
+    case Type::kRange:
+    case Type::kButton:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kReset:
+    case Type::kSubmit:
+      return true;
+  }
+  NOTREACHED();
+  return false;
 }
 
 bool InputType::IsKeyboardFocusable() const {
@@ -654,7 +839,35 @@ bool InputType::IsCheckable() {
   return false;
 }
 
+// Do not use virtual function for performance reason.
 bool InputType::IsSteppable() const {
+  switch (type_) {
+    case Type::kDate:
+    case Type::kDateTimeLocal:
+    case Type::kMonth:
+    case Type::kTime:
+    case Type::kWeek:
+    case Type::kNumber:
+    case Type::kRange:
+      return true;
+    case Type::kButton:
+    case Type::kCheckbox:
+    case Type::kColor:
+    case Type::kEmail:
+    case Type::kFile:
+    case Type::kHidden:
+    case Type::kImage:
+    case Type::kPassword:
+    case Type::kRadio:
+    case Type::kReset:
+    case Type::kSearch:
+    case Type::kSubmit:
+    case Type::kTelephone:
+    case Type::kURL:
+    case Type::kText:
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 

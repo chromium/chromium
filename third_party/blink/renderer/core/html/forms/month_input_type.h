@@ -38,7 +38,7 @@ namespace blink {
 class MonthInputType final : public BaseTemporalInputType {
  public:
   explicit MonthInputType(HTMLInputElement& element)
-      : BaseTemporalInputType(element) {}
+      : BaseTemporalInputType(Type::kMonth, element) {}
 
  private:
   void CountUsage() override;
@@ -67,6 +67,13 @@ class MonthInputType final : public BaseTemporalInputType {
                      bool has_minute,
                      bool has_second) const override;
   String AriaLabelForPickerIndicator() const override;
+};
+
+template <>
+struct DowncastTraits<MonthInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsMonthInputType();
+  }
 };
 
 }  // namespace blink

@@ -80,6 +80,13 @@ class ImageInputType final : public BaseButtonInputType {
   bool use_fallback_content_;
 };
 
+template <>
+struct DowncastTraits<ImageInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsImageInputType();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_IMAGE_INPUT_TYPE_H_

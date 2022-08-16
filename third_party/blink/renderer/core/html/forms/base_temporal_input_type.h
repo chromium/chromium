@@ -70,9 +70,12 @@ class BaseTemporalInputType : public InputType {
                              bool has_minute,
                              bool has_second) const = 0;
   virtual String AriaLabelForPickerIndicator() const = 0;
+  bool TypeMismatchFor(const String&) const;
+  bool ValueMissing(const String&) const;
 
  protected:
-  BaseTemporalInputType(HTMLInputElement& element) : InputType(element) {}
+  BaseTemporalInputType(Type type, HTMLInputElement& element)
+      : InputType(type, element) {}
   Decimal ParseToNumber(const String&, const Decimal&) const override;
   String Serialize(const Decimal&) const override;
   String SerializeWithComponents(const DateComponents&) const;
@@ -92,21 +95,25 @@ class BaseTemporalInputType : public InputType {
   void SetValueAsDouble(double,
                         TextFieldEventBehavior,
                         ExceptionState&) const override;
-  bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
-  bool ValueMissing(const String&) const override;
   String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maximum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
   String RangeInvalidText(const Decimal& minimum,
                           const Decimal& maximum) const override;
   Decimal DefaultValueForStepUp() const override;
-  bool IsSteppable() const override;
   virtual String SerializeWithDate(const absl::optional<base::Time>&) const;
   String LocalizeValue(const String&) const override;
   bool SupportsReadOnly() const override;
   bool ShouldRespectListAttribute() override;
   bool MayTriggerVirtualKeyboard() const override;
+};
+
+template <>
+struct DowncastTraits<BaseTemporalInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsBaseTemporalInputType();
+  }
 };
 
 }  // namespace blink

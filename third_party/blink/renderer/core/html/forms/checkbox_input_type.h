@@ -38,18 +38,25 @@ namespace blink {
 class CheckboxInputType final : public BaseCheckableInputType {
  public:
   CheckboxInputType(HTMLInputElement& element)
-      : BaseCheckableInputType(element) {}
+      : BaseCheckableInputType(Type::kCheckbox, element) {}
+  bool ValueMissing(const String&) const;
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
   ControlPart AutoAppearance() const override;
-  bool ValueMissing(const String&) const override;
   String ValueMissingText() const override;
   void HandleKeyupEvent(KeyboardEvent&) override;
   ClickHandlingState* WillDispatchClick() override;
   void DidDispatchClick(Event&, const ClickHandlingState&) override;
   bool ShouldAppearIndeterminate() const override;
+};
+
+template <>
+struct DowncastTraits<CheckboxInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsCheckboxInputType();
+  }
 };
 
 }  // namespace blink

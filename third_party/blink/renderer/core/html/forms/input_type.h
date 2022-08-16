@@ -54,6 +54,41 @@ class InputTypeView;
 // other than HTMLInputElement.
 class CORE_EXPORT InputType : public GarbageCollected<InputType> {
  public:
+  enum class Type : uint8_t {
+    kButton,
+    kColor,
+    kFile,
+    kHidden,
+    kImage,
+    kNumber,
+    kRange,
+    kReset,
+    kSubmit,
+
+    // BaseCheckable
+    kRadio,
+    kCheckbox,
+
+    // BaseTemporal
+    kDate,
+    kFirstBaseTemporalType = kDate,
+    kDateTimeLocal,
+    kMonth,
+    kTime,
+    kWeek,
+    kLastBaseTemporalType = kWeek,
+
+    // BaseText
+    kEmail,
+    kFirstBaseTextType = kEmail,
+    kPassword,
+    kSearch,
+    kTelephone,
+    kURL,
+    kText,
+    kLastBaseTextType = kText
+  };
+
   static InputType* Create(HTMLInputElement&, const AtomicString&);
   static const AtomicString& NormalizeTypeName(const AtomicString&);
   InputType(const InputType&) = delete;
@@ -76,6 +111,47 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool IsInteractiveContent() const;
   virtual bool IsTextButton() const;
   virtual bool IsTextField() const;
+
+  bool IsButtonInputType() const { return type_ == Type::kButton; }
+  bool IsColorInputType() const { return type_ == Type::kColor; }
+  bool IsFileInputType() const { return type_ == Type::kFile; }
+  bool IsHiddenInputType() const { return type_ == Type::kHidden; }
+  bool IsImageInputType() const { return type_ == Type::kImage; }
+  bool IsNumberInputType() const { return type_ == Type::kNumber; }
+  bool IsRangeInputType() const { return type_ == Type::kRange; }
+  bool IsResetInputType() const { return type_ == Type::kReset; }
+  bool IsSubmitInputType() const { return type_ == Type::kSubmit; }
+  bool IsRadioInputType() const { return type_ == Type::kRadio; }
+  bool IsCheckboxInputType() const { return type_ == Type::kCheckbox; }
+  bool IsBaseCheckableInputType() const {
+    return type_ == Type::kRadio || type_ == Type::kCheckbox;
+  }
+  bool IsDateInputType() const { return type_ == Type::kDate; }
+  bool IsDateTimeLocalInputType() const {
+    return type_ == Type::kDateTimeLocal;
+  }
+  bool IsMonthInputType() const { return type_ == Type::kMonth; }
+  bool IsTimeInputType() const { return type_ == Type::kTime; }
+  bool IsWeekInputType() const { return type_ == Type::kWeek; }
+  bool IsBaseTemporalInputType() const {
+    return type_ >= Type::kFirstBaseTemporalType &&
+           type_ <= Type::kLastBaseTemporalType;
+  }
+  bool IsEmailInputType() const { return type_ == Type::kEmail; }
+  bool IsPasswordInputType() const { return type_ == Type::kPassword; }
+  bool IsSearchInputType() const { return type_ == Type::kSearch; }
+  bool IsTelephoneInputType() const { return type_ == Type::kTelephone; }
+  bool IsTextInputType() const { return type_ == Type::kText; }
+  bool IsURLInputType() const { return type_ == Type::kURL; }
+  bool IsBaseTextInputType() const {
+    return type_ >= Type::kFirstBaseTextType &&
+           type_ <= Type::kLastBaseTextType;
+  }
+  bool IsTextFieldInputType() const {
+    return IsBaseTextInputType() || IsNumberInputType();
+  }
+
+  bool IsValidValue(const String&) const;
 
   // Form value functions
 
@@ -119,14 +195,14 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   // .second if patternMismatch.
   std::pair<String, String> ValidationMessage(const InputTypeView&) const;
   virtual bool SupportsValidation() const;
-  virtual bool TypeMismatchFor(const String&) const;
+  bool TypeMismatchFor(const String&) const;
   // Type check for the current input value. We do nothing for some types
   // though typeMismatchFor() does something for them because of value
   // sanitization.
   virtual bool TypeMismatch() const;
   virtual bool SupportsRequired() const;
-  virtual bool ValueMissing(const String&) const;
-  virtual bool PatternMismatch(const String&) const;
+  bool ValueMissing(const String&) const;
+  bool PatternMismatch(const String&) const;
   virtual bool TooLong(const String&,
                        TextControlElement::NeedsToCheckDirtyFlag) const;
   virtual bool TooShort(const String&,
@@ -154,7 +230,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
                                   const Decimal& maximum) const;
   virtual String TypeMismatchText() const;
   virtual String ValueMissingText() const;
-  virtual bool CanSetStringValue() const;
+  bool CanSetStringValue() const;
   virtual String LocalizeValue(const String&) const;
   virtual String VisibleValue() const;
   // Returing the null string means "use the default value."
@@ -195,7 +271,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool ShouldRespectListAttribute();
   virtual bool IsEnumeratable();
   virtual bool IsCheckable();
-  virtual bool IsSteppable() const;
+  bool IsSteppable() const;
   virtual HTMLFormControlElement::PopupTriggerSupport SupportsPopupTriggering()
       const;
   virtual bool ShouldRespectHeightAndWidthAttributes();
@@ -239,7 +315,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual ColorChooserClient* GetColorChooserClient();
 
  protected:
-  InputType(HTMLInputElement& element) : element_(element) {}
+  InputType(Type type, HTMLInputElement& element)
+      : type_(type), element_(element) {}
   HTMLInputElement& GetElement() const { return *element_; }
   ChromeClient* GetChromeClient() const;
   Locale& GetLocale() const;
@@ -278,6 +355,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
                             const StepRange::StepDescription&,
                             bool supports_reversed_range) const;
 
+  const Type type_;
   Member<HTMLInputElement> element_;
 };
 

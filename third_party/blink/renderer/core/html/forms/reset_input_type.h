@@ -38,7 +38,7 @@ namespace blink {
 class ResetInputType final : public BaseButtonInputType {
  public:
   explicit ResetInputType(HTMLInputElement& element)
-      : BaseButtonInputType(element) {}
+      : BaseButtonInputType(Type::kReset, element) {}
 
  private:
   void CountUsage() override;
@@ -47,6 +47,13 @@ class ResetInputType final : public BaseButtonInputType {
   void HandleDOMActivateEvent(Event&) override;
   String DefaultLabel() const override;
   bool IsTextButton() const override;
+};
+
+template <>
+struct DowncastTraits<ResetInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsResetInputType();
+  }
 };
 
 }  // namespace blink

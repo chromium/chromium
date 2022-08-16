@@ -77,7 +77,8 @@ static bool IsValidColorString(const String& value) {
 }
 
 ColorInputType::ColorInputType(HTMLInputElement& element)
-    : InputType(element), KeyboardClickableInputTypeView(element) {}
+    : InputType(Type::kColor, element),
+      KeyboardClickableInputTypeView(element) {}
 
 ColorInputType::~ColorInputType() = default;
 

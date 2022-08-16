@@ -124,10 +124,6 @@ Decimal BaseTemporalInputType::DefaultValueForStepUp() const {
       ConvertToLocalTime(base::Time::Now()).InMillisecondsF());
 }
 
-bool BaseTemporalInputType::IsSteppable() const {
-  return true;
-}
-
 Decimal BaseTemporalInputType::ParseToNumber(
     const String& source,
     const Decimal& default_value) const {

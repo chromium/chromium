@@ -47,10 +47,11 @@ class EmailInputType final : public BaseTextInputType {
                                               const String&);
   CORE_EXPORT static ScriptRegexp* CreateEmailRegexp();
 
+  bool TypeMismatchFor(const String&) const;
+
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
-  bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
   String TypeMismatchText() const override;
   bool SupportsSelectionAPI() const override;
@@ -60,6 +61,13 @@ class EmailInputType final : public BaseTextInputType {
 
   String ConvertEmailAddressToUnicode(const String&) const;
   String FindInvalidAddress(const String&) const;
+};
+
+template <>
+struct DowncastTraits<EmailInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsEmailInputType();
+  }
 };
 
 }  // namespace blink

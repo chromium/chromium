@@ -37,8 +37,8 @@ void BaseTextInputType::Trace(Visitor* visitor) const {
   TextFieldInputType::Trace(visitor);
 }
 
-BaseTextInputType::BaseTextInputType(HTMLInputElement& element)
-    : TextFieldInputType(element) {}
+BaseTextInputType::BaseTextInputType(Type type, HTMLInputElement& element)
+    : TextFieldInputType(type, element) {}
 
 BaseTextInputType::~BaseTextInputType() = default;
 

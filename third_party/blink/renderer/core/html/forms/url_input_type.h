@@ -37,16 +37,22 @@ namespace blink {
 
 class URLInputType final : public BaseTextInputType {
  public:
-  URLInputType(HTMLInputElement& element) : BaseTextInputType(element) {}
+  URLInputType(HTMLInputElement& element)
+      : BaseTextInputType(Type::kURL, element) {}
+  bool TypeMismatchFor(const String&) const;
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
-  bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
   String TypeMismatchText() const override;
   String SanitizeValue(const String&) const override;
   String SanitizeUserInputValue(const String&) const override;
+};
+
+template <>
+struct DowncastTraits<URLInputType> {
+  static bool AllowFrom(const InputType& type) { return type.IsURLInputType(); }
 };
 
 }  // namespace blink

@@ -45,7 +45,8 @@
 namespace blink {
 
 ImageInputType::ImageInputType(HTMLInputElement& element)
-    : BaseButtonInputType(element), use_fallback_content_(false) {}
+    : BaseButtonInputType(Type::kImage, element),
+      use_fallback_content_(false) {}
 
 void ImageInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeImage);

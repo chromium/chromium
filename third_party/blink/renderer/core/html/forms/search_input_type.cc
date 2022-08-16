@@ -48,7 +48,7 @@
 namespace blink {
 
 SearchInputType::SearchInputType(HTMLInputElement& element)
-    : BaseTextInputType(element),
+    : BaseTextInputType(Type::kSearch, element),
       search_event_timer_(
           element.GetDocument().GetTaskRunner(TaskType::kUserInteraction),
           this,

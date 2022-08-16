@@ -108,8 +108,8 @@ class DataListIndicatorElement final : public HTMLDivElement {
   }
 };
 
-TextFieldInputType::TextFieldInputType(HTMLInputElement& element)
-    : InputType(element), InputTypeView(element) {}
+TextFieldInputType::TextFieldInputType(Type type, HTMLInputElement& element)
+    : InputType(type, element), InputTypeView(element) {}
 
 TextFieldInputType::~TextFieldInputType() = default;
 

@@ -67,6 +67,13 @@ class TimeInputType final : public BaseTemporalInputType {
                                      const Decimal& maximum) const override;
 };
 
+template <>
+struct DowncastTraits<TimeInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsTimeInputType();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TIME_INPUT_TYPE_H_

@@ -51,7 +51,7 @@ static const int kTimeDefaultStepBase = 0;
 static const int kTimeStepScaleFactor = 1000;
 
 TimeInputType::TimeInputType(HTMLInputElement& element)
-    : BaseTemporalInputType(element) {}
+    : BaseTemporalInputType(Type::kTime, element) {}
 
 void TimeInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeTime);

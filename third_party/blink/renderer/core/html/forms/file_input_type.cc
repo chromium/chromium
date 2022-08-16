@@ -72,7 +72,7 @@ Vector<String> CollectAcceptTypes(const HTMLInputElement& input) {
 }  // namespace
 
 FileInputType::FileInputType(HTMLInputElement& element)
-    : InputType(element),
+    : InputType(Type::kFile, element),
       KeyboardClickableInputTypeView(element),
       file_list_(MakeGarbageCollected<FileList>()) {}
 

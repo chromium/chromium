@@ -75,7 +75,7 @@ static Decimal EnsureMaximum(const Decimal& proposed_value,
 }
 
 RangeInputType::RangeInputType(HTMLInputElement& element)
-    : InputType(element),
+    : InputType(Type::kRange, element),
       InputTypeView(element),
       tick_mark_values_dirty_(true) {}
 
@@ -149,10 +149,6 @@ StepRange RangeInputType::CreateStepRange(
   const bool kHasRangeLimitations = true;
   return StepRange(step_base, minimum, maximum, kHasRangeLimitations,
                    /*has_reversed_range=*/false, step, step_description);
-}
-
-bool RangeInputType::IsSteppable() const {
-  return true;
 }
 
 void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {

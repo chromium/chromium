@@ -179,10 +179,6 @@ bool NumberInputType::SizeShouldIncludeDecoration(int default_size,
   return true;
 }
 
-bool NumberInputType::IsSteppable() const {
-  return true;
-}
-
 static bool IsE(UChar ch) {
   return ch == 'e' || ch == 'E';
 }

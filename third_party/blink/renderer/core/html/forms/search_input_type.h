@@ -62,6 +62,13 @@ class SearchInputType final : public BaseTextInputType {
   HeapTaskRunnerTimer<SearchInputType> search_event_timer_;
 };
 
+template <>
+struct DowncastTraits<SearchInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsSearchInputType();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SEARCH_INPUT_TYPE_H_

@@ -44,7 +44,7 @@ class BaseButtonInputType : public InputType,
   using InputType::GetElement;
 
  protected:
-  explicit BaseButtonInputType(HTMLInputElement&);
+  BaseButtonInputType(Type, HTMLInputElement&);
   void ValueAttributeChanged() override;
   void CreateShadowSubtree() override;
   HTMLFormControlElement::PopupTriggerSupport SupportsPopupTriggering()
