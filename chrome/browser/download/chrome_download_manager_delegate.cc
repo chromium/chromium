@@ -859,12 +859,14 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   download::DownloadItemRenameHandler* handler = download->GetRenameHandler();
   if (handler) {
     handler->OpenDownload();
-    RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_RENAME_HANDLER);
+    RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_RENAME_HANDLER,
+                       download->GetMimeType());
     return;
   }
 
   if (!DownloadItemModel(download).ShouldPreferOpeningInBrowser()) {
-    RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_DEFAULT_PLATFORM);
+    RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_DEFAULT_PLATFORM,
+                       download->GetMimeType());
     OpenDownloadUsingPlatformHandler(download);
     return;
   }
@@ -890,7 +892,8 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   else
     browser->OpenURL(params);
 
-  RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER);
+  RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
+                     download->GetMimeType());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -1656,7 +1659,7 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
   if (!download->GetAutoOpened()) {
     download::DownloadContent download_content =
         download::DownloadContentFromMimeType(download->GetMimeType(), false);
-    safe_browsing::RecordDownloadOpened(
+    safe_browsing::RecordDownloadOpenedLatency(
         download->GetDangerType(), download_content, base::Time::Now(),
         download->GetEndTime(), show_download_in_folder);
   }

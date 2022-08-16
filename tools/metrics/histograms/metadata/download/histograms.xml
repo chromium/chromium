@@ -704,6 +704,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Open.ContentType" enum="DownloadContentType"
+    expires_after="M110">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Content types of the downloads being opened. This histogram is logged
+    whenever a download is opened, whether from the shelf/bubble or
+    chrome://downloads. Logged on Desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="Download.OpenDownloads.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-02-12">
   <owner>sideyilmaz@chromium.org</owner>
@@ -1311,17 +1322,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.ContentType" enum="DownloadContentType"
-    expires_after="M85">
+    expires_after="M110">
   <owner>shaktisahu@chromium.org</owner>
-  <summary>Content types of the downloads.</summary>
+  <owner>bhatiarohit@google.com</owner>
+  <summary>
+    Content types of the downloads. This histogram is logged when a download is
+    started. Logged on Desktop platforms. Warning: This histogram had expired
+    from M85 to M106, data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Download.Start.ContentType.NormalProfile"
-    enum="DownloadContentType" expires_after="2022-05-01">
+    enum="DownloadContentType" expires_after="2023-02-09">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Content types of the downloads that are started in non-incognito profile.
+    This histogram is logged when a download is started. Logged on Desktop
+    platforms. Warning: This histogram had expired from 2022-05-01 to
+    2022-08-15, data may be missing.
   </summary>
 </histogram>
 

@@ -132,8 +132,9 @@ void RecordDangerousDownloadWarningShown(
 void RecordOpenedDangerousConfirmDialog(
     download::DownloadDangerType danger_type);
 
-// Record how a download was opened.
-void RecordDownloadOpenMethod(ChromeDownloadOpenMethod open_method);
+// Record that a download was opened.
+void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
+                        const std::string& mime_type_string);
 
 // Record if the database is available to provide the next download id before
 // starting all downloads.

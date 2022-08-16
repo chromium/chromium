@@ -648,7 +648,8 @@ void DownloadItemModel::OpenUsingPlatformHandler() {
   if (!delegate)
     return;
   delegate->OpenDownloadUsingPlatformHandler(download_);
-  RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_USER_PLATFORM);
+  RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_USER_PLATFORM,
+                     download_->GetMimeType());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

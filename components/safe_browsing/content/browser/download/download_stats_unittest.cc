@@ -91,14 +91,14 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
   download::DownloadContent fake_content =
       download::DownloadContent::SPREADSHEET;
   // Not logged for dangerous downloads.
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
       fake_content, download_end_time + base::Days(1), download_end_time,
       /*show_download_in_folder=*/false);
   histogram_tester.ExpectTotalCount(
       "SBClientDownload.SafeDownloadOpenedLatency2.OpenDirectly", 0);
 
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       fake_content, download_end_time + base::Days(1), download_end_time,
       /*show_download_in_folder=*/false);
@@ -107,7 +107,7 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
       /*sample=*/base::Days(1),
       /*count=*/1);
 
-  RecordDownloadOpened(
+  RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       fake_content, download_end_time + base::Hours(5), download_end_time,
       /*show_download_in_folder=*/true);
@@ -122,25 +122,25 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpenedFileType) {
 
   base::Time download_end_time = base::Time::Now();
 
-  RecordDownloadOpenedFileType(download::DownloadContent::SPREADSHEET,
-                               download_end_time + base::Days(1),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::SPREADSHEET,
+                                      download_end_time + base::Days(1),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.SPREADSHEET",
       /*sample=*/base::Days(1),
       /*count=*/1);
 
-  RecordDownloadOpenedFileType(download::DownloadContent::PRESENTATION,
-                               download_end_time + base::Hours(5),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::PRESENTATION,
+                                      download_end_time + base::Hours(5),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.PRESENTATION",
       /*sample=*/base::Hours(5),
       /*count=*/1);
 
-  RecordDownloadOpenedFileType(download::DownloadContent::ARCHIVE,
-                               download_end_time + base::Days(1),
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download::DownloadContent::ARCHIVE,
+                                      download_end_time + base::Days(1),
+                                      download_end_time);
   histogram_tester.ExpectTimeBucketCount(
       "SBClientDownload.SafeDownloadOpenedLatencyByContentType.ARCHIVE",
       /*sample=*/base::Days(1),

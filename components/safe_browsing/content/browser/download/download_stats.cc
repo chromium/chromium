@@ -108,11 +108,11 @@ void RecordDangerousDownloadWarningBypassed(
       base::UserMetricsAction("SafeBrowsing.Download.WarningBypassed"));
 }
 
-void RecordDownloadOpened(download::DownloadDangerType danger_type,
-                          download::DownloadContent download_content,
-                          base::Time download_opened_time,
-                          base::Time download_end_time,
-                          bool show_download_in_folder) {
+void RecordDownloadOpenedLatency(download::DownloadDangerType danger_type,
+                                 download::DownloadContent download_content,
+                                 base::Time download_opened_time,
+                                 base::Time download_end_time,
+                                 bool show_download_in_folder) {
   if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
     return;
   }
@@ -124,13 +124,14 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
       /* min */ base::Seconds(1),
       /* max */ base::Days(1), /* buckets */ 50);
 
-  RecordDownloadOpenedFileType(download_content, download_opened_time,
-                               download_end_time);
+  RecordDownloadOpenedLatencyFileType(download_content, download_opened_time,
+                                      download_end_time);
 }
 
-void RecordDownloadOpenedFileType(download::DownloadContent download_content,
-                                  base::Time download_opened_time,
-                                  base::Time download_end_time) {
+void RecordDownloadOpenedLatencyFileType(
+    download::DownloadContent download_content,
+    base::Time download_opened_time,
+    base::Time download_end_time) {
   std::string download_content_str;
   switch (download_content) {
     case download::DownloadContent::UNRECOGNIZED:
