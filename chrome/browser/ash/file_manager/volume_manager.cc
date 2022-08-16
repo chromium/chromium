@@ -511,7 +511,8 @@ std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
     const base::FilePath& remote_mount_path,
     const guest_os::VmType vm_type) {
   std::unique_ptr<Volume> volume(new Volume());
-  volume->type_ = VOLUME_TYPE_GUEST_OS;
+  volume->type_ = vm_type == guest_os::VmType::ARCVM ? VOLUME_TYPE_ANDROID_FILES
+                                                     : VOLUME_TYPE_GUEST_OS;
   volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
@@ -915,12 +916,13 @@ void VolumeManager::RemoveSshfsCrostiniVolume(
 
 void VolumeManager::RemoveSftpGuestOsVolume(
     const base::FilePath& sftp_mount_path,
+    const guest_os::VmType vm_type,
     RemoveSshfsCrostiniVolumeCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   disk_mount_manager_->UnmountPath(
       sftp_mount_path.value(),
       base::BindOnce(&VolumeManager::OnSftpGuestOsUnmountCallback,
-                     weak_ptr_factory_.GetWeakPtr(), sftp_mount_path,
+                     weak_ptr_factory_.GetWeakPtr(), sftp_mount_path, vm_type,
                      std::move(callback)));
 }
 
@@ -1877,6 +1879,7 @@ void VolumeManager::OnSshfsCrostiniUnmountCallback(
 
 void VolumeManager::OnSftpGuestOsUnmountCallback(
     const base::FilePath& sftp_mount_path,
+    const guest_os::VmType vm_type,
     RemoveSftpGuestOsVolumeCallback callback,
     ash::MountError error_code) {
   if ((error_code == ash::MountError::kNone) ||
@@ -1886,12 +1889,9 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     // consistent, which means the mount path needs to be the same.
     // display_name, remote_mount_path and vm_type aren't needed and we don't
     // know them at unmount so leave them blank.
-    DoUnmountEvent(
-        ash::MountError::kNone,
-        // TODO(b/230667118): Once http://crrev/3627129 makes it into
-        // Chrome change the type to unknown.
-        *Volume::CreateForSftpGuestOs("", sftp_mount_path, base::FilePath(),
-                                      guest_os::VmType::TERMINA));
+    DoUnmountEvent(ash::MountError::kNone,
+                   *Volume::CreateForSftpGuestOs("", sftp_mount_path,
+                                                 base::FilePath(), vm_type));
     if (callback)
       std::move(callback).Run(true);
     return;

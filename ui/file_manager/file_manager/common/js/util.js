@@ -1586,6 +1586,12 @@ util.isArcUsbStorageUIEnabled = () => {
 };
 
 /** @return {boolean} */
+util.isArcVirtioBlkForDataEnabled = () => {
+  return loadTimeData.valueExists('ARC_ENABLE_VIRTIO_BLK_FOR_DATA') &&
+      loadTimeData.getBoolean('ARC_ENABLE_VIRTIO_BLK_FOR_DATA');
+};
+
+/** @return {boolean} */
 util.isPluginVmEnabled = () => {
   return loadTimeData.valueExists('PLUGIN_VM_ENABLED') &&
       loadTimeData.getBoolean('PLUGIN_VM_ENABLED');

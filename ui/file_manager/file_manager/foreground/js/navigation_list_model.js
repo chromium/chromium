@@ -691,8 +691,19 @@ export class NavigationListModel extends EventTarget {
       myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.GUEST_OS);
 
       // For each volume, add any which aren't already in the list.
-      for (const volume of getVolumes(
-               VolumeManagerCommon.VolumeType.GUEST_OS)) {
+      let guestOsVolumes = getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS);
+      if (util.isArcVirtioBlkForDataEnabled()) {
+        // Remove GuestOs Android placeholder, similar to what we did for
+        // GuestOs placeholders. This should be readded if needed.
+        myFilesEntry.removeAllByRootType(
+            VolumeManagerCommon.RootType.ANDROID_FILES);
+        const androidVolume =
+            getSingleVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+        if (androidVolume) {
+          guestOsVolumes = guestOsVolumes.concat(androidVolume);
+        }
+      }
+      for (const volume of guestOsVolumes) {
         if (myFilesEntry.findIndexByVolumeInfo(volume.volumeInfo) === -1) {
           myFilesEntry.addEntry(new VolumeEntry(volume.volumeInfo));
         }
@@ -705,16 +716,14 @@ export class NavigationListModel extends EventTarget {
                 VolumeManagerCommon.VolumeType.GUEST_OS) {
           continue;
         }
-        if (!getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS)
-                 .find(v => v.label === volume.name)) {
+        if (!guestOsVolumes.find(v => v.label === volume.name)) {
           myFilesEntry.removeChildEntry(volume);
         }
       }
       // Now we add any guests we know about which don't already have a
       // matching volume.
       for (const item of this.guestOsPlaceholders_) {
-        if (!getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS)
-                 .find(v => v.label === item.label)) {
+        if (!guestOsVolumes.find(v => v.label === item.label)) {
           // Since it's a fake item, link the navigation model so
           // DirectoryTree can choose the correct DirectoryItem for it.
           item.entry.navigationModel = item;

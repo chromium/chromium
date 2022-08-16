@@ -148,3 +148,64 @@ testcase.mountGuestSuccess = async () => {
   // And no more volume.
   await remoteCall.waitForElementsCount(appId, [volumeQuery], 0);
 };
+
+/**
+ * Tests that clicking on a Guest OS Android entry in the sidebar mounts the
+ * corresponding volume, and that the UI is update appropriately (volume in
+ * sidebar and not fake, contents show up once done loading, etc).
+ */
+testcase.mountAndroidVolumeSuccess = async () => {
+  await sendTestMessage({name: 'unmountPlayFiles'});
+  const guestName = 'Play files';
+  // Start off with one guest.
+  const guestId = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: guestName,
+    canMount: true,
+    vmType: 'arcvm',
+  });
+  // Open the files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Wait for our guest to appear and click it.
+  const placeholderQuery = '#directory-tree [root-type-icon=android_files]';
+  const volumeQuery =
+      `.tree-item[volume-type-for-testing="android_files"][entry-label="${
+          guestName}"]`;
+
+  // TODO(b/215255080): Change this into just one click.
+  await remoteCall.waitAndClickElement(appId, placeholderQuery);
+  await remoteCall.waitAndClickElement(appId, volumeQuery);
+
+  // Wait until it's loaded.
+  await remoteCall.waitForElement(
+      appId, `#breadcrumbs[path="My files/${guestName}"]`);
+
+  // We should have a volume in the sidebar.
+  await remoteCall.waitForElement(appId, volumeQuery);
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [volume-type-icon=android_files]');
+
+  // We should no longer have a fake.
+  await remoteCall.waitForElementsCount(appId, [placeholderQuery], 0);
+
+  // And the volume should be focused in the main window.
+  await remoteCall.waitForElement(
+      appId, `#list-container[scan-completed="${guestName}"]`);
+
+  // It should not be read-only.
+  await remoteCall.waitForElement(appId, '#read-only-indicator');
+
+  // Unmount the volume.
+  await sendTestMessage({
+    name: 'unmountGuest',
+    guestId: guestId,
+  });
+
+  // We should have our fake back.
+  await remoteCall.waitForElementsCount(appId, [placeholderQuery], 1);
+
+  // And no more volume.
+  await remoteCall.waitForElementsCount(appId, [volumeQuery], 0);
+};

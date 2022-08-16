@@ -133,6 +133,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should run with the GuestOs <-> Files app integration.
     bool enable_guest_os_files = false;
 
+    // Whether test should run Android with the virtio-blk for /data.
+    bool enable_virtio_blk_for_data = false;
+
     // Whether test needs the files-filters-in-recents flag.
     bool enable_filters_in_recents = false;
 

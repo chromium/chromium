@@ -31,7 +31,7 @@ class ScopedVolume {
       base::FilePath remote_path,
       const ash::disks::DiskMountManager::MountPoint& mount_info,
       VmType vm_type)
-      : profile_(profile), mount_label_(mount_label) {
+      : profile_(profile), mount_label_(mount_label), vm_type_(vm_type) {
     base::FilePath mount_path = base::FilePath(mount_info.mount_path);
     if (!storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
             mount_label_, storage::kFileSystemTypeLocal,
@@ -46,7 +46,7 @@ class ScopedVolume {
     if (vmgr) {
       // vmgr is null in unit tests.
       vmgr->AddSftpGuestOsVolume(display_name, mount_path, remote_path,
-                                 vm_type);
+                                 vm_type_);
     }
   }
 
@@ -67,13 +67,14 @@ class ScopedVolume {
       // for us (and we never unregister the filesystem) hence unmount doesn't
       // seem symmetric with mount.
       vmgr->RemoveSftpGuestOsVolume(
-          file_manager::util::GetGuestOsMountDirectory(mount_label_),
+          file_manager::util::GetGuestOsMountDirectory(mount_label_), vm_type_,
           base::DoNothing());
     }
   }
 
   Profile* profile_;
   std::string mount_label_;
+  VmType vm_type_;
 };
 
 class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {

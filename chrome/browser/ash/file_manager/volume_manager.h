@@ -400,6 +400,7 @@ class VolumeManager : public KeyedService,
   // mount was removed successfully or wasn't mounted to begin with. Runs
   // `callback` with false in all other cases.
   void RemoveSftpGuestOsVolume(const base::FilePath& sftp_mount_path,
+                               const guest_os::VmType vm_type,
                                RemoveSftpGuestOsVolumeCallback callback);
 
   // Removes Downloads volume used for testing.
@@ -558,6 +559,7 @@ class VolumeManager : public KeyedService,
       ash::MountError error_code);
 
   void OnSftpGuestOsUnmountCallback(const base::FilePath& sftp_mount_path,
+                                    const guest_os::VmType vm_type,
                                     RemoveSftpGuestOsVolumeCallback callback,
                                     ash::MountError error_code);
 

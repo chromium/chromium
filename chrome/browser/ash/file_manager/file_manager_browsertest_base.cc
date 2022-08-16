@@ -845,6 +845,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
   PRINT_IF_NOT_DEFAULT(enable_guest_os_files)
+  PRINT_IF_NOT_DEFAULT(enable_virtio_blk_for_data)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1958,6 +1959,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(chromeos::features::kGuestOsFiles);
   } else {
     disabled_features.push_back(chromeos::features::kGuestOsFiles);
+  }
+
+  if (options.enable_virtio_blk_for_data) {
+    enabled_features.push_back(arc::kEnableVirtioBlkForData);
+  } else {
+    disabled_features.push_back(arc::kEnableVirtioBlkForData);
   }
 
   if (options.enable_filters_in_recents) {

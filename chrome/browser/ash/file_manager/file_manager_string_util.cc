@@ -1009,6 +1009,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
   dict->Set("ARC_USB_STORAGE_UI_ENABLED",
             base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
+  dict->Set("ARC_ENABLE_VIRTIO_BLK_FOR_DATA",
+            base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData));
   dict->Set("CROSTINI_ENABLED",
             crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   dict->Set("PLUGIN_VM_ENABLED",
