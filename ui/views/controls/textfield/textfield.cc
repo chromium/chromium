@@ -1579,7 +1579,14 @@ bool Textfield::ChangeTextDirectionAndLayoutAlignment(
 
 void Textfield::ExtendSelectionAndDelete(size_t before, size_t after) {
   gfx::Range range = GetRenderText()->selection();
-  DCHECK_GE(range.start(), before);
+  // Discard out-of-bound operations.
+  // TODO(crbug.com/1344096): this is a temporary fix to prevent the
+  // checked_cast failure in gfx::Range. There does not seem to be any
+  // observable bad behaviors before checked_cast was added. However, range
+  // clipping or dropping should be the last resort because a checkfail
+  // indicates that we run into bad states somewhere earlier on the stack.
+  if (range.start() < before)
+    return;
 
   range.set_start(range.start() - before);
   range.set_end(range.end() + after);
