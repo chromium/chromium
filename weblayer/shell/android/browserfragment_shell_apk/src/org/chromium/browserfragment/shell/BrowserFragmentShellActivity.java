@@ -6,6 +6,8 @@ package org.chromium.browserfragment.shell;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +54,29 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable thrown) {}
         }, mContext.getMainExecutor());
+
+        final Button createTabButton = findViewById(R.id.create_tab);
+        final Button navigateButton = findViewById(R.id.navigate_tab);
+
+        createTabButton.setOnClickListener((View v) -> {
+            if (mTabManager != null) {
+                ListenableFuture<Tab> newTabFuture = mTabManager.createTab();
+                Futures.addCallback(newTabFuture, new FutureCallback<Tab>() {
+                    @Override
+                    public void onSuccess(Tab newTab) {
+                        navigateButton.setEnabled(true);
+                        newTab.getNavigationController().navigate("https://google.com");
+                        // TODO(swestphal): Call this in a Tab-loaded-callback instead.
+                        navigateButton.setOnClickListener((View v) -> {
+                            navigateButton.setEnabled(false);
+                            newTab.setActive();
+                        });
+                    }
+                    @Override
+                    public void onFailure(Throwable thrown) {}
+                }, mContext.getMainExecutor());
+            }
+        });
     }
 
     private void onBrowserReady(Browser browser) {
@@ -68,7 +93,6 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
             @Override
             public void onTabAdded(@NonNull Tab tab) {
                 Log.i(TAG, "received 'onTabAdded'-event");
-                tab.setActive();
             }
 
             @Override

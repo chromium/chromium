@@ -80,6 +80,24 @@ public class TabManager {
     }
 
     /**
+     * Creates a new Tab and returns it in a ListenableFuture.
+     *
+     * @return ListenableFuture for the new Tab.
+     */
+    @NonNull
+    public ListenableFuture<Tab> createTab() {
+        return CallbackToFutureAdapter.getFuture(completer -> {
+            try {
+                mDelegate.createTab(new TabCallback(completer));
+            } catch (RemoteException e) {
+                completer.setException(e);
+            }
+            // Debug string.
+            return "Create Tab Future";
+        });
+    }
+
+    /**
      * Tries to navigate back inside the Browser session and returns a Future with a Boolean
      * which is true if the back navigation was successful.
      *

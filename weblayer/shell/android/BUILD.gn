@@ -368,7 +368,6 @@ android_apk("browserfragment_shell_apk") {
   deps = [
     ":browserfragment_shell_java",
     ":browserfragment_shell_manifest",
-    ":browserfragment_shell_resources",
   ]
 
   apk_name = "BFShell"
@@ -376,7 +375,6 @@ android_apk("browserfragment_shell_apk") {
   min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   android_manifest_dep = ":browserfragment_shell_manifest"
-  shared_resources = true
 }
 
 browser_sandbox_manifest =
