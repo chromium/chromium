@@ -85,13 +85,6 @@ PA_ALWAYS_INLINE PartitionTag PartitionTagGetValue(void* ptr) {
   return *PartitionTagPointer(ptr);
 }
 
-PA_ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t size) {
-  size_t tag_region_size = size >> tag_bitmap::kBytesPerPartitionTagShift
-                                       << tag_bitmap::kPartitionTagSizeShift;
-  PA_DCHECK(!memchr(PartitionTagPointer(ptr), 0, tag_region_size));
-  memset(PartitionTagPointer(ptr), 0, tag_region_size);
-}
-
 PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
   PartitionTag tag = PartitionTagGetValue(ptr);
   PartitionTag new_tag = tag;
@@ -126,8 +119,6 @@ PA_ALWAYS_INLINE void PartitionTagSetValue(void*, size_t, PartitionTag) {}
 PA_ALWAYS_INLINE PartitionTag PartitionTagGetValue(void*) {
   return 0;
 }
-
-PA_ALWAYS_INLINE void PartitionTagClearValue(void* ptr, size_t) {}
 
 PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {}
 
