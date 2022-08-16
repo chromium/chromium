@@ -786,7 +786,8 @@ bool UseSharedInstanceForZeroSuggestPrefetching() {
 
 bool IsZeroSuggestPrefetchingEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP);
+         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) ||
+         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb);
 }
 
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(

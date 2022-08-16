@@ -16,6 +16,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -31,15 +32,26 @@ bool IsNTP(const GURL& url) {
   return url == GURL(chrome::kChromeUINewTabPageURL);
 }
 
+// Returns whether or not the given URL represents a prefetch-eligible Web page.
+bool IsEligibleWebPage(const GURL& url) {
+  return BaseSearchProvider::CanSendPageURLInRequest(url);
+}
+
 // Returns whether or not the given URL is eligible for ZPS prefetching.
 bool IsURLEligibleForZPSPrefetching(const GURL& url) {
-  bool is_ntp =
-      base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
-      IsNTP(url);
-  bool is_srp =
-      base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) &&
-      google_util::IsGoogleSearchUrl(url);
-  return is_ntp || is_srp;
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
+      IsNTP(url)) {
+    return true;
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kZeroSuggestPrefetchingOnSRP) &&
+             google_util::IsGoogleSearchUrl(url)) {
+    return true;
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kZeroSuggestPrefetchingOnWeb) &&
+             IsEligibleWebPage(url)) {
+    return true;
+  }
+  return false;
 }
 
 // Starts prefetching zero-prefix suggestions using the AutocompleteController
@@ -52,13 +64,18 @@ void StartPrefetch(content::WebContents* web_contents, const GURL& page_url) {
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto page_classification =
-      IsNTP(page_url)
-          ? OEP::NTP_ZPS_PREFETCH
-          : (google_util::IsGoogleSearchUrl(page_url) ? OEP::SRP_ZPS_PREFETCH
-                                                      : OEP::INVALID_SPEC);
+
+  OEP::PageClassification page_classification = OEP::INVALID_SPEC;
+  if (IsNTP(page_url)) {
+    page_classification = OEP::NTP_ZPS_PREFETCH;
+  } else if (google_util::IsGoogleSearchUrl(page_url)) {
+    page_classification = OEP::SRP_ZPS_PREFETCH;
+  } else if (IsEligibleWebPage(page_url)) {
+    page_classification = OEP::OTHER_ZPS_PREFETCH;
+  }
   DCHECK(page_classification != OEP::INVALID_SPEC)
       << "Prefetch page classification undefined for given URL.";
+
   AutocompleteInput autocomplete_input(
       u"", page_classification, ChromeAutocompleteSchemeClassifier(profile));
   autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);

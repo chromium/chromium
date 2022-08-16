@@ -219,12 +219,13 @@ bool StoreRemoteResponse(const std::string& response_json,
     client->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                   response_json);
     LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kZeroSuggestPrefetchingOnSRP) &&
-             result_type == ZeroSuggestProvider::ResultType::kRemoteSendURL) {
-    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
-        client->GetPrefs(), input.current_url().spec(), response_json);
-    LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
+  } else if (result_type == ZeroSuggestProvider::ResultType::kRemoteSendURL) {
+    if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) ||
+        base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb)) {
+      omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+          client->GetPrefs(), input.current_url().spec(), response_json);
+      LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
+    }
   }
 
   return true;
@@ -247,11 +248,12 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
   if (result_type == ZeroSuggestProvider::ResultType::kRemoteNoURL) {
     response_json =
         client->GetPrefs()->GetString(omnibox::kZeroSuggestCachedResults);
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kZeroSuggestPrefetchingOnSRP) &&
-             result_type == ZeroSuggestProvider::ResultType::kRemoteSendURL) {
-    response_json = omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
-        client->GetPrefs(), input.current_url().spec());
+  } else if (result_type == ZeroSuggestProvider::ResultType::kRemoteSendURL) {
+    if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) ||
+        base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb)) {
+      response_json = omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+          client->GetPrefs(), input.current_url().spec());
+    }
   }
 
   if (response_json.empty()) {
@@ -306,7 +308,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   }
 
   // Open Web - does NOT include Search Results Page.
-  if (page_class == OEP::OTHER) {
+  if (BaseSearchProvider::IsOtherWebPage(page_class)) {
     if (focus_type_input_type == std::make_pair(OFT::ON_FOCUS, OIT::URL) &&
         base::FeatureList::IsEnabled(
             omnibox::kFocusTriggersContextualWebZeroSuggest)) {

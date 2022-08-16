@@ -246,9 +246,15 @@ bool BaseSearchProvider::IsSearchResultsPage(
 }
 
 // static
+bool BaseSearchProvider::IsOtherWebPage(
+    metrics::OmniboxEventProto::PageClassification classification) {
+  return (classification == OEP::OTHER) ||
+         (classification == OEP::OTHER_ZPS_PREFETCH);
+}
+
+// static
 bool BaseSearchProvider::CanSendPageURLInRequest(const GURL& page_url) {
-  return page_url.is_valid() && (page_url.scheme() == url::kHttpScheme ||
-                                 page_url.scheme() == url::kHttpsScheme);
+  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();
 }
 
 // static

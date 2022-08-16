@@ -109,6 +109,10 @@ class BaseSearchProvider : public AutocompleteProvider {
   // Returns whether the provided classification indicates Search Results Page.
   static bool IsSearchResultsPage(
       metrics::OmniboxEventProto::PageClassification classification);
+  // Returns whether the provided classification indicates a non-NTP/non-SRP Web
+  // Page.
+  static bool IsOtherWebPage(
+      metrics::OmniboxEventProto::PageClassification classification);
   // Returns whether a suggest request can be made. It requires that all the
   // following to hold:
   // * The suggest request is sent over HTTPS.  This avoids leaking the current

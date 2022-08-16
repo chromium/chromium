@@ -45,13 +45,6 @@ class MockAutocompleteController : public AutocompleteController {
 }  // namespace
 
 class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
- public:
-  ZeroSuggestPrefetchTabHelperBrowserTest() {
-    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetching,
-                                    omnibox::kZeroSuggestPrefetchingOnSRP},
-                                   {});
-  }
-
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -80,9 +73,33 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
   raw_ptr<testing::NiceMock<MockAutocompleteController>> controller_;
 };
 
+class ZeroSuggestPrefetchTabHelperBrowserTestOnNTP
+    : public ZeroSuggestPrefetchTabHelperBrowserTest {
+ public:
+  ZeroSuggestPrefetchTabHelperBrowserTestOnNTP() {
+    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetching}, {});
+  }
+};
+
+class ZeroSuggestPrefetchTabHelperBrowserTestOnSRP
+    : public ZeroSuggestPrefetchTabHelperBrowserTest {
+ public:
+  ZeroSuggestPrefetchTabHelperBrowserTestOnSRP() {
+    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetchingOnSRP}, {});
+  }
+};
+
+class ZeroSuggestPrefetchTabHelperBrowserTestOnWeb
+    : public ZeroSuggestPrefetchTabHelperBrowserTest {
+ public:
+  ZeroSuggestPrefetchTabHelperBrowserTestOnWeb() {
+    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetchingOnWeb}, {});
+  }
+};
+
 // Tests that navigating to or switching to the NTP starts a prefetch request.
-IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTest,
-                       StartPrefetchOnNTP) {
+IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
+                       StartPrefetch) {
   {
     // Opening a background NTP triggers prefetching.
     EXPECT_CALL(*controller_, StartPrefetch).Times(1);
@@ -147,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTest,
 }
 
 // Tests that navigating to or switching to the SRP starts a prefetch request.
-IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTest,
-                       StartPrefetchOnSRP) {
+IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
+                       StartPrefetch) {
   const std::string srp_url = "https://www.google.com/search?q=hello+world";
   {
     // Opening a background SRP triggers prefetching.
@@ -175,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTest,
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
   {
-    // Navigating to a url in a new foreground tab does not trigger prefetching.
+    // Navigating to a Web url in a new foreground tab does not trigger
+    // prefetching.
     EXPECT_CALL(*controller_, StartPrefetch).Times(0);
     EXPECT_CALL(*controller_, Start).Times(0);
 
@@ -201,6 +219,72 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTest,
   }
   {
     // Switching to an SRP triggers prefetching.
+    EXPECT_CALL(*controller_, StartPrefetch).Times(1);
+    EXPECT_CALL(*controller_, Start).Times(0);
+
+    browser()->tab_strip_model()->ActivateTabAt(1);
+
+    testing::Mock::VerifyAndClearExpectations(controller_);
+  }
+}
+
+// Tests that navigating to or switching to a Web URL (non-NTP/non-SRP) starts a
+// prefetch request.
+IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
+                       StartPrefetch) {
+  const std::string web_url = "https://www.example.com";
+  {
+    // Opening a background Web page triggers prefetching.
+    EXPECT_CALL(*controller_, StartPrefetch).Times(1);
+    EXPECT_CALL(*controller_, Start).Times(0);
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(web_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+
+    testing::Mock::VerifyAndClearExpectations(controller_);
+  }
+  {
+    // Opening a foreground Web page triggers prefetching.
+    EXPECT_CALL(*controller_, StartPrefetch).Times(1);
+    EXPECT_CALL(*controller_, Start).Times(0);
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(web_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
+
+    testing::Mock::VerifyAndClearExpectations(controller_);
+  }
+  {
+    // Navigating to an ineligible url in a new foreground tab does not trigger
+    // prefetching.
+    EXPECT_CALL(*controller_, StartPrefetch).Times(0);
+    EXPECT_CALL(*controller_, Start).Times(0);
+
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("file://www.example.com"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+
+    testing::Mock::VerifyAndClearExpectations(controller_);
+  }
+  {
+    // Navigating to the Web in the current tab triggers prefetching.
+    EXPECT_CALL(*controller_, StartPrefetch).Times(1);
+    EXPECT_CALL(*controller_, Start).Times(0);
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(web_url), WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+
+    testing::Mock::VerifyAndClearExpectations(controller_);
+  }
+  {
+    // Switching to a Web tab triggers prefetching.
     EXPECT_CALL(*controller_, StartPrefetch).Times(1);
     EXPECT_CALL(*controller_, Start).Times(0);
 
