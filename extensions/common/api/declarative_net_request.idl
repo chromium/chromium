@@ -443,14 +443,14 @@ namespace declarativeNetRequest {
 
     // The unique identifier for the frame's document, if this request is for a
     // frame.
-    [nodoc] DOMString? documentId;
+    DOMString? documentId;
 
     // The type of the frame, if this request is for a frame.
-    [nodoc] extensionTypes.FrameType? frameType;
+    extensionTypes.FrameType? frameType;
 
     // The lifecycle of the frame's document, if this request is for a
     // frame.
-    [nodoc] extensionTypes.DocumentLifecycle? documentLifecycle;
+    extensionTypes.DocumentLifecycle? documentLifecycle;
 
     // ID of frame that wraps the frame which sent the request. Set to -1 if no
     // parent frame exists.
@@ -458,7 +458,7 @@ namespace declarativeNetRequest {
 
     // The unique identifier for the frame's parent document, if this request
     // is for a frame and has a parent.
-    [nodoc] DOMString? parentDocumentId;
+    DOMString? parentDocumentId;
 
     // The ID of the tab in which the request takes place. Set to -1 if the
     // request isn't related to a tab.

@@ -210,7 +210,6 @@
               "documentId": {
                 "type": "string",
                 "optional": true,
-                "nodoc": true,
                 "description": "Open a port to a specific <a href='webNavigation#document_ids'>document</a> identified by <code>documentId</code> instead of all frames in the tab."
               }
             },
@@ -280,7 +279,6 @@
               "documentId": {
                 "type": "string",
                 "optional": true,
-                "nodoc": true,
                 "description": "Send a message to a specific <a href='webNavigation#document_ids'>document</a> identified by <code>documentId</code> instead of all frames in the tab."
               }
             },

@@ -34,7 +34,7 @@ namespace scripting {
     // The <a href="https://developer.chrome.com/extensions/webNavigation#document_ids">IDs</a>
     // of specific documentIds to inject into. This must not be set if
     // <code>frameIds</code> is set.
-    [nodoc] DOMString[]? documentIds;
+    DOMString[]? documentIds;
 
     // Whether the script should inject into all frames within the tab. Defaults
     // to false.
@@ -109,7 +109,7 @@ namespace scripting {
     long frameId;
 
     // The document associated with the injection.
-    [nodoc] DOMString documentId;
+    DOMString documentId;
   };
 
   // Describes a content script to be injected into a web page registered

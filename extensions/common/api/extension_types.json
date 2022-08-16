@@ -104,14 +104,12 @@
       {
         "id": "FrameType",
         "type": "string",
-        "nodoc": true,
         "enum": ["outermost_frame", "fenced_frame", "sub_frame"],
         "description": "The type of frame."
       },
       {
         "id": "DocumentLifecycle",
         "type": "string",
-        "nodoc": true,
         "enum": ["prerender", "active", "cached", "pending_deletion"],
         "description": "The document lifecycle of the frame."
       },
