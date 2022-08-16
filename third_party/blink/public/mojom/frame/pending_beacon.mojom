@@ -24,13 +24,9 @@ interface PendingBeaconHost {
   // side `PendingBeacon` object.
   // `url` is the target url for the beacon.
   // `method` is the method used to send the beacon.
-  // `timeout` is the timeout after running the page hide event on the current
-  // document after which the beacon will be sent (or zero to not send after
-  // page hide, instead only send on document discard).
   CreateBeacon(pending_receiver<blink.mojom.PendingBeacon> receiver,
                url.mojom.Url url,
-               BeaconMethod method,
-               mojo_base.mojom.TimeDelta timeout);
+               BeaconMethod method);
 
 };
 

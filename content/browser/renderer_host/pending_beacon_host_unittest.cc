@@ -91,12 +91,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(PendingBeaconHostTest, SendBeacon) {
   const std::string method = GetParam();
-  const base::TimeDelta timeout = base::Milliseconds(0);
   const auto url = GURL("/test_send_beacon");
   auto* host = CreateHost();
   mojo::Remote<blink::mojom::PendingBeacon> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
-  host->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method), timeout);
+  host->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method));
 
   SetExpectNetworkRequest(FROM_HERE, method, url);
   remote->SendNow();
@@ -105,7 +104,6 @@ TEST_P(PendingBeaconHostTest, SendBeacon) {
 
 TEST_P(PendingBeaconHostTest, SendOneOfBeacons) {
   const std::string method = GetParam();
-  const base::TimeDelta timeout = base::Milliseconds(0);
   const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
@@ -115,7 +113,7 @@ TEST_P(PendingBeaconHostTest, SendOneOfBeacons) {
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
     host->CreateBeacon(std::move(receiver), GURL(url + i),
-                       ToBeaconMethod(method), timeout);
+                       ToBeaconMethod(method));
   }
 
   const size_t sent_beacon_i = 2;
@@ -126,7 +124,6 @@ TEST_P(PendingBeaconHostTest, SendOneOfBeacons) {
 
 TEST_P(PendingBeaconHostTest, SendBeacons) {
   const std::string method = GetParam();
-  const base::TimeDelta timeout = base::Milliseconds(0);
   const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
@@ -136,7 +133,7 @@ TEST_P(PendingBeaconHostTest, SendBeacons) {
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
     host->CreateBeacon(std::move(receiver), GURL(url + i),
-                       ToBeaconMethod(method), timeout);
+                       ToBeaconMethod(method));
   }
   for (int i = remotes.size() - 1; i >= 0; i--) {
     SetExpectNetworkRequest(FROM_HERE, method, GURL(url + i));
@@ -147,12 +144,11 @@ TEST_P(PendingBeaconHostTest, SendBeacons) {
 
 TEST_P(PendingBeaconHostTest, DeleteAndSendBeacon) {
   const std::string method = GetParam();
-  const base::TimeDelta timeout = base::Milliseconds(0);
   const auto url = GURL("/test_send_beacon");
   auto* host = CreateHost();
   mojo::Remote<blink::mojom::PendingBeacon> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
-  host->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method), timeout);
+  host->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method));
 
   // Deleted beacon won't be sent out by host.
   remote->Deactivate();
@@ -162,7 +158,6 @@ TEST_P(PendingBeaconHostTest, DeleteAndSendBeacon) {
 
 TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
   const std::string method = GetParam();
-  const base::TimeDelta timeout = base::Milliseconds(0);
   const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
@@ -172,7 +167,7 @@ TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
     host->CreateBeacon(std::move(receiver), GURL(url + i),
-                       ToBeaconMethod(method), timeout);
+                       ToBeaconMethod(method));
   }
 
   const size_t deleted_beacon_i = 2;
@@ -196,13 +191,11 @@ class BeaconTest : public PendingBeaconHostTestBase {
 
   mojo::Remote<blink::mojom::PendingBeacon> CreateBeaconAndPassRemote(
       const std::string& method) {
-    const base::TimeDelta timeout = base::Milliseconds(0);
     const auto url = GURL("/test_send_beacon");
     host_ = CreateHost();
     mojo::Remote<blink::mojom::PendingBeacon> remote;
     auto receiver = remote.BindNewPipeAndPassReceiver();
-    host_->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method),
-                        timeout);
+    host_->CreateBeacon(std::move(receiver), url, ToBeaconMethod(method));
     return remote;
   }
 

@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/frame/pending_beacon.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/core/loader/beacon_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -16,45 +18,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
-
-// Helper class to wrap a shared mojo remote to the frame's pending beacon host,
-// such that all beacons can share the same remote to make calls to that host.
-class PendingBeaconHostRemote
-    : public GarbageCollected<PendingBeaconHostRemote>,
-      public Supplement<ExecutionContext> {
- public:
-  static const char kSupplementName[];
-  explicit PendingBeaconHostRemote(ExecutionContext& ec)
-      : Supplement<ExecutionContext>(ec), remote_(&ec) {
-    // Using the MiscPlatformAPI task type as pending beacons are not yet
-    // associated with any specific task runner in the spec.
-    auto task_runner = ec.GetTaskRunner(TaskType::kMiscPlatformAPI);
-
-    mojo::PendingReceiver<mojom::blink::PendingBeaconHost> host_receiver =
-        remote_.BindNewPipeAndPassReceiver(task_runner);
-    ec.GetBrowserInterfaceBroker().GetInterface(std::move(host_receiver));
-  }
-
-  static PendingBeaconHostRemote& From(ExecutionContext& ec) {
-    PendingBeaconHostRemote* remote =
-        Supplement<ExecutionContext>::From<PendingBeaconHostRemote>(ec);
-    if (!remote) {
-      remote = MakeGarbageCollected<PendingBeaconHostRemote>(ec);
-      ProvideTo(ec, remote);
-    }
-    return *remote;
-  }
-
-  void Trace(Visitor* visitor) const override {
-    Supplement::Trace(visitor);
-    visitor->Trace(remote_);
-  }
-
-  HeapMojoRemote<mojom::blink::PendingBeaconHost> remote_;
-};
-
-const char PendingBeaconHostRemote::kSupplementName[] =
-    "PendingBeaconHostRemote";
 
 PendingBeacon::PendingBeacon(ExecutionContext* ec,
                              const String& url,
@@ -67,6 +30,8 @@ PendingBeacon::PendingBeacon(ExecutionContext* ec,
       method_(method),
       background_timeout_(base::Milliseconds(background_timeout)),
       timeout_(base::Milliseconds(timeout)) {
+  // Creates a corresponding instance of PendingBeacon in the browser process
+  // and binds `remote_` to it.
   mojom::blink::BeaconMethod host_method;
   if (method == http_names::kGET) {
     host_method = mojom::blink::BeaconMethod::kGet;
@@ -74,16 +39,15 @@ PendingBeacon::PendingBeacon(ExecutionContext* ec,
     host_method = mojom::blink::BeaconMethod::kPost;
   }
 
-  // Using the MiscPlatformAPI task type as pending beacons are not yet
-  // associated with any specific task runner in the spec.
-  auto task_runner = ec->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  auto task_runner = ec_->GetTaskRunner(PendingBeaconDispatcher::kTaskType);
   mojo::PendingReceiver<mojom::blink::PendingBeacon> beacon_receiver =
       remote_.BindNewPipeAndPassReceiver(task_runner);
-  KURL host_url = ec->CompleteURL(url);
+  KURL host_url = ec_->CompleteURL(url);
 
-  PendingBeaconHostRemote& host_remote = PendingBeaconHostRemote::From(*ec);
-  host_remote.remote_->CreateBeacon(std::move(beacon_receiver), host_url,
-                                    host_method, background_timeout_);
+  PendingBeaconDispatcher& dispatcher =
+      PendingBeaconDispatcher::FromOrAttachTo(*ec_);
+  dispatcher.CreateHostBeacon(std::move(beacon_receiver), host_url,
+                              host_method);
 }
 
 void PendingBeacon::Trace(Visitor* visitor) const {

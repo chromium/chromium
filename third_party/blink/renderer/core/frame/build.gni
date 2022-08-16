@@ -144,6 +144,8 @@ blink_core_sources_frame = [
   "page_scale_constraints_set.h",
   "pending_beacon.cc",
   "pending_beacon.h",
+  "pending_beacon_dispatcher.cc",
+  "pending_beacon_dispatcher.h",
   "pending_post_beacon.cc",
   "pending_post_beacon.h",
   "pending_get_beacon.cc",

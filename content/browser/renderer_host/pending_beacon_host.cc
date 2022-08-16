@@ -29,10 +29,9 @@ PendingBeaconHost::PendingBeaconHost(
 void PendingBeaconHost::CreateBeacon(
     mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
     const GURL& url,
-    blink::mojom::BeaconMethod method,
-    base::TimeDelta timeout) {
+    blink::mojom::BeaconMethod method) {
   auto beacon =
-      std::make_unique<Beacon>(url, method, timeout, this, std::move(receiver));
+      std::make_unique<Beacon>(url, method, this, std::move(receiver));
   beacons_.emplace_back(std::move(beacon));
 }
 
@@ -76,14 +75,12 @@ void Beacon::Deactivate() {
 
 Beacon::Beacon(const GURL& url,
                blink::mojom::BeaconMethod method,
-               base::TimeDelta timeout,
                PendingBeaconHost* beacon_host,
                mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver)
     : receiver_(this, std::move(receiver)),
       beacon_host_(beacon_host),
       url_(url),
-      method_(method),
-      timeout_(timeout) {
+      method_(method) {
   DCHECK(beacon_host_);
 }
 
