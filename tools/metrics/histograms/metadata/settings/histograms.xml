@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>anastasiian@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <owner>cros-lurs@google.com</owner>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.DialogDisplayHost"
     enum="SettingsPrivacySandboxDialogDisplayHostHash"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
-    enum="PrivacySandboxReferrer" expires_after="2022-11-27">
+    enum="PrivacySandboxReferrer" expires_after="2023-02-12">
   <owner>andzaytsev@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.StartupState"
-    enum="SettingsPrivacySandboxStartupStates" expires_after="2022-11-27">
+    enum="SettingsPrivacySandboxStartupStates" expires_after="2023-02-12">
   <owner>sauski@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
-    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-12-11">
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2023-02-12">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check Safe Browsing check.</summary>

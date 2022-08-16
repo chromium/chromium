@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Event"
-    enum="ContextualSearchCountedEvent" expires_after="2022-12-11">
+    enum="ContextualSearchCountedEvent" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Searches" enum="Boolean"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
 <!-- TODO(donnd): change expires_after to "never" once established and
          approved. -->
 
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="2022-12-11">
+    enum="ContextualSearchGestureIsTap" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2022-12-11">
+    enum="ContextualSearchGestureIsTap" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -864,7 +864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2022-12-11">
+    enum="ContextualSearchQuickActionCategory" expires_after="2023-02-12">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType"
-    enum="OmniboxSearchEngineType" expires_after="2022-12-11">
+    enum="OmniboxSearchEngineType" expires_after="2023-02-12">
   <owner>mpearson@chromium.org</owner>
   <owner>csharp@chromium.org</owner>
   <summary>
@@ -1400,7 +1400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.GroupStatus" enum="QueryTilesGroupStatus"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -1432,7 +1432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.RequestStatus"
-    enum="QueryTilesRequestStatus" expires_after="2022-12-04">
+    enum="QueryTilesRequestStatus" expires_after="2023-02-12">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -1456,7 +1456,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"
     enum="ShowQueryTilesSegmentationResultComparison"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>haileywang@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
-    expires_after="2022-11-27">
+    expires_after="2023-02-12">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>

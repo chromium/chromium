@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileEvent"
-    enum="WebAuthenticationCableV2MobileEvent" expires_after="2022-12-11">
+    enum="WebAuthenticationCableV2MobileEvent" expires_after="2023-02-12">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2022-12-01">
+    enum="WebAuthenticationFidoTransport" expires_after="2023-02-12">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

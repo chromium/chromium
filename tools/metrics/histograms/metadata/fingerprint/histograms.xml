@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.FingerprintPowerButtonRace" units="units"
-    expires_after="2022-12-01">
+    expires_after="2023-02-12">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.FingerprintScanDone" units="units"
-    expires_after="2022-12-01">
+    expires_after="2023-02-12">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>

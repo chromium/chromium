@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ArcContinueBootImpulseStatus"
-    enum="ArcContinueBootImpulseStatus" expires_after="2022-12-04">
+    enum="ArcContinueBootImpulseStatus" expires_after="2023-02-12">
   <owner>vsomani@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ArcContinueBootImpulseTime2" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>mslus@chromium.org</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>

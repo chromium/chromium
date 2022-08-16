@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
-    expires_after="2022-10-30">
+    expires_after="2023-02-12">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
@@ -586,7 +586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2022-12-04">
+    enum="SharingHubSharesheetResult" expires_after="2023-02-12">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.AssetsFetchSuccess" enum="BooleanSuccess"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.Funnel" enum="LightweightReactionsFunnel"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.Funnel" enum="NoteCreationFunnel"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2022-12-11">
+    enum="LinkGenerationSharedStatus" expires_after="2023-02-12">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.Desktop.CopiedLinkType"
-    enum="LinkGenerationCopiedLinkType" expires_after="2022-12-11">
+    enum="LinkGenerationCopiedLinkType" expires_after="2023-02-12">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -468,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>

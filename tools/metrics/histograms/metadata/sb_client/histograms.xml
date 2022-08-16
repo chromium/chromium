@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DmgHasAPFS" enum="Boolean"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DmgParsedUdif" enum="BooleanSuccess"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.CacheDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2022-11-27">
+    enum="BooleanIsPhishing" expires_after="2023-02-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.MainFrameRemoteConnected"
-    enum="BooleanConnected" expires_after="2022-11-27">
+    enum="BooleanConnected" expires_after="2023-02-12">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -760,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ProtobufScorer.CreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="2022-12-11">
+    enum="SBClientPhishingScorerCreationStatus" expires_after="2023-02-12">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.RequestWithToken" enum="BooleanSent"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -27,7 +27,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="2022-12-04">
+    enum="CaptivePortalBlockingPageEvent" expires_after="2023-02-12">
   <owner>meacer@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>

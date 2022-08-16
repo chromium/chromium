@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="VRViewerType" enum="VRViewerType" expires_after="2022-12-11">
+<histogram name="VRViewerType" enum="VRViewerType" expires_after="2023-02-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>The type of headset being used for VR.</summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="XR.WebXR.ReferenceSpace.Succeeded" enum="XRReferenceSpaceType"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

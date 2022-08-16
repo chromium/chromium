@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.ColorMode"
-    enum="ScanJobSettingsColorMode" expires_after="2022-12-11">
+    enum="ScanJobSettingsColorMode" expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.PageSize"
-    enum="ScanJobSettingsPageSize" expires_after="2022-12-11">
+    enum="ScanJobSettingsPageSize" expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Resolution"
-    enum="ScanJobSettingsResolution" expires_after="2022-12-11">
+    enum="ScanJobSettingsResolution" expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SideSearch.AvailabilityChanged"
-    enum="SideSearchAvailabilityChangeType" expires_after="2022-12-04">
+    enum="SideSearchAvailabilityChangeType" expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.CloseAction" enum="SideSearchCloseActionType"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.Navigation" enum="SideSearchNavigationType"
-    expires_after="2022-12-04">
+    expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
