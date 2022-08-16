@@ -92,6 +92,15 @@ public class ManualFillingTestHelper {
         mActivityTestRule = activityTestRule;
     }
 
+    public EmbeddedTestServer getOrCreateTestServer() {
+        if (mEmbeddedTestServer == null) {
+            mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                    InstrumentationRegistry.getInstrumentation().getContext(),
+                    ServerCertificate.CERT_OK);
+        }
+        return mEmbeddedTestServer;
+    }
+
     public void loadTestPage(boolean isRtl) {
         loadTestPage("/chrome/test/data/password/password_form.html", isRtl);
     }
@@ -102,9 +111,7 @@ public class ManualFillingTestHelper {
 
     public void loadTestPage(String url, boolean isRtl, boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
-        mEmbeddedTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
         if (mActivityTestRule.getActivity() == null) {
             mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
