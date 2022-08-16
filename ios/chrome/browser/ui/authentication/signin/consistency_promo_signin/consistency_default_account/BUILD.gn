@@ -17,6 +17,7 @@ source_set("consistency_default_account") {
   ]
   deps = [
     "//components/prefs",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",

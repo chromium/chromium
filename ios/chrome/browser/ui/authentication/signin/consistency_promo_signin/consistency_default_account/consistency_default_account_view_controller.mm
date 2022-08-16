@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
@@ -112,11 +113,16 @@ constexpr CGFloat kContentSpacing = 16.;
   self.navigationItem.leftBarButtonItem = leftItem;
 
   // Set the skip button in the right bar button item.
-  UIBarButtonItem* skipButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(skipButtonAction:)];
+  NSString* skipButtonTitle =
+      self.accessPoint ==
+              signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
+          ? l10n_util::GetNSString(IDS_CANCEL)
+          : l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
+  UIBarButtonItem* skipButton =
+      [[UIBarButtonItem alloc] initWithTitle:skipButtonTitle
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(skipButtonAction:)];
   skipButton.accessibilityIdentifier =
       kWebSigninSkipButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = skipButton;
