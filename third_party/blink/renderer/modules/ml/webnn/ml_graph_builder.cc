@@ -87,6 +87,24 @@ absl::optional<size_t> ValidateAndCalculateByteLength(
   return checked_byte_length.ValueOrDie();
 }
 
+bool ValidateClampOptions(const MLClampOptions* options,
+                          ExceptionState& exception_state) {
+  // The generated code of MLClampOptions uses blink::ToRestrictedFloat to
+  // convert the min/max value to a single precision float. It will throw on
+  // non-finite values.
+  if (options->hasMinValue() && options->hasMaxValue()) {
+    if (options->minValue() > options->maxValue()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          String::Format("The min value (%f) should be less than or equal to "
+                         "the max value (%f).",
+                         options->minValue(), options->maxValue()));
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -154,20 +172,28 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
 MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
                                  const MLClampOptions* options,
                                  ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  if (!ValidateClampOptions(options, exception_state)) {
+    return nullptr;
+  }
+  auto* clamp = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kClamp, options);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
+  // clamp has the same type and dimensions as its input.
+  auto* output = MLOperand::CreateOutput(this, input->Type(),
+                                         std::move(input->Dimensions()), clamp);
+  clamp->Connect({input}, {output});
+  return output;
 }
 
 MLOperator* MLGraphBuilder::clamp(const MLClampOptions* options,
                                   ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  if (!ValidateClampOptions(options, exception_state)) {
+    return nullptr;
+  }
+  // Create the clamp operator that would be used as an activation function.
+  return MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kClamp, options);
 }
 
 MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
