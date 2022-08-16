@@ -32,13 +32,13 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
 
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
-                          base::DictionaryValue* dict) const;
+                          base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
 
   void AddProperties(const BrowserAccessibility& node,
-                     base::DictionaryValue* dict) const;
+                     base::Value::Dict* dict) const;
 };
 
 }  // namespace content

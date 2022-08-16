@@ -209,14 +209,14 @@ base::Value AccessibilityTreeFormatterFuchsia::BuildTree(
   BrowserAccessibility* root_internal =
       BrowserAccessibility::FromAXPlatformNodeDelegate(root);
 
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
+    base::Value::Dict* dict) const {
   if (!ShouldDumpNode(node))
     return;
 
@@ -238,26 +238,25 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     BrowserAccessibilityFuchsia* child_browser_accessibility =
         static_cast<BrowserAccessibilityFuchsia*>(child_node->GetDelegate());
 
-    std::unique_ptr<base::DictionaryValue> child_dict(
-        new base::DictionaryValue);
-    RecursiveBuildTree(*child_browser_accessibility, child_dict.get());
-    children.Append(base::Value::FromUniquePtrValue(std::move(child_dict)));
+    base::Value::Dict child_dict;
+    RecursiveBuildTree(*child_browser_accessibility, &child_dict);
+    children.Append(std::move(child_dict));
   }
-  dict->GetDict().Set(kChildrenDictAttr, std::move(children));
+  dict->Set(kChildrenDictAttr, std::move(children));
 }
 
 base::Value AccessibilityTreeFormatterFuchsia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
-  return std::move(dict);
+  return base::Value(std::move(dict));
 }
 
 void AccessibilityTreeFormatterFuchsia::AddProperties(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
-  dict->SetIntKey("id", node.GetId());
+    base::Value::Dict* dict) const {
+  dict->Set("id", node.GetId());
 
   const BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
       static_cast<const BrowserAccessibilityFuchsia*>(&node);
@@ -268,44 +267,45 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
       browser_accessibility_fuchsia->ToFuchsiaNodeData();
 
   // Add fuchsia node attributes.
-  dict->SetStringKey("role", FuchsiaRoleToString(fuchsia_node.role()));
+  dict->Set("role", FuchsiaRoleToString(fuchsia_node.role()));
 
-  dict->SetStringKey("actions", FuchsiaActionsToString(fuchsia_node.actions()));
+  dict->Set("actions", FuchsiaActionsToString(fuchsia_node.actions()));
 
   if (fuchsia_node.has_attributes()) {
     const fuchsia::accessibility::semantics::Attributes& attributes =
         fuchsia_node.attributes();
 
     if (attributes.has_label() && !attributes.label().empty())
-      dict->SetStringKey("label", attributes.label());
+      dict->Set("label", attributes.label());
 
     if (attributes.has_secondary_label() &&
         !attributes.secondary_label().empty()) {
-      dict->SetStringKey("secondary_label", attributes.secondary_label());
+      dict->Set("secondary_label", attributes.secondary_label());
     }
 
     if (attributes.has_range()) {
       const auto& range_attributes = attributes.range();
 
       if (range_attributes.has_min_value())
-        dict->SetDoubleKey("min_value", range_attributes.min_value());
+        dict->Set("min_value", range_attributes.min_value());
 
       if (range_attributes.has_max_value())
-        dict->SetDoubleKey("max_value", range_attributes.max_value());
+        dict->Set("max_value", range_attributes.max_value());
 
       if (range_attributes.has_step_delta())
-        dict->SetDoubleKey("step_delta", range_attributes.step_delta());
+        dict->Set("step_delta", range_attributes.step_delta());
     }
 
     if (attributes.has_table_attributes()) {
       const auto& table_attributes = attributes.table_attributes();
 
       if (table_attributes.has_number_of_rows())
-        dict->SetIntKey("number_of_rows", table_attributes.number_of_rows());
+        dict->Set("number_of_rows",
+                  static_cast<int>(table_attributes.number_of_rows()));
 
       if (table_attributes.has_number_of_columns()) {
-        dict->SetIntKey("number_of_columns",
-                        table_attributes.number_of_columns());
+        dict->Set("number_of_columns",
+                  static_cast<int>(table_attributes.number_of_columns()));
       }
     }
 
@@ -313,40 +313,44 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
       const auto& table_row_attributes = attributes.table_row_attributes();
 
       if (table_row_attributes.has_row_index())
-        dict->SetIntKey("row_index", table_row_attributes.row_index());
+        dict->Set("row_index",
+                  static_cast<int>(table_row_attributes.row_index()));
     }
 
     if (attributes.has_table_cell_attributes()) {
       const auto& table_cell_attributes = attributes.table_cell_attributes();
 
       if (table_cell_attributes.has_row_index())
-        dict->SetIntKey("cell_row_index", table_cell_attributes.row_index());
+        dict->Set("cell_row_index",
+                  static_cast<int>(table_cell_attributes.row_index()));
 
       if (table_cell_attributes.has_column_index()) {
-        dict->SetIntKey("cell_column_index",
-                        table_cell_attributes.column_index());
+        dict->Set("cell_column_index",
+                  static_cast<int>(table_cell_attributes.column_index()));
       }
 
       if (table_cell_attributes.has_row_span())
-        dict->SetIntKey("cell_row_span", table_cell_attributes.row_span());
+        dict->Set("cell_row_span",
+                  static_cast<int>(table_cell_attributes.row_span()));
 
       if (table_cell_attributes.has_column_span()) {
-        dict->SetIntKey("cell_column_span",
-                        table_cell_attributes.column_span());
+        dict->Set("cell_column_span",
+                  static_cast<int>(table_cell_attributes.column_span()));
       }
     }
 
     if (attributes.has_list_attributes()) {
-      dict->SetIntKey("list_size", attributes.list_attributes().size());
+      dict->Set("list_size",
+                static_cast<int>(attributes.list_attributes().size()));
     }
 
     if (attributes.has_list_element_attributes()) {
-      dict->SetIntKey("list_element_index",
-                      attributes.list_element_attributes().index());
+      dict->Set("list_element_index",
+                static_cast<int>(attributes.list_element_attributes().index()));
     }
 
     if (attributes.has_is_keyboard_key())
-      dict->SetBoolKey("is_keyboard_key", attributes.is_keyboard_key());
+      dict->Set("is_keyboard_key", attributes.is_keyboard_key());
   }
 
   if (fuchsia_node.has_states()) {
@@ -354,42 +358,40 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
         fuchsia_node.states();
 
     if (states.has_selected())
-      dict->SetBoolKey("selected", states.selected());
+      dict->Set("selected", states.selected());
 
     if (states.has_checked_state()) {
-      dict->SetStringKey("checked_state",
-                         CheckedStateToString(states.checked_state()));
+      dict->Set("checked_state", CheckedStateToString(states.checked_state()));
     }
 
     if (states.has_hidden())
-      dict->SetBoolKey("hidden", states.hidden());
+      dict->Set("hidden", states.hidden());
 
     if (states.has_value() && !states.value().empty())
-      dict->SetStringKey("value", states.value());
+      dict->Set("value", states.value());
 
     if (states.has_viewport_offset()) {
-      dict->SetStringKey("viewport_offset",
-                         ViewportOffsetToString(states.viewport_offset()));
+      dict->Set("viewport_offset",
+                ViewportOffsetToString(states.viewport_offset()));
     }
 
     if (states.has_toggled_state()) {
-      dict->SetStringKey("toggled_state",
-                         ToggledStateToString(states.toggled_state()));
+      dict->Set("toggled_state", ToggledStateToString(states.toggled_state()));
     }
 
     if (states.has_focusable())
-      dict->SetBoolKey("focusable", states.focusable());
+      dict->Set("focusable", states.focusable());
 
     if (states.has_has_input_focus())
-      dict->SetBoolKey("has_input_focus", states.has_input_focus());
+      dict->Set("has_input_focus", states.has_input_focus());
   }
 
   if (fuchsia_node.has_location())
-    dict->SetStringKey("location", LocationToString(fuchsia_node.location()));
+    dict->Set("location", LocationToString(fuchsia_node.location()));
 
   if (fuchsia_node.has_transform()) {
-    dict->SetStringKey(
-        "transform", Mat4ToString(fuchsia_node.node_to_container_transform()));
+    dict->Set("transform",
+              Mat4ToString(fuchsia_node.node_to_container_transform()));
   }
 }
 

@@ -105,9 +105,9 @@ base::Value AccessibilityTreeFormatterAndroid::BuildTree(
       BrowserAccessibility::FromAXPlatformNodeDelegate(root);
 
   // XXX: Android formatter should walk native Android tree (not internal one).
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return std::move(dict);
+  return base::Value(std::move(dict));
 }
 
 base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
@@ -119,9 +119,9 @@ base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
 base::Value AccessibilityTreeFormatterAndroid::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
-  return std::move(dict);
+  return base::Value(std::move(dict));
 }
 
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
@@ -135,7 +135,7 @@ void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
 
 void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
+    base::Value::Dict* dict) const {
   if (!ShouldDumpNode(node))
     return;
 
@@ -147,89 +147,86 @@ void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
 
   for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
     BrowserAccessibility* child_node = node.PlatformGetChild(i);
-    std::unique_ptr<base::DictionaryValue> child_dict(
-        new base::DictionaryValue);
-    RecursiveBuildTree(*child_node, child_dict.get());
-    children.Append(base::Value::FromUniquePtrValue(std::move(child_dict)));
+    base::Value::Dict child_dict;
+    RecursiveBuildTree(*child_node, &child_dict);
+    children.Append(std::move(child_dict));
   }
-  dict->GetDict().Set(kChildrenDictAttr, std::move(children));
+  dict->Set(kChildrenDictAttr, std::move(children));
 }
 
 void AccessibilityTreeFormatterAndroid::AddProperties(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
-  dict->SetIntKey("id", node.GetId());
+    base::Value::Dict* dict) const {
+  dict->Set("id", node.GetId());
 
   const BrowserAccessibilityAndroid* android_node =
       static_cast<const BrowserAccessibilityAndroid*>(&node);
 
   // Class name.
-  dict->SetStringKey("class", android_node->GetClassName());
+  dict->Set("class", android_node->GetClassName());
 
   // Bool attributes.
-  dict->SetBoolKey("checkable", android_node->IsCheckable());
-  dict->SetBoolKey("checked", android_node->IsChecked());
-  dict->SetBoolKey("clickable", android_node->IsClickable());
-  dict->SetBoolKey("collapsed", android_node->IsCollapsed());
-  dict->SetBoolKey("collection", android_node->IsCollection());
-  dict->SetBoolKey("collection_item", android_node->IsCollectionItem());
-  dict->SetBoolKey("content_invalid", android_node->IsContentInvalid());
-  dict->SetBoolKey("disabled", !android_node->IsEnabled());
-  dict->SetBoolKey("editable_text", android_node->IsTextField());
-  dict->SetBoolKey("expanded", android_node->IsExpanded());
-  dict->SetBoolKey("focusable", android_node->IsFocusable());
-  dict->SetBoolKey("focused", android_node->IsFocused());
-  dict->SetBoolKey("has_character_locations",
-                   android_node->HasCharacterLocations());
-  dict->SetBoolKey("has_image", android_node->HasImage());
-  dict->SetBoolKey("has_non_empty_value", android_node->HasNonEmptyValue());
-  dict->SetBoolKey("heading", android_node->IsHeading());
-  dict->SetBoolKey("hierarchical", android_node->IsHierarchical());
-  dict->SetBoolKey("invisible", !android_node->IsVisibleToUser());
-  dict->SetBoolKey("link", ui::IsLink(android_node->GetRole()));
-  dict->SetBoolKey("multiline", android_node->IsMultiLine());
-  dict->SetBoolKey("multiselectable", android_node->IsMultiselectable());
-  dict->SetBoolKey("range", android_node->GetData().IsRangeValueSupported());
-  dict->SetBoolKey("password", android_node->IsPasswordField());
-  dict->SetBoolKey("scrollable", android_node->IsScrollable());
-  dict->SetBoolKey("selected", android_node->IsSelected());
-  dict->SetBoolKey("interesting", android_node->IsInterestingOnAndroid());
+  dict->Set("checkable", android_node->IsCheckable());
+  dict->Set("checked", android_node->IsChecked());
+  dict->Set("clickable", android_node->IsClickable());
+  dict->Set("collapsed", android_node->IsCollapsed());
+  dict->Set("collection", android_node->IsCollection());
+  dict->Set("collection_item", android_node->IsCollectionItem());
+  dict->Set("content_invalid", android_node->IsContentInvalid());
+  dict->Set("disabled", !android_node->IsEnabled());
+  dict->Set("editable_text", android_node->IsTextField());
+  dict->Set("expanded", android_node->IsExpanded());
+  dict->Set("focusable", android_node->IsFocusable());
+  dict->Set("focused", android_node->IsFocused());
+  dict->Set("has_character_locations", android_node->HasCharacterLocations());
+  dict->Set("has_image", android_node->HasImage());
+  dict->Set("has_non_empty_value", android_node->HasNonEmptyValue());
+  dict->Set("heading", android_node->IsHeading());
+  dict->Set("hierarchical", android_node->IsHierarchical());
+  dict->Set("invisible", !android_node->IsVisibleToUser());
+  dict->Set("link", ui::IsLink(android_node->GetRole()));
+  dict->Set("multiline", android_node->IsMultiLine());
+  dict->Set("multiselectable", android_node->IsMultiselectable());
+  dict->Set("range", android_node->GetData().IsRangeValueSupported());
+  dict->Set("password", android_node->IsPasswordField());
+  dict->Set("scrollable", android_node->IsScrollable());
+  dict->Set("selected", android_node->IsSelected());
+  dict->Set("interesting", android_node->IsInterestingOnAndroid());
 
   // String attributes.
-  dict->SetStringKey("name", android_node->GetTextContentUTF16());
-  dict->SetStringKey("hint", android_node->GetHint());
-  dict->SetStringKey("role_description", android_node->GetRoleDescription());
-  dict->SetStringKey("state_description", android_node->GetStateDescription());
+  dict->Set("name", android_node->GetTextContentUTF16());
+  dict->Set("hint", android_node->GetHint());
+  dict->Set("role_description", android_node->GetRoleDescription());
+  dict->Set("state_description", android_node->GetStateDescription());
 
   // Int attributes.
-  dict->SetIntKey("item_index", android_node->GetItemIndex());
-  dict->SetIntKey("item_count", android_node->GetItemCount());
-  dict->SetIntKey("row_count", android_node->RowCount());
-  dict->SetIntKey("column_count", android_node->ColumnCount());
-  dict->SetIntKey("row_index", android_node->RowIndex());
-  dict->SetIntKey("row_span", android_node->RowSpan());
-  dict->SetIntKey("column_index", android_node->ColumnIndex());
-  dict->SetIntKey("column_span", android_node->ColumnSpan());
-  dict->SetIntKey("input_type", android_node->AndroidInputType());
-  dict->SetIntKey("live_region_type", android_node->AndroidLiveRegionType());
-  dict->SetIntKey("range_min", static_cast<int>(android_node->RangeMin()));
-  dict->SetIntKey("range_max", static_cast<int>(android_node->RangeMax()));
-  dict->SetIntKey("range_current_value",
-                  static_cast<int>(android_node->RangeCurrentValue()));
-  dict->SetIntKey("text_change_added_count",
-                  android_node->GetTextChangeAddedCount());
-  dict->SetIntKey("text_change_removed_count",
-                  android_node->GetTextChangeRemovedCount());
+  dict->Set("item_index", android_node->GetItemIndex());
+  dict->Set("item_count", android_node->GetItemCount());
+  dict->Set("row_count", android_node->RowCount());
+  dict->Set("column_count", android_node->ColumnCount());
+  dict->Set("row_index", android_node->RowIndex());
+  dict->Set("row_span", android_node->RowSpan());
+  dict->Set("column_index", android_node->ColumnIndex());
+  dict->Set("column_span", android_node->ColumnSpan());
+  dict->Set("input_type", android_node->AndroidInputType());
+  dict->Set("live_region_type", android_node->AndroidLiveRegionType());
+  dict->Set("range_min", static_cast<int>(android_node->RangeMin()));
+  dict->Set("range_max", static_cast<int>(android_node->RangeMax()));
+  dict->Set("range_current_value",
+            static_cast<int>(android_node->RangeCurrentValue()));
+  dict->Set("text_change_added_count", android_node->GetTextChangeAddedCount());
+  dict->Set("text_change_removed_count",
+            android_node->GetTextChangeRemovedCount());
 
   // Actions.
-  dict->SetBoolKey("action_scroll_forward", android_node->CanScrollForward());
-  dict->SetBoolKey("action_scroll_backward", android_node->CanScrollBackward());
-  dict->SetBoolKey("action_scroll_up", android_node->CanScrollUp());
-  dict->SetBoolKey("action_scroll_down", android_node->CanScrollDown());
-  dict->SetBoolKey("action_scroll_left", android_node->CanScrollLeft());
-  dict->SetBoolKey("action_scroll_right", android_node->CanScrollRight());
-  dict->SetBoolKey("action_expand", android_node->IsCollapsed());
-  dict->SetBoolKey("action_collapse", android_node->IsExpanded());
+  dict->Set("action_scroll_forward", android_node->CanScrollForward());
+  dict->Set("action_scroll_backward", android_node->CanScrollBackward());
+  dict->Set("action_scroll_up", android_node->CanScrollUp());
+  dict->Set("action_scroll_down", android_node->CanScrollDown());
+  dict->Set("action_scroll_left", android_node->CanScrollLeft());
+  dict->Set("action_scroll_right", android_node->CanScrollRight());
+  dict->Set("action_expand", android_node->IsCollapsed());
+  dict->Set("action_collapse", android_node->IsExpanded());
 }
 
 std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(

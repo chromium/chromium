@@ -30,10 +30,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
 
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
-                          base::DictionaryValue* dict) const;
+                          base::Value::Dict* dict) const;
 
   void AddProperties(const BrowserAccessibility& node,
-                     base::DictionaryValue* dict) const;
+                     base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;

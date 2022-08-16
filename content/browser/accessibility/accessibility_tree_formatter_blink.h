@@ -35,16 +35,17 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
 
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
-                          base::Value* dict) const;
+                          base::Value::Dict* dict) const;
 
-  void RecursiveBuildTree(const ui::AXNode& node, base::Value* dict) const;
+  void RecursiveBuildTree(const ui::AXNode& node,
+                          base::Value::Dict* dict) const;
 
   base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   void AddProperties(const BrowserAccessibility& node,
-                     base::DictionaryValue* dict) const;
+                     base::Value::Dict* dict) const;
 
-  void AddProperties(const ui::AXNode& node, base::DictionaryValue* dict) const;
+  void AddProperties(const ui::AXNode& node, base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;

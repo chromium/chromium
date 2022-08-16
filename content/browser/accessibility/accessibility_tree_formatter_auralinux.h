@@ -37,26 +37,22 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
       const AXTreeSelector& selector,
       const ui::AXInspectScenario& scenario) const override;
 
-  void RecursiveBuildTree(AtspiAccessible* node,
-                          base::DictionaryValue* dict) const;
-  void RecursiveBuildTree(AtkObject*, base::DictionaryValue*) const;
+  void RecursiveBuildTree(AtspiAccessible* node, base::Value::Dict* dict) const;
+  void RecursiveBuildTree(AtkObject*, base::Value::Dict*) const;
 
-  void AddProperties(AtkObject*, base::DictionaryValue*) const;
-  void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
+  void AddProperties(AtkObject*, base::Value::Dict*) const;
+  void AddProperties(AtspiAccessible*, base::Value::Dict*) const;
 
-  void AddTextProperties(AtkObject* atk_object,
-                         base::DictionaryValue* dict) const;
+  void AddTextProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddHypertextProperties(AtkObject* atk_object,
-                              base::DictionaryValue* dict) const;
+                              base::Value::Dict* dict) const;
   void AddActionProperties(AtkObject* atk_object,
-                           base::DictionaryValue* dict) const;
-  void AddValueProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
-  void AddTableProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
+                           base::Value::Dict* dict) const;
+  void AddValueProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
+  void AddTableProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddTableCellProperties(const ui::AXPlatformNodeAuraLinux* node,
                               AtkObject* atk_object,
-                              base::DictionaryValue* dict) const;
+                              base::Value::Dict* dict) const;
 };
 
 }  // namespace content

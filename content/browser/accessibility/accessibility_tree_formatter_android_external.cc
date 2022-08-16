@@ -28,14 +28,14 @@ base::Value AccessibilityTreeFormatterAndroidExternal::BuildTree(
   BrowserAccessibility* root_internal =
       BrowserAccessibility::FromAXPlatformNodeDelegate(root);
 
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   RecursiveBuildTree(*root_internal, &dict);
-  return std::move(dict);
+  return base::Value(std::move(dict));
 }
 
 void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
+    base::Value::Dict* dict) const {
   const BrowserAccessibilityAndroid* android_node =
       static_cast<const BrowserAccessibilityAndroid*>(&node);
 
@@ -44,22 +44,21 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
   // TODO: It would be interesting to allow filtering here in the future.
   std::u16string str = android_node->GenerateAccessibilityNodeInfoString();
   if (str.empty()) {
-    dict->SetStringKey(kStringKey, kErrorMessage);
+    dict->Set(kStringKey, kErrorMessage);
     return;
   }
 
-  dict->SetStringKey(kStringKey, str);
+  dict->Set(kStringKey, str);
 
   base::Value::List children;
 
   for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
     BrowserAccessibility* child_node = node.PlatformGetChild(i);
-    std::unique_ptr<base::DictionaryValue> child_dict(
-        new base::DictionaryValue);
-    RecursiveBuildTree(*child_node, child_dict.get());
-    children.Append(base::Value::FromUniquePtrValue(std::move(child_dict)));
+    base::Value::Dict child_dict;
+    RecursiveBuildTree(*child_node, &child_dict);
+    children.Append(std::move(child_dict));
   }
-  dict->GetDict().Set(kChildrenDictAttr, std::move(children));
+  dict->Set(kChildrenDictAttr, std::move(children));
 }
 
 std::string AccessibilityTreeFormatterAndroidExternal::ProcessTreeForOutput(

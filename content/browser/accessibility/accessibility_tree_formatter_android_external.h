@@ -22,7 +22,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroidExternal
 
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,
-                          base::DictionaryValue* dict) const;
+                          base::Value::Dict* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
