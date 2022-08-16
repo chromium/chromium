@@ -334,7 +334,8 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::move(special_storage_policy),
           MakeStorageDelegate(),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
-          std::make_unique<AttributionReportNetworkSender>(storage_partition),
+          std::make_unique<AttributionReportNetworkSender>(
+              storage_partition->GetURLLoaderFactoryForBrowserProcess()),
           std::make_unique<AttributionDataHostManagerImpl>(this)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(

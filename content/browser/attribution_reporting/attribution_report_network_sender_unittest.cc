@@ -73,26 +73,20 @@ class AttributionReportNetworkSenderTest : public testing::Test {
   AttributionReportNetworkSenderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         network_sender_(std::make_unique<AttributionReportNetworkSender>(
-            /*storage_partition=*/nullptr)),
-        shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
-    network_sender_->SetURLLoaderFactoryForTesting(shared_url_loader_factory_);
-  }
+                &test_url_loader_factory_))) {}
 
  protected:
   // |task_environment_| must be initialized first.
   content::BrowserTaskEnvironment task_environment_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   base::MockCallback<base::OnceCallback<void(AttributionReport, SendResult)>>
       callback_;
 
   // Unique ptr so it can be reset during testing.
   std::unique_ptr<AttributionReportNetworkSender> network_sender_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 };
 
 TEST_F(AttributionReportNetworkSenderTest,

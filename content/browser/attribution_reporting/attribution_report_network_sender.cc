@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/send_result.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -22,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -43,8 +43,10 @@ enum class Status {
 }  // namespace
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
-    StoragePartition* storage_partition)
-    : storage_partition_(storage_partition) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(url_loader_factory_);
+}
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
@@ -52,13 +54,6 @@ void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback sent_callback) {
-  // The browser process URLLoaderFactory is not created by default, so don't
-  // create it until it is directly needed.
-  if (!url_loader_factory_) {
-    url_loader_factory_ =
-        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
-  }
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = report.ReportURL(is_debug_report);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -124,11 +119,6 @@ void AttributionReportNetworkSender::SendReport(
       base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                      base::Unretained(this), std::move(it), std::move(report),
                      is_debug_report, std::move(sent_callback)));
-}
-
-void AttributionReportNetworkSender::SetURLLoaderFactoryForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = url_loader_factory;
 }
 
 void AttributionReportNetworkSender::OnReportSent(
