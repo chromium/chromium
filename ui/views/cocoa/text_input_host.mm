@@ -379,7 +379,7 @@ void TextInputHost::GetSelectionText(GetSelectionTextCallback callback) {
 
 void TextInputHost::HasCompositionText(HasCompositionTextCallback callback) {
   bool has_composition_text = false;
-  IsRTL(&has_composition_text);
+  HasCompositionText(&has_composition_text);
   std::move(callback).Run(has_composition_text);
 }
 
