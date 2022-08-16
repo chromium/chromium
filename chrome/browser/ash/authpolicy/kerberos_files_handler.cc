@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

@@ -231,6 +231,11 @@ const size_t ChromeMainDelegate::kNonWildcardDomainNonPortSchemesSize =
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const base::FilePath::CharType kUserHomeDirPrefix[] =
+    FILE_PATH_LITERAL("/home/user");
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_WIN)
 // Early versions of Chrome incorrectly registered a chromehtml: URL handler,
 // which gives us nothing but trouble. Avoid launching chrome this way since
@@ -1154,6 +1159,16 @@ void ChromeMainDelegate::PreSandboxStartup() {
         chromeos::BrowserParamsProxy::Get();
     chrome::SetLacrosDefaultPathsFromInitParams(
         init_params->DefaultPaths().get());
+
+    // Override the login user DIR_HOME path for the Lacros browser process. The
+    // primary user id hash is expected to be already set, because Lacros should
+    // only run inside the user session.
+    if (init_params->CrosUserIdHash().has_value()) {
+      base::FilePath homedir(kUserHomeDirPrefix);
+      homedir = homedir.Append(init_params->CrosUserIdHash().value());
+      base::PathService::OverrideAndCreateIfNeeded(
+          base::DIR_HOME, homedir, /*is_absolute=*/true, /*create=*/false);
+    }
   }
 
   // Generate shared resource file only on browser process. This is to avoid
@@ -1188,7 +1203,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
           ui::k200Percent);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
