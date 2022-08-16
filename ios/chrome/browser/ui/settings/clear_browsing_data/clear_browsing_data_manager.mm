@@ -683,9 +683,11 @@ static NSDictionary* imageNamesByItemTypes = @{
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForBrowserState(_browserState);
     DCHECK(authenticationService);
-    authenticationService->SignOut(
-        signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
-        /*force_clear_browsing_data=*/false, nil);
+    if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
+      authenticationService->SignOut(
+          signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+          /*force_clear_browsing_data=*/false, nil);
+    }
   }
 }
 
