@@ -749,6 +749,14 @@ void AuraToplevel::SetSystemModal(bool modal) {
   shell_surface_->SetSystemModal(modal);
 }
 
+void AuraToplevel::SetFloat() {
+  shell_surface_->SetFloat();
+}
+
+void AuraToplevel::UnsetFloat() {
+  shell_surface_->UnsetFloat();
+}
+
 template <class T>
 void AddState(wl_array* states, T state) {
   T* value = static_cast<T*>(wl_array_add(states, sizeof(T)));
@@ -1136,6 +1144,14 @@ void aura_toplevel_unset_system_modal(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetSystemModal(false);
 }
 
+void aura_toplevel_set_float(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetFloat();
+}
+
+void aura_toplevel_unset_float(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->UnsetFloat();
+}
+
 void aura_toplevel_set_restore_info_with_window_id_source(
     wl_client* client,
     wl_resource* resource,
@@ -1181,6 +1197,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_restore_info_with_window_id_source,
     aura_toplevel_set_decoration,
     aura_toplevel_release,
+    aura_toplevel_set_float,
+    aura_toplevel_unset_float,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

@@ -51,6 +51,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetSystemModal(bool modal) override;
   bool SupportsScreenCoordinates() const override;
   void EnableScreenCoordinates() override;
+  void SetFloat() override;
+  void UnSetFloat() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

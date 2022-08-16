@@ -42,6 +42,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -651,6 +652,17 @@ void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
   restore_session_id_.emplace(restore_session_id);
   if (!restore_window_id_source.empty())
     restore_window_id_source_.emplace(restore_window_id_source);
+}
+
+void ShellSurfaceBase::SetFloat() {
+  // TODO(crbug.com/1347534): This currently can unset float as well, but its
+  // necessary until configure request is ready otherwise the window will remain
+  // floated forever.
+  chromeos::FloatControllerBase::Get()->ToggleFloat(widget_->GetNativeWindow());
+}
+
+void ShellSurfaceBase::UnsetFloat() {
+  chromeos::FloatControllerBase::Get()->ToggleFloat(widget_->GetNativeWindow());
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {

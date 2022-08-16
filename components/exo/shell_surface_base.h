@@ -171,6 +171,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
       int32_t restore_id,
       const std::string& restore_window_id_source);
 
+  // Floats (place on top of other surfaces) or unfloats the shell surface.
+  void SetFloat();
+  void UnsetFloat();
+
   // Returns a trace value representing the state of the surface.
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
 

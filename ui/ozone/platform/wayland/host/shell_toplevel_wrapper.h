@@ -127,6 +127,11 @@ class ShellToplevelWrapper {
   // Enables screen coordinates support. This is no-op if the server does not
   // support the screen coordinates.
   virtual void EnableScreenCoordinates() = 0;
+
+  // Sets/usets a native window to float state. This places it on top of other
+  // windows.
+  virtual void SetFloat() = 0;
+  virtual void UnSetFloat() = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

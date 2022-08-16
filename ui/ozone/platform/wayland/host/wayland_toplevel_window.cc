@@ -974,4 +974,12 @@ bool WaylandToplevelWindow::GetTabletMode() {
   return connection()->GetTabletMode();
 }
 
+void WaylandToplevelWindow::SetFloat(bool value) {
+  DCHECK(shell_toplevel_);
+  if (value)
+    shell_toplevel_->SetFloat();
+  else
+    shell_toplevel_->UnSetFloat();
+}
+
 }  // namespace ui

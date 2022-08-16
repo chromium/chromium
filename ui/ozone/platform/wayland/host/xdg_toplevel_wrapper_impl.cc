@@ -455,4 +455,18 @@ void XDGToplevelWrapperImpl::SetRestoreInfoWithWindowIdSource(
   }
 }
 
+void XDGToplevelWrapperImpl::SetFloat() {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_FLOAT_SINCE_VERSION) {
+    zaura_toplevel_set_float(aura_toplevel_.get());
+  }
+}
+
+void XDGToplevelWrapperImpl::UnSetFloat() {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_UNSET_FLOAT_SINCE_VERSION) {
+    zaura_toplevel_unset_float(aura_toplevel_.get());
+  }
+}
+
 }  // namespace ui

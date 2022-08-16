@@ -155,6 +155,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Lock(WaylandOrientationLockType lock_Type) override;
   void Unlock() override;
   bool GetTabletMode() override;
+  void SetFloat(bool value) override;
 
   // DeskExtension:
   int GetNumberOfDesks() const override;

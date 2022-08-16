@@ -215,4 +215,8 @@ bool ZXDGToplevelV6WrapperImpl::SupportsScreenCoordinates() const {
 
 void ZXDGToplevelV6WrapperImpl::EnableScreenCoordinates() {}
 
+void ZXDGToplevelV6WrapperImpl::SetFloat() {}
+
+void ZXDGToplevelV6WrapperImpl::UnSetFloat() {}
+
 }  // namespace ui

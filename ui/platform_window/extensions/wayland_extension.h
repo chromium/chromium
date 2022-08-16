@@ -75,6 +75,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // Retrieve current layout state.
   virtual bool GetTabletMode() = 0;
 
+  // Signals the underneath platform to float the browser window on top other
+  // windows.
+  virtual void SetFloat(bool value) = 0;
+
  protected:
   virtual ~WaylandExtension();
 

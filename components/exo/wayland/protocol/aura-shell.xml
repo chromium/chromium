@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="38">
+  <interface name="zaura_shell" version="39">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -684,7 +684,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_toplevel" version="38">
+  <interface name="zaura_toplevel" version="39">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -863,6 +863,18 @@
   is unmapped from a wl_surface.
 
   See zaura_shell.release for destructor naming.
+      </description>
+    </request>
+
+    <!-- Version 39 additions -->
+    <request name="set_float" since="39">
+      <description summary="float the surface on top">
+        This is a request to place the surface above others.
+      </description>
+    </request>
+    <request name="unset_float" since="39">
+      <description summary="unset the surface float">
+        Request that the surface resets floating.
       </description>
     </request>
   </interface>
