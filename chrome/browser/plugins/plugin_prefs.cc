@@ -123,7 +123,7 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
         }
         base::Value::Dict& plugin = plugin_value.GetDict();
 
-        // The plugin list constains all the plugin files in addition to the
+        // The plugin list contains all the plugin files in addition to the
         // plugin groups.
         if (const std::string* path = plugin.FindString("path")) {
           // Files have a path attribute, groups don't.
