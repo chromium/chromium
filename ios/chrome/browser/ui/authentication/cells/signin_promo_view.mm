@@ -480,10 +480,10 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
 
       // Configures fonts for titled layout.
       self.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
       self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
       self.textLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
       // In the standard layout, the button has a background.
