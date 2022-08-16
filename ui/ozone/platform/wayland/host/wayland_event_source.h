@@ -184,8 +184,7 @@ class WaylandEventSource : public PlatformEventSource,
   // TODO(https://crrev.com/c/1298504): Unify |PointerFrame| and |TouchFrame|
   // and make them non-copyable/move-only.
   struct PointerFrame {
-    PointerFrame(const MouseEvent& event,
-                 base::OnceCallback<void()> completion_cb);
+    PointerFrame(const Event& event, base::OnceCallback<void()> completion_cb);
     PointerFrame(const PointerFrame& other) = delete;
     PointerFrame(PointerFrame&&) = delete;
     ~PointerFrame();
@@ -195,13 +194,12 @@ class WaylandEventSource : public PlatformEventSource,
   };
 
   struct TouchFrame {
-    TouchFrame(const TouchEvent& event,
-               base::OnceCallback<void()> completion_cb);
+    TouchFrame(const Event& event, base::OnceCallback<void()> completion_cb);
     TouchFrame(const TouchFrame& other) = delete;
     TouchFrame(TouchFrame&&) = delete;
     ~TouchFrame();
 
-    TouchEvent event;
+    std::unique_ptr<Event> event;
     base::OnceCallback<void()> completion_cb;
   };
 

@@ -120,16 +120,16 @@ WaylandEventSource::PointerScrollData&
 WaylandEventSource::PointerScrollData::operator=(PointerScrollData&&) = default;
 
 // WaylandEventSource::PointerFrame implementation
-WaylandEventSource::PointerFrame::PointerFrame(const MouseEvent& e,
+WaylandEventSource::PointerFrame::PointerFrame(const Event& e,
                                                base::OnceCallback<void()> cb)
     : event(e.Clone()), completion_cb(std::move(cb)) {}
 
 WaylandEventSource::PointerFrame::~PointerFrame() = default;
 
 // WaylandEventSource::TouchFrame implementation
-WaylandEventSource::TouchFrame::TouchFrame(const TouchEvent& e,
+WaylandEventSource::TouchFrame::TouchFrame(const Event& e,
                                            base::OnceCallback<void()> cb)
-    : event(e), completion_cb(std::move(cb)) {}
+    : event(e.Clone()), completion_cb(std::move(cb)) {}
 
 WaylandEventSource::TouchFrame::~TouchFrame() = default;
 
@@ -537,16 +537,16 @@ void WaylandEventSource::OnTouchFrame() {
 
     // In case there are touch stylus information, override the current 'event'
     // instance, given that PointerDetails is 'const'.
-    auto pointer_details_with_stylus_data =
-        AmendStylusData(touch_frame->event.pointer_details().id);
+    auto pointer_details_with_stylus_data = AmendStylusData(
+        touch_frame->event->AsTouchEvent()->pointer_details().id);
     if (pointer_details_with_stylus_data) {
-      auto old_event = touch_frame->event;
-      touch_frame->event = TouchEvent(
-          old_event.type(), old_event.location_f(), old_event.root_location_f(),
-          old_event.time_stamp(), pointer_details_with_stylus_data.value(),
-          old_event.flags());
+      auto old_event = std::move(touch_frame->event);
+      touch_frame->event = std::make_unique<TouchEvent>(
+          old_event->type(), old_event->AsTouchEvent()->location_f(),
+          old_event->AsTouchEvent()->root_location_f(), old_event->time_stamp(),
+          pointer_details_with_stylus_data.value(), old_event->flags());
     }
-    SetTouchTargetAndDispatchTouchEvent(&(touch_frame->event));
+    SetTouchTargetAndDispatchTouchEvent(touch_frame->event->AsTouchEvent());
     if (!touch_frame->completion_cb.is_null())
       std::move(touch_frame->completion_cb).Run();
   }
