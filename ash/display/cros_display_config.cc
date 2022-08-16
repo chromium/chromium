@@ -163,6 +163,9 @@ std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayUnifiedLayouts() {
 crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     const crosapi::mojom::DisplayLayoutInfo& info) {
   display::DisplayManager* display_manager = GetDisplayManager();
+  if (display_manager->num_connected_displays() < 2)
+    return crosapi::mojom::DisplayConfigResult::kSingleDisplayError;
+
   if (info.layout_mode == crosapi::mojom::DisplayLayoutMode::kNormal) {
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::EXTENDED);
@@ -212,7 +215,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
           display_manager->GetConnectedDisplayIdList(), *mixed_params);
   switch (error_type) {
     case display::MixedMirrorModeParamsErrors::kErrorSingleDisplay:
-      return crosapi::mojom::DisplayConfigResult::kMirrorModeSingleDisplayError;
+      return crosapi::mojom::DisplayConfigResult::kSingleDisplayError;
     case display::MixedMirrorModeParamsErrors::kErrorSourceIdNotFound:
       return crosapi::mojom::DisplayConfigResult::kMirrorModeSourceIdError;
     case display::MixedMirrorModeParamsErrors::kErrorDestinationIdsEmpty:

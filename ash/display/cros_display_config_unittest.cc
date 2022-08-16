@@ -280,6 +280,20 @@ TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {
   EXPECT_EQ(0, layouts[1]->offset);
 }
 
+TEST_F(CrosDisplayConfigTest, FailToSetLayoutUnifiedWithOneDisplay) {
+  UpdateDisplay("500x400");
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+
+  // Enable unified desktop and expect to fail due to not enough connected
+  // displays.
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
+  crosapi::mojom::DisplayConfigResult result =
+      SetDisplayLayoutInfo(std::move(properties));
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSingleDisplayError, result);
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+}
+
 TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   UpdateDisplay("500x400,500x400");
   EXPECT_FALSE(display_manager()->IsInUnifiedMode());
@@ -309,6 +323,24 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   EXPECT_FALSE(display_manager()->IsInUnifiedMode());
 }
 
+TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredDefaultWithOneDisplay) {
+  UpdateDisplay("500x400");
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+
+  // Enable default mirror mode and expect to fail due to not enough connected
+  // displays.
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
+  crosapi::mojom::DisplayConfigResult result =
+      SetDisplayLayoutInfo(std::move(properties));
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSingleDisplayError, result);
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+
+  display::DisplayIdList id_list =
+      display_manager()->GetMirroringDestinationDisplayIdList();
+  ASSERT_TRUE(id_list.empty());
+}
+
 TEST_F(CrosDisplayConfigTest, SetLayoutMirroredDefault) {
   UpdateDisplay("500x400,500x400,500x400");
 
@@ -327,6 +359,32 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredDefault) {
   result = SetDisplayLayoutInfo(std::move(properties));
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
+}
+
+TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredMixedWithOneDisplay) {
+  UpdateDisplay("500x400");
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+
+  std::vector<display::Display> displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+  ASSERT_EQ(1u, displays.size());
+
+  // Enable mixed mirror mode and expect to fail due to not enough connected
+  // displays.
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
+  properties->mirror_source_id = base::NumberToString(displays[0].id());
+  properties->mirror_destination_ids =
+      absl::make_optional<std::vector<std::string>>();
+
+  crosapi::mojom::DisplayConfigResult result =
+      SetDisplayLayoutInfo(std::move(properties));
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSingleDisplayError, result);
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+
+  display::DisplayIdList id_list =
+      display_manager()->GetMirroringDestinationDisplayIdList();
+  ASSERT_TRUE(id_list.empty());
 }
 
 TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {

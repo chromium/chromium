@@ -273,8 +273,8 @@ absl::optional<std::string> GetStringResult(
       return "Setting the display mode failed";
     case crosapi::mojom::DisplayConfigResult::kInvalidDisplayLayoutError:
       return "Invalid display layout";
-    case crosapi::mojom::DisplayConfigResult::kMirrorModeSingleDisplayError:
-      return "Mirror mode requires multiple displays";
+    case crosapi::mojom::DisplayConfigResult::kSingleDisplayError:
+      return "This mode requires multiple displays";
     case crosapi::mojom::DisplayConfigResult::kMirrorModeSourceIdError:
       return "Mirror mode source id invalid";
     case crosapi::mojom::DisplayConfigResult::kMirrorModeDestIdError:

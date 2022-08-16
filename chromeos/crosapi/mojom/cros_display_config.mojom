@@ -34,8 +34,8 @@ enum DisplayConfigResult {
   kSetDisplayModeError,
   // Invalid display layout error.
   kInvalidDisplayLayoutError,
-  // Mirror mode requires multiple displays.
-  kMirrorModeSingleDisplayError,
+  // Mode requires multiple displays.
+  kSingleDisplayError,
   // Mirror mode source ID is invalid.
   kMirrorModeSourceIdError,
   // Mirror mode destination ID is invalid.
