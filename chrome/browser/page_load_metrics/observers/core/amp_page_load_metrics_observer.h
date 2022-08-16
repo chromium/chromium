@@ -65,7 +65,11 @@ class AMPPageLoadMetricsObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
   void OnCommitSameDocumentNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(
@@ -136,7 +140,7 @@ class AMPPageLoadMetricsObserver
     bool amp_document_loaded = false;
   };
 
-  void RecordLoadingBehaviorObserved();
+  void MaybeRecordLoadingBehaviorObserved();
   void RecordNormalizedResponsivenessMetrics(
       const page_load_metrics::NormalizedResponsivenessMetrics&
           normalized_responsiveness_metrics,
