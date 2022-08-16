@@ -8,6 +8,7 @@ include_rules = [
   "+components/ukm",
   "+components/user_prefs",
   "+content/public/browser",
+  "+content/test",
   "+net",
   "+services/metrics/public/cpp",
   "+services/service_manager/public/cpp",

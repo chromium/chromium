@@ -595,6 +595,8 @@ class CONTENT_EXPORT FrameTreeNode {
                            NavigationToAnonymousDocumentNetworkIsolationInfo);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
                            ChildOfAnonymousIsAnonymous);
+  FRIEND_TEST_ALL_PREFIXES(ContentPasswordManagerDriverTest,
+                           PasswordAutofillDisabledOnAnonymousIframe);
 
   // Called by the destructor. When `this` is an outer dummy FrameTreeNode
   // representing an inner FrameTree, this method destroys said inner FrameTree.

@@ -88,10 +88,11 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
   // call ContentPasswordManagerDriver::SendLoggingAvailability() on |this| to
   // do it actually.
   if (client_->GetLogManager()) {
-    // Do not call the virtual method SendLoggingAvailability from a constructor
-    // here, inline its steps instead.
-    GetPasswordAutofillAgent()->SetLoggingState(
-        client_->GetLogManager()->IsLoggingActive());
+    if (const auto& agent = GetPasswordAutofillAgent()) {
+      // Do not call the virtual method SendLoggingAvailability from a
+      // constructor here, inline its steps instead.
+      agent->SetLoggingState(client_->GetLogManager()->IsLoggingActive());
+    }
   }
 }
 
@@ -126,15 +127,17 @@ int ContentPasswordManagerDriver::GetId() const {
 void ContentPasswordManagerDriver::FillPasswordForm(
     const autofill::PasswordFormFillData& form_data) {
   password_autofill_manager_.OnAddPasswordFillData(form_data);
-  GetPasswordAutofillAgent()->FillPasswordForm(
-      autofill::MaybeClearPasswordValues(form_data));
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->FillPasswordForm(autofill::MaybeClearPasswordValues(form_data));
+  }
 }
 
 void ContentPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
   GetPasswordAutofillManager()->OnNoCredentialsFound();
-  GetPasswordAutofillAgent()->InformNoSavedCredentials(
-      should_show_popup_without_passwords);
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->InformNoSavedCredentials(should_show_popup_without_passwords);
+  }
 }
 
 void ContentPasswordManagerDriver::FormEligibleForGenerationFound(
@@ -175,7 +178,9 @@ void ContentPasswordManagerDriver::FillSuggestion(
 void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
-  GetPasswordAutofillAgent()->FillIntoFocusedField(is_password, credential);
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->FillIntoFocusedField(is_password, credential);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -214,8 +219,9 @@ ContentPasswordManagerDriver::GetPasswordAutofillManager() {
 }
 
 void ContentPasswordManagerDriver::SendLoggingAvailability() {
-  GetPasswordAutofillAgent()->SetLoggingState(
-      client_->GetLogManager()->IsLoggingActive());
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->SetLoggingState(client_->GetLogManager()->IsLoggingActive());
+  }
 }
 
 bool ContentPasswordManagerDriver::IsInPrimaryMainFrame() const {
@@ -237,7 +243,9 @@ const GURL& ContentPasswordManagerDriver::GetLastCommittedURL() const {
 
 void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
     const autofill::ParsingResult& parsing_result) {
-  GetPasswordAutofillAgent()->AnnotateFieldsWithParsingResult(parsing_result);
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->AnnotateFieldsWithParsingResult(parsing_result);
+  }
 }
 
 void ContentPasswordManagerDriver::GeneratePassword(
@@ -476,9 +484,15 @@ ContentPasswordManagerDriver::GetAutofillAgent() {
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>&
 ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
+  if (render_frame_host_->IsAnonymous()) {
+    password_autofill_agent_.reset();
+    return password_autofill_agent_;  // Unbound remote.
+  }
+
   DCHECK(!password_autofill_agent_ ||
          (content::RenderFrameHost::LifecycleState::kPrerendering !=
           render_frame_host_->GetLifecycleState()));
+
   if (!password_autofill_agent_) {
     // Some test environments may have no remote interface support.
     if (render_frame_host_->GetRemoteAssociatedInterfaces()) {

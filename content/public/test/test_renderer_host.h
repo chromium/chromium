@@ -50,7 +50,7 @@ struct WebPreferences;
 namespace display {
 class Screen;
 class ScopedNativeScreen;
-}
+}  // namespace display
 
 namespace net {
 namespace test {
@@ -119,6 +119,10 @@ class RenderFrameHostTester {
   virtual RenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
       const blink::ParsedPermissionsPolicy& allow) = 0;
+
+  // Same as AppendChild above, but simulates a custom attributes.
+  virtual RenderFrameHost* AppendAnonymousChild(
+      const std::string& frame_name) = 0;
 
   // Gives tests access to RenderFrameHostImpl::OnDetach. Destroys |this|.
   virtual void Detach() = 0;

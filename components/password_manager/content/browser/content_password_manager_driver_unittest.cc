@@ -24,6 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -431,6 +432,44 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(form_in_fenced_frame.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
+}
+
+TEST_F(ContentPasswordManagerDriverTest,
+       PasswordAutofillDisabledOnAnonymousIframe) {
+  NavigateAndCommit(GURL("https://test.org"));
+
+  content::RenderFrameHost* anonymous_iframe_root =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendAnonymousChild("anonymous_iframe");
+
+  // Navigate an anonymous iframe.
+  GURL anonymous_iframe_url = GURL("https://hostname/path?query#hash");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          anonymous_iframe_url, anonymous_iframe_root);
+  navigation_simulator->Commit();
+  content::RenderFrameHost* anonymous_iframe_1 =
+      navigation_simulator->GetFinalRenderFrameHost();
+
+  // Install a the PasswordAutofillAgent mock. Verify it do not receive commands
+  // from the browser side.
+  FakePasswordAutofillAgent anonymous_fake_agent_;
+  EXPECT_CALL(anonymous_fake_agent_, FillPasswordForm(_)).Times(0);
+  anonymous_iframe_1->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      autofill::mojom::PasswordAutofillAgent::Name_,
+      base::BindRepeating(&FakePasswordAutofillAgent::BindPendingReceiver,
+                          base::Unretained(&anonymous_fake_agent_)));
+
+  autofill::FormData initial_form;
+  autofill::FormData form_in_anonymous_iframe =
+      GetFormWithFrameAndFormMetaData(anonymous_iframe_1, initial_form);
+
+  // Verify autofill can not be triggered by browser side.
+  std::unique_ptr<ContentPasswordManagerDriver> driver(
+      std::make_unique<ContentPasswordManagerDriver>(
+          anonymous_iframe_1, &password_manager_client_, &autofill_client_));
+  driver->FillPasswordForm(GetTestPasswordFormFillData());
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace password_manager

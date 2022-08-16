@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -181,6 +182,15 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       blink::FrameOwnerElementType::kIframe);
   return static_cast<TestRenderFrameHost*>(
       child_creation_observer_.last_created_frame());
+}
+
+TestRenderFrameHost* TestRenderFrameHost::AppendAnonymousChild(
+    const std::string& frame_name) {
+  TestRenderFrameHost* rfh = AppendChildWithPolicy(frame_name, {});
+  auto attributes = blink::mojom::IframeAttributes::New();
+  attributes->anonymous = true;
+  rfh->frame_tree_node()->SetAttributes(std::move(attributes));
+  return rfh;
 }
 
 void TestRenderFrameHost::Detach() {
