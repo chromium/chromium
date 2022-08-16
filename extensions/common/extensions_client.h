@@ -114,6 +114,12 @@ class ExtensionsClient {
   // Returns the base webstore URL prefix.
   virtual const GURL& GetWebstoreBaseURL() const = 0;
 
+  // Returns the base webstore URL prefix for the new webstore. This is defined
+  // separately rather than just changing what GetWebstoreBaseURL returns, as
+  // during the transition some functionality needs to operate across both the
+  // old and the new domain.
+  virtual const GURL& GetNewWebstoreBaseURL() const = 0;
+
   // Returns the URL to use for update manifest queries.
   virtual const GURL& GetWebstoreUpdateURL() const = 0;
 

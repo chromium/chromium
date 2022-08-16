@@ -20,6 +20,7 @@ namespace extensions {
 
 TestExtensionsClient::TestExtensionsClient()
     : webstore_base_url_(extension_urls::kChromeWebstoreBaseURL),
+      new_webstore_base_url_(extension_urls::kNewChromeWebstoreBaseURL),
       webstore_update_url_(extension_urls::kChromeWebstoreUpdateURL) {
   AddAPIProvider(std::make_unique<CoreExtensionsAPIProvider>());
 }
@@ -90,6 +91,10 @@ bool TestExtensionsClient::IsScriptableURL(const GURL& url,
 
 const GURL& TestExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
+}
+
+const GURL& TestExtensionsClient::GetNewWebstoreBaseURL() const {
+  return new_webstore_base_url_;
 }
 
 const GURL& TestExtensionsClient::GetWebstoreUpdateURL() const {

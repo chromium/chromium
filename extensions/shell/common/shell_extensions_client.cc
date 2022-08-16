@@ -62,6 +62,7 @@ base::LazyInstance<ShellPermissionMessageProvider>::DestructorAtExit
 
 ShellExtensionsClient::ShellExtensionsClient()
     : webstore_base_url_(extension_urls::kChromeWebstoreBaseURL),
+      new_webstore_base_url_(extension_urls::kNewChromeWebstoreBaseURL),
       webstore_update_url_(extension_urls::kChromeWebstoreUpdateURL) {
   AddAPIProvider(std::make_unique<CoreExtensionsAPIProvider>());
   AddAPIProvider(std::make_unique<ShellExtensionsAPIProvider>());
@@ -120,6 +121,10 @@ bool ShellExtensionsClient::IsScriptableURL(const GURL& url,
 
 const GURL& ShellExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
+}
+
+const GURL& ShellExtensionsClient::GetNewWebstoreBaseURL() const {
+  return new_webstore_base_url_;
 }
 
 const GURL& ShellExtensionsClient::GetWebstoreUpdateURL() const {

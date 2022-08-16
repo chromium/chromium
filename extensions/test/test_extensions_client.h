@@ -47,6 +47,7 @@ class TestExtensionsClient : public ExtensionsClient {
       const APIPermissionSet& api_permissions) const override;
   bool IsScriptableURL(const GURL& url, std::string* error) const override;
   const GURL& GetWebstoreBaseURL() const override;
+  const GURL& GetNewWebstoreBaseURL() const override;
   const GURL& GetWebstoreUpdateURL() const override;
   bool IsBlocklistUpdateURL(const GURL& url) const override;
   std::set<base::FilePath> GetBrowserImagePaths(
@@ -61,6 +62,7 @@ class TestExtensionsClient : public ExtensionsClient {
   std::set<BrowserImagePathsFilter*> browser_image_filters_;
 
   const GURL webstore_base_url_;
+  const GURL new_webstore_base_url_;
   GURL webstore_update_url_;
 };
 
