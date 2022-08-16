@@ -46,10 +46,10 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
 
   @classmethod
   def SetUpProcess(cls) -> None:
-    options = cls.GetParsedCommandLineOptions()
+    super(MapsIntegrationTest, cls).SetUpProcess()
+    options = cls.GetOriginalFinderOptions()
     color_profile_manager.ForceUntilExitSRGB(
         options.dont_restore_color_profile_after_test)
-    super(MapsIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([
         cba.ENSURE_FORCED_COLOR_PROFILE,
         cba.FORCE_BROWSER_CRASH_ON_GPU_CRASH,
@@ -68,7 +68,6 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    cls.SetParsedCommandLineOptions(options)
     # The maps_pixel_expectations.json contain the actual image expectations. If
     # the test fails, with errors greater than the tolerance for the run, then
     # the logs will report the actual failure.

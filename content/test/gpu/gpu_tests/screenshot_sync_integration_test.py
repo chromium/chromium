@@ -32,20 +32,6 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     """The name by which this test is invoked on the command line."""
     return 'screenshot_sync'
 
-  # The command line options (which are passed to subclasses'
-  # GenerateGpuTests) *must* be configured here, via a call to
-  # SetParsedCommandLineOptions. If they are not, an error will be
-  # raised when running the tests.
-  _parsed_command_line_options = None
-
-  @classmethod
-  def SetParsedCommandLineOptions(cls, options: ct.ParsedCmdArgs) -> None:
-    cls._parsed_command_line_options = options
-
-  @classmethod
-  def GetParsedCommandLineOptions(cls) -> ct.ParsedCmdArgs:
-    return cls._parsed_command_line_options
-
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(ScreenshotSyncIntegrationTest, cls).AddCommandlineArgs(parser)
@@ -60,10 +46,10 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def SetUpProcess(cls) -> None:
-    options = cls.GetParsedCommandLineOptions()
+    super(cls, ScreenshotSyncIntegrationTest).SetUpProcess()
+    options = cls.GetOriginalFinderOptions()
     color_profile_manager.ForceUntilExitSRGB(
         options.dont_restore_color_profile_after_test)
-    super(cls, ScreenshotSyncIntegrationTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
@@ -87,7 +73,6 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    cls.SetParsedCommandLineOptions(options)
     yield ('ScreenshotSync_SWRasterWithCanvas', 'screenshot_sync_canvas.html',
            ['--disable-gpu-rasterization'])
     yield ('ScreenshotSync_SWRasterWithDivs', 'screenshot_sync_divs.html',

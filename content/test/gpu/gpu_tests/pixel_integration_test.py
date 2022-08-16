@@ -70,7 +70,6 @@ class PixelIntegrationTest(
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    cls.SetParsedCommandLineOptions(options)
     namespace = pixel_test_pages.PixelTestPages
     pages = namespace.DefaultPages(cls.test_base_name)
     pages += namespace.GpuRasterizationPages(cls.test_base_name)

@@ -33,7 +33,6 @@ class CastStreamingIntegrationTest(
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    cls.SetParsedCommandLineOptions(options)
     namespace = pixel_test_pages.PixelTestPages
     pages = namespace.CastStreamingReceiverPages(cls.test_base_name)
     for p in pages:

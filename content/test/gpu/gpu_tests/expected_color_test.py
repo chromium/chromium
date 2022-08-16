@@ -123,7 +123,7 @@ class ExpectedColorTest(
 
     expected_colors = page.expected_colors
     tolerance = page.tolerance
-    test_machine_name = self.GetParsedCommandLineOptions().test_machine_name
+    test_machine_name = self.GetOriginalFinderOptions().test_machine_name
 
     # First scan through the expected_colors and see if there are any scale
     # factor overrides that would preempt the device pixel ratio. This

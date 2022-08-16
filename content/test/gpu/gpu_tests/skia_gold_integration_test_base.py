@@ -53,12 +53,6 @@ class _ImageParameters():
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   """Base class for all tests that upload results to Skia Gold."""
-  # The command line options (which are passed to subclasses'
-  # GenerateGpuTests) *must* be configured here, via a call to
-  # SetParsedCommandLineOptions. If they are not, an error will be
-  # raised when running the tests.
-  _parsed_command_line_options = None
-
   _error_image_cloud_storage_bucket = 'chromium-browser-gpu-tests'
 
   # This information is class-scoped, so that it can be shared across
@@ -71,19 +65,11 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _skia_gold_properties = None
 
   @classmethod
-  def SetParsedCommandLineOptions(cls, options: ct.ParsedCmdArgs) -> None:
-    cls._parsed_command_line_options = options
-
-  @classmethod
-  def GetParsedCommandLineOptions(cls) -> ct.ParsedCmdArgs:
-    return cls._parsed_command_line_options
-
-  @classmethod
   def SetUpProcess(cls) -> None:
-    options = cls.GetParsedCommandLineOptions()
+    super(SkiaGoldIntegrationTestBase, cls).SetUpProcess()
+    options = cls.GetOriginalFinderOptions()
     color_profile_manager.ForceUntilExitSRGB(
         options.dont_restore_color_profile_after_test)
-    super(SkiaGoldIntegrationTestBase, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs(TEST_DATA_DIRS)
@@ -93,7 +79,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def GetSkiaGoldProperties(cls) -> sgp.GpuSkiaGoldProperties:
     if not cls._skia_gold_properties:
       cls._skia_gold_properties = sgp.GpuSkiaGoldProperties(
-          cls.GetParsedCommandLineOptions())
+          cls.GetOriginalFinderOptions())
     return cls._skia_gold_properties
 
   @classmethod
@@ -282,7 +268,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
                                           screenshot: ct.Screenshot) -> None:
     revision = cls.GetSkiaGoldProperties().git_revision
     machine_name = re.sub(r'\W+', '_',
-                          cls.GetParsedCommandLineOptions().test_machine_name)
+                          cls.GetOriginalFinderOptions().test_machine_name)
     base_bucket = '%s/gold_failures' % (cls._error_image_cloud_storage_bucket)
     image_name_with_revision_and_machine = '%s_%s_%s.png' % (
         image_name, machine_name, revision)
@@ -378,7 +364,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # "Retry without patch" steps automatically pass in a test filter, which
     # should be the only time these tests are run with a test filter on trybots.
     if (gold_properties.IsTryjobRun()
-        and self.GetParsedCommandLineOptions().has_test_filter):
+        and self.GetOriginalFinderOptions().has_test_filter):
       force_dryrun = True
 
     status, error = gold_session.RunComparison(
@@ -441,7 +427,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       True if the failure should be surfaced, i.e. the test should fail,
       otherwise False.
     """
-    parsed_options = self.GetParsedCommandLineOptions()
+    parsed_options = self.GetOriginalFinderOptions()
     # Don't surface if we're explicitly told not to.
     if parsed_options.no_skia_gold_failure:
       return False
