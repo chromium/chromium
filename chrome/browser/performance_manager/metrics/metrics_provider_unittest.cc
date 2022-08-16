@@ -69,6 +69,7 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
             std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
                 &throttling_enabled_),
             std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
+    manager_->Start();
     provider_.reset(new performance_manager::MetricsProvider(local_state()));
   }
 

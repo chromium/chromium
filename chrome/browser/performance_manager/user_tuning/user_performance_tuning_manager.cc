@@ -106,6 +106,10 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
   g_user_performance_tuning_manager = this;
 
   pref_change_registrar_.Init(local_state);
+}
+
+void UserPerformanceTuningManager::Start() {
+  was_started_ = true;
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable)) {
@@ -140,6 +144,8 @@ void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
 }
 
 void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
+  DCHECK(was_started_);
+
   performance_manager::user_tuning::prefs::BatterySaverModeState state =
       performance_manager::user_tuning::prefs::GetCurrentBatterySaverModeState(
           pref_change_registrar_.prefs());

@@ -198,6 +198,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
           performance_manager::features::kBatterySaverModeAvailable)) {
     profile_discard_opt_out_list_helper_ = std::make_unique<
         performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+    // Create the UserPerformanceTuningManager here so that early UI code can
+    // register observers, but only start it in PreMainMessageLoopRun because it
+    // requires the HostFrameSinkManager to exist.
+    user_performance_tuning_manager_ = std::unique_ptr<
+        performance_manager::user_tuning::UserPerformanceTuningManager>(
+        new performance_manager::user_tuning::UserPerformanceTuningManager(
+            g_browser_process->local_state()));
   }
 #endif
 
@@ -215,16 +222,15 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
-  // This object requires the host frame sink manager to exist, which is created
-  // after all the extra parts have run their PostCreateThreads.
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::kBatterySaverModeAvailable)) {
-    user_performance_tuning_manager_ = std::unique_ptr<
-        performance_manager::user_tuning::UserPerformanceTuningManager>(
-        new performance_manager::user_tuning::UserPerformanceTuningManager(
-            g_browser_process->local_state()));
+    // This object requires the host frame sink manager to exist, which is
+    // created after all the extra parts have run their PostCreateThreads.
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->Start();
 
     // This object is created by the metrics service before threads, but it
     // needs the UserPerformanceTuningManager to exist. At this point it's

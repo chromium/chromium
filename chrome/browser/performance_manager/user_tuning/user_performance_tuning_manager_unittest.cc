@@ -24,6 +24,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_,
         std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_)));
+    manager()->Start();
   }
 
   UserPerformanceTuningManager* manager() {

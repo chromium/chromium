@@ -93,11 +93,14 @@ class UserPerformanceTuningManager {
       std::unique_ptr<HighEfficiencyModeToggleDelegate>
           high_efficiency_mode_toggle_delegate = nullptr);
 
+  void Start();
+
   void OnHighEfficiencyModePrefChanged();
   void OnBatterySaverModePrefChanged();
 
   void UpdateBatterySaverModeState();
 
+  bool was_started_ = false;
   bool battery_saver_mode_enabled_ = false;
   bool temporary_battery_saver_enabled_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
