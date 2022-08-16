@@ -39,6 +39,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/apps/histograms.xml",
       "//tools/metrics/histograms/metadata/arc/histograms.xml",
       "//tools/metrics/histograms/metadata/ash/histograms.xml",
+      "//tools/metrics/histograms/metadata/ash_clipboard/histograms.xml",
       "//tools/metrics/histograms/metadata/assistant/histograms.xml",
       "//tools/metrics/histograms/metadata/auth/histograms.xml",
       "//tools/metrics/histograms/metadata/auto/histograms.xml",

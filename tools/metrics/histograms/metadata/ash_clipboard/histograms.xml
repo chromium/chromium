@@ -1,0 +1,264 @@
+<!--
+Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of ChromeOS clipboard-related
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Ash.Clipboard.ConsecutiveCopies" units="times"
+    expires_after="2022-10-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive copies in the user session, recorded when a paste
+    occurs. Warning: This histogram was expired from 2021-09-01 to 2022-01-05;
+    data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Clipboard.ConsecutivePastes" units="times"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive pastes in the user session, recorded when a copy
+    occurs. Includes pastes from Clipboard History.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ConsecutivePastes" units="times"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive pastes from the clipboard history menu. The count
+    is reset after a copy or a paste that is not through the clipboard history
+    menu (such as pressing ctrl-v accelerator or clicking at a context menu
+    option). Warning: This histogram was expired from 2022-01-02 to 2022-01-05;
+    data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was deleted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was pasted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatShown"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The format of the view used to display clipboard data. Logged when the view
+    is created.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.MenuOptionSelected"
+    units="index" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The command ID index within the Clipboard History contextual menu that was
+    selected by the user. Recorded when the menu item is selected.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown"
+    units="Items Shown" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of clipboard history items shown in the clipboard history
+    contextual menu. Recorded when the clipboard history contextual menu model
+    is built.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.ShowMenu"
+    enum="ClipboardHistoryTriggerType" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    It records how many times users trigger the clipboard history menu through
+    different ways respecitvely. Recorded when the clipboard history menu shows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString"
+    enum="ClipboardHistoryPlaceholderStringType" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of placeholder strings shown to users in lieu of actual data,
+    broken down by placeholder string type. Recorded when the label is requested
+    from ClipboardHistoryResourceManager.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.UserJourneyTime" units="ms"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The length of the user journey of the context menu version of clipboard
+    history. Measured as time from starting to construct the menu, to time of
+    the menu being closed. Recorded every time the menu is closed, regardless of
+    whether the user selected one of the menu options.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The time between a user pressing control and V when pasting via keyboard.
+    Recorded in AcceleratorHistory when a V is pressed. Only recorded for the
+    first pressed V in a sequence, for example: User holds control, waits 200ms,
+    presses V (histogram logged), presses V again without releasing control (no
+    histogram logged). This metric is used to set a baseline for an experimental
+    keyboard combination where a user holds control, then presses V after a
+    delay to show multipaste.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Lifetime" units="ms"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The lifetime of the ClipboardImageModelRequest object. Logged in the dtor of
+    ClipboardImageModelRequest.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Runtime" units="ms"
+    expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The runtime of a request in a ClipboardImageModelRequest. Logged from when
+    the ClipboardImageModelRequest is Start()-ed to when it is Stop()-ed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.StopReason"
+    enum="RequestStopReason" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The reason a ClipboardImageModelRequest is stopped. Logged when a request is
+    Stop()-ed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
+    enum="BooleanHit" expires_after="2022-10-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of times the clipboard history {NudgeType} has been shown. This
+    number will be used as the baseline against the number of emits of the
+    ToFeaturePasteTime and ToFeatureOpenTime histograms.
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
+    units="seconds" expires_after="2022-10-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    {NudgeType} and {Action}. The number of emits to this histogram will also be
+    used to measure the conversion rate by comparing it to ShownCount histogram
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+  <token key="Action">
+    <variant name="Open" summary="opening the clipboard history menu"/>
+    <variant name="Paste"
+        summary="using the clipboard history to paste something"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Operation"
+    enum="ClipboardHistoryOperation" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Different operations detected by ClipboardHistory. Debounced, so different
+    than Clipboard.Read, Clipboard.Write. Any clipboard copy detected here will
+    result in a new entry in ClipboardHistory. Recorded after a clipboard read
+    or write is debounced in ClipboardHistory. Warning: This histogram was
+    expired from 2022-01-02 to 2022-01-05; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.PasteType"
+    enum="ClipboardHistoryPasteType" expires_after="2022-12-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Emits information about the type (plain vs. rich text) and input source of
+    each clipboard history paste.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ReorderType"
+    enum="ClipboardHistoryReorderType" expires_after="2023-02-12">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Each time the clipboard history list is reordered, the operation (copy or
+    paste) initiating that reorder is emitted here.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

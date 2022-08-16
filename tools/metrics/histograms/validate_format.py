@@ -15,7 +15,7 @@ import merge_xml
 
 # The allowlist of namespaces that are split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'chromeos', 'fcminvalidations', 'graphics', 'launch'
+    'ash', 'chromeos', 'fcminvalidations', 'graphics', 'launch'
 ]
 
 
