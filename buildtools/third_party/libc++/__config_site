@@ -28,8 +28,4 @@
 /* #undef _LIBCPP_HAS_NO_LOCALIZATION */
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 
-// Enable libc++ assertions for hardening and safety
-// (https://crbug.com/1335422).
-#define _LIBCPP_ENABLE_ASSERTIONS 1
-
 #endif // _LIBCPP_CONFIG_SITE
