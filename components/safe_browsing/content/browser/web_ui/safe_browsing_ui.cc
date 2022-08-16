@@ -837,6 +837,10 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   base::Value::Dict dict;
   if (cdr.has_url())
     dict.Set("url", cdr.url());
+  if (cdr.digests().has_sha256()) {
+    const std::string& sha256 = cdr.digests().sha256();
+    dict.Set("digests.sha256", base::HexEncode(sha256.c_str(), sha256.size()));
+  }
   if (cdr.has_download_type())
     dict.Set("download_type", cdr.download_type());
   if (cdr.has_length())
