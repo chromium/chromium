@@ -140,11 +140,17 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Helper method to start drag widget flying back animation.
   void StartCanceledAnimation(base::TimeDelta animation_duration);
 
-  // Helper method to forward |pending_log_tap_| event to |drag_source_window_|.
+  // Helper methods to forward |pending_log_tap_| event to
+  // |drag_source_window_|.
+  void ScheduleForwardPendingLongTap();
   void ForwardPendingLongTap();
 
-  // Helper method to reset everything.
+  // Helper method to reset most of the state, except state that could be used
+  // during async operations of cancellation (including cancel animation and
+  // posting task to dispatch long tap event).
   void Cleanup();
+
+  void CleanupPendingLongTap();
 
   // Helper method to perform the drop if allowed by
   // DataTransferPolicyController. If it's run, `drag_cancel` will be replaced.
@@ -204,6 +210,10 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Holds a synthetic long tap event to be sent to the |drag_source_window_|.
   // See comment in OnGestureEvent() on why we need this.
   std::unique_ptr<ui::Event> pending_long_tap_;
+  // Set to true during async operations of cancellation (including cancel
+  // animation and posting task to dispatch long tap event), indicating that a
+  // long tap event will be dispatched.
+  bool will_forward_long_tap_ = false;
 
   gfx::Point start_location_;
   gfx::Point current_location_;
@@ -213,9 +223,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   ToplevelWindowDragDelegate* toplevel_window_drag_delegate_ = nullptr;
 
-  // Weak ptr for async drop callbacks to be invalidated if a new drag starts.
-  base::WeakPtrFactory<DragDropController> drop_weak_factory_{this};
-
+  // Weak ptr for async callbacks to be invalidated if a new drag starts.
   base::WeakPtrFactory<DragDropController> weak_factory_{this};
 };
 
