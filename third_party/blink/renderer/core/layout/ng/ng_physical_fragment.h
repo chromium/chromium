@@ -176,6 +176,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsAnonymousBlock() const {
     return IsCSSBox() && layout_object_->IsAnonymousBlock();
   }
+  bool IsFrameSet() const {
+    return IsCSSBox() && layout_object_->IsLayoutNGFrameSet();
+  }
   bool IsListMarker() const {
     return IsCSSBox() && layout_object_->IsLayoutNGOutsideListMarker();
   }
