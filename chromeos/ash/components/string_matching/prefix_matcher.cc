@@ -10,24 +10,12 @@
 
 namespace ash::string_matching {
 
-namespace {
-
-// TODO(crbug.com/1336160): Add unit tests.
-//
 // TODO(crbug.com/1336160): Paradigm shift 1: Reconsider the value of
 // search-via-acronym, i.e. the logic around `kIsFrontOfWordMultiplier`.
 //
 // TODO(crbug.com/1336160): Paradigm shift 2: Consider scoring matching prefixes
 // of tokens with equal value, regardless of whether the token is a first token
-// or non-first token. Currently, PrefixMatcher advances monotonically through
-// the chars of the query. This means that a strong prefix match in a non-first
-// text token will be missed if there is a weaker match in the first text token.
-// Consider modifying algorithm such that these matches won't be missed. Example
-// of current behavior:
-//
-//   Query `abcde` and text `aff abcde`. The first `a` of query and text match,
-//   therefore the `a` of query is consumed and is never considered for rematch
-//   elsewhere.
+// or non-first token.
 //
 // PrefixMatcher:
 //
@@ -58,27 +46,21 @@ namespace {
 //       kIsFrontOfWordMultiplier for 'c'.
 //   Query 'ch' would use kIsFrontOfWordMultiplier for 'c' and
 //       kIsWeakHitMultiplier for 'h'.
-const double kIsPrefixMultiplier = 1.0;
-const double kIsFrontOfWordMultiplier = 0.8;
-const double kIsWeakHitMultiplier = 0.6;
 
-// A relevance score that represents no match.
-const double kNoMatchScore = 0.0;
-
-}  // namespace
+// kNoMatchScore is a relevance score that represents no match.
 
 PrefixMatcher::PrefixMatcher(const TokenizedString& query,
                              const TokenizedString& text)
     : query_iter_(query),
       text_iter_(text),
       current_match_(gfx::Range::InvalidRange()),
-      current_relevance_(kNoMatchScore) {}
+      current_relevance_(constants::kNoMatchScore) {}
 
 bool PrefixMatcher::Match() {
   while (!RunMatch()) {
     // No match found and no more states to try. Bail out.
     if (states_.empty()) {
-      current_relevance_ = kNoMatchScore;
+      current_relevance_ = constants::kNoMatchScore;
       current_hits_.clear();
       return false;
     }
@@ -95,7 +77,7 @@ bool PrefixMatcher::Match() {
   return true;
 }
 
-PrefixMatcher::State::State() : relevance(kNoMatchScore) {}
+PrefixMatcher::State::State() : relevance(constants::kNoMatchScore) {}
 PrefixMatcher::State::~State() = default;
 PrefixMatcher::State::State(double relevance,
                             const gfx::Range& current_match,
@@ -116,11 +98,11 @@ bool PrefixMatcher::RunMatch() {
       PushState();
 
       if (query_iter_.GetArrayPos() == text_iter_.GetArrayPos())
-        current_relevance_ += kIsPrefixMultiplier;
+        current_relevance_ += constants::kIsPrefixMultiplier;
       else if (text_iter_.IsFirstCharOfToken())
-        current_relevance_ += kIsFrontOfWordMultiplier;
+        current_relevance_ += constants::kIsFrontOfWordMultiplier;
       else
-        current_relevance_ += kIsWeakHitMultiplier;
+        current_relevance_ += constants::kIsWeakHitMultiplier;
 
       if (!current_match_.IsValid())
         current_match_.set_start(text_iter_.GetArrayPos());
@@ -131,18 +113,27 @@ bool PrefixMatcher::RunMatch() {
       text_iter_.NextChar();
       have_match_already = true;
     } else {
-      // There are two possibilities here:
-      // 1. Need to AdvanceToNextTextToken() after having at least a match in
-      // current token (e.g. match the first character of the token) and the
-      // next character doesn't match.
-      // 2. Need to AdvanceToNextTextToken() because there is no match in
-      // current token.
-      // If there is no match in current token and we already have match (in
-      // previous tokens) before, a token is skipped and we consider this as no
-      // match.
-      if (text_iter_.IsFirstCharOfToken() && have_match_already)
+      // Character mismatch. Multiple possibilities:
+
+      if (text_iter_.IsFirstCharOfToken()) {
+        if (have_match_already) {
+          // We have a mismatch in the first letter of the current token, and
+          // have observed matches in previous tokens. Consider this a no match.
+          return false;
+        } else {
+          // No matches have been found so far. Skip over current token.
+          AdvanceToNextTextToken();
+        }
+      } else if (text_iter_.IsSecondCharOfToken()) {
+        // We have a match in the first letter of the current token, and the
+        // next character doesn't match. In this case we can
+        // AdvanceToNextTextToken().
+        AdvanceToNextTextToken();
+      } else {
+        // Mismatch is in the third or further char of the text token. Consider
+        // this a no match.
         return false;
-      AdvanceToNextTextToken();
+      }
     }
   }
 

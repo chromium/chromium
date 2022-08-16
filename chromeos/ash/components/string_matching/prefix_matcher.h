@@ -10,6 +10,17 @@
 
 namespace ash::string_matching {
 
+// These are described in more detail in the .cc file.
+namespace constants {
+
+constexpr double kIsPrefixMultiplier = 1.0;
+constexpr double kIsFrontOfWordMultiplier = 0.8;
+constexpr double kIsWeakHitMultiplier = 0.6;
+
+constexpr double kNoMatchScore = 0.0;
+
+}  // namespace constants
+
 // PrefixMatcher matches the chars of a given query as prefix of tokens in
 // a given text or as prefix of the acronyms of those text tokens.
 class PrefixMatcher {

@@ -58,6 +58,9 @@ class TokenizedStringCharIterator {
   // Returns true if the current char is the first char of the current token.
   bool IsFirstCharOfToken() const;
 
+  // Returns true if the current char is the second char of the current token.
+  bool IsSecondCharOfToken() const;
+
   // Helpers to get and restore the iterator's state.
   State GetState() const;
   void SetState(const State& state);

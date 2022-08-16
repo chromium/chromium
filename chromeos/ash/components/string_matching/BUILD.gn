@@ -41,6 +41,7 @@ source_set("unit_tests") {
 
   sources = [
     "fuzzy_tokenized_string_match_unittest.cc",
+    "prefix_matcher_unittest.cc",
     "sequence_matcher_unittest.cc",
     "term_break_iterator_unittest.cc",
     "tokenized_string_char_iterator_unittest.cc",

@@ -61,6 +61,10 @@ bool TokenizedStringCharIterator::IsFirstCharOfToken() const {
   return current_token_iter_ && current_token_iter_->char_offset() == 0;
 }
 
+bool TokenizedStringCharIterator::IsSecondCharOfToken() const {
+  return current_token_iter_ && current_token_iter_->char_offset() == 1;
+}
+
 TokenizedStringCharIterator::State TokenizedStringCharIterator::GetState()
     const {
   return State(current_token_,

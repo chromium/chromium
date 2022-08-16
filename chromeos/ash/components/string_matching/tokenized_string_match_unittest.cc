@@ -66,7 +66,6 @@ TEST(TokenizedStringMatchTest, Match) {
       {"John Doe", "jdoe", "[J]ohn [Doe]"},
       {"John Doe", "johnd", "[John D]oe"},
       {"Secure Shell", "she", "Secure [She]ll"},
-      {"Simple Secure Shell", "sish", "[Si]mple Secure [Sh]ell"},
       {"Netflix", "flix", "Net[flix]"},
   };
 
