@@ -321,14 +321,6 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillTypeSpecificPopupWidth{
     "AutofillTypeSpecificPopupWidth", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Autofill uses the local heuristic such that address forms are only filled if
-// at least 3 fields are fillable according to local heuristics. Unfortunately,
-// the criterion for fillability is only that the field type is unknown. So many
-// field types that we don't fill (search term, price, ...) count towards that
-// counter, effectively reducing the threshold for some forms.
-const base::Feature kAutofillFixFillableFieldTypes{
-    "AutofillFixFillableFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, the Autofill popup ignores second clicks for a certain period
 // (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
 // shown. This is to prevent double clicks accidentally accepting suggestions.

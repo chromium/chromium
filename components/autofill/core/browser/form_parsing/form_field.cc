@@ -129,13 +129,9 @@ void FormField::ParseFormFields(
   }
 
   size_t fillable_fields = 0;
-  if (base::FeatureList::IsEnabled(features::kAutofillFixFillableFieldTypes)) {
-    for (const auto& [field_id, candidates] : field_candidates) {
-      if (IsFillableFieldType(candidates.BestHeuristicType()))
-        ++fillable_fields;
-    }
-  } else {
-    fillable_fields = field_candidates.size();
+  for (const auto& [field_id, candidates] : field_candidates) {
+    if (IsFillableFieldType(candidates.BestHeuristicType()))
+      ++fillable_fields;
   }
 
   // Do not autofill a form if there aren't enough fields. Otherwise, it is

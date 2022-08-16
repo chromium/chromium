@@ -19,8 +19,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::features::kAutofillFixFillableFieldTypes;
-
 namespace autofill {
 
 class FormFieldTest
@@ -135,26 +133,10 @@ TEST_P(FormFieldTest, ParseFormFieldsIgnoreCheckableElements) {
 TEST_P(FormFieldTest, ParseFormFieldsEnforceMinFillableFields) {
   AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
   AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);
-  // Don't parse forms with 2 fields.
-  EXPECT_EQ(0, ParseFormFields());
-
   AddTextFormFieldData("", "Search", SEARCH_TERM);
-  // Before the fix in kAutofillFixFillableFieldTypes, we would parse the form
-  // now, although a search field is not fillable.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kAutofillFixFillableFieldTypes);
-    EXPECT_EQ(3, ParseFormFields());
-    TestClassificationExpectations();
-  }
-
-  // With the fix, we don't parse the form because search fields are not
-  // fillable (therefore, the form has only 2 fillable fields).
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kAutofillFixFillableFieldTypes);
-    EXPECT_EQ(0, ParseFormFields());
-  }
+  // We don't parse the form because search fields are not fillable (therefore,
+  // the form has only 2 fillable fields).
+  EXPECT_EQ(0, ParseFormFields());
 }
 
 // Tests that the `parseable_name()` is parsed as an autocomplete type.
