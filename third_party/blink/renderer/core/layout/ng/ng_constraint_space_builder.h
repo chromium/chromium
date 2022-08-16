@@ -153,6 +153,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   void SetShouldRepeat(bool b) { space_.EnsureRareData()->should_repeat = b; }
 
   void SetIsInsideRepeatableContent(bool b) {
+    if (!b && !space_.rare_data_)
+      return;
     space_.EnsureRareData()->is_inside_repeatable_content = b;
   }
 
