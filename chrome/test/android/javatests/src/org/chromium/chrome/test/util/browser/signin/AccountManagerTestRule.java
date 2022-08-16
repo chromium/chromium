@@ -21,6 +21,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -43,6 +44,7 @@ public class AccountManagerTestRule implements TestRule {
     public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
 
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
+    // TODO(https://crbug.com/1352119): Revise this test rule and make this non-nullable.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService;
 
     public AccountManagerTestRule() {
@@ -54,7 +56,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
-            @NonNull FakeAccountInfoService fakeAccountInfoService) {
+            @Nullable FakeAccountInfoService fakeAccountInfoService) {
         mFakeAccountManagerFacade = fakeAccountManagerFacade;
         mFakeAccountInfoService = fakeAccountInfoService;
     }
@@ -78,8 +80,11 @@ public class AccountManagerTestRule implements TestRule {
      * Sets up the AccountManagerFacade mock.
      */
     public void setUpRule() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mFakeAccountInfoService != null) {
+                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            }
+        });
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
@@ -88,7 +93,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void tearDownRule() {
         AccountManagerFacadeProvider.resetInstanceForTests();
-        AccountInfoServiceProvider.resetForTests();
+        if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }
 
     /**
@@ -112,7 +117,6 @@ public class AccountManagerTestRule implements TestRule {
      * @return The CoreAccountInfo for the account added.
      */
     public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
-        assert mFakeAccountInfoService != null;
         final String baseName = accountName.split("@", 2)[0];
         return addAccount(
                 accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
@@ -134,10 +138,13 @@ public class AccountManagerTestRule implements TestRule {
      */
     public AccountInfo addAccount(String email, String fullName, String givenName,
             @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
-        assert mFakeAccountInfoService != null;
+        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
+        AccountInfo accountInfo = new AccountInfo(new CoreAccountId(gaiaId), email, gaiaId,
+                fullName, givenName, avatar, capabilities);
         mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(email));
-        return mFakeAccountInfoService.addAccountInfo(
-                email, fullName, givenName, avatar, capabilities);
+        // TODO(https://crbug.com/1352119): Revise this test rule and remove the condition here.
+        if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
+        return accountInfo;
     }
 
     /**

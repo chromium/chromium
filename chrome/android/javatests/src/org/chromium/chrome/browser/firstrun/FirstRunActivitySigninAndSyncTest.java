@@ -59,6 +59,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -77,8 +78,10 @@ public class FirstRunActivitySigninAndSyncTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    // TODO(https://crbug.com/1352119): Use IdentityIntegrationTestRule instead.
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountManagerFacade(), null);
 
     // TODO(crbug.com/1311260): Consider using a test rule to ensure this gets terminated correctly.
     public FirstRunActivity mFirstRunActivity;
