@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
@@ -252,31 +253,6 @@ void SetInitialUserDataForAdditionalSection(
   }
 }
 
-bool RequiresPaymentMethod(
-    const CollectUserDataOptions& collect_user_data_options) {
-  return collect_user_data_options.request_payment_method;
-}
-
-bool RequiresContact(const CollectUserDataOptions& collect_user_data_options) {
-  return collect_user_data_options.request_payer_name ||
-         collect_user_data_options.request_payer_email ||
-         collect_user_data_options.request_payer_phone;
-}
-
-bool RequiresShipping(const CollectUserDataOptions& collect_user_data_options) {
-  return collect_user_data_options.request_shipping;
-}
-
-bool RequiresAddress(const CollectUserDataOptions& collect_user_data_options) {
-  return RequiresShipping(collect_user_data_options) ||
-         RequiresPaymentMethod(collect_user_data_options);
-}
-
-bool RequiresPhoneNumberSeparately(
-    const CollectUserDataOptions& collect_user_data_options) {
-  return collect_user_data_options.request_phone_number_separately;
-}
-
 void AddAutofillEntryToDataModel(autofill::ServerFieldType type,
                                  AutofillEntryProto entry,
                                  const std::string& locale,
@@ -297,6 +273,59 @@ void AddProtoDataToAutofillDataModel(
         static_cast<autofill::ServerFieldType>(it.first), it.second, locale,
         model);
   }
+}
+
+bool RequiresPaymentMethod(
+    const CollectUserDataOptions& collect_user_data_options) {
+  return collect_user_data_options.request_payment_method;
+}
+
+bool RequiresContact(const CollectUserDataOptions& collect_user_data_options) {
+  return collect_user_data_options.request_payer_name ||
+         collect_user_data_options.request_payer_email ||
+         collect_user_data_options.request_payer_phone;
+}
+
+bool HasValidContact(const GetUserDataResponseProto& response,
+                     const CollectUserDataOptions& collect_user_data_options) {
+  for (const auto& profile_data : response.available_contacts()) {
+    auto profile = std::make_unique<autofill::AutofillProfile>();
+    AddProtoDataToAutofillDataModel(profile_data.values(), response.locale(),
+                                    profile.get());
+    profile->FinalizeAfterImport();
+    if (user_data::GetContactValidationErrors(profile.get(),
+                                              collect_user_data_options)
+            .empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool RequiresShipping(const CollectUserDataOptions& collect_user_data_options) {
+  return collect_user_data_options.request_shipping;
+}
+
+bool RequiresAddress(const CollectUserDataOptions& collect_user_data_options) {
+  return RequiresShipping(collect_user_data_options) ||
+         RequiresPaymentMethod(collect_user_data_options);
+}
+
+bool RequiresPhoneNumberSeparately(
+    const CollectUserDataOptions& collect_user_data_options) {
+  return collect_user_data_options.request_phone_number_separately;
+}
+
+bool HasRequiredData(const GetUserDataResponseProto& response,
+                     const CollectUserDataOptions& collect_user_data_options) {
+  return (!RequiresContact(collect_user_data_options) ||
+          HasValidContact(response, collect_user_data_options)) &&
+         (!RequiresPhoneNumberSeparately(collect_user_data_options) ||
+          response.available_phone_numbers().size() > 0) &&
+         (!RequiresAddress(collect_user_data_options) ||
+          response.available_addresses().size() > 0) &&
+         (!RequiresPaymentMethod(collect_user_data_options) ||
+          response.available_payment_instruments().size() > 0);
 }
 
 void MergePhoneNumberIntoSelectedContact(UserData* user_data,
@@ -614,15 +643,17 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
     return;
   }
 
-  UseChromeData(user_data);
+  UseChromeData(user_data, Metrics::UserDataSource::CHROME_AUTOFILL);
 }
 
-void CollectUserDataAction::UseChromeData(UserData* user_data) {
+void CollectUserDataAction::UseChromeData(
+    UserData* user_data,
+    Metrics::UserDataSource user_data_source) {
   DCHECK(delegate_->GetPersonalDataManager());
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
   UpdatePersonalDataManagerCards(user_data);
-  UpdateMetrics(user_data, Metrics::UserDataSource::CHROME_AUTOFILL);
+  UpdateMetrics(user_data, user_data_source);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
@@ -635,8 +666,10 @@ void CollectUserDataAction::OnRequestUserData(
     const GetUserDataResponseProto& response) {
   if (!success) {
     if (is_initial_request && !delegate_->MustUseBackendData() &&
-        proto_.collect_user_data().data_source().allow_fallback()) {
-      FallbackToChromeData(user_data);
+        proto_.collect_user_data().data_source().allow_fallback_on_failure()) {
+      FallbackToChromeData(
+          user_data,
+          Metrics::UserDataSource::FALLBACK_CHROME_AUTOFILL_ON_FAILED_REQUEST);
       return;
     }
 
@@ -644,14 +677,34 @@ void CollectUserDataAction::OnRequestUserData(
               Metrics::CollectUserDataResult::FAILURE);
     return;
   }
+
+  const bool allow_fallback_on_missing_data =
+      proto_.collect_user_data().data_source().allow_fallback_on_missing_data();
+  if (allow_fallback_on_missing_data && !delegate_->MustUseBackendData()) {
+    bool has_required_data =
+        HasRequiredData(response, *collect_user_data_options_);
+    if (!has_required_data) {
+      VLOG(1) << "Falling back to Chrome Autofill data becuase backend "
+                 "has missing data";
+      FallbackToChromeData(
+          user_data,
+          Metrics::UserDataSource::FALLBACK_CHROME_AUTOFILL_ON_MISSING_DATA);
+      return;
+    }
+  }
+
   UpdateUserDataFromProto(response, user_data);
-  UpdateMetrics(user_data, Metrics::UserDataSource::BACKEND);
+  UpdateMetrics(user_data, allow_fallback_on_missing_data
+                               ? Metrics::UserDataSource::FALLBACK_BACKEND
+                               : Metrics::UserDataSource::BACKEND);
   UpdateUi();
 
   action_stopwatch_.StartWaitTime();
 }
 
-void CollectUserDataAction::FallbackToChromeData(UserData* user_data) {
+void CollectUserDataAction::FallbackToChromeData(
+    UserData* user_data,
+    Metrics::UserDataSource user_data_source) {
   if (collect_user_data_options_->request_phone_number_separately) {
     collect_user_data_options_->request_payer_phone = true;
     collect_user_data_options_->request_phone_number_separately = false;
@@ -679,7 +732,7 @@ void CollectUserDataAction::FallbackToChromeData(UserData* user_data) {
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord();
   collect_user_data_options_->use_alternative_edit_dialogs = false;
 
-  UseChromeData(user_data);
+  UseChromeData(user_data, user_data_source);
 }
 
 void CollectUserDataAction::UpdateUi() {
@@ -1308,6 +1361,7 @@ bool CollectUserDataAction::IsUserDataComplete(
       user_data.selected_address(options.billing_address_name);
   auto* shipping_address =
       user_data.selected_address(options.shipping_address_name);
+
   // TODO(b/204419253): check for phone number errors
   return user_data::GetContactValidationErrors(selected_profile, options)
              .empty() &&

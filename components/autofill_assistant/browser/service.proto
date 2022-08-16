@@ -2805,7 +2805,8 @@ message CollectUserDataProto {
     // ignored (Chrome Autofill data is not available). If this is false, the
     // action will fail if the user data request fails, even if Chrome Autofill
     // data would have been available.
-    optional bool allow_fallback = 1 [default = true];
+    optional bool allow_fallback_on_failure = 1 [default = true];
+    optional bool allow_fallback_on_missing_data = 2;
   }
 
   optional string prompt = 1;
