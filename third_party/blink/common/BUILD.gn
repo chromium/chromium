@@ -201,6 +201,7 @@ source_set("common") {
     "permissions/permission_utils.cc",
     "permissions_policy/document_policy.cc",
     "permissions_policy/permissions_policy.cc",
+    "permissions_policy/permissions_policy_declaration.cc",
     "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
