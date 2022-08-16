@@ -64,24 +64,6 @@ bool ShouldAlwaysShowFirstFollow();
 // TODO(crbug.com/1340154): Remove after launch.
 bool ShouldAlwaysShowFollowIPH();
 
-// Returns true if the user should receive a local notification when a
-// background refresh is completed.
-bool IsRefreshCompletedNotificationEnabled();
-
-// Returns true if background refresh should also be used for the Following
-// feed. If false, the default value or finch feature flag value should be used.
-bool IsForceBackgroundRefreshForFollowingFeedEnabled();
-
-// Returns an interval that can be used to set the background refresh earliest
-// begin date. Any value greater than zero should be used to override the
-// earliest begin date provided by the DiscoverFeedService.
-double GetBackgroundRefreshIntervalOverrideInSeconds();
-
-// The maximum age a response can be before it is refreshed in the background.
-// This check is done when the background task is executed. The default value of
-// 0 means the age check is ignored.
-double GetBackgroundRefreshMaxAgeInSeconds();
-
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 

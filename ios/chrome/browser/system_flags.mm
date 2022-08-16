@@ -37,15 +37,6 @@ NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 const base::Feature kEnableThirdPartyKeyboardWorkaround{
     "EnableThirdPartyKeyboardWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
 
-NSString* const kRefreshCompletedNotificationEnabled =
-    @"RefreshCompletedNotificationEnabled";
-NSString* const kForceBackgroundRefreshForFollowingFeedEnabled =
-    @"ForceBackgroundRefreshForFollowingFeedEnabled";
-NSString* const kBackgroundRefreshIntervalOverrideInSeconds =
-    @"BackgroundRefreshIntervalOverrideInSeconds";
-NSString* const kBackgroundRefreshMaxAgeInSeconds =
-    @"BackgroundRefreshMaxAgeInSeconds";
-
 }  // namespace
 
 namespace experimental_flags {
@@ -99,26 +90,6 @@ bool ShouldAlwaysShowFirstFollow() {
 bool ShouldAlwaysShowFollowIPH() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:@"AlwaysShowFollowIPH"];
-}
-
-bool IsRefreshCompletedNotificationEnabled() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kRefreshCompletedNotificationEnabled];
-}
-
-bool IsForceBackgroundRefreshForFollowingFeedEnabled() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kForceBackgroundRefreshForFollowingFeedEnabled];
-}
-
-double GetBackgroundRefreshIntervalOverrideInSeconds() {
-  return [[NSUserDefaults standardUserDefaults]
-      doubleForKey:kBackgroundRefreshIntervalOverrideInSeconds];
-}
-
-double GetBackgroundRefreshMaxAgeInSeconds() {
-  return [[NSUserDefaults standardUserDefaults]
-      doubleForKey:kBackgroundRefreshMaxAgeInSeconds];
 }
 
 bool IsMemoryDebuggingEnabled() {

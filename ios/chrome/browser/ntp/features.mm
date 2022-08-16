@@ -39,6 +39,7 @@ const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
     "EnableRecurringBackgroundRefreshSchedule";
+const char kMaxCacheAgeInSeconds[] = "MaxCacheAgeInSeconds";
 const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
@@ -66,46 +67,78 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
        forKey:kEnableFeedBackgroundRefreshForNextColdStart];
 }
 
+void SetFeedLastBackgroundRefreshTimestamp(NSDate* timestamp) {
+  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.dateStyle = NSDateFormatterShortStyle;
+  dateFormatter.timeStyle = NSDateFormatterShortStyle;
+  dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+  [[NSUserDefaults standardUserDefaults]
+      setObject:[dateFormatter stringFromDate:timestamp]
+         forKey:@"FeedLastBackgroundRefreshTimestamp"];
+}
+
+bool IsFeedOverrideDefaultsEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"FeedOverrideDefaultsEnabled"];
+}
+
 bool IsFeedBackgroundRefreshCompletedNotificationEnabled() {
   return IsFeedBackgroundRefreshEnabled() &&
-         experimental_flags::IsRefreshCompletedNotificationEnabled();
+         [[NSUserDefaults standardUserDefaults]
+             boolForKey:@"FeedBackgroundRefreshNotificationEnabled"];
 }
 
 bool IsFollowingFeedBackgroundRefreshEnabled() {
-  if (experimental_flags::IsForceBackgroundRefreshForFollowingFeedEnabled()) {
-    return true;
+  if (IsFeedOverrideDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        boolForKey:@"FollowingFeedBackgroundRefreshEnabled"];
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh, kEnableFollowingFeedBackgroundRefresh,
-      /*default=*/false);
+      /*default=*/true);
 }
 
 bool IsServerDrivenBackgroundRefreshScheduleEnabled() {
+  if (IsFeedOverrideDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        boolForKey:@"FeedServerDrivenBackgroundRefreshScheduleEnabled"];
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh,
       kEnableServerDrivenBackgroundRefreshSchedule, /*default=*/false);
 }
 
 bool IsRecurringBackgroundRefreshScheduleEnabled() {
+  if (IsFeedOverrideDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        boolForKey:@"FeedRecurringBackgroundRefreshScheduleEnabled"];
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh, kEnableRecurringBackgroundRefreshSchedule,
       /*default=*/false);
 }
 
+double GetFeedMaxCacheAgeInSeconds() {
+  if (IsFeedOverrideDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        doubleForKey:@"FeedMaxCacheAgeInSeconds"];
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(kEnableFeedBackgroundRefresh,
+                                                   kMaxCacheAgeInSeconds,
+                                                   /*default=*/60 * 60);
+}
+
 double GetBackgroundRefreshIntervalInSeconds() {
+  if (IsFeedOverrideDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        doubleForKey:@"FeedBackgroundRefreshIntervalInSeconds"];
+  }
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshIntervalInSeconds,
       /*default=*/60 * 60);
 }
 
-double GetBackgroundRefreshIntervalOverrideInSeconds() {
-  return experimental_flags::GetBackgroundRefreshIntervalOverrideInSeconds();
-}
-
 double GetBackgroundRefreshMaxAgeInSeconds() {
-  if (experimental_flags::GetBackgroundRefreshMaxAgeInSeconds() > 0) {
-    return experimental_flags::GetBackgroundRefreshMaxAgeInSeconds();
-  }
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshMaxAgeInSeconds,
       /*default=*/0);

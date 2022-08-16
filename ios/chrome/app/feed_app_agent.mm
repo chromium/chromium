@@ -130,10 +130,9 @@
 // interval in Experimental Settings.
 - (NSDate*)earliestBackgroundRefreshBeginDate {
   NSDate* earliestBeginDate = nil;
-  NSTimeInterval intervalOverride =
-      GetBackgroundRefreshIntervalOverrideInSeconds();
-  if (intervalOverride > 0) {
-    earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:intervalOverride];
+  if (IsFeedOverrideDefaultsEnabled()) {
+    earliestBeginDate = [NSDate
+        dateWithTimeIntervalSinceNow:GetBackgroundRefreshIntervalInSeconds()];
   } else {
     // This is expected to crash if FeedService is not available.
     earliestBeginDate =
@@ -219,6 +218,7 @@
     title = @"Feed Bg Refresh Failure";
   }
   [self maybeRequestNotification:title];
+  SetFeedLastBackgroundRefreshTimestamp([NSDate now]);
 }
 
 @end

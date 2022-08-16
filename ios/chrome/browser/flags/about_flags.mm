@@ -352,45 +352,67 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
 
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params
-const FeatureEntry::FeatureParam kOneHourIntervalOnce[] = {
+const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
     {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
-const FeatureEntry::FeatureParam kFourHourIntervalOnce[] = {
+const FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
     {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
-const FeatureEntry::FeatureParam kOneHourIntervalRecurring[] = {
+const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeRecurring[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
     {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
-const FeatureEntry::FeatureParam kFourHourIntervalRecurring[] = {
+const FeatureEntry::FeatureParam kFourHourIntervalSixHourMaxAgeRecurring[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
     {kBackgroundRefreshIntervalInSeconds, /* 4*60*60= */ "14400"}};
-const FeatureEntry::FeatureParam kServerDrivenOnce[] = {
+const FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
-    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
-const FeatureEntry::FeatureParam kServerDrivenRecurring[] = {
+    {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
+    {kBackgroundRefreshIntervalInSeconds, "0"}};
+const FeatureEntry::FeatureParam kServerDrivenOneHourMaxAgeRecurring[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
     {kEnableRecurringBackgroundRefreshSchedule, "true"},
-    {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
+    {kMaxCacheAgeInSeconds, /*60*60*/ "3600"},
+    {kBackgroundRefreshIntervalInSeconds, "0"}};
+const FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeOnce[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
+    {kEnableRecurringBackgroundRefreshSchedule, "false"},
+    {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
+    {kBackgroundRefreshIntervalInSeconds, "0"}};
+const FeatureEntry::FeatureParam kServerDrivenSixHourMaxAgeRecurring[] = {
+    {kEnableServerDrivenBackgroundRefreshSchedule, "true"},
+    {kEnableRecurringBackgroundRefreshSchedule, "true"},
+    {kMaxCacheAgeInSeconds, /*6*60*60*/ "21600"},
+    {kBackgroundRefreshIntervalInSeconds, "0"}};
 
 // Feed Background Refresh Feature Variations
 const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
-    {"1hr Interval Once", kOneHourIntervalOnce, std::size(kOneHourIntervalOnce),
-     nullptr},
-    {"4hr Interval Once", kFourHourIntervalOnce,
-     std::size(kFourHourIntervalOnce), nullptr},
-    {"1hr Interval Recurring", kOneHourIntervalRecurring,
-     std::size(kOneHourIntervalRecurring), nullptr},
-    {"4hr Interval Recurring", kFourHourIntervalRecurring,
-     std::size(kFourHourIntervalRecurring), nullptr},
-    {"Server Driven Once", kServerDrivenOnce, std::size(kServerDrivenOnce),
-     nullptr},
-    {"Server Driven Recurring", kServerDrivenRecurring,
-     std::size(kServerDrivenRecurring), nullptr},
+    {"1hr Interval 1hr Max Age Once", kOneHourIntervalOneHourMaxAgeOnce,
+     std::size(kOneHourIntervalOneHourMaxAgeOnce), nullptr},
+    {"4hr Interval 6hr Max Age Once", kFourHourIntervalSixHourMaxAgeOnce,
+     std::size(kFourHourIntervalSixHourMaxAgeOnce), nullptr},
+    {"1hr Interval 1hr Max Age Recurring",
+     kOneHourIntervalOneHourMaxAgeRecurring,
+     std::size(kOneHourIntervalOneHourMaxAgeRecurring), nullptr},
+    {"4hr Interval 6hr Max Age Recurring",
+     kFourHourIntervalSixHourMaxAgeRecurring,
+     std::size(kFourHourIntervalSixHourMaxAgeRecurring), nullptr},
+    {"Server Driven 1hr Max Age Once", kServerDrivenOneHourMaxAgeOnce,
+     std::size(kServerDrivenOneHourMaxAgeOnce), nullptr},
+    {"Server Driven 1hr Max Age Recurring", kServerDrivenOneHourMaxAgeRecurring,
+     std::size(kServerDrivenOneHourMaxAgeRecurring), nullptr},
+    {"Server Driven 6hr Max Age Once", kServerDrivenSixHourMaxAgeOnce,
+     std::size(kServerDrivenSixHourMaxAgeOnce), nullptr},
+    {"Server Driven 6hr Max Age Recurring", kServerDrivenSixHourMaxAgeRecurring,
+     std::size(kServerDrivenSixHourMaxAgeRecurring), nullptr},
 };
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 

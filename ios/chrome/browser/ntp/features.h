@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_NTP_FEATURES_H_
 #define IOS_CHROME_BROWSER_NTP_FEATURES_H_
 
+#import <Foundation/Foundation.h>
+
 #include "base/feature_list.h"
 
 // Feature flag to enable NTP UI pending loader blocker.
@@ -30,6 +32,10 @@ extern const char kEnableServerDrivenBackgroundRefreshSchedule[];
 // background refresh schedule.
 extern const char kEnableRecurringBackgroundRefreshSchedule[];
 
+// Feature param under `kEnableFeedBackgroundRefresh` for the max age that the
+// cache is still considered fresh.
+extern const char kMaxCacheAgeInSeconds[];
+
 // Feature param under `kEnableFeedBackgroundRefresh` for the background refresh
 // interval in seconds.
 extern const char kBackgroundRefreshIntervalInSeconds[];
@@ -52,6 +58,15 @@ bool IsFeedBackgroundRefreshEnabled();
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
+// Sets the last background refresh timestamp to be displayed in Experimental
+// Settings in the Settings App. This is not available in stable.
+void SetFeedLastBackgroundRefreshTimestamp(NSDate* timestamp);
+
+// Returns the override value from Experimental Settings in the Settings App. If
+// enabled, all values in Experimental Settings will override all corresponding
+// defaults.
+bool IsFeedOverrideDefaultsEnabled();
+
 // Returns true if the user should receive a local notification when a feed
 // background refresh is completed. Background refresh completion notifications
 // are only enabled by Experimental Settings.
@@ -67,13 +82,13 @@ bool IsServerDrivenBackgroundRefreshScheduleEnabled();
 // background refresh.
 bool IsRecurringBackgroundRefreshScheduleEnabled();
 
+// Returns the max age that the cache is still considered fresh. In other words,
+// the feed freshness threshold.
+double GetFeedMaxCacheAgeInSeconds();
+
 // The earliest interval to refresh if server value is not used. This value is
 // an input into the DiscoverFeedService.
 double GetBackgroundRefreshIntervalInSeconds();
-
-// If greater than zero, this value should be used to completely override the
-// earliest begin date provided by the DiscoverFeedService.
-double GetBackgroundRefreshIntervalOverrideInSeconds();
 
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
