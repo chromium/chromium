@@ -481,13 +481,11 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
 
   std::unique_ptr<ui::ViewProp> prop_;
 
+  std::unique_ptr<ui::InputMethod> input_method_owned_;
   // The InputMethod instance used to process key events.
   // If owned it, it is created in GetInputMethod() method;
   // If not owned it, it is passed in through SetSharedInputMethod() method.
-  raw_ptr<ui::InputMethod, DanglingUntriaged> input_method_ = nullptr;
-
-  // Whether the InputMethod instance is owned by this WindowTreeHost.
-  bool owned_input_method_ = false;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
 
   // Set to true if this WindowTreeHost is currently holding pointer moves.
   bool holding_pointer_moves_ = false;

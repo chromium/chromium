@@ -175,10 +175,6 @@ WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
 
 WindowTreeHost::~WindowTreeHost() {
   DCHECK(!compositor_) << "compositor must be destroyed before root window";
-  if (owned_input_method_) {
-    delete input_method_;
-    input_method_ = nullptr;
-  }
 }
 
 // static
@@ -344,18 +340,15 @@ void WindowTreeHost::MoveCursorToLocationInPixels(
 
 ui::InputMethod* WindowTreeHost::GetInputMethod() {
   if (!input_method_) {
-    input_method_ =
-        ui::CreateInputMethod(this, GetAcceleratedWidget()).release();
-    owned_input_method_ = true;
+    input_method_owned_ = ui::CreateInputMethod(this, GetAcceleratedWidget());
+    input_method_ = input_method_owned_.get();
   }
   return input_method_;
 }
 
 void WindowTreeHost::SetSharedInputMethod(ui::InputMethod* input_method) {
-  if (input_method_ && owned_input_method_)
-    delete input_method_;
   input_method_ = input_method;
-  owned_input_method_ = false;
+  input_method_owned_.reset();
 }
 
 ui::EventDispatchDetails WindowTreeHost::DispatchKeyEventPostIME(
