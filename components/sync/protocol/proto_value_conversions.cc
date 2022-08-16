@@ -21,6 +21,7 @@
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -331,6 +332,7 @@ IMPLEMENT_PROTO_TO_VALUE(AutofillSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(BookmarkSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ClientConfigParams)
+IMPLEMENT_PROTO_TO_VALUE(ContactInfoSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(DebugEventInfo)
 IMPLEMENT_PROTO_TO_VALUE(DebugInfo)
 IMPLEMENT_PROTO_TO_VALUE(DeviceInfoSpecifics)

@@ -21,6 +21,7 @@ import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
+import "components/sync/protocol/contact_info_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
 import "components/sync/protocol/dictionary_specifics.proto";
 import "components/sync/protocol/experiments_specifics.proto";
@@ -161,6 +162,7 @@ message EntitySpecifics {
     PrintersAuthorizationServerSpecifics printers_authorization_server = 974304;
     SavedTabGroupSpecifics saved_tab_group = 1004874;
     AutofillWalletUsageSpecifics autofill_wallet_usage = 1033580;
+    ContactInfoSpecifics contact_info = 1034378;
   }
   reserved 218175;
   reserved "wifi_credential";

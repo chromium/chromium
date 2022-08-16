@@ -15,6 +15,7 @@
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
@@ -75,6 +76,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_offer)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_profile)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet)
 DEFINE_SPECIFICS_TO_VALUE_TEST(bookmark)
+DEFINE_SPECIFICS_TO_VALUE_TEST(contact_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(device_info)
 DEFINE_SPECIFICS_TO_VALUE_TEST(dictionary)
 DEFINE_SPECIFICS_TO_VALUE_TEST(extension)

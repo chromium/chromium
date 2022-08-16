@@ -337,12 +337,12 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::TokenMetadata& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::StringToken& proto) {
   VISIT(value);
-  VISIT_ENUM(metadata);
+  VISIT(metadata);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::IntegerToken& proto) {
   VISIT(value);
-  VISIT_ENUM(metadata);
+  VISIT(metadata);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::CustomNudgeDelay& proto) {
@@ -547,6 +547,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(autofill_profile);
   VISIT(autofill_wallet);
   VISIT(bookmark);
+  VISIT(contact_info);
   VISIT(device_info);
   VISIT(dictionary);
   VISIT(extension);
