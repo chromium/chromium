@@ -1683,7 +1683,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Check to see if we have a valid tab to start dragging.
         mInteractingTab = getTabAtPosition(startX);
-        if (mInteractingTab == null) return;
+        if (mInteractingTab == null || mInteractingTab.isDying()) return;
 
         // 3. Set initial state parameters.
         mLastReorderScrollTime = 0;
