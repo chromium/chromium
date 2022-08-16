@@ -649,6 +649,23 @@ std::ostream& operator<<(std::ostream& out, const MountType type) {
   return out << std::underlying_type_t<MountType>(type);
 }
 
+std::ostream& operator<<(std::ostream& out, const DeviceType type) {
+  switch (type) {
+#define PRINT_TYPE(s) \
+  case DeviceType::s: \
+    return out << #s;
+    PRINT_TYPE(kUnknown)
+    PRINT_TYPE(kUSB)
+    PRINT_TYPE(kSD)
+    PRINT_TYPE(kOpticalDisc)
+    PRINT_TYPE(kMobile)
+    PRINT_TYPE(kDVD)
+#undef PRINT_TYPE
+  }
+
+  return out << std::underlying_type_t<DeviceType>(type);
+}
+
 std::ostream& operator<<(std::ostream& out, const MountError error) {
   switch (error) {
 #define PRINT_ERROR(s) \
