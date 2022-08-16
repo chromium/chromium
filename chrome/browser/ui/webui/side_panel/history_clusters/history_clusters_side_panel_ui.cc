@@ -33,8 +33,16 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  const webui::ResourcePath kHistoryClustersResources[] = {
+      {"history_clusters/history_clusters.html",
+       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML},
+      {"history_clusters/app.js", IDR_SIDE_PANEL_HISTORY_CLUSTERS_APP_JS},
+      {"history_clusters/app.html.js",
+       IDR_SIDE_PANEL_HISTORY_CLUSTERS_APP_HTML_JS},
+  };
+
   webui::SetupWebUIDataSource(
-      source, base::span<const webui::ResourcePath>(),
+      source, kHistoryClustersResources,
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

@@ -13,6 +13,7 @@ web_component_files = [
   "app.ts",
   "bookmarks/bookmark_folder.ts",
   "bookmarks/bookmarks_list.ts",
+  "history_clusters/app.ts",
   "read_anything/app.ts",
   "reading_list/app.ts",
   "reading_list/reading_list_item.ts",

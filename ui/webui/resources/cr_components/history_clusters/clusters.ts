@@ -238,16 +238,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   /**
-   * Called when the value of the search field changes.
-   */
-  private onSearchChanged_(event: CustomEvent<string>) {
-    // Update the query based on the value of the search field, if necessary.
-    if (event.detail !== this.query) {
-      this.query = event.detail;
-    }
-  }
-
-  /**
    * Called when the scrollable area has been scrolled nearly to the bottom.
    */
   private onScrolledToBottom_() {
