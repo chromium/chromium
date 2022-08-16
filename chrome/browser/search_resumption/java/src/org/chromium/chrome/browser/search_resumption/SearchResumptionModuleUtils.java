@@ -122,9 +122,7 @@ public class SearchResumptionModuleUtils {
      */
     @VisibleForTesting
     static boolean shouldShowSearchResumptionModule(Profile profile, Tab currentTab) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)) {
             recordModuleNotShownReason(ModuleNotShownReason.FEATURE_DISABLED);
             return false;
         }
