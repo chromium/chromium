@@ -69,9 +69,6 @@ webkit.org/b/90488 [ Debug ] http/tests/devtools/* [ Slow ]
 webkit.org/b/90488 [ Debug ] inspector-protocol/* [ Slow ]
 webkit.org/b/90488 [ Debug ] http/tests/inspector-protocol/* [ Slow ]
 
-# Attribution Reporting tests are slow on Windows
-crbug.com/1306848 [ Win ] http/tests/inspector-protocol/attribution-reporting/* [ Slow ]
-
 # DevTools tests cause flakes on slow hardware in Release as well.
 crbug.com/1063051 [ Release ] http/tests/devtools/* [ Slow ]
 crbug.com/420008 virtual/threaded/http/tests/devtools/tracing/* [ Slow ]
