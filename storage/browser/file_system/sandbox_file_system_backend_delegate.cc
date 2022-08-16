@@ -375,8 +375,10 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   // no-op. NOTE: one StorageKey may map to many BucketLocators depending on the
   // type. We only want to cache and delete kFileSystemTypeTemporary buckets.
   // Otherwise, we may accidentally delete the wrong databases.
-  if (type == FileSystemType::kFileSystemTypeTemporary)
+  if (FileSystemTypeToQuotaStorageType(type) ==
+      blink::mojom::StorageType::kTemporary) {
     obfuscated_file_util()->DeleteDefaultBucketForStorageKey(storage_key);
+  }
 
   if (result)
     return base::File::FILE_OK;
@@ -407,7 +409,8 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
   // deleted as well. If it was not cached, result is a no-op. NOTE: We only
   // want to cache and delete kTemporary buckets. Otherwise, we may accidentally
   // delete the wrong databases.
-  if (type == FileSystemType::kFileSystemTypeTemporary &&
+  if (FileSystemTypeToQuotaStorageType(type) ==
+          blink::mojom::StorageType::kTemporary &&
       bucket_locator.is_default) {
     obfuscated_file_util()->DeleteDefaultBucket(bucket_locator);
   }
