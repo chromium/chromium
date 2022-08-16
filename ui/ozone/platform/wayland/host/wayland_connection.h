@@ -61,6 +61,7 @@ class GtkPrimarySelectionDeviceManager;
 class GtkShell1;
 class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
+class XdgActivation;
 class XdgForeignWrapper;
 class OverlayPrioritizer;
 
@@ -243,6 +244,8 @@ class WaylandConnection {
     return wayland_zwp_relative_pointer_manager_.get();
   }
 
+  const XdgActivation* xdg_activation() const { return xdg_activation_.get(); }
+
   XdgForeignWrapper* xdg_foreign() const { return xdg_foreign_.get(); }
 
   ZwpIdleInhibitManager* zwp_idle_inhibit_manager() const {
@@ -328,6 +331,7 @@ class WaylandConnection {
   friend class WaylandZwpRelativePointerManager;
   friend class WaylandZcrColorManager;
   friend class WaylandZcrCursorShapes;
+  friend class XdgActivation;
   friend class XdgForeignWrapper;
   friend class ZwpIdleInhibitManager;
   friend class ZwpPrimarySelectionDeviceManager;
@@ -412,6 +416,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
   std::unique_ptr<WaylandSeat> seat_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
+  std::unique_ptr<XdgActivation> xdg_activation_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
   std::unique_ptr<OverlayPrioritizer> overlay_prioritizer_;

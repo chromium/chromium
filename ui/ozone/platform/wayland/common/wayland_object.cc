@@ -32,6 +32,7 @@
 #include <wayland-client-core.h>
 #include <wayland-cursor.h>
 #include <wayland-drm-client-protocol.h>
+#include <xdg-activation-v1-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-foreign-unstable-v1-client-protocol.h>
 #include <xdg-foreign-unstable-v2-client-protocol.h>
@@ -209,6 +210,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation_feedback)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewport)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewporter)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_token_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_popup)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_positioner)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_surface)

@@ -29,6 +29,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
+#include "ui/ozone/platform/wayland/host/xdg_activation.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 
@@ -239,6 +240,8 @@ void WaylandToplevelWindow::Activate() {
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
     zaura_surface_activate(aura_surface_.get());
+  } else if (connection()->xdg_activation()) {
+    connection()->xdg_activation()->Activate(root_surface()->surface());
   } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
   }

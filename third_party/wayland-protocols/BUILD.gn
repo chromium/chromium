@@ -140,6 +140,10 @@ wayland_protocol("wayland_drm_protocol") {
   sources = [ "mesa/wayland-drm/wayland-drm.xml" ]
 }
 
+wayland_protocol("xdg_activation") {
+  sources = [ "src/staging/xdg-activation/xdg-activation-v1.xml" ]
+}
+
 wayland_protocol("xdg_foreign") {
   sources = [
     "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml",
