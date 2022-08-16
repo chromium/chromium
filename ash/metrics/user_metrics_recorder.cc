@@ -80,7 +80,6 @@ ActiveWindowStateType GetActiveWindowState() {
       case WindowStateType::kNormal:
       case WindowStateType::kMinimized:
       case WindowStateType::kInactive:
-      case WindowStateType::kAutoPositioned:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_OTHER;
         break;
     }

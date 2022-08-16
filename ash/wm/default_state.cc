@@ -659,7 +659,6 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
       break;
     }
     case WindowStateType::kInactive:
-    case WindowStateType::kAutoPositioned:
     case WindowStateType::kPip:
       return;
   }

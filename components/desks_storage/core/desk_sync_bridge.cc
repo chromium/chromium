@@ -369,7 +369,6 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
     case chromeos::WindowStateType::kDefault:
     case chromeos::WindowStateType::kNormal:
     case chromeos::WindowStateType::kInactive:
-    case chromeos::WindowStateType::kAutoPositioned:
     case chromeos::WindowStateType::kPinned:
     case chromeos::WindowStateType::kTrustedPinned:
     case chromeos::WindowStateType::kPip:

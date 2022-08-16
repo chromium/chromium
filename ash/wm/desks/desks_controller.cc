@@ -1245,7 +1245,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
             break;
           case chromeos::WindowStateType::kInactive:
           case chromeos::WindowStateType::kFullscreen:
-          case chromeos::WindowStateType::kAutoPositioned:
           case chromeos::WindowStateType::kPinned:
           case chromeos::WindowStateType::kTrustedPinned:
           case chromeos::WindowStateType::kPip:

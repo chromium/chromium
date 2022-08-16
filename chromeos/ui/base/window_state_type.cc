@@ -26,8 +26,6 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kLeftSnapped";
     case WindowStateType::kSecondarySnapped:
       return stream << "kRightSnapped";
-    case WindowStateType::kAutoPositioned:
-      return stream << "kAutoPositioned";
     case WindowStateType::kPinned:
       return stream << "kPinned";
     case WindowStateType::kTrustedPinned:
@@ -69,7 +67,6 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kNormal:
     case WindowStateType::kSecondarySnapped:
     case WindowStateType::kPrimarySnapped:
-    case WindowStateType::kAutoPositioned:
     case WindowStateType::kPip:
     case WindowStateType::kFloated:
       return ui::SHOW_STATE_NORMAL;

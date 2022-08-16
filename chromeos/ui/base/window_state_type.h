@@ -31,11 +31,6 @@ enum class WindowStateType {
   kPrimarySnapped,
   kSecondarySnapped,
 
-  // A window is in this state when it is automatically placed and
-  // sized by the window manager. (it's newly opened, or pushed to the side
-  // due to new window, for example).
-  kAutoPositioned,
-
   // A window is pinned on top of other windows with fullscreenized.
   // Corresponding shelf should be hidden, also most of windows other than the
   // pinned one should be hidden.
