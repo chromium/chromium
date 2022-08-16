@@ -231,6 +231,9 @@ crbug.com/1201009 [ linux ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated
 crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Skip ]
 crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Skip ]
 
+# 5 minute timeout on ChromeOS FYI Release (amd64-generic)
+crbug.com/1167246 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
+
 # Timeout on Nexus 5
 crbug.com/1353189 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Skip ]
 
