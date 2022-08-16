@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 
 // TODO(crbug.com/1165828): Clean up feedv1 features.
 
@@ -104,6 +105,12 @@ std::string GetFeedReferrerUrl();
 
 // Personalize feed for unsigned users.
 extern const base::Feature kPersonalizeFeedUnsignedUsers;
+
+// Personalize feed for signed in users who haven't enabled sync.
+extern const base::Feature kPersonalizeFeedNonSyncUsers;
+
+// Returns the consent level needed to request a personalized feed.
+signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
 // Feature that enables tracking the acknowledgement state for the info cards.
 extern const base::Feature kInfoCardAcknowledgementTracking;

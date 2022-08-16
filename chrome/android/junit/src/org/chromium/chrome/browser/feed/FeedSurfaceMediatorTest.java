@@ -334,7 +334,7 @@ public class FeedSurfaceMediatorTest {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -353,7 +353,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -372,7 +372,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -391,7 +391,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -410,7 +410,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
 
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -429,7 +429,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
@@ -448,7 +448,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
@@ -467,7 +467,7 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         mFeedSurfaceMediator.updateContent();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(false);
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 

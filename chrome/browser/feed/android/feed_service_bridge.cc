@@ -141,6 +141,10 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
   NOTREACHED() << "Invalid content order: " << content_order;
 }
 
+static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
+  return FeedServiceBridge::IsSignedIn();
+}
+
 std::string FeedServiceBridge::GetLanguageTag() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return ConvertJavaStringToUTF8(env,
@@ -196,6 +200,11 @@ uint64_t FeedServiceBridge::GetReliabilityLoggingId() {
   }
   return FeedService::GetReliabilityLoggingId(
       g_browser_process->metrics_service()->GetClientId(), profile_prefs);
+}
+
+// static
+bool FeedServiceBridge::IsSignedIn() {
+  return GetFeedService()->IsSignedIn();
 }
 
 JavaUnreadContentObserver::JavaUnreadContentObserver(

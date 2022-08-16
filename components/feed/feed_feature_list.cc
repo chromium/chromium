@@ -9,6 +9,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/sync/base/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace feed {
 
 const base::Feature kInterestFeedContentSuggestions{
@@ -106,6 +110,27 @@ std::string GetFeedReferrerUrl() {
 
 const base::Feature kPersonalizeFeedUnsignedUsers{
     "PersonalizeFeedUnsignedUsers", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPersonalizeFeedNonSyncUsers{
+    "PersonalizeFeedNonSyncUsers", base::FEATURE_DISABLED_BY_DEFAULT};
+
+signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
+  if (!base::FeatureList::IsEnabled(kPersonalizeFeedNonSyncUsers))
+    return signin::ConsentLevel::kSync;
+
+#if BUILDFLAG(IS_ANDROID)
+  // When this flag is enabled, the wording of the sync promo card
+  // shows that enabling sync may get the user more relevant content but does
+  // not imply that a signed-in user must enable sync to get personalized
+  // content. Therefore we can request a signed-in feed for users who are
+  // signed in but not syncing.
+  // TODO(crbug/1205923): When this wording is fully launched, use kSignin
+  // only.
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAndroidPromosWithTitle))
+    return signin::ConsentLevel::kSync;
+#endif  // BUILDFLAG(IS_ANDROID)
+  return signin::ConsentLevel::kSignin;
+}
 
 const base::Feature kInfoCardAcknowledgementTracking{
     "InfoCardAcknowledgementTracking", base::FEATURE_DISABLED_BY_DEFAULT};

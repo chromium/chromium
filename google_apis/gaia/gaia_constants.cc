@@ -161,6 +161,9 @@ const char kPhotosModuleOAuth2Scope[] =
 const char kPhotosModuleImageOAuth2Scope[] =
     "https://www.googleapis.com/auth/photos.image.readonly";
 
+// OAuth 2 scope for the Discover feed.
+const char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
+
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";
 const char kGaiaLsid[] = "lsid";

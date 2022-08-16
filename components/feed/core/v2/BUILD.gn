@@ -255,6 +255,7 @@ source_set("core_unit_tests") {
     "//components/reading_list/features:flags",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync/base",
     "//components/variations:test_support",
     "//components/version_info:channel",
     "//net:test_support",

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_network_impl.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
