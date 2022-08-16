@@ -42,7 +42,7 @@ class OnStartupHandler : public SettingsPageUIHandler,
                            HandleValidateStartupPage_Invalid);
 
   // Info for extension controlling the NTP or empty value.
-  base::Value::Dict GetNtpExtension();
+  base::Value GetNtpExtension();
 
   // Handler for the "getNtpExtension" message. No arguments.
   void HandleGetNtpExtension(const base::Value::List& args);
