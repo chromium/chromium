@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_TRANSLATE_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HANDLER_H_
 #define COMPONENTS_TRANSLATE_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HANDLER_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/strings/string_piece.h"
@@ -41,7 +37,7 @@ class TranslateInternalsHandler {
 
   // Returns a dictionary of languages where each key is a language
   // code and each value is a language name in the locale.
-  static base::Value GetLanguages();
+  static base::Value::Dict GetLanguages();
 
   virtual TranslateClient* GetTranslateClient() = 0;
   virtual variations::VariationsService* GetVariationsService() = 0;
@@ -92,7 +88,8 @@ class TranslateInternalsHandler {
   void OnRequestInfo(const base::Value::List& args);
 
   // Sends a message to Javascript.
-  void SendMessageToJs(const std::string& message, const base::Value& value);
+  void SendMessageToJs(base::StringPiece message,
+                       const base::Value::Dict& value);
 
   // Sends the current preference to Javascript.
   void SendPrefsToJs();

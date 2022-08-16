@@ -38,8 +38,9 @@ content::WebUIDataSource* CreateTranslateInternalsHTMLSource() {
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
 
-  base::Value langs = translate::TranslateInternalsHandler::GetLanguages();
-  for (const auto key_value_pair : langs.DictItems()) {
+  base::Value::Dict langs =
+      translate::TranslateInternalsHandler::GetLanguages();
+  for (const auto key_value_pair : langs) {
     DCHECK(key_value_pair.second.is_string());
     std::string key = "language-" + key_value_pair.first;
     const std::string& value = key_value_pair.second.GetString();
