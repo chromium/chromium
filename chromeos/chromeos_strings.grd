@@ -2782,7 +2782,7 @@ Try tapping the mic to ask me anything.
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
       <message name="IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING" translateable="false" desc="Warning that RMA is only for qualified technicians.">
-        This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.
+        This repair process is intended for a trained repair technician. Start after you’ve fixed any device issues such as broken or missing parts.
       </message>
       <message name="IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS" translateable="false" desc="Checking that device components are approved for this device.">
         Validating components...
@@ -2804,7 +2804,7 @@ Try tapping the mic to ask me anything.
         Get connected
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_DESCRIPTION" translateable="false" desc="Description for the connect to wifi page.">
-        Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.
+        Connecting to the internet is recommended to make the repair process easier
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME" translateable="false" desc="Title for the network configuration dialog for an existing network.">
         Configure <ph name="NAME">$1<ex>My WiFi network</ex></ph>
@@ -2829,7 +2829,7 @@ Try tapping the mic to ask me anything.
         This component couldn't be detected.
       </message>
       <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" translateable="false" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
-        If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
+        If you replaced or reworked the mainboard, go to this <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
       <!-- Choose destination page -->
       <message name="IDS_SHIMLESS_RMA_CHOOSE_DESTINATION" translateable="false" desc="Title for the page shown when choosing the return destination of the device after repair.">
@@ -2940,13 +2940,13 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" translateable="false" desc="Title for the page shown when the RMA process repair process is completed.">
-        Repair is complete
+        Almost done!
       </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DESCRIPTION" translateable="false" desc="Notice for the user that repair is complete and they can shutdown when ready or run diagnostics/view logs.">
-        Your repair was successful. You can shut down the device or take some additional actions.
+        Shut down or reboot the device to complete the repair process. You can also take some additional actions.
       </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON" translateable="false" desc="Label of the button that launches the post-boot diagnostics SWA.">
-        Run Diagnostics
+        Run diagnostics
       </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION" translateable="false" desc="Description of what the diagnostics SWA is for">
         Confirm everything's in the right place and view the diagnostic report
