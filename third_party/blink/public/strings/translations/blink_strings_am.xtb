@@ -27,7 +27,7 @@
 <translation id="2031987842108996681">ቀይ ሰርጥ</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />» በ«<ph name="INVALIDDOMAIN" />» ውስጥ በተሳሳተ ቦታ ላይ ነው የገባው።</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
-<translation id="2226276347425096477">እባክዎ ይህ ጽሑፍ ወደ <ph name="MAX_CHARACTERS" /> ወይም ከዚያ በታች ቁምፊዎች ያሳጥሩት (በአሁኑ ጊዜ <ph name="CURRENT_LENGTH" /> ቁምፊዎችን እየተጠቀሙ ነዎት)።</translation>
+<translation id="2226276347425096477">እባክዎ ይህ ጽሁፍ ወደ <ph name="MAX_CHARACTERS" /> ወይም ከዚያ በታች ቁምፊዎች ያሳጥሩት (በአሁኑ ጊዜ <ph name="CURRENT_LENGTH" /> ቁምፊዎችን እየተጠቀሙ ነዎት)።</translation>
 <translation id="2246498165605549352">አካባቢያዊ ፋይል</translation>
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ትራክ <ph name="NUMBER" /></translation>
@@ -57,7 +57,7 @@
 <translation id="3732799496749320381">ሚሜ</translation>
 <translation id="3754210790023674521">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> ጊባ</translation>
-<translation id="3822383571486410024">እባክዎ ይህን ጽሑፍ ወደ <ph name="MIN_CHARACTERS" /> ቁምፊዎች ወይም ከዚያ በላይ ያራዝሙት (አሁን እየተጠቀሙ ያሉት <ph name="CURRENT_LENGTH" />ቁምፊዎችን ነው)።</translation>
+<translation id="3822383571486410024">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ቁምፊዎች ወይም ከዚያ በላይ ያራዝሙት (አሁን እየተጠቀሙ ያሉት <ph name="CURRENT_LENGTH" />ቁምፊዎችን ነው)።</translation>
 <translation id="383465348367842624">ከ«<ph name="ATSIGN" />» በፊት የሚመጣ ክፍል የ«<ph name="INVALIDCHARACTER" />» ምልክት መያዝ የለበትም።</translation>
 <translation id="3846214748874656680">ከሙሉ ማያገጽ ውጣ</translation>
 <translation id="4103419683916926126">ሚሊሰኮንዶች</translation>
@@ -132,7 +132,7 @@
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6941933287844615239">ማህደረ መረጃን አውርድ</translation>
 <translation id="698788488269350478">ተዘርግቷል።</translation>
-<translation id="6989848892321993519">እባክዎ ይህን ጽሑፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
+<translation id="6989848892321993519">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>
 <translation id="7102274145889307184">የአሁኑ አካባቢ</translation>
 <translation id="7263440858009898357">እባክዎ በዝርዝሩ ውስጥ አንድ ንጥል ይምረጡ።</translation>

@@ -111,7 +111,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1502010315804028179">Atualize o Google Play Services para gerenciar suas senhas.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
-<translation id="1513814250881909472">Sincronizar para acessar suas guias de outros dispositivos</translation>
+<translation id="1513814250881909472">Sincronize para acessar suas guias de outros dispositivos</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1514552811327923157">Solicitação do Sandbox de privacidade aberta no tamanho máximo</translation>
 <translation id="1518421282666914498">GIF de emoticon <ph name="CURRENT_DATE_ISO" /></translation>
@@ -570,7 +570,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
-<translation id="4177222230309051052">Ter acesso a todos seus favoritos</translation>
+<translation id="4177222230309051052">Acesse todos os seus favoritos</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4196597275619698563">Criar card</translation>
@@ -729,7 +729,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="5001388021414335527">Siga este site</translation>
-<translation id="500351648694011114">Navegar com mais facilidade</translation>
+<translation id="500351648694011114">Navegue com mais facilidade</translation>
 <translation id="5004416275253351869">Controles de atividade do Google</translation>
 <translation id="5005141133360250920">Reação excluída</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
@@ -886,7 +886,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5864419784173784555">Aguardando outro download…</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
-<translation id="5869789175361934029">Continuar de outro dispositivo</translation>
+<translation id="5869789175361934029">Continue de outro dispositivo</translation>
 <translation id="587735546353481577">Para seguir um site, acesse-o, abra o menu do Google Chrome e toque em "Seguir".</translation>
 <translation id="5879072387416556377">Receba sugestões melhores</translation>
 <translation id="5880748256563468367">Acessar o feed</translation>
@@ -1471,7 +1471,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8909135823018751308">Compartilhar...</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8920114477895755567">Aguardando detalhes dos pais.</translation>
-<translation id="8921980840204105660">Sincronizar para acessar seus favoritos de outros dispositivos</translation>
+<translation id="8921980840204105660">Sincronize para acessar seus favoritos de outros dispositivos</translation>
 <translation id="8922289737868596582">Use o botão Mais opções para fazer o download de páginas e acessá-las off-line</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O <ph name="LANG" /> está pronto</translation>
@@ -1544,7 +1544,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="968900484120156207">As páginas visitadas são exibidas aqui</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
-<translation id="978443947993957527">Veja conteúdo personalizado</translation>
+<translation id="978443947993957527">Receba conteúdo personalizado</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
 <translation id="987264212798334818">Geral</translation>
