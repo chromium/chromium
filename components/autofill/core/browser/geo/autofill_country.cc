@@ -32,7 +32,7 @@ const size_t kLocaleCapacity =
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const std::string& locale) {
+                                 const absl::optional<std::string>& locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // If the country code is an alias (e.g. "GB" for "UK") expand the country
@@ -46,7 +46,8 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
       country_data_map->GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
-  name_ = l10n_util::GetDisplayNameForCountry(country_code_, locale);
+  if (locale)
+    name_ = l10n_util::GetDisplayNameForCountry(country_code_, *locale);
 }
 
 AutofillCountry::~AutofillCountry() {}

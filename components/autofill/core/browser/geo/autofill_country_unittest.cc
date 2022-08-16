@@ -48,6 +48,11 @@ TEST(AutofillCountryTest, AutofillCountry) {
   // Unrecognizable country codes remain that way.
   AutofillCountry unknown("Unknown", "en_US");
   EXPECT_EQ("Unknown", unknown.country_code());
+
+  // If no locale is provided, no `name()` is returned.
+  AutofillCountry empty_locale("AT");
+  EXPECT_EQ("AT", empty_locale.country_code());
+  EXPECT_TRUE(empty_locale.name().empty());
 }
 
 // Test locale to country code mapping.

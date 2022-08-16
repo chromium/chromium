@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
 namespace autofill {
@@ -24,8 +25,9 @@ class AutofillCountry {
   // `country_code`.
   // `locale` is used translate the `name()` appropriately and can be ignored
   // if the name is not queried.
-  explicit AutofillCountry(const std::string& country_code,
-                           const std::string& locale = "en");
+  explicit AutofillCountry(
+      const std::string& country_code,
+      const absl::optional<std::string>& locale = absl::nullopt);
 
   AutofillCountry(const AutofillCountry&) = delete;
   AutofillCountry& operator=(const AutofillCountry&) = delete;
@@ -63,7 +65,12 @@ class AutofillCountry {
   // mapping from the locale is available.
   static const std::string CountryCodeForLocale(const std::string& locale);
 
+  // The `country_code` provided to the constructor, with aliases like "GB"
+  // replaced by their canonical version ("UK", in this case).
   const std::string& country_code() const { return country_code_; }
+
+  // Returns the name of the country translated into the `locale` provided to
+  // the constructor. If no `locale` was provided, an empty string is returned.
   const std::u16string& name() const { return name_; }
 
   // City is expected in a complete address for this country.
