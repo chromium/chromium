@@ -9,6 +9,8 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -97,8 +99,10 @@ enum class IOSOverflowMenuActionType {
 
 // Time when the tools menu opened.
 @property(nonatomic, assign) NSTimeInterval toolsMenuOpenTime;
-// Whether the tools menu was scrolled while it was open.
-@property(nonatomic, assign) BOOL toolsMenuWasScrolled;
+// Whether the tools menu was scrolled vertically while it was open.
+@property(nonatomic, assign) BOOL toolsMenuWasScrolledVertically;
+// Whether the tools menu was scrolled horizontally while it was open.
+@property(nonatomic, assign) BOOL toolsMenuWasScrolledHorizontally;
 // Whether the user took an action on the tools menu while it was open.
 @property(nonatomic, assign) BOOL toolsMenuUserTookAction;
 
@@ -193,7 +197,7 @@ enum class IOSOverflowMenuActionType {
     self.toolsMenuOpenTime = 0;
 
     IOSOverflowMenuActionType actionType;
-    if (self.toolsMenuWasScrolled) {
+    if (self.toolsMenuWasScrolledVertically) {
       if (self.toolsMenuUserTookAction) {
         actionType = IOSOverflowMenuActionType::kScrollAction;
       } else {
@@ -207,7 +211,13 @@ enum class IOSOverflowMenuActionType {
       }
     }
     base::UmaHistogramEnumeration("IOS.OverflowMenu.ActionType", actionType);
-    self.toolsMenuWasScrolled = NO;
+
+    if (!self.toolsMenuWasScrolledHorizontally &&
+        !self.toolsMenuUserTookAction) {
+      [self trackToolsMenuNoHorizontalScrollOrAction];
+    }
+    self.toolsMenuWasScrolledVertically = NO;
+    self.toolsMenuWasScrolledHorizontally = NO;
     self.toolsMenuUserTookAction = NO;
   }
 
@@ -278,13 +288,17 @@ enum class IOSOverflowMenuActionType {
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
     (UISheetPresentationController*)sheetPresentationController
     API_AVAILABLE(ios(15)) {
-  [self popupMenuScrolled];
+  [self popupMenuScrolledVertically];
 }
 
 #pragma mark - PopupMenuMetricsHandler
 
-- (void)popupMenuScrolled {
-  self.toolsMenuWasScrolled = YES;
+- (void)popupMenuScrolledVertically {
+  self.toolsMenuWasScrolledVertically = YES;
+}
+
+- (void)popupMenuScrolledHorizontally {
+  self.toolsMenuWasScrolledHorizontally = YES;
 }
 
 - (void)popupMenuTookAction {
@@ -351,7 +365,8 @@ enum class IOSOverflowMenuActionType {
   // if not needed.
   if (type == PopupMenuTypeToolsMenu) {
     self.toolsMenuOpenTime = [NSDate timeIntervalSinceReferenceDate];
-    self.toolsMenuWasScrolled = NO;
+    self.toolsMenuWasScrolledVertically = NO;
+    self.toolsMenuWasScrolledHorizontally = NO;
     self.toolsMenuUserTookAction = NO;
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
@@ -522,6 +537,21 @@ enum class IOSOverflowMenuActionType {
   if (type == PopupMenuTypeToolsMenu) {
     tableViewController.metricsHandler = self;
   }
+}
+
+- (void)trackToolsMenuNoHorizontalScrollOrAction {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState) {
+    return;
+  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  if (!tracker) {
+    return;
+  }
+
+  tracker->NotifyEvent(
+      feature_engagement::events::kOverflowMenuNoHorizontalScrollOrAction);
 }
 
 @end

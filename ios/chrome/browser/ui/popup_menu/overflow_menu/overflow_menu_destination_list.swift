@@ -36,6 +36,18 @@ struct OverflowMenuDestinationList: View {
 
     /// Space above the list pushing them down from the grabber.
     static let topMargin: CGFloat = 20
+
+    /// The name for the coordinate space of the scroll view, so children can
+    /// find their positioning in the scroll view.
+    static let coordinateSpaceName = "destinations"
+  }
+
+  /// `PreferenceKey` to track the leading offset of the scroll view.
+  struct ScrollViewLeadingOffset: PreferenceKey {
+    static var defaultValue: CGFloat = .greatestFiniteMagnitude
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+      value = min(value, nextValue())
+    }
   }
 
   /// The current dynamic type size.
@@ -48,6 +60,9 @@ struct OverflowMenuDestinationList: View {
   var destinations: [OverflowMenuDestination]
 
   weak var metricsHandler: PopupMenuMetricsHandler?
+
+  /// Tracks the list's current offset, to see when it scrolls.
+  @State var listOffset: CGFloat = 0
 
   var body: some View {
     GeometryReader { geometry in
@@ -62,27 +77,41 @@ struct OverflowMenuDestinationList: View {
               iconPadding: spacing.iconPadding)
           let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
 
-          VStack {
-            Spacer(minLength: Constants.topMargin)
-            LazyHStack(alignment: alignment, spacing: 0) {
-              ForEach(destinations) { destination in
-                OverflowMenuDestinationView(
-                  destination: destination, layoutParameters: layoutParameters,
-                  metricsHandler: metricsHandler
-                ).id(destination.destinationName)
+          ZStack {
+            VStack {
+              Spacer(minLength: Constants.topMargin)
+              LazyHStack(alignment: alignment, spacing: 0) {
+                // Make sure the space to the first icon is constant, so add extra
+                // spacing before the first item.
+                Spacer(minLength: Constants.iconInitialSpace - spacing.iconSpacing)
+                ForEach(destinations) { destination in
+                  OverflowMenuDestinationView(
+                    destination: destination, layoutParameters: layoutParameters,
+                    metricsHandler: metricsHandler
+                  ).id(destination.destinationName)
+                }
               }
             }
+            GeometryReader { innerGeometry in
+              let offset = innerGeometry.frame(in: .named(Constants.coordinateSpaceName)).minX
+              Color.clear
+                .preference(key: ScrollViewLeadingOffset.self, value: offset)
+            }
           }
-          // Make sure the space to the first icon is constant, so add extra
-          // spacing before the first item.
-          .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
         }
+        .coordinateSpace(name: Constants.coordinateSpaceName)
         .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
         .onAppear {
           if layoutDirection == .rightToLeft {
             proxy.scrollTo(destinations.last?.destinationName)
           }
         }
+      }
+      .onPreferenceChange(ScrollViewLeadingOffset.self) { value in
+        if value != listOffset {
+          metricsHandler?.popupMenuScrolledHorizontally()
+        }
+        listOffset = value
       }
     }
   }

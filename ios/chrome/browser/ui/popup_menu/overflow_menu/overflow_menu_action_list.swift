@@ -27,7 +27,7 @@ struct OverflowMenuActionList: View {
     }
     .simultaneousGesture(
       DragGesture().onChanged({ _ in
-        metricsHandler?.popupMenuScrolled()
+        metricsHandler?.popupMenuScrolledVertically()
       })
     )
     .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)

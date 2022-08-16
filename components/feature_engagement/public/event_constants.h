@@ -109,6 +109,10 @@ extern const char kPasswordSuggestionsShown[];
 // The user has selected an Autofill password suggestion.
 extern const char kPasswordSuggestionSelected[];
 
+// The user has exited the overflow menu without scrolling horizontally and
+// without taking an action.
+extern const char kOverflowMenuNoHorizontalScrollOrAction[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

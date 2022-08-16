@@ -286,6 +286,8 @@ const base::Feature kIPHPasswordSuggestionsFeature{
     "IPH_PasswordSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFollowWhileBrowsingFeature{
     "IPH_FollowWhileBrowsing", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHOverflowMenuTipFeature{
+    "IPH_OverflowMenuTip", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

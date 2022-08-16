@@ -9,8 +9,12 @@
 // happen in the view, so it can fire the correct metrics.
 @protocol PopupMenuMetricsHandler
 
-// Called when the popup menu is scrolled.
-- (void)popupMenuScrolled;
+// Called when the popup menu is scrolled vertically.
+- (void)popupMenuScrolledVertically;
+
+// Called when the popup menu is scrolled horizontally. This is only fired on
+// the new popup menu. The ond one doesn't have a horizontal scroll.
+- (void)popupMenuScrolledHorizontally;
 
 // Called when the user takes an action in the popup menu.
 - (void)popupMenuTookAction;

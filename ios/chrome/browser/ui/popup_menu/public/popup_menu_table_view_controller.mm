@@ -200,7 +200,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self.metricsHandler popupMenuScrolled];
+  [self.metricsHandler popupMenuScrolledVertically];
 }
 
 #pragma mark - UITableViewDelegate
