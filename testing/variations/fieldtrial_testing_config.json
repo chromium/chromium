@@ -3656,6 +3656,23 @@
             ]
         }
     ],
+    "DesktopSharePreview": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DesktopSharePreview"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopTabGroupsInProductHelp": [
         {
             "platforms": [
