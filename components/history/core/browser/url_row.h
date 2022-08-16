@@ -241,7 +241,9 @@ struct VisitContentAnnotations {
                           const std::vector<std::string>& related_searches,
                           const GURL& search_normalized_url,
                           const std::u16string& search_terms,
-                          const std::string& alternative_title);
+                          const std::string& alternative_title,
+                          const std::string& page_language,
+                          int password_state);
   VisitContentAnnotations(const VisitContentAnnotations& other);
   ~VisitContentAnnotations();
 
@@ -254,6 +256,13 @@ struct VisitContentAnnotations {
   std::u16string search_terms;
   // Alternative page title for the visit.
   std::string alternative_title;
+  // Language of the content on the page, as an ISO 639 language code (usually
+  // two letters). May be "und" if the language couldn't be determined.
+  std::string page_language;
+  // Whether a password form was found on the page - see
+  // sessions::GetPasswordStateFromNavigation().
+  // TODO(crbug.com/1347012): Make this strongly typed instead of just an int.
+  int password_state = 0;
 };
 
 class URLResult : public URLRow {

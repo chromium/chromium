@@ -9,8 +9,6 @@
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/url_row.h"
@@ -24,10 +22,11 @@ namespace {
 #define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                        \
   " visit_id,visibility_score,categories,page_topics_model_version,"  \
   "annotation_flags,entities,related_searches,search_normalized_url," \
-  "search_terms,alternative_title "
-#define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
-  " visit_id,context_annotation_flags,duration_since_last_visit," \
-  "page_end_reason,total_foreground_duration "
+  "search_terms,alternative_title,page_language,password_state "
+#define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                        \
+  " visit_id,context_annotation_flags,duration_since_last_visit,"     \
+  "page_end_reason,total_foreground_duration,browser_type,window_id," \
+  "tab_id,task_id,root_task_id,parent_task_id,response_code "
 #define HISTORY_CLUSTER_ROW_FIELDS \
   " cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label "
 #define HISTORY_CLUSTER_VISIT_ROW_FIELDS                              \
@@ -135,7 +134,14 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
     int64_t flags,
     base::TimeDelta duration_since_last_visit,
     int page_end_reason,
-    base::TimeDelta total_foreground_duration) {
+    base::TimeDelta total_foreground_duration,
+    int browser_type,
+    SessionID window_id,
+    SessionID tab_id,
+    int64_t task_id,
+    int64_t root_task_id,
+    int64_t parent_task_id,
+    int response_code) {
   VisitContextAnnotations context_annotations;
   context_annotations.omnibox_url_copied =
       flags & static_cast<uint64_t>(ContextAnnotationFlags::kOmniboxUrlCopied);
@@ -155,6 +161,13 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
   context_annotations.duration_since_last_visit = duration_since_last_visit;
   context_annotations.page_end_reason = page_end_reason;
   context_annotations.total_foreground_duration = total_foreground_duration;
+  context_annotations.immediate_fields.browser_type = browser_type;
+  context_annotations.immediate_fields.window_id = window_id;
+  context_annotations.immediate_fields.tab_id = tab_id;
+  context_annotations.immediate_fields.task_id = task_id;
+  context_annotations.immediate_fields.root_task_id = root_task_id;
+  context_annotations.immediate_fields.parent_task_id = parent_task_id;
+  context_annotations.immediate_fields.response_code = response_code;
   return context_annotations;
 }
 }  // namespace
@@ -175,18 +188,26 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
                        "related_searches VARCHAR,"
                        "search_normalized_url VARCHAR,"
                        "search_terms LONGVARCHAR,"
-                       "alternative_title VARCHAR)")) {
+                       "alternative_title VARCHAR,"
+                       "page_language VARCHAR,"
+                       "password_state INTEGER DEFAULT 0 NOT NULL)")) {
     return false;
   }
 
-  // See `AnnotatedVisitRow` and `VisitContextAnnotations` for details about
-  // these fields.
+  // See `VisitContextAnnotations` for details about these fields.
   if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS context_annotations("
                        "visit_id INTEGER PRIMARY KEY,"
                        "context_annotation_flags INTEGER NOT NULL,"
                        "duration_since_last_visit INTEGER,"
                        "page_end_reason INTEGER,"
-                       "total_foreground_duration INTEGER)")) {
+                       "total_foreground_duration INTEGER,"
+                       "browser_type INTEGER DEFAULT 0 NOT NULL,"
+                       "window_id INTEGER DEFAULT -1 NOT NULL,"
+                       "tab_id INTEGER DEFAULT -1 NOT NULL,"
+                       "task_id INTEGER DEFAULT -1 NOT NULL,"
+                       "root_task_id INTEGER DEFAULT -1 NOT NULL,"
+                       "parent_task_id INTEGER DEFAULT -1 NOT NULL,"
+                       "response_code INTEGER DEFAULT 0 NOT NULL)")) {
     return false;
   }
 
@@ -218,7 +239,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO content_annotations(" HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?,?,?,?,?,?,?)"));
+      ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindDouble(
       1, static_cast<double>(
@@ -238,6 +259,8 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(8, visit_content_annotations.search_terms);
   statement.BindString(9, visit_content_annotations.alternative_title);
+  statement.BindString(10, visit_content_annotations.page_language);
+  statement.BindInt(11, visit_content_annotations.password_state);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'content_annotations' insert statement:  "
@@ -252,7 +275,7 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO context_annotations(" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?,?)"));
+      ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindInt64(1, ContextAnnotationsToFlags(visit_context_annotations));
   statement.BindInt64(
@@ -260,6 +283,17 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
   statement.BindInt(3, visit_context_annotations.page_end_reason);
   statement.BindInt64(
       4, visit_context_annotations.total_foreground_duration.InMicroseconds());
+  statement.BindInt(5, visit_context_annotations.immediate_fields.browser_type);
+  statement.BindInt(6,
+                    visit_context_annotations.immediate_fields.window_id.id());
+  statement.BindInt(7, visit_context_annotations.immediate_fields.tab_id.id());
+  statement.BindInt64(8, visit_context_annotations.immediate_fields.task_id);
+  statement.BindInt64(9,
+                      visit_context_annotations.immediate_fields.root_task_id);
+  statement.BindInt64(
+      10, visit_context_annotations.immediate_fields.parent_task_id);
+  statement.BindInt(11,
+                    visit_context_annotations.immediate_fields.response_code);
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -308,6 +342,51 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   }
 }
 
+void VisitAnnotationsDatabase::UpdateContextAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContextAnnotations& visit_context_annotations) {
+  DCHECK_GT(visit_id, 0);
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE context_annotations SET "
+                                 "context_annotation_flags=?, "
+                                 "duration_since_last_visit=?, "
+                                 "page_end_reason=?, "
+                                 "total_foreground_duration=?, "
+                                 "browser_type=?, "
+                                 "window_id=?, "
+                                 "tab_id=?, "
+                                 "task_id=?, "
+                                 "root_task_id=?, "
+                                 "parent_task_id=? "
+                                 "response_code=? "
+                                 "WHERE visit_id=?"));
+  statement.BindInt64(0, ContextAnnotationsToFlags(visit_context_annotations));
+  statement.BindInt64(
+      1, visit_context_annotations.duration_since_last_visit.InMicroseconds());
+  statement.BindInt(2, visit_context_annotations.page_end_reason);
+  statement.BindInt64(
+      3, visit_context_annotations.total_foreground_duration.InMicroseconds());
+  statement.BindInt(4, visit_context_annotations.immediate_fields.browser_type);
+  statement.BindInt(5,
+                    visit_context_annotations.immediate_fields.window_id.id());
+  statement.BindInt(6, visit_context_annotations.immediate_fields.tab_id.id());
+  statement.BindInt64(7, visit_context_annotations.immediate_fields.task_id);
+  statement.BindInt64(8,
+                      visit_context_annotations.immediate_fields.root_task_id);
+  statement.BindInt64(
+      9, visit_context_annotations.immediate_fields.parent_task_id);
+  statement.BindInt64(10,
+                      visit_context_annotations.immediate_fields.response_code);
+  statement.BindInt64(11, visit_id);
+
+  if (!statement.Run()) {
+    DVLOG(0)
+        << "Failed to execute visit 'context_annotations' update statement:  "
+        << "visit_id = " << visit_id;
+  }
+}
+
 bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
     VisitID visit_id,
     VisitContextAnnotations* out_context_annotations) {
@@ -330,7 +409,12 @@ bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
   // `VisitContextAnnotations`.
   *out_context_annotations = ConstructContextAnnotationsWithFlags(
       statement.ColumnInt64(1), base::Microseconds(statement.ColumnInt64(2)),
-      statement.ColumnInt(3), base::Microseconds(statement.ColumnInt64(4)));
+      statement.ColumnInt(3), base::Microseconds(statement.ColumnInt64(4)),
+      statement.ColumnInt(5),
+      SessionID::FromSerializedValue(statement.ColumnInt(6)),
+      SessionID::FromSerializedValue(statement.ColumnInt(7)),
+      statement.ColumnInt64(8), statement.ColumnInt64(9),
+      statement.ColumnInt64(10), statement.ColumnInt(11));
   return true;
 }
 
@@ -366,6 +450,8 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
       GURL(statement.ColumnString(7));
   out_content_annotations->search_terms = statement.ColumnString16(8);
   out_content_annotations->alternative_title = statement.ColumnString(9);
+  out_content_annotations->page_language = statement.ColumnString(10);
+  out_content_annotations->password_state = statement.ColumnInt(11);
   return true;
 }
 
@@ -780,6 +866,87 @@ bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
          GetDB().Execute(
              "CREATE INDEX IF NOT EXISTS clusters_for_visit ON "
              "clusters_and_visits(visit_id)");
+}
+
+bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
+  if (!GetDB().DoesTableExist("context_annotations")) {
+    NOTREACHED() << " Context annotations table should exist before migration";
+    return false;
+  }
+
+  // ConteXt annotation columns:
+
+  if (!GetDB().DoesColumnExist("context_annotations", "browser_type")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE context_annotations "
+            "ADD COLUMN browser_type INTEGER DEFAULT 0 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "window_id")) {
+    if (!GetDB().Execute("ALTER TABLE context_annotations "
+                         "ADD COLUMN window_id INTEGER DEFAULT -1 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "tab_id")) {
+    if (!GetDB().Execute("ALTER TABLE context_annotations "
+                         "ADD COLUMN tab_id INTEGER DEFAULT -1 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "task_id")) {
+    if (!GetDB().Execute("ALTER TABLE context_annotations "
+                         "ADD COLUMN task_id INTEGER DEFAULT -1 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "root_task_id")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE context_annotations "
+            "ADD COLUMN root_task_id INTEGER DEFAULT -1 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "parent_task_id")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE context_annotations "
+            "ADD COLUMN parent_task_id INTEGER DEFAULT -1 NOT NULL")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("context_annotations", "response_code")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE context_annotations "
+            "ADD COLUMN response_code INTEGER DEFAULT 0 NOT NULL")) {
+      return false;
+    }
+  }
+
+  // ConteNt annotation columns:
+
+  if (!GetDB().DoesColumnExist("content_annotations", "page_language")) {
+    if (!GetDB().Execute("ALTER TABLE content_annotations "
+                         "ADD COLUMN page_language VARCHAR")) {
+      return false;
+    }
+  }
+
+  if (!GetDB().DoesColumnExist("content_annotations", "password_state")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE content_annotations "
+            "ADD COLUMN password_state INTEGER DEFAULT 0 NOT NULL")) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace history

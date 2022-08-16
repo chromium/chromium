@@ -75,7 +75,7 @@ if (!is_ios) {
   }
 }
 
-source_set("session_id") {
+component("session_id") {
   sources = [
     "core/session_id.cc",
     "core/session_id.h",

@@ -51,6 +51,13 @@ class VisitAnnotationsDatabase {
       VisitID visit_id,
       const VisitContentAnnotations& visit_content_annotations);
 
+  // Updates an existing row. The new information is set on the row, using the
+  // VisitID as the key. The context annotations for the visit must exist.
+  // Ignores failures.
+  void UpdateContextAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContextAnnotations& visit_context_annotations);
+
   // Query for a `VisitContentAnnotations` given `visit_id`. If it's found and
   // valid, this method returns true, and `out_content_annotations` is filled.
   // Otherwise, this returns false, and `out_content_annotations` is unchanged.
@@ -148,6 +155,18 @@ class VisitAnnotationsDatabase {
   // Called by the derived classes to delete the 'clusters' and
   // 'clusters_and_visits' tables so they can be recreated with updated columns.
   bool MigrateClustersAddColumns();
+
+  // Called by the derived classes to migrate the older context_annotations
+  // table by adding various columns that are (for now) needed by Sync:
+  // In context_annotations:
+  // * browser_type
+  // * window_id and tab_id
+  // * task_id, root_task_id, and parent_task_id
+  // * response_code
+  // In content_annotations:
+  // * page_language
+  // * password_state
+  bool MigrateAnnotationsAddColumnsForSync();
 
  private:
   // Helper to create the 'clusters' table and avoid duplicating the code.

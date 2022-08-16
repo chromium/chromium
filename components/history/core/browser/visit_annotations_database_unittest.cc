@@ -21,6 +21,23 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
+VisitContextAnnotations MakeContextAnnotations(
+    bool omnibox_url_copied,
+    bool is_existing_part_of_tab_group,
+    bool is_placed_in_tab_group,
+    bool is_existing_bookmark,
+    bool is_new_bookmark,
+    bool is_ntp_custom_link) {
+  VisitContextAnnotations result;
+  result.omnibox_url_copied = omnibox_url_copied;
+  result.is_existing_part_of_tab_group = is_existing_part_of_tab_group;
+  result.is_placed_in_tab_group = is_placed_in_tab_group;
+  result.is_existing_bookmark = is_existing_bookmark;
+  result.is_new_bookmark = is_new_bookmark;
+  result.is_ntp_custom_link = is_ntp_custom_link;
+  return result;
+}
+
 }  // namespace
 
 class VisitAnnotationsDatabaseTest : public testing::Test,
@@ -47,6 +64,19 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
 
   void ExpectContextAnnotations(VisitContextAnnotations actual,
                                 VisitContextAnnotations expected) {
+    EXPECT_EQ(actual.immediate_fields.browser_type,
+              expected.immediate_fields.browser_type);
+    EXPECT_EQ(actual.immediate_fields.window_id,
+              expected.immediate_fields.window_id);
+    EXPECT_EQ(actual.immediate_fields.tab_id, expected.immediate_fields.tab_id);
+    EXPECT_EQ(actual.immediate_fields.task_id,
+              expected.immediate_fields.task_id);
+    EXPECT_EQ(actual.immediate_fields.root_task_id,
+              expected.immediate_fields.root_task_id);
+    EXPECT_EQ(actual.immediate_fields.parent_task_id,
+              expected.immediate_fields.parent_task_id);
+    EXPECT_EQ(actual.immediate_fields.response_code,
+              expected.immediate_fields.response_code);
     EXPECT_EQ(actual.omnibox_url_copied, expected.omnibox_url_copied);
     EXPECT_EQ(actual.is_existing_part_of_tab_group,
               expected.is_existing_part_of_tab_group);
@@ -91,9 +121,14 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   std::vector<std::string> related_searches{"related searches",
                                             "búsquedas relacionadas"};
   VisitContentAnnotations content_annotations{
-      annotation_flags, model_annotations,
-      related_searches, GURL("http://pagewithvisit.com?q=search"),
-      u"search",        "Alternative title"};
+      annotation_flags,
+      model_annotations,
+      related_searches,
+      GURL("http://pagewithvisit.com?q=search"),
+      u"search",
+      "Alternative title",
+      "en",
+      0};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -131,10 +166,9 @@ TEST_F(VisitAnnotationsDatabaseTest,
   AddVisitWithTime(IntToTime(10), false);
 
   const std::vector<VisitContextAnnotations> visit_context_annotations_list = {
-      {true, false, true, true, false, false},
-      {false, true, false, false, false, true},
-      {false, true, true, false, true, false},
-  };
+      MakeContextAnnotations(true, false, true, true, false, false),
+      MakeContextAnnotations(false, true, false, false, false, true),
+      MakeContextAnnotations(false, true, true, false, true, false)};
 
   // Verify `AddContextAnnotationsForVisit()` and `GetAnnotatedVisits()`.
   AddContextAnnotationsForVisit(1, visit_context_annotations_list[0]);
@@ -174,10 +208,14 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   std::vector<std::string> related_searches{"related searches"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kBrowsingTopicsEligible;
-  VisitContentAnnotations original{
-      annotation_flags, model_annotations,
-      related_searches, GURL("http://pagewithvisit.com?q=search"),
-      u"search",        "Alternative title"};
+  VisitContentAnnotations original{annotation_flags,
+                                   model_annotations,
+                                   related_searches,
+                                   GURL("http://pagewithvisit.com?q=search"),
+                                   u"search",
+                                   "Alternative title",
+                                   "en",
+                                   0};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.

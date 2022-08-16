@@ -16,15 +16,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_samples.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,12 +42,10 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
-#include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/history_client_fake_bookmarks.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/history/core/test/visit_annotations_test_utils.h"
-#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -69,7 +62,6 @@ namespace history {
 
 namespace {
 
-using base::HistogramBase;
 using favicon::FaviconBitmap;
 using favicon::FaviconBitmapType;
 using favicon::IconMapping;
@@ -121,6 +113,12 @@ void SimulateNotificationURLsModified(HistoryServiceObserver* observer,
     rows.push_back(*row3);
 
   observer->OnURLsModified(nullptr, rows);
+}
+
+VisitContextAnnotations MakeContextAnnotations(bool omnibox_url_copied) {
+  VisitContextAnnotations result;
+  result.omnibox_url_copied = omnibox_url_copied;
+  return result;
 }
 
 }  // namespace
@@ -3692,18 +3690,18 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
             (std::pair<URLID, VisitID>{2, 2}));
   ASSERT_EQ(add_url_and_visit("http://1.com/"),
             (std::pair<URLID, VisitID>{1, 3}));
-  backend_->AddContextAnnotationsForVisit(1, {true});
-  backend_->AddContextAnnotationsForVisit(3, {false});
-  backend_->AddContextAnnotationsForVisit(2, {true});
+  backend_->AddContextAnnotationsForVisit(1, MakeContextAnnotations(true));
+  backend_->AddContextAnnotationsForVisit(3, MakeContextAnnotations(false));
+  backend_->AddContextAnnotationsForVisit(2, MakeContextAnnotations(true));
   EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
 
   // Annotated visits should have a visit IDs.
-  EXPECT_DCHECK_DEATH(backend_->AddContextAnnotationsForVisit(0, {true}));
+  EXPECT_DCHECK_DEATH(
+      backend_->AddContextAnnotationsForVisit(0, MakeContextAnnotations(true)));
   EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
 
   // `GetAnnotatedVisits()` should still succeed to fetch visits that lack
   // annotations. They just won't have annotations attached.
-  backend_->AddContextAnnotationsForVisit(4, {true});
   EXPECT_EQ(add_url_and_visit("http://3.com/"),
             (std::pair<URLID, VisitID>{3, 4}));
   EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 4u);
@@ -3712,7 +3710,7 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(add_url_and_visit("http://4.com/"),
             (std::pair<URLID, VisitID>{4, 5}));
   delete_visit(5);
-  backend_->AddContextAnnotationsForVisit(5, {true});
+  backend_->AddContextAnnotationsForVisit(5, MakeContextAnnotations(true));
   EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 4u);
 
   // Verify only the correct annotated visits are retrieved ordered recent
@@ -3756,6 +3754,48 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 1);
   EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, true);
+}
+
+TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
+  auto [url_id, visit_id] = backend_->AddPageVisit(
+      GURL("https://url.com"), base::Time::Now(), /*referring_visit=*/0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      /*hidden=*/false, SOURCE_BROWSED, /*should_increment_typed_count=*/true,
+      /*opener_visit=*/0);
+
+  // Add context annotations with non-default values for all fields.
+  VisitContextAnnotations annotations_in;
+  annotations_in.immediate_fields.browser_type = 1;
+  annotations_in.immediate_fields.window_id = SessionID::FromSerializedValue(2);
+  annotations_in.immediate_fields.tab_id = SessionID::FromSerializedValue(3);
+  annotations_in.immediate_fields.task_id = 4;
+  annotations_in.immediate_fields.root_task_id = 5;
+  annotations_in.immediate_fields.parent_task_id = 6;
+  annotations_in.immediate_fields.response_code = 200;
+  annotations_in.omnibox_url_copied = true;
+  annotations_in.is_existing_part_of_tab_group = true;
+  annotations_in.is_placed_in_tab_group = true;
+  annotations_in.is_existing_bookmark = true;
+  annotations_in.is_new_bookmark = true;
+  annotations_in.is_ntp_custom_link = true;
+  annotations_in.duration_since_last_visit = base::Seconds(7);
+  annotations_in.page_end_reason = 8;
+  annotations_in.duration_since_last_visit = base::Seconds(9);
+
+  backend_->AddContextAnnotationsForVisit(visit_id, annotations_in);
+
+  // Verify that we can read all the fields back from the DB.
+  history::QueryOptions query_options;
+  query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  std::vector<AnnotatedVisit> annotated_visits =
+      backend_->GetAnnotatedVisits(query_options);
+  ASSERT_EQ(annotated_visits.size(), 1u);
+
+  VisitContextAnnotations annotations_out =
+      annotated_visits[0].context_annotations;
+  EXPECT_EQ(annotations_in, annotations_out);
 }
 
 TEST_F(HistoryBackendTest, FindMostRecentClusteredTime) {
@@ -3899,7 +3939,8 @@ TEST_F(HistoryBackendTest, GetRedirectChainStart) {
     auto ids = backend_->AddPageVisit(GURL(url), last_visit_time,
                                       referring_visit, transition, false,
                                       SOURCE_BROWSED, false, opener_visit);
-    backend_->AddContextAnnotationsForVisit(ids.second, {});
+    backend_->AddContextAnnotationsForVisit(ids.second,
+                                            VisitContextAnnotations());
   };
 
   // Navigate to 'google.com'.

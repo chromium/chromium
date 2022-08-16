@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/stack_container.h"
 #include "base/time/time.h"
@@ -23,6 +23,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"
 #include "components/query_parser/snippet.h"
+#include "components/sessions/core/session_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -158,16 +159,6 @@ typedef std::vector<VisitRow> VisitVector;
 // The basic information associated with a visit (timestamp, type of visit),
 // used by HistoryBackend::AddVisits() to create new visits for a URL.
 typedef std::pair<base::Time, ui::PageTransition> VisitInfo;
-
-// PageVisit ------------------------------------------------------------------
-
-// Represents a simplified version of a visit for external users. Normally,
-// views are only interested in the time, and not the other information
-// associated with a VisitRow.
-struct PageVisit {
-  URLID page_id = 0;
-  base::Time visit_time;
-};
 
 // QueryResults ----------------------------------------------------------------
 
@@ -476,9 +467,6 @@ struct HistoryAddPageArgs {
   // doesn't guarantee it's relevant for Most Visited, since other requirements
   // exist (e.g. certain page transition types).
   bool consider_for_ntp_most_visited;
-  // Indicates whether this URL visit can be included in FLoC computation. See
-  // VisitRow::floc_allowed for details.
-  bool floc_allowed;
   absl::optional<std::u16string> title;
   absl::optional<Opener> opener;
   absl::optional<int64_t> bookmark_id;
@@ -747,6 +735,39 @@ class DomainVisit {
 // lifetime ends. This is to ensure that History actually has the visit row
 // already written.
 struct VisitContextAnnotations {
+  VisitContextAnnotations();
+  VisitContextAnnotations(const VisitContextAnnotations& other);
+  ~VisitContextAnnotations();
+
+  bool operator==(const VisitContextAnnotations& other) const;
+  bool operator!=(const VisitContextAnnotations& other) const;
+
+  // Fields known immediately on page load (when a visit is created):
+  struct ImmediateFields {
+    // The type of browser (tabbed, CCT etc) that produced this visit.
+    // TODO(crbug.com/1347012): Make this strongly typed instead of just an int.
+    int browser_type = 0;
+
+    // The IDs of the window and tab in which the visit happened.
+    SessionID window_id = SessionID::InvalidValue();
+    SessionID tab_id = SessionID::InvalidValue();
+
+    // Task IDs which can be used to group related visits together. See
+    // chrome/browser/complex_tasks.
+    int64_t task_id = -1;
+    int64_t root_task_id = -1;
+    int64_t parent_task_id = -1;
+
+    // The HTTP response code of the navigation.
+    int response_code = 0;
+  };
+
+  ImmediateFields immediate_fields;
+
+  // The remaining fields are "delayed": They are computed and written to the DB
+  // later, separately from the visit itself and from the "immediate" fields
+  // above.
+
   // True if the user has cut or copied the omnibox URL to the clipboard for
   // this page load.
   bool omnibox_url_copied = false;
@@ -831,24 +852,6 @@ struct AnnotatedVisit {
   // the uncollapsed opener visit could refer to an omitted visit.
   VisitID opener_visit_of_redirect_chain_start = 0;
   VisitSource source;
-};
-
-// A minimal representation of `AnnotationVisit` used when retrieving them from
-// `VisitAnnotationsDatabase`.
-struct AnnotatedVisitRow {
-  AnnotatedVisitRow() = default;
-  AnnotatedVisitRow(const VisitID visit_id,
-                    const VisitContextAnnotations& context_annotations,
-                    const VisitContentAnnotations& content_annotations)
-      : visit_id(visit_id),
-        context_annotations(context_annotations),
-        content_annotations(content_annotations) {}
-
-  VisitID visit_id;
-  VisitContextAnnotations context_annotations;
-  // TODO(manukh): retrieve and persist `content_annotations`; currently, only
-  //  `context_annotations` are being retrieved and persisted.
-  VisitContentAnnotations content_annotations;
 };
 
 // An `AnnotatedVisit` associated with some other metadata from clustering.

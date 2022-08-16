@@ -80,6 +80,10 @@ struct RecordingStatus {
 // A partially built VisitContextAnnotations with its state of completeness and
 // associated `URLRow` and `VisitRow` which are necessary to build it.
 struct IncompleteVisitContextAnnotations {
+  IncompleteVisitContextAnnotations();
+  IncompleteVisitContextAnnotations(const IncompleteVisitContextAnnotations&);
+  ~IncompleteVisitContextAnnotations();
+
   RecordingStatus status;
   history::URLRow url_row;
   history::VisitRow visit_row;

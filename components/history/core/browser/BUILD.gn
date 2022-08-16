@@ -102,6 +102,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    "//components/sessions:session_id",
     "//components/sync/protocol",
     "//skia",
   ]
@@ -199,6 +200,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/history/history.54.sql",
     "//components/test/data/history/history.55.sql",
     "//components/test/data/history/history.56.sql",
+    "//components/test/data/history/history.57.sql",
+    "//components/test/data/history/history.58.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
     "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",

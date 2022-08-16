@@ -134,13 +134,17 @@ VisitContentAnnotations::VisitContentAnnotations(
     const std::vector<std::string>& related_searches,
     const GURL& search_normalized_url,
     const std::u16string& search_terms,
-    const std::string& alternative_title)
+    const std::string& alternative_title,
+    const std::string& page_language,
+    int password_state)
     : annotation_flags(annotation_flags),
       model_annotations(model_annotations),
       related_searches(related_searches),
       search_normalized_url(search_normalized_url),
       search_terms(search_terms),
-      alternative_title(alternative_title) {}
+      alternative_title(alternative_title),
+      page_language(page_language),
+      password_state(password_state) {}
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;
