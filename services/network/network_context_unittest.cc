@@ -1762,7 +1762,7 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
         // We expect that every cache operation below is done synchronously
         // because we're using an in-memory backend.
 
-        // The disk cache is lazily instanitated, force it and ensure it's
+        // The disk cache is lazily instantiated, force it and ensure it's
         // valid.
         ASSERT_EQ(cache->GetBackend(&backend, base::BindOnce([](int rv) {})),
                   net::OK);
@@ -1837,7 +1837,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
       "domain3",
   };
 
-  // Each bit correponds to one of the 4 domains above.
+  // Each bit corresponds to one of the 4 domains above.
   enum Domains {
     NO_DOMAINS = 0x0,
     DOMAIN0 = 0x1,
@@ -5362,7 +5362,7 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotifiedOfPacError) {
   // mock ProxyResolverFactory which doesn't actually evaluate it. It just
   // needs to be a data: URL to ensure the network fetch doesn't fail.
   //
-  // That said, the mock PAC evalulator being used behaves similarly to the
+  // That said, the mock PAC evaluator being used behaves similarly to the
   // script embedded in the data URL below.
   net::ProxyConfig proxy_config = net::ProxyConfig::CreateFromCustomPacURL(
       GURL("data:,function FindProxyForURL(url,host){throw url}"));

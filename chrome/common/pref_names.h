@@ -77,7 +77,7 @@ extern const char kRlzPingDelaySeconds[];
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
 // For OS_CHROMEOS we maintain the kApplicationLocale property in both local
-// state and the user's profile.  The global property determines the locale of
+// state and the user's profile. The global property determines the locale of
 // the login screen, while the user's profile determines their personal locale
 // preference.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -816,7 +816,6 @@ extern const char
 extern const char kKnownUserParentAccessCodeConfig[];
 extern const char kLastRsuDeviceIdUploaded[];
 extern const char kDeviceName[];
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kClearPluginLSODataEnabled[];
@@ -853,9 +852,9 @@ extern const char kAuthNegotiateDelegateByKdcPolicy[];
 extern const char kNtlmV2Enabled[];
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kKerberosEnabled[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kCertRevocationCheckingEnabled[];
 extern const char kCertRevocationCheckingRequiredLocalAnchors[];

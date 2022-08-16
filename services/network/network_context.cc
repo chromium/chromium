@@ -166,11 +166,11 @@
 
 #if BUILDFLAG(IS_P2P_ENABLED)
 #include "services/network/p2p/socket_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 
@@ -317,7 +317,7 @@ class NetworkContextApplicationStatusListener
  private:
   ApplicationStateChangeCallback callback_;
 };
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 struct TestVerifyCertState {
   net::CertVerifyResult result;
@@ -468,13 +468,13 @@ NetworkContext::NetworkContext(
       url_request_context_(nullptr),
 #if BUILDFLAG(ENABLE_REPORTING)
       is_observing_reporting_service_(false),
-#endif
+#endif  // BUILDFLAG(ENABLE_REPORTING)
       params_(std::move(params)),
       on_connection_close_callback_(std::move(on_connection_close_callback)),
 #if BUILDFLAG(IS_ANDROID)
       app_status_listener_(
           std::make_unique<NetworkContextApplicationStatusListener>()),
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
       receiver_(this, std::move(receiver)),
       first_party_sets_access_delegate_(
           std::move(params_->first_party_sets_access_delegate_receiver),
@@ -563,12 +563,12 @@ NetworkContext::NetworkContext(
   sct_auditing_handler_ =
       std::make_unique<SCTAuditingHandler>(this, sct_auditing_path);
   sct_auditing_handler()->SetMode(params_->sct_auditing_mode);
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_ANDROID)
   if (params_->cookie_manager)
     GetCookieManager(std::move(params_->cookie_manager));
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   CreateURLLoaderFactoryForCertNetFetcher(
       std::move(url_loader_factory_for_cert_net_fetcher_receiver));
@@ -591,11 +591,11 @@ NetworkContext::NetworkContext(
       url_request_context_(url_request_context),
 #if BUILDFLAG(ENABLE_REPORTING)
       is_observing_reporting_service_(false),
-#endif
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 #if BUILDFLAG(IS_ANDROID)
       app_status_listener_(
           std::make_unique<NetworkContextApplicationStatusListener>()),
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
       receiver_(this, std::move(receiver)),
       first_party_sets_access_delegate_(
           /*receiver=*/mojo::NullReceiver(),
@@ -671,7 +671,7 @@ NetworkContext::~NetworkContext() {
           this);
     }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
   if (!dismount_closures_.empty()) {
@@ -943,7 +943,7 @@ bool NetworkContext::SkipReportingPermissionCheck() const {
   return params_ && params_->skip_reporting_send_permission_check;
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
 void NetworkContext::ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
@@ -2196,7 +2196,7 @@ void NetworkContext::LookupProxyAuthCredentials(
   else
     std::move(callback).Run(absl::nullopt);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
@@ -2231,17 +2231,17 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   http_auth_merged_preferences_.set_ntlm_v2_enabled(
       http_auth_dynamic_network_service_params->ntlm_v2_enabled);
-#endif
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
   http_auth_merged_preferences_.set_auth_android_negotiate_account_type(
       http_auth_dynamic_network_service_params->android_negotiate_account_type);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   http_auth_merged_preferences_.set_allow_gssapi_library_load(
       http_auth_dynamic_network_service_params->allow_gssapi_library_load);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (http_auth_dynamic_network_service_params->allowed_schemes.has_value()) {
     http_auth_merged_preferences_.set_allowed_schemes(std::set<std::string>(
         http_auth_dynamic_network_service_params->allowed_schemes->begin(),
@@ -2433,7 +2433,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.SetMojoWindowsSystemProxyResolver(
         std::move(params_->windows_system_proxy_resolver));
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_->dhcp_wpad_url_client) {
@@ -2462,7 +2462,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #if BUILDFLAG(IS_ANDROID)
     cache_params.app_status_listener = app_status_listener();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
   }
 
@@ -2850,7 +2850,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
         *pending_cert_verify->result, *pending_cert_verify->certificate,
         net::HostPortPair::FromURL(pending_cert_verify->url),
         pending_cert_verify->network_isolation_key);
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
             net::HostPortPair::FromURL(pending_cert_verify->url),
@@ -2877,7 +2877,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
     if (result != net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN &&
         ct_result != net::OK)
       result = ct_result;
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
   }
 
   std::move(pending_cert_verify->callback)
@@ -2889,7 +2889,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
 void NetworkContext::TrustAnchorUsed() {
   client_->OnTrustAnchorUsed();
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 void NetworkContext::EnsureMounted(network::TransferableDirectory* directory) {
