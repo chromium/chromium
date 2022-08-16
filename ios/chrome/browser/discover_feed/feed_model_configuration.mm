@@ -28,7 +28,7 @@
 
 #pragma mark - Private
 
-// Initializes |self| with a |feedType| and a |sortType|.
+// Initializes `self` with a `feedType` and a `sortType`.
 - (instancetype)initWithFeedType:(FeedType)feedType
            followingFeedSortType:(FollowingFeedSortType)sortType {
   if (self = [super init]) {

@@ -54,8 +54,8 @@ class DiscoverFeedService : public KeyedService {
   virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration) = 0;
 
-  // Removes the Discover |feed_view_controller|. It should be called whenever
-  // |feed_view_controller| will no longer be used.
+  // Removes the Discover `feed_view_controller`. It should be called whenever
+  // `feed_view_controller` will no longer be used.
   virtual void RemoveFeedViewController(
       UIViewController* feed_view_controller) = 0;
 

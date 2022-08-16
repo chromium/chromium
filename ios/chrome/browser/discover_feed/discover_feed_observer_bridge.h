@@ -22,7 +22,7 @@
 
 @end
 
-// Bridge class that listens for |DiscoverFeedService| notifications and
+// Bridge class that listens for `DiscoverFeedService` notifications and
 // passes them to its Objective-C delegate.
 class DiscoverFeedObserverBridge : public DiscoverFeedObserver {
  public:
