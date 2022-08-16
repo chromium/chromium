@@ -141,6 +141,28 @@ class ScopedSignaledValue {
   SignaledValue sv;
 };
 
+class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
+ public:
+  EncodedDataWrapper(uint8_t* data,
+                     size_t size,
+                     base::OnceClosure reuse_buffer_callback)
+      : data_(data),
+        size_(size),
+        reuse_buffer_callback_(std::move(reuse_buffer_callback)) {}
+  ~EncodedDataWrapper() override {
+    DCHECK(reuse_buffer_callback_);
+    std::move(reuse_buffer_callback_).Run();
+  }
+  const uint8_t* data() const override { return data_; }
+  uint8_t* data() override { return data_; }
+  size_t size() const override { return size_; }
+
+ private:
+  uint8_t* const data_;
+  const size_t size_;
+  base::OnceClosure reuse_buffer_callback_;
+};
+
 bool ConvertKbpsToBps(uint32_t bitrate_kbps, uint32_t* bitrate_bps) {
   if (!base::IsValueInRangeForNumericType<uint32_t>(bitrate_kbps *
                                                     UINT64_C(1000))) {
@@ -834,7 +856,7 @@ void RTCVideoEncoder::Impl::Enqueue(const webrtc::VideoFrame* input_frame,
   // (1) Encode() is waiting for the frame to be encoded in EncodeOneFrame().
   // (2) There are no free input buffers and they cannot be freed because
   //     the encoder has no output buffers.
-  // (3) Output buffers cannot be freed because ReturnEncodedImage is queued
+  // (3) Output buffers cannot be freed because OnEncodedImage() is queued
   //     on libjingle worker thread to be run. But the worker thread is waiting
   //     for the same webrtc lock held by the caller of Encode().
   //
@@ -1116,9 +1138,11 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   }
 
   webrtc::EncodedImage image;
-  image.SetEncodedData(webrtc::EncodedImageBuffer::Create(
-      static_cast<const uint8_t*>(output_mapping_memory),
-      metadata.payload_size_bytes));
+  image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
+      static_cast<uint8_t*>(output_mapping_memory), metadata.payload_size_bytes,
+      media::BindToCurrentLoop(
+          base::BindOnce(&RTCVideoEncoder::Impl::UseOutputBitstreamBufferId,
+                         WrapRefCounted(this), bitstream_buffer_id))));
   image._encodedWidth = input_visible_size_.width();
   image._encodedHeight = input_visible_size_.height();
   image.SetTimestamp(rtp_timestamp.value());
@@ -1229,7 +1253,15 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       break;
   }
 
-  ReturnEncodedImage(image, info, bitstream_buffer_id);
+  if (!encoded_image_callback_)
+    return;
+
+  const auto result = encoded_image_callback_->OnEncodedImage(image, &info);
+  if (result.error != webrtc::EncodedImageCallback::Result::OK) {
+    DVLOG(2)
+        << "ReturnEncodedImage(): webrtc::EncodedImageCallback::Result.error = "
+        << result.error;
+  }
 }
 
 void RTCVideoEncoder::Impl::NotifyError(
@@ -1567,26 +1599,6 @@ void RTCVideoEncoder::Impl::RegisterEncodeCompleteCallback(
     encoded_image_callback_ = callback;
   event.Set(retval);
   event.Signal();
-}
-
-void RTCVideoEncoder::Impl::ReturnEncodedImage(
-    const webrtc::EncodedImage& image,
-    const webrtc::CodecSpecificInfo& info,
-    int32_t bitstream_buffer_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id;
-
-  if (!encoded_image_callback_)
-    return;
-
-  const auto result = encoded_image_callback_->OnEncodedImage(image, &info);
-  if (result.error != webrtc::EncodedImageCallback::Result::OK) {
-    DVLOG(2)
-        << "ReturnEncodedImage(): webrtc::EncodedImageCallback::Result.error = "
-        << result.error;
-  }
-
-  UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
 
 RTCVideoEncoder::RTCVideoEncoder(
