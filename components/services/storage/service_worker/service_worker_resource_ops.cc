@@ -92,7 +92,11 @@ class WrappedPickleIOBuffer : public net::WrappedIOBuffer {
   size_t size() const { return pickle_->size(); }
 
  private:
-  ~WrappedPickleIOBuffer() override = default;
+  ~WrappedPickleIOBuffer() override {
+    // `data_` is a pointer on `pickle_` and should be nullified before that to
+    // prevent it from being dangling.
+    data_ = nullptr;
+  }
 
   const std::unique_ptr<const base::Pickle> pickle_;
 };

@@ -27,6 +27,7 @@ int HttpConnection::ReadIOBuffer::GetCapacity() const {
 
 void HttpConnection::ReadIOBuffer::SetCapacity(int capacity) {
   DCHECK_LE(GetSize(), capacity);
+  data_ = nullptr;
   base_->SetCapacity(capacity);
   data_ = base_->data();
 }
@@ -81,6 +82,8 @@ void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
     int new_capacity = GetCapacity() / kCapacityIncreaseFactor;
     if (new_capacity < kMinimumBufSize)
       new_capacity = kMinimumBufSize;
+    // this avoids the pointer to dangle until `SetCapacity` gets called.
+    data_ = nullptr;
     // realloc() within GrowableIOBuffer::SetCapacity() could move data even
     // when size is reduced. If unconsumed_size == 0, i.e. no data exists in
     // the buffer, free internal buffer first to guarantee no data move.
@@ -129,6 +132,7 @@ void HttpConnection::QueuedWriteIOBuffer::DidConsume(int size) {
   if (size < GetSizeToWrite()) {
     data_ += size;
   } else {  // size == GetSizeToWrite(). Updates data_ to next pending data.
+    data_ = nullptr;
     pending_data_.pop();
     data_ =
         IsEmpty() ? nullptr : const_cast<char*>(pending_data_.front()->data());

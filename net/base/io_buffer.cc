@@ -106,8 +106,11 @@ GrowableIOBuffer::GrowableIOBuffer() = default;
 
 void GrowableIOBuffer::SetCapacity(int capacity) {
   DCHECK_GE(capacity, 0);
+  // this will get reset in `set_offset`.
+  data_ = nullptr;
   // realloc will crash if it fails.
   real_data_.reset(static_cast<char*>(realloc(real_data_.release(), capacity)));
+
   capacity_ = capacity;
   if (offset_ > capacity)
     set_offset(capacity);
