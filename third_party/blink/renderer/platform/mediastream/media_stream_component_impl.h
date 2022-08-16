@@ -91,7 +91,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   }
   bool Remote() const override { return Source()->Remote(); }
   bool Enabled() const override { return enabled_; }
-  void SetEnabled(bool enabled) override { enabled_ = enabled; }
+  void SetEnabled(bool enabled) override;
   WebMediaStreamTrack::ContentHintType ContentHint() override {
     return content_hint_;
   }

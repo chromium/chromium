@@ -185,13 +185,6 @@ std::unique_ptr<MediaStreamVideoTrack> CloneNativeVideoMediaStreamTrack(
       MediaStreamVideoSource::ConstraintsOnceCallback(), original->Enabled());
 }
 
-void DidSetMediaStreamTrackEnabled(MediaStreamComponent* component) {
-  auto* native_track =
-      MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component));
-  if (native_track)
-    native_track->SetEnabled(component->Enabled());
-}
-
 void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
   DCHECK(clone);
   DCHECK(clone->Source());
@@ -341,11 +334,6 @@ void MediaStreamTrackImpl::setEnabled(bool enabled) {
 
   SendLogMessage(
       String::Format("%s({enabled=%s})", __func__, enabled ? "true" : "false"));
-
-  if (Ended())
-    return;
-
-  DidSetMediaStreamTrackEnabled(component_.Get());
 }
 
 bool MediaStreamTrackImpl::muted() const {
