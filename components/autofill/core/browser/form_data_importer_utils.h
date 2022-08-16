@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
 
-#include <deque>
+#include <iterator>
+#include <list>
 #include <string>
+#include <utility>
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -25,39 +27,66 @@ namespace internal {
 // relationships between submitted forms on the same origin, within a small
 // period of time.
 template <class T>
-struct TimestampedSameOriginQueue {
-  struct QueueEntry {
-    T data;
-    base::Time timestamp;
+class TimestampedSameOriginQueue {
+ public:
+  // The queue stores Ts augmented with a timestamp.
+  struct value_type : public T {
+    value_type(T t, base::Time timestamp)
+        : T(std::move(t)), timestamp(std::move(timestamp)) {}
+
+    const base::Time timestamp;
   };
-  std::deque<QueueEntry> items;
-  absl::optional<url::Origin> origin;  // Shared by all `items_`.
+  using const_iterator = typename std::list<value_type>::const_iterator;
 
   // Pushes `item` at the current timestamp.
-  void Push(const T& item, const url::Origin& item_origin) {
-    DCHECK(!origin || *origin == item_origin);
-    items.push_front({item, AutofillClock::Now()});
-    origin = item_origin;
+  void Push(T item, const url::Origin& item_origin) {
+    DCHECK(!origin_ || *origin_ == item_origin);
+    items_.emplace_front(std::move(item), AutofillClock::Now());
+    origin_ = item_origin;
   }
+
+  // Removes the oldest element from the queue.
+  void Pop() { erase(std::prev(end()), end()); }
 
   // Removes all `items` from a different `origin` or older than `ttl`.
+  // This is not done as part of `Push()`, as outdated items (for example in the
+  // multi-step import use-case) should be deleted as soon as possible for
+  // privacy reasons, even when no `Push()` happens.
   void RemoveOutdatedItems(const base::TimeDelta& ttl,
                            const url::Origin& new_origin) {
-    if (origin && *origin != new_origin) {
-      items.clear();
+    if (origin_ && *origin_ != new_origin) {
+      Clear();
     } else {
       const base::Time now = AutofillClock::Now();
-      while (!items.empty() && now - items.back().timestamp > ttl)
-        items.pop_back();
+      while (!empty() && now - items_.back().timestamp > ttl)
+        Pop();
     }
-    if (items.empty())
-      origin.reset();
   }
 
-  void Clear() {
-    items.clear();
-    origin.reset();
+  // Returns the origin shared by the elements in the queue. Or nullopt, if
+  // the queue is currently `Empty()`.
+  const absl::optional<url::Origin>& Origin() const { return origin_; }
+
+  size_t size() const { return items_.size(); }
+  bool empty() const { return items_.empty(); }
+
+  // Removes the items [first, last[.
+  void erase(const_iterator first, const_iterator last) {
+    items_.erase(first, last);
+    if (empty())
+      origin_.reset();
   }
+
+  void Clear() { erase(begin(), end()); }
+
+  // The elements are ordered from newest to latest.
+  const_iterator begin() const { return items_.begin(); }
+  const_iterator end() const { return items_.end(); }
+
+ private:
+  std::list<value_type> items_;
+  // If the queue is not `empty()`, this represents the origin of all `items_`.
+  absl::optional<url::Origin> origin_;
 };
 
 };  // namespace internal
@@ -104,7 +133,7 @@ class MultiStepImportMerger {
                               const url::Origin& origin);
 
   const absl::optional<url::Origin>& Origin() const {
-    return multistep_candidates_.origin;
+    return multistep_candidates_.Origin();
   }
 
   void Clear() { multistep_candidates_.Clear(); }

@@ -203,15 +203,14 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     const url::Origin& origin) {
   // Greedily merge with a prefix of |multistep_candidates|.
   AutofillProfileComparator comparator(app_locale_);
-  auto candidate_it = multistep_candidates_.items.cbegin();
+  auto candidate = multistep_candidates_.begin();
   AutofillProfile completed_profile = profile;
   ProfileImportMetadata completed_metadata = import_metadata;
   // Country completion has not happened yet, so this field can be ignored.
   DCHECK(!completed_metadata.did_complement_country);
-  while (candidate_it != multistep_candidates_.items.end()) {
-    const MultiStepFormProfileCandidate& candidate = candidate_it->data;
-    if (!comparator.AreMergeable(completed_profile, candidate.profile) ||
-        completed_profile.MergeDataFrom(candidate.profile, app_locale_)) {
+  while (candidate != multistep_candidates_.end()) {
+    if (!comparator.AreMergeable(completed_profile, candidate->profile) ||
+        completed_profile.MergeDataFrom(candidate->profile, app_locale_)) {
       break;
     }
     // ProfileImportMetadata is only relevant for metrics. If the phone number
@@ -219,8 +218,8 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     // in the metrics, because it would have hindered that partial profile from
     // import and merging.
     completed_metadata.did_remove_invalid_phone_number |=
-        candidate.import_metadata.did_remove_invalid_phone_number;
-    candidate_it++;
+        candidate->import_metadata.did_remove_invalid_phone_number;
+    candidate++;
   }
 
   // The minimum address requirements depend on the country, which has possibly
@@ -237,8 +236,7 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     return true;
   } else {
     // Remove all profiles that couldn't be merged.
-    multistep_candidates_.items.erase(candidate_it,
-                                      multistep_candidates_.items.end());
+    multistep_candidates_.erase(candidate, multistep_candidates_.end());
     return false;
   }
 }
