@@ -150,7 +150,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
                  Outcome::kSuccessfullyCreatedAnIssuanceHelper);
       auto helper = std::make_unique<TrustTokenRequestIssuanceHelper>(
           std::move(top_frame_origin), store, key_commitment_getter_,
-          params->custom_key_commitment,
+          params->custom_key_commitment, params->custom_issuer,
           std::make_unique<BoringsslTrustTokenIssuanceCryptographer>(),
           std::make_unique<LocalTrustTokenOperationDelegateImpl>(
               context_client_provider_),
@@ -168,7 +168,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
       auto helper = std::make_unique<TrustTokenRequestRedemptionHelper>(
           std::move(top_frame_origin), params->refresh_policy, store,
           key_commitment_getter_, params->custom_key_commitment,
-          std::make_unique<EcdsaP256KeyPairGenerator>(),
+          params->custom_issuer, std::make_unique<EcdsaP256KeyPairGenerator>(),
           std::make_unique<BoringsslTrustTokenRedemptionCryptographer>(),
           std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(

@@ -52,6 +52,7 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
     absl::optional<std::string> custom_key_commitment,
+    absl::optional<url::Origin> custom_issuer,
     std::unique_ptr<KeyPairGenerator> key_pair_generator,
     std::unique_ptr<Cryptographer> cryptographer,
     net::NetLogWithSource net_log)
@@ -60,6 +61,7 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
       token_store_(token_store),
       key_commitment_getter_(std::move(key_commitment_getter)),
       custom_key_commitment_(custom_key_commitment),
+      custom_issuer_(custom_issuer),
       key_pair_generator_(std::move(key_pair_generator)),
       cryptographer_(std::move(cryptographer)),
       net_log_(std::move(net_log)) {
@@ -80,7 +82,12 @@ void TrustTokenRequestRedemptionHelper::Begin(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION);
 
-  issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  if (custom_issuer_) {
+    issuer_ = SuitableTrustTokenOrigin::Create(*custom_issuer_);
+  } else {
+    issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  }
+
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL (request destination)");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);

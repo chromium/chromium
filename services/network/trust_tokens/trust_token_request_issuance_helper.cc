@@ -94,6 +94,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
     absl::optional<std::string> custom_key_commitment,
+    absl::optional<url::Origin> custom_issuer,
     std::unique_ptr<Cryptographer> cryptographer,
     std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate,
     base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
@@ -104,6 +105,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
       token_store_(token_store),
       key_commitment_getter_(std::move(key_commitment_getter)),
       custom_key_commitment_(custom_key_commitment),
+      custom_issuer_(custom_issuer),
       cryptographer_(std::move(cryptographer)),
       local_operation_delegate_(std::move(local_operation_delegate)),
       is_current_os_callback_(std::move(is_current_os_callback)),
@@ -129,7 +131,12 @@ void TrustTokenRequestIssuanceHelper::Begin(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_ISSUANCE);
 
-  issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  if (custom_issuer_) {
+    issuer_ = SuitableTrustTokenOrigin::Create(*custom_issuer_);
+  } else {
+    issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  }
+
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
