@@ -51,6 +51,15 @@ FencedFramesPageLoadMetricsObserver::OnFencedFramesStart(
   return CONTINUE_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FencedFramesPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Pages that contain FencedFrames are not eligible for prerendering.
+  // TODO(https://crbug.com/1335481): Make those pages prerenderable.
+  return STOP_OBSERVING;
+}
+
 void FencedFramesPageLoadMetricsObserver::OnFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
