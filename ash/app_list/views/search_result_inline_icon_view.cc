@@ -20,6 +20,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
 
@@ -69,7 +70,7 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
     label_->SetVisible(true);
     label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS);
-    label_->SetTextStyle(STYLE_EMPHASIZED);
+    label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
   }
 
   label_->SetText(text);

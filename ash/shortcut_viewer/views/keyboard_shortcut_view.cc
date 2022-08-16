@@ -59,6 +59,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace keyboard_shortcut_viewer {
@@ -596,7 +597,7 @@ void KeyboardShortcutView::ShowSearchResults(
             item_view->description_label_view();
         // Clear previous styles.
         description_label_view->ClearStyleRanges();
-        style.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
+        style.text_style = views::style::STYLE_EMPHASIZED;
         description_label_view->AddStyleRange(
             gfx::Range(match_index, match_index + match_length), style);
         // Apply new styles to highlight matched search query.

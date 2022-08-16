@@ -93,6 +93,14 @@ enum TextStyle {
   // Disabled "greyed out" text.
   STYLE_DISABLED,
 
+  // Used to draw attention to a section of body text such as an extension name
+  // or hostname.
+  STYLE_EMPHASIZED,
+
+  // Emphasized secondary style. Like STYLE_EMPHASIZED but styled to match
+  // surrounding STYLE_SECONDARY text.
+  STYLE_EMPHASIZED_SECONDARY,
+
   // The style used for links. Usually a solid shade of blue.
   STYLE_LINK,
 

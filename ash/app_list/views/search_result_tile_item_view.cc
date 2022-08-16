@@ -42,6 +42,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
 
@@ -424,7 +425,7 @@ void SearchResultTileItemView::SetTitle(const std::u16string& title) {
 void SearchResultTileItemView::SetTitleTags(const SearchResultTags& tags) {
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::MATCH) {
-      title_->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
+      title_->SetTextStyleRange(views::style::STYLE_EMPHASIZED, tag.range);
     }
   }
 }

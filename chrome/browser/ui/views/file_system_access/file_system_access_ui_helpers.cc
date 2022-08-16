@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/url_formatter/elide_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/style/typography.h"
 
 namespace file_system_access_ui_helper {
 
@@ -33,7 +33,7 @@ std::unique_ptr<views::View> CreateOriginLabel(int message_id,
 
   if (show_emphasis) {
     views::StyledLabel::RangeStyleInfo origin_style;
-    origin_style.text_style = STYLE_EMPHASIZED_SECONDARY;
+    origin_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
     label->AddStyleRange(gfx::Range(offset, offset + formatted_origin.length()),
                          origin_style);
   }
@@ -62,7 +62,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
 
   if (show_emphasis) {
     views::StyledLabel::RangeStyleInfo origin_style;
-    origin_style.text_style = STYLE_EMPHASIZED_SECONDARY;
+    origin_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
     // All but the last offset should be the origin.
     for (size_t i = 0; i < offsets.size() - 1; ++i) {
       label->AddStyleRange(
@@ -73,7 +73,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
 
   views::StyledLabel::RangeStyleInfo path_style;
   if (show_emphasis)
-    path_style.text_style = STYLE_EMPHASIZED_SECONDARY;
+    path_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
   path_style.tooltip = path.LossyDisplayName();
   label->AddStyleRange(
       gfx::Range(offsets.back(), offsets.back() + formatted_path.length()),

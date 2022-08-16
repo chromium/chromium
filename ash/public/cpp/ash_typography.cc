@@ -51,9 +51,6 @@ void ApplyAshFontStyles(int context,
   }
 
   switch (style) {
-    case STYLE_EMPHASIZED:
-      details.weight = gfx::Font::Weight::MEDIUM;
-      break;
     case STYLE_HIGHLIGHT:
       details.weight = gfx::Font::Weight::BOLD;
       break;

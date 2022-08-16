@@ -23,6 +23,7 @@ class ChromeTypographyProvider : public views::TypographyProvider {
                    int context,
                    int style) const override;
   int GetLineHeight(int context, int style) const override;
+  bool StyleAllowedForContext(int context, int style) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_PROVIDER_H_

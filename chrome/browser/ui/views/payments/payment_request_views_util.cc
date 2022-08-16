@@ -54,6 +54,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace payments {
@@ -151,9 +152,10 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
   container->SetLayoutManager(std::move(layout));
 
   if (!s1.empty()) {
-    const int text_style = type == AddressStyleType::DETAILED
-                               ? static_cast<int>(STYLE_EMPHASIZED)
-                               : static_cast<int>(views::style::STYLE_PRIMARY);
+    const int text_style =
+        type == AddressStyleType::DETAILED
+            ? static_cast<int>(views::style::STYLE_EMPHASIZED)
+            : static_cast<int>(views::style::STYLE_PRIMARY);
     auto label = std::make_unique<ThemeTrackingLabel>(s1);
     label->SetTextContext(views::style::CONTEXT_LABEL);
     label->SetTextStyle(text_style);
@@ -399,7 +401,7 @@ std::unique_ptr<views::Border> CreatePaymentRequestRowBorder(
 
 std::unique_ptr<views::Label> CreateBoldLabel(const std::u16string& text) {
   return std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL,
-                                        STYLE_EMPHASIZED);
+                                        views::style::STYLE_EMPHASIZED);
 }
 
 std::unique_ptr<views::Label> CreateMediumLabel(const std::u16string& text) {

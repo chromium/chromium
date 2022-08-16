@@ -65,7 +65,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   title_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE)));
   title_->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
-  title_->SetTextStyle(ash::STYLE_EMPHASIZED);
+  title_->SetTextStyle(views::style::STYLE_EMPHASIZED);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetAutoColorReadabilityEnabled(false);
   // Needs to paint to layer so it's stacked above `this` view.

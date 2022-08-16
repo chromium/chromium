@@ -42,6 +42,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -162,8 +163,8 @@ class MonthHeaderView : public views::View {
           gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
-      label->SetFontList(
-          views::style::GetFont(CONTEXT_CALENDAR_DATE, STYLE_EMPHASIZED));
+      label->SetFontList(views::style::GetFont(CONTEXT_CALENDAR_DATE,
+                                               views::style::STYLE_EMPHASIZED));
 
       AddChildView(std::move(label));
     }

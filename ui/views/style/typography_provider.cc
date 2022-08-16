@@ -95,6 +95,9 @@ ui::ColorId GetColorId(int context, int style) {
 ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
     int context,
     int style) const {
+  DCHECK(StyleAllowedForContext(context, style))
+      << "context: " << context << " style: " << style;
+
   ui::ResourceBundle::FontDetails details;
 
   switch (context) {
@@ -126,6 +129,10 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
                                    .GetFontWeight());
       }
       break;
+    case style::STYLE_EMPHASIZED:
+    case style::STYLE_EMPHASIZED_SECONDARY:
+      details.weight = gfx::Font::Weight::SEMIBOLD;
+      break;
   }
 
   return details;
@@ -144,6 +151,13 @@ SkColor TypographyProvider::GetColor(const View& view,
 
 int TypographyProvider::GetLineHeight(int context, int style) const {
   return GetFont(context, style).GetHeight();
+}
+
+bool TypographyProvider::StyleAllowedForContext(int context, int style) const {
+  // TODO(https://crbug.com/1352340): Limit emphasizing text to contexts where
+  // it's obviously correct. chrome_typography_provider.cc implements this
+  // correctly, but that does not cover uses outside of //chrome or //ash.
+  return true;
 }
 
 // static

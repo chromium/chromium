@@ -20,6 +20,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -36,7 +37,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_ = std::make_unique<views::Label>(
                browser->app_controller()->GetLaunchFlashText(),
                ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-               ChromeTextStyle::STYLE_EMPHASIZED)
+               views::style::STYLE_EMPHASIZED)
                .release();
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
   label_->SetSubpixelRenderingEnabled(false);

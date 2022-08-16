@@ -190,7 +190,7 @@ bool UseNewWarnings() {
 int GetFilenameStyle(const views::Label& label) {
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   if (UseNewWarnings())
-    return STYLE_EMPHASIZED;
+    return views::style::STYLE_EMPHASIZED;
 #endif
   return label.GetTextStyle();
 }
@@ -198,7 +198,7 @@ int GetFilenameStyle(const views::Label& label) {
 int GetFilenameStyle(const views::StyledLabel& label) {
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   if (UseNewWarnings())
-    return STYLE_EMPHASIZED;
+    return views::style::STYLE_EMPHASIZED;
 #endif
   return label.GetDefaultTextStyle();
 }

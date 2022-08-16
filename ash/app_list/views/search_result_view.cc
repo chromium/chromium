@@ -899,7 +899,7 @@ void SearchResultView::StyleLabel(views::Label* label,
     if (has_match_tag) {
       switch (view_type_) {
         case SearchResultViewType::kClassic:
-          label->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
+          label->SetTextStyleRange(views::style::STYLE_EMPHASIZED, tag.range);
           break;
         case SearchResultViewType::kDefault:
           ABSL_FALLTHROUGH_INTENDED;

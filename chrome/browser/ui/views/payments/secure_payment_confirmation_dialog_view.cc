@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -27,6 +26,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace payments {
 namespace {
@@ -378,7 +378,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
 
   std::unique_ptr<views::Label> label_text = std::make_unique<views::Label>(
       label, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      ChromeTextStyle::STYLE_EMPHASIZED_SECONDARY);
+      views::style::STYLE_EMPHASIZED_SECONDARY);
   label_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   label_text->SetLineHeight(kDescriptionLineHeight);
   label_text->SetID(static_cast<int>(label_id));

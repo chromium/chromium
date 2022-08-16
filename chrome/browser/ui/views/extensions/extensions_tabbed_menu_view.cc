@@ -49,6 +49,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -193,7 +194,7 @@ void SetLabelTextAndStyle(views::Label& label,
                           std::u16string current_site) {
   size_t offset = 0u;
   label.SetText(l10n_util::GetStringFUTF16(message_id, current_site, &offset));
-  label.SetTextStyleRange(ChromeTextStyle::STYLE_EMPHASIZED,
+  label.SetTextStyleRange(views::style::STYLE_EMPHASIZED,
                           gfx::Range(offset, offset + current_site.length()));
 }
 

@@ -39,6 +39,9 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   constexpr int kDefaultSize = 12;
   constexpr int kStatusSize = 10;
 
+  DCHECK(StyleAllowedForContext(context, style))
+      << "context: " << context << " style: " << style;
+
   ui::ResourceBundle::FontDetails details;
   details.size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
 
@@ -78,7 +81,6 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   }
 
   if (context == CONTEXT_TAB_HOVER_CARD_TITLE) {
-    DCHECK_EQ(views::style::STYLE_PRIMARY, style);
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
@@ -94,14 +96,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
 #endif
   }
 
-  if (style == STYLE_EMPHASIZED || style == STYLE_EMPHASIZED_SECONDARY) {
-    // Limit emphasizing text to contexts where it's obviously correct. If you
-    // hit this DCHECK, ensure it's sane and UX-approved to extend it to your
-    // new case (e.g. don't add CONTEXT_BUTTON_MD).
-    DCHECK(context == views::style::CONTEXT_LABEL ||
-           context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
-           context == CONTEXT_DOWNLOAD_SHELF);
+  if (style == views::style::STYLE_EMPHASIZED ||
+      style == views::style::STYLE_EMPHASIZED_SECONDARY) {
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
@@ -239,4 +235,32 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
     default:
       return default_height;
   }
+}
+
+bool ChromeTypographyProvider::StyleAllowedForContext(int context,
+                                                      int style) const {
+  if (context == CONTEXT_TAB_HOVER_CARD_TITLE) {
+    return style == views::style::STYLE_PRIMARY;
+  }
+
+  if (style == views::style::STYLE_EMPHASIZED ||
+      style == views::style::STYLE_EMPHASIZED_SECONDARY) {
+    // Limit emphasizing text to contexts where it's obviously correct. If you
+    // hit this check, ensure it's sane and UX-approved to extend it to your
+    // new case (e.g. don't add CONTEXT_BUTTON_MD).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(https://crbug.com/1352340): Limit emphasized text to more specific
+    // Ash contexts.
+    const bool is_ash_context = context >= ash::ASH_TEXT_CONTEXT_START &&
+                                context <= ash::ASH_TEXT_CONTEXT_END;
+#else
+    const bool is_ash_context = false;
+#endif
+    return is_ash_context || context == views::style::CONTEXT_LABEL ||
+           context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
+           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
+           context == CONTEXT_DOWNLOAD_SHELF;
+  }
+
+  return true;
 }

@@ -38,6 +38,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -217,7 +218,7 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
         auto header = std::make_unique<views::Label>(
             l10n_util::GetStringUTF16(section->header_string_id),
             ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-            ChromeTextStyle::STYLE_EMPHASIZED);
+            views::style::STYLE_EMPHASIZED);
         header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
         header->SetBorder(views::CreateEmptyBorder(
             gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(

@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -20,6 +19,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 
 IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
     views::View* anchor_view,
@@ -64,13 +64,14 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
 
 void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
   // Text
-  AddChildView(views::Builder<views::Label>()
-                   .SetText(l10n_util::GetStringUTF16(
-                       IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
-                   .SetFontList(views::style::GetFont(
-                       views::style::CONTEXT_LABEL, STYLE_EMPHASIZED))
-                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                   .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
+          .SetFontList(views::style::GetFont(views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_EMPHASIZED))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
 
   AddChildView(
       views::Builder<views::Label>()
@@ -99,13 +100,14 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
 void IncognitoClearBrowsingDataDialog::
     SetDialogForHistoryDisclaimerBubbleType() {
   // Text
-  AddChildView(views::Builder<views::Label>()
-                   .SetText(l10n_util::GetStringUTF16(
-                       IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
-                   .SetFontList(views::style::GetFont(
-                       views::style::CONTEXT_LABEL, STYLE_EMPHASIZED))
-                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                   .Build());
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT))
+          .SetFontList(views::style::GetFont(views::style::CONTEXT_LABEL,
+                                             views::style::STYLE_EMPHASIZED))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
 
   views::Label* label = AddChildView(
       views::Builder<views::Label>()
