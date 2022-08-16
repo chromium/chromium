@@ -64,7 +64,6 @@
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
-#include "components/prefs/pref_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
