@@ -214,10 +214,13 @@ public class SigninFirstRunFragment
 
     private View inflateFragmentView(LayoutInflater inflater, Configuration configuration) {
         // Since the landscape view has two panes the minimum screenWidth to show it is set to
-        // 600dp per android guideline.
+        // 600dp for phones and 1000dp for tablets per android guideline.
+        final int minWidthForLandscape =
+                configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE) ? 1000
+                                                                                         : 600;
         final SigninFirstRunView view = (SigninFirstRunView) inflater.inflate(
                 configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                                && configuration.screenWidthDp >= 600
+                                && configuration.screenWidthDp >= minWidthForLandscape
                         ? R.layout.signin_first_run_landscape_view
                         : R.layout.signin_first_run_portrait_view,
                 null, false);
