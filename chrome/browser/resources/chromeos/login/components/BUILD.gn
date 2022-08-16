@@ -62,7 +62,6 @@ group("polymer3_elements") {
                   ":gaia_header_module",
                   ":gaia_input_form_module",
                   ":hd_iron_icon_module",
-                  ":long_touch_detector_module",
                   ":network_select_login_module",
                   ":notification_card_module",
                   ":oobe_a11y_option_module",
@@ -147,7 +146,7 @@ js_library("keyboard_utils_for_injection") {
 js_library("long_touch_detector.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.m.js" ]
   deps = []
-  extra_deps = [ ":long_touch_detector_module" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("network_select_login.m") {
@@ -316,12 +315,6 @@ polymer_modulizer("hd_iron_icon") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("long_touch_detector") {
-  js_file = "long_touch_detector.js"
-  html_file = "long_touch_detector.html"
-  html_type = "dom-module"
-}
-
 polymer_modulizer("network_select_login") {
   js_file = "network_select_login.js"
   html_file = "network_select_login.html"
@@ -421,6 +414,7 @@ polymer_modulizer("throbber_notice") {
 js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
+    "long_touch_detector.js",
     "oobe_select.js",
     "oobe_types.js",
     "web_view_helper.js",
