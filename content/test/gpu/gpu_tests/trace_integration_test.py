@@ -196,6 +196,18 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               success_eval_func='CheckRootSwapChainPath',
               other_args=p.other_args)
       ])
+
+    for p in namespace.VideoFromCanvasPages('WebGLCanvasCaptureTraceTest'):
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+          _TraceTestArguments(
+              browser_args=p.browser_args,
+              category='blink',
+              test_harness_script=basic_test_harness_script,
+              finish_js_condition='domAutomationController._finished',
+              success_eval_func='CheckWebGLCanvasCapture',
+              other_args=p.other_args)
+      ])
+
     for p in namespace.WebGPUCanvasCapturePages('WebGPUTraceTest'):
       yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
           _TraceTestArguments(
@@ -560,6 +572,53 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                 (_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME,
                  'full damage' if expect_full_damage else 'partial damage'))
 
+  def _EvaluateSuccess_CheckWebGLCanvasCapture(self, category: str,
+                                               event_iterator: Iterator,
+                                               other_args: dict) -> None:
+    if other_args is None:
+      return
+    expected_one_copy = other_args.get('one_copy', None)
+    expected_accelerated_two_copy = other_args.get('accelerated_two_copy', None)
+    if expected_one_copy and expected_accelerated_two_copy:
+      self.fail('one_copy and accelerated_two_copy are mutually exclusive')
+
+    found_one_copy_event = False
+    found_accelerated_two_copy_event = False
+    # Verify expectations through captured trace events.
+    for event in event_iterator:
+      if event.category != category:
+        continue
+
+      if (expected_one_copy is not None and event.name ==
+          _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME):
+        detected_one_copy = event.args.get('one_copy_canvas_capture', None)
+
+        if detected_one_copy is not None:
+          found_one_copy_event = True
+          if expected_one_copy != detected_one_copy:
+            self.fail('one_copy_canvas_capture mismatch, expected %s got %s' %
+                      (expected_one_copy, detected_one_copy))
+
+      elif (expected_accelerated_two_copy is not None
+            and event.name == _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME):
+        detected_accelerated_two_copy = event.args.get(
+            'accelerated_frame_pool_copy', None)
+
+        if detected_accelerated_two_copy is not None:
+          found_accelerated_two_copy_event = True
+          if expected_accelerated_two_copy != detected_accelerated_two_copy:
+            self.fail(
+                'accelerated_frame_pool_copy mismatch, expected %s got %s' %
+                (expected_accelerated_two_copy, detected_accelerated_two_copy))
+
+    if expected_one_copy is not None and found_one_copy_event is False:
+      self.fail('%s events with one_copy_canvas_capture were not found' %
+                _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME)
+
+    if (expected_accelerated_two_copy is not None
+        and found_accelerated_two_copy_event is False):
+      self.fail('%s events with accelerated_frame_pool_copy were not found' %
+                _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME)
 
   def _EvaluateSuccess_CheckWebGPUCanvasCapture(self, category: str,
                                                 event_iterator: Iterator,

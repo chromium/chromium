@@ -1183,6 +1183,39 @@ class PixelTestPages():
             test_rect=[0, 0, 200, 200],
             browser_args=['--disable-features=CanvasOopRasterization'],
             matching_algorithm=match_algo),
+
+        # Test OneCopyCanvasCapture
+        PixelTestPage('pixel_video_from_canvas_webgl2.html',
+                      base_name + '_VideoStreamFromWebGLCanvas_OneCopy',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=['--enable-features=OneCopyCanvasCapture'],
+                      other_args={'one_copy': True},
+                      matching_algorithm=match_algo,
+                      grace_period_end=date(2022, 8, 30)),
+        # TwoCopyCanvasCapture
+        PixelTestPage('pixel_video_from_canvas_webgl2.html',
+                      base_name +
+                      '_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=['--disable-features=OneCopyCanvasCapture'],
+                      other_args={
+                          'one_copy': False,
+                          'accelerated_two_copy': True
+                      },
+                      matching_algorithm=match_algo,
+                      grace_period_end=date(2022, 8, 30)),
+        # Having alpha channel would disable TwoCopy's accelerated path
+        PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
+                      base_name +
+                      '_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=['--disable-features=OneCopyCanvasCapture'],
+                      other_args={
+                          'one_copy': False,
+                          'accelerated_two_copy': False
+                      },
+                      matching_algorithm=match_algo,
+                      grace_period_end=date(2022, 8, 30)),
     ]
 
   @staticmethod

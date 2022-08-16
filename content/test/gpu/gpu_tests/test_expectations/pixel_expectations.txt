@@ -222,6 +222,14 @@ crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pix
 crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasOneCopyCapture [ Skip ]
 crbug.com/1345767 [ mac asan ] Pixel_WebGPUCanvasDisableOneCopyCapture* [ Skip ]
 
+# Accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
+crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Skip ]
+crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Skip ]
+crbug.com/1201009 [ linux ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Skip ]
+crbug.com/1201009 [ linux ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Skip ]
+crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Skip ]
+crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
