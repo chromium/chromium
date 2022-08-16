@@ -352,6 +352,10 @@ public final class ProductionSupportedFlagList {
                     "Reduces fine-grained UMA metrics for IntersectionObserver."),
             Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
                     "If enabled, CSS will be tokenized in a background thread when possible."),
+            Flag.baseFeature(BlinkFeatures.DOCUMENT_TRANSITION,
+                    "Enables the experimental Shared Element Transitions API."
+                            + " See https://github.com/WICG/shared-element-transitions/blob/main/explainer.md."),
+
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
