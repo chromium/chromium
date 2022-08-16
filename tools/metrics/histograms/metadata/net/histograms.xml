@@ -5001,7 +5001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoaderThrottleDeferTime.WillProcessResponse.{Throttle}"
-    units="ms" expires_after="2022-09-13">
+    units="ms" expires_after="2023-02-13">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -5012,7 +5012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoaderThrottleDeferTime.WillStartRequest.{Throttle}"
-    units="ms" expires_after="2022-09-13">
+    units="ms" expires_after="2023-02-13">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -5023,7 +5023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoaderThrottleDeferTime.{Stage}" units="ms"
-    expires_after="2022-09-14">
+    expires_after="2023-02-14">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -5034,7 +5034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoaderThrottleExecutionTime.{Stage}" units="ms"
-    expires_after="2022-09-14">
+    expires_after="2023-02-14">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
