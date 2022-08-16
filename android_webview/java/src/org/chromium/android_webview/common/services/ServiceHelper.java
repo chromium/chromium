@@ -25,8 +25,7 @@ public class ServiceHelper {
     public static boolean bindService(
             Context context, Intent intent, ServiceConnection serviceConnection, int flags) {
         try {
-            boolean serviceBindingSuccess =
-                    context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            boolean serviceBindingSuccess = context.bindService(intent, serviceConnection, flags);
             if (!serviceBindingSuccess) {
                 context.unbindService(serviceConnection);
             }
