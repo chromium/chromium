@@ -1298,23 +1298,28 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     return;
   }
 
-  // Send file watch notifications on I/O task completion. inotify is flaky on
+  // Send directory change events on I/O task completion. inotify is flaky on
   // some filesystems, so send these notifications so that at least operations
-  // made from Files App are always reflected in the UI.
+  // made from Files App are always reflected in the UI. Additionally, this
+  // ensures the directory tree will be updated too, as the tree needs
+  // notifications for folders outside of those being watched by a file watcher.
   if (status.IsCompleted()) {
-    std::set<base::FilePath> updated_paths;
+    std::set<std::pair<base::FilePath, url::Origin>> updated_paths;
     if (status.destination_folder.is_valid()) {
-      updated_paths.insert(status.destination_folder.path());
+      updated_paths.emplace(status.destination_folder.virtual_path(),
+                            status.destination_folder.origin());
     }
     for (const auto& source : status.sources) {
-      updated_paths.insert(source.url.path().DirName());
+      updated_paths.emplace(source.url.virtual_path().DirName(),
+                            source.url.origin());
     }
     for (const auto& output : status.outputs) {
-      updated_paths.insert(output.url.path().DirName());
+      updated_paths.emplace(output.url.virtual_path().DirName(),
+                            output.url.origin());
     }
 
-    for (const auto& path : updated_paths) {
-      HandleFileWatchNotification(path, false);
+    for (const auto& [path, origin] : updated_paths) {
+      DispatchDirectoryChangeEvent(path, false, {origin});
     }
   }
 
