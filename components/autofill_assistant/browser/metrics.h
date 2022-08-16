@@ -616,10 +616,26 @@ class Metrics {
   // tools/metrics/ukm/ukm.xml as necessary.
   enum class UserDataSource {
     UNKNOWN,
+
+    // Only used backend data.
     BACKEND,
+
+    // Only used Chrome Autofill data.
     CHROME_AUTOFILL,
 
-    kMaxValue = CHROME_AUTOFILL
+    // Attempted to use backend data but request failed, had to fallback to
+    // Chrome Autofill.
+    FALLBACK_CHROME_AUTOFILL_ON_FAILED_REQUEST,
+
+    // Use backend data when possible, fallback to Chrome Autofill if
+    // not. Fallback was not necessary.
+    FALLBACK_BACKEND,
+
+    // Use backend data when possible, fallback to Chrome Autofill if
+    // not. Fallback was necessary (backend data was missing).
+    FALLBACK_CHROME_AUTOFILL_ON_MISSING_DATA,
+
+    kMaxValue = FALLBACK_CHROME_AUTOFILL_ON_MISSING_DATA
   };
 
   // Outcome of the CUP verification process for GetAction RPC calls. CUP

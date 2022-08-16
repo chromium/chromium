@@ -6241,8 +6241,11 @@ others/histograms.xml -->
 
 <enum name="AutofillAssistantUserDataSource">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Backend"/>
-  <int value="2" label="Chrome Autofill"/>
+  <int value="1" label="Always Backend"/>
+  <int value="2" label="Always Chrome Autofill"/>
+  <int value="3" label="Fallback Chrome Autofill on Failed Request"/>
+  <int value="4" label="Use Backend, no fallback required as data exists"/>
+  <int value="5" label="Fallback Chrome Autofill on Missing Data"/>
 </enum>
 
 <enum name="AutofillAwGSuggestionAvailability">
