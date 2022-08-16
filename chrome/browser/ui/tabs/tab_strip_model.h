@@ -91,18 +91,6 @@ class TabGroupModelFactory {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel : public TabGroupController {
  public:
-  // Enumerates different types of tab activation. Mainly used for
-  // comparison between classic tab strip and WebUI tab strip.
-  // KEEP IN SYNC WITH THE TabActivationTypes ENUM IN enums.xml.
-  // NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
-  enum class TabActivationTypes {
-    // Switch to a tab.
-    kTab = 0,
-    // Open the context menu of a tab.
-    kContextMenu = 1,
-    kMaxValue = kContextMenu,
-  };
-
   // Holds state for a WebContents that has been detached from the tab strip.
   // Will also handle WebContents deletion if |remove_reason| is kDeleted, or
   // WebContents caching if |remove_reason| is kCached.

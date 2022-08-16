@@ -430,9 +430,8 @@ void BrowserTabStripController::ShowContextMenuForTab(
     ui::MenuSourceType source_type) {
   context_menu_contents_ = std::make_unique<TabContextMenuContents>(tab, this);
   context_menu_contents_->RunMenuAt(p, source_type);
-  base::UmaHistogramEnumeration(
-      "TabStrip.Tab.Views.ActivationAction",
-      TabStripModel::TabActivationTypes::kContextMenu);
+  base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
+                                TabActivationTypes::kContextMenu);
 }
 
 void BrowserTabStripController::CloseContextMenuForTesting() {

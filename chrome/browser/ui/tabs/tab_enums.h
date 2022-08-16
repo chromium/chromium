@@ -101,4 +101,18 @@ enum NewTabTypes {
   NEW_TAB_ENUM_COUNT = 5,
 };
 
+// Enumerates different types of tab activation. Mainly used for
+// comparison between classic tab strip and WebUI tab strip.
+// KEEP IN SYNC WITH THE TabActivationTypes ENUM IN enums.xml.
+// NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
+enum class TabActivationTypes {
+  // Switch to a tab.
+  kTab = 0,
+
+  // Open the context menu of a tab.
+  kContextMenu = 1,
+
+  kMaxValue = kContextMenu,
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_
