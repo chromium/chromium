@@ -22,10 +22,26 @@
 
 namespace updater {
 
+namespace {
+
+scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
+  constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
+
+#if BUILDFLAG(IS_WIN)
+  return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
+#else
+  return base::ThreadPool::CreateSequencedTaskRunner(KMayBlockTraits);
+#endif
+}
+
+}  // namespace
+
 RefreshDMPoliciesTask::RefreshDMPoliciesTask(
     scoped_refptr<Configurator> config,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner)
-    : config_(config), main_task_runner_(main_task_runner) {}
+    : config_(config),
+      main_task_runner_(main_task_runner),
+      sequenced_task_runner_(GetBlockingTaskRunner()) {}
 
 RefreshDMPoliciesTask::~RefreshDMPoliciesTask() = default;
 
@@ -35,16 +51,9 @@ void RefreshDMPoliciesTask::Run(base::OnceClosure callback) {
 
   // `RefreshDMPoliciesTask::FetchPolicy` can block and therefore is running
   // under a task runner with `base::MayBlock()`.
-  []() {
-    constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
-#if BUILDFLAG(IS_WIN)
-    return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
-#else
-    return base::ThreadPool::CreateSequencedTaskRunner(KMayBlockTraits);
-#endif
-  }()
-      ->PostTask(FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy,
-                                           this, std::move(callback)));
+  sequenced_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&RefreshDMPoliciesTask::FetchPolicy, this,
+                                std::move(callback)));
 }
 
 void RefreshDMPoliciesTask::FetchPolicy(base::OnceClosure callback) {
@@ -64,10 +73,24 @@ void RefreshDMPoliciesTask::OnRequestComplete(
     const std::vector<PolicyValidationResult>& validation_results) {
   VLOG(1) << __func__;
 
-  // TODO(crbug.com/1345407) : call ReportPolicyValidationErrors() when there's
-  // an error.
-  if (result != DMClient::RequestResult::kSuccess)
+  if (result != DMClient::RequestResult::kSuccess) {
+    for (const auto& validation_result : validation_results) {
+      sequenced_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &DMClient::ReportPolicyValidationErrors,
+              DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
+              GetDefaultDMStorage(), validation_result,
+              base::BindOnce([](DMClient::RequestResult result) {
+                if (result != DMClient::RequestResult::kSuccess)
+                  LOG(WARNING)
+                      << "DMClient::ReportPolicyValidationErrors failed: "
+                      << static_cast<int>(result);
+              })));
+    }
+
     return;
+  }
 
   config_->ResetPolicyService();
   VLOG(1) << "Policies are now reloaded.";

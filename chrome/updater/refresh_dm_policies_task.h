@@ -39,8 +39,9 @@ class RefreshDMPoliciesTask
       const std::vector<PolicyValidationResult>& validation_results);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<Configurator> config_;
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  const scoped_refptr<Configurator> config_;
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 
 }  // namespace updater
