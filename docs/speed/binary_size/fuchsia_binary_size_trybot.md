@@ -48,40 +48,72 @@ package size.
 
 #### What to do if the Check Fails?
 
-- Look at the provided `commit size analysis files` stdout to understand where
-  the size is coming from.
-  - The `Read diff results` stdout will also give a breakdown of growth by
-    package, if any.
-  - If the compressed size grew (this is what we measure), but the
+- The `Read diff results` stdout will also give a breakdown of growth by
+  package, if any:
+```json
+{
+  "archive_filenames": [],
+  "compressed": {
+    "cast_runner": 0,
+    "chrome_fuchsia": 40960,  # chrome_fuchsia = web_engine + cast_runner
+    "web_engine": 40960  # This package grew by 40kB (post-compression)
+  },
+  "links": [],
+  "status_code": 1,
+[...]
+  "uncompressed": {
+    "cast_runner": 0,
+    "chrome_fuchsia": 33444,
+    "web_engine": 33444  # This package grew by 32.66kB (pre-compression)
+  }
+}
+```
+  - If the compressed size grew by less than 100kB, and the
     uncompressed size decreased, then **ignore** this failure. Add a
     [footer](#skipping-the-check) to
     the CL (see below) to document this (and ignore this failure).
+  - If `cast_runner` grew in size, you may need assistance from
+  the Chrome-Fuchsia team (fuchsia-dev@chromium.org).
+- If you are writing a new feature or including a new library, consider:
+  - If it is a feature only intended for Chrome (a full-browser), Contact
+  fuchsia-dev@chromium.org to help fix this.
+  - Whether it belongs on a size-contrained device (think a low-end phone with a
+  <1GB in total disk storage). fuchsia-dev@chromium.org can be helpful:
+    - If it does, look into how to reduce the
+    [overall size](#obvious-regressions)
+    - If it does not, look to remove it. See below.
+
+If you find it *should* be removed from a size-constrained platform, you should
+guard the code with the `IS_FUCHSIA` and `ARCH_CPU_ARM64` macros, as this
+CPU-architecture is the (current) set that requires size-checks. **Please also
+include the following comment and bug
+([crbug.com/1353061](https://crbug.com/1353061)) like so:**
+
+```cpp
+// TODO(crbug.com/1353061): Replace with more appropriate logic.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+// Feature you want to exclude from fuchsia-arm64
+// ...
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+```
+
 - See if any of the generic [optimization advice] is applicable.
-- If you are writing a new feature or including a new library you might want to
-  think about skipping the `web_engine`/`cast_runner` binaries and to restrict
-  this new feature/library to desktop platforms that might care less about
-  binary size.
-  - This can be done by removing it with the `is_fuchsia` BUILD tag and
-    `OS_FUCHSIA` macro.
-  - If this change belongs on a full-browser, but not
-   `web_engine`/`cast_runner`,
-    you should also guard against the  `ARCH_CPU_ARM64` tag, as this
-    CPU-architecture is the only (current) set that requires size-checks.
 - See [the section below](#obvious-regressions)
 - If reduction is not practical, add a rationale for the increase to the commit
-  description. It should include:
+  description, and [skip the check](#skipping-the-check). It could include:
     - A list of any optimizations that you attempted (if applicable)
     - If you think that there might not be a consensus that the code your adding
       is worth the added file size, then add why you think it is.
 
 ### Skipping the check
+
 Add a **footer** to the commit description along the lines of:
 
-    - `Fuchsia-Binary-Size: Size increase is unavoidable (see above).`
-    - `Fuchsia-Binary-Size: Uncompressed size actually decreased.`
-    - `Fuchsia-Binary-Size: Increase is temporary.`
-    - `Fuchsia-Binary-Size: See commit description.` <-- use this if longer
-    than one line.
+- `Fuchsia-Binary-Size: Size increase is unavoidable (see above).`
+- `Fuchsia-Binary-Size: Uncompressed size actually decreased.`
+- `Fuchsia-Binary-Size: Increase is temporary.`
+- `Fuchsia-Binary-Size: See commit description.` <-- use this if longer
+than one line.
 
 ***note
 **Note:** Make sure there are no blank lines between `Fuchsia-Binary-Size:` and
@@ -250,11 +282,15 @@ You can find out more about sections of ELF binaries
 
 ## If All Else Fails
 
-- For help, email [chrome-fuchsia-team@google.com]. They're expert
-  Chrome-Fuchsia developers!
+- For help, email [fuchsia-dev@chromium.org]. They're expert
+  Chrome-Fuchsia developers! See [here for more
+  details](/docs/fuchsia/README.md).
 - Not all checks are perfect and sometimes you want to overrule the trybot (for
   example if you did your best and are unable to reduce binary size any
   further).
+- Check out the
+  [Chromium binary-size](https://groups.google.com/a/chromium.org/g/binary-size) Google
+  group.
 - Adding a “Fuchsia-Binary-Size: $ANY\_TEXT\_HERE”
   [footer](#skipping-the-check) to your cl (next to “Bug:”)  will bypass
   the bot assertions.
@@ -262,8 +298,6 @@ You can find out more about sections of ELF binaries
       alerts and be reviewed by a binary size sheriff. Failing to write an
       adequate justification may lead to the binary size sheriff filing a bug
       against you to improve your cl.
-
-[chrome-fuchsia-team@chromium.org]: https://groups.google.com/a/chromium.org/forum/#!forum/binary-size
 
 ## Code Locations
 
