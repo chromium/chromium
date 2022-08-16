@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-
+import org.chromium.components.feature_engagement.Tracker;
 /**
  * Unit tests for OptionalButtonCoordinator.
  */
@@ -58,6 +58,8 @@ public class OptionalButtonCoordinatorTest {
     private UserEducationHelper mMockUserEducationHelper;
     @Mock
     private Callback<Transition> mMockBeginDelayedTransition;
+    @Mock
+    private Tracker mMockTracker;
 
     @Captor
     ArgumentCaptor<Callback<Integer>> mCallbackArgumentCaptor;
@@ -68,8 +70,9 @@ public class OptionalButtonCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mOptionalButtonCoordinator = new OptionalButtonCoordinator(mMockOptionalButtonView,
-                mMockUserEducationHelper, mMockRootView, mMockIsAnimationAllowedDelegate);
+        mOptionalButtonCoordinator =
+                new OptionalButtonCoordinator(mMockOptionalButtonView, mMockUserEducationHelper,
+                        mMockRootView, mMockIsAnimationAllowedDelegate, mMockTracker);
     }
 
     @Test

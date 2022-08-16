@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import android.app.Activity;
+import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -69,7 +70,11 @@ public class PriceTrackingButtonController implements ButtonDataProvider {
 
     private void maybeSetActionChipResourceId() {
         if (FeatureList.isInitialized() && AdaptiveToolbarFeatures.shouldShowActionChip()) {
+            // OptionalButtonCoordinator may choose to not show this action chip. It uses feature
+            // engagement to rate limit this animation.
             mButtonData.updateActionChipResourceId(R.string.enable_price_tracking_menu_item);
+        } else {
+            mButtonData.updateActionChipResourceId(Resources.ID_NULL);
         }
     }
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.optional_button;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -35,6 +40,7 @@ public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
     private final UserEducationHelper mUserEducationHelper;
+    private final Tracker mFeatureEngagementTracker;
     private Callback<Integer> mTransitionFinishedCallback;
     private IPHCommandBuilder mIphCommandBuilder;
 
@@ -59,7 +65,8 @@ public class OptionalButtonCoordinator {
      *         determine if said transition should be animated or not.
      */
     public OptionalButtonCoordinator(View view, UserEducationHelper userEducationHelper,
-            ViewGroup transitionRoot, BooleanSupplier isAnimationAllowedPredicate) {
+            ViewGroup transitionRoot, BooleanSupplier isAnimationAllowedPredicate,
+            Tracker featureEngagementTracker) {
         mUserEducationHelper = userEducationHelper;
         PropertyModel model =
                 new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
@@ -77,6 +84,7 @@ public class OptionalButtonCoordinator {
         PropertyModelChangeProcessor.create(model, mView, OptionalButtonViewBinder::bind);
 
         mMediator = new OptionalButtonMediator(model);
+        mFeatureEngagementTracker = featureEngagementTracker;
     }
 
     public void setPaddingStart(int paddingStart) {
@@ -118,6 +126,17 @@ public class OptionalButtonCoordinator {
             setViewSpecificIphProperties(mIphCommandBuilder);
         } else {
             mIphCommandBuilder = null;
+        }
+
+        if (buttonData != null
+                && buttonData.getButtonSpec().getButtonVariant()
+                        == AdaptiveToolbarButtonVariant.PRICE_TRACKING
+                && buttonData.getButtonSpec().getActionChipLabelResId() != Resources.ID_NULL) {
+            if (!mFeatureEngagementTracker.isInitialized()
+                    || !mFeatureEngagementTracker.shouldTriggerHelpUI(
+                            FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_ACTION_CHIP)) {
+                ((ButtonDataImpl) buttonData).updateActionChipResourceId(Resources.ID_NULL);
+            }
         }
 
         mMediator.updateButton(buttonData);
@@ -191,6 +210,16 @@ public class OptionalButtonCoordinator {
     private void onTransitionFinishedCallback(@TransitionType int transitionType) {
         if (mTransitionFinishedCallback != null) {
             mTransitionFinishedCallback.onResult(transitionType);
+        }
+
+        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP) {
+            // Record an event in feature engagement to limit the amount of times we show the action
+            // chip.
+            mFeatureEngagementTracker.addOnInitializedCallback(isReady -> {
+                if (!isReady) return;
+                mFeatureEngagementTracker.dismissed(
+                        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_ACTION_CHIP);
+            });
         }
 
         if (mIphCommandBuilder != null) {

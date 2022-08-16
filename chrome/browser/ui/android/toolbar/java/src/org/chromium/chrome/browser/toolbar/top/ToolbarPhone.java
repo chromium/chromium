@@ -84,6 +84,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -2565,8 +2566,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 }
             };
 
+            Profile profile = Profile.getLastUsedRegularProfile();
+            Tracker featureEngagementTracker = TrackerFactory.getTrackerForProfile(profile);
             mOptionalButton = new OptionalButtonCoordinator(optionalButton, userEducationHelper,
-                    /* transitionRoot= */ mToolbarButtonsContainer, isAnimationAllowedPredicate);
+                    /* transitionRoot= */ mToolbarButtonsContainer, isAnimationAllowedPredicate,
+                    featureEngagementTracker);
 
             // Set the button's background to the same color as the URL bar background. This color
             // is only used when showing dynamic actions.
