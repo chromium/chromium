@@ -82,4 +82,18 @@ enum SearchEngineType {
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
 
+// Enum to record the type of search engine a user used in keyword mode. This
+// should be kept aligned with the `OmniboxBuiltinEngineType` enum in enums.xml.
+// Entries should not be renumbered and numeric values should never be reused.
+enum BuiltinEngineType {
+  KEYWORD_MODE_NON_BUILT_IN = 0,
+  KEYWORD_MODE_PREPOPULATED_ENGINE = 1,
+  KEYWORD_MODE_STARTER_PACK_BOOKMARKS = 2,
+  KEYWORD_MODE_STARTER_PACK_HISTORY = 3,
+  KEYWORD_MODE_STARTER_PACK_TABS = 4,
+
+  KEYWORD_MODE_ENGINE_TYPE_MAX  // Bounding value needed for UMA histogram
+                                // macro.
+};
+
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_TYPE_H_

@@ -72391,6 +72391,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="auto, enabled in trial"/>
 </enum>
 
+<enum name="OmniboxBuiltinEngineType">
+  <int value="0" label="Non built-in engine"/>
+  <int value="1" label="Prepopulated Engine"/>
+  <int value="2" label="@bookmarks starter pack engine"/>
+  <int value="3" label="@history starter pack engine"/>
+  <int value="4" label="@tabs starter pack engine"/>
+</enum>
+
 <enum name="OmniboxDocumentSuggestRequests">
   <int value="1" label="requests sent"/>
   <int value="2" label="requests invalidated"/>

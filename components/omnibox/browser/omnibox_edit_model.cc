@@ -53,6 +53,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -103,6 +104,11 @@ const char kOmniboxFocusResultedInNavigation[] =
 // enum XML file.
 const char kEnteredKeywordModeHistogram[] = "Omnibox.EnteredKeywordMode2";
 
+// Histogram name which counts the number of times the user completes a search
+// in keyword mode, enumerated by the type of search engine.
+const char kEnteredKeywordModeByEngineTypeHistogram[] =
+    "Omnibox.EnteredKeywordModeByEngineType";
+
 // Histogram name which counts the number of milliseconds a user takes
 // between focusing and editing the omnibox.
 const char kFocusToEditTimeHistogram[] = "Omnibox.FocusToEditTime";
@@ -116,11 +122,19 @@ const char kFocusToOpenTimeHistogram[] =
 // in keyword mode, enumerated by how they enter keyword mode.
 const char kAcceptedKeywordSuggestion[] = "Omnibox.AcceptedKeywordSuggestion";
 
-void EmitKeywordHistogram(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
+void EmitEnteredKeywordModeHistogram(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* turl) {
   UMA_HISTOGRAM_ENUMERATION(
       kEnteredKeywordModeHistogram, static_cast<int>(entry_method),
       static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+
+  if (turl != nullptr) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kEnteredKeywordModeByEngineTypeHistogram,
+        static_cast<int>(turl->GetBuiltinEngineType()),
+        static_cast<int>(BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX));
+  }
 }
 
 // `executed_position` should be set to the position of the executed
@@ -755,8 +769,9 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 
   autocomplete_controller()->Stop(false);
 
-  keyword_ =
-      client_->GetTemplateURLService()->GetDefaultSearchProvider()->keyword();
+  const TemplateURL* default_search_provider =
+      client_->GetTemplateURLService()->GetDefaultSearchProvider();
+  keyword_ = default_search_provider->keyword();
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
 
@@ -773,7 +788,7 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   if (entry_method == OmniboxEventProto::KEYBOARD_SHORTCUT)
     view_->SelectAll(false);
 
-  EmitKeywordHistogram(entry_method);
+  EmitEnteredKeywordModeHistogram(entry_method, default_search_provider);
 }
 
 void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
@@ -1077,7 +1092,9 @@ bool OmniboxEditModel::AcceptKeyword(
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
-  EmitKeywordHistogram(entry_method);
+  const TemplateURL* turl =
+      client_->GetTemplateURLService()->GetTemplateURLForKeyword(keyword_);
+  EmitEnteredKeywordModeHistogram(entry_method, turl);
 
   return true;
 }
@@ -1615,7 +1632,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   view_->UpdatePopup();
   if (allow_exact_keyword_match_) {
     keyword_mode_entry_method_ = OmniboxEventProto::SPACE_IN_MIDDLE;
-    EmitKeywordHistogram(OmniboxEventProto::SPACE_IN_MIDDLE);
+    const TemplateURL* turl =
+        client_->GetTemplateURLService()->GetTemplateURLForKeyword(keyword_);
+    EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl);
     allow_exact_keyword_match_ = false;
   }
 

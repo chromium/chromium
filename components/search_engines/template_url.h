@@ -802,6 +802,10 @@ class TemplateURL {
   SearchEngineType GetEngineType(
       const SearchTermsData& search_terms_data) const;
 
+  // Returns the type of this search engine, i.e. whether the engine is a
+  // prepopulated engine, starter pack engine, or not built-in.
+  BuiltinEngineType GetBuiltinEngineType() const;
+
   // Use the alternate URLs and the search URL to match the provided |url|
   // and extract |search_terms| from it. Returns false and an empty
   // |search_terms| if no search terms can be matched. The URLs are matched in
