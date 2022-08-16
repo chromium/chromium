@@ -13,17 +13,36 @@
 
 namespace performance_manager::user_tuning {
 
+namespace {
+
+class FakeHighEfficiencyModeToggleDelegate
+    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+          HighEfficiencyModeToggleDelegate {
+ public:
+  void ToggleHighEfficiencyMode(bool enabled) override {}
+  ~FakeHighEfficiencyModeToggleDelegate() override = default;
+};
+
+}  // namespace
+
 class UserPerformanceTuningManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kBatterySaverModeAvailable);
-
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
+  }
+
+  void StartManager(
+      std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+          features_and_params = {
+              {performance_manager::features::kBatterySaverModeAvailable, {}},
+              {performance_manager::features::kHighEfficiencyModeAvailable, {}},
+          }) {
+    feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_,
-        std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_)));
+        std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
+        std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
     manager()->Start();
   }
 
@@ -40,6 +59,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
 };
 
 TEST_F(UserPerformanceTuningManagerTest, TemporaryBatterySaver) {
+  StartManager();
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
@@ -53,6 +73,7 @@ TEST_F(UserPerformanceTuningManagerTest, TemporaryBatterySaver) {
 }
 
 TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
+  StartManager();
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
@@ -72,6 +93,7 @@ TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
 }
 
 TEST_F(UserPerformanceTuningManagerTest, PrefSupersedesTemporary) {
+  StartManager();
   local_state_.SetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
@@ -89,6 +111,7 @@ TEST_F(UserPerformanceTuningManagerTest, PrefSupersedesTemporary) {
 }
 
 TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
+  StartManager();
   local_state_.SetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState,
       static_cast<int>(performance_manager::user_tuning::prefs::
@@ -108,6 +131,26 @@ TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
           1);
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
+}
+
+TEST_F(UserPerformanceTuningManagerTest, HEMFinchDisabledByDefault) {
+  StartManager({
+      {performance_manager::features::kHighEfficiencyModeAvailable,
+       {{"default_state", "false"}}},
+  });
+
+  EXPECT_FALSE(local_state_.GetBoolean(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
+}
+
+TEST_F(UserPerformanceTuningManagerTest, HEMFinchEnabledByDefault) {
+  StartManager({
+      {performance_manager::features::kHighEfficiencyModeAvailable,
+       {{"default_state", "true"}}},
+  });
+
+  EXPECT_TRUE(local_state_.GetBoolean(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
 }
 
 }  // namespace performance_manager::user_tuning

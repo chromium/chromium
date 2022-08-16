@@ -28,7 +28,10 @@ const base::Feature kBatterySaverModeAvailable{
     "BatterySaverModeAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::FeatureParam<base::TimeDelta> kHighEfficiencyModeTimeBeforeDiscard{
-    &kHighEfficiencyModeAvailable, "time_before_discard", base::Minutes(5)};
+    &kHighEfficiencyModeAvailable, "time_before_discard", base::Hours(2)};
+
+extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
+    &kHighEfficiencyModeAvailable, "default_state", false};
 #endif
 
 const base::Feature kBFCachePerformanceManagerPolicy{

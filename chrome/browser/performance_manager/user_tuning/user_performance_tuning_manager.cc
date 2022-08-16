@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
 
 #include "base/feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -104,6 +105,23 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
               : std::make_unique<HighEfficiencyModeToggleDelegateImpl>()) {
   DCHECK(!g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = this;
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
+    // If the HEM pref is still the default (it wasn't configured by the user),
+    // look up what that default value should be in Finch and set it here.
+    // This is called in PostCreateThreads, which ensures the pref is in the
+    // correct state when views are created.
+    const PrefService::Preference* pref = local_state->FindPreference(
+        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+    if (pref->IsDefaultValue()) {
+      local_state->SetDefaultPrefValue(
+          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+          base::Value(
+              performance_manager::features::kHighEfficiencyModeDefaultState
+                  .Get()));
+    }
+  }
 
   pref_change_registrar_.Init(local_state);
 }

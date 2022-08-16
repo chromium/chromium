@@ -40,6 +40,9 @@ extern const base::Feature kBatterySaverModeAvailable;
 // High-Efficiency Mode.
 extern const base::FeatureParam<base::TimeDelta>
     kHighEfficiencyModeTimeBeforeDiscard;
+
+// The default state of the high-efficiency mode pref
+extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState;
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the
