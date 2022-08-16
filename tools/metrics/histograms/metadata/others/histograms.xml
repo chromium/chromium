@@ -13930,11 +13930,16 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="Tracing.Background.FinalizingTraceSizeInKB" units="KB"
+<histogram name="Tracing.Background.FinalizingTraceSizeInKB2" units="KB"
     expires_after="2023-01-15">
-  <owner>oysteine@chromium.org</owner>
+  <owner>oksamyt@chromium.org</owner>
+  <owner>tracing@chromium.org</owner>
+  <owner>chrometto-team@google.com</owner>
   <summary>
-    The size, in kilobytes, of a finalized trace ready to be uploaded.
+    The size, in kilobytes, of a finalized trace ready to be uploaded. Values
+    can range from 1KB to 100MB. This replaces
+    Tracing.Background.FinalizingTraceSizeInKB, which had a minimum of 1MB and
+    was not precise enough for WebView traces.
   </summary>
 </histogram>
 

@@ -357,8 +357,8 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
 void BackgroundTracingActiveScenario::OnProtoDataComplete(
     std::unique_ptr<std::string> proto_trace) {
   BackgroundTracingManagerImpl::RecordMetric(Metrics::FINALIZATION_STARTED);
-  UMA_HISTOGRAM_MEMORY_KB("Tracing.Background.FinalizingTraceSizeInKB",
-                          proto_trace->size() / 1024);
+  UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.FinalizingTraceSizeInKB2",
+                              proto_trace->size() / 1024);
 
   // Store the trace to be uploaded through UMA.
   // BackgroundTracingMetricsProvider::ProvideIndependentMetrics will call
