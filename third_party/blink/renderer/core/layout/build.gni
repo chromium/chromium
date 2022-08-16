@@ -559,6 +559,8 @@ blink_core_sources_layout = [
   "ng/ng_fragment_repeater.h",
   "ng/ng_fragmentation_utils.cc",
   "ng/ng_fragmentation_utils.h",
+  "ng/ng_frame_set_layout_algorithm.cc",
+  "ng/ng_frame_set_layout_algorithm.h",
   "ng/ng_ink_overflow.cc",
   "ng/ng_ink_overflow.h",
   "ng/ng_layout_algorithm.h",
