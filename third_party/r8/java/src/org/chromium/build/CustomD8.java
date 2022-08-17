@@ -71,6 +71,14 @@ public class CustomD8 {
         }
 
         @Override
+        public void acceptProgramNode(Origin node) {
+            String potentialDependent = formatOrigin(node);
+            // Removing all nodes that D8 already knows about so that only those that are still
+            // relevant (added via calls to accept) are kept. Deletes stale nodes.
+            mDeps.remove(potentialDependent);
+        }
+
+        @Override
         public void accept(Origin dependentOrigin, Origin dependencyOrigin) {
             String dependent = formatOrigin(dependentOrigin);
             String dependency = formatOrigin(dependencyOrigin);
