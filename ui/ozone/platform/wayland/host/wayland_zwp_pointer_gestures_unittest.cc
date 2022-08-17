@@ -95,6 +95,11 @@ class WaylandPointerGesturesTest : public WaylandTest {
 //
 // See https://crbug.com/1283652
 TEST_P(WaylandPointerGesturesTest, MAYBE(PinchZoomScale)) {
+  // TODO(1353670): is this needed?
+#if DCHECK_IS_ON()
+  window_->disable_null_target_dcheck_for_testing();
+#endif
+
   auto* const mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 

@@ -3629,15 +3629,19 @@ TEST_P(WaylandWindowTest, MAYBE_ChangeFocusDuringDispatch) {
   auto* pointer = server_.seat()->pointer();
 
   wl_pointer_send_enter(pointer->resource(), 1, surface_->resource(), 0, 0);
+  // The Enter event is coupled with the frame event.
+  wl_pointer_send_frame(pointer->resource());
   wl_pointer_send_button(pointer->resource(), 2, 1004, BTN_LEFT,
                          WL_POINTER_BUTTON_STATE_PRESSED);
+
   int count = 0;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
     count++;
     if (event->type() == ui::ET_MOUSE_PRESSED) {
       wl_pointer_send_leave(pointer->resource(), 3, surface_->resource());
-      wl_pointer_send_enter(pointer->resource(), 3, other_surface->resource(),
+      wl_pointer_send_enter(pointer->resource(), 4, other_surface->resource(),
                             0, 0);
+      wl_pointer_send_frame(pointer->resource());
       Sync();
     }
   });

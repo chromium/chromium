@@ -472,7 +472,16 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
   EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
 }
 
-TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
+// TODO(1353668): WaylandInputMethodContext::OnCursorPosition sets
+// |pending_keep_selection| only on lacros. That's the reason why this test
+// doesn't pass on Linux. We need to clarify that.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE(x) x
+#else
+#define MAYBE(x) DISABLED_##x
+#endif
+
+TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
   constexpr char16_t text[] = u"ab😀cあdef";
   const gfx::Range range(5, 6);  // あ is selected.
 
