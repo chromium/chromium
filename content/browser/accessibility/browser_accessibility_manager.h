@@ -489,11 +489,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
-  ui::AXTreeID GetTreeID() const override;
-  ui::AXTreeID GetParentTreeID() const override;
-  ui::AXNode* GetRootAsAXNode() const override;
   ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
-  void WillBeRemovedFromMap() override;
 
   BrowserAccessibilityDelegate* delegate() const { return delegate_; }
 

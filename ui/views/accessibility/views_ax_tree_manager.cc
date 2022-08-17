@@ -75,21 +75,10 @@ ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
   return ax_tree_->GetFromId(node_id);
 }
 
-ui::AXTreeID ViewsAXTreeManager::GetTreeID() const {
-  return ax_tree_id_;
-}
-
 ui::AXTreeID ViewsAXTreeManager::GetParentTreeID() const {
   // TODO(nektar): Implement stiching of AXTrees, e.g. a dialog to the main
   // window.
   return ui::AXTreeIDUnknown();
-}
-
-ui::AXNode* ViewsAXTreeManager::GetRootAsAXNode() const {
-  if (!widget_ || !widget_->GetRootView() || !ax_tree_)
-    return nullptr;
-
-  return ax_tree_->root();
 }
 
 ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {

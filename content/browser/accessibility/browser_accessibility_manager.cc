@@ -1700,23 +1700,6 @@ ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
   return GetPlatformNodeFromTree(node.id());
 }
 
-ui::AXTreeID BrowserAccessibilityManager::GetTreeID() const {
-  return ax_tree_id_;
-}
-
-ui::AXTreeID BrowserAccessibilityManager::GetParentTreeID() const {
-  return GetTreeData().parent_tree_id;
-}
-
-ui::AXNode* BrowserAccessibilityManager::GetRootAsAXNode() const {
-  // ax_tree_ is nullptr after destruction.
-  if (!ax_tree())
-    return nullptr;
-
-  // ax_tree_->root() can be null during AXTreeObserver callbacks.
-  return ax_tree()->root();
-}
-
 ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
     const {
   BrowserAccessibilityManager* parent_manager = GetParentManager();
@@ -1747,13 +1730,6 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
          "`kChildTreeId` attribute.";
 
   return parent_node;
-}
-
-void BrowserAccessibilityManager::WillBeRemovedFromMap() {
-  if (!ax_tree())
-    return;
-
-  ax_tree()->NotifyTreeManagerWillBeRemoved(ax_tree_id_);
 }
 
 BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()

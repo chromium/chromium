@@ -561,17 +561,9 @@ ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
   return ax_tree_->GetFromId(node_id);
 }
 
-ui::AXTreeID AutomationAXTreeWrapper::GetTreeID() const {
-  return ax_tree_id_;
-}
-
 ui::AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
   AutomationAXTreeWrapper* parent_tree = GetParentOfTreeId(ax_tree_id_);
   return parent_tree ? parent_tree->GetTreeID() : ui::AXTreeIDUnknown();
-}
-
-ui::AXNode* AutomationAXTreeWrapper::GetRootAsAXNode() const {
-  return ax_tree_->root();
 }
 
 ui::AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode()

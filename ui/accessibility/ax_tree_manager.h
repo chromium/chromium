@@ -43,14 +43,14 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   virtual AXNode* GetNodeFromTree(const AXNodeID node_id) const = 0;
 
   // Returns the tree id of the tree managed by this AXTreeManager.
-  virtual AXTreeID GetTreeID() const = 0;
+  AXTreeID GetTreeID() const;
 
   // Returns the tree id of the parent tree.
   // Returns AXTreeIDUnknown if this tree doesn't have a parent tree.
-  virtual AXTreeID GetParentTreeID() const = 0;
+  virtual AXTreeID GetParentTreeID() const;
 
   // Returns the AXNode that is at the root of the current tree.
-  virtual AXNode* GetRootAsAXNode() const = 0;
+  AXNode* GetRootAsAXNode() const;
 
   // If this tree has a parent tree, returns the node in the parent tree that
   // hosts the current tree. Returns nullptr if this tree doesn't have a parent
@@ -59,7 +59,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   // Called when the tree manager is about to be removed from the tree map,
   // `AXTreeManagerMap`.
-  virtual void WillBeRemovedFromMap() {}
+  void WillBeRemovedFromMap();
 
   const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
   AXTree* ax_tree() const { return ax_tree_.get(); }

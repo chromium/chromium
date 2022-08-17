@@ -47,9 +47,6 @@ class AX_EXPORT TestAXTreeManager : public AXTreeManager {
   AXNode* GetNodeFromTree(const AXTreeID tree_id,
                           const AXNodeID node_id) const override;
   AXNode* GetNodeFromTree(const AXNodeID node_id) const override;
-  AXTreeID GetTreeID() const override;
-  AXTreeID GetParentTreeID() const override;
-  AXNode* GetRootAsAXNode() const override;
   AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
 };
 

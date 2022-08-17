@@ -67,6 +67,24 @@ AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
     tree_observation_.Observe(ax_tree());
 }
 
+AXTreeID AXTreeManager::GetTreeID() const {
+  return ax_tree_ ? ax_tree_->data().tree_id : AXTreeIDUnknown();
+}
+
+AXTreeID AXTreeManager::GetParentTreeID() const {
+  return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
+}
+
+AXNode* AXTreeManager::GetRootAsAXNode() const {
+  return ax_tree_ ? ax_tree_->root() : nullptr;
+}
+
+void AXTreeManager::WillBeRemovedFromMap() {
+  if (!ax_tree_)
+    return;
+  ax_tree_->NotifyTreeManagerWillBeRemoved(ax_tree_id_);
+}
+
 AXTreeManager::~AXTreeManager() {
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();

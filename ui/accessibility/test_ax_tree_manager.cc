@@ -69,18 +69,6 @@ AXNode* TestAXTreeManager::GetNodeFromTree(const AXNodeID node_id) const {
   return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
 }
 
-AXTreeID TestAXTreeManager::GetTreeID() const {
-  return ax_tree_ ? ax_tree_->data().tree_id : AXTreeIDUnknown();
-}
-
-AXTreeID TestAXTreeManager::GetParentTreeID() const {
-  return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
-}
-
-AXNode* TestAXTreeManager::GetRootAsAXNode() const {
-  return ax_tree_ ? ax_tree_->root() : nullptr;
-}
-
 AXNode* TestAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   AXTreeID parent_tree_id = GetParentTreeID();
   TestAXTreeManager* parent_manager =
