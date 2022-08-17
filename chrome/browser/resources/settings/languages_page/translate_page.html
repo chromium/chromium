@@ -34,7 +34,8 @@
   </div>
   <div class="list-frame">
     <div id="alwaysTranslateList" class="vertical-list">
-      <template is="dom-repeat" items="[[languages.alwaysTranslate]]">
+      <template is="dom-repeat" items="[[languages.alwaysTranslate]]"
+          sort="alphabeticalSort_">
         <div class="list-item">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray"
@@ -57,7 +58,8 @@
   </div>
   <div class="list-frame">
     <div id="neverTranslateList" class="vertical-list">
-      <template is="dom-repeat" items="[[languages.neverTranslate]]">
+      <template is="dom-repeat" items="[[languages.neverTranslate]]"
+          sort="alphabeticalSort_">
         <div class="list-item">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"

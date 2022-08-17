@@ -109,6 +109,14 @@ export class SettingsTranslatePageElement extends
   }
 
   /**
+   * A function used for sorting languages alphabetically by display name.
+   */
+  private alphabeticalSort_(first: chrome.languageSettingsPrivate.Language,
+      second: chrome.languageSettingsPrivate.Language) {
+    return first.displayName.localeCompare(second.displayName);
+  }
+
+  /**
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
    */
