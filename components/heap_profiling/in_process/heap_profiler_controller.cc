@@ -157,12 +157,9 @@ std::string ProcessHistogramName(base::StringPiece base_name,
 ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
                                              ProcessType process_type) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/1297724): The POSIX implementation of
-  // ModuleCache::CreateModuleForAddress is stubbed out on ARM64, so all samples
-  // would lack module information (see base/profiler/module_cache_posix.cc).
-  // Without this the reports cannot be symbolized so no point in collecting
-  // them. If this is fixed, also re-enable the tests in
-  // heap_profiler_controller_unittests.cc.
+  // TODO(crbug.com/1297724): Remove this early return after validating that
+  // there are no crashes in ModuleCache::CreateModuleForAddress on ARM64. Also
+  // re-enable the tests in heap_profiler_controller_unittests.cc.
   return ProfilingEnabled::kDisabled;
 #else
   if (!base::FeatureList::IsEnabled(
