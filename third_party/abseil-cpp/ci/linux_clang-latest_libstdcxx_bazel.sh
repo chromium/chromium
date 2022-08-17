@@ -80,6 +80,7 @@ for std in ${STD}; do
           --copt=-Werror \
           --define="absl=1" \
           --distdir="/bazel-distdir" \
+          --features=external_include_paths \
           --keep_going \
           --linkopt="--gcc-toolchain=/usr/local" \
           --show_timestamps \

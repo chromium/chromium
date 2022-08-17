@@ -51,10 +51,10 @@
 #ifndef ABSL_STATUS_STATUS_H_
 #define ABSL_STATUS_STATUS_H_
 
-#include <iostream>
+#include <ostream>
 #include <string>
+#include <utility>
 
-#include "absl/container/inlined_vector.h"
 #include "absl/functional/function_ref.h"
 #include "absl/status/internal/status_internal.h"
 #include "absl/strings/cord.h"

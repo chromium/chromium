@@ -85,6 +85,7 @@ for std in ${STD}; do
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
           --distdir="/bazel-distdir" \
+          --features=external_include_paths \
           --keep_going \
           --linkopt="-fsanitize=address" \
           --linkopt="-fsanitize-link-c++-runtime" \

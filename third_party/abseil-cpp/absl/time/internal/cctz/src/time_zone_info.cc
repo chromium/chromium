@@ -134,6 +134,21 @@ std::int_fast64_t Decode64(const char* cp) {
   return static_cast<std::int_fast64_t>(v - s64maxU - 1) - s64max - 1;
 }
 
+// Does the rule for future transitions call for year-round daylight time?
+// See tz/zic.c:stringzone() for the details on how such rules are encoded.
+bool AllYearDST(const PosixTimeZone& posix) {
+  if (posix.dst_start.date.fmt != PosixTransition::N) return false;
+  if (posix.dst_start.date.n.day != 0) return false;
+  if (posix.dst_start.time.offset != 0) return false;
+
+  if (posix.dst_end.date.fmt != PosixTransition::J) return false;
+  if (posix.dst_end.date.j.day != kDaysPerYear[0]) return false;
+  const auto offset = posix.std_offset - posix.dst_offset;
+  if (posix.dst_end.time.offset + offset != kSecsPerDay) return false;
+
+  return true;
+}
+
 // Generate a year-relative offset for a PosixTransition.
 std::int_fast64_t TransOffset(bool leap_year, int jan1_weekday,
                               const PosixTransition& pt) {
@@ -350,6 +365,12 @@ bool TimeZoneInfo::ExtendTransitions() {
   std::uint_least8_t dst_ti;
   if (!GetTransitionType(posix.dst_offset, true, posix.dst_abbr, &dst_ti))
     return false;
+
+  if (AllYearDST(posix)) {  // dst only
+    // The future specification should match the last transition, and
+    // that means that handling the future will fall out naturally.
+    return EquivTransitions(transitions_.back().type_index, dst_ti);
+  }
 
   // Extend the transitions for an additional 400 years using the
   // future specification. Years beyond those can be handled by

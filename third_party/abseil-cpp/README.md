@@ -56,10 +56,12 @@ Quickstart](https://abseil.io/docs/cpp/quickstart-cmake).
 
 ## Support
 
-Abseil is officially supported on many platforms. See the [Abseil
-platform support
-guide](https://abseil.io/docs/cpp/platforms/platforms) for details on
-supported operating systems, compilers, CPUs, etc.
+Abseil follows Google's [Foundational C++ Support
+Policy](https://opensource.google/documentation/policies/cplusplus-support). See
+[this
+table](https://github.com/google/oss-policies-info/blob/main/foundational-cxx-support-matrix.md)
+for a list of currently supported versions compilers, platforms, and build
+tools.
 
 ## Codemap
 

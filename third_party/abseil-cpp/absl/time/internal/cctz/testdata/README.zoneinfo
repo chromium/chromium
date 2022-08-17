@@ -13,12 +13,7 @@ New versions can be generated using the following shell script.
   trap "rm -fr ${DESTDIR}" 0 2 15
   (
     cd ${DESTDIR}
-    if [ -n "${USE_GLOBAL_TZ}" ]
-    then
-      git clone -b global-tz https://github.com/JodaOrg/global-tz.git tz
-    else
-      git clone https://github.com/eggert/tz.git
-    fi
+    git clone https://github.com/eggert/tz.git
     make --directory=tz \
         install DESTDIR=${DESTDIR} \
                 DATAFORM=vanguard \
@@ -26,6 +21,7 @@ New versions can be generated using the following shell script.
                 REDO=posix_only \
                 LOCALTIME=Factory \
                 TZDATA_TEXT= \
+                PACKRATDATA=backzone PACKRATLIST=zone.tab \
                 ZONETABLES=zone1970.tab
     tar --create --dereference --hard-dereference --file tzfile.tar \
         --directory=tz tzfile.h

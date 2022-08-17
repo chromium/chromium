@@ -70,6 +70,10 @@ if((${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.8) AND (NOT ABSL_PROPAGATE_CXX_STD)
   message(WARNING "A future Abseil release will default ABSL_PROPAGATE_CXX_STD to ON for CMake 3.8 and up. We recommend enabling this option to ensure your project still builds correctly.")
 endif()
 
+option(ABSL_USE_SYSTEM_INCLUDES
+  "Silence warnings in Abseil headers by marking them as SYSTEM includes"
+  OFF)
+
 list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}/CMake
   ${CMAKE_CURRENT_LIST_DIR}/absl/copts

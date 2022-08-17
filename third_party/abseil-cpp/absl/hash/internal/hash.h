@@ -444,7 +444,7 @@ H AbslHashValue(H hash_state, T C::* ptr) {
     // On other platforms, we assume that pointers-to-members do not have
     // padding.
 #ifdef __cpp_lib_has_unique_object_representations
-    static_assert(std::has_unique_object_representations_v<T C::*>);
+    static_assert(std::has_unique_object_representations<T C::*>::value);
 #endif  // __cpp_lib_has_unique_object_representations
     return n;
 #endif

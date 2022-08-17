@@ -26,6 +26,12 @@ if(NOT DEFINED ABSL_IDE_FOLDER)
   set(ABSL_IDE_FOLDER Abseil)
 endif()
 
+if(ABSL_USE_SYSTEM_INCLUDES)
+  set(ABSL_INTERNAL_INCLUDE_WARNING_GUARD SYSTEM)
+else()
+  set(ABSL_INTERNAL_INCLUDE_WARNING_GUARD "")
+endif()
+
 # absl_cc_library()
 #
 # CMake function to imitate Bazel's cc_library rule.
@@ -242,7 +248,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
     # unconditionally.
     set_property(TARGET ${_NAME} PROPERTY LINKER_LANGUAGE "CXX")
 
-    target_include_directories(${_NAME}
+    target_include_directories(${_NAME} ${ABSL_INTERNAL_INCLUDE_WARNING_GUARD}
       PUBLIC
         "$<BUILD_INTERFACE:${ABSL_COMMON_INCLUDE_DIRS}>"
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -290,7 +296,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
   else()
     # Generating header-only library
     add_library(${_NAME} INTERFACE)
-    target_include_directories(${_NAME}
+    target_include_directories(${_NAME} ${ABSL_INTERNAL_INCLUDE_WARNING_GUARD}
       INTERFACE
         "$<BUILD_INTERFACE:${ABSL_COMMON_INCLUDE_DIRS}>"
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>

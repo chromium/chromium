@@ -489,6 +489,7 @@ const char* const kTimeZoneNames[] = {"Africa/Abidjan",
                                       "Europe/Kaliningrad",
                                       "Europe/Kiev",
                                       "Europe/Kirov",
+                                      "Europe/Kyiv",
                                       "Europe/Lisbon",
                                       "Europe/Ljubljana",
                                       "Europe/London",
@@ -528,6 +529,7 @@ const char* const kTimeZoneNames[] = {"Africa/Abidjan",
                                       "Europe/Zagreb",
                                       "Europe/Zaporozhye",
                                       "Europe/Zurich",
+                                      "Factory",
                                       "GB",
                                       "GB-Eire",
                                       "GMT",
@@ -1188,11 +1190,12 @@ TEST(PrevTransition, AmericaNewYork) {
 
 TEST(NextTransition, Scan) {
   for (const char* const* np = kTimeZoneNames; *np != nullptr; ++np) {
+    SCOPED_TRACE(testing::Message() << "In " << *np);
     time_zone tz;
+    // EXPECT_TRUE(load_time_zone(*np, &tz));
     if (!load_time_zone(*np, &tz)) {
       continue;  // tolerate kTimeZoneNames/zoneinfo skew
     }
-    SCOPED_TRACE(testing::Message() << "In " << *np);
 
     auto tp = time_point<absl::time_internal::cctz::seconds>::min();
     time_zone::civil_transition trans;

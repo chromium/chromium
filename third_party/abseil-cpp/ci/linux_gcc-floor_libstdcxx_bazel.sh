@@ -79,6 +79,7 @@ for std in ${STD}; do
           --copt=-Werror \
           --define="absl=1" \
           --distdir="/bazel-distdir" \
+          --features=external_include_paths \
           --keep_going \
           --show_timestamps \
           --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" \
