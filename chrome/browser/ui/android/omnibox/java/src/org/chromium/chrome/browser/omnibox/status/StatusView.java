@@ -343,6 +343,8 @@ public class StatusView extends LinearLayout {
     /** Specify the status icon visibility. */
     void setStatusIconShown(boolean showIcon) {
         if (mIconView == null) return;
+        // Check if layout was requested before changing our child view.
+        boolean wasLayoutPreviouslyRequested = isLayoutRequested();
 
         mIconView.setVisibility(showIcon ? VISIBLE : GONE);
         updateTouchDelegate();
@@ -353,10 +355,10 @@ public class StatusView extends LinearLayout {
         }
 
         // If the icon's visibility changes while layout is pending, we can end up in a bad state
-        // due to a stale measurement cache. forceLayout() will invalidate the cache without
-        // bubbling the request to parent views.
-        if (isInLayout()) {
-            forceLayout();
+        // due to a stale measurement cache. Post a task to request layout to force this visibility
+        // change (crbug.com/1345552).
+        if (wasLayoutPreviouslyRequested && getHandler() != null) {
+            getHandler().post(() -> requestLayout());
         }
     }
 
