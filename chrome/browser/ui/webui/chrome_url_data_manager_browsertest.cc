@@ -335,7 +335,10 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://signin-email-confirmation",
 #endif
 #if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_WIN)
+    // Quite flaky on Windows: https://crbug.com/1353819
     "chrome://sandbox",
+#endif
     "chrome://nacl",
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
