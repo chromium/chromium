@@ -6,9 +6,11 @@ package org.chromium.browserfragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.SurfaceControlViewHost.SurfacePackage;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,15 +45,8 @@ public class BrowserFragment extends Fragment {
             new IBrowserFragmentDelegateClient.Stub() {
                 @Override
                 public void onSurfacePackageReady(SurfacePackage surfacePackage) {
-                    mSurfaceView.setChildSurfacePackage(surfacePackage);
-                    // Set initial size and LayoutChangeListener of {@code mSurfaceView}, as {@link
-                    // SurfaceControlViewHost} is only initialized now.
-                    resizeSurfaceView(mSurfaceView.getWidth(), mSurfaceView.getHeight());
-                    mSurfaceView.addOnLayoutChangeListener(
-                            (View v, int left, int top, int right, int bottom, int oldLeft,
-                                    int oldTop, int oldRight, int oldBottom) -> {
-                                resizeSurfaceView(right - left, bottom - top);
-                            });
+                    SurfaceView surfaceView = (SurfaceView) BrowserFragment.super.getView();
+                    surfaceView.setChildSurfacePackage(surfacePackage);
                 }
 
                 @Override
@@ -59,6 +54,26 @@ public class BrowserFragment extends Fragment {
                     mTabManagerCompleter.set(new TabManager(mDelegate));
                 }
             };
+
+    private SurfaceHolder.Callback mSurfaceHolderCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            IBinder hostToken = ((SurfaceView) getView()).getHostToken();
+            assert hostToken != null;
+            try {
+                mDelegate.attachViewHierarchy(hostToken);
+            } catch (RemoteException e) {
+            }
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            resizeSurfaceView(width, height);
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {}
+    };
 
     /**
      * This constructor is for the system FragmentManager only. Please use
@@ -75,8 +90,6 @@ public class BrowserFragment extends Fragment {
     void initialize(Browser browser, IBrowserFragmentDelegate delegate) throws RemoteException {
         mBrowser = browser;
         mDelegate = delegate;
-        mDelegate.setClient(mClient);
-        mDelegate.setTabObserverDelegate(mTabObserverDelegate);
     }
 
     @Override
@@ -90,22 +103,19 @@ public class BrowserFragment extends Fragment {
 
             mBrowser = model.mBrowser;
             mDelegate = model.mDelegate;
-            mSurfaceView = model.mSurfaceView;
         } else {
             // Save to View model.
             assert mBrowser != null;
 
-            mSurfaceView = new SurfaceView(context);
-            mSurfaceView.setZOrderOnTop(true);
-
             model.mBrowser = mBrowser;
             model.mDelegate = mDelegate;
-            model.mSurfaceView = mSurfaceView;
         }
 
         AppCompatDelegate.create(getActivity(), null);
 
         try {
+            mDelegate.setClient(mClient);
+            mDelegate.setTabObserverDelegate(mTabObserverDelegate);
             mDelegate.onAttach();
         } catch (RemoteException e) {
         }
@@ -123,24 +133,7 @@ public class BrowserFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return mSurfaceView;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        BrowserViewModel model = getViewModel();
-        if (model.getIsViewAttached()) {
-            return;
-        }
-
-        try {
-            mDelegate.attachViewHierarchy(mSurfaceView.getHostToken());
-        } catch (RemoteException e) {
-        }
-
-        model.markViewAttached();
+        return new BrowserSurfaceView(getActivity(), mSurfaceHolderCallback);
     }
 
     @Override
@@ -250,6 +243,31 @@ public class BrowserFragment extends Fragment {
     }
 
     /**
+     * A custom SurfaceView that registers a SurfaceHolder.Callback.
+     */
+    private class BrowserSurfaceView extends SurfaceView {
+        private SurfaceHolder.Callback mSurfaceHolderCallback;
+
+        BrowserSurfaceView(Context context, SurfaceHolder.Callback surfaceHolderCallback) {
+            super(context);
+            mSurfaceHolderCallback = surfaceHolderCallback;
+            setZOrderOnTop(true);
+        }
+
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            getHolder().addCallback(mSurfaceHolderCallback);
+        }
+
+        @Override
+        protected void onDetachedFromWindow() {
+            super.onDetachedFromWindow();
+            getHolder().removeCallback(mSurfaceHolderCallback);
+        }
+    }
+
+    /**
      * This class is an implementation detail and not intended for public use. It may change at any
      * time in incompatible ways, including being removed.
      * <p>
@@ -261,33 +279,9 @@ public class BrowserFragment extends Fragment {
         private Browser mBrowser;
         @Nullable
         private IBrowserFragmentDelegate mDelegate;
-        @Nullable
-        private SurfaceView mSurfaceView;
-
-        private boolean mIsViewAttached;
 
         boolean hasSavedState() {
             return mBrowser != null;
-        }
-
-        void markViewAttached() {
-            mIsViewAttached = true;
-        }
-
-        boolean getIsViewAttached() {
-            return mIsViewAttached;
-        }
-
-        @Override
-        protected void onCleared() {
-            super.onCleared();
-            if (mDelegate == null) {
-                return;
-            }
-            try {
-                mDelegate.onCleared();
-            } catch (RemoteException e) {
-            }
         }
     }
 }

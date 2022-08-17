@@ -27,10 +27,6 @@ oneway interface IBrowserFragmentDelegate {
     void onResume() = 10;
     void onPause() = 11;
 
-    // ViewModel events.
-    void onCleared() = 16;
-
-    // TODO(swestphal): Move these to their own interface.
     // Tab operations.
     void getActiveTab(ITabCallback callback) = 14;
     void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;

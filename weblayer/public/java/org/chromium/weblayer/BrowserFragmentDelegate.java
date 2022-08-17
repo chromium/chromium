@@ -117,7 +117,11 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onDetach() {
-        mHandler.post(() -> mFragment.onDetach());
+        mHandler.post(() -> {
+            mFragment.onDetach();
+            mSurfaceControlViewHost.release();
+            mSurfaceControlViewHost = null;
+        });
     }
 
     @Override
@@ -144,11 +148,6 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void onPause() {
         mHandler.post(() -> mFragment.onPause());
-    }
-
-    @Override
-    public void onCleared() {
-        mHandler.post(() -> mSurfaceControlViewHost.release());
     }
 
     @Override
