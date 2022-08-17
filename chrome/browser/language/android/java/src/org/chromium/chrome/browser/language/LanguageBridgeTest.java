@@ -34,18 +34,29 @@ public class LanguageBridgeTest {
         MockitoAnnotations.initMocks(this);
         // Setup fake language bridge JNI interface
         mFakeLanguageBridge = new FakeLanguageBridgeJni();
-        String[] ulpLanguages = {"pt-BR", "en-US"};
-        mFakeLanguageBridge.setULPLanguages(ulpLanguages);
         mJniMocker.mock(LanguageBridgeJni.TEST_HOOKS, mFakeLanguageBridge);
     }
 
     @Test
     @SmallTest
     public void testIsTopULPBaseLanguage() {
-        Assert.assertTrue(LanguageBridge.isTopULPBaseLanguage("pt"));
-        Assert.assertTrue(LanguageBridge.isTopULPBaseLanguage("pt-PT"));
-        Assert.assertTrue(LanguageBridge.isTopULPBaseLanguage("pt-BR"));
-        Assert.assertFalse(LanguageBridge.isTopULPBaseLanguage("en"));
-        Assert.assertFalse(LanguageBridge.isTopULPBaseLanguage("en-US"));
+        String[] ulpLanguages = {"pt-BR", "en-US"};
+        mFakeLanguageBridge.setULPLanguages(ulpLanguages);
+
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("pt"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("pt-PT"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("pt-BR"),
+                AppLanguagePromoDialog.TopULPMatchType.YES);
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en"),
+                AppLanguagePromoDialog.TopULPMatchType.NO);
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
+                AppLanguagePromoDialog.TopULPMatchType.NO);
+
+        String[] emptyULPLanguages = {};
+        mFakeLanguageBridge.setULPLanguages(emptyULPLanguages);
+        Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
+                AppLanguagePromoDialog.TopULPMatchType.EMPTY);
     }
 }

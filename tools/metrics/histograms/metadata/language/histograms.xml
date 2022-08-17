@@ -92,6 +92,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageSettings.AppLanguagePrompt.HasTopULPMatch"
     enum="BooleanYesNo" expires_after="2023-01-15">
+  <obsolete>
+    Replaced by LanguageSettings.AppLanguagePrompt.HasTopULPMatchOrEmpty
+  </obsolete>
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -177,6 +180,19 @@ chromium-metrics-reviews@google.com.
     AppLanguagePrompt was displayed.
 
     Reported when the AppLanguagePrompt dialog is dismissed for any reason.
+  </summary>
+</histogram>
+
+<histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
+    enum="ULPTopLanguageMatch" expires_after="2023-01-15">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome UI language matches the top ULP language when the
+    AppLanguagePrompt should be shown. Logged when checking if the prompt should
+    be shown and it has not already been shown.
+
+    Only the base languages are compared so pt-PT is considered equal to pt-BR.
   </summary>
 </histogram>
 

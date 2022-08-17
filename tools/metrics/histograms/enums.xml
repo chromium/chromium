@@ -96273,6 +96273,12 @@ Full version information for the fingerprint enum values:
   <int value="5" label="Language empty"/>
 </enum>
 
+<enum name="ULPTopLanguageMatch">
+  <int value="0" label="No"/>
+  <int value="1" label="Yes"/>
+  <int value="2" label="ULP Empty"/>
+</enum>
+
 <enum name="UmaCleanExitConsistency">
   <obsolete>
     Deprecated 07/2021 in favor of UmaCleanExitConsistency2. Version 2 re-orders

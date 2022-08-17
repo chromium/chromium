@@ -22,17 +22,20 @@ import java.util.List;
  */
 public class LanguageBridge {
     /**
-     * Returns true if the language tag matches the top ULP language. Only
-     * language bases are compared (e.g. en-US = en-GB).
+     * Returns the TopULPMatchType for |language| and the top ULP language. Only language bases are
+     * compared (e.g. en-US = en-GB).
      * @param language String of language tag to check.
-     * @return True if the base language tag matches the top language.
+     * @return TopULPMatchType
      */
-    public static boolean isTopULPBaseLanguage(String language) {
+    public static @AppLanguagePromoDialog.TopULPMatchType int isTopULPBaseLanguage(
+            String language) {
         LinkedHashSet<String> ulpLanguages = getULPModelLanguages();
 
         Iterator<String> ulpIterator = ulpLanguages.iterator();
-        if (!ulpIterator.hasNext()) return false;
-        return LocaleUtils.isBaseLanguageEqual(language, ulpIterator.next());
+        if (!ulpIterator.hasNext()) return AppLanguagePromoDialog.TopULPMatchType.EMPTY;
+        return LocaleUtils.isBaseLanguageEqual(language, ulpIterator.next())
+                ? AppLanguagePromoDialog.TopULPMatchType.YES
+                : AppLanguagePromoDialog.TopULPMatchType.NO;
     }
 
     /**
