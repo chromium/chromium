@@ -77,13 +77,10 @@ var TEST_TARGETS = [
     responseRedirected, checkURLList.bind(self, [BASE_URL])],
    [methodIsPOST, authCheck1]],
   // The 308 redirect response doesn't change the method.
-  // FIXME: currently this and following 308 tests are disabled because they
-  // fail on try bots, probably due to Apache/PHP versions.
-  // https://crbug.com/451938
-  // [REDIRECT_URL + encodeURIComponent(BASE_URL) +
-  //  '&mode=same-origin&method=POST&Status=308',
-  //  [fetchResolved, hasContentLength, hasServerHeader, hasBody, typeBasic],
-  //  [methodIsPOST, authCheck1]],
+  [REDIRECT_URL + encodeURIComponent(BASE_URL) +
+   '&mode=same-origin&method=POST&Status=308',
+   [fetchResolved, hasContentLength, hasServerHeader, hasBody, typeBasic],
+   [methodIsPOST, authCheck1]],
 
   // Do not redirect for other status even if Location header exists.
   [REDIRECT_URL + encodeURIComponent(BASE_URL) +
@@ -170,11 +167,10 @@ var TEST_TARGETS = [
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsPOST]],
   // The 308 redirect response MUST NOT change the method.
-  // FIXME: disabled due to https://crbug.com/451938
-  // [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
-  //  '&mode=cors&credentials=same-origin&method=POST&Status=308',
-  //  [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
-  //  [methodIsPOST]],
+  [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
+   '&mode=cors&credentials=same-origin&method=POST&Status=308',
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
+   [methodIsPOST]],
 
   // Custom header
   [REDIRECT_URL +
@@ -350,11 +346,10 @@ var TEST_TARGETS = [
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsPOST]],
   // The 308 redirect response MUST NOT change the method.
-  // FIXME: disabled due to https://crbug.com/451938
-  // [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
-  //  '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=308',
-  //  [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
-  //  [methodIsPOST]],
+  [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
+   '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=308',
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
+   [methodIsPOST]],
 
   // Server header
   [OTHER_REDIRECT_URL +
