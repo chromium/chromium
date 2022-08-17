@@ -138,11 +138,6 @@ class Beacon : public blink::mojom::PendingBeacon {
            content_type_.empty());
     return content_type_;
   }
-  const std::vector<network::DataElement>& request_elements() const {
-    DCHECK(method_ != blink::mojom::BeaconMethod::kGet ||
-           request_elements_.empty());
-    return request_elements_;
-  }
 
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
@@ -156,9 +151,9 @@ class Beacon : public blink::mojom::PendingBeacon {
   // The request content type for POST beacon. If `method_` is GET, this field
   // should not be used.
   std::string content_type_;
-  // The beacon data represented as data elements. If `method_` is GET, this
+  // The beacon data represented as a data element. If `method_` is GET, this
   // field should not be used.
-  std::vector<network::DataElement> request_elements_;
+  absl::optional<network::DataElement> request_element_;
 };
 
 }  // namespace content

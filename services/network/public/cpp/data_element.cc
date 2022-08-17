@@ -24,6 +24,10 @@ DataElementBytes& DataElementBytes::operator=(DataElementBytes&& other) =
     default;
 DataElementBytes::~DataElementBytes() = default;
 
+DataElementBytes DataElementBytes::Clone() const {
+  return DataElementBytes(bytes_);
+}
+
 DataElementDataPipe::DataElementDataPipe() = default;
 DataElementDataPipe::DataElementDataPipe(
     mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter)
@@ -51,6 +55,10 @@ DataElementDataPipe::CloneDataPipeGetter() const {
   owned->Clone(clone.InitWithNewPipeAndPassReceiver());
   mutable_this->data_pipe_getter_ = owned.Unbind();
   return clone;
+}
+
+DataElementDataPipe DataElementDataPipe::Clone() const {
+  return DataElementDataPipe(CloneDataPipeGetter());
 }
 
 DataElementChunkedDataPipe::DataElementChunkedDataPipe() = default;
@@ -82,6 +90,8 @@ DataElementFile::DataElementFile(const base::FilePath& path,
       offset_(offset),
       length_(length),
       expected_modification_time_(expected_modification_time) {}
+DataElementFile::DataElementFile(const DataElementFile&) = default;
+DataElementFile& DataElementFile::operator=(const DataElementFile&) = default;
 DataElementFile::DataElementFile(DataElementFile&&) = default;
 DataElementFile& DataElementFile::operator=(DataElementFile&&) = default;
 DataElementFile::~DataElementFile() = default;
@@ -90,5 +100,22 @@ DataElement::DataElement() = default;
 DataElement::DataElement(DataElement&& other) = default;
 DataElement& DataElement::operator=(DataElement&& other) = default;
 DataElement::~DataElement() = default;
+
+DataElement DataElement::Clone() const {
+  switch (type()) {
+    case Tag::kBytes:
+      return DataElement(As<DataElementBytes>().Clone());
+    case network::DataElement::Tag::kDataPipe:
+      return DataElement(As<DataElementDataPipe>().Clone());
+    case network::DataElement::Tag::kFile:
+      return DataElement(As<DataElementFile>());
+    case network::DataElement::Tag::kChunkedDataPipe:
+      // DataElementChunkedDataPipe is not generally copyable, especially if
+      // `read_only_once` is true.
+      // We want to be strict on this case, and use CHECK rather than DCHECK.
+      CHECK(false);
+      return DataElement();
+  }
+}
 
 }  // namespace network

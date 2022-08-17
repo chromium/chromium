@@ -55,17 +55,38 @@ void PendingBeaconService::SendBeacons(
     network::SharedURLLoaderFactory* shared_url_loader_factory) {
   for (const auto& beacon : beacons) {
     auto resource_request = beacon->GenerateResourceRequest();
+    // SimpleURLLoader doesn't support bytes and file request body. We need to
+    // call AttachStringForUpload and AttachFileForUpload instead in such cases.
+    absl::optional<network::DataElement> element;
+    if (resource_request->request_body) {
+      auto& elements = *resource_request->request_body->elements_mutable();
+      DCHECK_EQ(elements.size(), 1u);
+
+      if (elements[0].type() == network::DataElement::Tag::kBytes ||
+          elements[0].type() == network::DataElement::Tag::kFile) {
+        element = std::move(elements[0]);
+        resource_request->request_body = nullptr;
+      }
+    }
+
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          kPendingBeaconNetworkTag);
-    for (const auto& element : beacon->request_elements()) {
-      if (element.type() == network::mojom::DataElementDataView::Tag::kBytes) {
+
+    if (element.has_value()) {
+      if (element->type() == network::DataElement::Tag::kBytes) {
+        const auto& bytes = element->As<network::DataElementBytes>();
         simple_url_loader->AttachStringForUpload(
-            std::string(
-                element.As<network::DataElementBytes>().AsStringPiece()),
-            beacon->content_type());
+            std::string(bytes.AsStringPiece()), beacon->content_type());
+      } else if (element->type() == network::DataElement::Tag::kFile) {
+        const auto& file = element->As<network::DataElementFile>();
+        simple_url_loader->AttachFileForUpload(
+            file.path(), beacon->content_type(), file.offset(), file.length());
+      } else {
+        NOTREACHED();
       }
     }
+
     network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
 
     // Send out the |beacon|.
