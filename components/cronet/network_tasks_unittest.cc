@@ -99,15 +99,29 @@ std::unique_ptr<URLRequestContextConfig> CreateSimpleURLRequestContextConfig() {
 class NetworkTasksTest : public testing::Test {
  protected:
   NetworkTasksTest()
-      : ncn_(net::NetworkChangeNotifier::CreateIfNeeded()),
-        network_task_runner_(
-            base::ThreadPool::CreateSingleThreadTaskRunner({})),
-        file_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
+      : ncn_(net::NetworkChangeNotifier::CreateMockIfNeeded()),
+        scoped_ncn_(
+            std::make_unique<net::test::ScopedMockNetworkChangeNotifier>()),
+        network_thread_(std::make_unique<base::Thread>("network")),
+        file_thread_(std::make_unique<base::Thread>("Network File Thread")),
         network_tasks_(new CronetContext::NetworkTasks(
             CreateSimpleURLRequestContextConfig(),
             std::make_unique<NoOpCronetContextCallback>())) {
-    scoped_ncn_.mock_network_change_notifier()->ForceNetworkHandlesSupported();
+    base::Thread::Options options;
+    options.message_pump_type = base::MessagePumpType::IO;
+    network_thread_->StartWithOptions(std::move(options));
+    network_task_runner_ = network_thread_->task_runner();
+
+    file_thread_->Start();
+    file_task_runner_ = file_thread_->task_runner();
+
+    scoped_ncn_->mock_network_change_notifier()->ForceNetworkHandlesSupported();
     Initialize();
+  }
+
+  ~NetworkTasksTest() override {
+    PostToNetworkThreadSync(
+        base::BindLambdaForTesting([&]() { delete network_tasks_; }));
   }
 
   void Initialize() {
@@ -127,20 +141,24 @@ class NetworkTasksTest : public testing::Test {
 
   void CheckURLRequestContextExistence(net::handles::NetworkHandle network,
                                        bool expected) {
-    PostToNetworkThreadSync(base::BindLambdaForTesting([=]() {
-      EXPECT_EQ(expected,
-                network_tasks_->URLRequestContextExistsForTesting(network));
+    std::atomic_bool context_exists = false;
+    PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
+      context_exists.store(
+          network_tasks_->URLRequestContextExistsForTesting(network));
     }));
+    EXPECT_EQ(expected, context_exists.load());
   }
 
   void CreateURLRequest(net::handles::NetworkHandle network) {
+    std::atomic_bool url_request_created = false;
     PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
       auto* context = network_tasks_->GetURLRequestContext(network);
       url_request_ = context->CreateRequest(GURL("http://www.foo.com"),
                                             net::DEFAULT_PRIORITY, nullptr,
                                             TRAFFIC_ANNOTATION_FOR_TESTS);
-      EXPECT_TRUE(url_request_);
+      url_request_created = !!url_request_;
     }));
+    EXPECT_TRUE(url_request_created);
   }
 
   void ReleaseURLRequest() {
@@ -164,7 +182,9 @@ class NetworkTasksTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::NetworkChangeNotifier> ncn_;
-  net::test::ScopedMockNetworkChangeNotifier scoped_ncn_;
+  std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier> scoped_ncn_;
+  std::unique_ptr<base::Thread> network_thread_;
+  std::unique_ptr<base::Thread> file_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   raw_ptr<CronetContext::NetworkTasks> network_tasks_;
@@ -177,7 +197,7 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
       base::android::SDK_VERSION_MARSHMALLOW) {
     GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -185,9 +205,12 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
   CheckURLRequestContextExistence(kNetwork, true);
 
   // Once the network disconnects the context should be destroyed.
-  scoped_ncn_.mock_network_change_notifier()->NotifyNetworkDisconnected(
+  scoped_ncn_->mock_network_change_notifier()->NotifyNetworkDisconnected(
       kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
+#else
+  GTEST_SKIP() << "Network binding is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
@@ -196,7 +219,7 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
       base::android::SDK_VERSION_MARSHMALLOW) {
     GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -207,7 +230,8 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
   // context should not be destroyed to avoid UAFs (URLRequests can reference
   // their associated URLRequestContext).
   CreateURLRequest(kNetwork);
-  scoped_ncn_.mock_network_change_notifier()->NotifyNetworkDisconnected(
+  CheckURLRequestContextExistence(kNetwork, true);
+  scoped_ncn_->mock_network_change_notifier()->QueueNetworkDisconnected(
       kNetwork);
   CheckURLRequestContextExistence(kNetwork, true);
 
@@ -216,6 +240,9 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
   ReleaseURLRequest();
   MaybeDestroyURLRequestContext(kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
+#else
+  GTEST_SKIP() << "Network binding is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
