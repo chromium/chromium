@@ -369,7 +369,7 @@ void NukeProfileFromDisk(const base::FilePath& profile_path,
 void ProfileCleanedUp(base::Value profile_path_value) {
   ListPrefUpdate deleted_profiles(g_browser_process->local_state(),
                                   prefs::kProfilesDeleted);
-  deleted_profiles->EraseListValue(profile_path_value);
+  deleted_profiles->GetList().EraseValue(profile_path_value);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -435,9 +435,9 @@ void RemoveFromLastActiveProfilesPrefList(base::FilePath path) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value* profile_list = update.Get();
+  base::Value::List& profile_list = update->GetList();
   base::Value entry_value = base::Value(path.BaseName().AsUTF8Unsafe());
-  profile_list->EraseListValue(entry_value);
+  profile_list.EraseValue(entry_value);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -687,12 +687,11 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   DCHECK(local_state);
 
   std::vector<Profile*> to_return;
-  if (local_state->HasPrefPath(prefs::kProfilesLastActive) &&
-      local_state->GetList(prefs::kProfilesLastActive)) {
+  if (local_state->HasPrefPath(prefs::kProfilesLastActive)) {
     // Make a copy because the list might change in the calls to GetProfile.
-    const base::Value profile_list =
-        local_state->GetList(prefs::kProfilesLastActive)->Clone();
-    for (const auto& entry : profile_list.GetListDeprecated()) {
+    const base::Value::List profile_list =
+        local_state->GetValueList(prefs::kProfilesLastActive).Clone();
+    for (const auto& entry : profile_list) {
       const std::string* profile_base_name = entry.GetIfString();
       if (!profile_base_name || profile_base_name->empty() ||
           *profile_base_name ==
@@ -2365,9 +2364,9 @@ void ProfileManager::SaveActiveProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value* profile_list = update.Get();
+  base::Value::List& profile_list = update->GetList();
 
-  profile_list->ClearList();
+  profile_list.clear();
 
   // crbug.com/120112 -> several non-off-the-record profiles might have the same
   // GetBaseName(). In that case, we cannot restore both
@@ -2394,7 +2393,7 @@ void ProfileManager::SaveActiveProfiles() {
         profile_paths.find(profile_path) == profile_paths.end() &&
         profile_path != base::FilePath(chrome::kSystemProfileDir)) {
       profile_paths.insert(profile_path);
-      profile_list->Append(profile_path.AsUTF8Unsafe());
+      profile_list.Append(profile_path.AsUTF8Unsafe());
     }
   }
 }
