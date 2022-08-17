@@ -701,7 +701,8 @@ HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
-    : policy_service_(PolicyService::Create(CreateExternalConstants())) {}
+    : policy_service_(
+          AppServerSingletonInstance()->config()->GetPolicyService()) {}
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
 HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
