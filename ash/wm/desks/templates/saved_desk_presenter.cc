@@ -359,9 +359,11 @@ void SavedDeskPresenter::LaunchSavedDesk(
     std::unique_ptr<DeskTemplate> saved_desk,
     base::TimeDelta delay,
     aura::Window* root_window) {
+  DesksController* desks_controller = DesksController::Get();
+
   // If we are at the max desk limit (currently is 8), a new desk
   // cannot be created, and a toast will be displayed to the user.
-  if (!DesksController::Get()->CanCreateDesks()) {
+  if (!desks_controller->CanCreateDesks()) {
     ToastData toast_data = {
         /*id=*/kMaximumDeskLaunchTemplateToastName,
         ToastCatalogName::kMaximumDeskLaunchTemplate,
@@ -373,19 +375,18 @@ void SavedDeskPresenter::LaunchSavedDesk(
     return;
   }
 
-  // Copy fields we need from `desk_template` since we're about to move it. Also
-  // be very careful about doing anything after `CreateNewDeskForTemplate` since
-  // it may exit overview (and thus destroy `this`).
-  // See https://crbug.com/1284138.
-  const auto saved_desk_name = saved_desk->template_name();
+  // Copy fields we need from `desk_template` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
   const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
-  DesksController::Get()->CreateNewDeskForTemplate(
-      activate_desk,
-      base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(saved_desk),
-                     base::Time::Now(), delay, root_window),
-      saved_desk_name);
+
+  const Desk* new_desk = desks_controller->CreateNewDeskForTemplate(
+      activate_desk, saved_desk->template_name());
+  LaunchSavedDeskIntoNewDesk(std::move(saved_desk), delay, root_window,
+                             new_desk);
+
+  // Note: `LaunchSavedDeskIntoNewDesk` *may* cause overview mode to exit. This
+  // means that the saved desk presenter may have been destroyed at this point.
+  // Do not add any code below this point that depend on `this`.
 
   RecordLaunchSavedDeskHistogram(saved_desk_type);
 }
@@ -504,21 +505,20 @@ void SavedDeskPresenter::OnDeleteEntry(
   RemoveUIEntries({uuid});
 }
 
-void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
-    std::unique_ptr<DeskTemplate> desk_template,
-    base::Time time_launch_started,
+void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
+    std::unique_ptr<DeskTemplate> saved_desk,
     base::TimeDelta delay,
     aura::Window* root_window,
     const Desk* new_desk) {
-  // Desk creation failed.
-  if (!new_desk)
-    return;
+  DCHECK(new_desk);
+
+  base::Time time_launch_started = base::Time::Now();
 
   // For Save & Recall, the underlying desk definition is deleted on launch. We
   // store the template ID here since we're about to move the desk template.
-  const auto saved_desk_type = desk_template->type();
-  const auto saved_desk_creation_time = desk_template->created_time();
-  const std::string uuid = desk_template->uuid().AsLowercaseString();
+  const auto saved_desk_type = saved_desk->type();
+  const auto saved_desk_creation_time = saved_desk->created_time();
+  const std::string uuid = saved_desk->uuid().AsLowercaseString();
 
   auto* overview_controller = Shell::Get()->overview_controller();
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
@@ -533,17 +533,17 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
       DCHECK(mini_view);
 
       SavedDeskLibraryView* library = overview_grid->GetSavedDeskLibraryView();
-      library->AnimateDeskLaunch(desk_template->uuid(), mini_view);
+      library->AnimateDeskLaunch(saved_desk->uuid(), mini_view);
     }
   }
 
   // Copy the index of the newly created desk to the template. This ensures that
   // apps appear on the right desk even if the user switches to another.
   const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
-  desk_template->SetDeskIndex(desk_index);
+  saved_desk->SetDeskIndex(desk_index);
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
-      std::move(desk_template), time_launch_started, delay);
+      std::move(saved_desk), time_launch_started, delay);
 
   if (!overview_controller->InOverviewSession()) {
     // Note: it is the intention that we don't leave overview mode when

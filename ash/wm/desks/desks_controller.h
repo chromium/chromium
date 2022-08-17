@@ -307,14 +307,12 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    DeskTemplateType template_type,
                                    aura::Window* root_window_to_show) const;
 
-  // Creates (and optionally activates) a new desk. If `customized_desk_name`
-  // is provided, desk name will be `customized_desk_name` or
-  // `customized_desk_name ({counter})` to resolve naming conflicts. Runs
-  // `callback` with the newly created desk if creation was successful, nullptr
-  // otherwise.
-  void CreateNewDeskForTemplate(
+  // Creates (and optionally activates) a new desk. If `customized_desk_name` is
+  // provided, desk name will be `customized_desk_name` or `customized_desk_name
+  // ({counter})` to resolve naming conflicts. CanCreateDesks() must be checked
+  // before calling this.
+  const Desk* CreateNewDeskForTemplate(
       bool activate_desk,
-      base::OnceCallback<void(const Desk*)> callback,
       const std::u16string& customized_desk_name = std::u16string());
 
   // Called when an app with `app_id` is a single instance app which is about to

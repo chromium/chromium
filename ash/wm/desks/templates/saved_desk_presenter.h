@@ -96,18 +96,17 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
  private:
   friend class SavedDeskPresenterTestApi;
 
+  // Launch `saved_desk` into `new_desk`.
+  void LaunchSavedDeskIntoNewDesk(std::unique_ptr<DeskTemplate> saved_desk,
+                                  base::TimeDelta delay,
+                                  aura::Window* root_window,
+                                  const Desk* new_desk);
+
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted saved desk.
   void OnDeleteEntry(const std::string& uuid,
                      absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
-
-  // Callback after creating a new desk for launching a template.
-  void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
-                                   base::Time time_launch_started,
-                                   base::TimeDelta delay,
-                                   aura::Window* root_window,
-                                   const Desk* new_desk);
 
   // Callback after adding or updating an entry. Will then call
   // `AddOrUpdateUIEntries` to update the UI by adding or updating the template.

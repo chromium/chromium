@@ -1049,16 +1049,10 @@ void DesksController::CaptureActiveDeskAsTemplate(
       base::UTF16ToUTF8(active_desk_->name()), root_window_to_show);
 }
 
-void DesksController::CreateNewDeskForTemplate(
+const Desk* DesksController::CreateNewDeskForTemplate(
     bool activate_desk,
-    base::OnceCallback<void(const Desk*)> callback,
     const std::u16string& customized_desk_name) {
-  DCHECK(!callback.is_null());
-
-  if (!CanCreateDesks()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
+  DCHECK(CanCreateDesks());
 
   // If there is an ongoing animation, we should stop it before creating and
   // activating the new desk, which triggers its own animation.
@@ -1124,7 +1118,7 @@ void DesksController::CreateNewDeskForTemplate(
     DCHECK(!animation_);
   }
 
-  std::move(callback).Run(desk);
+  return desk;
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
