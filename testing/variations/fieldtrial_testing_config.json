@@ -8041,9 +8041,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "All",
                     "params": {
                         "all_except_legacy_windows_platform": "true",
+                        "legacy_windows_platform": "true"
+                    },
+                    "enable_features": [
+                        "ReduceUserAgentPlatformOsCpu"
+                    ]
+                },
+                {
+                    "name": "AllExceptLegacyWindows",
+                    "params": {
+                        "all_except_legacy_windows_platform": "true",
+                        "legacy_windows_platform": "false"
+                    },
+                    "enable_features": [
+                        "ReduceUserAgentPlatformOsCpu"
+                    ]
+                },
+                {
+                    "name": "LegacyWindows",
+                    "params": {
+                        "all_except_legacy_windows_platform": "false",
                         "legacy_windows_platform": "true"
                     },
                     "enable_features": [
