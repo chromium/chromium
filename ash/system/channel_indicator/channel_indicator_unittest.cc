@@ -5,18 +5,22 @@
 #include "ash/system/channel_indicator/channel_indicator.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 
@@ -61,6 +65,8 @@ INSTANTIATE_TEST_SUITE_P(ChannelValues,
                                            version_info::Channel::DEV,
                                            version_info::Channel::CANARY));
 
+#define SHELF_ALIGNMENT_TESTS_ENABLED (0)
+
 TEST_P(ChannelIndicatorViewTest, Visible) {
   // Local ref.
   ShellDelegate* shell_delegate = Shell::Get()->shell_delegate();
@@ -95,6 +101,30 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
   EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
   EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
 
+#if SHELF_ALIGNMENT_TESTS_ENABLED
+  // Two shelf alignments to test.
+  auto shelf_alignments = {ShelfAlignment::kBottom, ShelfAlignment::kRight};
+
+  // Image is the right size in both alignments.
+  for (const auto& alignment : shelf_alignments) {
+    // Initiates the shelf alignment change.
+    GetPrimaryShelf()->SetAlignment(alignment);
+
+    // Perform a synchronous `Layout` of `channel_indicator_view` and its child
+    // views.
+    channel_indicator_view->GetWidget()->LayoutRootViewIfNecessary();
+
+    // Now test the bounds of the image view.
+    gfx::Rect image_view_bounds = GetPrimaryUnifiedSystemTray()
+                                      ->channel_indicator_view()
+                                      ->image_view()
+                                      ->GetLocalBounds();
+    EXPECT_GE(image_view_bounds.width(), kUnifiedTrayChannelIndicatorDimension);
+    EXPECT_GE(image_view_bounds.height(),
+              kUnifiedTrayChannelIndicatorDimension);
+  }
+#endif  // SHELF_ALIGNMENT_TESTS_ENABLED
+
   // User locks the session, view should display text, no image.
   SetSessionState(session_manager::SessionState::LOCKED);
   EXPECT_TRUE(channel_indicator_view->IsLabelVisibleForTesting());
@@ -104,6 +134,27 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
   SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(channel_indicator_view->IsLabelVisibleForTesting());
   EXPECT_TRUE(channel_indicator_view->IsImageViewVisibleForTesting());
+
+#if SHELF_ALIGNMENT_TESTS_ENABLED
+  // Image is the right size in both alignments.
+  for (const auto& alignment : shelf_alignments) {
+    // Initiates the shelf alignment change.
+    GetPrimaryShelf()->SetAlignment(alignment);
+
+    // Perform a synchronous `Layout` of `channel_indicator_view` and its child
+    // views.
+    channel_indicator_view->GetWidget()->LayoutRootViewIfNecessary();
+
+    // Now test the bounds of the image view.
+    gfx::Rect image_view_bounds = GetPrimaryUnifiedSystemTray()
+                                      ->channel_indicator_view()
+                                      ->image_view()
+                                      ->GetLocalBounds();
+    EXPECT_GE(image_view_bounds.width(), kUnifiedTrayChannelIndicatorDimension);
+    EXPECT_GE(image_view_bounds.height(),
+              kUnifiedTrayChannelIndicatorDimension);
+  }
+#endif  // SHELF_ALIGNMENT_TESTS_ENABLED
 }
 
 }  // namespace ash
