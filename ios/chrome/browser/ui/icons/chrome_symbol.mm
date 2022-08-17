@@ -77,6 +77,7 @@ NSString* const kCheckMarkCircleFillSymbol = @"checkmark.circle.fill";
 NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
 NSString* const kTrashSymbol = @"trash";
 NSString* const kInfoCircleSymbol = @"info.circle";
+NSString* const kClockArrowSymbol = @"clock.arrow.circlepath";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {

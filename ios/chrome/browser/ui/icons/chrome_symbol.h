@@ -40,6 +40,7 @@ extern NSString* const kCheckMarkCircleFillSymbol;
 extern NSString* const kFailMarkCircleFillSymbol;
 extern NSString* const kTrashSymbol;
 extern NSString* const kInfoCircleSymbol;
+extern NSString* const kClockArrowSymbol;
 
 // Returns a SF symbol named `symbol_name` configured with the given
 // `configuration`.

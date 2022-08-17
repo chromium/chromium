@@ -103,11 +103,17 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   UIImage* symbol = nil;
   switch (itemType) {
     case ItemTypeDataTypeBrowsingHistory:
+      symbol = DefaultSymbolTemplateWithPointSize(kClockArrowSymbol,
+                                                  kSymbolPointSize);
+      break;
     case ItemTypeDataTypeCookiesSiteData:
+      symbol = DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                                  kSymbolPointSize);
+      break;
     case ItemTypeDataTypeSavedPasswords:
-      // TODO(crbug.com/1315544): update these cases when custom symbols are
+      // TODO(crbug.com/1315544): update this case when the custom symbol is
       // done.
-      symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
+      symbol = DefaultSymbolTemplateWithPointSize(kClockArrowSymbol,
                                                   kSymbolPointSize);
       break;
     case ItemTypeDataTypeCache:
