@@ -16,6 +16,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -49,7 +50,7 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 
 }  // namespace
 
-SiteDataRowView::SiteDataRowView(const GURL& url) {
+SiteDataRowView::SiteDataRowView(const url::Origin& origin) {
   const int icon_size = 16;
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -59,7 +60,7 @@ SiteDataRowView::SiteDataRowView(const GURL& url) {
 
   // TODO(crbug.com/1344787): Use proper formatting of the host.
   auto* label = AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(url.host())));
+      std::make_unique<views::Label>(base::UTF8ToUTF16(origin.host())));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // TODO(crbug.com/1344787): Use actual strings.

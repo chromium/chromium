@@ -7,7 +7,9 @@
 
 #include "ui/views/view.h"
 
-class GURL;
+namespace url {
+class Origin;
+}  // namespace url
 
 // The view that represents a site that has acesss to the data or was blocked
 // from accessing the data in the context of the currently visited website. The
@@ -16,7 +18,7 @@ class GURL;
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
  public:
-  explicit SiteDataRowView(const GURL& url);
+  explicit SiteDataRowView(const url::Origin& origin);
 
  private:
   void OnMenuIconClicked();
