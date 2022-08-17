@@ -70,6 +70,8 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenExtensions, key::kExtensionInstallForcelist},
     {key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
      key::kPromptOnMultipleMatchingCertificates},
+    {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,
+     key::kContextAwareAccessSignalsAllowlist},
 
     // key::kDeviceLoginScreenLocales maps to the ash::kDeviceLoginScreenLocales
     // CrosSetting elsewhere. Also map it to the key::kForcedLanguages policy in

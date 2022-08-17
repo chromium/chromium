@@ -12879,6 +12879,43 @@
       }
     ]
   },
+  "DeviceLoginScreenContextAwareAccessSignalsAllowlist": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value when DeviceLoginScreenContextAwareAccessSignalsAllowlist is unset.",
+        "policies": {},
+        "prefs": {
+          "enterprise_connectors.device_trust.origins": {
+            "default_value": [],
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
+        "note": "DeviceLoginScreenContextAwareAccessSignalsAllowlist contains elements",
+        "policies": {
+          "DeviceLoginScreenContextAwareAccessSignalsAllowlist": [
+            "https://example1.com",
+            "https://[*.]example2.com",
+            "https://foo.example3.com/path"
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.device_trust.origins": {
+            "value": [
+              "https://example1.com",
+              "https://[*.]example2.com",
+              "https://foo.example3.com/path"
+            ],
+            "location": "signin_profile"
+          }
+        }
+      }
+    ]
+  },
   "DeviceQuickFixBuildToken": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the update engine daemon."
   },

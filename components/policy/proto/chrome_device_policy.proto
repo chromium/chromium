@@ -1867,4 +1867,6 @@ message ChromeDeviceSettingsProto {
   optional EncryptedReportingPipelineConfigurationProto
       device_encrypted_reporting_pipeline_enabled = 134;
   optional SAMLUsernameProto saml_username = 135;
+  optional StringListPolicyProto
+      device_login_screen_context_aware_access_signals_allowlist = 136;
 }

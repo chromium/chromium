@@ -24881,7 +24881,7 @@
     },
     {
       'name': 'ContextAwareAccessSignalsAllowlist',
-      'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org', 'seblalancette@chromium.org'],
+      'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org', 'seblalancette@chromium.org', 'cbe-device-trust-eng@google.com'],
       'supported_on': ['chrome.*:95-', 'chrome_os:95-'],
       'future_on': ['fuchsia'],
       'type': 'list',
@@ -24910,7 +24910,39 @@
 
       For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https: //cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+    },
+    {
+      'name': 'DeviceLoginScreenContextAwareAccessSignalsAllowlist',
+      'owners': ['lmasopust@google.com', 'rodmartin@google.com', 'cbe-device-trust-eng@google.com'],
+      'future_on': ['chrome_os'],
+      'device_only': True,
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'example_value': ['https://example1.com', 'https://[*.]example2.com', 'https://foo.example3.com/path'],
+      'features': {
+        'dynamic_refresh': True,
+        'cloud_only': True,
+      },
+      'id': 1003,
+      'caption': '''Enable attestation flow for a list of URLs on the login and lock screen''',
+      'tags': [],
+      'desc': '''Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs on the login and lock screen.
+
+      Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
+
+      Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
+
+      URLs must have HTTPS scheme, e.g. "https://example.com".
+
+      Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+      This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
+
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https: //cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
     },
     {
       'name': 'DeviceQuickFixBuildToken',
@@ -33073,7 +33105,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceKeylockerForStorageEncryptionEnabled': 'keylocker_for_storage_encryption_enabled.enabled',
     'DeviceRunAutomaticCleanupOnLogin': 'device_run_automatic_cleanup_on_login.value',
     'DeviceEncryptedReportingPipelineEnabled': 'device_reporting.encrypted_reporting_pipeline_enabled',
-    'DeviceAutofillSAMLUsername': 'saml_username.url_parameter_to_autofill_saml_username'
+    'DeviceAutofillSAMLUsername': 'saml_username.url_parameter_to_autofill_saml_username',
+    'DeviceLoginScreenContextAwareAccessSignalsAllowlist': 'device_login_screen_context_aware_access_signals_allowlist.value'
   },
   'policy_atomic_group_definitions': [
     {
@@ -33605,6 +33638,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1002,
+  'highest_id_currently_used': 1003,
   'highest_atomic_group_id_currently_used': 43
 }
