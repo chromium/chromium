@@ -51,6 +51,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_utils.h"
@@ -1585,6 +1586,56 @@ TEST_F(SystemWebAppManagerTest, DestroyUiManager) {
   // Should not crash.
   DestroyUiManager();
   run_loop.Run();
+}
+
+class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
+ public:
+  template <typename... TaskEnvironmentTraits>
+  explicit SystemWebAppManagerInKioskTest(TaskEnvironmentTraits&&... traits)
+      : ChromeRenderViewHostTestHarness(
+            std::forward<TaskEnvironmentTraits>(traits)...) {}
+  SystemWebAppManagerInKioskTest(const SystemWebAppManagerInKioskTest&) =
+      delete;
+  SystemWebAppManagerInKioskTest& operator=(
+      const SystemWebAppManagerInKioskTest&) = delete;
+
+  ~SystemWebAppManagerInKioskTest() override = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(
+        ::features::kKioskEnableAppService);
+
+    chromeos::LoginState::Initialize();
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+
+    system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile());
+  }
+
+  void TearDown() override {
+    system_web_app_manager_.reset();
+    scoped_feature_list_.reset();
+    chromeos::LoginState::Shutdown();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  SystemWebAppManager& system_web_app_manager() {
+    return *system_web_app_manager_;
+  }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  std::unique_ptr<SystemWebAppManager> system_web_app_manager_;
+};
+
+// Checks that SWA delegates are not created in Kiosk sessions.
+TEST_F(SystemWebAppManagerInKioskTest, ShoudNotCreateDelegate) {
+  EXPECT_EQ(system_web_app_manager().GetSystemApp(SystemWebAppType::SETTINGS),
+            nullptr);
 }
 
 }  // namespace ash

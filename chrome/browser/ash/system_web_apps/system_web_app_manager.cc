@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -76,6 +77,7 @@
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
@@ -217,7 +219,14 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
   // Always create delegates because many System Web App WebUIs are disabled
   // when the delegate is not present and we need them in tests. Tests can
   // override the list of delegates with SetSystemAppsForTesting().
-  system_app_delegates_ = CreateSystemWebApps(profile_);
+  //
+  // TODO(https://crbug.com/1353262): SWAM is not supported in Kiosk mode. Many
+  // components assume that SWAM always exists alongside WebAppProvider. We want
+  // to use WebAppProvider to install web apps in Kiosk without enabling SWAM.
+  if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService) ||
+      !profiles::IsKioskSession()) {
+    system_app_delegates_ = CreateSystemWebApps(profile_);
+  }
 
 #if defined(OFFICIAL_BUILD)
   const bool is_official = true;

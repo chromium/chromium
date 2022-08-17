@@ -8,12 +8,14 @@
 
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -250,6 +252,15 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
         .WillOnce(testing::Return(true));
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kKioskEnableAppService);
+    auto user_manager = std::make_unique<MockUserManager>();
+    EXPECT_CALL(*user_manager, IsLoggedInAsKioskApp())
+        .WillOnce(testing::Return(true));
+    user_manager::ScopedUserManager enabler(std::move(user_manager));
+    EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
 #endif
 }
