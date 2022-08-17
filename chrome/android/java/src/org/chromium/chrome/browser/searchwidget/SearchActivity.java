@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -504,6 +505,14 @@ public class SearchActivity extends AsyncInitializationActivity
                 cancelSearch();
             }
         });
+
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(this)) {
+            View toolbarView = contentView.findViewById(R.id.toolbar);
+            final int edgePadding =
+                    getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
+            toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
+                    toolbarView.getPaddingBottom());
+        }
         return contentView;
     }
 

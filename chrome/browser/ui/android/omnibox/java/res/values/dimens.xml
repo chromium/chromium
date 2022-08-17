@@ -18,6 +18,7 @@
     <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>
 
     <dimen name="toolbar_edge_padding">8dp</dimen>
+    <dimen name="toolbar_edge_padding_modern">16dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
     <dimen name="location_bar_url_text_size">16sp</dimen>
     <dimen name="location_bar_icon_width">28dp</dimen>
