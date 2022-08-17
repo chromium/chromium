@@ -96,7 +96,7 @@ export const FilesTooltip = Polymer({
 
   /**
    * Adds a target to tooltip.
-   * @param {!EventTarget} target
+   * @param {!HTMLElement} target
    */
   addTarget: function(target) {
     target.addEventListener('mouseover', this.onMouseOver_.bind(this, target));
@@ -287,21 +287,27 @@ export const FilesTooltip = Polymer({
   },
 
   /**
-   * @param {Event} event
+   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
+   * @param {Event} event The event that triggered this handler.
    * @private
    */
   onMouseOver_: function(target, event) {
     const actualTarget = target || this.visibleTooltipTarget_;
-    this.initShowingTooltip_(actualTarget);
+    if (actualTarget) {
+      this.initShowingTooltip_(actualTarget);
+    }
   },
 
   /**
-   * @param {Event} event
+   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
+   * @param {Event} event The event that triggered this handler.
    * @private
    */
   onMouseOut_: function(target, event) {
     const actualTarget = target || this.visibleTooltipTarget_;
-    this.initHidingTooltip_(actualTarget);
+    if (actualTarget) {
+      this.initHidingTooltip_(actualTarget);
+    }
   },
 
   /**
