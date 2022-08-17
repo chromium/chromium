@@ -76,17 +76,17 @@ PhoneConnectedView::PhoneConnectedView(
         phone_model, phone_hub_manager->GetUserActionRecorder())));
   }
 
+  auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
+  if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
+    setup_layered_view(AddChildView(std::make_unique<CameraRollView>(
+        camera_roll_manager, phone_hub_manager->GetUserActionRecorder())));
+  }
+
   auto* recent_apps_handler =
       phone_hub_manager->GetRecentAppsInteractionHandler();
   if (features::IsEcheSWAEnabled() && recent_apps_handler) {
     setup_layered_view(AddChildView(
         std::make_unique<PhoneHubRecentAppsView>(recent_apps_handler)));
-  }
-
-  auto* camera_roll_manager = phone_hub_manager->GetCameraRollManager();
-  if (features::IsPhoneHubCameraRollEnabled() && camera_roll_manager) {
-    setup_layered_view(AddChildView(std::make_unique<CameraRollView>(
-        camera_roll_manager, phone_hub_manager->GetUserActionRecorder())));
   }
 
   phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();
