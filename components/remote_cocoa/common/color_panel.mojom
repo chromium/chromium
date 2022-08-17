@@ -7,10 +7,10 @@ module remote_cocoa.mojom;
 // Interface to the NSColorPanel.
 interface ColorPanel {
   // Show the panel with initial color |initial_sk_color|.
-  Show(uint32 initial_sk_color);
+  Show(uint32 initial_sk_color) => ();
 
   // Programmatically set the selected color to |sk_color|.
-  SetSelectedColor(uint32 sk_color);
+  SetSelectedColor(uint32 sk_color) => ();
 };
 
 // NSColorPanel's interface to the browser.

@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
+#include "components/remote_cocoa/app_shim/color_panel_bridge.h"
 #include "components/remote_cocoa/common/color_panel.mojom.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/web_contents.h"
@@ -30,7 +31,8 @@ class ColorChooserMac : public content::ColorChooser,
   // interactions
   static std::unique_ptr<ColorChooserMac> Create(
       content::WebContents* web_contents,
-      SkColor initial_color);
+      SkColor initial_color,
+      remote_cocoa::ColorPanelBridge::ShowCallback callback);
 
   ~ColorChooserMac() override;
 
@@ -38,12 +40,19 @@ class ColorChooserMac : public content::ColorChooser,
   void SetSelectedColor(SkColor color) override;
   void End() override;
 
+  // content::ColorChooser variation that has a callback.
+  void SetSelectedColor(
+      SkColor color,
+      remote_cocoa::ColorPanelBridge::SetSelectedColorCallback callback);
+
  private:
   // remote_cocoa::mojom::ColorPanelHost.
   void DidChooseColorInColorPanel(SkColor color) override;
   void DidCloseColorPanel() override;
 
-  ColorChooserMac(content::WebContents* tab, SkColor initial_color);
+  ColorChooserMac(content::WebContents* tab,
+                  SkColor initial_color,
+                  remote_cocoa::ColorPanelBridge::ShowCallback callback);
 
   // The web contents invoking the color chooser.  No ownership because it will
   // outlive this class.
