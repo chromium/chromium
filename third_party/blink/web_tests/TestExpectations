@@ -5261,9 +5261,6 @@ crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-l
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
-# Temporarily disable to land DevTools changes.
-crbug.com/1309310 http/tests/devtools/copy-network-request.js [ Failure Pass ]
-
 # Sheriff 2020-07-22
 crbug.com/1107722 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-script-id.js [ Failure Pass ]

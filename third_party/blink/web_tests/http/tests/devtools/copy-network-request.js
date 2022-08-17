@@ -33,8 +33,8 @@
 
   async function dumpRequest(headers, data, opt_url, method) {
     const request = newRequest(false, headers, data, opt_url, method);
-    var curlWin = await logView.generateCurlCommand(request, 'win');
-    var curlUnix = await logView.generateCurlCommand(request, 'unix');
+    var curlWin = await Network.NetworkLogView.generateCurlCommand(request, 'win');
+    var curlUnix = await Network.NetworkLogView.generateCurlCommand(request, 'unix');
     var powershell = await logView.generatePowerShellCommand(request);
     var fetchForBrowser = await logView.generateFetchCall(request, BROWSER);
     var fetchForNodejs = await logView.generateFetchCall(request, NODE_JS);
@@ -87,6 +87,7 @@
   await dumpRequest({}, null, null, '|evilcommand|');
   await dumpRequest({'Content-Type':'application/x-www-form-urlencoded'}, '@/etc/passwd');
   await dumpRequest({'Referer' : 'https://example.com'});
+  await dumpRequest({'No-Value-Header': ''});
 
   await dumpMultipleRequests([]);
   await dumpMultipleRequests([true]);

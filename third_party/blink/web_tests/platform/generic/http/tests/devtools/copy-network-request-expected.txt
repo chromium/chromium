@@ -621,6 +621,44 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
+curl "http://example.org/path" ^
+  -H "No-Value-Header;" ^
+  --compressed
+
+
+cURL Unix:
+curl 'http://example.org/path' \
+  -H 'No-Value-Header;' \
+  --compressed
+
+
+Powershell:
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" -Headers @{
+"No-Value-Header"=""
+}
+
+
+fetch (for browser):
+fetch("http://example.org/path", {
+  "headers": {
+    "no-value-header": ""
+  },
+  "method": "GET",
+  "mode": "cors",
+  "credentials": "omit"
+});
+
+
+fetch (for nodejs):
+fetch("http://example.org/path", {
+  "headers": {
+    "no-value-header": ""
+  },
+  "method": "GET"
+});
+
+
+cURL Windows:
 
 
 
