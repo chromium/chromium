@@ -167,7 +167,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      sync_pb::EntitySpecifics::kPrintersAuthorizationServerFieldNumber,
      ModelTypeForHistograms::kPrintersAuthorizationServers},
     // ---- Proxy types ----
-    {PROXY_TABS, "", "", "Tabs", -1, ModelTypeForHistograms::kProxyTabs},
+    {PROXY_TABS, "", "", "Proxy tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
     {NIGORI, "NIGORI", "nigori", "Encryption Keys",
      sync_pb::EntitySpecifics::kNigoriFieldNumber,
