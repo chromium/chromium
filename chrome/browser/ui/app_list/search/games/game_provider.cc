@@ -40,7 +40,6 @@ using ::ash::string_matching::TokenizedString;
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
-constexpr double kPartialMatchPenaltyRate = 0.9;
 
 constexpr double kRelevanceThreshold = 0.65;
 constexpr size_t kMaxResults = 3u;
@@ -101,7 +100,7 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
 
   FuzzyTokenizedStringMatch match;
   return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
-                         kUseEditDistance, kPartialMatchPenaltyRate);
+                         kUseEditDistance);
 }
 
 std::vector<std::pair<const apps::Result*, double>> SearchGames(

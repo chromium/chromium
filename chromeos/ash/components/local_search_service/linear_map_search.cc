@@ -53,8 +53,7 @@ bool IsItemRelevant(const TokenizedString& query,
     FuzzyTokenizedStringMatch match;
     const double relevance =
         match.Relevance(query, *(tag.second), true /* use_weighted_ratio */,
-                        false /* use_edit_distance */,
-                        0.9 /* partial_match_penalty_rate */, 0.1);
+                        false /* use_edit_distance */, 0.1);
     if (relevance >= relevance_threshold) {
       *relevance_score = relevance;
       Position position;

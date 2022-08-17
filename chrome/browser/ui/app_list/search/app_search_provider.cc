@@ -72,7 +72,6 @@ constexpr size_t kMinimumReservedAppsContainerCapacity = 60U;
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kRelevanceThreshold = 0.32;
-constexpr double kPartialMatchPenaltyRate = 0.9;
 
 // Default recommended apps in descending order of priority.
 constexpr const char* const ranked_default_app_ids[] = {
@@ -219,7 +218,7 @@ class AppSearchProvider::App {
       FuzzyTokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
         if (match.Relevance(query, *curr_text, kUseWeightedRatio,
-                            kUseEditDistance, kPartialMatchPenaltyRate) >=
+                            kUseEditDistance) >=
             std::max(kRelevanceThreshold, relevance_threshold())) {
           return true;
         }
@@ -604,9 +603,8 @@ void AppSearchProvider::UpdateQueriedResults() {
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {
       FuzzyTokenizedStringMatch match;
-      const double relevance =
-          match.Relevance(query_terms, *indexed_name, kUseWeightedRatio,
-                          kUseEditDistance, kPartialMatchPenaltyRate);
+      const double relevance = match.Relevance(
+          query_terms, *indexed_name, kUseWeightedRatio, kUseEditDistance);
       if (relevance >= kRelevanceThreshold ||
           app->MatchSearchableText(query_terms, use_exact_match)) {
         std::unique_ptr<AppResult> result = app->data_source()->CreateResult(
