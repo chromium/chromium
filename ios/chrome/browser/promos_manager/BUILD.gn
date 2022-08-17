@@ -6,6 +6,8 @@ source_set("promos_manager") {
   sources = [
     "impression_limit.h",
     "impression_limit.mm",
+    "promo.h",
+    "promo.mm",
     "promos_manager.h",
     "promos_manager.mm",
   ]
