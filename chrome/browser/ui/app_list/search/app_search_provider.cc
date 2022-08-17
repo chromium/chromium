@@ -70,7 +70,6 @@ constexpr size_t kMinimumReservedAppsContainerCapacity = 60U;
 
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;
-constexpr bool kUseEditDistance = false;
 constexpr double kRelevanceThreshold = 0.32;
 
 // Default recommended apps in descending order of priority.
@@ -217,8 +216,7 @@ class AppSearchProvider::App {
     } else {
       FuzzyTokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
-        if (match.Relevance(query, *curr_text, kUseWeightedRatio,
-                            kUseEditDistance) >=
+        if (match.Relevance(query, *curr_text, kUseWeightedRatio) >=
             std::max(kRelevanceThreshold, relevance_threshold())) {
           return true;
         }
@@ -603,8 +601,8 @@ void AppSearchProvider::UpdateQueriedResults() {
       MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
     } else {
       FuzzyTokenizedStringMatch match;
-      const double relevance = match.Relevance(
-          query_terms, *indexed_name, kUseWeightedRatio, kUseEditDistance);
+      const double relevance =
+          match.Relevance(query_terms, *indexed_name, kUseWeightedRatio);
       if (relevance >= kRelevanceThreshold ||
           app->MatchSearchableText(query_terms, use_exact_match)) {
         std::unique_ptr<AppResult> result = app->data_source()->CreateResult(

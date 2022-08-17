@@ -45,7 +45,6 @@ float ExactPrefixMatchScore(const std::u16string& query,
 
 float BlockMatchScore(const std::u16string& query, const std::u16string& text) {
   return string_matching::SequenceMatcher(query, text,
-                                          false /* use_edit_distance */,
                                           0.1 /*num_matching_blocks_penalty*/)
       .Ratio();
 }

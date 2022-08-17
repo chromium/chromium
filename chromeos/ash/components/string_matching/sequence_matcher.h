@@ -14,6 +14,11 @@ namespace ash::string_matching {
 // Performs the calculation of similarity level between 2 strings. This class's
 // functionality is inspired by python's difflib.SequenceMatcher library.
 // (https://docs.python.org/2/library/difflib.html#difflib.SequenceMatcher)
+//
+// TODO(crbug.com/1336160): This class contains two mutually exclusive
+// pathways (edit distance and block matching), with distinct algorithms
+// and ratio calculations. The edit distance pathway is currently unused.
+// Consider removing / refactoring.
 class SequenceMatcher {
  public:
   // Representing a common substring between `first_string_` and
@@ -36,8 +41,8 @@ class SequenceMatcher {
   // only appled if `use_edit_distance` is false.
   SequenceMatcher(const std::u16string& first_string,
                   const std::u16string& second_string,
-                  bool use_edit_distance,
-                  double num_matching_blocks_penalty);
+                  double num_matching_blocks_penalty,
+                  bool use_edit_distance = false);
 
   SequenceMatcher(const SequenceMatcher&) = delete;
   SequenceMatcher& operator=(const SequenceMatcher&) = delete;

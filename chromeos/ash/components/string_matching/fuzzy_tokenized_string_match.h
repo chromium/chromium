@@ -50,7 +50,6 @@ class FuzzyTokenizedStringMatch {
   static double TokenSetRatio(const TokenizedString& query,
                               const TokenizedString& text,
                               bool partial,
-                              bool use_edit_distance,
                               double num_matching_blocks_penalty);
 
   // TokenSortRatio takes two set of tokens, sorts them and find the similarity
@@ -60,7 +59,6 @@ class FuzzyTokenizedStringMatch {
   static double TokenSortRatio(const TokenizedString& query,
                                const TokenizedString& text,
                                bool partial,
-                               bool use_edit_distance,
                                double num_matching_blocks_penalty);
 
   // Finds the best ratio of shorter text with a part of longer text.
@@ -68,7 +66,6 @@ class FuzzyTokenizedStringMatch {
   // to lower case). The return score is in range of [0, 1].
   static double PartialRatio(const std::u16string& query,
                              const std::u16string& text,
-                             bool use_edit_distance,
                              double num_matching_blocks_penalty);
 
   // Combines scores from different ratio functions. This function assumes that
@@ -76,7 +73,6 @@ class FuzzyTokenizedStringMatch {
   // The return score is in range of [0, 1].
   static double WeightedRatio(const TokenizedString& query,
                               const TokenizedString& text,
-                              bool use_edit_distance,
                               double num_matching_blocks_penalty);
   // TODO(crbug.com/1336160): Should prefix match always be favored over other
   // matches? Reconsider this principle.
@@ -93,7 +89,6 @@ class FuzzyTokenizedStringMatch {
   double Relevance(const TokenizedString& query,
                    const TokenizedString& text,
                    bool use_weighted_ratio,
-                   bool use_edit_distance,
                    double num_matching_blocks_penalty = 0.0);
   const Hits& hits() const { return hits_; }
 

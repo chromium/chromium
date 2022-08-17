@@ -33,8 +33,8 @@ SequenceMatcher::Match::Match(int pos_first, int pos_second, int len)
 
 SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
                                  const std::u16string& second_string,
-                                 bool use_edit_distance,
-                                 double num_matching_blocks_penalty)
+                                 double num_matching_blocks_penalty,
+                                 bool use_edit_distance)
     : first_string_(first_string),
       second_string_(second_string),
       num_matching_blocks_penalty_(num_matching_blocks_penalty),
@@ -213,9 +213,6 @@ int SequenceMatcher::EditDistance() {
   return edit_distance_;
 }
 
-// TODO(crbug.com/1336160): This class contains two mutually exclusive
-// pathways (edit distance and block matching), with distinct algorithms
-// and ratio calculations. Consider refactoring.
 double SequenceMatcher::Ratio() {
   if (use_edit_distance_) {
     if (edit_distance_ratio_ < 0) {
