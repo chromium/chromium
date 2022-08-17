@@ -18,7 +18,7 @@
 
 namespace {
 
-// Checks that Handoff will report the specified |gurl|.
+// Checks that Handoff will report the specified `gurl`.
 void AssertHandoffURL(const GURL& gurl) {
   NSURL* handoffURL =
       [HandoffManagerAppInterface currentUserActivityWebPageURL];

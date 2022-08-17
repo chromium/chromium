@@ -60,9 +60,9 @@ class DeviceSharingBrowserAgent
 
   // The Browser this agent is associated with.
   Browser* browser_;
-  // Whether the browser state assoicated with |browser_| is inocgnito or not.
+  // Whether the browser state assoicated with `browser_` is inocgnito or not.
   const bool is_incognito_ = true;
-  // Observer for the active web state in |browser_|'s browser list.
+  // Observer for the active web state in `browser_`'s browser list.
   std::unique_ptr<ActiveWebStateObservationForwarder>
       active_web_state_observer_;
 };

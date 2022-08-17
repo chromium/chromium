@@ -19,21 +19,21 @@ class DeviceSharingManager : public KeyedService {
  public:
   DeviceSharingManager() = default;
 
-  // Set |browser| as the active browser. It will remain the active browser
+  // Set `browser` as the active browser. It will remain the active browser
   // until another active browser is set.
   virtual void SetActiveBrowser(Browser* browser) = 0;
 
-  // If |browser| is the active browser, set |active_url| as the active URL.
-  // If |browser| is not the active browser, do nothing.
+  // If `browser` is the active browser, set `active_url` as the active URL.
+  // If `browser` is not the active browser, do nothing.
   virtual void UpdateActiveUrl(Browser* browser, const GURL& active_url) = 0;
 
-  // If |browser| is the active browser, set |active_title| as the active
-  // page title. If |browser| is not the active browser, do nothing.
+  // If `browser` is the active browser, set `active_title` as the active
+  // page title. If `browser` is not the active browser, do nothing.
   virtual void UpdateActiveTitle(Browser* browser,
                                  const std::u16string& active_title) = 0;
 
-  // If |browser| is the active browser, clear the active URL and title.
-  // If |browser| is not the active browser, do nothing.
+  // If `browser` is the active browser, clear the active URL and title.
+  // If `browser` is not the active browser, do nothing.
   virtual void ClearActiveUrl(Browser* browser) = 0;
 };
 
