@@ -342,15 +342,15 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
 
     if (MayRememberAllowDecisionsForThisOrigin(initiating_origin)) {
       // Check if there is a matching {Origin+Protocol} pair exemption:
-      const base::Value* allowed_origin_protocol_pairs =
-          profile_prefs->GetDictionary(
+      const base::Value::Dict& allowed_origin_protocol_pairs =
+          profile_prefs->GetValueDict(
               prefs::kProtocolHandlerPerOriginAllowedProtocols);
-      const base::Value* allowed_protocols_for_origin =
-          allowed_origin_protocol_pairs->FindDictKey(
+      const base::Value::Dict* allowed_protocols_for_origin =
+          allowed_origin_protocol_pairs.FindDict(
               initiating_origin->Serialize());
       if (allowed_protocols_for_origin) {
         absl::optional<bool> allow =
-            allowed_protocols_for_origin->FindBoolKey(scheme);
+            allowed_protocols_for_origin->FindBool(scheme);
         if (allow.has_value() && allow.value())
           return DONT_BLOCK;
       }
