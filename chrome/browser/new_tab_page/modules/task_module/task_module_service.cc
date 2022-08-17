@@ -180,14 +180,15 @@ void TaskModuleService::GetPrimaryTask(TaskModuleCallback callback) {
 
 void TaskModuleService::DismissTask(const std::string& task_name) {
   ListPrefUpdate update(profile_->GetPrefs(), GetDismissedTasksPrefName());
+  base::Value::List& update_list = update->GetList();
   base::Value task_name_value(task_name);
-  if (!base::Contains(update->GetListDeprecated(), task_name_value))
-    update->Append(std::move(task_name_value));
+  if (!base::Contains(update_list, task_name_value))
+    update_list.Append(std::move(task_name_value));
 }
 
 void TaskModuleService::RestoreTask(const std::string& task_name) {
   ListPrefUpdate update(profile_->GetPrefs(), GetDismissedTasksPrefName());
-  update->EraseListValue(base::Value(task_name));
+  update->GetList().EraseValue(base::Value(task_name));
 }
 
 void TaskModuleService::OnDataLoaded(network::SimpleURLLoader* loader,
@@ -230,20 +231,20 @@ void TaskModuleService::OnJsonParsed(
 
   // We receive a list of tasks ordered from highest to lowest priority. We only
   // support showing a single task though. Therefore, pick the first task.
-  auto* tasks =
-      result->FindListPath(base::StringPrintf("update.%s", GetTasksKey()));
-  if (!tasks || tasks->GetListDeprecated().size() == 0) {
+  auto* tasks = result->GetDict().FindListByDottedPath(
+      base::StringPrintf("update.%s", GetTasksKey()));
+  if (!tasks || tasks->size() == 0) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  for (const auto& task : tasks->GetListDeprecated()) {
-    auto* title = task.FindStringPath("title");
-    auto* task_name = task.FindStringPath("task_name");
-    auto* task_items = task.FindListPath(GetTaskItemsKey());
-    auto* related_searches = task.FindListPath("related_searches");
-    if (!title || !task_name || !task_items ||
-        task_items->GetListDeprecated().size() == 0) {
+  for (const auto& task : *tasks) {
+    const base::Value::Dict& task_dict = task.GetDict();
+    auto* title = task_dict.FindString("title");
+    auto* task_name = task_dict.FindString("task_name");
+    auto* task_items = task_dict.FindListByDottedPath(GetTaskItemsKey());
+    auto* related_searches = task_dict.FindList("related_searches");
+    if (!title || !task_name || !task_items || task_items->size() == 0) {
       continue;
     }
     if (IsTaskDismissed(*task_name)) {
@@ -251,13 +252,14 @@ void TaskModuleService::OnJsonParsed(
     }
     auto mojo_task = task_module::mojom::Task::New();
     std::vector<task_module::mojom::TaskItemPtr> mojo_task_items;
-    for (const auto& task_item : task_items->GetListDeprecated()) {
-      const auto* name = task_item.FindStringPath("name");
-      const auto* image_url = task_item.FindStringPath("image_url");
+    for (const auto& task_item : *task_items) {
+      const base::Value::Dict& task_item_dict = task_item.GetDict();
+      const auto* name = task_item_dict.FindString("name");
+      const auto* image_url = task_item_dict.FindString("image_url");
       const absl::optional<int> viewed_timestamp =
-          task_item.FindIntPath("viewed_timestamp.seconds");
-      const auto* site_name = task_item.FindStringPath("site_name");
-      const auto* target_url = task_item.FindStringPath("target_url");
+          task_item_dict.FindIntByDottedPath("viewed_timestamp.seconds");
+      const auto* site_name = task_item_dict.FindString("site_name");
+      const auto* target_url = task_item_dict.FindString("target_url");
       if (!name || !image_url || !target_url) {
         continue;
       }
@@ -278,9 +280,10 @@ void TaskModuleService::OnJsonParsed(
 
     if (related_searches) {
       std::vector<task_module::mojom::RelatedSearchPtr> mojo_related_searches;
-      for (const auto& related_search : related_searches->GetListDeprecated()) {
-        auto* text = related_search.FindStringPath("text");
-        auto* target_url = related_search.FindStringPath("target_url");
+      for (const auto& related_search : *related_searches) {
+        const base::Value::Dict& related_search_dict = related_search.GetDict();
+        auto* text = related_search_dict.FindString("text");
+        auto* target_url = related_search_dict.FindString("target_url");
         if (!text || !target_url) {
           continue;
         }
@@ -315,9 +318,7 @@ bool TaskModuleService::IsTaskDismissed(const std::string& task_name) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     return false;
   }
-  const base::Value* dismissed_tasks =
-      profile_->GetPrefs()->GetList(GetDismissedTasksPrefName());
-  DCHECK(dismissed_tasks);
-  return base::Contains(dismissed_tasks->GetListDeprecated(),
-                        base::Value(task_name));
+  const base::Value::List& dismissed_tasks =
+      profile_->GetPrefs()->GetValueList(GetDismissedTasksPrefName());
+  return base::Contains(dismissed_tasks, base::Value(task_name));
 }
