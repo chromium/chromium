@@ -2347,3 +2347,35 @@ AX_TEST_F(
 
       await mockFeedback.replay();
     });
+
+// Regression test that large text areas produce output.
+AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>start</p>
+    <textarea></textarea>
+    <script>
+      const codepointCount = 35536 * 10;
+      const greeking1024Codepoints = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua elit.';
+
+      let value = '';
+      while (value.length < codepointCount) {
+        value += greeking1024Codepoints;
+      }
+      let textarea = document.querySelector('textarea');
+      textarea.value = value;
+      textarea.setSelectionRange(0, 0);
+    </script>
+  `;
+  const root = await this.runWithLoadedTree(site);
+  await this.focusFirstTextField(root);
+
+  const textField = root.find({role: RoleType.TEXT_FIELD});
+  mockFeedback.expectSpeech('Text area')
+      .call(this.press(KeyCode.DOWN))
+      .expectSpeech('amet, consectetur')
+      .call(this.press(KeyCode.RIGHT))
+      .expectSpeech('m')
+
+      .replay();
+});

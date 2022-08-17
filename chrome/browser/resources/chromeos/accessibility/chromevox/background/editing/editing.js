@@ -65,6 +65,8 @@ export class TextEditHandler {
     this.inferredIntents_ = [];
 
     chrome.automation.getDesktop(function(desktop) {
+      const isTextArea = node.htmlTag === 'textarea';
+
       // ChromeVox handles two general groups of text fields:
       // A rich text field is one where selection gets placed on a DOM
       // descendant to a root text field. This is one of:
@@ -87,7 +89,18 @@ export class TextEditHandler {
           (node.state[StateType.EDITABLE] && node.htmlAttributes &&
            node.htmlAttributes['contenteditable'] !== undefined &&
            node.htmlAttributes['contenteditable'] !== 'false') ||
-          node.htmlTag === 'textarea';
+          isTextArea;
+
+      // Prior to creating the specific editable text handler, ensure that text
+      // areas exclude offscreen elements in line computations. This is because
+      // text areas from Blink expose a single large static text node which can
+      // have thousands or more inline text boxes. This is a very specific check
+      // because ignoring offscreen nodes can impact the way in which we convert
+      // from a tree position to a deep equivalent on the inline text boxes.
+      const MAX_INLINE_TEXT_BOXES = 500;
+      const firstStaticText = node.find({role: RoleType.STATIC_TEXT});
+      EditableLine.includeOffscreen = !isTextArea || !firstStaticText ||
+          firstStaticText.children.length < MAX_INLINE_TEXT_BOXES;
 
       this.editableText_ = useRichText ? new AutomationRichEditableText(node) :
                                          new AutomationEditableText(node);

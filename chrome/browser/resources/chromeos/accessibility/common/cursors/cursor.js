@@ -11,6 +11,7 @@ import {AutomationPredicate} from '../automation_predicate.js';
 import {AutomationUtil} from '../automation_util.js';
 import {constants} from '../constants.js';
 import {StringUtil} from '../string_util.js';
+import {AutomationTreeWalker} from '../tree_walker.js';
 
 import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
 
@@ -523,14 +524,17 @@ export class Cursor {
         // This offset is a text offset into the descendant visible
         // text. Approximate this by indexing into the inline text boxes.
         isTextIndex = true;
-        const lines = this.getAllLeaves_(newNode);
-        if (!lines.length) {
-          break;
-        }
+
+        const walker = new AutomationTreeWalker(newNode, Dir.FORWARD, {
+          visit: n => !n.firstChild,
+          root: n => n === newNode,
+        });
 
         let targetLine;
         let targetIndex = 0;
-        for (let i = 0, line, cur = 0; line = lines[i]; i++) {
+        let cur = 0;
+        while (walker.next().node) {
+          const line = walker.node;
           const lineLength = line.name ? line.name.length : 1;
           cur += lineLength;
           if (cur > newIndex) {
@@ -546,7 +550,10 @@ export class Cursor {
         if (!targetLine) {
           // If we got here, that means the index is actually beyond the total
           // length of text. Just get the last line.
-          targetLine = lines[lines.length - 1];
+          targetLine = newNode.lastChild;
+          while (targetLine && targetLine.lastChild) {
+            targetLine = targetLine.lastChild;
+          }
           targetIndex = targetLine ? targetLine.name.length : CURSOR_NODE_INDEX;
         }
         newNode = targetLine;
@@ -575,25 +582,6 @@ export class Cursor {
    */
   requiresRecovery() {
     return this.recovery_.requiresRecovery();
-  }
-
-  /**
-   * @private
-   * @param {!AutomationNode} node
-   * @return {!Array<!AutomationNode>}
-   */
-  getAllLeaves_(node) {
-    let ret = [];
-    if (!node.firstChild) {
-      ret.push(node);
-      return ret;
-    }
-
-    for (let i = 0; i < node.children.length; i++) {
-      ret = ret.concat(this.getAllLeaves_(node.children[i]));
-    }
-
-    return ret;
   }
 
   /**
