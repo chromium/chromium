@@ -5,7 +5,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 6
+version_major: 7
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 trust_anchors {
@@ -54,7 +54,7 @@ trust_anchors {
 
 # CN=Autoridad de Certificacion Firmaprofesional CIF A62634068, C=ES
 trust_anchors {
-  sha256_hex: "04048028bf1f2864d48f9ad4d83294366a828856553f3b14303f90147f5d40ef"
+  sha256_hex: "57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a"
 }
 
 # CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO
@@ -304,7 +304,7 @@ trust_anchors {
 
 # CN=GlobalSign, O=GlobalSign, OU=GlobalSign ECC Root CA - R4
 trust_anchors {
-  sha256_hex: "bec94911c2955676db6c0a550986d76e3ba005667c442c9762b4fbb773de228c"
+  sha256_hex: "b085d70b964f191a73e4af0d54ae7a0e07aafdaf9b71dd0862138ab7325a24a2"
 }
 
 # CN=GTS Root R2, O=Google Trust Services LLC, C=US
@@ -665,4 +665,44 @@ trust_anchors {
 # C = US, O = Certainly, CN = Certainly Root R1
 trust_anchors {
   sha256_hex: "77b82cd8644c4305f7acc5cb156b45675004033d51c60c6202a8e0c33467d3a0"
+}
+
+# CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS, organizationIdentifier=VATES-Q2826004J, OU=Ceres, O=FNMT-RCM, C=ES
+trust_anchors {
+  sha256_hex: "554153b13d2cf9ddb753bfbe1a4e0ae08d0aa4187058fe60a2b862b2e4b87bcb"
+}
+
+# CN=ANF Secure Server Root CA, OU=ANF CA Raiz, O=ANF Autoridad de Certificacion, C=ES, serialNumber=G63287510
+trust_anchors {
+  sha256_hex: "fb8fec759169b9106b1e511644c618c51304373f6c0643088d8beffd1b997599"
+}
+
+# CN=E-Tugra Global Root CA ECC v3, OU=E-Tugra Trust Center, O=E-Tugra EBG A.S., L=Ankara, C=TR
+trust_anchors {
+  sha256_hex: "873f4685fa7f563625252e6d36bcd7f16fc24951f264e47e1b954f4908cdca13"
+}
+
+# CN=E-Tugra Global Root CA RSA v3, OU=E-Tugra Trust Center, O=E-Tugra EBG A.S., L=Ankara, C=TR
+trust_anchors {
+  sha256_hex: "ef66b0b10a3cdb9f2e3648c76bd2af18ead2bfe6f117655e28c4060da1a3f4c2"
+}
+
+# CN=Security Communication ECC RootCA1, O=SECOM Trust Systems CO.,LTD., C=JP
+trust_anchors {
+  sha256_hex: "e74fbda55bd564c473a36b441aa799c8a68e077440e8288b9fa1e50e4bbaca11"
+}
+
+# CN=TunTrust Root CA, O=Agence Nationale de Certification Electronique, C=TN
+trust_anchors {
+  sha256_hex: "2e44102ab58cb85419451c8e19d9acf3662cafbc614b6a53960a30f7d0e2eb41"
+}
+
+# CN=vTrus ECC Root CA, O=iTrusChina Co.,Ltd., C=CN
+trust_anchors {
+  sha256_hex: "30fbba2c32238e2a98547af97931e550428b9b3f1c8eeb6633dcfa86c5b27dd3"
+}
+
+# CN=vTrus Root CA, O=iTrusChina Co.,Ltd., C=CN
+trust_anchors {
+  sha256_hex: "8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387"
 }
