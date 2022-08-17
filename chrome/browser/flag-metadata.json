@@ -1801,7 +1801,7 @@
   {
     "name": "enable-cros-autocorrect-params-tuning",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-avatars-cloud-migration",
@@ -1886,7 +1886,7 @@
   {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-on-device-grammar-check",
