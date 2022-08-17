@@ -217,7 +217,7 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyCustomization customization;
-  if (public_sets_.has_value()) {
+  if (!public_sets_.is_null()) {
     std::move(callback).Run(GetCustomizationForPolicyInternal(policy));
     return;
   }
@@ -358,8 +358,8 @@ absl::optional<network::mojom::PublicFirstPartySetsPtr>
 FirstPartySetsHandlerImpl::GetSets(SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsEnabled());
-  if (public_sets_.has_value())
-    return public_sets_.value()->Clone();
+  if (!public_sets_.is_null())
+    return public_sets_->Clone();
 
   if (!callback.is_null()) {
     // base::Unretained(this) is safe here because this is a static singleton.
@@ -419,7 +419,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
                      base::Unretained(this)));
   on_sets_ready_callbacks_.clear();
   persisted_sets_path_ = base::FilePath();
-  public_sets_ = absl::nullopt;
+  public_sets_ = nullptr;
   raw_persisted_sets_ = absl::nullopt;
 }
 
@@ -457,7 +457,7 @@ void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
       "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets2",
       construction_timer_.Elapsed());
 
-  if (public_sets_.has_value()) {
+  if (!public_sets_.is_null()) {
     ClearSiteDataOnChangedSets();
 
     if (IsEnabled()) {
@@ -469,7 +469,7 @@ void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
 void FirstPartySetsHandlerImpl::SetCompleteSets(
     network::mojom::PublicFirstPartySetsPtr public_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!public_sets_.has_value());
+  DCHECK(public_sets_.is_null());
   DCHECK(!public_sets.is_null());
   public_sets_ = std::move(public_sets);
 
@@ -495,8 +495,8 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
 network::mojom::PublicFirstPartySetsPtr FirstPartySetsHandlerImpl::GetSetsSync()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(public_sets_.has_value());
-  return public_sets_.value()->Clone();
+  DCHECK(!public_sets_.is_null());
+  return public_sets_->Clone();
 }
 
 // static
@@ -544,7 +544,7 @@ base::flat_set<net::SchemefulSite> FirstPartySetsHandlerImpl::ComputeSetsDiff(
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(public_sets_.has_value());
+  DCHECK(!public_sets_.is_null());
   DCHECK(raw_persisted_sets_.has_value());
 
   // TODO(shuuran@chromium.org): Implement site state clearing.
@@ -552,9 +552,9 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   if (!persisted_sets_path_.empty()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&MaybeWriteSetsToDisk, persisted_sets_path_,
-                       FirstPartySetParser::SerializeFirstPartySets(
-                           public_sets_.value()->sets)));
+        base::BindOnce(
+            &MaybeWriteSetsToDisk, persisted_sets_path_,
+            FirstPartySetParser::SerializeFirstPartySets(public_sets_->sets)));
   }
 }
 
@@ -569,7 +569,7 @@ FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
   // Provide empty customization if the policy is malformed.
   return parsed_policy.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-                   public_sets_.value(), parsed_policy.value())
+                   public_sets_, parsed_policy.value())
              : FirstPartySetsHandlerImpl::PolicyCustomization();
 }
 

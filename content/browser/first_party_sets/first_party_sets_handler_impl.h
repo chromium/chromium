@@ -159,16 +159,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Whether Init has been called already or not.
   bool initialized_ = false;
 
-  // Represents the mapping of site -> site, where keys are members of sets,
-  // and values are owners of the sets. Owners are explicitly represented as
-  // members of the set.
+  // The public First-Party Sets, after parsing and validation.
   //
-  // Optional because it is unset until all of the required inputs have been
-  // received.
-  // TODO(https://crbug.com/1349781): remove the optional layer. We don't need
-  // something that's both optional and nullable, and mojo struct ptrs are
-  // always nullable.
-  absl::optional<network::mojom::PublicFirstPartySetsPtr> public_sets_
+  // This is nullptr until all of the required inputs have been received.
+  network::mojom::PublicFirstPartySetsPtr public_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The sets that were persisted during the last run of Chrome. Initially
