@@ -594,14 +594,26 @@
       "chrome-untrusted://terminal/*"
     ]
   }],
-  "sockets.tcpServer": {
+  "sockets.tcpServer": [{
     "dependencies": ["manifest:sockets"],
     "contexts": ["blessed_extension"]
-  },
-  "sockets.udp": {
+  },{
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://terminal/*"
+    ]
+  }],
+  "sockets.udp": [{
     "dependencies": ["manifest:sockets"],
     "contexts": ["blessed_extension"]
-  },
+  },{
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://terminal/*"
+    ]
+  }],
   "storage": {
     "dependencies": ["permission:storage"],
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
