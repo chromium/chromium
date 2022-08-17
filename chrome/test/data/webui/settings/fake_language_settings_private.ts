@@ -356,7 +356,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * Sets the translate target language.
    */
   setTranslateTargetLanguage(languageCode: string) {
-    this.settingsPrefs_!.push(
+    this.settingsPrefs_!.set(
         'prefs.translate_recent_target.value', languageCode);
   }
 
@@ -468,7 +468,7 @@ export function getFakeLanguagePrefs() {
     {
       key: 'translate_recent_target',
       type: chrome.settingsPrivate.PrefType.STRING,
-      value: 'en-US',
+      value: 'en',
     },
   ];
 }

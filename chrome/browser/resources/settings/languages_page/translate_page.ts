@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './add_languages_dialog.js';
@@ -77,6 +78,35 @@ export class SettingsTranslatePageElement extends
       chrome.languageSettingsPrivate.Language[]|null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
+
+  private onTargetLanguageChange_() {
+    this.languageHelper.setTranslateTargetLanguage(
+        this.shadowRoot!.querySelector<HTMLSelectElement>('#targetLanguage')!
+            .value);
+  }
+
+  /**
+   * Helper function to get the text to display in the target language drop down
+   * list. Returns the display name in the current UI language and the native
+   * name of the language.
+  */
+  private getTargetLanguageDisplayOption_(
+        item: chrome.languageSettingsPrivate.Language): string {
+    let formattedLanguage = item.displayName;
+    if (item.displayName !== item.nativeDisplayName) {
+      formattedLanguage += ' - ' + item.nativeDisplayName;
+    }
+    return formattedLanguage;
+  }
+
+  /**
+   * Used in the translate language selector. If the item matches the translate
+   * target language, it will set that item as selected.
+   */
+  private translateLanguageEqual_(itemCode: string, translateTarget: string):
+      boolean {
+    return itemCode === translateTarget;
+  }
 
   /**
    * Stamps and opens the Add Languages dialog, registering a listener to
@@ -184,6 +214,14 @@ export class SettingsTranslatePageElement extends
     return this.languages!.supported.filter(language => {
       return this.languageHelper.isLanguageTranslatable(language);
     });
+  }
+
+  /**
+   * Filters only for translate supported languages
+   */
+  private isTranslateSupported_(
+      language: chrome.languageSettingsPrivate.Language): boolean {
+    return this.languageHelper.isLanguageTranslatable(language);
   }
 }
 

@@ -18,6 +18,7 @@ import { TestLanguagesBrowserProxy } from './test_languages_browser_proxy.js';
 
 const translate_page_tests = {
   TestNames: {
+    TargetLanguageSelect: 'target language select',
     AlwaysTranslateDialog: 'always translate dialog',
     NeverTranslateDialog: 'never translate dialog',
     TranslateToggle: 'offer to translate toggle',
@@ -31,6 +32,7 @@ suite('translate page settings', function() {
   let translatePage: SettingsTranslatePageElement;
   let browserProxy: TestLanguagesBrowserProxy;
 
+  const translateTarget = 'translate_recent_target';
   // Always Translate language pref name for the platform.
   const alwaysTranslatePref = 'translate_allowlists';
   const neverTranslatePref = 'translate_blocked_languages';
@@ -86,6 +88,22 @@ suite('translate page settings', function() {
 
   teardown(function() {
     document.body.innerHTML = '';
+  });
+
+  suite(translate_page_tests.TestNames.TargetLanguageSelect, function() {
+    test('change target language', function() {
+      const targetLanguageSelector = translatePage.shadowRoot!.querySelector
+          <HTMLSelectElement>('#targetLanguage');
+      assertTrue(!!targetLanguageSelector);
+
+      assertEquals(targetLanguageSelector.value,
+          translatePage.getPref(translateTarget).value);
+
+      targetLanguageSelector.value = 'sw';
+      targetLanguageSelector.dispatchEvent(new CustomEvent('change'));
+
+      assertEquals(translatePage.getPref(translateTarget).value, 'sw');
+    });
   });
 
   suite(translate_page_tests.TestNames.TranslateToggle, function() {

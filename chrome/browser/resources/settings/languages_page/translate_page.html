@@ -1,4 +1,4 @@
-<style include="cr-shared-style settings-shared iron-flex"></style>
+<style include="cr-shared-style settings-shared md-select iron-flex"></style>
 <settings-toggle-button id="offerTranslateOtherLanguages"
     pref="{{prefs.translate.enabled}}"
     label="$i18n{offerToEnableTranslate}"
@@ -7,6 +7,24 @@
 </settings-toggle-button>
 <iron-collapse id="spellCheckCollapse"
     opened="[[prefs.translate.enabled.value]]">
+  <div class="cr-row continuation">
+    <div id="targetLanguageLabel" class="flex cr-padded-text"
+        aria-hidden="true">
+      $i18n{targetLanguageLabel}
+    </div>
+    <select id="targetLanguage" class="md-select"
+        aria-labelledby="targetLanguageLabel"
+        on-change="onTargetLanguageChange_">
+      <template is="dom-repeat" items="[[languages.supported]]"
+          filter="isTranslateSupported_">
+        <option value="[[item.code]]"
+            selected="[[translateLanguageEqual_(
+                item.code, languages.translateTarget)]]">
+          [[getTargetLanguageDisplayOption_(item)]]
+        </option>
+      </template>
+    </select>
+  </div>
   <div class="cr-row continuation">
     <h2 class="flex">$i18n{automaticallyTranslateLanguages}</h2>
     <cr-button id="addAlwaysTranslate" class="header-aligned-button"

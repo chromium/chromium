@@ -139,6 +139,11 @@ export interface LanguageHelper {
   disableTranslateLanguage(languageCode: string): void;
 
   /**
+   * Sets the translate target language.
+   */
+  setTranslateTargetLanguage(languageCode: string): void;
+
+  /**
    * Sets whether a given language should always be automatically translated.
    */
   setLanguageAlwaysTranslateState(

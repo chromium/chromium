@@ -134,6 +134,10 @@ var CrSettingsTranslatePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
+TEST_F('CrSettingsTranslatePageTest', 'TargetLanguageSelect', function() {
+  mocha.grep(translate_page_tests.TestNames.TargetLanguageSelect).run();
+});
+
 TEST_F('CrSettingsTranslatePageTest', 'AlwaysTranslateDialog', function() {
   mocha.grep(translate_page_tests.TestNames.AlwaysTranslateDialog).run();
 });
