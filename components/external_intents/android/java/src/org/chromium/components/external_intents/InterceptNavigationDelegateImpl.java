@@ -77,7 +77,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
 
-    private final AuthenticatorNavigationInterceptor mAuthenticatorHelper;
     private InterceptNavigationDelegateClient mClient;
     private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
     private WebContents mWebContents;
@@ -94,7 +93,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      */
     public InterceptNavigationDelegateImpl(InterceptNavigationDelegateClient client) {
         mClient = client;
-        mAuthenticatorHelper = mClient.createAuthenticatorNavigationInterceptor();
         associateWithWebContents(mClient.getWebContents());
     }
 
@@ -123,11 +121,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     public boolean shouldIgnoreNewTab(
             GURL url, boolean incognito, boolean isRendererInitiated, Origin initiatorOrigin) {
-        if (mAuthenticatorHelper != null
-                && mAuthenticatorHelper.handleAuthenticatorUrl(url.getSpec())) {
-            return true;
-        }
-
         ExternalNavigationParams params = new ExternalNavigationParams.Builder(url, incognito)
                                                   .setOpenInNewTab(true)
                                                   .setIsRendererInitiated(isRendererInitiated)
@@ -148,11 +141,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         GURL url = escapedUrl;
         long lastUserInteractionTime = mClient.getLastUserInteractionTime();
-
-        if (mAuthenticatorHelper != null
-                && mAuthenticatorHelper.handleAuthenticatorUrl(url.getSpec())) {
-            return true;
-        }
 
         RedirectHandler redirectHandler = null;
         if (navigationHandle.isInPrimaryMainFrame()) {
@@ -278,11 +266,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         }
         mClearAllForwardHistoryRequired = false;
         mShouldClearRedirectHistoryForTabClobbering = false;
-    }
-
-    @VisibleForTesting
-    public AuthenticatorNavigationInterceptor getAuthenticatorNavigationInterceptor() {
-        return mAuthenticatorHelper;
     }
 
     private int getLastCommittedEntryIndex() {

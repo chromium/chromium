@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/external_intents/AuthenticatorNavigationInterceptor.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsFeatures.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsSwitches.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationDelegate.java",

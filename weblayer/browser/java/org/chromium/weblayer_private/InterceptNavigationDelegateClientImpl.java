@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingAsyncActionType;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -88,11 +87,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public RedirectHandler getOrCreateRedirectHandler() {
         return mRedirectHandler;
-    }
-
-    @Override
-    public AuthenticatorNavigationInterceptor createAuthenticatorNavigationInterceptor() {
-        return null;
     }
 
     @Override

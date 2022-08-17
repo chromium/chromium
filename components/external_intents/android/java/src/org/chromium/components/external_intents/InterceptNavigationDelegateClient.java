@@ -29,10 +29,6 @@ public interface InterceptNavigationDelegateClient {
      * necessary. */
     RedirectHandler getOrCreateRedirectHandler();
 
-    /* Creates an AuthenticatorNavigationInterceptor instance that is configured for this client.
-     */
-    AuthenticatorNavigationInterceptor createAuthenticatorNavigationInterceptor();
-
     /* Returns whether whether the tab associated with this client is incognito. */
     boolean isIncognito();
 

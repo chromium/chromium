@@ -1080,7 +1080,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/ui/SyncErrorPromptUtils.java",
   "java/src/org/chromium/chrome/browser/sync/ui/SyncTrustedVaultProxyActivity.java",
   "java/src/org/chromium/chrome/browser/tab/AccessibilityVisibilityHandler.java",
-  "java/src/org/chromium/chrome/browser/tab/AuthenticatorNavigationInterceptorTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/AutofillSessionLifetimeController.java",
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateClientImpl.java",
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTabHelper.java",

@@ -7137,17 +7137,6 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="                .getAuthenticatorNavigationInterceptor();"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/tab/AuthenticatorNavigationInterceptorTabHelper.java"
-            line="19"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="                CombinedPolicyProvider.get().registerProvider(new AwPolicyProvider(appContext));"
         errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
