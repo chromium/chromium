@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/permissions/features.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +31,10 @@
 
 class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
  public:
-  PermissionBubbleInteractiveUITest() = default;
+  PermissionBubbleInteractiveUITest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kPermissionChip);
+  }
 
   PermissionBubbleInteractiveUITest(const PermissionBubbleInteractiveUITest&) =
       delete;
@@ -140,6 +145,9 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
