@@ -1079,6 +1079,48 @@ TEST_F(ShimlessRmaServiceTest,
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
+TEST_F(ShimlessRmaServiceTest,
+       ShutDownAfterHardwareErrorInFinalizationRequestsShutdown) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(true);
+  base::RunLoop run_loop;
+
+  shimless_rma_provider_->GetCurrentState(
+      base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
+        EXPECT_EQ(state_result_ptr->state, mojom::State::kFinalize);
+        EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ShutDownAfterHardwareError();
+  run_loop.RunUntilIdle();
+
+  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_shutdown_calls());
+}
+
+TEST_F(ShimlessRmaServiceTest,
+       ShutDownAfterHardwareErrorInProvisioningRequestsShutdown) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(true);
+  base::RunLoop run_loop;
+
+  shimless_rma_provider_->GetCurrentState(
+      base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
+        EXPECT_EQ(state_result_ptr->state, mojom::State::kProvisionDevice);
+        EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->ShutDownAfterHardwareError();
+  run_loop.RunUntilIdle();
+
+  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_shutdown_calls());
+}
+
 TEST_F(ShimlessRmaServiceTest, CriticalErrorRebootRequestsFullReboot) {
   const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};

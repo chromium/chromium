@@ -193,6 +193,19 @@ void ShimlessRmaService::CriticalErrorReboot(
       std::move(callback), /*reboot=*/true));
 }
 
+void ShimlessRmaService::ShutDownAfterHardwareError() {
+  if (state_proto_.state_case() != rmad::RmadState::kProvisionDevice &&
+      state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "ShutDownAfterHardwareError called from incorrect state "
+               << state_proto_.state_case() << " / " << mojo_state_;
+    return;
+  }
+
+  chromeos::PowerManagerClient::Get()->RequestShutdown(
+      power_manager::REQUEST_SHUTDOWN_FOR_USER,
+      "Shutting down after encountering a hardware error.");
+}
+
 void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
       mojo_state_ != mojom::State::kWelcomeScreen) {

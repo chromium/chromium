@@ -11,7 +11,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 import {disableAllButtons, executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
@@ -54,8 +54,7 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
 
   /** @protected */
   onShutDownButtonClicked_() {
-    executeThenTransitionState(
-        this, () => this.shimlessRmaService_.endRma(ShutdownMethod.kShutdown));
+    this.shimlessRmaService_.shutDownAfterHardwareError();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 }

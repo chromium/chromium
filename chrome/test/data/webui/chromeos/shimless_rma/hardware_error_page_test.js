@@ -82,10 +82,8 @@ export function hardwareErrorPageTest() {
     await initializeHardwareErrorPage();
 
     let callCount = 0;
-    let shutdownMethod;
-    service.endRma = (seenShutdownMethod) => {
+    service.shutDownAfterHardwareError = () => {
       callCount++;
-      shutdownMethod = seenShutdownMethod;
       return resolver.promise;
     };
     await flushTasks();
@@ -94,6 +92,5 @@ export function hardwareErrorPageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
-    assertEquals(ShutdownMethod.kShutdown, shutdownMethod);
   });
 }

@@ -784,6 +784,9 @@ export class FakeShimlessRmaService {
         'criticalErrorReboot', this.resolveMethodDelayMs_);
   }
 
+  shutDownAfterHardwareError() {
+    console.log('(Fake) Shutting down...');
+  }
 
   /**
    * Implements ShimlessRmaServiceInterface.ObserveError.
@@ -1323,6 +1326,8 @@ export class FakeShimlessRmaService {
     // Critical error handling
     this.methods_.register('criticalErrorExitToLogin');
     this.methods_.register('criticalErrorReboot');
+
+    this.methods_.register('shutDownAfterHardwareError');
   }
 
   /**

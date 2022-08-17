@@ -144,6 +144,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void CriticalErrorExitToLogin(
       CriticalErrorExitToLoginCallback callback) override;
   void CriticalErrorReboot(CriticalErrorRebootCallback callback) override;
+  void ShutDownAfterHardwareError() override;
 
   void ObserveError(
       ::mojo::PendingRemote<mojom::ErrorObserver> observer) override;
