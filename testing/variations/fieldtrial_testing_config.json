@@ -2630,6 +2630,29 @@
             ]
         }
     ],
+    "ChromeOSARCVMReclaimThrottle": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupMedium_20220808",
+                    "params": {
+                        "ArcVmInactivityTimeMs": "600s",
+                        "ArcVmTrimBackoffTimeMs": "900s",
+                        "MaxPageLimit": "250000",
+                        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "true",
+                        "PagesPerMinute": "15000",
+                        "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSMemoryPressureSignalStudy": [
         {
             "platforms": [
