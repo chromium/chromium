@@ -72,7 +72,7 @@ class FaviconHelper {
       const base::android::JavaRef<jobject>& j_favicon_image_callback,
       const favicon_base::FaviconRawBitmapResult& result);
 
-  void OnFaviconBitmapResultsAvailable(
+  void OnComposedFaviconBitmapResultsAvailable(
       const base::android::JavaRef<jobject>& j_favicon_image_callback,
       const int desired_size_in_pixel,
       const std::vector<favicon_base::FaviconRawBitmapResult>& result);

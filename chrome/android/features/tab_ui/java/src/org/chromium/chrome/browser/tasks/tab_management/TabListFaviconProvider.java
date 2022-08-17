@@ -299,7 +299,7 @@ public class TabListFaviconProvider {
             List<GURL> urls, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
 
-        mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrl) -> {
+        mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrls) -> {
             if (image == null) {
                 faviconCallback.onResult(getDefaultComposedImageFavicon(isIncognito));
             } else {
