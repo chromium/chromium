@@ -90,6 +90,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
       auto* image =
           rb.GetImageSkiaNamed(IDR_SETTINGS_RGB_KEYBOARD_RAINBOW_COLOR_48_PNG);
       button->SetBackgroundImage(*image);
+      button->SetIconColor(gfx::kGoogleGrey900);
     } else {
       SkColor color =
           ConvertBacklightColorToIconBackgroundColor(backlight_color);
