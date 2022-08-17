@@ -1884,7 +1884,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int direction = towardEnd ? 1 : -1;
         int destinationTabId = mTabGroupModelFilter.getRootId(
                 getTabById(mStripTabs[curIndex + direction].getId()));
-        int numTabsToSkip = (int) ((Math.abs(offset) - mTabMarginWidth) / mCachedTabWidth);
+        float effectiveWidth = mCachedTabWidth - mTabOverlapWidth;
+        float flipThreshold = effectiveWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        float minFlipOffset = mTabMarginWidth + flipThreshold;
+        int numTabsToSkip =
+                1 + (int) Math.floor((Math.abs(offset) - minFlipOffset) / effectiveWidth);
 
         mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destinationTabId, true);
 
