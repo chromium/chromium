@@ -184,7 +184,7 @@ public class Profile implements BrowserContextHandle {
     /**
      * @return Whether or not the native side profile exists.
      */
-    @VisibleForTesting
+    // @VisibleForTesting (Temporarily allow calling this to debug https://crbug.com/1346710).
     public boolean isNativeInitialized() {
         return mNativeProfileAndroid != 0;
     }
