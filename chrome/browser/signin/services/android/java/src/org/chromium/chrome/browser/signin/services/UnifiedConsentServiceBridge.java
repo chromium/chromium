@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,7 +55,8 @@ public class UnifiedConsentServiceBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         boolean isUrlKeyedAnonymizedDataCollectionEnabled(Profile profile);
         void setUrlKeyedAnonymizedDataCollectionEnabled(Profile profile, boolean enabled);
         boolean isUrlKeyedAnonymizedDataCollectionManaged(Profile profile);

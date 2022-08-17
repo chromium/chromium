@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
@@ -40,15 +39,6 @@ public class PrivacyGuidePagerAdapter extends RecyclerView.Adapter<RecyclerView.
         private View mView;
 
         public CookiesViewHolder(View view) {
-            super(view);
-            mView = view;
-        }
-    }
-
-    class MSBBViewHolder extends RecyclerView.ViewHolder {
-        private View mView;
-
-        public MSBBViewHolder(View view) {
             super(view);
             mView = view;
         }

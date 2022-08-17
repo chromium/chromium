@@ -1065,6 +1065,7 @@ robolectric_binary("chrome_junit_tests") {
     "//chrome/browser/policy/android:junit",
     "//chrome/browser/preferences:java",
     "//chrome/browser/preferences:preferences_junit_tests",
+    "//chrome/browser/privacy_guide/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safety_check/android:java",
     "//chrome/browser/safety_check/android:junit",
