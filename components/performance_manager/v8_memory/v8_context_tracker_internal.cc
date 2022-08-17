@@ -110,7 +110,11 @@ RemoteFrameData::~RemoteFrameData() {
   // scope on their own.
   if (execution_context_data_->ClearRemoteFrameData(PassKey()) &&
       execution_context_data_->IsTracked()) {
-    process_data_->data_store()->Destroy(execution_context_data_->GetToken());
+    // Reset `execution_context_data_` to nullptr because it will be destroyed
+    // using the token below.
+    blink::ExecutionContextToken token = execution_context_data_->GetToken();
+    execution_context_data_ = nullptr;
+    process_data_->data_store()->Destroy(token);
   }
 }
 

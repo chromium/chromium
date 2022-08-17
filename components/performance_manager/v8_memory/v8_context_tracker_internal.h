@@ -118,7 +118,7 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
  private:
   const raw_ptr<ProcessData> process_data_;
 
-  raw_ptr<RemoteFrameData, DanglingUntriaged> remote_frame_data_ = nullptr;
+  raw_ptr<RemoteFrameData> remote_frame_data_ = nullptr;
 
   // The count of V8ContextDatas keeping this object alive.
   size_t v8_context_count_ = 0;
@@ -166,8 +166,7 @@ class RemoteFrameData : public base::LinkNode<RemoteFrameData> {
  private:
   const raw_ptr<ProcessData> process_data_;
   const blink::RemoteFrameToken token_;
-  const raw_ptr<ExecutionContextData, DanglingUntriaged>
-      execution_context_data_;
+  raw_ptr<ExecutionContextData> execution_context_data_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
