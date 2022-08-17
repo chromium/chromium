@@ -368,6 +368,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.ExternalPointerTableCompactionOutcome"
+    enum="V8ExternalPointerTableCompactionOutcome" expires_after="2023-02-12">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    The outcome of external pointer table compaction.
+
+    External pointer table compaction may only succeed partially or fail
+    entirely if the application allocates lots of external pointer table entries
+    while the table is being compacted. This histogram records this outcome at
+    the end of a table-compacting GC. The frequency of such failures influences
+    the heuristics used to decide when to compact the table, and to some degree
+    also the compaction algorithm itself.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.CollectionRate.Full" units="%"
     expires_after="M109">
   <owner>nikolaos@chromium.org</owner>

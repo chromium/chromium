@@ -98373,6 +98373,21 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
+<enum name="V8ExternalPointerTableCompactionOutcome">
+  <int value="0" label="kSuccess">Table compaction was successful.</int>
+  <int value="1" label="kPartialSuccess">
+    Table compaction was partially successful: marking finished successfully,
+    and so the table was successfully compacted, but some of the entries in the
+    evacuated area were already in use again during sweeping, preventing the
+    underlying OS pages from being deallocated.
+  </int>
+  <int value="2" label="kAbortedDuringMarking">
+    Table compaction was aborted during marking because not enough evacuation
+    entries (the new entries into which evacuated entries are moved) could be
+    allocated.
+  </int>
+</enum>
+
 <enum name="V8InitializerLoadV8SnapshotResult">
   <int value="0" label="SUCCESS">Load succeeded</int>
   <int value="1" label="FAILED_OPEN">Failure to open snapshot file</int>
