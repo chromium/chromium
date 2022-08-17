@@ -30,6 +30,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSkipFrameCountForLazyEmbeds;
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbedUrls;
+enum class AutomaticLazyFrameLoadingToEmbedLoadingStrategy {
+  kAllowList,
+  kNonAds,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
+    kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam;
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature kBatchFetchRequests;
 BLINK_COMMON_EXPORT extern const base::Feature

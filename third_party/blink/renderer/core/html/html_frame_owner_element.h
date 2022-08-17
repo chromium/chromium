@@ -219,6 +219,9 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     is_swapping_frames_ = is_swapping;
   }
 
+  // Checks if the passed `url` is eligible for automatic lazy-loading.
+  // Also this method checks the url is cross-origin or not.
+  bool IsEligibleForLazyEmbeds(const KURL& url) const;
   bool IsEligibleForLazyAds(const KURL& url);
   void MaybeSetTimeoutToStartFrameLoading(
       const KURL& url,

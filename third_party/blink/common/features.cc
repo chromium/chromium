@@ -62,6 +62,22 @@ const base::FeatureParam<int> kSkipFrameCountForLazyEmbeds(
 const base::Feature kAutomaticLazyFrameLoadingToEmbedUrls{
     "AutomaticLazyFrameLoadingToEmbedUrls", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Define the strategy for LazyEmbeds to decide which frames we apply
+// lazy-loading or not. If the loading strategy is kAllowList, the detection
+// logic is based on the allowlist that kAutomaticLazyFrameLoadingToEmbedUrls
+// passes to the client. If the strategy is kNonAds, the detection logic is
+// based on the Ad Tagging in chromium.
+const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>::
+    Option kAutomaticLazyFrameLoadingToEmbedLoadingStrategies[] = {
+        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
+         "allow_list"},
+        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kNonAds, "non_ads"}};
+const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
+    kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam{
+        &kAutomaticLazyFrameLoadingToEmbedUrls, "strategy",
+        AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
+        &kAutomaticLazyFrameLoadingToEmbedLoadingStrategies};
+
 // Allows pages with DedicatedWorker to stay eligible for the back/forward
 // cache.
 const base::Feature kBackForwardCacheDedicatedWorker{

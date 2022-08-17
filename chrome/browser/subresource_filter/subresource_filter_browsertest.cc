@@ -1200,6 +1200,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 struct AutomaticLazyLoadFrameBrowserTestParam {
   bool enable_lazy_ads_and_embeds;
   bool enable_lazy_embed_urls;
+  bool enable_lazy_embed_with_non_ads_strategy;
   int skip_frame_count;
   int number_of_ads;
   int number_of_embeds;
@@ -1243,6 +1244,19 @@ class AutomaticLazyLoadFrameBrowserTest
           /*disabled_features=*/
           {blink::features::kAutomaticLazyFrameLoadingToAds,
            blink::features::kAutomaticLazyFrameLoadingToEmbeds});
+    } else if (GetParam().enable_lazy_embed_with_non_ads_strategy) {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::kAutomaticLazyFrameLoadingToEmbedUrls,
+            {{blink::features::
+                  kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam.name,
+              blink::features::
+                  kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam
+                      .options[1]
+                      .name}}},
+           {blink::features::kAutomaticLazyFrameLoadingToEmbeds,
+            {{blink::features::kTimeoutMillisForLazyEmbeds.name, "10000"}}}},
+          /**disabled_features=*/{});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
@@ -1416,6 +1430,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 0,
@@ -1426,6 +1441,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 0,
             .number_of_embeds = 2,
@@ -1436,6 +1452,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
@@ -1446,6 +1463,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = false,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
@@ -1456,6 +1474,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 0,
@@ -1466,6 +1485,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 0,
             .number_of_embeds = 2,
@@ -1476,6 +1496,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
@@ -1486,6 +1507,7 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 1,
             .number_of_ads = 2,
             .number_of_embeds = 0,
@@ -1496,12 +1518,25 @@ const AutomaticLazyLoadFrameBrowserTestParam
         {
             .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .enable_lazy_embed_with_non_ads_strategy = false,
             .skip_frame_count = 1,
             .number_of_ads = 0,
             .number_of_embeds = 2,
             .expected_child_frame_load_count = 4,
             .expected_lazy_ads_frame_count_in_ukm = 0,
             .expected_lazy_embeds_frame_count_in_ukm = 2,
+        },
+        {
+            .enable_lazy_ads_and_embeds = false,
+            .enable_lazy_embed_urls = false,
+            .enable_lazy_embed_with_non_ads_strategy = true,
+            .skip_frame_count = 0,
+            .number_of_ads = 2,
+            .number_of_embeds = 2,
+            .expected_child_frame_load_count = 4,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            // number_of_embeds + kNonAdNonEmbed frame added in the test code.
+            .expected_lazy_embeds_frame_count_in_ukm = 3,
         },
 };
 
