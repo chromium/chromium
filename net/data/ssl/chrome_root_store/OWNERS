@@ -6,3 +6,4 @@ per-file root_store.textproto=mdb.chrome-pki-metadata@google.com
 
 per-file root_store.certs=mdb.chrome-pki-metadata-release-jobs@google.com
 per-file root_store.textproto=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file root_store.md=mdb.chrome-pki-metadata-release-jobs@google.com
