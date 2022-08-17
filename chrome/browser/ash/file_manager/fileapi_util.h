@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -22,11 +23,6 @@
 #include "url/origin.h"
 
 class Profile;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}  // namespace base
 
 namespace content {
 class RenderFrameHost;
@@ -164,10 +160,10 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
     FileChooserFileInfoListCallback callback);
 
 // Converts EntryDefinition to something File API stack can understand.
-std::unique_ptr<base::DictionaryValue> ConvertEntryDefinitionToValue(
+base::Value::Dict ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition);
 
-std::unique_ptr<base::ListValue> ConvertEntryDefinitionListToListValue(
+base::Value::List ConvertEntryDefinitionListToListValue(
     const EntryDefinitionList& entry_definition_list);
 
 // Checks if a directory exists at |directory_path| absolute path.

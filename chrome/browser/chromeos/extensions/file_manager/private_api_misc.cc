@@ -237,7 +237,7 @@ FileManagerPrivateLogoutUserForReauthenticationFunction::Run() {
   }
 
   chrome::AttemptUserExit();
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -270,7 +270,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.folder_shortcuts = folder_shortcuts;
 
   return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+      WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
 ExtensionFunction::ResponseAction
@@ -304,7 +304,7 @@ FileManagerPrivateSetPreferencesFunction::Run() {
                      std::move(folder_shortcuts));
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 // Collection of active ZipFileCreator objects, indexed by ZIP operation ID.
@@ -408,8 +408,7 @@ void FileManagerPrivateInternalZipSelectionFunction::ZipItems() {
   // Start the ZipFileCreator.
   creator->Start(LaunchFileUtilService());
 
-  Respond(TwoArguments(base::Value(zip_id),
-                       base::Value(static_cast<double>(total_bytes_))));
+  Respond(WithArguments(zip_id, static_cast<double>(total_bytes_)));
 }
 
 FileManagerPrivateCancelZipFunction::FileManagerPrivateCancelZipFunction() =
@@ -435,7 +434,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateCancelZipFunction::Run() {
   // Tell the ZipFileCreator to stop.
   creator->Stop();
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 FileManagerPrivateGetZipProgressFunction::
@@ -461,8 +460,8 @@ FileManagerPrivateGetZipProgressFunction::ZipProgressValue(
     DCHECK_GT(n, 0u);
   }
 
-  return TwoArguments(base::Value(static_cast<int>(progress.result)),
-                      base::Value(static_cast<double>(progress.bytes)));
+  return WithArguments(static_cast<int>(progress.result),
+                       static_cast<double>(progress.bytes));
 }
 
 ExtensionFunction::ResponseAction
@@ -520,7 +519,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
       return RespondNow(Error(kUnknownErrorDoNotUse));
   }
   zoom::PageZoom::Zoom(GetSenderWebContents(), zoom_type);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 FileManagerPrivateRequestWebStoreAccessTokenFunction::
@@ -574,7 +573,7 @@ void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
     DCHECK(access_token == auth_service_->access_token());
     if (logger)
       logger->Log(logging::LOG_INFO, "CWS OAuth token fetch succeeded.");
-    Respond(OneArgument(base::Value(access_token)));
+    Respond(WithArguments(access_token));
   } else {
     if (logger) {
       logger->Log(logging::LOG_ERROR,
@@ -646,7 +645,7 @@ FileManagerPrivateOpenInspectorFunction::Run() {
           base::StringPrintf("Unexpected inspection type(%d) is specified.",
                              static_cast<int>(params->type))));
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -662,7 +661,7 @@ FileManagerPrivateOpenSettingsSubpageFunction::Run() {
   } else {
     chrome::ShowSettingsSubPageForProfile(profile, params->sub_page);
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 FileManagerPrivateInternalGetMimeTypeFunction::
@@ -696,7 +695,7 @@ FileManagerPrivateInternalGetMimeTypeFunction::Run() {
 
 void FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType(
     const std::string& mimeType) {
-  Respond(OneArgument(base::Value(mimeType)));
+  Respond(WithArguments(mimeType));
 }
 
 FileManagerPrivateGetProvidersFunction::
@@ -762,7 +761,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   if (!service->RequestMount(ProviderId::FromString(params->provider_id)))
     return RespondNow(Error("Failed to request a new mount."));
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 FileManagerPrivateConfigureVolumeFunction::
@@ -822,7 +821,7 @@ void FileManagerPrivateConfigureVolumeFunction::OnCompleted(
     return;
   }
 
-  Respond(NoArguments());
+  Respond(WithArguments());
 }
 
 FileManagerPrivateMountCrostiniFunction::
@@ -875,7 +874,7 @@ void FileManagerPrivateMountCrostiniFunction::MountCallback(
         base::StringPrintf("Error mounting crostini container: %d", result)));
     return;
   }
-  Respond(NoArguments());
+  Respond(WithArguments());
 }
 
 FileManagerPrivateInternalImportCrostiniImageFunction::
@@ -911,7 +910,7 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
             }
           },
           path));
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -943,7 +942,7 @@ FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
 
 void FileManagerPrivateInternalSharePathsWithCrostiniFunction::
     SharePathsCallback(bool success, const std::string& failure_reason) {
-  Respond(success ? NoArguments() : Error(failure_reason));
+  Respond(success ? WithArguments() : Error(failure_reason));
 }
 
 ExtensionFunction::ResponseAction
@@ -971,7 +970,7 @@ FileManagerPrivateInternalUnsharePathWithCrostiniFunction::Run() {
 
 void FileManagerPrivateInternalUnsharePathWithCrostiniFunction::
     UnsharePathCallback(bool success, const std::string& failure_reason) {
-  Respond(success ? NoArguments() : Error(failure_reason));
+  Respond(success ? WithArguments() : Error(failure_reason));
 }
 
 ExtensionFunction::ResponseAction
@@ -1013,8 +1012,7 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
     entry.Set("fileIsDirectory", true);
     entries.Append(std::move(entry));
   }
-  return RespondNow(TwoArguments(base::Value(std::move(entries)),
-                                 base::Value(first_for_session)));
+  return RespondNow(WithArguments(std::move(entries), first_for_session));
 }
 
 ExtensionFunction::ResponseAction
@@ -1195,7 +1193,7 @@ void FileManagerPrivateInternalExecuteCustomActionFunction::OnCompleted(
     return;
   }
 
-  Respond(NoArguments());
+  Respond(WithArguments());
 }
 
 FileManagerPrivateInternalGetRecentFilesFunction::
@@ -1285,9 +1283,9 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
             entry_definition_list) {
   DCHECK(entry_definition_list);
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
-      file_manager::util::ConvertEntryDefinitionListToListValue(
-          *entry_definition_list))));
+  Respond(
+      WithArguments(file_manager::util::ConvertEntryDefinitionListToListValue(
+          *entry_definition_list)));
 }
 
 // TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
@@ -1301,14 +1299,14 @@ FileManagerPrivateGetFrameColorFunction::Run() {
         dark_light_mode_controller->IsDarkModeEnabled(),
         /*use_debug_colors=*/false));
   }
-  return RespondNow(OneArgument(base::Value(frame_color)));
+  return RespondNow(WithArguments(frame_color));
 }
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateIsTabletModeEnabledFunction::Run() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();
-  return RespondNow(OneArgument(
-      base::Value(tablet_mode ? tablet_mode->InTabletMode() : false)));
+  return RespondNow(
+      WithArguments(tablet_mode ? tablet_mode->InTabletMode() : false));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {
@@ -1325,7 +1323,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
@@ -1360,7 +1358,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                launch_params);
 
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction
@@ -1376,7 +1374,7 @@ FileManagerPrivateSendFeedbackFunction::Run() {
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/"chromeos-files-app",
                            /*extra_diagnostics=*/std::string());
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace extensions

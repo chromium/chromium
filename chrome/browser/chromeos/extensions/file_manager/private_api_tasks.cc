@@ -258,7 +258,7 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   // TODO(gspencer): Fix file manager so that it never tries to set default in
   // cases where extensionless local files are part of the selection.
   if (suffixes.empty() && mime_types.empty()) {
-    return RespondNow(OneArgument(base::Value(true)));
+    return RespondNow(WithArguments(true));
   }
 
   file_manager::file_tasks::TaskType task_type =
@@ -271,7 +271,7 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
 
   file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffixes,
                                               mime_types);
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace extensions

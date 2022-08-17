@@ -326,7 +326,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
 void OnSearchDriveFs(
     scoped_refptr<ExtensionFunction> function,
     bool filter_dirs,
-    base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback,
+    base::OnceCallback<void(absl::optional<base::Value::List>)> callback,
     drive::FileError error,
     absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   Profile* const profile =
@@ -334,12 +334,12 @@ void OnSearchDriveFs(
   drive::DriveIntegrationService* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile);
   if (!integration_service) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   if (error != drive::FILE_ERROR_OK || !items.has_value()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -352,21 +352,20 @@ void OnSearchDriveFs(
       integration_service->GetMountPointPath().BaseName().value();
   const base::FilePath root("/");
 
-  auto result = std::make_unique<base::ListValue>();
+  base::Value::List result;
   for (const auto& item : *items) {
     base::FilePath path;
     if (!root.AppendRelativePath(item->path, &path))
       path = item->path;
-    base::DictionaryValue entry;
-    entry.SetKey("fileSystemName", base::Value(fs_name));
-    entry.SetKey("fileSystemRoot", base::Value(fs_root));
-    entry.SetKey("fileFullPath", base::Value(item->path.AsUTF8Unsafe()));
+    base::Value::Dict entry;
+    entry.Set("fileSystemName", fs_name);
+    entry.Set("fileSystemRoot", fs_root);
+    entry.Set("fileFullPath", item->path.AsUTF8Unsafe());
     bool is_dir = drivefs::IsADirectory(item->metadata->type);
-    entry.SetKey("fileIsDirectory", base::Value(is_dir));
-    entry.SetKey(kAvailableOfflinePropertyName,
-                 base::Value(item->metadata->available_offline));
+    entry.Set("fileIsDirectory", is_dir);
+    entry.Set(kAvailableOfflinePropertyName, item->metadata->available_offline);
     if (!filter_dirs || !is_dir) {
-      result->Append(std::move(entry));
+      result.Append(std::move(entry));
     }
   }
 
@@ -377,7 +376,7 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
     scoped_refptr<ExtensionFunction> function,
     drivefs::mojom::QueryParametersPtr query,
     bool filter_dirs,
-    base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {
+    base::OnceCallback<void(absl::optional<base::Value::List>)> callback) {
   drive::DriveIntegrationService* const integration_service =
       drive::util::GetIntegrationServiceByProfile(
           Profile::FromBrowserContext(function->browser_context()));
@@ -600,7 +599,7 @@ void FileManagerPrivateInternalPinDriveFileFunction::OnPinStateSet(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (error == drive::FILE_ERROR_OK) {
-    Respond(NoArguments());
+    Respond(WithArguments());
   } else {
     Respond(Error(drive::FileErrorToString(error)));
   }
@@ -638,7 +637,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
 }
 
 void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
-    std::unique_ptr<base::ListValue> results) {
+    absl::optional<base::Value::List> results) {
   if (!results) {
     UmaEmitSearchOutcome(
         false, !is_offline_,
@@ -647,16 +646,16 @@ void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
     Respond(Error("No search results"));
     return;
   }
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetKey("entries", std::move(*results));
+  base::Value::Dict result;
+  result.Set("entries", std::move(*results));
   // Search queries are capped at 100 of items anyway and pagination is
   // never actually used, so no need to fill this.
-  result->SetKey("nextFeed", base::Value(""));
+  result.Set("nextFeed", "");
   UmaEmitSearchOutcome(
       true, !is_offline_,
       FileManagerPrivateSearchDriveMetadataFunction::SearchType::kText,
       operation_start_);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(WithArguments(std::move(result)));
 }
 
 FileManagerPrivateSearchDriveMetadataFunction::
@@ -737,7 +736,7 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
 
 void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
     const std::string& query_text,
-    std::unique_ptr<base::ListValue> results) {
+    absl::optional<base::Value::List> results) {
   if (!results) {
     UmaEmitSearchOutcome(false, !is_offline_, search_type_, operation_start_);
     Respond(Error("No search results"));
@@ -759,32 +758,32 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
             keyword));
   }
 
-  auto results_list = std::make_unique<base::ListValue>();
-  for (auto& entry : results->GetListDeprecated()) {
-    base::DictionaryValue dict;
+  base::Value::List results_list;
+  for (auto& item : *results) {
+    base::Value::Dict& entry = item.GetDict();
+
+    base::Value::Dict dict;
     std::string highlight;
-    base::Value* value = entry.FindKey("fileFullPath");
-    if (value && value->is_string()) {
-      highlight = value->GetString();
+    std::string* value = entry.FindString("fileFullPath");
+    if (value) {
+      highlight = *value;
       base::FilePath path(highlight);
       if (!drive::internal::FindAndHighlight(path.BaseName().value(), queries,
                                              &highlight)) {
         highlight = path.BaseName().value();
       }
     }
-    if (base::Value* availableOffline = entry.FindKeyOfType(
-            kAvailableOfflinePropertyName, base::Value::Type::BOOLEAN)) {
-      dict.SetKey(kAvailableOfflinePropertyName, std::move(*availableOffline));
-      entry.RemoveKey(kAvailableOfflinePropertyName);
+    if (auto availableOffline = entry.FindBool(kAvailableOfflinePropertyName)) {
+      dict.Set(kAvailableOfflinePropertyName, *availableOffline);
+      entry.Remove(kAvailableOfflinePropertyName);
     }
-    dict.SetKey("entry", std::move(entry));
-    dict.SetKey("highlightedBaseName", base::Value(highlight));
-    results_list->Append(std::move(dict));
+    dict.Set("entry", std::move(entry));
+    dict.Set("highlightedBaseName", highlight);
+    results_list.Append(std::move(dict));
   }
 
   UmaEmitSearchOutcome(true, !is_offline_, search_type_, operation_start_);
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(results_list))));
+  Respond(WithArguments(std::move(results_list)));
 }
 
 ExtensionFunction::ResponseAction
@@ -906,9 +905,8 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnTokenFetched(
     return;
   }
 
-  Respond(OneArgument(base::Value(
-      download_url_.Resolve("?alt=media&access_token=" + access_token)
-          .spec())));
+  Respond(WithArguments(
+      download_url_.Resolve("?alt=media&access_token=" + access_token).spec()));
 }
 
 ExtensionFunction::ResponseAction
@@ -973,7 +971,7 @@ FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   } else {
     return RespondNow(Error("Could not find event router"));
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -987,7 +985,7 @@ FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
       integration_service->PollHostedFilePinStates();
     }
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -996,7 +994,7 @@ FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
     chromeos::ManageMirrorSyncDialog::Show(
         Profile::FromBrowserContext(browser_context()));
   }
-  return RespondNow(NoArguments());
+  return RespondNow(WithArguments());
 }
 
 }  // namespace extensions

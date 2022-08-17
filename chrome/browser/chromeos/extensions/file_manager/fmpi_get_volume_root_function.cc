@@ -82,8 +82,7 @@ void FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone(
     Respond(Error("Failed to resolve volume's root directory: *",
                   base::NumberToString(entry_definition.error)));
   } else {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(
-        ConvertEntryDefinitionToValue(entry_definition))));
+    Respond(WithArguments(ConvertEntryDefinitionToValue(entry_definition)));
   }
 }
 

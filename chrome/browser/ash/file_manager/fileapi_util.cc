@@ -16,7 +16,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -604,25 +603,23 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
       context, origin, selected_info_list, std::move(callback));
 }
 
-std::unique_ptr<base::DictionaryValue> ConvertEntryDefinitionToValue(
+base::Value::Dict ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition) {
-  auto entry = std::make_unique<base::DictionaryValue>();
-  entry->SetStringKey("fileSystemName", entry_definition.file_system_name);
-  entry->SetStringKey("fileSystemRoot", entry_definition.file_system_root_url);
-  entry->SetStringKey(
+  base::Value::Dict entry;
+  entry.Set("fileSystemName", entry_definition.file_system_name);
+  entry.Set("fileSystemRoot", entry_definition.file_system_root_url);
+  entry.Set(
       "fileFullPath",
       base::FilePath("/").Append(entry_definition.full_path).AsUTF8Unsafe());
-  entry->SetBoolKey("fileIsDirectory", entry_definition.is_directory);
+  entry.Set("fileIsDirectory", entry_definition.is_directory);
   return entry;
 }
 
-std::unique_ptr<base::ListValue> ConvertEntryDefinitionListToListValue(
+base::Value::List ConvertEntryDefinitionListToListValue(
     const EntryDefinitionList& entry_definition_list) {
-  auto entries = std::make_unique<base::ListValue>();
-  for (auto it = entry_definition_list.begin();
-       it != entry_definition_list.end(); ++it) {
-    entries->GetList().Append(
-        base::Value::FromUniquePtrValue(ConvertEntryDefinitionToValue(*it)));
+  base::Value::List entries;
+  for (const auto& entry : entry_definition_list) {
+    entries.Append(ConvertEntryDefinitionToValue(entry));
   }
   return entries;
 }

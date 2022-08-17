@@ -97,7 +97,7 @@ class FileManagerPrivateSearchDriveFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnSearchDriveFs(std::unique_ptr<base::ListValue> results);
+  void OnSearchDriveFs(absl::optional<base::Value::List> results);
 
   base::TimeTicks operation_start_;
   bool is_offline_;
@@ -126,7 +126,7 @@ class FileManagerPrivateSearchDriveMetadataFunction
 
  private:
   void OnSearchDriveFs(const std::string& query_text,
-                       std::unique_ptr<base::ListValue> results);
+                       absl::optional<base::Value::List> results);
 
   base::TimeTicks operation_start_;
   SearchType search_type_;

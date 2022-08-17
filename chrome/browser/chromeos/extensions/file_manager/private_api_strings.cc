@@ -27,7 +27,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
   AddFileManagerFeatureStrings(
       locale, Profile::FromBrowserContext(browser_context()), &dict);
 
-  return RespondNow(OneArgument(base::Value(std::move(dict))));
+  return RespondNow(WithArguments(std::move(dict)));
 }
 
 }  // namespace extensions

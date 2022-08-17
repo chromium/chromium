@@ -72,7 +72,7 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
     return;
   }
 
-  Respond(OneArgument(base::Value(mime_type)));
+  Respond(WithArguments(mime_type));
 }
 
 FileManagerPrivateInternalGetContentMetadataFunction::
@@ -196,7 +196,8 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
     attached_images_list->Append(std::move(media_thumbnail_image));
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dictionary))));
+  Respond(
+      WithArguments(base::Value::FromUniquePtrValue(std::move(dictionary))));
 }
 
 }  // namespace extensions

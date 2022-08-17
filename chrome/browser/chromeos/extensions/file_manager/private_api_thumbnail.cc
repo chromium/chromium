@@ -120,7 +120,7 @@ FileManagerPrivateGetThumbnailFunction::
 
 void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
     std::string thumbnail_data_url) {
-  Respond(OneArgument(base::Value(std::move(thumbnail_data_url))));
+  Respond(WithArguments(std::move(thumbnail_data_url)));
 }
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
@@ -180,7 +180,7 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
 void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    Respond(OneArgument(base::Value("")));
+    Respond(WithArguments(""));
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -334,7 +334,7 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
   }
 
   if (!metadata.supports_thumbnail) {
-    Respond(OneArgument(base::Value("")));
+    Respond(WithArguments(""));
     return;
   }
 
