@@ -408,25 +408,6 @@
             ]
           }
         ]
-      },
-      {
-        "name": "requestExtension",
-        "description": "Ask Chrome to send the extension request to the Admin Console.",
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "description": "The id of the extension to be requested. The webstore should call this after a call to getExtensionStatus"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              { "name": "status", "$ref": "ExtensionInstallStatus" }
-            ]
-          }
-        ]
       }
     ]
   }

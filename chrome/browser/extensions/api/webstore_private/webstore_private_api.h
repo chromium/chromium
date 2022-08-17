@@ -391,24 +391,6 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
-class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("webstorePrivate.requestExtension",
-                             WEBSTOREPRIVATE_REQUESTEXTENSION)
-  WebstorePrivateRequestExtensionFunction();
-
-  WebstorePrivateRequestExtensionFunction(
-      const WebstorePrivateRequestExtensionFunction&) = delete;
-  WebstorePrivateRequestExtensionFunction& operator=(
-      const WebstorePrivateRequestExtensionFunction&) = delete;
-
- private:
-  ~WebstorePrivateRequestExtensionFunction() override;
-
-  // Extensionfunction:
-  ExtensionFunction::ResponseAction Run() override;
-};
-
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_

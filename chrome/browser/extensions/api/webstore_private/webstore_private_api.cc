@@ -91,7 +91,6 @@ namespace IsPendingCustodianApproval =
     api::webstore_private::IsPendingCustodianApproval;
 namespace IsInIncognitoMode = api::webstore_private::IsInIncognitoMode;
 namespace LaunchEphemeralApp = api::webstore_private::LaunchEphemeralApp;
-namespace RequestExtension = api::webstore_private::RequestExtension;
 namespace SetStoreLogin = api::webstore_private::SetStoreLogin;
 
 namespace {
@@ -1321,32 +1320,6 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   Respond(ArgumentList(GetExtensionStatus::Results::Create(api_status)));
-}
-
-WebstorePrivateRequestExtensionFunction::
-    WebstorePrivateRequestExtensionFunction() = default;
-WebstorePrivateRequestExtensionFunction::
-    ~WebstorePrivateRequestExtensionFunction() = default;
-
-ExtensionFunction::ResponseAction
-WebstorePrivateRequestExtensionFunction::Run() {
-  std::unique_ptr<RequestExtension::Params> params(
-      RequestExtension::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const ExtensionId& extension_id = params->id;
-
-  if (!crx_file::id_util::IdIsValid(extension_id))
-    return RespondNow(Error(kWebstoreInvalidIdError));
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  ExtensionInstallStatus status =
-      AddExtensionToPendingList(extension_id, profile, std::string());
-
-  api::webstore_private::ExtensionInstallStatus api_status =
-      ConvertExtensionInstallStatusForAPI(status);
-  return RespondNow(
-      ArgumentList(RequestExtension::Results::Create(api_status)));
 }
 
 }  // namespace extensions
