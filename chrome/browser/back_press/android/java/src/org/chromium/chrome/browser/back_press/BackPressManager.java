@@ -49,6 +49,7 @@ public class BackPressManager {
             put(Type.SHOW_READING_LIST, 14);
             put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15);
             put(Type.FIND_TOOLBAR, 16);
+            put(Type.LOCATION_BAR, 17);
             // Add new one here.
         }
     };

@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -186,6 +187,12 @@ public class SearchActivity extends AsyncInitializationActivity
             loadUrl(url, transition, postDataType, postData);
             return true;
         };
+
+        BackPressManager backPressManager = null;
+        if (BackPressManager.isEnabled()) {
+            backPressManager = new BackPressManager();
+            getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
+        }
         // clang-format off
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
                 mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
@@ -202,7 +209,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*merchantTrustSignalsCoordinatorSupplier=*/null,
                 new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>(),
                         getModalDialogManagerSupplier()), null,
-                ChromePureJavaExceptionReporter::postReportJavaException);
+                ChromePureJavaExceptionReporter::postReportJavaException, backPressManager);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

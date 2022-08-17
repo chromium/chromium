@@ -10337,11 +10337,12 @@ others/histograms.xml -->
   <int value="9" label="(09) TAB_MODAL_HANDLER"/>
   <int value="10" label="(10) TAB_SWITCHER_TO_BROWSING"/>
   <int value="11" label="(11) CLOSE_WATCHER"/>
-  <int value="12" label="(13) TOOLBAR_TAB_CONTROLLER"/>
-  <int value="13" label="(14) TAB_RETURN_TO_CHROME_START_SURFACE"/>
-  <int value="14" label="(15) SHOW_READING_LIST"/>
-  <int value="15" label="(16) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="12" label="(14) TOOLBAR_TAB_CONTROLLER"/>
+  <int value="13" label="(15) TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="(16) SHOW_READING_LIST"/>
+  <int value="15" label="(17) MINIMIZE_APP_AND_CLOSE_TAB"/>
   <int value="16" label="(12) FIND_TOOLBAR"/>
+  <int value="17" label="(13) LOCATION_BAR"/>
 </enum>
 
 <enum name="BadMessageReasonAutofill">

@@ -26,7 +26,7 @@ public interface BackPressHandler {
     @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.SCENE_OVERLAY,
             Type.START_SURFACE_MEDIATOR, Type.SELECTION_POPUP, Type.MANUAL_FILLING,
             Type.TAB_MODAL_HANDLER, Type.FULLSCREEN, Type.TAB_SWITCHER_TO_BROWSING,
-            Type.CLOSE_WATCHER, Type.FIND_TOOLBAR, Type.TOOLBAR_TAB_CONTROLLER,
+            Type.CLOSE_WATCHER, Type.FIND_TOOLBAR, Type.LOCATION_BAR, Type.TOOLBAR_TAB_CONTROLLER,
             Type.TAB_RETURN_TO_CHROME_START_SURFACE, Type.BOTTOM_SHEET, Type.SHOW_READING_LIST,
             Type.MINIMIZE_APP_AND_CLOSE_TAB})
     @Retention(RetentionPolicy.SOURCE)
@@ -44,10 +44,11 @@ public interface BackPressHandler {
         int TAB_SWITCHER_TO_BROWSING = 10;
         int CLOSE_WATCHER = 11;
         int FIND_TOOLBAR = 12;
-        int TOOLBAR_TAB_CONTROLLER = 13;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 14;
-        int SHOW_READING_LIST = 15;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 16;
+        int LOCATION_BAR = 13;
+        int TOOLBAR_TAB_CONTROLLER = 14;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 15;
+        int SHOW_READING_LIST = 16;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 17;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

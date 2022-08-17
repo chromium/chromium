@@ -281,6 +281,10 @@ public abstract class UrlBar extends AutocompleteEditText {
         mTextContextMenuDelegate = delegate;
     }
 
+    /**
+     * When predictive back gesture is enabled, keycode_back will not be sent from Android OS
+     * starting from T. {@link LocationBarMediator} will intercept the back press instead.
+     */
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_UP) {

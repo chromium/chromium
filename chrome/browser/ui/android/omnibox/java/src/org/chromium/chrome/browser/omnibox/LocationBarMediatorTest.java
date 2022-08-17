@@ -60,6 +60,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -570,7 +571,9 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).clearFocus();
     }
 
+    // KEYCODE_BACK will not be sent from Android OS starting from T.
     @Test
+    @DisableIf.Build(sdk_is_greater_than = 32) // S_V2
     public void testOnKey_autocompleteHandles() {
         doReturn(true)
                 .when(mAutocompleteCoordinator)
@@ -580,6 +583,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    @DisableIf.Build(sdk_is_greater_than = 32) // S_V2
     public void testOnKey_back() {
         doReturn(mKeyDispatcherState).when(mLocationBarLayout).getKeyDispatcherState();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
