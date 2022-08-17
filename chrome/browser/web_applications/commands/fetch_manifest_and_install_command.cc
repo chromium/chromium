@@ -189,11 +189,11 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   app_id_ = GenerateAppId(install_info_->manifest_id, install_info_->start_url);
 
   command_manager()->ScheduleCommand(std::make_unique<WebAppInstallCommand>(
-      app_id_, Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      install_finalizer_, std::move(data_retriever_), registrar_,
-      install_surface_, web_contents_, std::move(dialog_callback_),
-      std::move(install_callback_), std::move(install_info_),
-      std::move(opt_manifest), manifest_url, flow_));
+      app_id_, install_surface_, std::move(install_info_),
+      std::move(opt_manifest), manifest_url, flow_, std::move(dialog_callback_),
+      std::move(install_callback_),
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      install_finalizer_, std::move(data_retriever_), web_contents_));
   SignalCompletionAndSelfDestruct(CommandResult::kSuccess, base::DoNothing());
 }
 

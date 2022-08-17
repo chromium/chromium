@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_WEB_APP_WITH_PARAMS_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_WEB_APP_WITH_PARAMS_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_EXTERNALLY_MANAGED_INSTALL_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_EXTERNALLY_MANAGED_INSTALL_COMMAND_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
@@ -24,20 +28,17 @@ namespace web_app {
 class NoopLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
-class WebAppRegistrar;
 
 // Command to install web_apps from param by the ExternallyInstalledAppsManager
-class InstallWebAppWithParamsCommand : public WebAppCommand {
+class ExternallyManagedInstallCommand : public WebAppCommand {
  public:
-  InstallWebAppWithParamsCommand(
-      base::WeakPtr<content::WebContents> contents,
-      const WebAppInstallParams& install_params,
-      webapps::WebappInstallSource install_surface,
-      WebAppInstallFinalizer* install_finalizer,
-      WebAppRegistrar* registrar,
+  ExternallyManagedInstallCommand(
+      const ExternalInstallOptions& external_install_options,
       OnceInstallCallback callback,
+      base::WeakPtr<content::WebContents> contents,
+      WebAppInstallFinalizer* install_finalizer,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
-  ~InstallWebAppWithParamsCommand() override;
+  ~ExternallyManagedInstallCommand() override;
 
   Lock& lock() const override;
 
@@ -46,6 +47,8 @@ class InstallWebAppWithParamsCommand : public WebAppCommand {
   void OnShutdown() override;
 
   base::Value ToDebugValue() const override;
+
+  void SetOnLockUpgradedCallbackForTesting(base::OnceClosure callback);
 
  private:
   void Abort(webapps::InstallResultCode code);
@@ -56,23 +59,42 @@ class InstallWebAppWithParamsCommand : public WebAppCommand {
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     bool is_installable);
+  void OnIconsRetrievedUpgradeLock(
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
 
-  std::unique_ptr<NoopLock> lock_;
-  base::WeakPtr<content::WebContents> web_contents_;
+  void OnLockUpgradedFinalizeInstall();
+
+  void OnInstallFinalized(const AppId& app_id,
+                          webapps::InstallResultCode code,
+                          OsHooksErrors os_hooks_errors);
+
+  std::unique_ptr<NoopLock> noop_lock_;
+
+  std::unique_ptr<AppLock> app_lock_ = nullptr;
+
   WebAppInstallParams install_params_;
   webapps::WebappInstallSource install_surface_;
-  base::raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  base::raw_ptr<WebAppRegistrar> registrar_;
   OnceInstallCallback install_callback_;
+
+  base::WeakPtr<content::WebContents> web_contents_;
+  base::raw_ptr<WebAppInstallFinalizer> install_finalizer_;
 
   bool bypass_service_worker_check_ = false;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
-  base::WeakPtrFactory<InstallWebAppWithParamsCommand> weak_factory_{this};
+  InstallErrorLogEntry install_error_log_entry_;
+
+  AppId app_id_;
+
+  base::OnceClosure on_lock_upgraded_callback_for_testing_;
+
+  base::WeakPtrFactory<ExternallyManagedInstallCommand> weak_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_WEB_APP_WITH_PARAMS_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_EXTERNALLY_MANAGED_INSTALL_COMMAND_H_

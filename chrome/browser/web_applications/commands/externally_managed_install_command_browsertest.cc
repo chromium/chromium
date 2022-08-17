@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/install_web_app_with_params_command.h"
+#include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -22,9 +22,9 @@
 
 namespace web_app {
 
-using InstallWebAppWithParamsCommandBrowserTest = WebAppControllerBrowserTest;
+using ExternallyManagedInstallCommandBrowserTest = WebAppControllerBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        BasicInstallCommand) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -36,27 +36,24 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
       kWebAppUrl,
       /*user_display_mode=*/absl::nullopt,
       ExternalInstallSource::kInternalDefault);
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          install_params, install_source, &provider().install_finalizer(),
-          &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options,
           base::BindLambdaForTesting(
               [&](const AppId& app_id, webapps::InstallResultCode code) {
                 EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
                 EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
                 run_loop.Quit();
               }),
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          &provider().install_finalizer(),
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        ExternalInstallWindowMode) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -67,15 +64,10 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
   ExternalInstallOptions install_options(
       kWebAppUrl, UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalDefault);
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          install_params, install_source, &provider().install_finalizer(),
-          &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options,
           base::BindLambdaForTesting([&](const AppId& app_id,
                                          webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -85,12 +77,14 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
                 provider().registrar().GetAppUserDisplayMode(app_id).value());
             run_loop.Quit();
           }),
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          &provider().install_finalizer(),
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        ExternalInstallBrowserMode) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -101,15 +95,11 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
   ExternalInstallOptions install_options(
       kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kInternalDefault);
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          install_params, install_source, &provider().install_finalizer(),
-          &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+
+          install_options,
           base::BindLambdaForTesting([&](const AppId& app_id,
                                          webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -119,12 +109,15 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
                 provider().registrar().GetAppUserDisplayMode(app_id).value());
             run_loop.Quit();
           }),
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        InstallAppFromPolicy) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -135,15 +128,10 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
   ExternalInstallOptions install_options(
       kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kExternalPolicy);
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-          install_params, install_source, &provider().install_finalizer(),
-          &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options,
           base::BindLambdaForTesting(
               [&](const AppId& app_id, webapps::InstallResultCode code) {
                 EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -154,12 +142,14 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
                                 ->IsPolicyInstalledApp());
                 run_loop.Quit();
               }),
+          browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+          &provider().install_finalizer(),
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        InstallFailsWebContentsDestroyed) {
   const GURL kWebAppUrl("https://external_app.com");
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -168,28 +158,26 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
   ExternalInstallOptions install_options(
       kWebAppUrl, UserDisplayMode::kBrowser,
       ExternalInstallSource::kExternalPolicy);
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          web_contents->GetWeakPtr(), install_params, install_source,
-          &provider().install_finalizer(), &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options,
           base::BindLambdaForTesting([&](const AppId& app_id,
                                          webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
             EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
             run_loop.Quit();
           }),
+          web_contents->GetWeakPtr(), &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   web_contents->Close();
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
                        InstallFailsWithInvalidManifest) {
   const GURL kWebAppUrl("https://external_app.com");
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -201,15 +189,11 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
   // This should force the install_params to have a valid manifest, otherwise
   // install will not happen.
   install_options.require_manifest = true;
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options.install_source);
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          web_contents->GetWeakPtr(), install_params, install_source,
-          &provider().install_finalizer(), &provider().registrar(),
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options,
           base::BindLambdaForTesting([&](const AppId& app_id,
                                          webapps::InstallResultCode code) {
             EXPECT_EQ(code,
@@ -217,6 +201,8 @@ IN_PROC_BROWSER_TEST_F(InstallWebAppWithParamsCommandBrowserTest,
             EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
             run_loop.Quit();
           }),
+          web_contents->GetWeakPtr(), &provider().install_finalizer(),
+
           std::make_unique<WebAppDataRetriever>()));
 
   run_loop.Run();

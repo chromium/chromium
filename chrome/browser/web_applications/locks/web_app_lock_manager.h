@@ -14,7 +14,9 @@
 
 namespace web_app {
 
+class AppLock;
 class Lock;
+class NoopLock;
 class SharedWebContentsLock;
 class SharedWebContentsWithAppLock;
 
@@ -40,6 +42,11 @@ class WebAppLockManager {
   // was not already used in a call to `AcquireLock`.
   std::unique_ptr<SharedWebContentsWithAppLock> UpgradeAndAcquireLock(
       std::unique_ptr<SharedWebContentsLock> lock,
+      const base::flat_set<AppId>& app_ids,
+      base::OnceClosure on_lock_acquired);
+
+  std::unique_ptr<AppLock> UpgradeAndAcquireLock(
+      std::unique_ptr<NoopLock> lock,
       const base::flat_set<AppId>& app_ids,
       base::OnceClosure on_lock_acquired);
 

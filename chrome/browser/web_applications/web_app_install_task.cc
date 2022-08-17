@@ -345,23 +345,6 @@ void WebAppInstallTask::InstallWebAppFromInfo(
       base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
 }
 
-void WebAppInstallTask::InstallWebAppWithParams(
-    content::WebContents* contents,
-    const WebAppInstallParams& install_params,
-    OnceInstallCallback install_callback) {
-  CheckInstallPreconditions();
-
-  Observe(contents);
-  SetInstallParams(install_params);
-  install_callback_ = std::move(install_callback);
-  background_installation_ = true;
-  log_entry_.set_background_installation(true);
-
-  data_retriever_->GetWebAppInstallInfo(
-      web_contents(),
-      base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr()));
-}
-
 void WebAppInstallTask::LoadAndRetrieveWebAppInstallInfoWithIcons(
     const GURL& start_url,
     WebAppUrlLoader* url_loader,

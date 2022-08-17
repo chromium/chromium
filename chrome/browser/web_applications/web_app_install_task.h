@@ -120,14 +120,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       bool overwrite_existing_manifest_fields,
       OnceInstallCallback callback);
 
-  // Starts a background web app installation process for a given
-  // |web_contents|. This method infers WebApp info from the blink renderer
-  // process and then retrieves a manifest in a way similar to
-  // |InstallWebAppFromManifestWithFallback|.
-  void InstallWebAppWithParams(content::WebContents* web_contents,
-                               const WebAppInstallParams& install_params,
-                               OnceInstallCallback callback);
-
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
   void LoadAndRetrieveWebAppInstallInfoWithIcons(

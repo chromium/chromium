@@ -5,7 +5,9 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -118,6 +120,20 @@ WebAppLockManager::UpgradeAndAcquireLock(
   CHECK(lock->HasLockBeenRequested());
   std::unique_ptr<SharedWebContentsWithAppLock> result_lock =
       std::make_unique<SharedWebContentsWithAppLock>(app_ids);
+  result_lock->holder_ = std::move(lock->holder_);
+  bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
+                                            result_lock->holder_->AsWeakPtr(),
+                                            std::move(on_lock_acquired));
+  DCHECK(success);
+  return result_lock;
+}
+
+std::unique_ptr<AppLock> WebAppLockManager::UpgradeAndAcquireLock(
+    std::unique_ptr<NoopLock> lock,
+    const base::flat_set<AppId>& app_ids,
+    base::OnceClosure on_lock_acquired) {
+  CHECK(lock->HasLockBeenRequested());
+  std::unique_ptr<AppLock> result_lock = std::make_unique<AppLock>(app_ids);
   result_lock->holder_ = std::move(lock->holder_);
   bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                                             result_lock->holder_->AsWeakPtr(),

@@ -17,12 +17,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
-#include "chrome/browser/web_applications/commands/install_web_app_with_params_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -229,23 +230,19 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
 void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
-  auto install_params = ConvertExternalInstallOptionsToParams(install_options_);
-  auto install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options_.install_source);
-
   if (!data_retriever_factory_) {
     data_retriever_factory_ = base::BindRepeating(
         []() { return std::make_unique<WebAppDataRetriever>(); });
   }
 
   command_manager_->ScheduleCommand(
-      std::make_unique<InstallWebAppWithParamsCommand>(
-          web_contents->GetWeakPtr(), install_params, install_source,
-          install_finalizer_, registrar_,
+      std::make_unique<ExternallyManagedInstallCommand>(
+          install_options_,
           base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
                          weak_ptr_factory_.GetWeakPtr(),
                          /*is_placeholder=*/false,
                          /*offline_install=*/false, std::move(result_callback)),
+          web_contents->GetWeakPtr(), install_finalizer_,
           data_retriever_factory_.Run()));
 }
 

@@ -83,6 +83,8 @@ class WebAppCommandManager {
     return shared_web_contents_.get();
   }
 
+  WebAppLockManager& lock_manager() const { return *lock_manager_; }
+
  protected:
   friend class WebAppCommand;
 

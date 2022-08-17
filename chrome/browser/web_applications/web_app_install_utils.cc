@@ -745,6 +745,17 @@ void RecordAppBanner(content::WebContents* contents, const GURL& app_url) {
       base::Time::Now());
 }
 
+void RecordDownloadedIconsResultAndHttpStatusCodes(
+    IconsDownloadedResult result,
+    const DownloadedIconsHttpResults& icons_http_results) {
+  RecordDownloadedIconsHttpResultsCodeClass(
+      "WebApp.Icon.HttpStatusCodeClassOnCreate", result, icons_http_results);
+
+  base::UmaHistogramEnumeration("WebApp.Icon.DownloadedResultOnCreate", result);
+  RecordDownloadedIconHttpStatusCodes(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate", icons_http_results);
+}
+
 void RecordDownloadedIconsHttpResultsCodeClass(
     base::StringPiece histogram_name,
     IconsDownloadedResult result,

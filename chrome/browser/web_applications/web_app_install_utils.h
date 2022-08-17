@@ -81,6 +81,11 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
 // shown for this app.
 void RecordAppBanner(content::WebContents* contents, const GURL& app_url);
 
+// Records downloaded icons result and http code and code class.
+void RecordDownloadedIconsResultAndHttpStatusCodes(
+    IconsDownloadedResult result,
+    const DownloadedIconsHttpResults& icons_http_results);
+
 // Records the class of http status code (2XX, 3XX, 4XX, 5XX) for each processed
 // icon url.
 void RecordDownloadedIconsHttpResultsCodeClass(

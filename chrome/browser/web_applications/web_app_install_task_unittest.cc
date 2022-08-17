@@ -79,18 +79,6 @@
 
 namespace web_app {
 
-namespace {
-
-WebAppInstallParams MakeParams(
-    absl::optional<UserDisplayMode> display_mode = absl::nullopt) {
-  WebAppInstallParams params;
-  params.fallback_start_url = GURL("https://example.com/fallback");
-  params.user_display_mode = display_mode;
-  return params;
-}
-
-}  // namespace
-
 class WebAppInstallTaskTest : public WebAppTest {
  public:
   void SetUp() override {
@@ -306,24 +294,6 @@ class WebAppInstallTaskTest : public WebAppTest {
     InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
     DCHECK_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
     return result.app_id;
-  }
-
-  AppId InstallWebAppWithParams(const WebAppInstallParams& params) {
-    AppId app_id;
-    base::RunLoop run_loop;
-    if (!install_task_)
-      InitializeInstallTaskAndRetriever(
-          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-    install_task_->InstallWebAppWithParams(
-        web_contents(), params,
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       webapps::InstallResultCode code) {
-          ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-          app_id = installed_app_id;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return app_id;
   }
 
   void PrepareTestAppInstall(webapps::WebappInstallSource install_surface) {
@@ -820,83 +790,6 @@ TEST_F(WebAppInstallTaskWithShortcutFeatureTest,
           }));
 
   run_loop.Run();
-}
-
-// Default apps should be installable for guest profiles.
-TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
-  SetInstallFinalizerForTesting();
-
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager.SetUp());
-  Profile* guest_profile = profile_manager.CreateGuestProfile();
-
-  const GURL start_url("https://example.com/path");
-  auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(start_url,
-                                             /*scope=*/GURL{});
-
-  auto install_task = std::make_unique<WebAppInstallTask>(
-      guest_profile, install_finalizer_.get(), std::move(data_retriever),
-      &registrar(), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-
-  base::RunLoop run_loop;
-  install_task->InstallWebAppWithParams(
-      web_contents(), MakeParams(),
-      base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
-            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-}
-
-TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_DisplayMode) {
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-    CreateDataToRetrieve(GURL("https://example.com/"),
-                         /*user_display_mode=*/UserDisplayMode::kBrowser);
-
-    auto app_id = InstallWebAppWithParams(MakeParams(absl::nullopt));
-
-    EXPECT_EQ(UserDisplayMode::kBrowser,
-              registrar().GetAppById(app_id)->user_display_mode());
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-    CreateDataToRetrieve(GURL("https://example.org/"),
-                         /*user_display_mode=*/UserDisplayMode::kStandalone);
-
-    auto app_id = InstallWebAppWithParams(MakeParams(absl::nullopt));
-
-    EXPECT_EQ(UserDisplayMode::kStandalone,
-              registrar().GetAppById(app_id)->user_display_mode());
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-    CreateDataToRetrieve(GURL("https://example.au/"),
-                         /*user_display_mode=*/UserDisplayMode::kStandalone);
-
-    auto app_id =
-        InstallWebAppWithParams(MakeParams(UserDisplayMode::kBrowser));
-
-    EXPECT_EQ(UserDisplayMode::kBrowser,
-              registrar().GetAppById(app_id)->user_display_mode());
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-    CreateDataToRetrieve(GURL("https://example.app/"),
-                         /*user_display_mode=*/UserDisplayMode::kBrowser);
-
-    auto app_id =
-        InstallWebAppWithParams(MakeParams(UserDisplayMode::kStandalone));
-
-    EXPECT_EQ(UserDisplayMode::kStandalone,
-              registrar().GetAppById(app_id)->user_display_mode());
-  }
 }
 
 TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {

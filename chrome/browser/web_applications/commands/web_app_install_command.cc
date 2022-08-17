@@ -129,45 +129,34 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 
 WebAppInstallCommand::WebAppInstallCommand(
     const AppId& app_id,
-    Profile* profile,
-    WebAppInstallFinalizer* install_finalizer,
-    std::unique_ptr<WebAppDataRetriever> data_retriever,
-    WebAppRegistrar* registrar,
     webapps::WebappInstallSource install_surface,
-    base::WeakPtr<content::WebContents> contents,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     WebAppInstallFlow flow,
-    absl::optional<WebAppInstallParams> install_params)
+    WebAppInstallDialogCallback dialog_callback,
+    OnceInstallCallback callback,
+    Profile* profile,
+    WebAppInstallFinalizer* install_finalizer,
+    std::unique_ptr<WebAppDataRetriever> data_retriever,
+    base::WeakPtr<content::WebContents> contents)
     : lock_(std::make_unique<AppLock, base::flat_set<AppId>>({app_id})),
-      profile_(profile),
-      install_finalizer_(install_finalizer),
-      data_retriever_(std::move(data_retriever)),
-      registrar_(registrar),
+      app_id_(app_id),
       install_surface_(install_surface),
-      web_contents_(contents),
-      dialog_callback_(std::move(dialog_callback)),
-      install_callback_(std::move(callback)),
       web_app_info_(std::move(web_app_info)),
       opt_manifest_(std::move(opt_manifest)),
       manifest_url_(manifest_url),
       flow_(flow),
-      app_id_(app_id),
-      install_params_(install_params),
-      background_installation_(dialog_callback_.is_null()),
-      install_error_log_entry_(background_installation_, install_surface_) {
-  // TODO(https://crbug.com/1298130): move to InstallWebAppWithParams
-  if (install_params_.has_value() && !install_params_->locally_installed) {
-    DCHECK(!install_params_->add_to_applications_menu);
-    DCHECK(!install_params_->add_to_desktop);
-    DCHECK(!install_params_->add_to_quick_launch_bar);
-    DCHECK(dialog_callback_.is_null());
-  }
-
+      dialog_callback_(std::move(dialog_callback)),
+      install_callback_(std::move(callback)),
+      profile_(profile),
+      install_finalizer_(install_finalizer),
+      data_retriever_(std::move(data_retriever)),
+      web_contents_(contents),
+      install_error_log_entry_(/*background_installation=*/false,
+                               install_surface_) {
   DCHECK_NE(install_surface_, webapps::WebappInstallSource::SYNC);
+  DCHECK_NE(install_surface_, webapps::WebappInstallSource::SUB_APP);
 }
 
 WebAppInstallCommand::~WebAppInstallCommand() = default;
@@ -188,11 +177,7 @@ void WebAppInstallCommand::Start() {
     return;
   }
 
-  if (!background_installation_) {
-    // TODO(https://crbug.com/1298130): Move the DCHECK to the beginning of
-    // install commands when all install flows are denormalized.
-    DCHECK(AreWebAppsUserInstallable(profile_));
-  }
+  DCHECK(AreWebAppsUserInstallable(profile_));
 
   if (opt_manifest_)
     UpdateWebAppInfoFromManifest(*opt_manifest_, manifest_url_,
@@ -206,25 +191,6 @@ void WebAppInstallCommand::Start() {
     // which is always set to the current page.
     *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
         web_contents_->GetLastCommittedURL(), *web_app_info_);
-  }
-
-  // Duplicate installation check for SUB_APP installs (done here since the
-  // AppId isn't available beforehand). It's possible that the app was already
-  // installed, but from a different source (eg. by the user manually). In that
-  // case we proceed with the installation which adds the SUB_APP install source
-  // as well.
-  if (install_surface_ == webapps::WebappInstallSource::SUB_APP) {
-    DCHECK(install_params_ && install_params_->parent_app_id.has_value());
-    if (registrar_->WasInstalledBySubApp(app_id_)) {
-      Abort(webapps::InstallResultCode::kSuccessAlreadyInstalled);
-      return;
-    }
-  }
-
-  // A system app should always have a manifest icon.
-  if (install_surface_ == webapps::WebappInstallSource::SYSTEM_DEFAULT) {
-    DCHECK(opt_manifest_);
-    DCHECK(!opt_manifest_->icons.empty());
   }
 
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
@@ -242,8 +208,7 @@ void WebAppInstallCommand::CheckForPlayStoreIntentOrGetIcons(
   bool is_create_shortcut = flow_ == WebAppInstallFlow::kCreateShortcut;
   // Background installations are not a user-triggered installs, and thus
   // cannot be sent to the store.
-  bool skip_store =
-      is_create_shortcut || background_installation_ || !opt_manifest_;
+  bool skip_store = is_create_shortcut || !opt_manifest_;
 
   if (!skip_store) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -392,29 +357,11 @@ void WebAppInstallCommand::OnDialogCompleted(
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
 
-  if (install_params_) {
-    finalize_options.locally_installed = install_params_->locally_installed;
-    finalize_options.overwrite_existing_manifest_fields =
-        install_params_->force_reinstall;
-    finalize_options.parent_app_id = install_params_->parent_app_id;
-
-    ApplyParamsToFinalizeOptions(*install_params_, finalize_options);
-
-    if (install_params_->user_display_mode.has_value())
-      web_app_info_->user_display_mode = install_params_->user_display_mode;
-    finalize_options.add_to_applications_menu =
-        install_params_->add_to_applications_menu;
-    finalize_options.add_to_desktop = install_params_->add_to_desktop;
-    finalize_options.add_to_quick_launch_bar =
-        install_params_->add_to_quick_launch_bar;
-  } else {
-    finalize_options.locally_installed = true;
-    finalize_options.overwrite_existing_manifest_fields = true;
-    finalize_options.add_to_applications_menu = true;
-    finalize_options.add_to_desktop = true;
-    finalize_options.add_to_quick_launch_bar =
-        kAddAppsToQuickLaunchBarByDefault;
-  }
+  finalize_options.locally_installed = true;
+  finalize_options.overwrite_existing_manifest_fields = true;
+  finalize_options.add_to_applications_menu = true;
+  finalize_options.add_to_desktop = true;
+  finalize_options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
 
   install_finalizer_->FinalizeInstall(
       *web_app_info_, finalize_options,
@@ -443,22 +390,17 @@ void WebAppInstallCommand::OnInstallFinalizedMaybeReparentTab(
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     install_surface_);
 
-  // TODO(https://crbug.com/1298130): update when denormalized.
-  if (!install_params_ || install_params_->locally_installed) {
-    RecordAppBanner(web_contents_.get(), web_app_info_->start_url);
+  RecordAppBanner(web_contents_.get(), web_app_info_->start_url);
+
+  bool error = os_hooks_errors[OsHookType::kShortcuts];
+  const bool can_reparent_tab =
+      install_finalizer_->CanReparentTab(app_id, !error);
+
+  if (can_reparent_tab &&
+      (web_app_info_->user_display_mode != UserDisplayMode::kBrowser)) {
+    install_finalizer_->ReparentTab(app_id, !error, web_contents_.get());
   }
 
-  if (!background_installation_ &&
-      install_surface_ != webapps::WebappInstallSource::SUB_APP) {
-    bool error = os_hooks_errors[OsHookType::kShortcuts];
-    const bool can_reparent_tab =
-        install_finalizer_->CanReparentTab(app_id, !error);
-
-    if (can_reparent_tab &&
-        (web_app_info_->user_display_mode != UserDisplayMode::kBrowser)) {
-      install_finalizer_->ReparentTab(app_id, !error, web_contents_.get());
-    }
-  }
   OnInstallCompleted(app_id, webapps::InstallResultCode::kSuccessNewInstall);
 }
 
@@ -474,17 +416,6 @@ void WebAppInstallCommand::Abort(webapps::InstallResultCode code) {
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(install_callback_), app_id_, code));
-}
-
-void WebAppInstallCommand::RecordDownloadedIconsResultAndHttpStatusCodes(
-    IconsDownloadedResult result,
-    const DownloadedIconsHttpResults& icons_http_results) {
-  RecordDownloadedIconsHttpResultsCodeClass(
-      "WebApp.Icon.HttpStatusCodeClassOnCreate", result, icons_http_results);
-
-  UMA_HISTOGRAM_ENUMERATION("WebApp.Icon.DownloadedResultOnCreate", result);
-  RecordDownloadedIconHttpStatusCodes(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate", icons_http_results);
 }
 
 void WebAppInstallCommand::OnInstallCompleted(const AppId& app_id,
