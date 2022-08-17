@@ -126,7 +126,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   static int GetSizeOfAppButtons(int count, int button_size);
 
   // Initializes shelf view elements.
-  void Init();
+  void Init(views::FocusSearch* focus_search);
 
   // Returns true if we're showing a menu. Note the menu could be either the
   // context menu or the application select menu.
@@ -617,8 +617,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Used for the context menu of a particular item.
   ShelfID context_menu_id_;
 
-  std::unique_ptr<views::FocusSearch> focus_search_;
-
   // Responsible for building and running all menus.
   std::unique_ptr<ShelfMenuModelAdapter> shelf_menu_model_adapter_;
 
@@ -725,6 +723,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
   ShelfButtonDelegate* shelf_button_delegate_ = nullptr;
+
+  // Owned by ScrollableShelfView.
+  views::FocusSearch* focus_search_ = nullptr;
 
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 

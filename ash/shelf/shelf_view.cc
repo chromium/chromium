@@ -147,57 +147,6 @@ class BoundsAnimatorDisabler {
   views::BoundsAnimator* bounds_animator_;
 };
 
-// Custom FocusSearch used to navigate the shelf in the order items are in
-// the ViewModel.
-class ShelfFocusSearch : public views::FocusSearch {
- public:
-  explicit ShelfFocusSearch(ShelfView* shelf_view)
-      : FocusSearch(nullptr, true, true), shelf_view_(shelf_view) {}
-
-  ShelfFocusSearch(const ShelfFocusSearch&) = delete;
-  ShelfFocusSearch& operator=(const ShelfFocusSearch&) = delete;
-
-  ~ShelfFocusSearch() override = default;
-
-  // views::FocusSearch:
-  View* FindNextFocusableView(
-      View* starting_view,
-      FocusSearch::SearchDirection search_direction,
-      FocusSearch::TraversalDirection traversal_direction,
-      FocusSearch::StartingViewPolicy check_starting_view,
-      FocusSearch::AnchoredDialogPolicy can_go_into_anchored_dialog,
-      views::FocusTraversable** focus_traversable,
-      View** focus_traversable_view) override {
-    // Build a list of all the views that we are able to focus.
-    std::vector<views::View*> focusable_views;
-
-    for (int i : shelf_view_->visible_views_indices())
-      focusable_views.push_back(shelf_view_->view_model()->view_at(i));
-
-    // Where are we starting from?
-    int start_index = 0;
-    for (size_t i = 0; i < focusable_views.size(); ++i) {
-      if (focusable_views[i] == starting_view) {
-        start_index = i;
-        break;
-      }
-    }
-    int new_index =
-        start_index +
-        (search_direction == FocusSearch::SearchDirection::kBackwards ? -1 : 1);
-    // Loop around.
-    if (new_index < 0)
-      new_index = focusable_views.size() - 1;
-    else if (new_index >= static_cast<int>(focusable_views.size()))
-      new_index = 0;
-
-    return focusable_views[new_index];
-  }
-
- private:
-  ShelfView* shelf_view_;
-};
-
 void ReportMoveAnimationSmoothness(int smoothness) {
   base::UmaHistogramPercentage(kShelfIconMoveAnimationHistogram, smoothness);
 }
@@ -392,7 +341,6 @@ ShelfView::ShelfView(ShelfModel* model,
       bounds_animator_(
           std::make_unique<views::BoundsAnimator>(this,
                                                   /*use_transforms=*/true)),
-      focus_search_(std::make_unique<ShelfFocusSearch>(this)),
       delegate_(delegate),
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(model_);
@@ -431,7 +379,7 @@ int ShelfView::GetSizeOfAppButtons(int count, int button_size) {
   return app_size + total_padding;
 }
 
-void ShelfView::Init() {
+void ShelfView::Init(views::FocusSearch* focus_search) {
   auto separator = std::make_unique<views::Separator>();
   separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator->SetPreferredLength(kSeparatorSize);
@@ -453,6 +401,8 @@ void ShelfView::Init() {
   }
 
   fade_in_animation_delegate_ = std::make_unique<FadeInAnimationDelegate>(this);
+
+  focus_search_ = focus_search;
 
   // We'll layout when our bounds change.
 }
@@ -818,7 +768,7 @@ bool ShelfView::IsShowingMenuForView(const views::View* view) const {
 // ShelfView, FocusTraversable implementation:
 
 views::FocusSearch* ShelfView::GetFocusSearch() {
-  return focus_search_.get();
+  return focus_search_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
