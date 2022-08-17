@@ -820,18 +820,15 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::Value* dictionary =
-      g_browser_process->local_state()->GetDictionary(
+  const base::Value::Dict& dictionary =
+      g_browser_process->local_state()->GetValueDict(
           prefs::kTaskManagerColumnVisibility);
-  if (!dictionary)
-    return;
 
   // Do a best effort of retrieving the correct settings from the local state.
   // Use the default settings of the value if it fails to be retrieved.
-  const std::string* sorted_col_id =
-      dictionary->GetDict().FindString(kSortColumnIdKey);
+  const std::string* sorted_col_id = dictionary.FindString(kSortColumnIdKey);
   bool sort_is_ascending =
-      dictionary->GetDict().FindBool(kSortIsAscendingKey).value_or(true);
+      dictionary.FindBool(kSortIsAscendingKey).value_or(true);
 
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const int col_id = kColumns[i].id;
@@ -840,7 +837,7 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
     if (col_id_key.empty())
       continue;
 
-    bool col_visibility = dictionary->FindBoolPath(col_id_key)
+    bool col_visibility = dictionary.FindBoolByDottedPath(col_id_key)
                               .value_or(kColumns[i].default_visibility);
 
     // If the above FindBoolPath() fails, the |col_visibility| remains at the
