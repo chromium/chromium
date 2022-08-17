@@ -70,7 +70,7 @@
             android:theme="@style/Theme.Chromium.Activity"
             android:exported="true"/>
 
-        <activity android:name="org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetTest$DummyAddAccountActivity"
+        <activity android:name="org.chromium.components.signin.test.util.FakeAccountManagerFacade$AddAccountActivityStub"
             android:exported="true"/>
 
         <service

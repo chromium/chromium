@@ -5,14 +5,17 @@
 package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
@@ -38,6 +41,21 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * a child account in {@link FakeAccountManagerFacade}.
      */
     private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
+    public static final String NEW_ACCOUNT_EMAIL = "new.account@gmail.com";
+
+    /** An {@link Activity} stub to test add account flow. */
+    public static final class AddAccountActivityStub extends Activity {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Intent data = new Intent();
+            // TODO(https://crbug.com/1352486) : Get the account name and result code from callsite.
+            data.putExtra(AccountManager.KEY_ACCOUNT_NAME, NEW_ACCOUNT_EMAIL);
+            setResult(RESULT_OK, data);
+            finish();
+        }
+    }
+
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
@@ -118,7 +136,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void createAddAccountIntent(Callback<Intent> callback) {}
+    public void createAddAccountIntent(Callback<Intent> callback) {
+        Intent addAccountIntent =
+                new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
+        callback.onResult(addAccountIntent);
+    }
 
     @Override
     public void updateCredentials(
