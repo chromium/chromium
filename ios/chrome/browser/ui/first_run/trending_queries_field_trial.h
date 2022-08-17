@@ -9,7 +9,8 @@
 #include "components/variations/variations_associated_data.h"
 
 class PrefService;
-class PrefRegistrySimple;
+
+extern const char kTrendingQueriesFieldTrialName[];
 
 namespace {
 
@@ -27,8 +28,6 @@ const variations::VariationID kTrendingQueriesControlID = 3350764;
 
 namespace trending_queries_field_trial {
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
 // Creates a field trial to control the Trending Queries feature so that it is
 // shown on the NTP after first run.
 //
@@ -37,15 +36,11 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state);
 
-namespace testing {
-
 // Exposes CreateTrendingQueriesTrial() for testing FieldTrial set-up.
-int CreateTrendingQueriesTrialForTesting(
+void CreateTrendingQueriesTrialForTesting(
     std::map<variations::VariationID, int> weights_by_id,
     const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list);
-
-}  // namespace testing
 
 }  // namespace trending_queries_field_trial
 
