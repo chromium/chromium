@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -647,11 +648,11 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest::
             ParamType>& info) {
-      return absl::StrCat(
-          std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
-          std::get<1>(info.param).has_value()
-              ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
-              : "PolicyNotSet");
+      return base::StrCat(
+          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
+           std::get<1>(info.param).has_value()
+               ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
+               : "PolicyNotSet"});
     });
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
@@ -747,11 +748,11 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<
         ProfileNetworkContextServiceChromeRootStorePermissionsPolicyTest::
             ParamType>& info) {
-      return absl::StrCat(
-          std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
-          std::get<1>(info.param).has_value()
-              ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
-              : "PolicyNotSet");
+      return base::StrCat(
+          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
+           std::get<1>(info.param).has_value()
+               ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
+               : "PolicyNotSet"});
     });
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
