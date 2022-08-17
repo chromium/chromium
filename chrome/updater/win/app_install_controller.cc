@@ -809,9 +809,36 @@ void AppInstallControllerImpl::HandleInstallResult(
       base::StringPrintf("%s?product=%s&error=%d", HELP_CENTER_URL,
                          base::EscapeUrlEncodedData(app_id_, false).c_str(),
                          update_state.error_code);
-  // TODO(sorin): implement the installer API and provide the
-  // application info in the observer info. https://crbug.com/1014630
-  observer_info.apps_info.push_back({});
+
+  AppCompletionInfo app_info;
+  if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
+    app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
+    app_info.completion_message =
+        base::ASCIIToUTF16(update_state.installer_text);
+    app_info.error_code = update_state.error_code;
+    app_info.extra_code1 = update_state.extra_code1;
+    app_info.post_install_launch_command_line =
+        base::SysUTF8ToWide(update_state.installer_cmd_line);
+    VLOG(1) << app_info.app_id << " installation completed: error_code["
+            << app_info.error_code << "], extra_code1[" << app_info.extra_code1
+            << "], completion_message[" << app_info.completion_message
+            << "], post_install_launch_command_line["
+            << app_info.post_install_launch_command_line << "]";
+
+    // TODO(crbug.com/1352307): Figure out how to populate members like
+    // `completion_code` and `post_install_url`. For now, set the completion
+    // for the basic cases and ignore the post install URL.
+    if (app_info.error_code == 0) {
+      app_info.completion_code =
+          app_info.post_install_launch_command_line.empty()
+              ? CompletionCodes::COMPLETION_CODE_SUCCESS
+              : CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND;
+    } else {
+      app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
+    }
+  }
+  observer_info.apps_info.push_back(app_info);
+
   install_progress_observer_ipc_->OnComplete(observer_info);
 }
 

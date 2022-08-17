@@ -145,6 +145,9 @@ MakeUpdateClientCrxStateChangeCallback(
         update_state.error_code = crx_update_item.error_code;
         update_state.extra_code1 = crx_update_item.extra_code1;
 
+        // TODO(crbug.com/1352307): Investigate if it is desirable to read the
+        // result from the installer result API here when update completes.
+
         // Commit the prefs values written by |update_client| when the
         // update has completed, such as `pv` and `fingerprint`.
         if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
@@ -558,19 +561,21 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
       base::BindOnce(
           [](StateChangeCallback state_update, const std::string& app_id,
              Callback callback, const InstallerResult& result) {
+            // Final state update after installation completes.
             UpdateState state;
             state.app_id = app_id;
             state.state = result.error == 0 ? UpdateState::State::kUpdated
                                             : UpdateState::State::kUpdateError;
+            state.error_code = result.error;
+            state.extra_code1 = result.extended_error;
+            state.installer_text = result.installer_text;
+            state.installer_cmd_line = result.installer_cmd_line;
             state_update.Run(state);
-
             VLOG(1) << app_id << " installation completed: " << result.error;
 
             // TODO(crbug.com/1286574): Perform post-install actions, such as
             // send pings (if `enterprise` is not set in install_settings).
 
-            // TODO(crbug.com/1286574): Expand arguments in `Callback` to take
-            // more installation result details.
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);
           },

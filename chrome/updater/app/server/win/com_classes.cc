@@ -111,6 +111,23 @@ STDMETHODIMP UpdateStateImpl::get_extraCode1(LONG* extra_code1) {
   return S_OK;
 }
 
+STDMETHODIMP UpdateStateImpl::get_installerText(BSTR* installer_text) {
+  DCHECK(installer_text);
+  *installer_text =
+      base::win::ScopedBstr(base::UTF8ToWide(update_state_.installer_text))
+          .Release();
+  return S_OK;
+}
+
+STDMETHODIMP UpdateStateImpl::get_installerCommandLine(
+    BSTR* installer_cmd_line) {
+  DCHECK(installer_cmd_line);
+  *installer_cmd_line =
+      base::win::ScopedBstr(base::UTF8ToWide(update_state_.installer_cmd_line))
+          .Release();
+  return S_OK;
+}
+
 STDMETHODIMP CompleteStatusImpl::get_statusCode(LONG* code) {
   DCHECK(code);
   *code = code_;
@@ -590,9 +607,6 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                     [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                        IUpdaterObserverPtr observer,
                        const UpdateService::Result result) {
-                      // TODO(crbug.com/1286574): Once `result` is expanded
-                      // with more detailed installation result, convert and
-                      // forward the details to `CompleteStatusImpl`.
                       task_runner->PostTaskAndReplyWithResult(
                           FROM_HERE,
                           base::BindOnce(

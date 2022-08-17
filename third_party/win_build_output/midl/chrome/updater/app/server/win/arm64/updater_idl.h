@@ -198,6 +198,12 @@ EXTERN_C const IID IID_IUpdateState;
         virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_extraCode1( 
             /* [retval][out] */ LONG *__MIDL__IUpdateState0008) = 0;
         
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerText( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateState0009) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerCommandLine( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateState0010) = 0;
+        
     };
     
     
@@ -267,6 +273,16 @@ EXTERN_C const IID IID_IUpdateState;
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0008);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_installerText)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerText )( 
+            IUpdateState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdateState0009);
+        
+        DECLSPEC_XFGVIRT(IUpdateState, get_installerCommandLine)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerCommandLine )( 
+            IUpdateState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdateState0010);
+        
         END_INTERFACE
     } IUpdateStateVtbl;
 
@@ -316,6 +332,12 @@ EXTERN_C const IID IID_IUpdateState;
 
 #define IUpdateState_get_extraCode1(This,__MIDL__IUpdateState0008)	\
     ( (This)->lpVtbl -> get_extraCode1(This,__MIDL__IUpdateState0008) ) 
+
+#define IUpdateState_get_installerText(This,__MIDL__IUpdateState0009)	\
+    ( (This)->lpVtbl -> get_installerText(This,__MIDL__IUpdateState0009) ) 
+
+#define IUpdateState_get_installerCommandLine(This,__MIDL__IUpdateState0010)	\
+    ( (This)->lpVtbl -> get_installerCommandLine(This,__MIDL__IUpdateState0010) ) 
 
 #endif /* COBJMACROS */
 

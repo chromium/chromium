@@ -166,6 +166,11 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     ErrorCategory error_category = ErrorCategory::kNone;
     int error_code = 0;
     int extra_code1 = 0;
+
+    // Results collected from installer result API. See the definition of
+    // `update_client::CrxInstaller::Result` for the meaning of the members.
+    std::string installer_text;
+    std::string installer_cmd_line;
   };
 
   // Urgency of the update service invocation.
