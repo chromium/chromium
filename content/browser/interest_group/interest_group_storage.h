@@ -82,17 +82,15 @@ class CONTENT_EXPORT InterestGroupStorage {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
-  // Records the K-anonymity data for an interest group owner/name combination.
-  void UpdateInterestGroupNameKAnonymity(
-      const StorageInterestGroup::KAnonymityData& data,
-      const absl::optional<base::Time>& update_sent_time);
-  // Records the K-anonymity data for an interest group update URL.
-  void UpdateInterestGroupUpdateURLKAnonymity(
-      const StorageInterestGroup::KAnonymityData& data,
-      const absl::optional<base::Time>& update_sent_time);
-  // Records the K-anonymity data for an ad.
-  void UpdateAdKAnonymity(const StorageInterestGroup::KAnonymityData& data,
-                          const absl::optional<base::Time>& update_sent_time);
+  // Records K-anonymity.
+  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data,
+                        const absl::optional<base::Time>& update_sent_time);
+
+  // Gets the last time that the key was reported to the k-anonymity server.
+  base::Time GetLastKAnonymityReported(const GURL& key);
+  // Updates the last time that the key was reported to the k-anonymity server.
+  void UpdateLastKAnonymityReported(const GURL& key);
+
   // Gets a single interest group.
   absl::optional<StorageInterestGroup> GetInterestGroup(
       const blink::InterestGroupKey& group_key);

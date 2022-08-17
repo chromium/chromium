@@ -15,7 +15,8 @@ StorageInterestGroup::~StorageInterestGroup() = default;
 
 std::ostream& operator<<(std::ostream& out,
                          const StorageInterestGroup::KAnonymityData& kanon) {
-  return out << "KAnonymityData[key=`" << kanon.key << "`, k=" << kanon.k
+  return out << "KAnonymityData[key=`" << kanon.key
+             << "`, is_k_anonymous=" << kanon.is_k_anonymous
              << ", last_updated=`" << kanon.last_updated << "`]";
 }
 

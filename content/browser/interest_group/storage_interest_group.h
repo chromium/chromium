@@ -36,14 +36,15 @@ struct CONTENT_EXPORT StorageInterestGroup {
   // without a sufficiently large k.
   struct CONTENT_EXPORT KAnonymityData {
     bool operator==(const KAnonymityData& rhs) const {
-      return key == rhs.key && k == rhs.k && last_updated == rhs.last_updated;
+      return key == rhs.key && is_k_anonymous == rhs.is_k_anonymous &&
+             last_updated == rhs.last_updated;
     }
 
     // Unique identifier associated with the data being anonymized, usually a
     // URL.
     GURL key;
-    // The (noised) count of unique users that reported this key.
-    int k;
+    // Whether the `key` was k-anonymous during the last update.
+    bool is_k_anonymous;
     // The last time the unique user count was updated.
     base::Time last_updated;
   };
