@@ -69,58 +69,20 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private buildNode_(nodeId: number): Node|null {
-    if (chrome.readAnything.isHeading(nodeId)) {
-      return this.buildHeadingElement_(nodeId);
+    const htmlTag = chrome.readAnything.getHtmlTag(nodeId);
+    // Text nodes do not have an html tag.
+    if (!htmlTag.length) {
+      const textContent = chrome.readAnything.getTextContent(nodeId);
+      return document.createTextNode(textContent);
     }
-    if (chrome.readAnything.isLink(nodeId)) {
-      return this.buildLinkElement_(nodeId);
-    }
-    if (chrome.readAnything.isParagraph(nodeId)) {
-      return this.buildParagraphElement_(nodeId);
-    }
-    if (chrome.readAnything.isStaticText(nodeId)) {
-      return this.buildStaticTextElement_(nodeId);
-    }
-    return null;
-  }
 
-  private buildHeadingElement_(nodeId: number): HTMLHeadingElement {
-    let headingLevel = chrome.readAnything.getHeadingLevel(nodeId);
-    // In ARIA 1.1, the default heading level is 2.
-    // See AXNodeObject::kDefaultHeadingLevel.
-    if (headingLevel < 1 || headingLevel > 6) {
-      headingLevel = 2;
-    }
-    const tagName = 'h' + headingLevel;
-    const element = document.createElement(tagName);
-    element.setAttribute('align', 'left');
-    this.appendChildNodes_(element, nodeId);
-    return element as HTMLHeadingElement;
-  }
-
-  private buildLinkElement_(nodeId: number): HTMLAnchorElement|null {
+    const element = document.createElement(htmlTag);
     const url = chrome.readAnything.getUrl(nodeId);
-    if (!url.length) {
-      return null;
+    if (url) {
+      element.setAttribute('href', url);
     }
-    const element = document.createElement('a');
-    element.setAttribute('href', url);
     this.appendChildNodes_(element, nodeId);
     return element;
-  }
-
-  private buildParagraphElement_(nodeId: number): HTMLParagraphElement {
-    const element = document.createElement('p');
-    this.appendChildNodes_(element, nodeId);
-    return element;
-  }
-
-  private buildStaticTextElement_(nodeId: number): Text|null {
-    const textContent = chrome.readAnything.getTextContent(nodeId);
-    if (!textContent.length) {
-      return null;
-    }
-    return document.createTextNode(textContent);
   }
 
   private appendChildNodes_(node: Node, nodeId: number) {

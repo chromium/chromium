@@ -24,27 +24,14 @@ declare namespace chrome {
     // the AXNode for the provided AXNodeID.
     function getChildren(nodeId: number): number[];
 
-    // Returns the heading level of the AXNode for the provided AXNodeID.
-    function getHeadingLevel(nodeId: number): number;
+    // Returns the HTML tag of the AXNode for the provided AXNodeID.
+    function getHtmlTag(nodeId: number): string;
 
     // Returns the text content of the AXNode for the provided AXNodeID.
     function getTextContent(nodeId: number): string;
 
     // Returns the url of the AXNode for the provided AXNodeID.
     function getUrl(nodeId: number): string;
-
-    // Returns whether the AXNode for the provided AXNodeID is a heading.
-    function isHeading(nodeId: number): boolean;
-
-    // Returns whether the AXNode for the provided AXNodeID is a link,
-    // represented by the anchor tag in HTML.
-    function isLink(nodeId: number): boolean;
-
-    // Returns whether the AXNode for the provided AXNodeID is a paragraph.
-    function isParagraph(nodeId: number): boolean;
-
-    // Returns whether the AXNode for the provided AXNodeID is a static text.
-    function isStaticText(nodeId: number): boolean;
 
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.

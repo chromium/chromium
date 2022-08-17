@@ -62,8 +62,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetChildren(ax_node_id);
   }
 
-  uint32_t GetHeadingLevel(ui::AXNodeID ax_node_id) {
-    return controller_->GetHeadingLevel(ax_node_id);
+  std::string GetHtmlTag(ui::AXNodeID ax_node_id) {
+    return controller_->GetHtmlTag(ax_node_id);
   }
 
   std::string GetTextContent(ui::AXNodeID ax_node_id) {
@@ -72,22 +72,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   std::string GetUrl(ui::AXNodeID ax_node_id) {
     return controller_->GetUrl(ax_node_id);
-  }
-
-  bool IsHeading(ui::AXNodeID ax_node_id) {
-    return controller_->IsHeading(ax_node_id);
-  }
-
-  bool IsLink(ui::AXNodeID ax_node_id) {
-    return controller_->IsLink(ax_node_id);
-  }
-
-  bool IsParagraph(ui::AXNodeID ax_node_id) {
-    return controller_->IsParagraph(ax_node_id);
-  }
-
-  bool IsStaticText(ui::AXNodeID ax_node_id) {
-    return controller_->IsStaticText(ax_node_id);
   }
 
   ui::AXTreeUpdate basic_snapshot_;
@@ -131,13 +115,20 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren) {
   EXPECT_EQ(4, GetChildren(1)[1]);
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetHeadingLevel) {
-  uint32_t heading_level = 3;
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kHeading;
-  basic_snapshot_.nodes[1].AddIntAttribute(
-      ax::mojom::IntAttribute::kHierarchicalLevel, heading_level);
+TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
+  std::string span = "span";
+  std::string h1 = "h1";
+  std::string ul = "ul";
+  basic_snapshot_.nodes[1].AddStringAttribute(
+      ax::mojom::StringAttribute::kHtmlTag, span);
+  basic_snapshot_.nodes[2].AddStringAttribute(
+      ax::mojom::StringAttribute::kHtmlTag, h1);
+  basic_snapshot_.nodes[3].AddStringAttribute(
+      ax::mojom::StringAttribute::kHtmlTag, ul);
   OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_EQ(heading_level, GetHeadingLevel(2));
+  EXPECT_EQ(span, GetHtmlTag(2));
+  EXPECT_EQ(h1, GetHtmlTag(3));
+  EXPECT_EQ(ul, GetHtmlTag(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent) {
@@ -174,54 +165,4 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   EXPECT_EQ(url, GetUrl(2));
   EXPECT_EQ(invalid_url, GetUrl(3));
   EXPECT_EQ(missing_url, GetUrl(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, IsHeading) {
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kHeading;
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kDocSubtitle;
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kLink;
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_TRUE(IsHeading(2));
-  EXPECT_TRUE(IsHeading(3));
-  EXPECT_FALSE(IsHeading(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, IsLink) {
-  basic_snapshot_.nodes.resize(7);
-  for (int i = 4; i < 7; i++) {
-    basic_snapshot_.nodes[0].child_ids.push_back(i + 1);
-    basic_snapshot_.nodes[i].id = i + 1;
-  }
-
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kDocBackLink;
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kDocBiblioRef;
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kDocGlossRef;
-  basic_snapshot_.nodes[4].role = ax::mojom::Role::kDocNoteRef;
-  basic_snapshot_.nodes[5].role = ax::mojom::Role::kLink;
-  basic_snapshot_.nodes[6].role = ax::mojom::Role::kParagraph;
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_TRUE(IsLink(2));
-  EXPECT_TRUE(IsLink(3));
-  EXPECT_TRUE(IsLink(4));
-  EXPECT_TRUE(IsLink(5));
-  EXPECT_TRUE(IsLink(6));
-  EXPECT_FALSE(IsLink(7));
-}
-
-TEST_F(ReadAnythingAppControllerTest, IsParagraph) {
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kParagraph;
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kListBox;
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_TRUE(IsParagraph(2));
-  EXPECT_FALSE(IsParagraph(3));
-}
-
-TEST_F(ReadAnythingAppControllerTest, IsStaticText) {
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kInlineTextBox;
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kLabelText;
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_TRUE(IsStaticText(2));
-  EXPECT_FALSE(IsStaticText(3));
-  EXPECT_FALSE(IsStaticText(4));
 }

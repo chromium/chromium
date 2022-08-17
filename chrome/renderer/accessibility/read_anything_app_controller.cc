@@ -21,7 +21,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "v8/include/v8-context.h"
@@ -43,17 +42,6 @@ void SetAXNodeDataChildIds(v8::Isolate* isolate,
   v8::Local<v8::Value> v8_child_ids;
   v8_dict->Get("childIds", &v8_child_ids);
   gin::ConvertFromV8(isolate, v8_child_ids, &ax_node_data->child_ids);
-}
-
-void SetAXNodeDataHierarchicalLevel(v8::Isolate* isolate,
-                                    gin::Dictionary* v8_dict,
-                                    ui::AXNodeData* ax_node_data) {
-  v8::Local<v8::Value> v8_hierarchical_level;
-  v8_dict->Get("hierarchicalLevel", &v8_hierarchical_level);
-  int32_t hierarchical_level;
-  gin::ConvertFromV8(isolate, v8_hierarchical_level, &hierarchical_level);
-  ax_node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                                hierarchical_level);
 }
 
 void SetAXNodeDataId(v8::Isolate* isolate,
@@ -92,6 +80,17 @@ void SetAXNodeDataRole(v8::Isolate* isolate,
     ax_node_data->role = ax::mojom::Role::kParagraph;
   else if (role_name == "staticText")
     ax_node_data->role = ax::mojom::Role::kStaticText;
+}
+
+void SetAXNodeDataHtmlTag(v8::Isolate* isolate,
+                          gin::Dictionary* v8_dict,
+                          ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_url;
+  v8_dict->Get("htmlTag", &v8_url);
+  std::string html_tag;
+  gin::Converter<std::string>::FromV8(isolate, v8_url, &html_tag);
+  ax_node_data->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                   html_tag);
 }
 
 void SetAXNodeDataUrl(v8::Isolate* isolate,
@@ -135,7 +134,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     SetAXNodeDataRole(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataName(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
-    SetAXNodeDataHierarchicalLevel(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataHtmlTag(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);
   }
@@ -224,13 +223,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("backgroundColor",
                    &ReadAnythingAppController::BackgroundColor)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
-      .SetMethod("getHeadingLevel", &ReadAnythingAppController::GetHeadingLevel)
+      .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
-      .SetMethod("isHeading", &ReadAnythingAppController::IsHeading)
-      .SetMethod("isLink", &ReadAnythingAppController::IsLink)
-      .SetMethod("isParagraph", &ReadAnythingAppController::IsParagraph)
-      .SetMethod("isStaticText", &ReadAnythingAppController::IsStaticText)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
@@ -271,11 +266,11 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   return child_ids;
 }
 
-uint32_t ReadAnythingAppController::GetHeadingLevel(ui::AXNodeID ax_node_id) {
+std::string ReadAnythingAppController::GetHtmlTag(ui::AXNodeID ax_node_id) {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   if (!ax_node)
-    return -1;
-  return ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+    return std::string();
+  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
 }
 
 std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {
@@ -290,34 +285,6 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) {
   if (!ax_node)
     return std::string();
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
-}
-
-bool ReadAnythingAppController::IsHeading(ui::AXNodeID ax_node_id) {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return false;
-  return ui::IsHeading(ax_node->GetRole());
-}
-
-bool ReadAnythingAppController::IsLink(ui::AXNodeID ax_node_id) {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return false;
-  return ui::IsLink(ax_node->GetRole());
-}
-
-bool ReadAnythingAppController::IsParagraph(ui::AXNodeID ax_node_id) {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return false;
-  return ax_node->GetRole() == ax::mojom::Role::kParagraph;
-}
-
-bool ReadAnythingAppController::IsStaticText(ui::AXNodeID ax_node_id) {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return false;
-  return ax_node->GetRole() == ax::mojom::Role::kStaticText;
 }
 
 void ReadAnythingAppController::OnConnected() {

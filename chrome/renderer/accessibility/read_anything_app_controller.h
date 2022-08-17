@@ -77,13 +77,9 @@ class ReadAnythingAppController
   SkColor ForegroundColor();
   SkColor BackgroundColor();
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id);
-  uint32_t GetHeadingLevel(ui::AXNodeID ax_node_id);
+  std::string GetHtmlTag(ui::AXNodeID ax_node_id);
   std::string GetTextContent(ui::AXNodeID ax_node_id);
   std::string GetUrl(ui::AXNodeID ax_node_id);
-  bool IsHeading(ui::AXNodeID ax_node_id);
-  bool IsLink(ui::AXNodeID ax_node_id);
-  bool IsParagraph(ui::AXNodeID ax_node_id);
-  bool IsStaticText(ui::AXNodeID ax_node_id);
   void OnConnected();
 
   // The following methods are used for testing ReadAnythingAppTest.
