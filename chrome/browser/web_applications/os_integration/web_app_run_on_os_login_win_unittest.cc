@@ -58,9 +58,9 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
 
   base::FilePath GetStartupFolder() {
     base::FilePath location;
-    ShellUtil::GetShortcutPath(
+    EXPECT_TRUE(ShellUtil::GetShortcutPath(
         ShellUtil::ShortcutLocation::SHORTCUT_LOCATION_STARTUP,
-        ShellUtil::ShellChange::CURRENT_USER, &location);
+        ShellUtil::ShellChange::CURRENT_USER, &location));
     return location;
   }
 
