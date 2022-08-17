@@ -8,13 +8,18 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/syscall.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
@@ -52,9 +57,86 @@ class URandomFd {
   const int fd_;
 };
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
+    !BUILDFLAG(IS_NACL)
+// TODO(pasko): Unify reading kernel version numbers in:
+// mojo/core/channel_linux.cc
+// chrome/browser/android/seccomp_support_detector.cc
+void KernelVersionNumbers(int32_t* major_version,
+                          int32_t* minor_version,
+                          int32_t* bugfix_version) {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+    *major_version = 0;
+    *minor_version = 0;
+    *bugfix_version = 0;
+    return;
+  }
+  int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
+                        bugfix_version);
+  if (num_read < 1)
+    *major_version = 0;
+  if (num_read < 2)
+    *minor_version = 0;
+  if (num_read < 3)
+    *bugfix_version = 0;
+}
+
+bool KernelSupportsGetRandom() {
+  int32_t major = 0;
+  int32_t minor = 0;
+  int32_t bugfix = 0;
+  KernelVersionNumbers(&major, &minor, &bugfix);
+  if (major >= 3 && minor >= 17)
+    return true;
+  return false;
+}
+
+bool GetRandomSyscall(void* output, size_t output_length) {
+  // We have to call `getrandom` via Linux Syscall Support, rather than through
+  // the libc wrapper, because we might not have an up-to-date libc (e.g. on
+  // some bots).
+  const ssize_t r =
+      HANDLE_EINTR(syscall(__NR_getrandom, output, output_length, 0));
+
+  // Return success only on total success. In case errno == ENOSYS (or any other
+  // error), we'll fall through to reading from urandom below.
+  if (output_length == static_cast<size_t>(r)) {
+    MSAN_UNPOISON(output, output_length);
+    return true;
+  }
+  return false;
+}
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)) && !BUILDFLAG(IS_NACL)
+
+#if BUILDFLAG(IS_ANDROID)
+std::atomic<bool> g_use_getrandom;
+
+const base::Feature kUseGetrandomForRandBytes{
+    "UseGetrandomForRandBytes", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool UseGetrandom() {
+  return g_use_getrandom.load(std::memory_order_relaxed);
+}
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
+bool UseGetrandom() {
+  return true;
+}
+#endif
+
 }  // namespace
 
 namespace base {
+
+#if BUILDFLAG(IS_ANDROID)
+void ConfigureRandBytesFieldTrial() {
+  g_use_getrandom.store(FeatureList::IsEnabled(kUseGetrandomForRandBytes),
+                        std::memory_order_relaxed);
+}
+#endif
 
 // NOTE: In an ideal future, all implementations of this function will just
 // wrap BoringSSL's `RAND_bytes`. TODO(crbug.com/995996): Figure out the
@@ -62,17 +144,16 @@ namespace base {
 // (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
 // it or some form of it.
 void RandBytes(void* output, size_t output_length) {
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
-  // We have to call `getrandom` via Linux Syscall Support, rather than through
-  // the libc wrapper, because we might not have an up-to-date libc (e.g. on
-  // some bots).
-  const ssize_t r = HANDLE_EINTR(sys_getrandom(output, output_length, 0));
-
-  // Return success only on total success. In case errno == ENOSYS (or any other
-  // error), we'll fall through to reading from urandom below.
-  if (output_length == static_cast<size_t>(r)) {
-    MSAN_UNPOISON(output, output_length);
-    return;
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
+    !BUILDFLAG(IS_NACL)
+  if (UseGetrandom()) {
+    // On Android it is mandatory to check that the kernel _version_ has the
+    // support for a syscall before calling. The same check is made on Linux and
+    // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
+    static const bool kernel_has_support = KernelSupportsGetRandom();
+    if (kernel_has_support && GetRandomSyscall(output, output_length))
+      return;
   }
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives

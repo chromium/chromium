@@ -30,6 +30,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
+#include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -477,6 +478,10 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
 
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
+
+#if BUILDFLAG(IS_ANDROID)
+  ConfigureRandBytesFieldTrial();
+#endif
 
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
