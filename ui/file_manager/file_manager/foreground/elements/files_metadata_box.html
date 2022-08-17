@@ -55,7 +55,8 @@
   <files-metadata-entry key="$i18n{METADATA_BOX_FILE_SIZE}" value="[[size]]" loading="[[isSizeLoading]]"></files-metadata-entry>
   <files-metadata-entry key="$i18n{METADATA_BOX_MODIFICATION_TIME}" value="[[modificationTime]]"></files-metadata-entry>
   <files-metadata-entry key="$i18n{METADATA_BOX_MEDIA_MIME_TYPE}" value="[[mediaMimeType]]"></files-metadata-entry>
-  <files-metadata-entry key="$i18n{METADATA_BOX_FILE_LOCATION}" value="[[fileLocation]]"></files-metadata-entry>
+  <files-metadata-entry key="$i18n{METADATA_BOX_FILE_LOCATION}" value="[[fileLocation]]" hidden="[[!isTrashEntry(originalLocation)]]"></files-metadata-entry>
+  <files-metadata-entry key="$i18n{METADATA_BOX_ORIGINAL_LOCATION}" value="[[originalLocation]]" hidden="[[isTrashEntry(originalLocation)]]"></files-metadata-entry>
 
   <div hidden="[[!hasFileSpecificMetadata_]]">
     <hr>

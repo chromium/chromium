@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {FileType} from '../../common/js/file_type.js';
+import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
@@ -163,6 +164,12 @@ export class MetadataBoxController {
       this.metadataBox_.size =
           this.fileMetadataFormatter_.formatSize(item.size, item.hosted, true);
       this.metadataBox_.metadataRendered('size');
+    }
+
+    if (entry.restoreEntry) {
+      this.metadataBox_.originalLocation =
+          this.getFileLocationLabel_(entry.restoreEntry);
+      this.metadataBox_.metadataRendered('originalLocation');
     }
 
     this.updateModificationTime_(entry, items);

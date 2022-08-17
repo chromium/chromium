@@ -37,6 +37,7 @@ Polymer({
     mediaTitle: String,
     mediaTrack: String,
     mediaYearRecorded: String,
+    originalLocation: String,
 
     /**
      * True if the file has file-specific metadata.
@@ -78,6 +79,7 @@ Polymer({
       mediaTrack: '',
       mediaYearRecorded: '',
       metadata: '',
+      originalLocation: '',
     };
 
     if (!keepSizeFields) {
@@ -116,6 +118,14 @@ Polymer({
    */
   isAudio_: function(type) {
     return type === 'audio';
+  },
+
+  /**
+   * If the originalLocation is set, the preview is for a trashed item.
+   * @returns {boolean}
+   */
+  isTrashEntry: function(originalLocation) {
+    return !(originalLocation && originalLocation.length > 0);
   },
 
   /**

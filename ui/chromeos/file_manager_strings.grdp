@@ -1056,6 +1056,9 @@
   <message name="IDS_FILE_BROWSER_METADATA_BOX_FILE_LOCATION" desc="Label for file location.">
     File location
   </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_ORIGINAL_LOCATION" desc="Label for items original location.">
+    Original location
+  </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_FILE_PATH" desc="Label for file path.">
     Path
   </message>

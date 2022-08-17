@@ -884,6 +884,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewUsb").FilesSwa(),
         TestCase("openQuickViewRemovablePartitions"),
         TestCase("openQuickViewRemovablePartitions").FilesSwa(),
+        TestCase("openQuickViewTrash").FilesSwa().EnableTrash(),
         TestCase("openQuickViewMtp"),
         TestCase("openQuickViewMtp").FilesSwa(),
         TestCase("openQuickViewTabIndexImage").MediaSwa(),
