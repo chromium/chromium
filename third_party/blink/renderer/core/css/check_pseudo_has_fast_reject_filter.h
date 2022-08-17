@@ -39,6 +39,8 @@ class CORE_EXPORT CheckPseudoHasFastRejectFilter {
   USING_FAST_MALLOC(CheckPseudoHasFastRejectFilter);
 
  public:
+  using FastRejectFilter = WTF::BloomFilter<12>;
+
   CheckPseudoHasFastRejectFilter() = default;
   CheckPseudoHasFastRejectFilter(CheckPseudoHasFastRejectFilter&) = delete;
 
@@ -59,7 +61,6 @@ class CORE_EXPORT CheckPseudoHasFastRejectFilter {
   bool BloomFilterAllocated() const { return filter_.get(); }
 
  private:
-  using FastRejectFilter = WTF::BloomFilter<12>;
   std::unique_ptr<FastRejectFilter> filter_;
 };
 

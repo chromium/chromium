@@ -68,27 +68,38 @@ void AddPseudoHasArgumentHash(Vector<unsigned>& pseudo_has_argument_hashes,
   pseudo_has_argument_hashes.push_back(hash);
 }
 
+void AddHashToFilter(CheckPseudoHasFastRejectFilter::FastRejectFilter& filter,
+                     unsigned hash) {
+  filter.Add(hash);
+}
+
+void AddHashAndHoverCompoundingHashToFilter(
+    CheckPseudoHasFastRejectFilter::FastRejectFilter& filter,
+    unsigned hash) {
+  filter.Add(hash);
+  filter.Add(GetHoverCompoundedHash(hash));
+}
+
 }  // namespace
 
 void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
     const Element& element) {
   DCHECK(filter_.get());
-  Vector<unsigned, 4> element_identifier_hashes;
 
-  element_identifier_hashes.push_back(
-      GetTagHash(element.LocalNameForSelectorMatching()));
+  void (*add_hash)(FastRejectFilter&, unsigned) =
+      element.IsHovered() ? AddHashAndHoverCompoundingHashToFilter
+                          : AddHashToFilter;
 
-  if (element.HasID()) {
-    element_identifier_hashes.push_back(
-        GetIdHash(element.IdForStyleResolution()));
-  }
+  add_hash(*filter_, GetTagHash(element.LocalNameForSelectorMatching()));
+
+  if (element.HasID())
+    add_hash(*filter_, GetIdHash(element.IdForStyleResolution()));
 
   if (element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
     wtf_size_t count = class_names.size();
-    for (wtf_size_t i = 0; i < count; ++i) {
-      element_identifier_hashes.push_back(GetClassHash(class_names[i]));
-    }
+    for (wtf_size_t i = 0; i < count; ++i)
+      add_hash(*filter_, GetClassHash(class_names[i]));
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
@@ -97,17 +108,8 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
       continue;
     auto lower = attribute_name.IsLowerASCII() ? attribute_name
                                                : attribute_name.LowerASCII();
-    element_identifier_hashes.push_back(GetAttributeHash(lower));
+    add_hash(*filter_, GetAttributeHash(lower));
   }
-
-  for (unsigned hash : element_identifier_hashes)
-    filter_->Add(hash);
-
-  if (!element.IsHovered())
-    return;
-
-  for (unsigned hash : element_identifier_hashes)
-    filter_->Add(GetHoverCompoundedHash(hash));
 }
 
 bool CheckPseudoHasFastRejectFilter::FastReject(
