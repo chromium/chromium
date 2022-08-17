@@ -18,8 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,7 +71,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private boolean mPageIsOffline;
     private boolean mShowStatusIconWhenUrlFocused;
     private boolean mIsSecurityViewShown;
-    private boolean mShouldCancelCustomFavicon;
     private boolean mIsTablet;
 
     private final int mEndPaddingPixelSizeOnFocusDelta;
@@ -517,16 +516,22 @@ public class StatusMediator implements PermissionDialogController.Observer,
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
         // Show the logo unfocused if we're on the NTP.
         if (shouldDisplaySearchEngineIcon()) {
-            getStatusIconResourceForSearchEngineIcon((statusIconRes) -> {
-                // Check again in case the conditions have changed since this callback was
-                // created.
-                if (shouldDisplaySearchEngineIcon()) {
-                    mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
-                }
-            });
+            Promise<StatusIconResource> resourcePromise =
+                    getStatusIconResourceForSearchEngineIcon();
+            // As an optimization, synchronously update the status icon resource if it's available
+            // immediately, which is the common case. This lets us avoid rechecking
+            // shouldDisplaySearchEngineIcon().
+            if (resourcePromise.isFulfilled()) {
+                mModel.set(StatusProperties.STATUS_ICON_RESOURCE, resourcePromise.getResult());
+            } else {
+                resourcePromise.then((result -> {
+                    if (shouldDisplaySearchEngineIcon()) {
+                        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, result);
+                    }
+                }));
+            }
             return true;
         } else {
-            mShouldCancelCustomFavicon = true;
             return false;
         }
     }
@@ -550,24 +555,19 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
-     * Set the security icon resource for the search engine icon and invoke the callback to inform
-     * the caller which resource has been set.
-     *
-     * @param resourceCallback Called when the final value is set for the security icon resource.
-     *                         Meant to give the caller a chance to set the tint for the given
-     *                         resource.
+     * Returns a promise wrapping the result of calculating the security icon resource for the
+     * search engine icon. The icon is available immediately in most case, but may need to be
+     * fetched asynchronously. The returned promise will never be rejected.
      */
-    private void getStatusIconResourceForSearchEngineIcon(
-            Callback<StatusIconResource> resourceCallback) {
-        mShouldCancelCustomFavicon = false;
+    private Promise<StatusIconResource> getStatusIconResourceForSearchEngineIcon() {
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
-            resourceCallback.onResult(new StatusIconResource(R.drawable.ic_globe_24dp,
+            return Promise.fulfilled(new StatusIconResource(R.drawable.ic_globe_24dp,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
-        } else {
-            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
-                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get(), resourceCallback);
         }
+
+        return mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
+                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */

@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
@@ -39,10 +38,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.base.Promise;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -126,6 +124,9 @@ public class LocationBarTest {
             TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
             LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
             SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
+            doReturn(new Promise<>())
+                    .when(mSearchEngineLogoUtils)
+                    .getSearchEngineLogo(any(), anyInt(), any(), any());
         });
     }
 
@@ -202,16 +203,12 @@ public class LocationBarTest {
                     .when(mTemplateUrlService)
                     .getDefaultSearchEngineTemplateUrl();
 
-            Answer logoAnswer = (invocation) -> {
-                ((Callback<StatusIconResource>) invocation.getArgument(4))
-                        .onResult(new StatusIconResource(
-                                isGoogle ? R.drawable.ic_logo_googleg_20dp : R.drawable.ic_search,
-                                0));
-                return null;
-            };
-            doAnswer(logoAnswer)
+            Promise<StatusIconResource> logoPromise = Promise.fulfilled(new StatusIconResource(
+                    isGoogle ? R.drawable.ic_logo_googleg_20dp : R.drawable.ic_search, 0));
+
+            doReturn(logoPromise)
                     .when(mSearchEngineLogoUtils)
-                    .getSearchEngineLogo(any(), anyInt(), any(), any(), any());
+                    .getSearchEngineLogo(any(), anyInt(), any(), any());
         });
     }
 

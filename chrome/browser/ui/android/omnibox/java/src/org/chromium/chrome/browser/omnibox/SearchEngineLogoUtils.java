@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,8 +39,6 @@ import java.util.Map;
 public class SearchEngineLogoUtils {
     // Note: shortened to account for the 20 character limit.
     private static final String TAG = "SearchLogoUtils";
-    private static final String ROUNDED_EDGES_VARIANT = "rounded_edges";
-    private static final String LOUPE_EVERYWHERE_VARIANT = "loupe_everywhere";
     private static final String DUMMY_URL_QUERY = "replace_me";
 
     private static SearchEngineLogoUtils sInstance;
@@ -55,12 +52,11 @@ public class SearchEngineLogoUtils {
     public static SearchEngineLogoUtils getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = new SearchEngineLogoUtils(BrowserStartupController.getInstance());
+            sInstance = new SearchEngineLogoUtils();
         }
         return sInstance;
     }
 
-    private final BrowserStartupController mBrowserStartupController;
     // Lazy initialization for native-bound dependencies.
     private FaviconHelper mFaviconHelper;
     private RoundedIconGenerator mRoundedIconGenerator;
@@ -86,9 +82,7 @@ public class SearchEngineLogoUtils {
     }
 
     @VisibleForTesting
-    SearchEngineLogoUtils(BrowserStartupController browserStartupController) {
-        mBrowserStartupController = browserStartupController;
-    }
+    SearchEngineLogoUtils() {}
 
     /**
      * Encapsulates the check for if the search engine logo should be shown.
@@ -150,12 +144,10 @@ public class SearchEngineLogoUtils {
      * @param profile The current profile. When null, falls back to locally-provided icons.
      * @param templateUrlService The current templateUrlService. When null, falls back to
      *         locally-provided icons.
-     * @param callback How the bitmap will be returned to the caller.
      */
-    public void getSearchEngineLogo(@NonNull Resources resources,
+    public Promise<StatusIconResource> getSearchEngineLogo(@NonNull Resources resources,
             @BrandedColorScheme int brandedColorScheme, @Nullable Profile profile,
-            @Nullable TemplateUrlService templateUrlService,
-            @NonNull Callback<StatusIconResource> callback) {
+            @Nullable TemplateUrlService templateUrlService) {
         // In the following cases, we fallback to the search loupe:
         // - Either of the nullable dependencies are null.
         // - We still need to check for the search engine promo, which happens in rare cases when
@@ -164,11 +156,9 @@ public class SearchEngineLogoUtils {
         // then we serve the Google icon we have locally.
         // Otherwise, the search engine is non-Google and we go to the network to fetch it.
         if (profile == null || templateUrlService == null || needToCheckForSearchEnginePromo()) {
-            callback.onResult(getSearchLoupeResource(brandedColorScheme));
-            return;
+            return Promise.fulfilled(getSearchLoupeResource(brandedColorScheme));
         } else if (templateUrlService.isDefaultSearchEngineGoogle()) {
-            callback.onResult(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
-            return;
+            return Promise.fulfilled(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
         }
 
         // If all of the nullable dependencies are present and the search engine is non-Google,
@@ -178,34 +168,34 @@ public class SearchEngineLogoUtils {
 
         String logoUrl = getSearchLogoUrl(templateUrlService);
         if (logoUrl == null) {
-            callback.onResult(getSearchLoupeResource(brandedColorScheme));
             recordEvent(Events.FETCH_FAILED_NULL_URL);
-            return;
+            return Promise.fulfilled(getSearchLoupeResource(brandedColorScheme));
         }
 
         // Return a cached copy if it's available.
         if (sCachedComposedBackground != null && sCachedComposedBackgroundLogoUrl.equals(logoUrl)) {
-            callback.onResult(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
             recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
-            return;
+            return Promise.fulfilled(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
         }
 
+        Promise<StatusIconResource> promise = new Promise<>();
         final int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         boolean willCallbackBeCalled = mFaviconHelper.getLocalFaviconImageForURL(
                 profile, logoUrl, logoSizePixels, (image, iconUrl) -> {
                     if (image == null) {
-                        callback.onResult(getSearchLoupeResource(brandedColorScheme));
+                        promise.fulfill(getSearchLoupeResource(brandedColorScheme));
                         recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
                         return;
                     }
 
-                    processReturnedLogo(logoUrl, image, resources, callback);
+                    processReturnedLogo(logoUrl, image, resources, promise);
                     recordEvent(Events.FETCH_SUCCESS);
                 });
         if (!willCallbackBeCalled) {
-            callback.onResult(getSearchLoupeResource(brandedColorScheme));
+            promise.fulfill(getSearchLoupeResource(brandedColorScheme));
             recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
         }
+        return promise;
     }
 
     @VisibleForTesting
@@ -241,10 +231,10 @@ public class SearchEngineLogoUtils {
      * @param logoUrl The url for the given logo.
      * @param image The logo to process.
      * @param resources Android resources object used to access dimensions.
-     * @param callback The client callback to receive the processed logo.
+     * @param promise The promise encapsulating the processed logo.
      */
     private void processReturnedLogo(String logoUrl, Bitmap image, Resources resources,
-            Callback<StatusIconResource> callback) {
+            Promise<StatusIconResource> promise) {
         // Scale the logo up to the desired size.
         int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         Bitmap scaledIcon =
@@ -272,7 +262,7 @@ public class SearchEngineLogoUtils {
         sCachedComposedBackground = composedIcon;
         sCachedComposedBackgroundLogoUrl = logoUrl;
 
-        callback.onResult(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
+        promise.fulfill(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
     }
 
     /**

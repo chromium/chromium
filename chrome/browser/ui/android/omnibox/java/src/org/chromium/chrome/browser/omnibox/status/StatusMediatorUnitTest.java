@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.status;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,11 +30,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -100,18 +98,16 @@ public final class StatusMediatorUnitTest {
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
 
         // By default return google g, but this behavior is overridden in some tests.
-        Answer logoAnswer = (invocation) -> {
-            ((Callback<StatusIconResource>) invocation.getArgument(4))
-                    .onResult(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
-            return null;
-        };
+        Promise<StatusIconResource> logoPromise =
+                Promise.fulfilled(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+
         doReturn(false).when(mLocationBarDataProvider).isInOverviewAndShowingOmnibox();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doAnswer(logoAnswer)
+        doReturn(logoPromise)
                 .when(mSearchEngineLogoUtils)
                 .getSearchEngineLogo(
-                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any(), any());
+                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
 
         setupStatusMediator(/* isTablet= */ false);
     }
@@ -379,7 +375,7 @@ public final class StatusMediatorUnitTest {
         mMediator.onTemplateURLServiceChanged();
         verify(mSearchEngineLogoUtils, times(3))
                 .getSearchEngineLogo(
-                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any(), any());
+                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
     }
 
     @Test
