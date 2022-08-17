@@ -168,7 +168,7 @@ def DownloadBootImages(bucket, image_hash, boot_image_names, image_root_dir):
       DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
     except subprocess.CalledProcessError as e:
       logging.exception('Failed to download image %s from URL: %s',
-                        image_to_download, images_targball_url)
+                        image_to_download, images_tarball_url)
 
 
 def main():
