@@ -401,16 +401,22 @@ TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
 }
 
 TEST_F(WindowEventDispatcherTest, DontIgnoreUnknownKeys) {
+  ui::Event::Properties properties;
+  properties.emplace(ui::kPropertyKeyboardImeFlag,
+                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
+
   ConsumeKeyHandler handler;
   root_window()->AddPreTargetHandler(&handler);
 
   ui::KeyEvent unknown_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+  unknown_event.SetProperties(properties);
   DispatchEventUsingWindowDispatcher(&unknown_event);
   EXPECT_TRUE(unknown_event.handled());
   EXPECT_EQ(1, handler.num_key_events());
 
   handler.Reset();
   ui::KeyEvent known_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  known_event.SetProperties(properties);
   DispatchEventUsingWindowDispatcher(&known_event);
   EXPECT_TRUE(known_event.handled());
   EXPECT_EQ(1, handler.num_key_events());
@@ -418,6 +424,7 @@ TEST_F(WindowEventDispatcherTest, DontIgnoreUnknownKeys) {
   handler.Reset();
   ui::KeyEvent ime_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
                          ui::EF_IME_FABRICATED_KEY);
+  ime_event.SetProperties(properties);
   DispatchEventUsingWindowDispatcher(&ime_event);
   EXPECT_TRUE(ime_event.handled());
   EXPECT_EQ(1, handler.num_key_events());
@@ -426,6 +433,7 @@ TEST_F(WindowEventDispatcherTest, DontIgnoreUnknownKeys) {
   ui::KeyEvent unknown_key_with_char_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
                                            ui::EF_NONE);
   unknown_key_with_char_event.set_character(0x00e4 /* "ä" */);
+  unknown_key_with_char_event.SetProperties(properties);
   DispatchEventUsingWindowDispatcher(&unknown_key_with_char_event);
   EXPECT_TRUE(unknown_key_with_char_event.handled());
   EXPECT_EQ(1, handler.num_key_events());
@@ -440,6 +448,11 @@ TEST_F(WindowEventDispatcherTest, NoDelegateWindowReceivesKeyEvents) {
   ui::test::TestEventHandler handler;
   w1->AddPreTargetHandler(&handler);
   ui::KeyEvent key_press(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::Event::Properties properties;
+  properties.emplace(ui::kPropertyKeyboardImeFlag,
+                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
+  key_press.SetProperties(properties);
+
   DispatchEventUsingWindowDispatcher(&key_press);
   EXPECT_TRUE(key_press.handled());
   EXPECT_EQ(1, handler.num_key_events());

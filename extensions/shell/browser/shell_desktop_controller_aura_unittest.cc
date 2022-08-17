@@ -32,6 +32,7 @@
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
@@ -132,6 +133,10 @@ TEST_F(ShellDesktopControllerAuraTest, InputEvents) {
 
   // Dispatch a keypress on the window tree host to verify it is processed.
   ui::KeyEvent key_press(u'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
+  ui::Event::Properties properties;
+  properties.emplace(ui::kPropertyKeyboardImeFlag,
+                     std::vector<uint8_t>{ui::kPropertyKeyboardImeIgnoredFlag});
+  key_press.SetProperties(properties);
   ui::EventDispatchDetails details =
       controller_->GetPrimaryHost()->dispatcher()->DispatchEvent(
           controller_->GetPrimaryHost()->window(), &key_press);
