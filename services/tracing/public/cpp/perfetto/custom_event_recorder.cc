@@ -139,6 +139,10 @@ void CustomEventRecorder::OnStartupTracingStarted(
 // TODO(b/237761718): Support multiple simultaneous tracing sessions.
 // * Read privacy_filtering_enabled from EventContext.
 // * Make monitored_histograms_ a map keyed on session ID.
+// TODO(khokhlov): In SDK build, this method can be called at startup, before
+// the task runner is created. Factor out the parts that can be called early
+// into OnStartupTracingStarted, and make sure each part is called at the
+// appropriate time.
 void CustomEventRecorder::OnTracingStarted(
     const perfetto::DataSourceConfig& data_source_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);

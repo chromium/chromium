@@ -384,6 +384,18 @@ bool PerfettoTracedProcess::SetupStartupTracing(
   return true;
 }
 
+void PerfettoTracedProcess::RequestStartupTracing(
+    const perfetto::TraceConfig& config,
+    const perfetto::Tracing::SetupStartupTracingOpts& opts) {
+  if (platform_->did_start_task_runner()) {
+    perfetto::Tracing::SetupStartupTracing(config, opts);
+  } else {
+    saved_config_ = config;
+    saved_opts_ = opts;
+    startup_tracing_needed_ = true;
+  }
+}
+
 void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
@@ -414,6 +426,11 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   SetTrackDescriptors();
   CustomEventRecorder::GetInstance();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+  if (startup_tracing_needed_) {
+    perfetto::Tracing::SetupStartupTracing(saved_config_, saved_opts_);
+    startup_tracing_needed_ = false;
+  }
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {

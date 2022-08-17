@@ -193,7 +193,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   EXPECT_FALSE(base::trace_event::TraceLog::GetInstance()->IsEnabled());
+#endif
 
   // We should not be able to start a new reactive scenario immediately after
   // a previous one gets uploaded.

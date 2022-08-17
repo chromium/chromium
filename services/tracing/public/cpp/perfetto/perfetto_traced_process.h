@@ -280,6 +280,15 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>)
       override;
 
+  // Indicate that startup tracing will need to start when thread pool becomes
+  // available. This is used in Perfetto client library build, because currently
+  // it requires a threadpool to run tracing tasks.
+  // TODO(khokhlov): Remove this method once startup tracing no longer depends
+  // on threadpool in client library build.
+  void RequestStartupTracing(
+      const perfetto::TraceConfig& config,
+      const perfetto::Tracing::SetupStartupTracingOpts& opts);
+
  protected:
   // protected for testing.
   PerfettoTracedProcess();
@@ -331,6 +340,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>
       pending_producer_callback_;
+
+  bool startup_tracing_needed_ = false;
+  perfetto::TraceConfig saved_config_;
+  perfetto::Tracing::SetupStartupTracingOpts saved_opts_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

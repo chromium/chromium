@@ -236,6 +236,11 @@ void AddPidsToProcessFilter(
   }
 }
 
+bool IsChromeDataSource(const std::string& data_source_name) {
+  return base::StartsWith(data_source_name, "org.chromium.") ||
+         data_source_name == "track_event";
+}
+
 absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     const std::string& tracing_backend,
     perfetto::TraceConfig& perfetto_config) {
@@ -248,7 +253,7 @@ absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     // sources specified in the config.
     for (auto& data_source : *(perfetto_config.mutable_data_sources())) {
       auto* source_config = data_source.mutable_config();
-      if (!base::StartsWith(source_config->name(), "org.chromium."))
+      if (!IsChromeDataSource(source_config->name()))
         return perfetto::BackendType::kSystemBackend;
     }
     return perfetto::BackendType::kCustomBackend;

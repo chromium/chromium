@@ -11,6 +11,7 @@
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
@@ -21,6 +22,10 @@
 
 namespace tracing {
 namespace {
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+constexpr uint32_t kStartupTracingTimeoutMs = 30 * 1000;  // 30 sec
+#endif
 
 using base::trace_event::TraceConfig;
 using base::trace_event::TraceLog;
@@ -61,6 +66,29 @@ void EnableStartupTracingIfNeeded() {
 
     TraceConfig trace_config = startup_config->GetTraceConfig();
 
+    bool privacy_filtering_enabled =
+        startup_config->GetSessionOwner() ==
+            TraceStartupConfig::SessionOwner::kBackgroundTracing ||
+        command_line.HasSwitch(switches::kTraceStartupEnablePrivacyFiltering);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+        trace_config, privacy_filtering_enabled,
+        /*convert_to_legacy_json=*/false);
+    int duration_in_seconds =
+        tracing::TraceStartupConfig::GetInstance()->GetStartupDuration();
+    if (duration_in_seconds > 0)
+      perfetto_config.set_duration_ms(duration_in_seconds * 1000);
+    perfetto::Tracing::SetupStartupTracingOpts opts;
+    opts.timeout_ms = kStartupTracingTimeoutMs;
+    // TODO(khokhlov): Support startup tracing with the system backend in the
+    // SDK build.
+    opts.backend = perfetto::kCustomBackend;
+    // TODO(khokhlov): After client library is moved onto a separate thread
+    // and it's possible to start startup tracing early, replace this call with
+    // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
+    PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoProducer* producer =
         PerfettoTracedProcess::Get()->producer_client();
     if (startup_config->GetSessionOwner() ==
@@ -69,24 +97,34 @@ void EnableStartupTracingIfNeeded() {
       producer = PerfettoTracedProcess::Get()->system_producer();
     }
 
-    bool privacy_filtering_enabled =
-        startup_config->GetSessionOwner() ==
-            TraceStartupConfig::SessionOwner::kBackgroundTracing ||
-        command_line.HasSwitch(switches::kTraceStartupEnablePrivacyFiltering);
-
     if (!PerfettoTracedProcess::Get()->SetupStartupTracing(
             producer, trace_config, privacy_filtering_enabled)) {
       startup_config->SetDisabled();
     }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 }
 
 bool EnableStartupTracingForProcess(
     const base::trace_event::TraceConfig& trace_config,
     bool privacy_filtering_enabled) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TraceConfig perfetto_config =
+      tracing::GetDefaultPerfettoConfig(trace_config, privacy_filtering_enabled,
+                                        /*convert_to_legacy_json=*/false);
+  perfetto::Tracing::SetupStartupTracingOpts opts;
+  opts.timeout_ms = kStartupTracingTimeoutMs;
+  opts.backend = perfetto::kCustomBackend;
+  // TODO(khokhlov): After client library is moved onto a separate thread
+  // and it's possible to start startup tracing early, replace this call with
+  // perfetto::Tracing::SetupStartupTracing(perfetto_config, args).
+  PerfettoTracedProcess::Get()->RequestStartupTracing(perfetto_config, opts);
+  return true;
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   return PerfettoTracedProcess::Get()->SetupStartupTracing(
       PerfettoTracedProcess::Get()->producer_client(), trace_config,
       privacy_filtering_enabled);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
@@ -124,6 +162,7 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   if (!trace_log->IsEnabled())
     return;
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // It's possible that tracing is enabled only for atrace, in which case the
   // TraceEventDataSource isn't registered. In that case, there's no reason to
   // enable startup tracing in the child process (and we wouldn't know the
@@ -138,6 +177,7 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
       PerfettoTracedProcess::Get()->system_producer()->IsTracingActive()) {
     return;
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // The child process startup may race with a concurrent disabling of the
   // tracing session by the tracing service. To avoid being stuck in startup
@@ -149,7 +189,15 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
   // shortly. Otherwise, the startup tracing timeout in the child will
   // eventually disable tracing for the process.
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // TODO(b/240536920): Also propagate regular (non-startup) sessions to child
+  // processes.
+  if (!TraceStartupConfig::GetInstance()->IsEnabled())
+    return;
+  const auto trace_config = TraceStartupConfig::GetInstance()->GetTraceConfig();
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const auto trace_config = trace_log->GetCurrentTraceConfig();
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // We can't currently propagate event filter options, histogram names, memory
   // dump configs, or trace buffer sizes via command line flags (they only
