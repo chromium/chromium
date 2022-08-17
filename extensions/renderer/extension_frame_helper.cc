@@ -576,15 +576,6 @@ void ExtensionFrameHelper::UpdateBrowserWindowId(int32_t window_id) {
 
 void ExtensionFrameHelper::NotifyDidCreateScriptContext(int32_t world_id) {
   did_create_script_context_ = true;
-  if (world_id == blink::kMainDOMWorldId &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
-    // Grant cross browsing instance frame lookup if we are an extension. This
-    // should match the conditions in FindFrame.
-    content::RenderFrame* frame = render_frame();
-    if (GetExtensionFromFrame(frame))
-      frame->SetAllowsCrossBrowsingInstanceFrameLookup();
-  }
 }
 
 void ExtensionFrameHelper::OnDestruct() {
@@ -607,6 +598,25 @@ void ExtensionFrameHelper::DraggableRegionsChanged() {
     region.draggable = webregion.draggable;
   }
   Send(new ExtensionHostMsg_UpdateDraggableRegions(routing_id(), regions));
+}
+
+void ExtensionFrameHelper::DidClearWindowObject() {
+  // DidClearWindowObject() is called right at the end of
+  // DocumentLoader::CreateParserPostCommit(). This is late enough in the commit
+  // process that it won't interfere with any optimizations, since the code
+  // below may cause the V8 context to be initialized.
+  //
+  // Calling this multiple times in a page load is safe because
+  // SetAllowsCrossBrowsingInstanceFrameLookup() just sets a bool to true on the
+  // SecurityOrigin.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAvoidEarlyExtensionScriptContextCreation)) {
+    // Grant cross browsing instance frame lookup if we are an extension. This
+    // should match the conditions in FindFrame.
+    content::RenderFrame* frame = render_frame();
+    if (GetExtensionFromFrame(frame))
+      frame->SetAllowsCrossBrowsingInstanceFrameLookup();
+  }
 }
 
 }  // namespace extensions
