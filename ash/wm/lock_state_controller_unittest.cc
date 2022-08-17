@@ -476,6 +476,22 @@ class LockStateControllerAnimationTest
           SessionStateAnimator::kAllNonRootContainersMask);
     }
   }
+
+  // Switches to tablet mode for tests that want table mode power button
+  // behavior, also sets other session related info to simulate being on a lock
+  // screen with some other relevant user prefs.
+  void PrepareSessionForUnlockAnimationInTabletModeTest() {
+    power_button_controller_->OnTabletModeStarted();
+    // Advance mock clock to now. If we don't do this, PowerButtonController
+    // will wrongly assume that we have accidental button presses due to all
+    // timestamps zeroed.
+    tick_clock_.SetNowTicks(base::TimeTicks::Now());
+
+    Shell::Get()->session_controller()->SetSessionInfo(
+        SessionInfo{.can_lock_screen = true,
+                    .should_lock_screen_automatically = true,
+                    .state = session_manager::SessionState::LOCKED});
+  }
 };
 
 // Test the basic operation of the lock button.
@@ -527,6 +543,52 @@ TEST_P(LockStateControllerAnimationTest, LockButtonBasic) {
   PressLockButton();
   ReleaseLockButton();
   ExpectPostLockAnimationFinished("9");
+}
+
+TEST_P(LockStateControllerAnimationTest,
+       PowerButtonCancelsUnlockBeforeLockUIDestroyedInTabletMode) {
+  PrepareSessionForUnlockAnimationInTabletModeTest();
+
+  Shell::Get()->session_controller()->RunUnlockAnimation(
+      base::BindLambdaForTesting([](bool aborted) { EXPECT_TRUE(aborted); }));
+
+  ExpectUnlockBeforeUIDestroyedAnimationStarted("0");
+  AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, 0.5f);
+
+  PressPowerButton();
+  ReleasePowerButton();
+
+  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectUnlockBeforeUIDestroyedAnimationFinished("1");
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+}
+
+TEST_P(LockStateControllerAnimationTest,
+       PowerButtonCancelsUnlockAfterLockUIDestroyedInTabletMode) {
+  PrepareSessionForUnlockAnimationInTabletModeTest();
+
+  Shell::Get()->session_controller()->RunUnlockAnimation(
+      base::BindLambdaForTesting([](bool aborted) {
+        EXPECT_TRUE(true);
+        Shell::Get()->session_controller()->SetSessionInfo(
+            SessionInfo{.can_lock_screen = true,
+                        .should_lock_screen_automatically = true,
+                        .state = session_manager::SessionState::ACTIVE});
+      }));
+
+  ExpectUnlockBeforeUIDestroyedAnimationStarted("0");
+  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  ExpectUnlockBeforeUIDestroyedAnimationFinished("1");
+
+  ExpectUnlockAfterUIDestroyedAnimationStarted("2");
+  AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, 0.5f);
+
+  PressPowerButton();
+  ReleasePowerButton();
+
+  Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 }
 
 #if 0

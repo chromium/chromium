@@ -120,8 +120,15 @@ void TestSessionStateAnimator::Advance(const base::TimeDelta& duration) {
       ActiveAnimation& active_animation = *animation_iter;
       active_animation.remaining_duration -= duration;
       if (active_animation.remaining_duration <= base::TimeDelta()) {
-        std::move(active_animation.success_callback).Run();
+        // Save callback and erase animation, then run the callback afterwards
+        // to avoid running the callback twice for animations that start other
+        // animations on their same container. This is because the second
+        // animation will call the first's animation callback when being added
+        // to the animations list by aborting it, as we don't support 2
+        // animations on the same container in this object.
+        auto success_callback = std::move(active_animation.success_callback);
         animation_iter = (*container_iter).second.erase(animation_iter);
+        std::move(success_callback).Run();
       } else {
         ++animation_iter;
       }

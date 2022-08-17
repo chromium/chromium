@@ -45,7 +45,7 @@ enum class ShutdownReason;
 // triggers StartUnlockAnimationBeforeUIDestroyed(callback). Once callback is
 // called at the end of the animation, lock UI is deleted, system unlocks, and
 // OnLockStateChanged is called. It leads to
-// StartUnlockAnimationAfterUIDestroyed.
+// StartUnlockAnimationAfterLockUIDestroyed.
 class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
                                        public SessionObserver {
  public:
@@ -154,7 +154,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void LockAnimationCancelled(bool aborted);
   void PreLockAnimationFinished(bool request_lock, bool aborted);
   void PostLockAnimationFinished(bool aborted);
-  void UnlockAnimationAfterUIDestroyedFinished(bool aborted);
+  void UnlockAnimationAfterLockUIDestroyedFinished(bool aborted);
 
   // Stores properties of UI that have to be temporarily modified while locking.
   void StoreUnlockedProperties();
