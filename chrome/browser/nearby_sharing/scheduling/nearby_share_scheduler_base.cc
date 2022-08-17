@@ -102,8 +102,8 @@ void NearbyShareSchedulerBase::Reschedule() {
 
 absl::optional<base::Time> NearbyShareSchedulerBase::GetLastSuccessTime()
     const {
-  return base::ValueToTime(pref_service_->GetDictionary(pref_name_)
-                               ->FindKey(kLastSuccessTimeKeyName));
+  return base::ValueToTime(
+      pref_service_->GetValueDict(pref_name_).Find(kLastSuccessTimeKeyName));
 }
 
 absl::optional<base::TimeDelta>
@@ -126,14 +126,14 @@ NearbyShareSchedulerBase::GetTimeUntilNextRequest() const {
 }
 
 bool NearbyShareSchedulerBase::IsWaitingForResult() const {
-  return pref_service_->GetDictionary(pref_name_)
-      ->FindBoolKey(kIsWaitingForResultKeyName)
+  return pref_service_->GetValueDict(pref_name_)
+      .FindBool(kIsWaitingForResultKeyName)
       .value_or(false);
 }
 
 size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
-  const std::string* str = pref_service_->GetDictionary(pref_name_)
-                               ->FindStringKey(kNumConsecutiveFailuresKeyName);
+  const std::string* str = pref_service_->GetValueDict(pref_name_)
+                               .FindString(kNumConsecutiveFailuresKeyName);
   if (!str)
     return 0;
 
@@ -164,13 +164,13 @@ void NearbyShareSchedulerBase::OnConnectionChanged(
 
 absl::optional<base::Time> NearbyShareSchedulerBase::GetLastAttemptTime()
     const {
-  return base::ValueToTime(pref_service_->GetDictionary(pref_name_)
-                               ->FindKey(kLastAttemptTimeKeyName));
+  return base::ValueToTime(
+      pref_service_->GetValueDict(pref_name_).Find(kLastAttemptTimeKeyName));
 }
 
 bool NearbyShareSchedulerBase::HasPendingImmediateRequest() const {
-  return pref_service_->GetDictionary(pref_name_)
-      ->FindBoolKey(kHasPendingImmediateRequestKeyName)
+  return pref_service_->GetValueDict(pref_name_)
+      .FindBool(kHasPendingImmediateRequestKeyName)
       .value_or(false);
 }
 
