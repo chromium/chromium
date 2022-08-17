@@ -767,6 +767,9 @@ class CORE_EXPORT LocalFrame final
     ancestor_or_self_has_cspee_ = has_policy;
   }
 
+  void SetBackgroundColorPaintImageGeneratorForTesting(
+      BackgroundColorPaintImageGenerator* generator);
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.

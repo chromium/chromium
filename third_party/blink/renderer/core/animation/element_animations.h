@@ -118,9 +118,7 @@ class CORE_EXPORT ElementAnimations final
         composited_background_color_status_);
   }
 
-  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status) {
-    composited_background_color_status_ = static_cast<unsigned>(status);
-  }
+  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status);
 
   void Trace(Visitor*) const;
 

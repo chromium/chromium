@@ -620,17 +620,22 @@ void LocalFrame::CheckCompleted() {
 
 BackgroundColorPaintImageGenerator*
 LocalFrame::GetBackgroundColorPaintImageGenerator() {
-  // There is no compositor thread in certain testing environment, and we should
-  // not composite background color animation in those cases.
-  if (!Thread::CompositorThread())
-    return nullptr;
   LocalFrame& local_root = LocalFrameRoot();
   // One background color paint worklet per root frame.
-  if (!local_root.background_color_paint_image_generator_) {
+  // There is no compositor thread in certain testing environment, and we
+  // should not composite background color animation in those cases.
+  if (Thread::CompositorThread() &&
+      !local_root.background_color_paint_image_generator_) {
     local_root.background_color_paint_image_generator_ =
         BackgroundColorPaintImageGenerator::Create(local_root);
   }
   return local_root.background_color_paint_image_generator_.Get();
+}
+
+void LocalFrame::SetBackgroundColorPaintImageGeneratorForTesting(
+    BackgroundColorPaintImageGenerator* generator_for_testing) {
+  LocalFrame& local_root = LocalFrameRoot();
+  local_root.background_color_paint_image_generator_ = generator_for_testing;
 }
 
 BoxShadowPaintImageGenerator* LocalFrame::GetBoxShadowPaintImageGenerator() {

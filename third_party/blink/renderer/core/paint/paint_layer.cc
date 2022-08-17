@@ -2361,7 +2361,15 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   UpdateScrollableArea();
 
+  bool had_filter_that_moves_pixels = has_filter_that_moves_pixels_;
   has_filter_that_moves_pixels_ = ComputeHasFilterThatMovesPixels();
+  if (had_filter_that_moves_pixels != has_filter_that_moves_pixels_) {
+    // The compositor cannot easily track the filters applied within a layer
+    // (i.e. composited filters) and is unable to expand the damage rect.
+    // Force paint invalidation to update any potentially affected animations.
+    // See |CompositorMayHaveIncorrectDamageRect|.
+    GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
+  }
 
   if (PaintLayerStackingNode::StyleDidChange(*this, old_style)) {
     // The compositing container (see: |PaintLayer::CompositingContainer()|) may

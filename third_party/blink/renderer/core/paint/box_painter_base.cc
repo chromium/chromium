@@ -112,8 +112,8 @@ bool CanCompositeBackgroundColorAnimation(Node* node) {
   if (!generator)
     return false;
 
-  Animation* animation =
-      generator->GetAnimationIfCompositable(static_cast<Element*>(node));
+  Element* element = DynamicTo<Element>(node);
+  Animation* animation = generator->GetAnimationIfCompositable(element);
   if (!animation)
     return false;
 
@@ -686,20 +686,17 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   switch (status) {
     case CompositedPaintStatus::kNotComposited:
       // Once an animation has been downgraded to run on the main thread, it
-      // cannot restart on the compositor without an pending animation update.
+      // cannot restart on the compositor without a pending animation update.
       return false;
 
     case CompositedPaintStatus::kNeedsRepaintOrNoAnimation:
+    case CompositedPaintStatus::kComposited:
       if (CanCompositeBackgroundColorAnimation(node)) {
         SetHasNativeBackgroundPainter(node, true);
       } else {
         SetHasNativeBackgroundPainter(node, false);
         return false;
       }
-      break;
-
-    case CompositedPaintStatus::kComposited:
-      DCHECK(CanCompositeBackgroundColorAnimation(node));
   }
 
   scoped_refptr<Image> paint_worklet_image =

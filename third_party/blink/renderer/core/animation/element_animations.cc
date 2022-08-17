@@ -82,4 +82,26 @@ bool ElementAnimations::IsIdentityOrTranslation() const {
   return true;
 }
 
+void ElementAnimations::SetCompositedBackgroundColorStatus(
+    CompositedPaintStatus status) {
+  if (composited_background_color_status_ == static_cast<unsigned>(status))
+    return;
+
+  if (status == CompositedPaintStatus::kNotComposited) {
+    // Ensure that animation is cancelled on the compositor. We do this ahead
+    // of updating the status since the act of cancelling a background color
+    // animation forces it back into the kNeedsRepaintOrNoAnimation state,
+    // which we then need to stomp with a kNotComposited decision.
+    PropertyHandle background_color_property =
+        PropertyHandle(GetCSSPropertyBackgroundColor());
+    for (auto& entry : Animations()) {
+      KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+      if (effect && effect->Affects(background_color_property)) {
+        entry.key->CancelAnimationOnCompositor();
+      }
+    }
+  }
+  composited_background_color_status_ = static_cast<unsigned>(status);
+}
+
 }  // namespace blink

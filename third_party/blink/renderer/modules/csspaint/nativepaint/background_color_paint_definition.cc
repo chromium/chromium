@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
@@ -33,6 +34,33 @@ bool AllColorsOpaque(const Vector<Color>& animated_colors) {
       return false;
   }
   return true;
+}
+
+// Check for ancestor node with filter that moves pixels. The compositor cannot
+// easily track the filters applied within a layer (i.e. composited filters) and
+// is unable to expand the damage rect. To workaround this, we want to disallow
+// composited background animations if there are decomposited filters, but we do
+// not know that at this stage of the pipeline.  Therefore, we simple disallow
+// any pixel moving filters between this object and the nearest ancestor known
+// to be composited.
+bool CompositorMayHaveIncorrectDamageRect(const Element* element) {
+  LayoutObject* layout_object = element->GetLayoutObject();
+  DCHECK(layout_object);
+  auto& first_fragment =
+      layout_object->EnclosingLayer()->GetLayoutObject().FirstFragment();
+  if (!first_fragment.HasLocalBorderBoxProperties())
+    return true;
+
+  auto paint_properties = first_fragment.LocalBorderBoxProperties();
+  for (const auto* effect = &paint_properties.Effect().Unalias(); effect;
+       effect = effect->UnaliasedParent()) {
+    if (effect->HasDirectCompositingReasons())
+      break;
+    if (effect->HasFilterThatMovesPixels())
+      return true;
+  }
+
+  return false;
 }
 
 // This class includes information that is required by the compositor thread
@@ -177,6 +205,9 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
 
 Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
+  if (CompositorMayHaveIncorrectDamageRect(element))
+    return nullptr;
+
   return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor(),
                                  ValidateColorValue);
 }

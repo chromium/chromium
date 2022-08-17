@@ -705,10 +705,9 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest, PixelMovingFilter) {
   TestTargetChange("filter: blur(5px)", "", true, true, true);
   TestTargetChange("", "filter: blur(5px)", true, true, true);
   TestTargetChange("will-change: filter; filter: blur(5px)",
-                   "will-change: filter", false, false, false);
+                   "will-change: filter", true, false, true);
   TestTargetChange("will-change: filter",
-                   "will-change: filter; filter: blur(5px)", false, false,
-                   false);
+                   "will-change: filter; filter: blur(5px)", true, false, true);
 }
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, Transform) {
