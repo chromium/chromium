@@ -165,9 +165,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
     if (const auto it =
             fps_context_config.customizations().find(normalized_site);
         it != fps_context_config.customizations().end()) {
-      if (it->second.has_value()) {
-        entry = it->second.value();
-      }
+      entry = it->second;
     } else if (const auto it = sets_->find(normalized_site);
                it != sets_->end()) {
       entry = it->second;
