@@ -142,6 +142,12 @@ class GpuDiskCacheFactory {
   GpuDiskCacheHandle GetCacheHandle(GpuDiskCacheType type,
                                     const base::FilePath& path);
 
+  // Releases the cache's handle (or at least one count of it). When a cache
+  // handle's number of refs goes to 0, we can cull it from from the map. If the
+  // handle is a reserved handle, nothing happens because we do not cull
+  // reserved handles.
+  void ReleaseCacheHandle(GpuDiskCache* cache);
+
   // Retrieve the gpu disk cache with the given |handle| if the handle has an
   // associated path. Returns nullptr if there is no associated path or the
   // cache was never explicitly created.
@@ -180,6 +186,15 @@ class GpuDiskCacheFactory {
   using PathToHandleMap =
       base::flat_map<base::FilePath, gpu::GpuDiskCacheHandle>;
   PathToHandleMap path_to_handle_map_;
+
+  // Map that essentially ref-counts the number of times that a handle is
+  // re-used. This is important since it allows us to cull the bi-directional
+  // mappings above when we no longer need them. Handle ref-count is incremented
+  // each time it is returned in GetCacheHandle, and decremented/removed in
+  // ReleaseCacheHandle. Note that this does not apply for reserved handles
+  // which we never cull.
+  using HandleRefCounts = base::flat_map<GpuDiskCacheHandle, uint32_t>;
+  HandleRefCounts handle_ref_counts_;
 
   using PathToCacheMap = base::flat_map<base::FilePath, GpuDiskCache*>;
   PathToCacheMap gpu_cache_map_;

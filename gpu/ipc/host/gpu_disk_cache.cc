@@ -438,6 +438,7 @@ GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
   auto it = path_to_handle_map_.find(path);
   if (it != path_to_handle_map_.end()) {
     DCHECK(GetHandleType(it->second) == type);
+    handle_ref_counts_[it->second]++;
     return it->second;
   }
 
@@ -464,8 +465,32 @@ GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
   }
   handle_to_path_map_[handle] = path;
   path_to_handle_map_[path] = handle;
+  handle_ref_counts_[handle]++;
 
   return handle;
+}
+
+void GpuDiskCacheFactory::ReleaseCacheHandle(GpuDiskCache* cache) {
+  // Get the handle related to the cache via the path.
+  auto it = path_to_handle_map_.find(cache->cache_path_);
+  DCHECK(it != path_to_handle_map_.end());
+  const base::FilePath& path = it->first;
+  const GpuDiskCacheHandle& handle = it->second;
+
+  // Special case where we don't need to do anything if the handle is a reserved
+  // handle.
+  if (gpu::IsReservedGpuDiskCacheHandle(handle)) {
+    return;
+  }
+
+  // We should never be decrementing the ref-count past 0.
+  DCHECK_GT(handle_ref_counts_[handle], 0u);
+  if (--handle_ref_counts_[handle] > 0u) {
+    return;
+  }
+  handle_to_path_map_.erase(handle);
+  handle_ref_counts_.erase(handle);
+  path_to_handle_map_.erase(path);
 }
 
 scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(

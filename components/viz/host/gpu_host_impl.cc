@@ -305,6 +305,11 @@ void GpuHostImpl::SetChannelDiskCacheHandle(
 }
 
 void GpuHostImpl::RemoveChannelDiskCacheHandles(int client_id) {
+  // Release the handle, then release the cache.
+  auto [start, end] = client_id_to_caches_.equal_range(client_id);
+  for (auto it = start; it != end; ++it) {
+    delegate_->GetGpuDiskCacheFactory()->ReleaseCacheHandle(it->second.get());
+  }
   client_id_to_caches_.erase(client_id);
 }
 

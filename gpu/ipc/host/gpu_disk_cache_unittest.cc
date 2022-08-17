@@ -159,4 +159,26 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   EXPECT_EQ(count, loaded_calls);
 }
 
+TEST_F(GpuDiskCacheTest, ReleasedCacheHandle) {
+  // Init cache registers the handle.
+  InitCache();
+
+  {
+    // Create a cache and use it to remove the handle.
+    scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
+    ASSERT_TRUE(cache.get() != nullptr);
+    factory()->ReleaseCacheHandle(cache.get());
+  }
+
+  // It should no longer be possible to get or create a cache using the handle.
+  {
+    scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
+    ASSERT_TRUE(cache.get() == nullptr);
+  }
+  {
+    scoped_refptr<GpuDiskCache> cache = factory()->Get(handle_);
+    ASSERT_TRUE(cache.get() == nullptr);
+  }
+}
+
 }  // namespace gpu
