@@ -269,7 +269,8 @@ TEST_F(CastMediaRouteProviderTest, TerminateRoute) {
 TEST_F(CastMediaRouteProviderTest, GetState) {
   MediaSinkInternal sink = CreateCastSink(1);
   media_sink_service_.AddOrUpdateSink(sink);
-  session_tracker_->HandleReceiverStatusMessage(sink, base::test::ParseJson(R"({
+  session_tracker_->HandleReceiverStatusMessage(sink,
+                                                base::test::ParseJsonDict(R"({
     "status": {
       "applications": [{
         "appId": "ABCDEFGH",

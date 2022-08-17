@@ -74,11 +74,11 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
 
   void InitOnIoThread();
   void HandleReceiverStatusMessage(const MediaSinkInternal& sink,
-                                   const base::Value& message);
+                                   const base::Value::Dict& message);
   void HandleMediaStatusMessage(const MediaSinkInternal& sink,
-                                const base::Value& message);
+                                const base::Value::Dict& message);
   void CopySavedMediaFieldsToMediaList(CastSession* session,
-                                       base::Value::ListView media_list);
+                                       base::Value::List& media_list);
   const MediaSinkInternal* GetSinkByChannelId(int channel_id) const;
 
   // MediaSinkServiceBase::Observer implementation

@@ -148,6 +148,12 @@ class CastSession {
  public:
   // Returns a CastSession from |receiver_status| message sent by |sink|, or
   // nullptr if |receiver_status| is not a valid RECEIVER_STATUS message.
+  static std::unique_ptr<CastSession> From(
+      const MediaSinkInternal& sink,
+      const base::Value::Dict& receiver_status);
+
+  // Non-type-safe deprecated version of above method, only used in tests.
+  // TODO(mmenke): Remove this.
   static std::unique_ptr<CastSession> From(const MediaSinkInternal& sink,
                                            const base::Value& receiver_status);
 
@@ -162,7 +168,7 @@ class CastSession {
   void UpdateSession(std::unique_ptr<CastSession> from);
 
   // Sets the 'media' field of |value_| with a value received from the client.
-  void UpdateMedia(const base::Value& media);
+  void UpdateMedia(const base::Value::List& media);
 
   // ID of the session.
   const std::string& session_id() const { return session_id_; }

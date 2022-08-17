@@ -79,9 +79,8 @@ void CastSessionTracker::InitOnIoThread() {
 
 void CastSessionTracker::HandleReceiverStatusMessage(
     const MediaSinkInternal& sink,
-    const base::Value& message) {
-  const base::Value* status =
-      message.FindKeyOfType("status", base::Value::Type::DICTIONARY);
+    const base::Value::Dict& message) {
+  const base::Value::Dict* status = message.FindDict("status");
   auto session = status ? CastSession::From(sink, *status) : nullptr;
   const MediaSink::Id& sink_id = sink.sink().id();
   if (!session) {
@@ -103,8 +102,9 @@ void CastSessionTracker::HandleReceiverStatusMessage(
     observer.OnSessionAddedOrUpdated(sink, *it->second);
 }
 
-void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
-                                                  const base::Value& message) {
+void CastSessionTracker::HandleMediaStatusMessage(
+    const MediaSinkInternal& sink,
+    const base::Value::Dict& message) {
   DVLOG(2) << "Initial MEDIA_STATUS: " << message;
   auto session_it = sessions_by_sink_id_.find(sink.sink().id());
   if (session_it == sessions_by_sink_id_.end()) {
@@ -122,81 +122,76 @@ void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
   // for the session we happen to currently know is on that sink.
   CastSession* session = session_it->second.get();
   const std::string& session_id = session->session_id();
-  base::Value updated_message = message.Clone();
-  updated_message.SetKey("sessionId", base::Value(session_id));
+  base::Value::Dict updated_message = message.Clone();
+  updated_message.Set("sessionId", session_id);
 
-  base::Value* updated_status =
-      updated_message.FindKeyOfType("status", base::Value::Type::LIST);
+  base::Value::List* updated_status = updated_message.FindList("status");
   if (!updated_status) {
     DVLOG(2) << "No status list in media status message.";
     return;
   }
 
   // Ensure every item in |updated_status| is a dictionary.
-  updated_status->EraseListValueIf(
-      [](auto const& media) { return !media.is_dict(); });
-
-  base::Value::ListView media_list = updated_status->GetListDeprecated();
+  updated_status->EraseIf([](auto const& media) { return !media.is_dict(); });
 
   // Backfill messages from receivers to make them compatible with Cast SDK.
-  for (auto& media : media_list) {
-    media.SetKey("sessionId", base::Value(session_id));
-    const base::Value* supported_media_commands = media.FindKeyOfType(
-        "supportedMediaCommands", base::Value::Type::INTEGER);
-    if (!supported_media_commands)
+  for (auto& media : *updated_status) {
+    base::Value::Dict& media_dict = media.GetDict();
+    media_dict.Set("sessionId", session_id);
+    absl::optional<int> supported_media_commands =
+        media_dict.FindInt("supportedMediaCommands");
+    if (!supported_media_commands.has_value())
       continue;
 
-    media.SetKey(
+    media_dict.Set(
         "supportedMediaCommands",
-        SupportedMediaCommandsToListValue(supported_media_commands->GetInt()));
+        SupportedMediaCommandsToListValue(supported_media_commands.value()));
   }
 
-  CopySavedMediaFieldsToMediaList(session, media_list);
+  CopySavedMediaFieldsToMediaList(session, *updated_status);
 
   DVLOG(2) << "Final updated MEDIA_STATUS: " << *updated_status;
   session->UpdateMedia(*updated_status);
 
+  base::Value updated_message_value(std::move(updated_message));
   absl::optional<int> request_id =
-      cast_channel::GetRequestIdFromResponse(updated_message);
+      cast_channel::GetRequestIdFromResponse(updated_message_value);
 
   // Notify observers of media update.
   for (auto& observer : observers_)
-    observer.OnMediaStatusUpdated(sink, updated_message, request_id);
+    observer.OnMediaStatusUpdated(sink, updated_message_value, request_id);
 }
 
 void CastSessionTracker::CopySavedMediaFieldsToMediaList(
     CastSession* session,
-    base::Value::ListView media_list) {
+    base::Value::List& media_list) {
   // When |session| has saved media objects with a mediaSessionId corresponding
   // to a value in |media_list|, copy the 'media' field from the saved objects
   // to the corresponding objects in |media_list|.
-  const base::Value* session_media_value =
-      session->value().FindKeyOfType("media", base::Value::Type::LIST);
-  if (!session_media_value)
+  const base::Value::List* session_media_value_list =
+      session->value().GetDict().FindList("media");
+  if (!session_media_value_list)
     return;
-  const auto& session_media_value_list =
-      session_media_value->GetListDeprecated();
+
   for (auto& media : media_list) {
-    const base::Value* media_session_id_value =
-        media.FindKeyOfType("mediaSessionId", base::Value::Type::INTEGER);
-    if (!media_session_id_value || media.FindKey("media"))
+    base::Value::Dict& media_dict = media.GetDict();
+    absl::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
+    if (!media_session_id.has_value() || media_dict.Find("media"))
       continue;
 
     auto session_media_it = std::find_if(
-        session_media_value_list.begin(), session_media_value_list.end(),
-        [&media_session_id_value](const base::Value& session_media) {
-          const base::Value* session_media_session_id_value =
-              session_media.FindKeyOfType("mediaSessionId",
-                                          base::Value::Type::INTEGER);
-          return session_media_session_id_value &&
-                 session_media_session_id_value->GetInt() ==
-                     media_session_id_value->GetInt();
+        session_media_value_list->begin(), session_media_value_list->end(),
+        [&media_session_id](const base::Value& session_media) {
+          absl::optional<int> session_media_session_id =
+              session_media.GetDict().FindInt("mediaSessionId");
+          return session_media_session_id == media_session_id;
         });
-    if (session_media_it == session_media_value_list.end())
+    if (session_media_it == session_media_value_list->end())
       continue;
-    const base::Value* session_media = session_media_it->FindKey("media");
+    const base::Value* session_media =
+        session_media_it->GetDict().Find("media");
     if (session_media)
-      media.SetKey("media", session_media->Clone());
+      media_dict.Set("media", session_media->Clone());
   }
 }
 
@@ -238,10 +233,10 @@ void CastSessionTracker::OnInternalMessage(
 
   if (message.type == cast_channel::CastMessageType::kReceiverStatus) {
     DVLOG(2) << "Got receiver status: " << message.message;
-    HandleReceiverStatusMessage(*sink, message.message);
+    HandleReceiverStatusMessage(*sink, message.message.GetDict());
   } else if (message.type == cast_channel::CastMessageType::kMediaStatus) {
     DVLOG(2) << "Got media status: " << message.message;
-    HandleMediaStatusMessage(*sink, message.message);
+    HandleMediaStatusMessage(*sink, message.message.GetDict());
   }
 }
 
