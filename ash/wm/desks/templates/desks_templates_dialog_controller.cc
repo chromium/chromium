@@ -227,6 +227,9 @@ void DesksTemplatesDialogController::ShowReplaceDialog(
     const std::u16string& template_name,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
+  if (!CanShowDialog())
+    return;
+
   auto dialog = views::Builder<DesksTemplatesDialog>()
                     .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
                     .SetConfirmButtonText(
@@ -247,6 +250,9 @@ void DesksTemplatesDialogController::ShowDeleteDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
     base::OnceClosure on_accept_callback) {
+  if (!CanShowDialog())
+    return;
+
   auto dialog =
       views::Builder<DesksTemplatesDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
@@ -290,8 +296,8 @@ void DesksTemplatesDialogController::OnWidgetDestroying(views::Widget* widget) {
 void DesksTemplatesDialogController::CreateDialogWidget(
     std::unique_ptr<DesksTemplatesDialog> dialog,
     aura::Window* root_window) {
-  if (dialog_widget_)
-    dialog_widget_->CloseNow();
+  // We should not get here with an active dialog.
+  DCHECK_EQ(dialog_widget_, nullptr);
 
   // The dialog will show on the display associated with `root_window`, and will
   // block all input since it is system modal.
@@ -309,6 +315,11 @@ void DesksTemplatesDialogController::OnUserAcceptedUnsupportedAppsDialog() {
   DCHECK(unsupported_apps_template_);
   std::move(unsupported_apps_callback_)
       .Run(std::move(unsupported_apps_template_));
+}
+
+bool DesksTemplatesDialogController::CanShowDialog() const {
+  // Cannot show a dialog while another is active.
+  return dialog_widget_ == nullptr;
 }
 
 void DesksTemplatesDialogController::OnUserCanceledUnsupportedAppsDialog() {

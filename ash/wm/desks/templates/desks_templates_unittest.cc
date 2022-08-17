@@ -290,7 +290,8 @@ class DesksTemplatesTest : public OverviewTestBase {
                                 ->widget_delegate()
                                 ->AsDialogDelegate();
     dialog_delegate->AcceptDialog();
-    WaitForDesksTemplatesUI();
+    // Wait for the dialog to close.
+    base::RunLoop().RunUntilIdle();
     DesksTemplatesGridViewTestApi(templates_grid_view)
         .WaitForItemMoveAnimationDone();
   }
