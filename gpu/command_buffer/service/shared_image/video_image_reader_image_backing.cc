@@ -16,7 +16,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
-#include "gpu/command_buffer/service/bug_1307307_tracker.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -207,8 +206,6 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
     }
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
-      Bug1307307Tracker::SetLastAccessError(
-          Bug1307307Tracker::VideoAccessError::kImageReader_NoAHB);
       return false;
     }
     CreateAndBindEglImageFromAHB(scoped_hardware_buffer_->buffer(),
@@ -275,8 +272,6 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
     }
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
-      Bug1307307Tracker::SetLastAccessError(
-          Bug1307307Tracker::VideoAccessError::kImageReader_NoAHB);
       return false;
     }
     CreateAndBindEglImageFromAHB(scoped_hardware_buffer_->buffer(),
@@ -345,8 +340,6 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
     scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
-      Bug1307307Tracker::SetLastAccessError(
-          Bug1307307Tracker::VideoAccessError::kImageReader_NoAHB);
       return nullptr;
     }
     DCHECK(scoped_hardware_buffer_->buffer());
@@ -362,12 +355,8 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       vulkan_image_ = CreateVkImageFromAhbHandle(
           scoped_hardware_buffer_->TakeBuffer(), context_state(), size(),
           format(), VK_QUEUE_FAMILY_FOREIGN_EXT);
-      if (!vulkan_image_) {
-        Bug1307307Tracker::SetLastAccessError(
-            Bug1307307Tracker::VideoAccessError::
-                kImageReader_CantCreateVulkanImage);
+      if (!vulkan_image_)
         return nullptr;
-      }
 
       // We always use VK_IMAGE_TILING_OPTIMAL while creating the vk image in
       // VulkanImplementationAndroid::CreateVkImageAndImportAHB. Hence pass
@@ -388,14 +377,8 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       DCHECK(promise_texture_);
     }
 
-    auto result = SkiaVkAndroidImageRepresentation::BeginReadAccess(
+    return SkiaVkAndroidImageRepresentation::BeginReadAccess(
         begin_semaphores, end_semaphores, end_state);
-    if (!result) {
-      Bug1307307Tracker::SetLastAccessError(
-          Bug1307307Tracker::VideoAccessError::
-              kImageReader_VulkanReadAccessFailed);
-    }
-    return result;
   }
 
   void EndReadAccess() override {
@@ -470,11 +453,9 @@ VideoImageReaderImageBacking::ProduceSkia(
   // For (old) overlays, we don't have a texture owner, but overlay promotion
   // might not happen for some reasons. In that case, it will try to draw
   // which should result in no image.
-  if (!stream_texture_sii_->HasTextureOwner()) {
-    Bug1307307Tracker::SetLastAccessError(
-        Bug1307307Tracker::VideoAccessError::kImageReader_NoTextureOwner);
+  if (!stream_texture_sii_->HasTextureOwner())
     return nullptr;
-  }
+
   if (context_state->GrContextIsVulkan()) {
     return std::make_unique<SkiaVkVideoImageRepresentation>(
         manager, this, std::move(context_state), tracker, GetDrDcLock());
@@ -487,11 +468,8 @@ VideoImageReaderImageBacking::ProduceSkia(
       (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough);
 
   auto texture = GenAbstractTexture(passthrough);
-  if (!texture) {
-    Bug1307307Tracker::SetLastAccessError(
-        Bug1307307Tracker::VideoAccessError::kImageReader_CantCreateTexture);
+  if (!texture)
     return nullptr;
-  }
 
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
@@ -502,16 +480,9 @@ VideoImageReaderImageBacking::ProduceSkia(
     gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
         manager, this, tracker, std::move(texture), GetDrDcLock());
   }
-  auto skia_representation = SkiaGLImageRepresentation::Create(
-      std::move(gl_representation), std::move(context_state), manager, this,
-      tracker);
-
-  if (!skia_representation) {
-    Bug1307307Tracker::SetLastAccessError(
-        Bug1307307Tracker::VideoAccessError::
-            kImageReader_CantCreateRepresentation);
-  }
-  return skia_representation;
+  return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                           std::move(context_state), manager,
+                                           this, tracker);
 }
 
 // Representation of VideoImageReaderImageBacking as an overlay plane.

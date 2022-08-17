@@ -38,7 +38,6 @@
 #include "gpu/command_buffer/common/raster_cmd_format.h"
 #include "gpu/command_buffer/common/raster_cmd_ids.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/command_buffer/service/bug_1307307_tracker.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -229,14 +228,12 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
       scoped_refptr<SharedContextState> shared_context_state,
       SkSurface* output_surface,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      gles2::ErrorState* error_state,
-      Bug1307307Tracker* bug_1307307_tracker)
+      gles2::ErrorState* error_state)
       : shared_image_factory_(shared_image_factory),
         shared_context_state_(std::move(shared_context_state)),
         output_surface_(output_surface),
         end_semaphores_(end_semaphores),
-        error_state_(error_state),
-        bug_1307307_tracker_(bug_1307307_tracker) {
+        error_state_(error_state) {
     DCHECK(shared_image_factory_);
     DCHECK(shared_context_state_);
     DCHECK(output_surface_);
@@ -256,8 +253,6 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
       return it->second.read_access_sk_image;
     }
 
-    bug_1307307_tracker_->BeforeAccess();
-
     auto shared_image_skia =
         shared_image_factory_->ProduceSkia(mailbox, shared_context_state_);
     if (!shared_image_skia) {
@@ -267,8 +262,6 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
                                mailbox.ToDebugString())
                                   .c_str());
       error = Error::kUnknownMailbox;
-      bug_1307307_tracker_->AccessFailed(mailbox,
-                                         /*cleared=*/false);
       return nullptr;
     }
 
@@ -284,8 +277,6 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
                                mailbox.ToDebugString())
                                   .c_str());
       error = Error::kNoAccess;
-      bug_1307307_tracker_->AccessFailed(
-          mailbox, /*cleared=*/shared_image_skia->IsCleared());
       return nullptr;
     }
 
@@ -328,7 +319,6 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
   raw_ptr<SkSurface> output_surface_;
   raw_ptr<std::vector<GrBackendSemaphore>> end_semaphores_;
   raw_ptr<gles2::ErrorState> error_state_;
-  raw_ptr<Bug1307307Tracker> bug_1307307_tracker_;
 
   struct SharedImageReadAccess {
     std::unique_ptr<SkiaImageRepresentation> shared_image_skia;
@@ -953,8 +943,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::unique_ptr<RasterImageRepresentation> shared_image_raster_;
   std::unique_ptr<RasterImageRepresentation::ScopedWriteAccess>
       scoped_shared_image_raster_write_;
-
-  Bug1307307Tracker bug_1307307_tracker_;
 
   raw_ptr<SkSurface> sk_surface_ = nullptr;
   std::unique_ptr<SharedImageProviderImpl> paint_op_shared_image_provider_;
@@ -2136,16 +2124,6 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   DLOG_IF(ERROR, !dest_mailbox.Verify())
       << "CopySubTexture was passed an invalid mailbox";
 
-  bug_1307307_tracker_.BeforeAccess();
-  // Make sure we always call CopySubTextureFinished with fail unless the very
-  // end.
-  base::ScopedClosureRunner runner(base::BindOnce(
-      [](Bug1307307Tracker* tracker, const Mailbox& source,
-         const Mailbox& destination) {
-        tracker->CopySubTextureFinished(source, destination, /*failed=*/true);
-      },
-      &bug_1307307_tracker_, source_mailbox, dest_mailbox));
-
   if (source_mailbox == dest_mailbox) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glCopySubTexture",
                        "source and destination mailboxes are the same");
@@ -2207,11 +2185,11 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
       source_mailbox, shared_context_state_);
 
-  // TODO(vasilyt): Remove this workaround asap. When android video is promoted
-  // to SurfaceView overlay, we won't be able to create representation. We need
-  // to surface error here, but as very short term solution we're using debug
-  // code to make sure image is cleared correctly.
-  if (!source_shared_image && bug_1307307_tracker_.HadNoTextureOwnerError()) {
+  // In some cases (e.g android video that is promoted to overlay) we can't
+  // create representation of the valid mailbox. To avoid problems with
+  // uncleared destination later later, we do clear destination rect with black
+  // color.
+  if (!source_shared_image) {
     auto* canvas = dest_scoped_access->surface()->getCanvas();
 
     SkAutoCanvasRestore autoRestore(canvas, true /* do_save */);
@@ -2224,8 +2202,8 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     FlushSurface(dest_scoped_access.get());
     SubmitIfNecessary(std::move(end_semaphores));
 
-    // Note, we're intentionally don't mark this CopySubTexture as succeeded.
-    return;
+    // Note, that we still generate error for the client to indicate there was
+    // problem.
   }
 
   if (!source_shared_image) {
@@ -2301,10 +2279,6 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   }
 
   SubmitIfNecessary(std::move(end_semaphores));
-
-  std::ignore = runner.Release();
-  bug_1307307_tracker_.CopySubTextureFinished(source_mailbox, dest_mailbox,
-                                              /*failed=*/false);
 }
 
 bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
@@ -3409,7 +3383,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
 
   paint_op_shared_image_provider_ = std::make_unique<SharedImageProviderImpl>(
       &shared_image_representation_factory_, shared_context_state_, sk_surface_,
-      &end_semaphores_, error_state_.get(), &bug_1307307_tracker_);
+      &end_semaphores_, error_state_.get());
 
   // All or nothing clearing, as no way to validate the client's input on what
   // is the "used" part of the texture.  A separate |needs_clear| flag is needed

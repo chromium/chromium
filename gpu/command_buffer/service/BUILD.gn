@@ -108,8 +108,6 @@ target(link_target_type, "gles2_sources") {
     "abstract_texture_impl.h",
     "buffer_manager.cc",
     "buffer_manager.h",
-    "bug_1307307_tracker.cc",
-    "bug_1307307_tracker.h",
     "client_service_map.h",
     "command_buffer_task_executor.cc",
     "command_buffer_task_executor.h",
