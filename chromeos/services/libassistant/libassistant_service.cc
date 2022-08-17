@@ -8,37 +8,18 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/scoped_native_library.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
+#include "chromeos/services/libassistant/libassistant_loader_impl.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 
 namespace chromeos {
 namespace libassistant {
 
 namespace {
-
-using LoadStatus = chromeos::assistant::LibassistantDlcLoadStatus;
-
-inline constexpr char kLibassistantPath[] =
-    "opt/google/chrome/libassistant.so";
-
-inline constexpr char kDlcLoadStatusHistogram[] =
-    "Assistant.Libassistant.DlcLoadStatus";
-
-base::FilePath GetLibassisantPath(const std::string& dlc_path) {
-  return base::FilePath(dlc_path).Append(kLibassistantPath);
-}
-
-void RecordLibassistantDlcLoadStatus(const LoadStatus& status) {
-  base::UmaHistogramEnumeration(kDlcLoadStatusHistogram, status);
-}
 
 class LibassistantFactoryImpl : public LibassistantFactory {
  public:
@@ -51,81 +32,36 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   // LibassistantFactory implementation:
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
       const std::string& lib_assistant_config) override {
-    if (!IsDlcLibraryValid()) {
+    // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
+    if (chromeos::assistant::features::IsLibAssistantV2Enabled() ||
+        !chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
       return base::WrapUnique(assistant_client::AssistantManager::Create(
           platform_api_, lib_assistant_config));
     }
 
-    auto* entrypoint = CreateLibassistantEntrypoint();
+    auto* entrypoint = LibassistantLoaderImpl::GetInstance()->GetEntryPoint();
     assistant_client::AssistantManager* assistant_manager =
         entrypoint->NewAssistantManager(lib_assistant_config, platform_api_);
-    DCHECK(assistant_manager);
-    delete entrypoint;
     return base::WrapUnique(assistant_manager);
   }
 
   assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) override {
-    if (!IsDlcLibraryValid()) {
+    // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
+    if (chromeos::assistant::features::IsLibAssistantV2Enabled() ||
+        !chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
       return assistant_client::UnwrapAssistantManagerInternal(
           assistant_manager);
     }
 
-    auto* entrypoint = CreateLibassistantEntrypoint();
+    auto* entrypoint = LibassistantLoaderImpl::GetInstance()->GetEntryPoint();
     auto* assistant_manager_internal =
         entrypoint->GetAssistantManagerInternal(assistant_manager);
-    DCHECK(assistant_manager_internal);
-    delete entrypoint;
     return assistant_manager_internal;
   }
 
-  void LoadLibassistantLibraryFromDlc(
-      const absl::optional<std::string>& dlc_path) override {
-    if (!dlc_path.has_value()) {
-      DVLOG(3) << "libassistant DLC is not mounted.";
-      dlc_library_.reset();
-      return;
-    }
-
-    if (dlc_path_ == dlc_path) {
-      DVLOG(3) << "Skip loading libassistant DLC with the same root path.";
-      return;
-    }
-    dlc_path_ = dlc_path;
-
-    base::FilePath path = GetLibassisantPath(dlc_path.value());
-    // Self-resets are not allowed on unique_ptr.
-    // We should only load the DLC once.
-    dlc_library_ = base::ScopedNativeLibrary(path);
-    if (IsDlcLibraryValid()) {
-      DVLOG(3) << "Loaded libassistant shared library from: " << path;
-      RecordLibassistantDlcLoadStatus(LoadStatus::kLoaded);
-    } else {
-      DVLOG(1) << "Failed to load libassistant shared library from: " << path
-               << ", error: " << dlc_library_.GetError()->ToString();
-      RecordLibassistantDlcLoadStatus(LoadStatus::kNotLoaded);
-    }
-  }
-
  private:
-  assistant_client::internal_api::LibassistantEntrypoint*
-  CreateLibassistantEntrypoint() {
-    NewLibassistantEntrypointFn entrypoint =
-        reinterpret_cast<NewLibassistantEntrypointFn>(
-            dlc_library_.GetFunctionPointer(kNewLibassistantEntrypointFnName));
-
-    // Call exported function in libassistant.so.
-    C_API_LibassistantEntrypoint* c_entrypoint = entrypoint(0);
-    CHECK(c_entrypoint);
-    return assistant_client::internal_api::LibassistantEntrypointFromC(
-        c_entrypoint);
-  }
-
-  bool IsDlcLibraryValid() const { return dlc_library_.is_valid(); }
-
   assistant_client::PlatformApi* const platform_api_;
-  absl::optional<std::string> dlc_path_;
-  base::ScopedNativeLibrary dlc_library_;
 };
 
 std::unique_ptr<LibassistantFactory> FactoryOrDefault(

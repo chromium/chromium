@@ -61,10 +61,9 @@ component("lib") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/dbus",
-    "//chromeos/dbus/dlcservice:dlcservice",
-    "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/libassistant/public/cpp:loader",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/strings",
     "//chromeos/version",
@@ -81,7 +80,11 @@ component("lib") {
     deps += [
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/services/libassistant",
+      "//chromeos/services/libassistant:loader",
     ]
+  } else {
+    sources +=
+        [ "//chromeos/ash/services/assistant/libassistant_loader_stub.cc" ]
   }
 
   public_deps = [

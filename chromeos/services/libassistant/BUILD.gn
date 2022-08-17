@@ -29,10 +29,12 @@ component("libassistant") {
   public_deps = [
     "//chromeos/assistant/internal/proto:assistant",
     "//chromeos/services/libassistant/public/mojom",
+    "//dbus",
   ]
 
   deps = [
     ":internal",
+    ":loader",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/services/libassistant/public/mojom",
@@ -44,6 +46,28 @@ component("libassistant") {
   # exists (as build target of //chromeos/ash/services/assistant), so we have to
   # use `lib_libassistant_service.so`.
   output_name = "lib_libassistant_service"
+}
+
+source_set("loader") {
+  defines = [ "IS_LIBASSISTANT_LOADER_IMPL" ]
+
+  sources = [
+    "libassistant_loader_impl.cc",
+    "libassistant_loader_impl.h",
+  ]
+
+  public_deps = [ "//dbus" ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+    "//chromeos/dbus",
+    "//chromeos/dbus/dlcservice",
+    "//chromeos/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/services/libassistant/public/cpp:loader",
+    "//net",
+  ]
 }
 
 source_set("sandbox_hook") {
@@ -238,6 +262,7 @@ source_set("unit_tests") {
     "conversation_observer_unittest.cc",
     "device_settings_controller_unittest.cc",
     "display_controller_unittest.cc",
+    "libassistant_loader_impl_unittest.cc",
     "media_controller_unittest.cc",
     "network_provider_impl_unittest.cc",
     "notification_delegate_unittest.cc",
@@ -254,6 +279,7 @@ source_set("unit_tests") {
     ":audio",
     ":internal",
     ":libassistant",
+    ":loader",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -263,6 +289,7 @@ source_set("unit_tests") {
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
+    "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/power",
     "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",

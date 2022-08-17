@@ -65,7 +65,4 @@ struct BootupConfig {
   bool spoken_feedback_enabled;
   bool dark_mode_enabled;
   bool hotword_enabled;
-
-  // Optional root path where the DLC library mounted.
-  string? dlc_path;
 };

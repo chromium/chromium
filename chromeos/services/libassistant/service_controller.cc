@@ -118,12 +118,6 @@ void ServiceController::Initialize(
     return;
   }
 
-  // Currently only V1 library is uploaded to DLC.
-  // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
-    libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
-  }
-
   auto assistant_manager = libassistant_factory_.CreateAssistantManager(
       ToLibassistantConfig(*config));
   assistant_client::AssistantManagerInternal* assistant_manager_internal =

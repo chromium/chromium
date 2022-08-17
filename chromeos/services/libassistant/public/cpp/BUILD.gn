@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/ash/components/assistant/assistant.gni")
+
 # The structures used by the mojom API.
 component("structs") {
   defines = [ "IS_LIBASSISTANT_PUBLIC_STRUCTS_IMPL" ]
@@ -25,4 +27,12 @@ component("structs") {
     "//base:base",
     "//url",
   ]
+}
+
+source_set("loader") {
+  defines = [ "IS_LIBASSISTANT_PUBLIC_LOADER_IMPL" ]
+
+  sources = [ "libassistant_loader.h" ]
+
+  deps = [ "//base:base" ]
 }

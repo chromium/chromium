@@ -25,7 +25,6 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
@@ -189,13 +188,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnStateChanged(
       chromeos::libassistant::mojom::ServiceState new_state) override;
 
-  void OnInstallDlcComplete(
-      const absl::optional<UserInfo>& user,
-      const chromeos::DlcserviceClient::InstallResult& result);
-
-  // Optional `dlc_path`, where the DLC libassistant.so is mounted.
-  void InitAssistant(const absl::optional<UserInfo>& user,
-                     const absl::optional<std::string>& dlc_path);
+  void InitAssistant(const absl::optional<UserInfo>& user);
   void OnServiceStarted();
   void OnServiceRunning();
   bool IsServiceStarted() const;
@@ -275,9 +268,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Configuration passed to libassistant.
   chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Mounted path of libassistant.so. Will not change within a chrome session.
-  absl::optional<std::string> dlc_path_;
 
   base::ScopedObservation<DeviceActions,
                           AppListEventSubscriber,

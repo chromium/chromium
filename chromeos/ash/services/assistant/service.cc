@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/assistant_interaction_logger.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service.h"
@@ -33,6 +34,7 @@
 #include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/services/libassistant/public/cpp/libassistant_loader.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -221,6 +223,7 @@ void Service::Init() {
   DCHECK(!assistant_manager_service_);
 
   RequestAccessToken();
+  LoadLibassistant();
 }
 
 void Service::Shutdown() {
@@ -341,7 +344,8 @@ void Service::UpdateAssistantManagerState() {
       !assistant_state->settings_enabled().has_value() ||
       !assistant_state->locale().has_value() ||
       (!access_token_.has_value() && !IsSignedOutMode()) ||
-      !assistant_state->arc_play_store_enabled().has_value()) {
+      !assistant_state->arc_play_store_enabled().has_value() ||
+      !libassistant_loaded_) {
     // Assistant state has not finished initialization, let's wait.
     return;
   }
@@ -574,6 +578,19 @@ bool Service::ShouldEnableHotword() {
   }
 
   return assistant_state->hotword_enabled().value();
+}
+
+void Service::LoadLibassistant() {
+  chromeos::libassistant::LibassistantLoader::Load(base::BindOnce(
+      &Service::OnLibassistantLoaded, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void Service::OnLibassistantLoaded(bool success) {
+  libassistant_loaded_ = success;
+
+  if (success) {
+    UpdateAssistantManagerState();
+  }
 }
 
 }  // namespace ash::assistant

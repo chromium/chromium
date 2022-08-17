@@ -34,8 +34,6 @@ class FakeLibassistantFactory : public LibassistantFactory {
       const std::string& libassistant_config) override;
   assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) override;
-  void LoadLibassistantLibraryFromDlc(
-      const absl::optional<std::string>& root_path) override;
 
   std::string libassistant_config() const { return libassistant_config_; }
 

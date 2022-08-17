@@ -51,9 +51,11 @@ std::string GetSanitizedTestName() {
       "%s_%s",
       testing::UnitTest::GetInstance()->current_test_info()->test_suite_name(),
       testing::UnitTest::GetInstance()->current_test_info()->name()));
-  std::string new_test_name;
-  base::ReplaceChars(test_name, "/", "_", &new_test_name);
-  return new_test_name;
+  // The test name has suffix of `/0` or `/1`. Remove it to match the data_file
+  // name.
+  base::ReplaceSubstringsAfterOffset(&test_name, 0, "/0", "");
+  base::ReplaceSubstringsAfterOffset(&test_name, 0, "/1", "");
+  return test_name;
 }
 
 const std::string GetAccessTokenFromEnvironmentOrDie() {

@@ -54,6 +54,9 @@ extern const base::Feature kEnableLibAssistantSandbox;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableLibAssistantV2;
 
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::Feature kEnableLibAssistantDlc;
+
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAppSupportEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAudioEraserEnabled();
@@ -80,6 +83,8 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 bool IsLibAssistantSandboxEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsLibAssistantV2Enabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsLibAssistantDlcEnabled();
 
 }  // namespace ash::assistant::features
 

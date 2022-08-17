@@ -46,6 +46,9 @@ const base::Feature kEnableLibAssistantSandbox{
 const base::Feature kEnableLibAssistantV2{"LibAssistantV2",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableLibAssistantDlc{"LibAssistantDlc",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
       assistant::features::kAssistantAppSupport);
@@ -95,6 +98,10 @@ bool IsLibAssistantSandboxEnabled() {
 
 bool IsLibAssistantV2Enabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
+}
+
+bool IsLibAssistantDlcEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLibAssistantDlc);
 }
 
 }  // namespace ash::assistant::features

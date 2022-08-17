@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
@@ -29,11 +28,6 @@
 
 namespace chromeos {
 namespace libassistant {
-
-inline constexpr char kNewLibassistantEntrypointFnName[] =
-    "NewLibassistantEntrypoint";
-typedef C_API_LibassistantEntrypoint* (*NewLibassistantEntrypointFn)(
-    int version);
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
