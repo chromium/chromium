@@ -1724,7 +1724,7 @@ public class ExternalNavigationHandler {
 
         if (requiresPromptForExternalIntent) {
             return maybeAskToLaunchApp(isExternalProtocol, targetIntent, resolvingInfos,
-                    resolveActivity, browserFallbackUrl);
+                    resolveActivity, browserFallbackUrl, params);
         }
 
         return startActivity(targetIntent, shouldProxyForInstantApps, requiresIntentChooser,
@@ -2234,7 +2234,8 @@ public class ExternalNavigationHandler {
 
     protected OverrideUrlLoadingResult maybeAskToLaunchApp(boolean isExternalProtocol,
             Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
-            ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl) {
+            ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
+            ExternalNavigationParams params) {
         // For URLs the browser supports, we shouldn't have reached here.
         assert isExternalProtocol;
 
@@ -2303,6 +2304,11 @@ public class ExternalNavigationHandler {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     startActivity(targetIntent, false);
+                                    if (params.getAsyncActionTakenInMainFrameCallback() != null) {
+                                        params.getAsyncActionTakenInMainFrameCallback().onResult(
+                                                new ExternalNavigationParams.AsyncActionTakenParams(
+                                                        true, false, params));
+                                    }
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .build();

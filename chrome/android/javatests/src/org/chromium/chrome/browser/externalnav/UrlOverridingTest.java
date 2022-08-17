@@ -24,6 +24,7 @@ import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Pair;
+import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -1175,6 +1176,17 @@ public class UrlOverridingTest {
             int result = loadUrlAndWaitForIntentUrl(url, false, null, PageTransition.AUTO_BOOKMARK);
             Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result);
             assertMessagePresent();
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                TextView button = mActivityTestRule.getActivity().findViewById(
+                        org.chromium.components.messages.R.id.message_primary_button);
+                button.performClick();
+            });
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+                Criteria.checkThat(
+                        mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec(),
+                        Matchers.is("about:blank"));
+            });
         } else {
             loadUrlAndWaitForIntentUrl(url, true, null, PageTransition.AUTO_BOOKMARK);
         }

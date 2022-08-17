@@ -2990,10 +2990,11 @@ public class ExternalNavigationHandlerTest {
         @Override
         protected OverrideUrlLoadingResult maybeAskToLaunchApp(boolean isExternalProtocol,
                 Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
-                ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl) {
+                ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
+                ExternalNavigationParams params) {
             if (!browserFallbackUrl.isEmpty() || !isExternalProtocol) {
                 return super.maybeAskToLaunchApp(isExternalProtocol, targetIntent, resolvingInfos,
-                        resolveActivity, browserFallbackUrl);
+                        resolveActivity, browserFallbackUrl, params);
             }
             Assert.assertTrue(mExpectingMessage);
             return OverrideUrlLoadingResult.forAsyncAction(
