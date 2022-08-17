@@ -35,6 +35,9 @@
 .target {
   position: absolute;
 }
+.fixed {
+  position: fixed;
+}
 .target1 {
   left: anchor(--a1 left);
   top: anchor(--a1 top);
@@ -71,6 +74,11 @@
              data-expected-width=160 data-expected-height=100></div>
         <div class="target target1-rb"
              data-offset-x=168 data-offset-y=155></div>
+        <div class="target fixed target1"
+             data-offset-x=26 data-offset-y=70
+             data-expected-width=160 data-expected-height=100></div>
+        <div class="target fixed target1-rb"
+             data-offset-x=176 data-offset-y=160></div>
       </div>
 
       <!-- The containing block of querying elements is a multi-column.  -->
@@ -79,6 +87,11 @@
            data-expected-width=160 data-expected-height=100></div>
       <div class="target target1-rb"
            data-offset-x=294 data-offset-y=95></div>
+      <div class="target fixed target1"
+           data-offset-x=152 data-offset-y=10
+           data-expected-width=160 data-expected-height=100></div>
+      <div class="target fixed target1-rb"
+           data-offset-x=302 data-offset-y=100></div>
     </div>
 
     <!-- The containing block of querying elements is not fragmented.  -->
@@ -87,5 +100,10 @@
          data-expected-width=160 data-expected-height=100></div>
     <div class="target target1-rb"
          data-offset-x=294 data-offset-y=95></div>
+    <div class="target fixed target1"
+         data-offset-x=152 data-offset-y=10
+         data-expected-width=160 data-expected-height=100></div>
+    <div class="target fixed target1-rb"
+         data-offset-x=302 data-offset-y=100></div>
     </div>
 </body>
