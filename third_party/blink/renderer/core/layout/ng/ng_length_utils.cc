@@ -1442,6 +1442,20 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
     bool is_intrinsic) {
   DCHECK(is_intrinsic || node.CanUseNewLayout());
   const ComputedStyle& style = node.Style();
+
+  if (node.IsFrameSet()) {
+    if (node.IsParentNGFrameSet()) {
+      LogicalSize size = constraint_space.AvailableSize();
+      DCHECK_NE(size.inline_size, kIndefiniteSize);
+      DCHECK_NE(size.block_size, kIndefiniteSize);
+      DCHECK(constraint_space.IsFixedInlineSize());
+      DCHECK(constraint_space.IsFixedBlockSize());
+      return {size, {}, {}, {}};
+    }
+    PhysicalSize size = node.InitialContainingBlockSize();
+    return {size.ConvertToLogical(style.GetWritingMode()), {}, {}, {}};
+  }
+
   NGBoxStrut border = ComputeBorders(constraint_space, node);
   NGBoxStrut padding = ComputePadding(constraint_space, style);
   NGBoxStrut scrollbar = ComputeScrollbars(constraint_space, node);

@@ -138,7 +138,10 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool IsContainingBlockNGGrid() const {
     return box_->ContainingBlock()->IsLayoutNGGrid();
   }
-
+  bool IsFrameSet() const { return box_->IsLayoutNGFrameSet(); }
+  bool IsParentNGFrameSet() const {
+    return box_->Parent()->IsLayoutNGFrameSet();
+  }
   bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }
 
   // Return true if this block node establishes an inline formatting context.
