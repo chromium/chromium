@@ -59,7 +59,9 @@ absl::optional<int> ParseIntValue(const base::Value& value, std::string key) {
 
 }  // namespace
 
-Position::Position() {}
+Position::Position() = default;
+Position::Position(const Position&) = default;
+Position& Position::operator=(const Position&) = default;
 Position::~Position() = default;
 
 bool Position::ParseFromJson(const base::Value& value) {
@@ -93,7 +95,8 @@ bool Position::ParseFromJson(const base::Value& value) {
   return true;
 }
 
-gfx::PointF Position::CalculatePosition(const gfx::RectF& content_bounds) {
+gfx::PointF Position::CalculatePosition(
+    const gfx::RectF& content_bounds) const {
   gfx::PointF res = anchor_ + anchor_to_target_;
   res.Scale(content_bounds.width(), content_bounds.height());
   if (max_x_)

@@ -248,7 +248,7 @@ ActionMove::~ActionMove() = default;
 bool ActionMove::ParseFromJson(const base::Value& value) {
   Action::ParseFromJson(value);
   if (parsed_input_sources_ == InputSource::IS_KEYBOARD) {
-    if (locations_.size() == 0) {
+    if (original_positions_.empty()) {
       LOG(ERROR) << "Require at least one location for key-bound move action: "
                  << name_ << ".";
       return false;
@@ -380,12 +380,11 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
 }
 
 gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
-  if (locations().empty()) {
+  if (original_positions().empty()) {
     DCHECK(IsMouseBound(*current_binding_));
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   }
-  auto* position = locations().front().get();
-  return position->CalculatePosition(content_bounds);
+  return original_positions().front().CalculatePosition(content_bounds);
 }
 
 std::unique_ptr<ActionView> ActionMove::CreateView(

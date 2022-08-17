@@ -22,8 +22,8 @@ bool ParsePositiveFraction(const base::Value& value,
 class DependentPosition : public Position {
  public:
   DependentPosition();
-  DependentPosition(const DependentPosition&) = delete;
-  DependentPosition& operator=(const DependentPosition&) = delete;
+  DependentPosition(const DependentPosition&);
+  DependentPosition& operator=(const DependentPosition&);
   ~DependentPosition() override;
 
   // Override from Position.
@@ -40,7 +40,8 @@ class DependentPosition : public Position {
   //                       // position.
   // }
   bool ParseFromJson(const base::Value& value) override;
-  gfx::PointF CalculatePosition(const gfx::RectF& window_bounds) override;
+  gfx::PointF CalculatePosition(
+      const gfx::RectF& content_bounds) const override;
 
   absl::optional<float> x_on_y() const { return x_on_y_; }
   absl::optional<float> y_on_x() const { return y_on_x_; }

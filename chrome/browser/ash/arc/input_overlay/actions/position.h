@@ -17,8 +17,8 @@ namespace input_overlay {
 class Position {
  public:
   Position();
-  Position(const Position&) = delete;
-  Position& operator=(const Position&) = delete;
+  Position(const Position&);
+  Position& operator=(const Position&);
   virtual ~Position();
 
   // Json value format:
@@ -36,9 +36,9 @@ class Position {
   // "max_y": 50 // Optional.
   // }
   virtual bool ParseFromJson(const base::Value& value);
-  // Return the position coords in window. |content_bounds| is the window bounds
-  // excluding caption if the caption shows.
-  virtual gfx::PointF CalculatePosition(const gfx::RectF& content_bounds);
+  // Return the position coords in |content_bounds| which excludes the caption
+  // if the caption shows.
+  virtual gfx::PointF CalculatePosition(const gfx::RectF& content_bounds) const;
 
   const gfx::PointF& anchor() const { return anchor_; }
   const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }

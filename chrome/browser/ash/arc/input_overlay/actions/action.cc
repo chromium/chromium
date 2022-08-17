@@ -36,9 +36,8 @@ constexpr char kRadius[] = "radius";
 constexpr int kMinRadius = 18;
 constexpr float kHalf = 0.5;
 
-std::vector<std::unique_ptr<Position>> ParseLocation(
-    const base::Value& position) {
-  std::vector<std::unique_ptr<Position>> positions;
+std::vector<Position> ParseLocation(const base::Value& position) {
+  std::vector<Position> positions;
   for (const base::Value& val : position.GetListDeprecated()) {
     auto pos = ParsePosition(val);
     if (!pos) {
@@ -46,7 +45,7 @@ std::vector<std::unique_ptr<Position>> ParseLocation(
       positions.clear();
       return positions;
     }
-    positions.emplace_back(std::move(pos));
+    positions.emplace_back(std::move(*pos));
   }
 
   return positions;
@@ -184,9 +183,9 @@ bool Action::ParseFromJson(const base::Value& value) {
   if (position) {
     auto parsed_pos = ParseLocation(*position);
     if (!parsed_pos.empty()) {
-      std::move(parsed_pos.begin(), parsed_pos.end(),
-                std::back_inserter(locations_));
-      on_left_or_middle_side_ = (locations_.front()->anchor().x() <= kHalf);
+      original_positions_ = parsed_pos;
+      on_left_or_middle_side_ =
+          (original_positions_.front().anchor().x() <= kHalf);
     }
   }
   // Parse action radius.
@@ -346,9 +345,10 @@ void Action::OnTouchReleased() {
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
   touch_id_ = absl::nullopt;
   keys_pressed_.clear();
-  if (locations_.empty())
+  if (original_positions_.empty())
     return;
-  current_position_idx_ = (current_position_idx_ + 1) % locations_.size();
+  current_position_idx_ =
+      (current_position_idx_ + 1) % original_positions_.size();
 }
 
 void Action::OnTouchCancelled() {
@@ -383,14 +383,14 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
 void Action::UpdateTouchDownPositions(
     const gfx::RectF& content_bounds,
     const gfx::Transform* rotation_transform) {
-  if (locations_.empty())
+  if (original_positions_.empty())
     return;
 
   touch_down_positions_.clear();
 
-  for (int i = 0; i < locations_.size(); i++) {
-    Position* position = locations_[i].get();
-    const gfx::PointF point = position->CalculatePosition(content_bounds);
+  for (int i = 0; i < original_positions_.size(); i++) {
+    const gfx::PointF point =
+        original_positions_[i].CalculatePosition(content_bounds);
 
     float scale = target_window_->GetHost()->device_scale_factor();
 
@@ -408,7 +408,7 @@ void Action::UpdateTouchDownPositions(
             << root_point.ToString() << "}, root location in pixels {"
             << root_location.ToString() << "}";
   }
-  DCHECK_EQ(touch_down_positions_.size(), locations_.size());
+  DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
 }
 
 }  // namespace input_overlay

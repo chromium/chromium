@@ -15,27 +15,27 @@ constexpr char kAspectRatio[] = "aspect_ratio";
 constexpr char kXonY[] = "x_on_y";
 constexpr char kYonX[] = "y_on_x";
 
-float CalculateDependent(gfx::PointF anchor,
-                         gfx::Vector2dF anchor_to_target,
+float CalculateDependent(const gfx::PointF& anchor,
+                         const gfx::Vector2dF& anchor_to_target,
                          bool height_dependent,
                          float dependent,
-                         const gfx::RectF window_bounds) {
+                         const gfx::RectF& content_bounds) {
   float res;
   if (height_dependent) {
     float anchor_to_target_y =
-        std::abs(anchor_to_target.y()) * window_bounds.height();
-    res = anchor.x() * window_bounds.width() +
+        std::abs(anchor_to_target.y()) * content_bounds.height();
+    res = anchor.x() * content_bounds.width() +
           (anchor_to_target.x() < 0 ? -1 : 1) * anchor_to_target_y * dependent;
-    if (res >= window_bounds.width())
-      res = window_bounds.width() - 1;
+    if (res >= content_bounds.width())
+      res = content_bounds.width() - 1;
   } else {
     float anchor_to_target_x =
-        std::abs(anchor_to_target.x()) * window_bounds.width();
-    res = anchor.y() * window_bounds.height() +
+        std::abs(anchor_to_target.x()) * content_bounds.width();
+    res = anchor.y() * content_bounds.height() +
           (std::signbit(anchor_to_target.y()) ? -1 : 1) * anchor_to_target_x *
               dependent;
-    if (res >= window_bounds.height())
-      res = window_bounds.height() - 1;
+    if (res >= content_bounds.height())
+      res = content_bounds.height() - 1;
   }
   // Make sure it is inside of the window bounds.
   return std::max(0.f, res);
@@ -54,7 +54,10 @@ bool ParsePositiveFraction(const base::Value& value,
   return true;
 }
 
-DependentPosition::DependentPosition() {}
+DependentPosition::DependentPosition() = default;
+DependentPosition::DependentPosition(const DependentPosition&) = default;
+DependentPosition& DependentPosition::operator=(const DependentPosition&) =
+    default;
 DependentPosition::~DependentPosition() = default;
 
 bool DependentPosition::ParseFromJson(const base::Value& value) {
@@ -91,16 +94,17 @@ bool DependentPosition::ParseFromJson(const base::Value& value) {
 }
 
 gfx::PointF DependentPosition::CalculatePosition(
-    const gfx::RectF& window_bounds) {
-  gfx::PointF res = Position::CalculatePosition(window_bounds);
-  float cur_aspect_ratio = 1. * window_bounds.width() / window_bounds.height();
+    const gfx::RectF& content_bounds) const {
+  gfx::PointF res = Position::CalculatePosition(content_bounds);
+  float cur_aspect_ratio =
+      1. * content_bounds.width() / content_bounds.height();
   if (cur_aspect_ratio >= *aspect_ratio_) {
     float x = CalculateDependent(anchor(), anchor_to_target(), true, *x_on_y_,
-                                 window_bounds);
+                                 content_bounds);
     res.set_x(x);
   } else {
     float y = CalculateDependent(anchor(), anchor_to_target(), false, *y_on_x_,
-                                 window_bounds);
+                                 content_bounds);
     res.set_y(y);
   }
   return res;

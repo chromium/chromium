@@ -120,8 +120,8 @@ class Action {
   }
   int id() { return id_; }
   const std::string& name() { return name_; }
-  const std::vector<std::unique_ptr<Position>>& locations() const {
-    return locations_;
+  const std::vector<Position>& original_positions() const {
+    return original_positions_;
   }
   const std::vector<gfx::PointF>& touch_down_positions() const {
     return touch_down_positions_;
@@ -163,10 +163,10 @@ class Action {
   int id_ = 0;
   // name_ is basically for debugging and not visible to users.
   std::string name_;
-  // Location take turns for each key press if there are more than
-  // one location.
-  std::vector<std::unique_ptr<Position>> locations_;
-  // Touch down root location corresponding to |locations_|.
+  // Position take turns for each key press if there are more than
+  // one positions. This is for original default positions.
+  std::vector<Position> original_positions_;
+  // Touch down root location corresponding to |original_positions_|.
   std::vector<gfx::PointF> touch_down_positions_;
   // If |require_mouse_locked_| == true, the action takes effect when the mouse
   // is locked. Once the mouse is unlocked, the active actions which need mouse

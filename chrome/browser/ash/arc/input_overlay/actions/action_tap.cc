@@ -183,7 +183,7 @@ ActionTap::~ActionTap() = default;
 
 bool ActionTap::ParseFromJson(const base::Value& value) {
   Action::ParseFromJson(value);
-  if (locations_.empty()) {
+  if (original_positions_.empty()) {
     LOG(ERROR) << "Require at least one location for tap action {" << name_
                << "}.";
     return false;
@@ -258,8 +258,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
 }
 
 gfx::PointF ActionTap::GetUICenterPosition(const gfx::RectF& content_bounds) {
-  auto* position = locations().front().get();
-  return position->CalculatePosition(content_bounds);
+  return original_positions().front().CalculatePosition(content_bounds);
 }
 
 std::unique_ptr<ActionView> ActionTap::CreateView(
