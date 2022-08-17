@@ -282,10 +282,16 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> gpu_dependency_;
   std::unique_ptr<OutputSurface> output_surface_;
   const raw_ptr<SkiaOutputSurface> skia_output_surface_;
-  std::unique_ptr<DisplayDamageTracker> damage_tracker_;
-  std::unique_ptr<DisplaySchedulerBase> scheduler_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
+  // `aggregator_` depends on `resource_provider_` so it must be declared last
+  // and destroyed first.
   std::unique_ptr<SurfaceAggregator> aggregator_;
+  // `damage_tracker_` depends on `aggregator_` so it must be declared last and
+  // destroyed first.
+  std::unique_ptr<DisplayDamageTracker> damage_tracker_;
+  // `scheduler_` depends on `damage_tracker_` so it must be declared last and
+  // destroyed first.
+  std::unique_ptr<DisplaySchedulerBase> scheduler_;
   bool last_wide_color_enabled_ = false;
   std::unique_ptr<FrameRateDecider> frame_rate_decider_;
   // This may be null if the Display is on a thread without a MessageLoop.
