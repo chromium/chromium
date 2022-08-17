@@ -125,10 +125,18 @@ RenderWidgetHostViewAura* ToRenderWidgetHostViewAura(
 
 // Listens to all mouse drag events during a drag and drop and sends them to
 // the renderer.
-class WebDragSourceAura : public content::WebContentsObserver {
+class WebDragSourceAura : public content::WebContentsObserver,
+                          public aura::WindowObserver {
  public:
   WebDragSourceAura(aura::Window* window, WebContentsImpl* contents)
-      : WebContentsObserver(contents), window_(window) {}
+      : WebContentsObserver(contents), window_(window) {
+    window_->AddObserver(this);
+  }
+
+  ~WebDragSourceAura() override {
+    if (window_)
+      window_->RemoveObserver(this);
+  }
 
   WebDragSourceAura(const WebDragSourceAura&) = delete;
   WebDragSourceAura& operator=(const WebDragSourceAura&) = delete;
@@ -141,6 +149,15 @@ class WebDragSourceAura : public content::WebContentsObserver {
 
   void WebContentsDestroyed() override { CancelDrag(); }
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+  }
+
+  aura::Window* window() const { return window_; }
+
+ private:
   void CancelDrag() {
     if (!window_)
       return;
@@ -148,15 +165,14 @@ class WebDragSourceAura : public content::WebContentsObserver {
     // Cancel the drag if it is still in progress.
     aura::client::DragDropClient* dnd_client =
         aura::client::GetDragDropClient(window_->GetRootWindow());
+
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+
     if (dnd_client && dnd_client->IsDragDropInProgress())
       dnd_client->DragCancel();
-
-    window_ = nullptr;
   }
 
-  aura::Window* window() const { return window_; }
-
- private:
   raw_ptr<aura::Window> window_;
 };
 
