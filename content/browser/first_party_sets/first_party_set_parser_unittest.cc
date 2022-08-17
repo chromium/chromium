@@ -1078,4 +1078,62 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
           })}));
 }
 
+TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+     SuccessfulMapping_CCTLDs) {
+  net::SchemefulSite owner1(GURL("https://owner1.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member1_cctld(GURL("https://member1.cctld"));
+  net::SchemefulSite owner2(GURL("https://owner2.test"));
+  net::SchemefulSite owner2_cctld(GURL("https://owner2.cctld"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
+  base::Value policy_value = base::JSONReader::Read(R"(
+             {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"],
+                    "ccTLDs": {
+                      "https://member1.test": ["https://member1.cctld"],
+                      "https://not_in_set.test": ["https://not_in_set.cctld"]
+                    }
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"],
+                    "ccTLDs": {
+                      "https://owner2.test": ["https://owner2.cctld"]
+                    }
+                  }
+                ]
+              }
+            )")
+                                 .value();
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {FirstPartySetParser::SetsMap({
+               {owner1, net::FirstPartySetEntry(owner1, net::SiteType::kPrimary,
+                                                absl::nullopt)},
+               {member1,
+                net::FirstPartySetEntry(owner1, net::SiteType::kAssociated,
+                                        absl::nullopt)},
+               {member1_cctld,
+                net::FirstPartySetEntry(owner1, net::SiteType::kAssociated,
+                                        absl::nullopt)},
+           }),
+           FirstPartySetParser::SetsMap({
+               {owner2, net::FirstPartySetEntry(owner2, net::SiteType::kPrimary,
+                                                absl::nullopt)},
+               {owner2_cctld,
+                net::FirstPartySetEntry(owner2, net::SiteType::kPrimary,
+                                        absl::nullopt)},
+               {member2,
+                net::FirstPartySetEntry(owner2, net::SiteType::kAssociated,
+                                        absl::nullopt)},
+           })},
+          {}));
+}
+
 }  // namespace content

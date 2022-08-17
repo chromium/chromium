@@ -35,6 +35,7 @@ namespace {
 using ParseError = FirstPartySetParser::ParseError;
 using Aliases = FirstPartySetParser::Aliases;
 using SetsAndAliases = FirstPartySetParser::SetsAndAliases;
+using SetsMap = FirstPartySetParser::SetsMap;
 
 // Ensures that the string represents an origin that is non-opaque and HTTPS.
 // Returns the registered domain.
@@ -272,9 +273,16 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
       return base::unexpected(
           FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
     }
-    // TODO(https://crbug.com/1349781): handle ccTLD aliases for enterprise
-    // sets.
-    parsed_sets.push_back(parsed.value().first);
+    SetsMap& set = parsed.value().first;
+    if (!parsed.value().second.empty()) {
+      std::vector<SetsMap::value_type> alias_entries;
+      for (const auto& alias : parsed.value().second) {
+        alias_entries.emplace_back(alias.first, set.find(alias.second)->second);
+      }
+      set.insert(std::make_move_iterator(alias_entries.begin()),
+                 std::make_move_iterator(alias_entries.end()));
+    }
+    parsed_sets.push_back(set);
   }
   return parsed_sets;
 }
