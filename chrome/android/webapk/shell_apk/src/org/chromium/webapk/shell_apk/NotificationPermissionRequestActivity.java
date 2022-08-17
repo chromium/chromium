@@ -4,6 +4,7 @@
 
 package org.chromium.webapk.shell_apk;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,13 +26,6 @@ import android.util.Log;
  */
 public class NotificationPermissionRequestActivity extends Activity {
     private static final String TAG = "PermissionRequestActivity";
-
-    // TODO: Use Manifest.permission.POST_NOTIFICATIONS when it is released.
-    private static final String PERMISSION_POST_NOTIFICATIONS =
-            "android.permission.POST_NOTIFICATIONS";
-
-    // TODO: Use Build.VERSION_CODES when it is released.
-    private static final int VERSION_T = 33;
 
     // An intent extra for a notification channel name string.
     private static final String EXTRA_NOTIFICATION_CHANNEL_NAME = "notificationChannelName";
@@ -70,7 +64,7 @@ public class NotificationPermissionRequestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT < VERSION_T) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             Log.w(TAG, "Cannot request notification permission before Android T.");
             finish();
             return;
@@ -87,13 +81,14 @@ public class NotificationPermissionRequestActivity extends Activity {
 
         // When running on T or greater, with the app targeting less than T, creating a channel for
         // the first time will trigger the permission dialog.
-        if (getApplicationContext().getApplicationInfo().targetSdkVersion < VERSION_T) {
+        if (getApplicationContext().getApplicationInfo().targetSdkVersion
+                < Build.VERSION_CODES.TIRAMISU) {
             NotificationChannel channel = new NotificationChannel(
                     mChannelId, mChannelName, NotificationManager.IMPORTANCE_DEFAULT);
             getNotificationManager().createNotificationChannel(channel);
         }
 
-        requestPermissions(new String[] {PERMISSION_POST_NOTIFICATIONS}, 0);
+        requestPermissions(new String[] {Manifest.permission.POST_NOTIFICATIONS}, 0);
     }
 
     @Override
@@ -101,7 +96,7 @@ public class NotificationPermissionRequestActivity extends Activity {
             int requestCode, String[] permissions, int[] grantResults) {
         boolean enabled = false;
         for (int i = 0; i < permissions.length; i++) {
-            if (!permissions[i].equals(PERMISSION_POST_NOTIFICATIONS)) continue;
+            if (!permissions[i].equals(Manifest.permission.POST_NOTIFICATIONS)) continue;
 
             PrefUtils.setHasRequestedNotificationPermission(this);
             enabled = grantResults[i] == PackageManager.PERMISSION_GRANTED;

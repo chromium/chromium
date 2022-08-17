@@ -42,9 +42,6 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     private static final String FUNCTION_NAME_REQUEST_NOTIFICATION_PERMISSION =
             "TRANSACTION_requestNotificationPermission";
 
-    // TODO: Use Build.VERSION_CODES when it is released.
-    private static final int VERSION_T = 33;
-
     /**
      * Uid of only application allowed to call the service's methods. If an application with a
      * different uid calls the service, the service throws a RemoteException.
@@ -138,7 +135,7 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
         int status = enabled ? PermissionStatus.ALLOW : PermissionStatus.BLOCK;
         if (status == PermissionStatus.BLOCK
                 && !PrefUtils.hasRequestedNotificationPermission(mContext)
-                && Build.VERSION.SDK_INT >= VERSION_T) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             status = PermissionStatus.ASK;
         }
         return status;
@@ -146,7 +143,7 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
 
     @Override
     public PendingIntent requestNotificationPermission(String channelName, String channelId) {
-        if (Build.VERSION.SDK_INT < VERSION_T) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             Log.w(TAG, "Cannot request notification permission before Android T.");
             return null;
         }
