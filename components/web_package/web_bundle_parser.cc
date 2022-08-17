@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/cbor/reader.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
@@ -42,6 +43,11 @@ constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
 // The initial buffer size for reading an item from the response section.
 constexpr uint64_t kInitialBufferSizeForResponse = 4096;
 
+// The first byte of WebBundle format >=b2 (Array of length 5).
+constexpr uint8_t kBundleHeadByte = 0x85;
+// The first byte of WebBundle format b1 (Array of length 6).
+constexpr uint8_t kBundleB1HeadByte = 0x86;
+
 // CBOR of the magic string "🌐📦".
 // MetadataParser::ParseMagicBytes() checks the first byte (0x85) and this.
 //
@@ -58,6 +64,12 @@ const uint8_t kBundleMagicBytes[] = {
 //       62 32 00 00  -- "b2\0\0"
 const uint8_t kVersionB2MagicBytes[] = {
     0x44, 0x62, 0x32, 0x00, 0x00,
+};
+// CBOR of the version string "b1\0\0".
+//   44               -- Byte string of length 4
+//       62 31 00 00  -- "b1\0\0"
+const uint8_t kVersionB1MagicBytes[] = {
+    0x44, 0x62, 0x31, 0x00, 0x00,
 };
 
 // Section names.
@@ -294,9 +306,10 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    if (*array_size != 0x85) {
-      RunErrorCallbackAndDestroy(
-          "Wrong CBOR array size of the top-level structure");
+    // Let kBundleB1HeadByte pass this check, to report custom error message for
+    // b1 bundles.
+    if (*array_size != kBundleHeadByte && *array_size != kBundleB1HeadByte) {
+      RunErrorCallbackAndDestroy("Wrong magic bytes.");
       return;
     }
 
@@ -318,10 +331,25 @@ class WebBundleParser::MetadataParser
     if (!std::equal(version->begin(), version->end(),
                     std::begin(kVersionB2MagicBytes),
                     std::end(kVersionB2MagicBytes))) {
+      const char* message;
+      if (std::equal(version->begin(), version->end(),
+                     std::begin(kVersionB1MagicBytes),
+                     std::end(kVersionB1MagicBytes))) {
+        message =
+            "Bundle format version is 'b1' which is no longer supported."
+            " Currently supported version is: 'b2'";
+      } else {
+        message =
+            "Version error: bundle format does not correspond to the specifed "
+            "version. Currently supported version is: 'b2'";
+      }
+      RunErrorCallbackAndDestroy(message,
+                                 mojom::BundleParseErrorType::kVersionError);
+      return;
+    }
+    if (*array_size != kBundleHeadByte) {
       RunErrorCallbackAndDestroy(
-          "Version error: bundle format does not correspond to the specifed "
-          "version. Currently supported version is: 'b2'",
-          mojom::BundleParseErrorType::kVersionError);
+          "Wrong CBOR array size of the top-level structure");
       return;
     }
 
@@ -551,7 +579,11 @@ class WebBundleParser::MetadataParser
       GURL parsed_url = ParseExchangeURL(url, base_url_);
 
       if (!parsed_url.is_valid()) {
-        RunErrorCallbackAndDestroy("Index section: exchange URL is not valid.");
+        std::string message = base::StringPrintf(
+            "Index section: exchange URL \"%s\" is not valid.", url.c_str());
+        if (base_url_.is_empty())
+          message += " (Relative URLs are not allowed in this context.)";
+        RunErrorCallbackAndDestroy(message);
         return false;
       }
 
