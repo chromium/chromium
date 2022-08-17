@@ -421,33 +421,32 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (!enabled_suggestions.diacritic_suggestions) {
+  if (!IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
+      !enabled_suggestions.diacritic_suggestions ||
+      !kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
     return;
   }
 
-  if (const char c = event.GetCharacter();
-      kDefaultLongpressEnabledKeys.contains(c) &&
-      IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {
-    // Process longpress keydown event.
-    if (current_longpress_char_ == absl::nullopt &&
-        event.type() == ui::EventType::ET_KEY_PRESSED) {
-      current_longpress_char_ = c;
-      longpress_timer_.Start(
-          FROM_HERE, kLongpressActivationDelay,
-          base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
+  const char c = event.GetCharacter();
+  // Process longpress keydown event.
+  if (current_longpress_char_ == absl::nullopt &&
+      event.type() == ui::EventType::ET_KEY_PRESSED) {
+    current_longpress_char_ = c;
+    longpress_timer_.Start(
+        FROM_HERE, kLongpressActivationDelay,
+        base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
-    // Process longpress interrupted event (key press up before timer callback
-    // fired)
-    if (current_longpress_char_.has_value() &&
-        event.type() == ui::EventType::ET_KEY_RELEASED &&
-        *current_longpress_char_ == c) {
-      current_longpress_char_ = absl::nullopt;
-      longpress_timer_.Stop();
-      return;
-    }
+  // Process longpress interrupted event (key press up before timer callback
+  // fired)
+  if (current_longpress_char_.has_value() &&
+      event.type() == ui::EventType::ET_KEY_RELEASED &&
+      *current_longpress_char_ == c) {
+    current_longpress_char_ = absl::nullopt;
+    longpress_timer_.Stop();
+    return;
   }
 }
 
