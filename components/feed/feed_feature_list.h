@@ -133,6 +133,11 @@ extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
 // false, schedule only when the feed surface is opened to content.
 extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
 
+// When enabled, no view cache is used.
+extern const base::Feature kFeedNoViewCache;
+// When enabled, replace all items.
+extern const base::Feature kFeedReplaceAll;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
