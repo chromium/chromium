@@ -121,6 +121,15 @@ BackForwardCachePageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class mainly interested in the behavior after entreing Back/Forward
+  // Cache. Works as same as non prerendering case.
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!in_back_forward_cache_) {
@@ -173,6 +182,13 @@ BackForwardCachePageLoadMetricsObserver::ShouldObserveMimeType(
   PageLoadMetricsObserver::ObservePolicy policy =
       PageLoadMetricsObserver::ShouldObserveMimeType(mime_type);
   if (policy == STOP_OBSERVING && has_ever_entered_back_forward_cache_) {
+    // We should not record UKMs while prerendering. But the page in
+    // prerendering is not eligible for Back/Forward Cache and
+    // `has_ever_entered_back_forward_cache_` implies the page is not in
+    // prerendering. So, we can record UKM safely.
+    DCHECK_NE(GetDelegate().GetPrerenderingState(),
+              page_load_metrics::PrerenderingState::kInPrerendering);
+
     ukm::builders::UserPerceivedPageVisit(
         GetLastUkmSourceIdForBackForwardCacheRestore())
         .SetNotCountedForCoreWebVitals(true)
