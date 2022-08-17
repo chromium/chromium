@@ -54,8 +54,20 @@ class TestAppDiscoveryService : public apps::AppDiscoveryService {
                int32_t size_hint_in_dip,
                apps::ResultType result_type,
                apps::GetIconCallback callback) override {
-    std::move(callback).Run(GetTestIcon(), apps::DiscoveryError::kSuccess);
+    if (icons_available_) {
+      std::move(callback).Run(GetTestIcon(), apps::DiscoveryError::kSuccess);
+    } else {
+      std::move(callback).Run(gfx::ImageSkia(),
+                              apps::DiscoveryError::kErrorRequestFailed);
+    }
   }
+
+  void set_icons_available(bool icons_available) {
+    icons_available_ = icons_available;
+  }
+
+ private:
+  bool icons_available_ = true;
 };
 
 apps::Result MakeAppsResult(bool masking_allowed) {
@@ -98,6 +110,7 @@ TEST_F(GameResultTest, Basic) {
 }
 
 TEST_F(GameResultTest, Icons) {
+  // The maskable icon should not be modified from its original form.
   apps::Result maskable_app = MakeAppsResult(/*masking_allowed=*/true);
   GameResult maskable_result(profile_.get(), &list_controller_,
                              app_discovery_service_.get(), maskable_app, 0.6,
@@ -105,10 +118,10 @@ TEST_F(GameResultTest, Icons) {
 
   EXPECT_EQ(maskable_result.icon().dimension, GetAppIconDimension());
   EXPECT_EQ(maskable_result.icon().shape, ash::SearchResultIconShape::kCircle);
-  // The maskable icon should not be modified from its original form.
   EXPECT_TRUE(gfx::BitmapsAreEqual(*maskable_result.icon().icon.bitmap(),
                                    *GetTestIcon().bitmap()));
 
+  // The non-maskable icon must be resized and placed on a white circle.
   apps::Result non_maskable_app = MakeAppsResult(/*masking_allowed=*/false);
   GameResult non_maskable_result(profile_.get(), &list_controller_,
                                  app_discovery_service_.get(), non_maskable_app,
@@ -117,9 +130,17 @@ TEST_F(GameResultTest, Icons) {
   EXPECT_EQ(non_maskable_result.icon().dimension, GetAppIconDimension());
   EXPECT_EQ(non_maskable_result.icon().shape,
             ash::SearchResultIconShape::kCircle);
-  // The non-maskable icon must be resized and placed on a white circle.
   EXPECT_TRUE(gfx::BitmapsAreEqual(*non_maskable_result.icon().icon.bitmap(),
                                    *GetExpectedNonMaskableIcon().bitmap()));
+
+  // If there is no icon, then the result should be filtered out.
+  app_discovery_service_->set_icons_available(false);
+  apps::Result no_icon_app = MakeAppsResult(/*masking_allowed=*/false);
+  GameResult no_icon_result(profile_.get(), &list_controller_,
+                            app_discovery_service_.get(), no_icon_app, 0.6,
+                            u"SomeGame");
+
+  EXPECT_TRUE(no_icon_result.scoring().filter);
 }
 
 }  // namespace app_list

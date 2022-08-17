@@ -135,11 +135,6 @@ void GameResult::Open(int event_flags) {
                             ui::DispositionFromEventFlags(event_flags));
 }
 
-void GameResult::OnColorModeChanged(bool dark_mode_enabled) {
-  if (uses_generic_icon_)
-    SetGenericIcon();
-}
-
 void GameResult::UpdateText(const apps::Result& game,
                             const std::u16string& query) {
   SetTitle(game.GetAppTitle());
@@ -158,7 +153,8 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
                               apps::DiscoveryError error) {
   // TODO(crbug.com/1305880): Report the error to UMA.
   if (error != apps::DiscoveryError::kSuccess) {
-    SetGenericIcon();
+    // Don't display results that have no icon.
+    scoring().filter = true;
     return;
   }
 
@@ -184,17 +180,6 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
         radius, SK_ColorWHITE, resized_image);
   }
   SetIcon(IconInfo(icon, GetAppIconDimension(), IconShape::kCircle));
-}
-
-void GameResult::SetGenericIcon() {
-  uses_generic_icon_ = true;
-  const auto color = cros_styles::ResolveColor(
-      cros_styles::ColorName::kIconColorPrimary, IsDarkModeEnabled(),
-      /*use_debug_colors=*/false);
-  const gfx::ImageSkia icon =
-      gfx::CreateVectorIcon(ash::kGameGenericIcon, kSystemIconDimension, color);
-
-  SetIcon(IconInfo(icon, kSystemIconDimension));
 }
 
 }  // namespace app_list

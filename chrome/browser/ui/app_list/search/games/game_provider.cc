@@ -82,8 +82,9 @@ bool EnabledByPolicy(Profile* profile) {
 // text in a separate post-processing step.
 std::u16string GetStrippedText(const std::u16string& text) {
   std::u16string stripped_text;
-  // In order, these are: apostrophe, left quote, right quote, TM, circled R.
-  base::RemoveChars(text, u"\'\u2018\u2019\u2122\u24C7", &stripped_text);
+  // In order, these are: apostrophe, left quote, right quote, TM, registered
+  // sign.
+  base::RemoveChars(text, u"\'\u2018\u2019\u2122\u00AE", &stripped_text);
   return stripped_text;
 }
 

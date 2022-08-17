@@ -43,11 +43,8 @@ class GameResult : public ChromeSearchResult, public ash::ColorModeObserver {
   void Open(int event_flags) override;
 
  private:
-  // ash::ColorModeObserver:
-  void OnColorModeChanged(bool dark_mode_enabled) override;
   void UpdateText(const apps::Result& game, const std::u16string& query);
   void OnIconLoaded(const gfx::ImageSkia& image, apps::DiscoveryError error);
-  void SetGenericIcon();
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;
@@ -55,9 +52,6 @@ class GameResult : public ChromeSearchResult, public ash::ColorModeObserver {
   GURL launch_url_;
   bool is_icon_masking_allowed_;
   const int dimension_;
-
-  // Whether this game result uses a generic backup icon.
-  bool uses_generic_icon_ = false;
 
   base::WeakPtrFactory<GameResult> weak_factory_{this};
 };
