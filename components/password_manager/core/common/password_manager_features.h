@@ -56,6 +56,9 @@ extern const base::Feature kPasswordChangeInSettings;
 extern const base::Feature kPasswordChangeWellKnown;
 extern const base::Feature kPasswordDomainCapabilitiesFetching;
 extern const base::Feature kPasswordImport;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+extern const base::Feature kPasswordManagerRedesign;
+#endif
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kPasswordStrengthIndicator;

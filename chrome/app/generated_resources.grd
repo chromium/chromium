@@ -331,6 +331,11 @@ are declared in tools/grit/grit_rule.gni.
         <part file="whats_new_strings.grdp" />
       </if>
 
+       <!-- Password Manager strings -->
+      <if expr="not is_android">
+        <part file="password_manager_ui_strings.grdp" />
+      </if>
+
       <!-- Printing specific strings -->
       <if expr="enable_basic_printing">
         <part file="printing_strings.grdp" />

@@ -2399,6 +2399,9 @@ extern const char kOmniboxDriveSuggestionsDescriptions[];
 extern const char kOmniboxExperimentalKeywordModeName[];
 extern const char kOmniboxExperimentalKeywordModeDescription[];
 
+extern const char kPasswordManagerRedesignName[];
+extern const char kPasswordManagerRedesignDescription[];
+
 extern const char kScreenAIName[];
 extern const char kScreenAIDescription[];
 

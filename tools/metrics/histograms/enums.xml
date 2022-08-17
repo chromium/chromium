@@ -57366,6 +57366,7 @@ from previous Chrome versions.
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
+  <int value="-1178536416" label="PasswordManagerRedesign:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
   <int value="-1177802205" label="enable-hosted-app-quit-notification"/>
   <int value="-1177230990" label="PrefetchAndroidFonts:enabled"/>
@@ -60769,6 +60770,7 @@ from previous Chrome versions.
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="975104092" label="show-taps"/>
+  <int value="975249239" label="PasswordManagerRedesign:enabled"/>
   <int value="975463471" label="WebViewExtraHeadersSameOriginOnly:enabled"/>
   <int value="976079108" label="TouchpadOverscrollHistoryNavigation:disabled"/>
   <int value="976767701" label="CategoricalSearch:disabled"/>
