@@ -42,16 +42,28 @@ class OsIntegrationManager;
 class WebAppTranslationManager;
 class WebAppCommandManager;
 
+// WebAppProvider is the heart of Chrome web app code.
+//
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
 // Profile-linked KeyedService) and their associated PrefService.
 //
 // Lifecycle notes:
-// All subsystems are constructed independently of each other in the
-// WebAppProvider constructor.
-// Subsystem construction should have no side effects and start no tasks.
-// Tests can replace any of the subsystems before Start() is called.
-// Similarly, in destruction, subsystems should not refer to each other.
+// - WebAppProvider and its sub-managers are not ready for use until the
+//   on_registry_ready() event has fired. Its database must be loaded from
+//   disk before it can be interacted with.
+//   Example of waiting for on_registry_ready():
+//   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+//   provider->on_registry_ready().Post(
+//       FROM_HERE,
+//       base::BindOnce([](WebAppProvider& provider) {
+//         ...
+//       }, std::ref(*provider));
+// - All subsystems are constructed independently of each other in the
+//   WebAppProvider constructor.
+// - Subsystem construction should have no side effects and start no tasks.
+// - Tests can replace any of the subsystems before Start() is called.
+// - Similarly, in destruction, subsystems should not refer to each other.
 class WebAppProvider : public KeyedService {
  public:
   // Deprecated: Use GetForWebApps instead.
