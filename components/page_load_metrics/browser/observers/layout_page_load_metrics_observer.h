@@ -19,6 +19,8 @@ class LayoutPageLoadMetricsObserver : public PageLoadMetricsObserver {
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   void OnComplete(const mojom::PageLoadTiming& timing) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const mojom::PageLoadTiming& timing) override;
