@@ -28,6 +28,7 @@ ts_library("build_ts") {
     "tab_search_app_focus_test.ts",
     "tab_search_app_test.ts",
     "tab_search_item_test.ts",
+    "tab_search_media_tabs_test.ts",
     "tab_search_test_data.ts",
     "tab_search_test_helper.ts",
     "test_tab_search_api_proxy.ts",

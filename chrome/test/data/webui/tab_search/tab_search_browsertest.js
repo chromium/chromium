@@ -28,13 +28,7 @@ var TabSearchAppTest = class extends TabSearchBrowserTest {
   }
 };
 
-// This times out regularly on debug builds, see https://crbug.com/1311655
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-TEST_F('TabSearchAppTest', 'MAYBE_All', function() {
+TEST_F('TabSearchAppTest', 'All', function() {
   mocha.run();
 });
 
@@ -79,5 +73,16 @@ var TabSearchItemTest = class extends TabSearchBrowserTest {
 };
 
 TEST_F('TabSearchItemTest', 'All', function() {
+  mocha.run();
+});
+
+var TabSearchMediaTabsTest = class extends TabSearchBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_media_tabs_test.js';
+  }
+};
+
+TEST_F('TabSearchMediaTabsTest', 'All', function() {
   mocha.run();
 });
