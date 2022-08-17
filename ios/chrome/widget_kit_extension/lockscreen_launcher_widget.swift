@@ -13,7 +13,9 @@ import WidgetKit
       case search, incognito, voiceSearch, dinoGame
 
       struct Configuration {
-        let displayName: String, description: String, imageName: String, widgetURL: URL
+        let displayName: LocalizedStringKey, description: LocalizedStringKey, imageName: String,
+          accessibilityLabel: LocalizedStringKey,
+          widgetURL: URL
 
         var supportedFamilies: [WidgetFamily] {
           if #available(iOS 16, *) {
@@ -28,27 +30,35 @@ import WidgetKit
         switch self {
         case .search:
           return Configuration(
-            displayName: "Search",
-            description: "Search",
+            displayName: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DISPLAY_NAME",
+            description: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DESCRIPTION",
             imageName: "lockscreen_chrome_logo",
+            accessibilityLabel:
+              "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_A11Y_LABEL",
             widgetURL: WidgetConstants.LockscreenLauncherWidget.searchUrl)
         case .incognito:
           return Configuration(
-            displayName: "Incognito Search",
-            description: "Incognito Search",
+            displayName: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DISPLAY_NAME",
+            description: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DESCRIPTION",
             imageName: "lockscreen_incognito_logo",
+            accessibilityLabel:
+              "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_A11Y_LABEL",
             widgetURL: WidgetConstants.LockscreenLauncherWidget.incognitoUrl)
         case .voiceSearch:
           return Configuration(
-            displayName: "Voice Search",
-            description: "Voice Search",
+            displayName:
+              "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DISPLAY_NAME",
+            description: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DESCRIPTION",
             imageName: "lockscreen_voicesearch_logo",
+            accessibilityLabel:
+              "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_A11Y_LABEL",
             widgetURL: WidgetConstants.LockscreenLauncherWidget.voiceSearchUrl)
         case .dinoGame:
           return Configuration(
-            displayName: "Dino Game",
-            description: "Dino Game",
+            displayName: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DISPLAY_NAME",
+            description: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DESCRIPTION",
             imageName: "lockscreen_game_logo",
+            accessibilityLabel: "IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_A11Y_LABEL",
             widgetURL: WidgetConstants.LockscreenLauncherWidget.gameUrl)
         }
       }
@@ -63,6 +73,8 @@ import WidgetKit
         // TODO(crbug.com/1347565): Add a11y label.
         Image(configuration.imageName)
           .widgetURL(configuration.widgetURL)
+          .accessibility(
+            label: Text(configuration.accessibilityLabel))
       }
     }
 

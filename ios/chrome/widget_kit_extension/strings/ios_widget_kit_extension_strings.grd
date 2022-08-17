@@ -202,6 +202,42 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL" desc="Accessibility label for the dino game widget" meaning="Accessibility label for the dino game widget [CHAR_LIMIT=40][iOS only]">
         Jump into Chrome Dino Game
       </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DISPLAY_NAME" desc="Display name for the lockscreen launcher game widget" meaning="String that appears as title in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=30][iOS only]">
+        Chrome Dino Game
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_DESCRIPTION" desc="Description for the lockscreen launcher game widget" meaning="String that appears as description in the installation window for the lockscreen launcher Dino Game widget. [CHAR_LIMIT=150][iOS only]">
+        Jump into the Chrome Dino Game from your lock screen.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_GAME_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher game widget" meaning="Accessibility label for the lockscreen launcher Dino Game widget [CHAR_LIMIT=40][iOS only]">
+        Jump into Chrome Dino Game
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DISPLAY_NAME" desc="Display name for the lockscreen launcher incognito widget" meaning="String that appears as title in the installation window for the lockscreen launcher Incognito widget. [CHAR_LIMIT=30][iOS only]">
+        Incognito Search
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_DESCRIPTION" desc="Description for the lockscreen launcher incognito widget" meaning="String that appears as description in the installation window for the lockscreen launcher Incognito widget. [CHAR_LIMIT=150][iOS only]">
+        Search or navigate in a new Incognito tab in Chrome.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher incognito widget" meaning="Accessibility label for the lockscreen launcher Incognito widget [CHAR_LIMIT=40][iOS only]">
+        Incognito Search
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Search widget. [CHAR_LIMIT=30][iOS only]">
+        Search
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_DESCRIPTION" desc="Description for the lockscreen launcher search widget" meaning="String that appears as description in the installation window for the lockscreen launcher Search widget. [CHAR_LIMIT=150][iOS only]">
+        Search in Chrome with your favorite search engine.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_SEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher search widget" meaning="Accessibility label for the lockscreen launcher Search widget [CHAR_LIMIT=40][iOS only]">
+        Search
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DISPLAY_NAME" desc="Display name for the lockscreen launcher voice search widget" meaning="String that appears as title in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=30][iOS only]">
+        Voice Search
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_DESCRIPTION" desc="Description for the lockscreen launcher voice search widget" meaning="String that appears as description in the installation window for the lockscreen launcher Voice Search widget. [CHAR_LIMIT=150][iOS only]">
+        Search in Chrome using your voice.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_LOCKSCREEN_LAUNCHER_VOICESEARCH_A11Y_LABEL" desc="Accessibility label for the lockscreen launcher voice search widget" meaning="Accessibility label for the lockscreen launcher Voice Search widget [CHAR_LIMIT=40][iOS only]">
+        Voice Search
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME" desc="Name for the quick actions widget" meaning="String that appears as title in the installation window for the Quick Actions widget. [CHAR_LIMIT=30][iOS only]">
         Quick Actions
       </message>
