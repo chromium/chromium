@@ -55,7 +55,7 @@
     // Explainers:
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardPolicy/explainer.md
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/VirtualKeyboardAPI/explainer.md
-    [RuntimeEnabled=VirtualKeyboard, CEReactions, Reflect, ReflectOnly=("auto","manual")] attribute DOMString virtualKeyboardPolicy;
+    [CEReactions, Reflect, ReflectOnly=("auto","manual")] attribute DOMString virtualKeyboardPolicy;
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-htmlelement-interface

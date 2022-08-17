@@ -1048,12 +1048,6 @@
     "args": ["--disable-features=HTMLParamElementUrlSupport"]
   },
   {
-    "prefix": "virtual-keyboard",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/virtual-keyboard"],
-    "args": ["--enable-blink-features=VirtualKeyboard"]
-  },
-  {
     "prefix": "parakeet",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/parakeet"],

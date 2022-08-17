@@ -2401,10 +2401,6 @@
       status: "experimental",
     },
     {
-      name: "VirtualKeyboard",
-      status: "stable",
-    },
-    {
       name: "VisibilityCollapseColumn",
     },
     {

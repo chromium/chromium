@@ -447,9 +447,8 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetTop) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, KeyboardInset_AfterLoad) {
-  // This test asserts that the keyboard inset environment variables should be
-  // loaded by default when the VirtualKeyboard runtime flag is set.
-  ScopedVirtualKeyboardForTest scoped_feature(true);
+  // This test asserts that the keyboard inset environment variables are loaded
+  // by default.
   CSSVariableData* data =
       StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
           StyleEnvironmentVariables::GetVariableName(
