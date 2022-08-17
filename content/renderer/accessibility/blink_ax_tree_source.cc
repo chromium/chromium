@@ -97,7 +97,7 @@ ScopedFreezeBlinkAXTreeSource::~ScopedFreezeBlinkAXTreeSource() {
 
 BlinkAXTreeSource::BlinkAXTreeSource(RenderFrameImpl* render_frame,
                                      ui::AXMode mode)
-    : render_frame_(render_frame), accessibility_mode_(mode), frozen_(false) {}
+    : render_frame_(render_frame), accessibility_mode_(mode) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() {}
 
