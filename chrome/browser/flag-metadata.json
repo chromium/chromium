@@ -5938,6 +5938,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "skip-service-worker-fetch-handler",
+    "owners": [ "yyanagisawa@google.com", "chrome-worker@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
     "expiry_milestone": 102

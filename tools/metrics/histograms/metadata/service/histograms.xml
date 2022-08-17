@@ -386,6 +386,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FetchHandler.SkipReason"
+    enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The reason why the service worker fetch handler has been skipped. If the
+    fetch handler has not been skipped for any reasons, it is just recorded as
+    not skipped instead.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
     expires_after="2023-01-26">
   <owner>wanderview@chromium.org</owner>

@@ -12,6 +12,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -465,6 +467,90 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
 
   // The host should still have the correct URL.
   EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
+}
+
+class ServiceWorkerSkipEmptyFetchHandlerTest
+    : public ServiceWorkerControlleeRequestHandlerTest {
+ public:
+  ServiceWorkerSkipEmptyFetchHandlerTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        "ServiceWorkerSkipIgnorableFetchHandler:SkipEmptyFetchHandler/true",
+        "");
+  }
+  ~ServiceWorkerSkipEmptyFetchHandlerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest, HasNotSkippedMetrics) {
+  base::HistogramTester tester;
+
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetWaitingVersion(version_);
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
+  tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
+                            ServiceWorkerControlleeRequestHandler::
+                                FetchHandlerSkipReason::kNotSkipped,
+                            1);
+
+  test_resources.ResetHandler();
+}
+
+TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest,
+       HasSkippedForEmptyFetchHandlerMetrics) {
+  base::HistogramTester tester;
+
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetWaitingVersion(version_);
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler.SkipReason",
+      ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+          kSkippedForEmptyFetchHandler,
+      1);
+
+  test_resources.ResetHandler();
 }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

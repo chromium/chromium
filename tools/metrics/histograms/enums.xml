@@ -57427,6 +57427,8 @@ from previous Chrome versions.
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
   <int value="-1144754105" label="ScalableStatusArea:enabled"/>
   <int value="-1144501989" label="UserActivityPredictionMlService:disabled"/>
+  <int value="-1144296865"
+      label="ServiceWorkerSkipIgnorableFetchHandler:disabled"/>
   <int value="-1144170722" label="DisableProcessReuse:enabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
@@ -57901,6 +57903,8 @@ from previous Chrome versions.
   <int value="-853594220" label="disable-new-avatar-menu"/>
   <int value="-853455968"
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
+  <int value="-853404233"
+      label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
   <int value="-852804781"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
@@ -87181,6 +87185,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="ServiceWorkerFetchEventResult">
   <int value="0" label="Should Fallback"/>
   <int value="1" label="Got Response"/>
+</enum>
+
+<enum name="ServiceWorkerFetchHandlerSkipReason">
+  <int value="0" label="No Fetch Handler"/>
+  <int value="1" label="Not Skipped"/>
+  <int value="2" label="Skipped for Empty Fetch Handler"/>
 </enum>
 
 <enum name="ServiceWorkerInstalledScriptsManager.FinishedReason">

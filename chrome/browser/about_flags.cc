@@ -3279,6 +3279,20 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kServiceWorkerSkipIgnorableFetchHandler_NotSkip[] = {
+        {"SkipEmptyFetchHandler", "false"}};
+const FeatureEntry::FeatureParam
+    kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty[] = {
+        {"SkipEmptyFetchHandler", "true"}};
+const FeatureEntry::FeatureVariation
+    kServiceWorkerSkipIgnorableFetchHandlerVariations[] = {
+        {"Not Skip", kServiceWorkerSkipIgnorableFetchHandler_NotSkip,
+         std::size(kServiceWorkerSkipIgnorableFetchHandler_NotSkip), nullptr},
+        {"Skip Empty", kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty,
+         std::size(kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9122,6 +9136,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kBiometricAuthenticationForFilling)},
 #endif
+    {"skip-service-worker-fetch-handler",
+     flag_descriptions::kSkipServiceWorkerFetchHandlerName,
+     flag_descriptions::kSkipServiceWorkerFetchHandlerDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kServiceWorkerSkipIgnorableFetchHandler,
+         kServiceWorkerSkipIgnorableFetchHandlerVariations,
+         "ServiceWorkerSkipIgnorableFetchHandler")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"reduce-gpu-priority-on-background",

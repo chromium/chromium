@@ -235,6 +235,9 @@ CONTENT_EXPORT extern const base::Feature kSiteIsolationForGuests;
 CONTENT_EXPORT extern const base::Feature kDisableProcessReuse;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;
+CONTENT_EXPORT extern const base::Feature
+    kServiceWorkerSkipIgnorableFetchHandler;
+CONTENT_EXPORT extern const base::FeatureParam<bool> kSkipEmptyFetchHandler;
 CONTENT_EXPORT extern const base::Feature kUserMediaCaptureOnFocus;
 CONTENT_EXPORT extern const base::Feature kWebLockScreenApi;
 CONTENT_EXPORT extern const base::Feature kWebOTP;

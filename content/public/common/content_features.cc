@@ -804,6 +804,20 @@ const base::Feature kRenderDocument{"RenderDocument",
 const base::Feature kSkipEarlyCommitPendingForCrashedFrame{
     "SkipEarlyCommitPendingForCrashedFrame", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables skipping the service worker fetch handler if the fetch handler is
+// identified as ignorable.
+const base::Feature kServiceWorkerSkipIgnorableFetchHandler{
+    "ServiceWorkerSkipIgnorableFetchHandler",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This feature param controls if the empty service worker fetch handler is
+// skipped.
+constexpr base::FeatureParam<bool> kSkipEmptyFetchHandler{
+    &kServiceWorkerSkipIgnorableFetchHandler,
+    "SkipEmptyFetchHandler",
+    false,
+};
+
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process
 const base::Feature kRunVideoCaptureServiceInBrowserProcess{
