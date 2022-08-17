@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 542 tests; 477 PASS, 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 542 tests; 480 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -538,9 +538,9 @@ PASS CSS namespace: operation dpi(double)
 PASS CSS namespace: operation dpcm(double)
 PASS CSS namespace: operation dppx(double)
 PASS CSS namespace: operation fr(double)
-FAIL SVGElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
-FAIL HTMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
+PASS SVGElement interface: attribute attributeStyleMap
+PASS HTMLElement interface: attribute attributeStyleMap
 PASS Element interface: operation computedStyleMap()
-FAIL MathMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
+PASS MathMLElement interface: attribute attributeStyleMap
 Harness: the test ran to completion.
 

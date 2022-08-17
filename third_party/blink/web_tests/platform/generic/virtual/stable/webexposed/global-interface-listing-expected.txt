@@ -1832,7 +1832,6 @@ interface Element : Node
     getter ariaValueNow
     getter ariaValueText
     getter assignedSlot
-    getter attributeStyleMap
     getter attributes
     getter childElementCount
     getter children
@@ -2712,6 +2711,7 @@ interface HTMLDocument : Document
 interface HTMLElement : Element
     attribute @@toStringTag
     getter accessKey
+    getter attributeStyleMap
     getter autocapitalize
     getter autofocus
     getter contentEditable
@@ -6411,6 +6411,7 @@ interface SVGDescElement : SVGElement
     method constructor
 interface SVGElement : Element
     attribute @@toStringTag
+    getter attributeStyleMap
     getter autofocus
     getter className
     getter dataset

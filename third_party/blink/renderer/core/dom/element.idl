@@ -138,10 +138,6 @@ dictionary CheckVisibilityOptions {
     readonly attribute long clientWidth;
     readonly attribute long clientHeight;
 
-    // Typed OM
-    // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects
-    [SameObject, MeasureAs=CSSTypedOMStylePropertyMap] readonly attribute StylePropertyMap attributeStyleMap;
-
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
 
