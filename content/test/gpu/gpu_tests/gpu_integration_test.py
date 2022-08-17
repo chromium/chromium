@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import collections
+import fnmatch
 import logging
 import re
 import sys
@@ -91,10 +92,46 @@ class GpuIntegrationTest(
       artifacts = acw.FullLoggingArtifactImpl()
     super().set_artifacts(artifacts)
 
+  def CanRunInParallel(self) -> bool:
+    """Returns whether a particular test instance can be run in parallel."""
+    if not self._SuiteSupportsParallelTests():
+      return False
+    name = self.shortName()
+    for glob in self._GetSerialGlobs():
+      if fnmatch.fnmatch(name, glob):
+        return False
+    return name not in self._GetSerialTests()
+
+  def _SuiteSupportsParallelTests(self) -> bool:  # pylint: disable=no-self-use
+    """Returns whether the suite in general supports parallel tests."""
+    return False
+
+  def _GetSerialGlobs(self) -> Set[str]:  # pylint: disable=no-self-use
+    """Returns a set of test name globs that should be run serially."""
+    return set()
+
+  def _GetSerialTests(self) -> Set[str]:  # pylint: disable=no-self-use
+    """Returns a set of test names that should be run serially."""
+    return set()
+
+  @classmethod
+  def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
+    """Sets class member variables from parsed command line options.
+
+    This was historically done once in GenerateGpuTests since it was one of the
+    earliest called class methods, but that relied on the process always being
+    the same, which is not the case if running tests in parallel. Thus, the same
+    logic should be run on process setup to ensure that parallel and serial
+    execution works the same.
+
+    This should be called once in SetUpProcess and once in GenerateGpuTests.
+    """
+
   @classmethod
   def SetUpProcess(cls) -> None:
     super(GpuIntegrationTest, cls).SetUpProcess()
     cls._original_finder_options = cls._finder_options.Copy()
+    cls._SetClassVariablesFromOptions(cls._finder_options)
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -606,7 +643,7 @@ class GpuIntegrationTest(
     """
     raise NotImplementedError
 
-  def GetOverlayBotConfig(self) -> Dict[str, Any]:
+  def _GetOverlayBotConfig(self) -> Dict[str, Any]:
     """Returns expected bot config for DirectComposition and overlay support.
 
     This is only meaningful on Windows platform.
@@ -665,7 +702,7 @@ class GpuIntegrationTest(
           config['nv12_overlay_support'] = 'SCALING'
     return config
 
-  def GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
+  def _GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
     """Returns expected bot config for DX12 and Vulkan support.
 
     This configuration is collected on Windows platform only.

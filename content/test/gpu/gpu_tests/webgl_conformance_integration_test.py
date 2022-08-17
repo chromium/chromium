@@ -2,12 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import fnmatch
 import logging
 import os
 import re
 import sys
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Set, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -64,27 +63,6 @@ extension_harness_additional_script = r"""
   window.onload = function() { window._loaded = true; }
 """
 
-# For whatever reason, these tests don't like being run in parallel, so run them
-# serially.
-SERIAL_TESTS = {
-    # crbug.com/1347970.
-    'conformance/textures/misc/texture-video-transparent.html',
-    # crbug.com/1345755, crbug.com/1345782. Can be removed onced OpenGL is no
-    # longer used on Mac.
-    'deqp/functional/gles3/shaderindexing/uniform.html',
-}
-
-SERIAL_TEST_GLOBS = {
-    # crbug.com/1345466. Can be removed once OpenGL is no longer used on Mac.
-    'deqp/functional/gles3/transformfeedback/*',
-    # crbug.com/1345782. Can be removed once OpenGL is no longer used on Mac.
-    'deqp/functional/gles3/texturefiltering/*',
-    'deqp/functional/gles3/texturespecification/*',
-    # crbug.com/1347970. Flaking for unknown reasons on Metal backend.
-    'deqp/functional/gles3/textureshadow/*',
-}
-
-
 # cmp no longer exists in Python 3
 def cmp(a: Any, b: Any) -> int:
   return int(a > b) - int(a < b)
@@ -121,12 +99,30 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def Name(cls) -> str:
     return 'webgl_conformance'
 
-  def CanRunInParallel(self) -> bool:
-    name = self.shortName()
-    for glob in SERIAL_TEST_GLOBS:
-      if fnmatch.fnmatch(name, glob):
-        return False
-    return name not in SERIAL_TESTS
+  def _SuiteSupportsParallelTests(self) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    return {
+        # crbug.com/1345466. Can be removed once OpenGL is no longer used on
+        # Mac.
+        'deqp/functional/gles3/transformfeedback/*',
+        # crbug.com/1345782. Can be removed once OpenGL is no longer used on
+        # Mac.
+        'deqp/functional/gles3/texturefiltering/*',
+        'deqp/functional/gles3/texturespecification/*',
+        # crbug.com/1347970. Flaking for unknown reasons on Metal backend.
+        'deqp/functional/gles3/textureshadow/*',
+    }
+
+  def _GetSerialTests(self) -> Set[str]:
+    return {
+        # crbug.com/1347970.
+        'conformance/textures/misc/texture-video-transparent.html',
+        # crbug.com/1345755, crbug.com/1345782. Can be removed onced OpenGL is
+        # no longer used on Mac.
+        'deqp/functional/gles3/shaderindexing/uniform.html',
+    }
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -145,13 +141,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       help='Whether to enable Metal debug layers')
 
   @classmethod
-  def SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs):
-    """Sets class member variables from parsed command line options.
-
-    This was historically done once in GenerateGpuTests, but that relied on the
-    process always being the same, which is not the case if running tests in
-    parallel.
-    """
+  def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
     cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
 
   @classmethod
@@ -162,7 +152,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     test_paths = cls._ParseTests('00_test_list.txt',
                                  options.webgl_conformance_version,
                                  (options.webgl2_only == 'true'), None)
-    cls.SetClassVariablesFromOptions(options)
+    cls._SetClassVariablesFromOptions(options)
     for test_path in test_paths:
       test_path_with_args = test_path
       if cls._webgl_version > 1:
@@ -473,7 +463,6 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls) -> None:
     super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
-    cls.SetClassVariablesFromOptions(cls.child.context.finder_options)
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     # By setting multiple server directories, the root of the server

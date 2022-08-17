@@ -283,7 +283,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return default_args
 
   def _GetAndAssertOverlayBotConfig(self) -> Dict[str, str]:
-    overlay_bot_config = self.GetOverlayBotConfig()
+    overlay_bot_config = self._GetOverlayBotConfig()
     if overlay_bot_config is None:
       self.fail('Overlay bot config can not be determined')
     assert overlay_bot_config.get('direct_composition', False)
@@ -499,7 +499,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
-    overlay_bot_config = self.GetOverlayBotConfig()
+    overlay_bot_config = self._GetOverlayBotConfig()
     if overlay_bot_config is None:
       self.fail('Overlay bot config can not be determined')
     assert overlay_bot_config.get('direct_composition', False)
@@ -534,7 +534,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
-    overlay_bot_config = self.GetOverlayBotConfig()
+    overlay_bot_config = self._GetOverlayBotConfig()
     if overlay_bot_config is None:
       self.fail('Overlay bot config can not be determined')
     assert overlay_bot_config.get('direct_composition', False)

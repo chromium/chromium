@@ -116,7 +116,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
                                 test_args: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
     if os_name and os_name.lower() == 'win':
-      overlay_bot_config = self.GetOverlayBotConfig()
+      overlay_bot_config = self._GetOverlayBotConfig()
       aux_attributes = test_args.gpu.aux_attributes
       if not aux_attributes:
         self.fail('GPU info does not have aux_attributes.')
@@ -143,7 +143,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       if not aux_attributes:
         self.fail('GPU info does not have aux_attributes.')
 
-      dx12_vulkan_bot_config = self.GetDx12VulkanBotConfig()
+      dx12_vulkan_bot_config = self._GetDx12VulkanBotConfig()
       for field, expected in dx12_vulkan_bot_config.items():
         detected = aux_attributes.get(field)
         if expected != detected:

@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 import threading
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 import unittest
 
 import websockets  # pylint:disable=import-error
@@ -50,9 +50,6 @@ MESSAGE_TYPE_TEST_HEARTBEAT = 'TEST_HEARTBEAT'
 MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
 MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
-
-# These are tests that, for whatever reason, don't like being run in parallel.
-SERIAL_TESTS = {}
 
 
 class WebGpuTestResult():
@@ -138,8 +135,14 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def Name(cls) -> str:
     return 'webgpu_cts'
 
-  def CanRunInParallel(self) -> bool:
-    return self.shortName() not in SERIAL_TESTS
+  def _SuiteSupportsParallelTests(self) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    return set()
+
+  def _GetSerialTests(self) -> Set[str]:
+    return set()
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -180,7 +183,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls) -> None:
     super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
-    cls.SetClassVariablesFromOptions(cls.child.context.finder_options)
 
     cls.SetUpWebsocketServer()
     browser_args = [
@@ -240,13 +242,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(WebGpuCtsIntegrationTest, cls).TearDownProcess()
 
   @classmethod
-  def SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs):
-    """Sets class member variables from parsed command line options.
-
-    This was historically done once in GenerateGpuTests, but that relied on the
-    process always being the same, which is not the case if running tests in
-    parallel.
-    """
+  def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
     if options.override_timeout:
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
@@ -254,7 +250,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    cls.SetClassVariablesFromOptions(options)
+    cls._SetClassVariablesFromOptions(options)
     if cls._test_list is None:
       with open(TEST_LIST_FILE) as f:
         cls._test_list = [l for l in f.read().splitlines() if l]
