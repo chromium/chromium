@@ -230,3 +230,14 @@ export async function startIOTask(type, entries, params) {
   return promisify(
       chrome.fileManagerPrivate.startIOTask, type, entries, params);
 }
+
+/**
+ * Parses .trashinfo files to retrieve the restore path and deletion date.
+ * @param {!Array<!Entry>} entries
+ * @returns {!Promise<!Array<!chrome.fileManagerPrivate.ParsedTrashInfoFile>>}
+ */
+export async function parseTrashInfoFiles(entries) {
+  return promisify(
+      chrome.fileManagerPrivate.parseTrashInfoFiles,
+      entries.map(e => util.unwrapEntry(e)));
+}

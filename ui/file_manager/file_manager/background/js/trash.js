@@ -232,7 +232,8 @@ export class Trash {
     const infoEntry = await this.writeTrashInfoFile_(
         trashDirs.info, trashInfoName, path, deletionDate);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    return new TrashEntry(entry.name, deletionDate, filesEntry, infoEntry);
+    return new TrashEntry(
+        entry.name, deletionDate, filesEntry, infoEntry, entry);
   }
 
   /**

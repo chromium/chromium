@@ -188,7 +188,7 @@ testcase.trashRestoreFromTrash = async () => {
   // Navigate to /Trash and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 
   // Right-click the selected file to validate context menu.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -210,7 +210,7 @@ testcase.trashRestoreFromTrash = async () => {
 
   // Wait for completion of file restore.
   await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 
   // Navigate to /My files/Downloads and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
@@ -237,7 +237,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
   await navigateWithDirectoryTree(appId, '/Trash');
 
   // Select file.
-  await remoteCall.waitUntilSelected(appId, 'My files › Downloads › hello.txt');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Press 'Delete' key.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -245,7 +245,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
 
   // Wait for completion of file restore.
   await remoteCall.waitForElementLost(
-      appId, '.tre-row input [file-name="My files › Downloads › hello.txt"]');
+      appId, '.tre-row input [file-name="hello.txt"]');
 
   // Navigate to /My files/Downloads and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
@@ -271,7 +271,7 @@ testcase.trashEmptyTrash = async () => {
   // Navigate to /Trash and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 
   // Empty trash and confirm delete (dialog shown).
   await remoteCall.waitAndClickElement(appId, '#empty-trash-button');
@@ -280,7 +280,7 @@ testcase.trashEmptyTrash = async () => {
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
@@ -302,7 +302,7 @@ testcase.trashEmptyTrashShortcut = async () => {
   // Navigate to /Trash and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 
   // Press Ctrl+Shift+Delete key.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -315,7 +315,7 @@ testcase.trashEmptyTrashShortcut = async () => {
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
@@ -337,7 +337,7 @@ testcase.trashDeleteFromTrash = async () => {
   // Navigate to /Trash and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 
   // Delete selected item.
   await remoteCall.waitAndClickElement(appId, '#delete-button');
@@ -357,7 +357,7 @@ testcase.trashDeleteFromTrash = async () => {
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
@@ -384,7 +384,7 @@ testcase.trashNoTasksInTrashRoot = async () => {
   // hidden.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
   await remoteCall.waitForElement(appId, '#tasks[hidden]');
 };
 
@@ -413,13 +413,12 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
   // Navigate to /Trash and ensure the file is shown.
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"]');
   await remoteCall.waitForElement(appId, '#tasks[hidden]');
 
   // Double-click the file and ensure an alert dialog is displayed.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseDoubleClick', appId,
-      ['#file-list [file-name="My files › Downloads › hello.txt"]']);
+      'fakeMouseDoubleClick', appId, ['#file-list [file-name="hello.txt"]']);
   await remoteCall.waitForElement(appId, '.files-alert-dialog');
 };
 
@@ -561,8 +560,7 @@ testcase.trashDragDropRootPerformsTrashAction = async () => {
   await navigateWithDirectoryTree(appId, '/Trash');
 
   // Wait for the element to appear in the Trash.
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**

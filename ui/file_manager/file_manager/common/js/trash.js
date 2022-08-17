@@ -22,9 +22,9 @@
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
+import {parseTrashInfoFiles} from './api.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
-import {str} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -172,11 +172,13 @@ export class TrashEntry {
    * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
    * @param {!Entry} filesEntry trash files entry.
    * @param {!FileEntry} infoEntry trash info entry.
+   * @param {!Entry} restoreEntry The entry to restore the item.
    */
-  constructor(name, deletionDate, filesEntry, infoEntry) {
+  constructor(name, deletionDate, filesEntry, infoEntry, restoreEntry) {
     this.name = name;
     this.filesEntry = filesEntry;
     this.infoEntry = infoEntry;
+    this.restoreEntry = restoreEntry;
 
     /** @private */
     this.deletionDate_ = deletionDate;
@@ -362,62 +364,25 @@ class TrashDirectoryReader {
    * Create a trash entry if infoEntry and matching files entry are valid, else
    * return null.
    *
+   * @param {!chrome.fileManagerPrivate.ParsedTrashInfoFile} parsedEntry
    * @param {!FileEntry} infoEntry trash info entry.
-   * @return {!Promise<TrashEntry?>}
+   * @return {?TrashEntry}
    */
-  async createTrashEntry_(infoEntry) {
-    const error = (msg, text = '') => {
-      console.warn(`${msg}: ${infoEntry.toURL()}: ${text}`);
-      return null;
-    };
-
-    // Ignore any directories.
-    if (!infoEntry.isFile) {
-      return error('Ignoring unexpected trash info directory');
-    }
-
-    // Ignore any files not *.trashinfo.
-    if (!infoEntry.name.endsWith('.trashinfo')) {
-      return error('Ignoring unexpected trash info file');
-    }
-
-    const fileName = infoEntry.name.substring(0, infoEntry.name.length - 10);
-    const filesEntry = this.filesEntries_[fileName];
-    delete this.filesEntries_[fileName];
+  createTrashEntry_(parsedEntry, infoEntry) {
+    const filesEntry = this.filesEntries_[parsedEntry.trashInfoFileName];
+    delete this.filesEntries_[parsedEntry.trashInfoFileName];
 
     // Ignore any .trashinfo file with no matching file entry.
     if (!filesEntry) {
-      return error('Ignoring trash info file with no matching files entry');
+      console.warn('Ignoring trash info file with no matching files entry');
+      return null;
     }
 
-    let text;
-    try {
-      const file = await new Promise(
-          (resolve, reject) => infoEntry.file(resolve, reject));
-      text = await file.text();
-    } catch (e) {
-      return error('Ignoring removed file');
-    }
-    const path = TrashEntry.parsePath(text);
-    if (!path) {
-      return error('Ignoring trash info file with no Path', text);
-    }
+    const deletionDate = /** @type {!Date} */ (parsedEntry.deletionDate);
 
-    const deletionDate = TrashEntry.parseDeletionDate(text);
-    if (!deletionDate) {
-      return error('Ignoring trash info file with invalid DeletionDate', text);
-    }
-
-    // Show the root label and the whole Path=<path> from infoEntry as the name.
-    // This allows users to differentiate deleted files such as /a/hello.txt and
-    // /b/hello.txt.
-    const parts = path.split('/');
-    const firstSegment = this.config_.pathMap[parts[1]];
-    if (firstSegment) {
-      parts[1] = str(firstSegment);
-    }
-    const trashName = str(this.config_.rootLabel) + parts.join(' › ');
-    return new TrashEntry(trashName, deletionDate, filesEntry, infoEntry);
+    return new TrashEntry(
+        parsedEntry.restoreEntry.name, deletionDate, filesEntry, infoEntry,
+        parsedEntry.restoreEntry);
   }
 
   /**
@@ -455,7 +420,8 @@ class TrashDirectoryReader {
           if (!entries.length) {
             break;
           }
-          entries.forEach(entry => this.filesEntries_[entry.name] = entry);
+          entries.forEach(
+              entry => this.filesEntries_[entry.name + '.trashinfo'] = entry);
         }
       } catch (e) {
         console.warn('Error reading trash files entries', e);
@@ -478,13 +444,29 @@ class TrashDirectoryReader {
         error(e);
         return;
       }
+      const infoEntryMap = {};
       for (const e of entries) {
-        const trashEntry = await this.createTrashEntry_(e);
+        if (!e.isFile || !e.name.endsWith('.trashinfo')) {
+          continue;
+        }
+        infoEntryMap[e.name] = e;
+      }
+      let parsedEntries = [];
+      try {
+        parsedEntries = await parseTrashInfoFiles(entries);
+      } catch (e) {
+        console.warn('Error parsing trash info entries', e);
+        error(e);
+        return;
+      }
+      for (const parsedEntry of parsedEntries) {
+        const trashEntry = this.createTrashEntry_(
+            parsedEntry, infoEntryMap[parsedEntry.trashInfoFileName]);
         if (trashEntry) {
           result.push(trashEntry);
         }
       }
-      if (!entries.length || result.length) {
+      if (!parsedEntries.length || result.length) {
         break;
       }
     }
