@@ -16,23 +16,23 @@ namespace autofill_assistant {
 // C++ equivalent to java-side |AssistantQrCodeImagePickerModelWrapper|.
 class AssistantQrCodeImagePickerModelWrapper {
  public:
-  explicit AssistantQrCodeImagePickerModelWrapper(
-      const base::android::ScopedJavaLocalRef<jobject>&
-          java_assistant_image_picker_model_wrapper);
+  explicit AssistantQrCodeImagePickerModelWrapper();
   ~AssistantQrCodeImagePickerModelWrapper();
 
+  base::android::ScopedJavaGlobalRef<jobject> GetModel() const;
   void SetDelegate(const base::android::ScopedJavaGlobalRef<jobject>&
-                       java_qr_code_native_delegate);
-  void SetToolbarTitle(const std::string& title_text);
-  void SetPermissionText(const std::string& permission_text);
-  void SetPermissionButtonText(const std::string& permission_button_text);
-  void SetOpenSettingsText(const std::string& open_settings_text);
-  void SetOpenSettingsButtonText(const std::string& open_settings_button_text);
+                       java_qr_code_native_delegate) const;
+  void SetToolbarTitle(const std::string& title_text) const;
+  void SetPermissionText(const std::string& permission_text) const;
+  void SetPermissionButtonText(const std::string& permission_button_text) const;
+  void SetOpenSettingsText(const std::string& open_settings_text) const;
+  void SetOpenSettingsButtonText(
+      const std::string& open_settings_button_text) const;
 
  private:
   JNIEnv* jni_env_;
   // Java-side AssistantQrCodeImagePickerModelWrapper object.
-  base::android::ScopedJavaLocalRef<jobject>
+  base::android::ScopedJavaGlobalRef<jobject>
       java_assistant_image_picker_model_wrapper_;
 };
 }  // namespace autofill_assistant

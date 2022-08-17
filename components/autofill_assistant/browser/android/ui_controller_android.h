@@ -330,6 +330,10 @@ class UiControllerAndroid : public EmptyControllerObserver,
   std::unique_ptr<AssistantHeaderModel> header_model_;
 
   std::unique_ptr<AssistantQrCodeNativeDelegate> qr_code_native_delegate_;
+  std::unique_ptr<AssistantQrCodeCameraScanModelWrapper>
+      qr_code_camera_scan_model_wrapper_;
+  std::unique_ptr<AssistantQrCodeImagePickerModelWrapper>
+      qr_code_image_picker_model_wrapper_;
 
   base::WeakPtrFactory<UiControllerAndroid> weak_ptr_factory_{this};
 };

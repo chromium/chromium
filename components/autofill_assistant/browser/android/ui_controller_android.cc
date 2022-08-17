@@ -213,12 +213,9 @@ void PromptQrCodeImagePicker(
     base::android::ScopedJavaGlobalRef<jobject>
         java_ui_controller_android_object,
     const PromptQrCodeScanProto_ImagePickerUiStrings* image_picker_ui_strings,
-    base::android::ScopedJavaLocalRef<jobject>
-        java_qr_code_image_picker_model_wrapper,
+    const AssistantQrCodeImagePickerModelWrapper&
+        qr_code_image_picker_model_wrapper,
     base::android::ScopedJavaGlobalRef<jobject> java_qr_code_native_delegate) {
-  AssistantQrCodeImagePickerModelWrapper qr_code_image_picker_model_wrapper(
-      java_qr_code_image_picker_model_wrapper);
-
   // Register delegate for the QR Code Image Picker UI
   qr_code_image_picker_model_wrapper.SetDelegate(java_qr_code_native_delegate);
 
@@ -238,7 +235,7 @@ void PromptQrCodeImagePicker(
       env,
       Java_AutofillAssistantUiController_getDependencies(
           env, java_ui_controller_android_object),
-      java_qr_code_image_picker_model_wrapper);
+      qr_code_image_picker_model_wrapper.GetModel());
 }
 
 /*
@@ -251,12 +248,9 @@ void PromptQrCodeCameraScan(
     base::android::ScopedJavaGlobalRef<jobject>
         java_ui_controller_android_object,
     const PromptQrCodeScanProto_CameraScanUiStrings* camera_scan_ui_strings,
-    base::android::ScopedJavaLocalRef<jobject>
-        java_qr_code_camera_scan_model_wrapper,
+    const AssistantQrCodeCameraScanModelWrapper&
+        qr_code_camera_scan_model_wrapper,
     base::android::ScopedJavaGlobalRef<jobject> java_qr_code_native_delegate) {
-  AssistantQrCodeCameraScanModelWrapper qr_code_camera_scan_model_wrapper(
-      java_qr_code_camera_scan_model_wrapper);
-
   // Register delegate for the QR Code Camera Scan UI
   qr_code_camera_scan_model_wrapper.SetDelegate(java_qr_code_native_delegate);
 
@@ -280,7 +274,7 @@ void PromptQrCodeCameraScan(
       env,
       Java_AutofillAssistantUiController_getDependencies(
           env, java_ui_controller_android_object),
-      java_qr_code_camera_scan_model_wrapper);
+      qr_code_camera_scan_model_wrapper.GetModel());
 }
 
 // Analog to
@@ -1937,7 +1931,11 @@ void UiControllerAndroid::OnClientSettingsChanged(
 void UiControllerAndroid::OnQrCodeScanUiChanged(
     const PromptQrCodeScanProto* qr_code_scan) {
   if (!qr_code_scan) {
+    // Action is completed and we will clear all the models and delegate
+    // objects. For any new action, we will create it again.
     qr_code_native_delegate_ = nullptr;
+    qr_code_camera_scan_model_wrapper_ = nullptr;
+    qr_code_image_picker_model_wrapper_ = nullptr;
     return;
   }
 
@@ -1950,21 +1948,20 @@ void UiControllerAndroid::OnQrCodeScanUiChanged(
 
   if (qr_code_scan->use_gallery()) {
     // Create a model to manage state of QR Code Scanning via Image Picker.
-    const auto java_assistant_image_picker_model_wrapper =
-        Java_AssistantModel_getQrCodeImagePickerModelWrapper(env, GetModel());
+    qr_code_image_picker_model_wrapper_ =
+        std::make_unique<AssistantQrCodeImagePickerModelWrapper>();
 
-    PromptQrCodeImagePicker(env, java_object_,
-                            &qr_code_scan->image_picker_ui_strings(),
-                            java_assistant_image_picker_model_wrapper,
-                            java_qr_code_native_delegate);
+    PromptQrCodeImagePicker(
+        env, java_object_, &qr_code_scan->image_picker_ui_strings(),
+        *qr_code_image_picker_model_wrapper_, java_qr_code_native_delegate);
   } else {
     // Create a model to manage state of QR Code Scanning via Camera Preview.
-    const auto java_assistant_camera_scan_model_wrapper =
-        Java_AssistantModel_getQrCodeCameraScanModelWrapper(env, GetModel());
+    qr_code_camera_scan_model_wrapper_ =
+        std::make_unique<AssistantQrCodeCameraScanModelWrapper>();
 
     PromptQrCodeCameraScan(
         env, java_object_, &qr_code_scan->camera_scan_ui_strings(),
-        java_assistant_camera_scan_model_wrapper, java_qr_code_native_delegate);
+        *qr_code_camera_scan_model_wrapper_, java_qr_code_native_delegate);
   }
 }
 

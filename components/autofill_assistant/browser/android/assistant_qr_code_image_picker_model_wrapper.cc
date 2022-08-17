@@ -12,55 +12,59 @@ using base::android::ConvertUTF8ToJavaString;
 
 namespace autofill_assistant {
 
-AssistantQrCodeImagePickerModelWrapper::AssistantQrCodeImagePickerModelWrapper(
-    const base::android::ScopedJavaLocalRef<jobject>&
-        java_assistant_image_picker_model_wrapper) {
+AssistantQrCodeImagePickerModelWrapper::
+    AssistantQrCodeImagePickerModelWrapper() {
   jni_env_ = AttachCurrentThread();
   java_assistant_image_picker_model_wrapper_ =
-      java_assistant_image_picker_model_wrapper;
+      Java_AssistantQrCodeImagePickerModelWrapper_Constructor(jni_env_);
 }
 
 AssistantQrCodeImagePickerModelWrapper::
     ~AssistantQrCodeImagePickerModelWrapper() = default;
 
+base::android::ScopedJavaGlobalRef<jobject>
+AssistantQrCodeImagePickerModelWrapper::GetModel() const {
+  return java_assistant_image_picker_model_wrapper_;
+}
+
 void AssistantQrCodeImagePickerModelWrapper::SetDelegate(
     const base::android::ScopedJavaGlobalRef<jobject>&
-        java_qr_code_native_delegate) {
+        java_qr_code_native_delegate) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setDelegate(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       java_qr_code_native_delegate);
 }
 
 void AssistantQrCodeImagePickerModelWrapper::SetToolbarTitle(
-    const std::string& title_text) {
+    const std::string& title_text) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setToolbarTitle(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, title_text));
 }
 
 void AssistantQrCodeImagePickerModelWrapper::SetPermissionText(
-    const std::string& permission_text) {
+    const std::string& permission_text) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setPermissionText(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, permission_text));
 }
 
 void AssistantQrCodeImagePickerModelWrapper::SetPermissionButtonText(
-    const std::string& permission_button_text) {
+    const std::string& permission_button_text) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setPermissionButtonText(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, permission_button_text));
 }
 
 void AssistantQrCodeImagePickerModelWrapper::SetOpenSettingsText(
-    const std::string& open_settings_text) {
+    const std::string& open_settings_text) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setOpenSettingsText(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, open_settings_text));
 }
 
 void AssistantQrCodeImagePickerModelWrapper::SetOpenSettingsButtonText(
-    const std::string& open_settings_button_text) {
+    const std::string& open_settings_button_text) const {
   Java_AssistantQrCodeImagePickerModelWrapper_setOpenSettingsButtonText(
       jni_env_, java_assistant_image_picker_model_wrapper_,
       ConvertUTF8ToJavaString(jni_env_, open_settings_button_text));

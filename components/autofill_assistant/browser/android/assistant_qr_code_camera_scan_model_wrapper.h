@@ -16,27 +16,27 @@ namespace autofill_assistant {
 // C++ equivalent to java-side |AssistantQrCodeCameraScanModelWrapper|.
 class AssistantQrCodeCameraScanModelWrapper {
  public:
-  explicit AssistantQrCodeCameraScanModelWrapper(
-      const base::android::ScopedJavaLocalRef<jobject>&
-          java_assistant_camera_scan_model_wrapper);
+  explicit AssistantQrCodeCameraScanModelWrapper();
   ~AssistantQrCodeCameraScanModelWrapper();
 
+  base::android::ScopedJavaGlobalRef<jobject> GetModel() const;
   void SetDelegate(const base::android::ScopedJavaGlobalRef<jobject>&
-                       java_qr_code_native_delegate);
-  void SetToolbarTitle(const std::string& title_text);
-  void SetPermissionText(const std::string& permission_text);
-  void SetPermissionButtonText(const std::string& permission_button_text);
-  void SetOpenSettingsText(const std::string& open_settings_text);
-  void SetOpenSettingsButtonText(const std::string& open_settings_button_text);
+                       java_qr_code_native_delegate) const;
+  void SetToolbarTitle(const std::string& title_text) const;
+  void SetPermissionText(const std::string& permission_text) const;
+  void SetPermissionButtonText(const std::string& permission_button_text) const;
+  void SetOpenSettingsText(const std::string& open_settings_text) const;
+  void SetOpenSettingsButtonText(
+      const std::string& open_settings_button_text) const;
   void SetCameraPreviewInstructionText(
-      const std::string& camera_preview_instruction_text);
+      const std::string& camera_preview_instruction_text) const;
   void SetCameraPreviewSecurityText(
-      const std::string& camera_preview_security_text);
+      const std::string& camera_preview_security_text) const;
 
  private:
   JNIEnv* jni_env_;
   // Java-side AssistantQrCodeCameraScanModelWrapper object.
-  base::android::ScopedJavaLocalRef<jobject>
+  base::android::ScopedJavaGlobalRef<jobject>
       java_assistant_camera_scan_model_wrapper_;
 };
 }  // namespace autofill_assistant

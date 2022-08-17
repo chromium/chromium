@@ -19,6 +19,7 @@ public class AssistantQrCodeImagePickerModelWrapper {
     /**
      * The AssistantQrCodeImagePickerWrapperModel constructor.
      */
+    @CalledByNative
     public AssistantQrCodeImagePickerModelWrapper() {
         mImagePickerModel = new AssistantQrCodeImagePickerModel();
     }
