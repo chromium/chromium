@@ -19,6 +19,7 @@ const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
 const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
+const PrefObject = chrome.settingsPrivate.PrefObject;
 
 /** Main class for the Chrome OS dictation feature. */
 export class Dictation {
@@ -74,6 +75,23 @@ export class Dictation {
     /** @private {?FocusHandler} */
     this.focusHandler_ = null;
 
+    // API Listeners //
+
+    /** @private {?function(StopEvent):void} */
+    this.speechRecognitionStopListener_ = null;
+
+    /** @private {?function(ResultEvent):Promise} */
+    this.speechRecognitionResultListener_ = null;
+
+    /** @private {?function(ErrorEvent):void} */
+    this.speechRecognitionErrorListener_ = null;
+
+    /** @private {?function(!Array<!PrefObject>):void} */
+    this.prefsListener_ = null;
+
+    /** @private {?function(boolean):void} */
+    this.onToggleDictationListener_ = null;
+
     this.initialize_();
   }
 
@@ -97,24 +115,61 @@ export class Dictation {
       interimResults: true,
     };
 
+    this.speechRecognitionStopListener_ = event =>
+        this.onSpeechRecognitionStopped_(event);
+    this.speechRecognitionResultListener_ = event =>
+        this.onSpeechRecognitionResult_(event);
+    this.speechRecognitionErrorListener_ = event =>
+        this.onSpeechRecognitionError_(event);
+    this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
+    this.onToggleDictationListener_ = activated =>
+        this.onToggleDictation_(activated);
+
     // Setup speechRecognitionPrivate API listeners.
     chrome.speechRecognitionPrivate.onStop.addListener(
-        event => this.onSpeechRecognitionStopped_(event));
+        this.speechRecognitionStopListener_);
     chrome.speechRecognitionPrivate.onResult.addListener(
-        event => this.onSpeechRecognitionResult_(event));
+        this.speechRecognitionResultListener_);
     chrome.speechRecognitionPrivate.onError.addListener(
-        event => this.onSpeechRecognitionError_(event));
+        this.speechRecognitionErrorListener_);
 
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
-    chrome.settingsPrivate.onPrefsChanged.addListener(
-        prefs => this.updateFromPrefs_(prefs));
+    chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
 
     // Listen for Dictation toggles (activated / deactivated) from the Ash
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
-        activated => this.onToggleDictation_(activated));
+        this.onToggleDictationListener_);
 
     this.maybeInstallPumpkin_();
+  }
+
+  /**
+   * Performs any destruction before dictation object is destroyed.
+   */
+  onDictationDisabled() {
+    if (this.speechRecognitionStopListener_) {
+      chrome.speechRecognitionPrivate.onStop.removeListener(
+          this.speechRecognitionStopListener_);
+    }
+    if (this.speechRecognitionResultListener_) {
+      chrome.speechRecognitionPrivate.onResult.removeListener(
+          this.speechRecognitionResultListener_);
+    }
+    if (this.speechRecognitionErrorListener_) {
+      chrome.speechRecognitionPrivate.onError.removeListener(
+          this.speechRecognitionErrorListener_);
+    }
+    if (this.prefsListener_) {
+      chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
+    }
+    if (this.onToggleDictationListener_) {
+      chrome.accessibilityPrivate.onToggleDictation.removeListener(
+          this.onToggleDictationListener_);
+    }
+    if (this.inputController_) {
+      this.inputController_.removeListeners();
+    }
   }
 
   /** @private */
@@ -356,7 +411,7 @@ export class Dictation {
   }
 
   /**
-   * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
+   * @param {!Array<!PrefObject>} prefs
    * @private
    */
   updateFromPrefs_(prefs) {

@@ -114,6 +114,7 @@ export class AccessibilityCommon {
     if (details.value && !this.dictation_) {
       this.dictation_ = new Dictation();
     } else if (!details.value && this.dictation_) {
+      this.dictation_.onDictationDisabled();
       this.dictation_ = null;
     }
   }
