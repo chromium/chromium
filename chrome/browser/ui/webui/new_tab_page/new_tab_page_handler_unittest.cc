@@ -550,7 +550,6 @@ TEST_F(NewTabPageHandlerTest, GetInteractiveDoodle) {
 
 TEST_F(NewTabPageHandlerTest, GetPromo) {
   PromoData promo_data;
-  promo_data.promo_html = "<html/>";
   promo_data.middle_slot_json = R"({
     "part": [{
       "image": {

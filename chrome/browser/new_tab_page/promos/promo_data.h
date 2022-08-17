@@ -20,9 +20,6 @@ struct PromoData {
   PromoData& operator=(const PromoData&);
   PromoData& operator=(PromoData&&);
 
-  // The main HTML for the promo. May be empty when nothing to show.
-  std::string promo_html;
-
   // The structured JSON data of the middle slot promo.
   std::string middle_slot_json;
 

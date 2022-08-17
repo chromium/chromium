@@ -849,7 +849,7 @@ void NewTabPageHandler::OnPromoDataUpdated() {
 
   const auto& data = promo_service_->promo_data();
   for (auto& callback : promo_callbacks_) {
-    if (data.has_value() && !data->promo_html.empty()) {
+    if (data.has_value()) {
       std::move(callback).Run(MakePromo(data.value()));
     } else {
       std::move(callback).Run(nullptr);

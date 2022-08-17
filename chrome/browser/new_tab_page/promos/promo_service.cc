@@ -60,7 +60,8 @@ GURL GetApiUrl() {
 }
 
 // Parses an update proto from |value|. Will return false if |value| is not of
-// the form: {"update":{"promos":{"middle": ""}}}, and true otherwise.
+// the form: {"update":{"promos":{"middle_announce_payload": ""}}}, and true
+// otherwise.
 // Additionally, there can be a "log_url" or "id" field in the promo. Those are
 // populated if found. They're not set for emergency promos. |data| will never
 // be absl::nullopt if top level dictionary keys of "update" and "promos" are
@@ -91,18 +92,14 @@ bool JsonToPromoData(const base::Value& value,
   PromoData result;
   *data = result;
 
-  const std::string* middle = promos->FindString("middle");
-  if (!middle) {
-    DVLOG(1) << "No middle promo";
-    return false;
-  }
-
   const base::Value::Dict* middle_announce_payload =
       promos->FindDict("middle_announce_payload");
-  if (middle_announce_payload) {
-    JSONStringValueSerializer serializer(&result.middle_slot_json);
-    serializer.Serialize(*middle_announce_payload);
+  if (!middle_announce_payload) {
+    DVLOG(1) << "No middle announce payload";
+    return false;
   }
+  JSONStringValueSerializer serializer(&result.middle_slot_json);
+  serializer.Serialize(*middle_announce_payload);
 
   const std::string* maybe_log_url = promos->FindString("log_url");
   // Emergency promos don't have these, so it's OK if this key is missing.
@@ -124,7 +121,6 @@ bool JsonToPromoData(const base::Value& value,
   // Emergency promos may not have IDs, which is OK. They also can't be
   // dismissed (because of this).
 
-  result.promo_html = *middle;
   result.promo_log_url = promo_log_url;
   result.promo_id = promo_id;
 
