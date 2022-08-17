@@ -4,6 +4,8 @@
 
 #include "ash/components/login/auth/public/auth_factors_data.h"
 
+#include <algorithm>
+
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "base/check_op.h"
@@ -11,7 +13,14 @@
 namespace ash {
 
 AuthFactorsData::AuthFactorsData(std::vector<cryptohome::KeyDefinition> keys)
-    : keys_(std::move(keys)) {}
+    : keys_(std::move(keys)) {
+  // Sort the keys by label, so that in case of ties (e.g., when choosing among
+  // multiple legacy keys in `FindOnlinePasswordKey()`) we're not affected by
+  // random factors that affect the input ordering of `keys`.
+  std::sort(keys_.begin(), keys_.end(), [](const auto& lhs, const auto& rhs) {
+    return lhs.label.value() < rhs.label.value();
+  });
+}
 
 AuthFactorsData::AuthFactorsData() = default;
 AuthFactorsData::AuthFactorsData(const AuthFactorsData&) = default;

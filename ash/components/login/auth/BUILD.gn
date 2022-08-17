@@ -147,6 +147,7 @@ source_set("unit_tests") {
     "auth_performer_unittest.cc",
     "auth_session_authenticator_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",
+    "public/auth_factors_data_unittest.cc",
     "public/key_unittest.cc",
     "public/operation_chain_runner_unittest.cc",
     "public/saml_password_attributes_unittest.cc",
