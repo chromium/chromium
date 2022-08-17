@@ -548,7 +548,8 @@ void WebsiteMetrics::EmitUkm(const GURL& url,
                              UrlContent url_content,
                              bool promotable,
                              bool is_from_last_login) {
-  auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(url);
+  auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(
+      base::PassKey<WebsiteMetrics>(), url);
   if (source_id != ukm::kInvalidSourceId) {
     ukm::builders::ChromeOS_WebsiteUsageTime builder(source_id);
     builder.SetDuration(usage_time)
