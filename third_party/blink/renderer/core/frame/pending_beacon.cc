@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/core/loader/beacon_data.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -84,7 +85,8 @@ void PendingBeacon::SetURLInternal(const String& url) {
   remote_->SetRequestURL(host_url);
 }
 
-void PendingBeacon::SetDataInternal(const BeaconData& data) {
+void PendingBeacon::SetDataInternal(const BeaconData& data,
+                                    ExceptionState& exception_state) {
   ResourceRequest request;
 
   data.Serialize(request);
@@ -92,6 +94,15 @@ void PendingBeacon::SetDataInternal(const BeaconData& data) {
   request.SetHttpMethod(http_names::kPOST);
   scoped_refptr<network::ResourceRequestBody> request_body =
       GetRequestBodyForWebURLRequest(WrappedResourceRequest(request));
+  // TODO(crbug.com/1293679): Support multi-parts request.
+  // Current implementation in browser only supports sending single request with
+  // single DataElement.
+  if (request_body->elements()->size() > 1) {
+    exception_state.ThrowRangeError(
+        "PendingBeacon only supports single part data.");
+    return;
+  }
+
   AtomicString content_type = request.HttpContentType();
   remote_->SetRequestData(std::move(request_body),
                           content_type.IsNull() ? "" : content_type);

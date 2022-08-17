@@ -46,5 +46,6 @@
   [Measure, CallWith = ExecutionContext] constructor(
       USVString url, optional PendingBeaconOptions options);
 
-  [Measure] void setData((ReadableStream or XMLHttpRequestBodyInit) data);
+  [Measure, RaisesException] void setData(
+      (ReadableStream or XMLHttpRequestBodyInit) data);
 };

@@ -21,4 +21,25 @@ for (const [dataType, skipCharset] of Object.entries(
       'Encoded and sent in POST request.');
 }
 
-// TODO(crbug.com/1293679): Test large payload.
+// Test large payload.
+for (const dataType in BeaconDataType) {
+  postBeaconSendDataTest(
+      dataType, generatePayload(65536), 'Sent out big data.');
+}
+
+test(() => {
+  const uuid = token();
+  const url = generateSetBeaconURL(uuid);
+  let beacon = new PendingPostBeacon(url);
+  assert_throws_js(TypeError, () => beacon.setData(new ReadableStream()));
+}, 'setData() does not support ReadableStream.');
+
+test(() => {
+  const uuid = token();
+  const url = generateSetBeaconURL(uuid);
+  let beacon = new PendingPostBeacon(url);
+  const formData = new FormData();
+  formData.append('part1', 'value1');
+  formData.append('part2', new Blob(['value2']), 'file.txt');
+  assert_throws_js(RangeError, () => beacon.setData(formData));
+}, 'setData() does not support multi-parts data.');

@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_pending_beacon_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/loader/beacon_data.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 
@@ -41,35 +44,55 @@ PendingPostBeacon::PendingPostBeacon(ExecutionContext* context,
                     timeout) {}
 
 void PendingPostBeacon::setData(
-    const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data) {
+    const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+    ExceptionState& exception_state) {
   using ContentType =
       V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType;
   switch (data->GetContentType()) {
     case ContentType::kUSVString: {
-      SetDataInternal(BeaconString(data->GetAsUSVString()));
+      SetDataInternal(BeaconString(data->GetAsUSVString()), exception_state);
       return;
     }
     case ContentType::kArrayBuffer: {
-      SetDataInternal(BeaconDOMArrayBuffer(data->GetAsArrayBuffer()));
+      auto* array_buffer = data->GetAsArrayBuffer();
+      if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLength())
+               .IsValid()) {
+        exception_state.ThrowRangeError(
+            "The data provided to setData() exceeds the maximally "
+            "possible length, which is 4294967295.");
+        return;
+      }
+      SetDataInternal(BeaconDOMArrayBuffer(array_buffer), exception_state);
       return;
     }
     case ContentType::kArrayBufferView: {
-      SetDataInternal(
-          BeaconDOMArrayBufferView(data->GetAsArrayBufferView().Get()));
+      auto* array_buffer_view = data->GetAsArrayBufferView().Get();
+      if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view->byteLength())
+               .IsValid()) {
+        exception_state.ThrowRangeError(
+            "The data provided to setData() exceeds the maximally "
+            "possible length, which is 4294967295.");
+        return;
+      }
+      SetDataInternal(BeaconDOMArrayBufferView(array_buffer_view),
+                      exception_state);
       return;
     }
     case ContentType::kFormData: {
-      SetDataInternal(BeaconFormData(data->GetAsFormData()));
+      SetDataInternal(BeaconFormData(data->GetAsFormData()), exception_state);
       return;
     }
     case ContentType::kURLSearchParams: {
-      SetDataInternal(BeaconURLSearchParams(data->GetAsURLSearchParams()));
+      SetDataInternal(BeaconURLSearchParams(data->GetAsURLSearchParams()),
+                      exception_state);
       return;
     }
     case ContentType::kBlob:
-      // TODO(crbug.com/1293679): Decide whether to support blob/file.
+      SetDataInternal(BeaconBlob(data->GetAsBlob()), exception_state);
+      return;
     case ContentType::kReadableStream: {
-      // TODO(crbug.com/1293679): Throw errors.
+      exception_state.ThrowTypeError(
+          "PendingPostBeacon cannot have a ReadableStream body.");
       break;
     }
   }

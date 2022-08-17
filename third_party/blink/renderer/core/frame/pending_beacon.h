@@ -13,6 +13,7 @@
 namespace blink {
 
 class BeaconData;
+class ExceptionState;
 class ExecutionContext;
 
 // Implementation of the PendingBeacon API.
@@ -51,7 +52,8 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
                          int32_t timeout);
 
   void SetURLInternal(const String& url);
-  void SetDataInternal(const BeaconData& beacon_data);
+  void SetDataInternal(const BeaconData& beacon_data,
+                       ExceptionState& exception_state);
 
  private:
   Member<ExecutionContext> ec_;

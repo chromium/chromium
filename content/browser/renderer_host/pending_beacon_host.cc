@@ -108,7 +108,6 @@ void Beacon::SetRequestData(
     return;
   }
   if (request_body->elements()->size() != 1) {
-    // TODO(mych): Ensure that renderer doesn't make such a request.
     mojo::ReportBadMessage("Complex body is not supported yet");
     return;
   }
@@ -142,6 +141,8 @@ void Beacon::SendNow() {
 
 const std::unique_ptr<network::ResourceRequest>
 Beacon::GenerateResourceRequest() const {
+  DCHECK(method_ == blink::mojom::BeaconMethod::kGet ||
+         method_ == blink::mojom::BeaconMethod::kPost);
   auto request = std::make_unique<network::ResourceRequest>();
   if (method_ == blink::mojom::BeaconMethod::kGet) {
     request->method = net::HttpRequestHeaders::kGetMethod;

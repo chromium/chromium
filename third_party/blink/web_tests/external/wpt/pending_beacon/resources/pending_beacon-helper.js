@@ -14,6 +14,8 @@ const BeaconDataType = {
   ArrayBuffer: 'ArrayBuffer',
   FormData: 'FormData',
   URLSearchParams: 'URLSearchParams',
+  Blob: 'Blob',
+  File: 'File',
 };
 
 /** @enum {string} */
@@ -22,6 +24,8 @@ const BeaconDataTypeToSkipCharset = {
   ArrayBuffer: '',
   FormData: '\n\r',  // CRLF characters will be normalized by FormData
   URLSearchParams: ';,/?:@&=+$',  // reserved URI characters
+  Blob: '',
+  File: '',
 };
 
 const BEACON_PAYLOAD_KEY = 'payload';
@@ -47,6 +51,10 @@ function makeBeaconData(data, dataType) {
         return new URLSearchParams(`${BEACON_PAYLOAD_KEY}=${data}`);
       }
       return new URLSearchParams();
+    case BeaconDataType.Blob:
+      return new Blob([data]);
+    case BeaconDataType.File:
+      return new File([data], 'file.txt', {type: 'text/plain'});
     default:
       throw Error(`Unsupported beacon dataType: ${dataType}`);
   }
@@ -61,6 +69,15 @@ function generateSequentialData(begin, end, skip) {
         ...codeUnits.filter(c => !skip.includes(String.fromCharCode(c))));
   }
   return String.fromCharCode(...codeUnits);
+}
+
+function generatePayload(size) {
+  let data = '';
+  if (size > 0) {
+    const prefix = String(size) + ':';
+    data = prefix + Array(size - prefix.length).fill('*').join('');
+  }
+  return data;
 }
 
 function generateSetBeaconURL(uuid) {

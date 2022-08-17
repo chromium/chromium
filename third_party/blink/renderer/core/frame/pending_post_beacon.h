@@ -12,6 +12,7 @@
 namespace blink {
 
 class PendingBeaconOptions;
+class ExceptionState;
 class ExecutionContext;
 
 // Implementation of the PendingPostBeacon API.
@@ -33,7 +34,8 @@ class CORE_EXPORT PendingPostBeacon : public PendingBeacon {
                              int32_t timeout,
                              base::PassKey<PendingPostBeacon> key);
 
-  void setData(const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data);
+  void setData(const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data,
+               ExceptionState& exception_state);
 };
 
 }  // namespace blink

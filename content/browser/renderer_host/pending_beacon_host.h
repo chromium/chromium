@@ -129,7 +129,7 @@ class Beacon : public blink::mojom::PendingBeacon {
   // Creates a request based on the beacon's url and data.
   // * If `method_` is GET, the request url is constructed from `url_`.
   // * If `method_` is POST, the request url is from `url_`, and the request
-  //   content is from `request_body_` and `content_type_`.
+  //   content is from `request_body_`, `content_type_`, and `request_element_`.
   const std::unique_ptr<network::ResourceRequest> GenerateResourceRequest()
       const;
 
