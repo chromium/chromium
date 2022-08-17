@@ -284,7 +284,7 @@ void GpuHostImpl::SetChannelClientPid(int client_id,
 void GpuHostImpl::SetChannelDiskCacheHandle(
     int client_id,
     const gpu::GpuDiskCacheHandle& handle) {
-  if (!params_.disable_gpu_shader_disk_cache) {
+  if (params_.disable_gpu_shader_disk_cache) {
     return;
   }
 
