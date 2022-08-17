@@ -264,6 +264,7 @@ void UnifiedSliderBubbleController::CreateSliderController() {
       return;
     case SLIDER_TYPE_MIC:
       slider_controller_ = std::make_unique<MicGainSliderController>();
+      return;
   }
 }
 
