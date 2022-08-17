@@ -1075,6 +1075,10 @@ HTMLElement* CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
   // not been invalidated by an earlier call to this function.  The caller,
   // applyBlockStyle, should do this.
   VisiblePosition visible_pos = CreateVisiblePosition(pos);
+  if (visible_pos.IsNull()) {
+    editing_state->Abort();
+    return nullptr;
+  }
   VisiblePosition visible_paragraph_start = StartOfParagraph(visible_pos);
   VisiblePosition visible_paragraph_end = EndOfParagraph(visible_pos);
   VisiblePosition next = NextPositionOf(visible_paragraph_end);
@@ -1146,6 +1150,10 @@ HTMLElement* CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
   }
 
   visible_pos = CreateVisiblePosition(pos);
+  if (visible_pos.IsNull()) {
+    editing_state->Abort();
+    return nullptr;
+  }
   visible_paragraph_start = StartOfParagraph(visible_pos);
   visible_paragraph_end = EndOfParagraph(visible_pos);
   DCHECK_LE(visible_paragraph_start.DeepEquivalent(),

@@ -314,4 +314,37 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
             GetDocument().body()->innerHTML());
 }
 
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithNullVisiblePosition1) {
+  EditingState editing_state;
+  Document& document = GetDocument();
+  Element* body = document.body();
+  document.setDesignMode("on");
+  SetBodyInnerHTML("<div contenteditable=false><br></div>");
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+
+  // Should not crash. See http://crbug.com/1351899
+  sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
+                                                    &editing_state);
+  EXPECT_TRUE(editing_state.IsAborted());
+  EXPECT_EQ("<div contenteditable=\"false\"><br></div>", body->innerHTML());
+}
+
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithNullVisiblePosition2) {
+  EditingState editing_state;
+  Document& document = GetDocument();
+  Element* body = document.body();
+  document.setDesignMode("on");
+  InsertStyleElement("div, input {-webkit-user-modify: read-only}");
+  SetBodyInnerHTML("<input>");
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+
+  // Should not crash. See http://crbug.com/1351899
+  sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
+                                                    &editing_state);
+  EXPECT_TRUE(editing_state.IsAborted());
+  EXPECT_EQ("<div><br></div><input>", body->innerHTML());
+}
+
 }  // namespace blink
