@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service.h"
 #include "chromeos/ash/services/assistant/libassistant_service_host.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"

@@ -367,14 +367,14 @@ component("cpp") {
   ]
 
   deps = [
-    "//ash/components/audio",
-    "//ash/components/audio:in_process_audio_config",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
     "//ash/resources/vector_icons",
     "//ash/services/cellular_setup:in_process_esim_manager",
     "//ash/strings",
     "//base",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/audio:in_process_audio_config",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
@@ -408,12 +408,12 @@ component("cpp") {
 
   public_deps = [
     "//ash/components/arc/mojom:notifications",
-    "//ash/components/audio/public/mojom",
     "//ash/components/login/auth",
     "//ash/public/mojom",
     "//ash/services/cellular_setup/public/mojom",
     "//ash/webui/personalization_app/proto",
     "//base",
+    "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/components/security_token_pin",
     "//chromeos/crosapi/mojom",

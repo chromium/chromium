@@ -5,8 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_AUDIO_CONFIG_SERVICE_H_
 #define ASH_PUBLIC_CPP_AUDIO_CONFIG_SERVICE_H_
 
-#include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {

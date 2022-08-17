@@ -118,11 +118,11 @@ static_library("arc") {
   deps = [
     "//ash",
     "//ash/components/arc/vector_icons",
-    "//ash/components/audio",
     "//ash/components/disks",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc:external_arc",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",

@@ -1,9 +1,0 @@
-include_rules = [
-  "+ash/components/audio",
-]
-
-specific_include_rules = {
-  "service_video_capture_device_launcher\.cc": [
-    "+media/capture/capture_switches.h",
-  ],
-}

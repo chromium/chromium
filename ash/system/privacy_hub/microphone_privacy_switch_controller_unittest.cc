@@ -4,12 +4,12 @@
 
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

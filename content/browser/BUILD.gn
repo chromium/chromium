@@ -3123,9 +3123,9 @@ source_set("browser") {
     ]
 
     deps += [
-      "//ash/components/audio",
       "//ash/constants",
       "//chromeos/ash/components/assistant:buildflags",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/network",
       "//chromeos/system",
       "//components/session_manager/core",

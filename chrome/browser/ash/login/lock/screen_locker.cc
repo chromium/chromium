@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/components/audio/sounds.h"
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/auth/public/auth_failure.h"
@@ -57,6 +56,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"

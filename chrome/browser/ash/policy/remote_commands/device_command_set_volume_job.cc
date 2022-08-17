@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

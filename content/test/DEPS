@@ -11,7 +11,6 @@ include_rules = [
   "+services/viz/public/mojom",
 
   # For WebRTC tests.
-  "+ash/components/audio",
   "+chromeos/ash/components/dbus/audio",
   "+chromeos/ash/components/network/network_handler.h",
   "+chromeos/ash/components/network/network_state.h",

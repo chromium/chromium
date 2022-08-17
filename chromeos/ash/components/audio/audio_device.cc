@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 
 #include <stdint.h>
 
@@ -93,8 +93,7 @@ std::string AudioDevice::GetTypeString(AudioDeviceType type) {
 }
 
 // static
-AudioDeviceType AudioDevice::GetAudioType(
-    const std::string& node_type) {
+AudioDeviceType AudioDevice::GetAudioType(const std::string& node_type) {
   if (node_type.find("HEADPHONE") != std::string::npos)
     return AudioDeviceType::kHeadphone;
   else if (node_type.find("INTERNAL_MIC") != std::string::npos)
@@ -167,12 +166,8 @@ std::string AudioDevice::ToString() const {
   }
 
   std::string result;
-  base::StringAppendF(&result,
-                      "is_input = %s ",
-                      is_input ? "true" : "false");
-  base::StringAppendF(&result,
-                      "id = 0x%" PRIx64 " ",
-                      id);
+  base::StringAppendF(&result, "is_input = %s ", is_input ? "true" : "false");
+  base::StringAppendF(&result, "id = 0x%" PRIx64 " ", id);
   base::StringAppendF(&result, "stable_device_id_version = %d",
                       stable_device_id_version);
   base::StringAppendF(&result, "stable_device_id = 0x%" PRIx64 " ",
@@ -180,15 +175,9 @@ std::string AudioDevice::ToString() const {
   base::StringAppendF(&result, "deprecated_stable_device_id = 0x%" PRIx64 " ",
                       deprecated_stable_device_id);
   base::StringAppendF(&result, "display_name = %s ", display_name.c_str());
-  base::StringAppendF(&result,
-                      "device_name = %s ",
-                      device_name.c_str());
-  base::StringAppendF(&result,
-                      "type = %s ",
-                      GetTypeString(type).c_str());
-  base::StringAppendF(&result,
-                      "active = %s ",
-                      active ? "true" : "false");
+  base::StringAppendF(&result, "device_name = %s ", device_name.c_str());
+  base::StringAppendF(&result, "type = %s ", GetTypeString(type).c_str());
+  base::StringAppendF(&result, "active = %s ", active ? "true" : "false");
   base::StringAppendF(&result, "plugged_time= %s ",
                       base::NumberToString(plugged_time).c_str());
 

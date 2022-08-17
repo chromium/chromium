@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,8 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -19,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/base/video_facing.h"
@@ -175,19 +175,13 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     active_input_node_changed_count_ = 0;
   }
 
-  int audio_nodes_changed_count() const {
-    return audio_nodes_changed_count_;
-  }
+  int audio_nodes_changed_count() const { return audio_nodes_changed_count_; }
 
-  int output_mute_changed_count() const {
-    return output_mute_changed_count_;
-  }
+  int output_mute_changed_count() const { return output_mute_changed_count_; }
 
   void reset_output_mute_changed_count() { input_mute_changed_count_ = 0; }
 
-  int input_mute_changed_count() const {
-    return input_mute_changed_count_;
-  }
+  int input_mute_changed_count() const { return input_mute_changed_count_; }
 
   int output_volume_changed_count() const {
     return output_volume_changed_count_;
@@ -195,9 +189,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   void reset_output_volume_changed_count() { output_volume_changed_count_ = 0; }
 
-  int input_gain_changed_count() const {
-    return input_gain_changed_count_;
-  }
+  int input_gain_changed_count() const { return input_gain_changed_count_; }
 
   int output_channel_remixing_changed_count() const {
     return output_channel_remixing_changed_count_;
@@ -510,7 +502,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
-  CrasAudioHandler* cras_audio_handler_ = nullptr;         // Not owned.
+  CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
@@ -2371,8 +2363,7 @@ TEST_P(CrasAudioHandlerTest, SetVolumeGainPercentForDevice) {
   EXPECT_EQ(kUSBMicGain,
             cras_audio_handler_->GetOutputVolumePercentForDevice(kUSBMic1->id));
   AudioDevice usb_mic(GenerateAudioNode(kHeadphone));
-  EXPECT_EQ(kUSBMicGain,
-            audio_pref_handler_->GetInputGainValue(&usb_mic));
+  EXPECT_EQ(kUSBMicGain, audio_pref_handler_->GetInputGainValue(&usb_mic));
 
   // Set gain percent for non-active input device.
   const int kInternalMicGain = 60;

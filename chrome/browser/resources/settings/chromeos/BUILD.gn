@@ -153,8 +153,8 @@ group("generate_mojom_webui") {
 }
 
 copy("generate_cros_audio_config_mojo_webui") {
-  deps = [ "//ash/components/audio/public/mojom:mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
+  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/audio/{{source_file_part}}" ]
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_SOUNDS_H_
-#define ASH_COMPONENTS_AUDIO_SOUNDS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_SOUNDS_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_SOUNDS_H_
 
 // This file declares sound resources keys for ChromeOS.
 namespace ash {
@@ -34,4 +34,4 @@ namespace chromeos {
 using ::ash::Sound;
 }
 
-#endif  // ASH_COMPONENTS_AUDIO_SOUNDS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_SOUNDS_H_

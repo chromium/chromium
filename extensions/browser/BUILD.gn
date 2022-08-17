@@ -736,7 +736,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
-      "//ash/components/audio",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/cec_service",

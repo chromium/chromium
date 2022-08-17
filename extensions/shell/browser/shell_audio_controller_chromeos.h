@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace extensions {
 

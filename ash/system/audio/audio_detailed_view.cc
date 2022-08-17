@@ -5,7 +5,6 @@
 #include "ash/system/audio/audio_detailed_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -20,6 +19,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"

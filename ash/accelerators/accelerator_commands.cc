@@ -4,7 +4,6 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/focus_cycler.h"
@@ -32,6 +31,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"

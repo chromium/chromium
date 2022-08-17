@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/audio",
   "+ash/public",
   "+chromeos/ash/components/assistant",
   "+chromeos/grit/chromeos_strings.h",

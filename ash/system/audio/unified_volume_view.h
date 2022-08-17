@@ -5,9 +5,9 @@
 #ifndef ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 #define ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
 

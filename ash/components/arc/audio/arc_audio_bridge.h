@@ -7,7 +7,7 @@
 
 #include "ash/components/arc/mojom/audio.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

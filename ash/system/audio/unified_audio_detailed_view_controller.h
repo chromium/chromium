@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
 

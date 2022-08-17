@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

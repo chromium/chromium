@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/assistant/platform/audio_input_host_impl.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"

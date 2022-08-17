@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_BUBBLE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
 

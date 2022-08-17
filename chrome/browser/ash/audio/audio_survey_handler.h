@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 #define CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
 

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/cros_audio_config_impl.h"
+#include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/cros_audio_config.h"
-#include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cros_audio_config.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -76,8 +76,7 @@ class CrosAudioConfigImplTest : public testing::Test {
   ~CrosAudioConfigImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAudioSettingsPage);
+    scoped_feature_list_.InitAndEnableFeature(features::kAudioSettingsPage);
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client_ = FakeCrasAudioClient::Get();
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();

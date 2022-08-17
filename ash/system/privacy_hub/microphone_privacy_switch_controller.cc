@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

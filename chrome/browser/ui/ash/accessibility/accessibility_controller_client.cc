@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 
-#include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "content/public/browser/tts_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

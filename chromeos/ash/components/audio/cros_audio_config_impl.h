@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
-#define ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/cros_audio_config.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cros_audio_config.h"
 
 namespace ash::audio_config {
 
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
     : public CrosAudioConfig,
       public CrasAudioHandler::AudioObserver {
  public:
@@ -35,4 +34,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
 
 }  // namespace ash::audio_config
 
-#endif  // ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_IMPL_H_

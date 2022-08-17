@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_
-#define ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_
 
 #include <memory>
 #include <string>
 
-#include "ash/components/audio/audio_devices_pref_handler.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/values.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
@@ -21,8 +21,8 @@ namespace ash {
 
 // Class which implements AudioDevicesPrefHandler interface and register audio
 // preferences as well.
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
-    : public AudioDevicesPrefHandler {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
+    AudioDevicesPrefHandlerImpl : public AudioDevicesPrefHandler {
  public:
   // |local_state| is the device-wide preference service.
   explicit AudioDevicesPrefHandlerImpl(PrefService* local_state);
@@ -127,4 +127,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_IMPL_H_

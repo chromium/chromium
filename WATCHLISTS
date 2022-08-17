@@ -193,7 +193,7 @@
       'filepath': 'services/audio/'
     },
     'audio_settings': {
-      'filepath': 'ash/components/audio/'
+      'filepath': 'chromeos/ash/components/audio/'
     },
     'aura': {
       'filepath': 'ui/aura/',

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -13,8 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -24,6 +22,8 @@
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

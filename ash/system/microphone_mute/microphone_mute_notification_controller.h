@@ -8,9 +8,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace message_center {

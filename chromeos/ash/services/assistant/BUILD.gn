@@ -55,10 +55,10 @@ component("lib") {
   ]
 
   deps = [
-    "//ash/components/audio",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/dbus",
     "//chromeos/dbus/dlcservice:dlcservice",
@@ -99,13 +99,13 @@ source_set("tests") {
   deps = [
     ":lib",
     ":test_support",
-    "//ash/components/audio",
     "//ash/constants",
     "//ash/public/cpp/assistant/test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/assistant/test_support",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/services/assistant/public/cpp",

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 
 #include <stdint.h>
 
 #include <memory>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -199,8 +199,8 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
                                                      &activated_by_user))
         << " value for device " << device.id << " not found.";
     EXPECT_EQ(expect_active, active) << " device " << device.id;
-    EXPECT_EQ(expect_activated_by_user, activated_by_user) << " device "
-                                                           << device.id;
+    EXPECT_EQ(expect_activated_by_user, activated_by_user)
+        << " device " << device.id;
   }
 
   bool GetMute(const AudioDevice& device) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/command_line.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "chromeos/ash/services/assistant/service.h"

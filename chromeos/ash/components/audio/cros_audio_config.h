@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
-#define ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -17,7 +16,7 @@ namespace ash::audio_config {
 
 // Implements the CrosAudioConfig API, which will support Audio system UI on
 // Chrome OS, providing and allowing configuration of system audio settings.
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfig
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfig
     : public mojom::CrosAudioConfig {
  public:
   CrosAudioConfig(const CrosAudioConfig&) = delete;
@@ -51,4 +50,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfig
 
 }  // namespace ash::audio_config
 
-#endif  // ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_

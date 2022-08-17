@@ -10,10 +10,10 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ash/components/audio/audio_device.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/callback.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "components/soda/soda_installer.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"

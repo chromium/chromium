@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_
-#define ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_
 
 #include <stdint.h>
 
@@ -37,7 +37,7 @@ enum class AudioDeviceType {
   kOther,
 };
 
-struct COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevice {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevice {
   AudioDevice();
   explicit AudioDevice(const AudioNode& node);
   AudioDevice(const AudioDevice& other);
@@ -138,4 +138,4 @@ using ::ash::AudioDeviceList;
 using ::ash::AudioDeviceType;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_H_

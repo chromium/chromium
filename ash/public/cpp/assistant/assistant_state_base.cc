@@ -7,11 +7,11 @@
 #include <ostream>
 #include <sstream>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/accelerators.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 

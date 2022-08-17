@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/test_support/fake_assistant_manager_service_impl.h"

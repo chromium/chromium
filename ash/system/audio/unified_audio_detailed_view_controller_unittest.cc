@@ -5,8 +5,6 @@
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,6 +17,8 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "components/live_caption/pref_names.h"

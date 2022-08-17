@@ -201,7 +201,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "ash/services/multidevice_setup/multidevice_setup_service.h"
@@ -279,6 +278,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"

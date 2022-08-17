@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/cros_audio_config_impl.h"
+#include "chromeos/ash/components/audio/cros_audio_config_impl.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::audio_config {
 

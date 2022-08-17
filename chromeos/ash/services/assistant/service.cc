@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -23,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/assistant_interaction_logger.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"

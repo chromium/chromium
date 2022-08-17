@@ -7,10 +7,10 @@
 
 #include <tuple>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

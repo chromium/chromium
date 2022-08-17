@@ -283,7 +283,7 @@ source_set("audio") {
         "cras/audio_manager_chromeos.cc",
         "cras/audio_manager_chromeos.h",
       ]
-      deps += [ "//ash/components/audio" ]
+      deps += [ "//chromeos/ash/components/audio" ]
     } else if (is_linux || is_chromeos_lacros) {
       sources += [
         "cras/audio_manager_cras.cc",
@@ -450,7 +450,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/components/audio",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
     ]
 

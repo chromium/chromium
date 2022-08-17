@@ -5,14 +5,14 @@
 #include <map>
 #include <memory>
 
-#include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "content/public/test/browser_test.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/accelerators/accelerator.h"

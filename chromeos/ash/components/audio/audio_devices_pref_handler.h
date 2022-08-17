@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_
-#define ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_
 
-#include "ash/components/audio/audio_pref_observer.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/audio_pref_observer.h"
 
 namespace ash {
 
@@ -16,7 +16,7 @@ struct AudioDevice;
 // Interface that handles audio preference related work, reads and writes
 // audio preferences, and notifies AudioPrefObserver for audio preference
 // changes.
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
     : public base::RefCountedThreadSafe<AudioDevicesPrefHandler> {
  public:
   // Integer because C++ does not allow static const double in header files.
@@ -73,4 +73,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICES_PREF_HANDLER_H_

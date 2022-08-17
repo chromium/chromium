@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash {

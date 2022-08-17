@@ -4,7 +4,6 @@
 
 #include "ash/system/audio/mic_gain_slider_view.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -12,6 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"

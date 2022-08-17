@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_MACHINE_LEARNING_USER_SETTINGS_EVENT_LOGGER_H_
 #define ASH_SYSTEM_MACHINE_LEARNING_USER_SETTINGS_EVENT_LOGGER_H_
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/shell_observer.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
@@ -14,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 

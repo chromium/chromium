@@ -375,9 +375,9 @@ mojom_webui_closure_flags = [
           root_build_dir),
   "browser_resolver_prefix_replacements=\"../../mojom-webui/personalization/=../../\"",
   "browser_resolver_prefix_replacements=\"../mojom-webui/personalization/=../\"",
-  "js_module_root=" +
-      rebase_path("$root_gen_dir/mojom-webui/ash/components/audio/public/mojom",
-                  root_build_dir),
+  "js_module_root=" + rebase_path(
+          "$root_gen_dir/mojom-webui/chromeos/ash/components/audio/public/mojom",
+          root_build_dir),
   "browser_resolver_prefix_replacements=\"../../mojom-webui/audio/=../../\"",
   "browser_resolver_prefix_replacements=\"../mojom-webui/audio/=../\"",
 ]

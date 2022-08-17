@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
-#include "ash/components/audio/sounds.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/settings/timezone_settings.h"
@@ -80,6 +79,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"

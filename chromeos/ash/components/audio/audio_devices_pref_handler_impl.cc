@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 
 #include <stdint.h>
 
 #include <algorithm>
 
-#include "ash/components/audio/audio_device.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -107,8 +107,8 @@ double AudioDevicesPrefHandlerImpl::GetInputGainValue(
   return GetInputGainPrefValue(*device);
 }
 
-void AudioDevicesPrefHandlerImpl::SetVolumeGainValue(
-    const AudioDevice& device, double value) {
+void AudioDevicesPrefHandlerImpl::SetVolumeGainValue(const AudioDevice& device,
+                                                     double value) {
   // TODO(baileyberro): Refactor public interface to use two explicit methods.
   device.is_input ? SetInputGainPrefValue(device, value)
                   : SetOutputVolumePrefValue(device, value);

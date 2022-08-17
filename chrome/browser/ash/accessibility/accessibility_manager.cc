@@ -11,7 +11,6 @@
 
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
-#include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -67,6 +66,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power/power_manager_client.h"

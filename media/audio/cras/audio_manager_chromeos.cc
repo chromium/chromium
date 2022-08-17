@@ -10,8 +10,6 @@
 #include <map>
 #include <utility>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -22,6 +20,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/cras/cras_input.h"

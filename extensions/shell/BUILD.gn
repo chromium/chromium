@@ -230,9 +230,9 @@ source_set("app_shell_lib") {
       "browser/shell_screen.h",
     ]
     deps += [
-      "//ash/components/audio",
       "//ash/components/disks",
       "//ash/constants",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/cros_disks",
       "//chromeos/ash/components/dbus/hermes",
@@ -368,7 +368,7 @@ test("app_shell_unittests") {
       "browser/shell_screen_unittest.cc",
     ]
     deps += [
-      "//ash/components/audio",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
     ]

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -64,6 +63,7 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"

@@ -60,9 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/audio_devices_pref_handler_impl.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"

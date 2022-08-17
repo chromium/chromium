@@ -8,11 +8,11 @@ import("//testing/test.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("audio") {
-  defines = [ "IS_ASH_COMPONENTS_AUDIO_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUDIO_IMPL" ]
   deps = [
-    "//ash/components/audio/public/mojom",
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
     "//components/prefs",
     "//device/bluetooth",
@@ -46,11 +46,11 @@ component("in_process_audio_config") {
     "in_process_instance.h",
   ]
 
-  defines = [ "IS_IN_PROCESS_AUDIO_CONFIG_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUDIO_IN_PROCESS_AUDIO_CONFIG_IMPL" ]
 
   public_deps = [
-    "//ash/components/audio/public/mojom",
     "//ash/constants",
+    "//chromeos/ash/components/audio/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 
@@ -61,9 +61,9 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":audio",
-    "//ash/components/audio/public/mojom",
     "//ash/constants",
     "//base/test:test_support",
+    "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/dbus/audio",
     "//components/prefs:test_support",
     "//device/bluetooth",

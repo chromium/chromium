@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_chromeos.h"

@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/audio",
   "+components/content_settings/core/browser",
   "+components/content_settings/core/common",
   "+components/content_settings/core/test",

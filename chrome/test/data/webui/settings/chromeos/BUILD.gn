@@ -27,5 +27,7 @@ js_library("fake_user_action_recorder") {
 }
 
 js_library("fake_cros_audio_config") {
-  deps = [ "//ash/components/audio/public/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//chromeos/ash/components/audio/public/mojom:mojom_js_library_for_compile",
+  ]
 }

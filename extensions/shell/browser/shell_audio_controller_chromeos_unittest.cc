@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "testing/gtest/include/gtest/gtest.h"

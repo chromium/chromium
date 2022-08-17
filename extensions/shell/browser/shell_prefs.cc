@@ -22,7 +22,7 @@
 #include "extensions/browser/permissions_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #endif
 
 using base::FilePath;

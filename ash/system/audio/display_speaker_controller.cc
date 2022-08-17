@@ -4,8 +4,8 @@
 
 #include "ash/system/audio/display_speaker_controller.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/shell.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"

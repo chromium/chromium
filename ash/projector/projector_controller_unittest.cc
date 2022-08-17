@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/projector_metadata_controller.h"
@@ -34,6 +33,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_result.h"

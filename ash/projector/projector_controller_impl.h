@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class PrefRegistrySimple;

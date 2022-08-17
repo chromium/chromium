@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"

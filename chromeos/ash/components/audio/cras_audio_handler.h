@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_
-#define ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,15 +12,15 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/audio/audio_device.h"
-#include "ash/components/audio/audio_devices_pref_handler.h"
-#include "ash/components/audio/audio_pref_observer.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/audio_pref_observer.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
@@ -51,7 +51,7 @@ using OnNoiseCancellationSupportedCallback = base::OnceCallback<void()>;
 
 // This class is not thread safe. The public functions should be called on
 // browser main thread.
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     : public CrasAudioClient::Observer,
       public ui::MicrophoneMuteSwitchMonitor::Observer,
       public AudioPrefObserver,
@@ -785,7 +785,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
 // Helper class that will initialize the |CrasAudioHandler| for testing in its
 // constructor, and clean things up in its destructor.
-class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) ScopedCrasAudioHandlerForTesting {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
+    ScopedCrasAudioHandlerForTesting {
  public:
   ScopedCrasAudioHandlerForTesting();
   ScopedCrasAudioHandlerForTesting(const ScopedCrasAudioHandlerForTesting&) =
@@ -805,4 +806,4 @@ namespace chromeos {
 using ::ash::CrasAudioHandler;
 }
 
-#endif  // ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_CRAS_AUDIO_HANDLER_H_

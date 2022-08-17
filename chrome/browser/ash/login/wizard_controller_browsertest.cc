@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/wizard_controller.h"
 
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/components/timezone/timezone_request.h"
@@ -88,6 +87,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 
-#include "ash/components/audio/audio_device.h"
 #include "base/containers/contains.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 
 namespace ash {
 
@@ -40,8 +40,7 @@ void AudioDevicesPrefHandlerStub::SetVolumeGainValue(const AudioDevice& device,
   audio_device_volume_gain_map_[device.stable_device_id] = value;
 }
 
-bool AudioDevicesPrefHandlerStub::GetMuteValue(
-    const AudioDevice& device) {
+bool AudioDevicesPrefHandlerStub::GetMuteValue(const AudioDevice& device) {
   return audio_device_mute_map_[device.stable_device_id];
 }
 

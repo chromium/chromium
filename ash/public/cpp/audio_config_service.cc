@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/audio_config_service.h"
 
-#include "ash/components/audio/in_process_instance.h"
+#include "chromeos/ash/components/audio/in_process_instance.h"
 
 namespace ash {
 
