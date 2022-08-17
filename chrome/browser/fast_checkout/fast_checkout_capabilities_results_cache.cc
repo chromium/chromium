@@ -12,6 +12,8 @@
 #include "components/autofill/core/common/signatures.h"
 #include "url/origin.h"
 
+FastCheckoutCapabilitiesResult::FastCheckoutCapabilitiesResult() = default;
+
 FastCheckoutCapabilitiesResult::FastCheckoutCapabilitiesResult(
     base::span<const autofill::FormSignature> signatures)
     : form_signatures_(signatures.begin(), signatures.end()) {}

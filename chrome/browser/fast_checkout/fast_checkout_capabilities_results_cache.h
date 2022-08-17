@@ -22,6 +22,7 @@ class Origin;
 // a FastCheckout flow on a given origin.
 class FastCheckoutCapabilitiesResult {
  public:
+  FastCheckoutCapabilitiesResult();
   explicit FastCheckoutCapabilitiesResult(
       base::span<const autofill::FormSignature> signatures);
   virtual ~FastCheckoutCapabilitiesResult();
@@ -52,7 +53,8 @@ class FastCheckoutCapabilitiesResultsCache {
       const FastCheckoutCapabilitiesResultsCache& other);
 
   // Adds a new `result` for `origin` to the cache. If the cache is already
-  // full (i.e. it has `kMaxSize` entries), it removes the oldest entry.
+  // full (i.e. it has `kMaxSize` entries), it removes the oldest entry. Does
+  // nothing if an entry for `origin` already exists.
   void AddToCache(const url::Origin& origin,
                   const FastCheckoutCapabilitiesResult& result);
 
