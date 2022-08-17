@@ -136,6 +136,17 @@ ts_definitions("generate_definitions") {
   ]
 }
 
+checked_in_dts_files = [
+  "page_toolbar.d.ts",
+  "navigation_view_panel.d.ts",
+  "navigation_selector.d.ts",
+]
+
+copy("copy_checked_in_dts_files") {
+  sources = checked_in_dts_files
+  outputs = [ "$target_gen_dir/$preprocessed_dir/{{source_target_relative}}" ]
+}
+
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
