@@ -33,4 +33,17 @@ int ConvertAddressFamily(AddressFamily address_family) {
   return AF_UNSPEC;
 }
 
+AddressFamily ToAddressFamily(int family) {
+  switch (family) {
+    case AF_INET:
+      return ADDRESS_FAMILY_IPV4;
+    case AF_INET6:
+      return ADDRESS_FAMILY_IPV6;
+    case AF_UNSPEC:
+      return ADDRESS_FAMILY_UNSPECIFIED;
+  }
+  NOTREACHED();
+  return ADDRESS_FAMILY_UNSPECIFIED;
+}
+
 }  // namespace net
