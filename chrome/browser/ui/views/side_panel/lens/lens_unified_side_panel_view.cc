@@ -53,7 +53,7 @@ std::unique_ptr<views::WebView> CreateWebView(
 
 namespace lens {
 constexpr int kDefaultSidePanelHeaderHeight = 40;
-constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 16);
+constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 0);
 constexpr char kStaticLoadingScreenURL[] =
     "https://www.gstatic.com/lens/chrome/lens_side_panel_loading.html";
 
