@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_fieldset_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_frame_set_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_mathml_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
@@ -622,6 +623,11 @@ void NGBoxFragmentPainter::PaintObject(
     bool suppress_box_decoration_background) {
   const PaintPhase paint_phase = paint_info.phase;
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+  if (fragment.IsFrameSet()) {
+    NGFrameSetPainter(fragment, display_item_client_)
+        .PaintObject(paint_info, paint_offset);
+    return;
+  }
   const ComputedStyle& style = fragment.Style();
   const bool is_visible = IsVisibleToPaint(fragment, style);
   if (ShouldPaintSelfBlockBackground(paint_phase)) {

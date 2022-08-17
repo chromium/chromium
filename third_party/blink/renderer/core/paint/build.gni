@@ -112,6 +112,8 @@ blink_core_sources_paint = [
   "ng/ng_fieldset_painter.h",
   "ng/ng_fragment_painter.cc",
   "ng/ng_fragment_painter.h",
+  "ng/ng_frame_set_painter.cc",
+  "ng/ng_frame_set_painter.h",
   "ng/ng_highlight_overlay.cc",
   "ng/ng_highlight_overlay.h",
   "ng/ng_highlight_painter.cc",
