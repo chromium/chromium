@@ -15,6 +15,9 @@
 // NSURL of the presented file.
 @property(nonatomic, strong) NSURL* fileURL;
 
+// BOOL that indicates if the view is still presented.
+@property(nonatomic, assign) BOOL isPresented;
+
 @end
 
 @implementation OpenInActivityViewController
@@ -25,13 +28,32 @@
   if (self = [super initWithActivityItems:customActions
                     applicationActivities:activities]) {
     self.fileURL = fileURL;
+    __weak __typeof__(self) weakSelf = self;
+    self.completionWithItemsHandler = ^(NSString*, BOOL, NSArray*, NSError*) {
+      [weakSelf activityViewCompletionHandler];
+    };
   }
   return self;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  [self.delegate openInActivityWillDisappearForFileAtURL:self.fileURL];
+  self.isPresented = NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.isPresented = YES;
+}
+
+#pragma mark - Private Methods
+
+// Invokes `openInActivityWillDisappearForFileAtURL:` when the view is about to
+// be removed.
+- (void)activityViewCompletionHandler {
+  if (!self.isPresented) {
+    [self.delegate openInActivityWillDisappearForFileAtURL:self.fileURL];
+  }
 }
 
 @end
