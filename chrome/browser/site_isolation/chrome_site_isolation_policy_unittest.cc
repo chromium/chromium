@@ -113,6 +113,8 @@ TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   expected_embedder_origins.push_back(
       url::Origin::Create(extension_urls::GetWebstoreLaunchURL()));
+  expected_embedder_origins.push_back(
+      url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL()));
 #endif
   auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
   std::vector<url::Origin> isolated_origins = cpsp->GetIsolatedOrigins();

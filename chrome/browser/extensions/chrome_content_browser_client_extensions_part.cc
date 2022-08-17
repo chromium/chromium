@@ -562,6 +562,8 @@ std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
   // Require a dedicated process for the webstore origin.  See
   // https://crbug.com/939108.
   list.push_back(url::Origin::Create(extension_urls::GetWebstoreLaunchURL()));
+  list.push_back(
+      url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL()));
 
   return list;
 }

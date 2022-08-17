@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -36,6 +37,8 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -74,6 +77,8 @@ class ProcessManagementTest : public ExtensionBrowserTest {
 
 // Domain which the Webstore hosted app is associated with in production.
 constexpr char kWebstoreURL[] = "chrome.google.com";
+// Domain which the new Webstore is associated with in production.
+constexpr char kNewWebstoreURL[] = "webstore.google.com";
 // Domain for testing an overridden Webstore URL.
 constexpr char kWebstoreURLOverride[] = "chrome.webstore.test.com";
 
@@ -82,12 +87,14 @@ class ChromeWebStoreProcessTest
       public testing::WithParamInterface<const char*> {
  public:
   ChromeWebStoreProcessTest() {
-    // The Webstore hosted app uses https for its launch URL, so we need an
-    // https server that can resolve both that URL as well an unrelated
-    // non-Webstore URL.
+    feature_list_.InitAndEnableFeature(extensions_features::kNewWebstoreDomain);
+    // The tests need the https server to resolve the webstore domain being
+    // tested and 2 related subdomains with the same eTLD+1. Add certificates
+    // for each.
     UseHttpsTestServer();
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {GetParam(), "foo.com"};
+    cert_config.dns_names = {GetParam(), GetRelatedSubdomain(),
+                             GetSecondRelatedSubdomain()};
     embedded_test_server()->SetSSLConfig(cert_config);
 
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -110,7 +117,7 @@ class ChromeWebStoreProcessTest
   }
 
   // Serve up a page Chrome will detect as being associated with the Webstore.
-  // For the normal Webstore this needs to be served from a 'webstore'
+  // For the hosted app Webstore this needs to be served from a 'webstore'
   // directory, but otherwise it can just be from the root.
   GURL GetWebstorePage() {
     GURL::Replacements replace_path;
@@ -122,6 +129,23 @@ class ChromeWebStoreProcessTest
     return webstore_url().ReplaceComponents(replace_path);
   }
 
+  // Returns a host that is an alternate subdomain that has the same eTLD+1 as
+  // the Webstore URL under test.
+  const char* GetRelatedSubdomain() {
+    if (GetParam() == kWebstoreURLOverride)
+      return "foo.webstore.test.com";
+    return "foo.google.com";
+  }
+
+  // Returns a host that is another alternate subdomain that has the same eTLD+1
+  // as the Webstore URL under test, but different from that returned by
+  // GetRelatedSubdomain().
+  const char* GetSecondRelatedSubdomain() {
+    if (GetParam() == kWebstoreURLOverride)
+      return "bar.webstore.test.com";
+    return "bar.google.com";
+  }
+
   const GURL& webstore_url() { return webstore_url_; }
 
  private:
@@ -129,6 +153,10 @@ class ChromeWebStoreProcessTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  // The webstore API availability for the new domain is currently behind a
+  // feature and channel restriction.
+  base::test::ScopedFeatureList feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
   GURL webstore_url_;
 };
 
@@ -144,7 +172,6 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
 };
 
 }  // namespace
-
 
 // Ensure that an isolated app never shares a process with WebUIs, non-isolated
 // extensions, and normal webpages.  None of these should ever comingle
@@ -544,10 +571,59 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   EXPECT_NE(old_process_host, new_process_host);
 }
 
+// Test that the Webstore domain is isolated from a non-webstore subdomain that
+// shares the same eTLD+1.
+IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
+                       StoreIsolatedFromRelatedSubdomain) {
+  GURL non_cws_url_1 =
+      embedded_test_server()->GetURL(GetRelatedSubdomain(), "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_cws_url_1));
+  WebContents* non_cws_contents_1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(non_cws_url_1, non_cws_contents_1->GetLastCommittedURL());
+
+  // We use window.open here to keep this as a renderer-initiated navigation, as
+  // a normal browser-initiated navigation would get a process swap by default
+  // (if there are remaining renderer processes available).
+  auto open_url = [](GURL url, WebContents* opener) {
+    content::WebContentsAddedObserver popup_observer;
+    EXPECT_TRUE(
+        content::EvalJs(opener, content::JsReplace("!!window.open($1);", url))
+            .ExtractBool());
+    WebContents* web_contents = popup_observer.GetWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_EQ(url, web_contents->GetLastCommittedURL());
+    return web_contents;
+  };
+  // Open two pages from the initial page: One that is another non-Webstore
+  // subdomain and one that is the Webstore URL under test.
+  GURL non_cws_url_2 = embedded_test_server()->GetURL(
+      GetSecondRelatedSubdomain(), "/title1.html");
+  WebContents* non_cws_contents_2 = open_url(non_cws_url_2, non_cws_contents_1);
+  WebContents* cws_contents = open_url(GetWebstorePage(), non_cws_contents_1);
+
+  // The second non-Webstore page should have been given a different
+  // WebContents, but share the same process with the page that opened it.
+  EXPECT_NE(non_cws_contents_1, non_cws_contents_2);
+  EXPECT_EQ(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
+            non_cws_contents_2->GetPrimaryMainFrame()->GetProcess());
+
+  // The Webstore page should have been given a separate WebContents and process
+  // than the page that opened it.
+  EXPECT_NE(non_cws_contents_1, cws_contents);
+  EXPECT_NE(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
+            cws_contents->GetPrimaryMainFrame()->GetProcess());
+}
+
 IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
                        NavigateWebTabToChromeWebStoreViaPost) {
-  // Navigate a tab to a web page with a form.
-  GURL web_url = embedded_test_server()->GetURL("foo.com", "/form.html");
+  content::RenderProcessHost::SetMaxRendererProcessCount(1);
+  // Navigate a tab to a web page with a form. We specifically use a page that
+  // is on another subdomain with the same host as the Webstore URL under test,
+  // as normally these would be allowed to share processes, but for the Webstore
+  // that should never be the case.
+  GURL web_url =
+      embedded_test_server()->GetURL(GetRelatedSubdomain(), "/form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -581,11 +657,15 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
   nav_observer.Wait();
   EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
 
-  // Verify that we have the Webstore hosted app loaded in the Web Contents.
+  // If not using the new Webstore URL, verify that we have the Webstore hosted
+  // app loaded into the Web Contents. Note: the new Webstore is granted it's
+  // powers without use of the hosted app.
   content::RenderProcessHost* new_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-      extensions::kWebStoreAppId, new_process_host->GetID()));
+  if (GetParam() != kNewWebstoreURL) {
+    EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
+        extensions::kWebStoreAppId, new_process_host->GetID()));
+  }
 
   // Verify that Webstore is isolated in a separate renderer process.
   EXPECT_NE(old_process_host, new_process_host);
@@ -593,7 +673,9 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeWebStoreProcessTest,
-                         testing::Values(kWebstoreURL, kWebstoreURLOverride));
+                         testing::Values(kWebstoreURL,
+                                         kNewWebstoreURL,
+                                         kWebstoreURLOverride));
 
 // Check that navigations to the Chrome Web Store succeed when the Chrome Web
 // Store URL's origin is set as an isolated origin via the
@@ -615,16 +697,27 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
 
-  // Verify that the Chrome Web Store hosted app is really loaded.
-  content::RenderProcessHost* render_process_host =
-      web_contents->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-      extensions::kWebStoreAppId, render_process_host->GetID()));
+  // Double-check that the page has access to the restricted APIs we expect to
+  // be available to the Webstore.
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "!!chrome && !!chrome.webstorePrivate"));
+
+  // Verify that we have the Webstore hosted app loaded into the Web Contents.
+  // Note: the new Webstore is granted it's powers without use of the hosted
+  // app, so we don't do this check for it.
+  if (GetParam() != kNewWebstoreURL) {
+    content::RenderProcessHost* render_process_host =
+        web_contents->GetPrimaryMainFrame()->GetProcess();
+    EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
+        extensions::kWebStoreAppId, render_process_host->GetID()));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeWebStoreInIsolatedOriginTest,
-                         testing::Values(kWebstoreURL, kWebstoreURLOverride));
+                         testing::Values(kWebstoreURL,
+                                         kNewWebstoreURL,
+                                         kWebstoreURLOverride));
 
 // This test verifies that blocked navigations to extensions pages do not
 // overwrite process-per-site map inside content/.
