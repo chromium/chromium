@@ -281,9 +281,13 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     isIncognito, true, inTabGroup, additionalUrls);
             ContextUtils.getApplicationContext().startActivity(intent);
         } else {
-            Tab parent = createNewTab(visits.get(0).getNormalizedUrl(), isIncognito, null);
+            Tab parent = createNewTab(visits.get(0).getNormalizedUrl(), isIncognito, null,
+                    TabLaunchType.FROM_CHROME_UI);
+            @TabLaunchType
+            int tabLaunchType = inTabGroup ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                           : TabLaunchType.FROM_CHROME_UI;
             for (int i = 1; i < visits.size(); i++) {
-                createNewTab(visits.get(i).getNormalizedUrl(), false, parent);
+                createNewTab(visits.get(i).getNormalizedUrl(), isIncognito, parent, tabLaunchType);
             }
         }
     }
@@ -336,11 +340,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mVisitMetadataMap.remove(visit);
     }
 
-    private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab) {
+    private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab, int tabLaunchType) {
         TabCreator tabCreator = mDelegate.getTabCreator(incognito);
         assert tabCreator != null;
-        return tabCreator.createNewTab(
-                new LoadUrlParams(gurl), TabLaunchType.FROM_CHROME_UI, parentTab);
+        return tabCreator.createNewTab(new LoadUrlParams(gurl), tabLaunchType, parentTab);
     }
 
     private void queryComplete(HistoryClustersResult result) {

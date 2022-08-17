@@ -129,6 +129,8 @@ public class HistoryClustersMediatorTest {
     @Mock
     private TabCreator mTabCreator;
     @Mock
+    private TabCreator mIncognitoTabCreator;
+    @Mock
     private HistoryClustersMetricsLogger mMetricsLogger;
     @Mock
     private AccessibilityUtil mAccessibilityUtil;
@@ -205,7 +207,7 @@ public class HistoryClustersMediatorTest {
 
             @Override
             public TabCreator getTabCreator(boolean isIncognito) {
-                return mTabCreator;
+                return isIncognito ? mIncognitoTabCreator : mTabCreator;
             }
 
             @Nullable
@@ -703,6 +705,15 @@ public class HistoryClustersMediatorTest {
         verify(mTabCreator)
                 .createNewTab(argThat(hasSameUrl(mGurl2.getSpec())),
                         eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
+
+        doReturn(mTab2).when(mIncognitoTabCreator).createNewTab(any(), anyInt(), any());
+        mMediator.openVisitsInNewTabs(Arrays.asList(mVisit1, mVisit2), true, false);
+        verify(mIncognitoTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl1.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        verify(mIncognitoTabCreator)
+                .createNewTab(argThat(hasSameUrl(mGurl2.getSpec())),
+                        eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
     }
 
     @Test
@@ -724,7 +735,7 @@ public class HistoryClustersMediatorTest {
                         eq(TabLaunchType.FROM_CHROME_UI), eq(null));
         verify(mTabCreator)
                 .createNewTab(argThat(hasSameUrl(mGurl2.getSpec())),
-                        eq(TabLaunchType.FROM_CHROME_UI), eq(mTab2));
+                        eq(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP), eq(mTab2));
     }
 
     @Test
