@@ -14,6 +14,9 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
@@ -217,6 +220,39 @@ TEST_F(MediaStreamTrackImplTest, CloneAudioTrack) {
 
   // Clones should share the same source object.
   EXPECT_EQ(clone->Component()->Source(), source);
+}
+
+TEST_F(MediaStreamTrackImplTest, CloningPreservesConstraints) {
+  V8TestingScope v8_scope;
+
+  auto platform_source = std::make_unique<MockMediaStreamVideoSource>(
+      media::VideoCaptureFormat(gfx::Size(1280, 720), 1000.0,
+                                media::PIXEL_FORMAT_I420),
+      false);
+  MockMediaStreamVideoSource* platform_source_ptr = platform_source.get();
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
+      false /* remote */, std::move(platform_source));
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      platform_source_ptr,
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      true /* enabled */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(source,
+                                                     std::move(platform_track));
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  MediaConstraints constraints;
+  MediaTrackConstraintSetPlatform basic;
+  basic.width.SetMax(240);
+  constraints.Initialize(basic, Vector<MediaTrackConstraintSetPlatform>());
+  track->SetConstraints(constraints);
+
+  MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
+  MediaTrackConstraints* clone_constraints = clone->getConstraints();
+  EXPECT_TRUE(clone_constraints->hasWidth());
+  EXPECT_EQ(clone_constraints->width()->GetAsConstrainLongRange()->max(), 240);
 }
 
 }  // namespace blink

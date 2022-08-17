@@ -10,6 +10,9 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -195,5 +198,28 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
   EXPECT_TRUE(script_promise_tester.IsRejected());
 }
 #endif
+
+TEST_F(BrowserCaptureMediaStreamTrackTest, CloningPreservesConstraints) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
+      MakeMockMediaStreamVideoSource();
+
+  EXPECT_CALL(*media_stream_video_source, Crop(_, _, _)).Times(0);
+
+  BrowserCaptureMediaStreamTrack* const track =
+      MakeTrack(v8_scope, std::move(media_stream_video_source));
+
+  MediaConstraints constraints;
+  MediaTrackConstraintSetPlatform basic;
+  basic.width.SetMax(240);
+  constraints.Initialize(basic, Vector<MediaTrackConstraintSetPlatform>());
+  track->SetConstraints(constraints);
+
+  MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
+  MediaTrackConstraints* clone_constraints = clone->getConstraints();
+  EXPECT_TRUE(clone_constraints->hasWidth());
+  EXPECT_EQ(clone_constraints->width()->GetAsConstrainLongRange()->max(), 240);
+}
 
 }  // namespace blink

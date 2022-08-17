@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
@@ -96,10 +95,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
     return content_hint_;
   }
   void SetContentHint(WebMediaStreamTrack::ContentHintType) override;
-  const MediaConstraints& Constraints() const override { return constraints_; }
-  void SetConstraints(const MediaConstraints& constraints) override {
-    constraints_ = constraints;
-  }
 
   MediaStreamTrackPlatform* GetPlatformTrack() const override {
     return platform_track_.get();
@@ -129,7 +124,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   bool enabled_ = true;
   WebMediaStreamTrack::ContentHintType content_hint_ =
       WebMediaStreamTrack::ContentHintType::kNone;
-  MediaConstraints constraints_;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
   // Frame where the referenced platform track was created, if applicable.
   WebLocalFrame* creation_frame_ = nullptr;

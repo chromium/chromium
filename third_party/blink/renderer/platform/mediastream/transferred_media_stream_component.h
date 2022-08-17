@@ -10,7 +10,6 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -55,8 +54,6 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   void SetEnabled(bool enabled) override;
   WebMediaStreamTrack::ContentHintType ContentHint() override;
   void SetContentHint(WebMediaStreamTrack::ContentHintType) override;
-  const MediaConstraints& Constraints() const override;
-  void SetConstraints(const MediaConstraints& constraints) override;
 
   MediaStreamTrackPlatform* GetPlatformTrack() const override;
 

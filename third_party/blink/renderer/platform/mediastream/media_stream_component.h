@@ -75,8 +75,6 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual void SetEnabled(bool enabled) = 0;
   virtual WebMediaStreamTrack::ContentHintType ContentHint() = 0;
   virtual void SetContentHint(WebMediaStreamTrack::ContentHintType) = 0;
-  virtual const MediaConstraints& Constraints() const = 0;
-  virtual void SetConstraints(const MediaConstraints& constraints) = 0;
 
   virtual MediaStreamTrackPlatform* GetPlatformTrack() const = 0;
 

@@ -123,25 +123,6 @@ void TransferredMediaStreamComponent::SetContentHint(
   // initialized.
 }
 
-const MediaConstraints& TransferredMediaStreamComponent::Constraints() const {
-  if (component_) {
-    return component_->Constraints();
-  }
-  // TODO(crbug.com/1288839): Return the transferred value
-  static MediaConstraints media_constraints;
-  return media_constraints;
-}
-
-void TransferredMediaStreamComponent::SetConstraints(
-    const MediaConstraints& constraints) {
-  if (component_) {
-    component_->SetConstraints(constraints);
-    return;
-  }
-  // TODO(https://crbug.com/1288839): Save and forward to component_ once it's
-  // initialized.
-}
-
 MediaStreamTrackPlatform* TransferredMediaStreamComponent::GetPlatformTrack()
     const {
   if (component_) {

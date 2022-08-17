@@ -95,7 +95,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   // This function is called when constrains have been successfully applied.
   // Called from UserMediaRequest when it succeeds. It is not IDL-exposed.
-  void SetConstraints(const MediaConstraints&) override;
+  void SetConstraints(const MediaConstraints& constraints) override {
+    constraints_ = constraints;
+  }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
@@ -190,6 +192,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   WeakMember<ExecutionContext> execution_context_;
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
+  MediaConstraints constraints_;
 };
 
 }  // namespace blink

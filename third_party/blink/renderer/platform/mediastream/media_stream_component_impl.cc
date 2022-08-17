@@ -109,7 +109,6 @@ MediaStreamComponentImpl* MediaStreamComponentImpl::Clone(
       Source(), std::move(cloned_platform_track));
   cloned_component->SetEnabled(enabled_);
   cloned_component->SetContentHint(content_hint_);
-  cloned_component->SetConstraints(constraints_);
   return cloned_component;
 }
 

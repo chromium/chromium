@@ -456,10 +456,6 @@ MediaStreamTrack* MediaStreamTrackImpl::clone(
   return cloned_track;
 }
 
-void MediaStreamTrackImpl::SetConstraints(const MediaConstraints& constraints) {
-  component_->SetConstraints(constraints);
-}
-
 MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
   MediaTrackCapabilities* capabilities = MediaTrackCapabilities::Create();
   if (image_capture_)
@@ -565,7 +561,7 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
 
 MediaTrackConstraints* MediaStreamTrackImpl::getConstraints() const {
   MediaTrackConstraints* constraints =
-      media_constraints_impl::ConvertConstraints(component_->Constraints());
+      media_constraints_impl::ConvertConstraints(constraints_);
   if (!image_capture_)
     return constraints;
 
@@ -762,8 +758,8 @@ void MediaStreamTrackImpl::applyConstraints(
   }
 
   user_media_client->ApplyConstraints(
-      MakeGarbageCollected<ApplyConstraintsRequest>(Component(),
-                                                    web_constraints, resolver));
+      MakeGarbageCollected<ApplyConstraintsRequest>(this, web_constraints,
+                                                    resolver));
   return;
 }
 
@@ -942,6 +938,8 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
   DCHECK(cloned_track);
 
   DidCloneMediaStreamTrack(cloned_track->Component());
+
+  cloned_track->SetConstraints(constraints_);
 
   if (image_capture_) {
     cloned_track->image_capture_ = image_capture_->Clone();

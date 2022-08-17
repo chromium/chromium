@@ -12,13 +12,13 @@
 namespace blink {
 
 ApplyConstraintsRequest::ApplyConstraintsRequest(
-    MediaStreamComponent* component,
+    MediaStreamTrack* track,
     const MediaConstraints& constraints,
     ScriptPromiseResolver* resolver)
-    : component_(component), constraints_(constraints), resolver_(resolver) {}
+    : track_(track), constraints_(constraints), resolver_(resolver) {}
 
 MediaStreamComponent* ApplyConstraintsRequest::Track() const {
-  return component_;
+  return track_->Component();
 }
 
 MediaConstraints ApplyConstraintsRequest::Constraints() const {
@@ -26,10 +26,10 @@ MediaConstraints ApplyConstraintsRequest::Constraints() const {
 }
 
 void ApplyConstraintsRequest::RequestSucceeded() {
-  component_->SetConstraints(constraints_);
+  track_->SetConstraints(constraints_);
   if (resolver_)
     resolver_->Resolve();
-  component_ = nullptr;
+  track_ = nullptr;
 }
 
 void ApplyConstraintsRequest::RequestFailed(const String& constraint,
@@ -38,11 +38,11 @@ void ApplyConstraintsRequest::RequestFailed(const String& constraint,
     resolver_->Reject(
         MakeGarbageCollected<OverconstrainedError>(constraint, message));
   }
-  component_ = nullptr;
+  track_ = nullptr;
 }
 
 void ApplyConstraintsRequest::Trace(Visitor* visitor) const {
-  visitor->Trace(component_);
+  visitor->Trace(track_);
   visitor->Trace(resolver_);
 }
 
