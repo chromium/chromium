@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,14 +70,15 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
+  location_bar_model_ = std::make_unique<LocationBarModelImpl>(
+      this, content::kMaxURLDisplayChars);
+
   // Creates a window background with solid color.
   // TODO(https://crbug.com/1346734): Need to figure out how to make this
   // background color not overlap pip content. AddChildView() would cause it to
   // overlap while now it never shows.
   window_background_view_ = browser_view->contents_web_view()->AddChildViewAt(
       std::make_unique<views::View>(), 0);
-  window_background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  window_background_view_->layer()->SetName("WindowBackgroundView");
 
   // Creates a view that will hold all the control views.
   AddChildView(
@@ -82,31 +87,21 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .Build());
-  controls_container_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  controls_container_view_->layer()->SetName("ControlsContainerView");
 
   // Creates the window icon.
-  controls_container_view_->AddChildView(
-      views::Builder<views::ImageView>()
-          .CopyAddressTo(&window_icon_)
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              vector_icons::kHttpsValidIcon, kColorOmniboxSecurityChipSecure,
-              kWindowIconImageSize))
-          .Build());
-  window_icon_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  window_icon_->layer()->SetFillsBoundsOpaquely(false);
-  window_icon_->layer()->SetName("WindowIcon");
+  const gfx::FontList& font_list = views::style::GetFont(
+      CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
+  location_icon_view_ = controls_container_view_->AddChildView(
+      std::make_unique<LocationIconView>(font_list, this, this));
 
   // Creates the window title.
   controls_container_view_->AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&window_title_)
-          .SetText(browser_view->GetWindowTitle())
+          .SetText(location_bar_model_->GetURLForDisplay())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build());
   controls_container_view_->SetFlexForView(window_title_, 1);
-  window_title_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  window_title_->layer()->SetName("WindowTitle");
 
   // Creates the back to tab button.
   back_to_tab_button_ = controls_container_view_->AddChildView(
@@ -115,9 +110,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
             // TODO(https://crbug.com/1346734): Implement functionality.
           },
           base::Unretained(this))));
-  back_to_tab_button_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  back_to_tab_button_->layer()->SetFillsBoundsOpaquely(false);
-  back_to_tab_button_->layer()->SetName("BackToTabButton");
 
   // Creates the close button.
   close_image_button_ = controls_container_view_->AddChildView(
@@ -127,10 +119,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                 views::Widget::ClosedReason::kCloseButtonClicked);
           },
           base::Unretained(this))));
-  close_image_button_->SetPaintToLayer(ui::LAYER_TEXTURED);
-  close_image_button_->layer()->SetFillsBoundsOpaquely(false);
-  close_image_button_->layer()->SetName("CloseImageButton");
 }
+
+PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameView implementations:
@@ -189,8 +180,11 @@ void PictureInPictureBrowserFrameView::GetWindowMask(const gfx::Size& size,
   views::GetDefaultWindowMask(size, window_mask);
 }
 
-void PictureInPictureBrowserFrameView::UpdateWindowTitle() {
-  window_title_->SchedulePaint();
+void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
+  // This will be called after WebContents in PictureInPictureWindowManager is
+  // set, so that we can update the icon and title based on WebContents.
+  location_icon_view_->Update(/*suppress_animations=*/false);
+  window_title_->SetText(location_bar_model_->GetURLForDisplay());
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
@@ -201,19 +195,95 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  window_background_view_->layer()->SetColor(
-      color_provider->GetColor(kColorPipWindowBackground));
-  controls_container_view_->layer()->SetColor(
+  window_background_view_->SetBackground(views::CreateSolidBackground(
+      color_provider->GetColor(kColorPipWindowBackground)));
+  controls_container_view_->SetBackground(views::CreateSolidBackground(
       SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
-                  SK_AlphaOPAQUE));
-
-  // Must set an opaque background color for the label before setting opacity.
-  window_title_->SetBackgroundColor(
-      color_provider->GetColor(kColorPipWindowControlsBackground));
-  window_title_->SetEnabledColor(
-      color_provider->GetColor(kColorPipWindowForeground));
-  window_title_->layer()->SetFillsBoundsOpaquely(false);
+                  SK_AlphaOPAQUE)));
 }
+
+void PictureInPictureBrowserFrameView::Layout() {
+  controls_container_view_->SetBoundsRect(
+      gfx::Rect(0, 0, width(), kTopControlsHeight));
+
+  BrowserNonClientFrameView::Layout();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ChromeLocationBarModelDelegate implementations:
+
+content::WebContents* PictureInPictureBrowserFrameView::GetActiveWebContents()
+    const {
+  return PictureInPictureWindowManager::GetInstance()->GetWebContents();
+}
+
+bool PictureInPictureBrowserFrameView::GetURL(GURL* url) const {
+  DCHECK(url);
+  if (GetActiveWebContents()) {
+    *url = GetActiveWebContents()->GetLastCommittedURL();
+    return true;
+  }
+  return false;
+}
+
+bool PictureInPictureBrowserFrameView::ShouldTrimDisplayUrlAfterHostName()
+    const {
+  // We need to set the window title URL to be eTLD+1.
+  return true;
+}
+
+bool PictureInPictureBrowserFrameView::ShouldDisplayURL() const {
+  return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LocationIconView::Delegate implementations:
+
+content::WebContents* PictureInPictureBrowserFrameView::GetWebContents() {
+  return PictureInPictureWindowManager::GetInstance()->GetWebContents();
+}
+
+bool PictureInPictureBrowserFrameView::IsEditingOrEmpty() const {
+  return false;
+}
+
+SkColor PictureInPictureBrowserFrameView::GetSecurityChipColor(
+    security_state::SecurityLevel security_level) const {
+  return GetColorProvider()->GetColor(kColorOmniboxSecurityChipSecure);
+}
+
+bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
+  return false;
+}
+
+LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
+    const {
+  return location_bar_model_.get();
+}
+
+ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
+    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+  return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
+                                        kColorOmniboxSecurityChipSecure,
+                                        kWindowIconImageSize);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IconLabelBubbleView::Delegate implementations:
+
+SkColor
+PictureInPictureBrowserFrameView::GetIconLabelBubbleSurroundingForegroundColor()
+    const {
+  return GetColorProvider()->GetColor(kColorOmniboxText);
+}
+
+SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
+    const {
+  return GetColorProvider()->GetColor(kColorLocationBarBackground);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PictureInPictureBrowserFrameView implementations:
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
   DCHECK(back_to_tab_button_);
@@ -223,14 +293,6 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
 gfx::Rect PictureInPictureBrowserFrameView::GetCloseControlsBounds() const {
   DCHECK(close_image_button_);
   return close_image_button_->GetMirroredBounds();
-}
-
-void PictureInPictureBrowserFrameView::OnBoundsChanged(
-    const gfx::Rect& previous_bounds) {
-  window_background_view_->SetBoundsRect(
-      gfx::Rect(gfx::Point(), bounds().size()));
-  controls_container_view_->SetBoundsRect(
-      gfx::Rect(0, 0, width(), kTopControlsHeight));
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)

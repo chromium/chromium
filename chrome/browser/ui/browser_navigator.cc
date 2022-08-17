@@ -304,8 +304,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
                                              profile, params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
-        browser_params.picture_in_picture_window_title =
-            params.source_contents->GetLastCommittedURL().GetContent();
         if (params.contents_to_insert) {
           browser_params.initial_bounds =
               CalculateInitialPictureInPictureWindowBounds(
