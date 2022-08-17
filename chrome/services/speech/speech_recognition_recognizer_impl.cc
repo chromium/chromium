@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
@@ -291,6 +293,25 @@ void SpeechRecognitionRecognizerImpl::
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
     const std::string& language) {
+  if (!task_runner_) {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  }
+
+  // Changing the language requires a blocking call to check if the language
+  // pack exists on the device.
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunnerHandle::Get();
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionRecognizerImpl::ChangeLanguage,
+                     base::Unretained(this), language, current_task_runner));
+}
+
+void SpeechRecognitionRecognizerImpl::ChangeLanguage(
+    const std::string& language,
+    scoped_refptr<base::SequencedTaskRunner> main_sequence) {
   absl::optional<speech::SodaLanguagePackComponentConfig>
       language_component_config = GetLanguageComponentConfig(language);
   if (!language_component_config.has_value())
@@ -301,13 +322,17 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
   if (language_code == language_ || language_code == LanguageCode::kNone)
     return;
 
-  language_ = language_component_config.value().language_code;
+  // Only change the language if the new language pack is installed.
   base::FilePath config_path = GetLatestSodaLanguagePackDirectory(language);
   if (base::PathExists(config_path)) {
     config_path_ = config_path;
-    ResetSoda();
-  } else {
-    NOTREACHED();
+    language_ = language_component_config.value().language_code;
+
+    // SODA must be reset on the same sequence where it's actively used in order
+    // to avoid race conditions.
+    main_sequence->PostTask(
+        FROM_HERE, base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSoda,
+                                  base::Unretained(this)));
   }
 }
 
