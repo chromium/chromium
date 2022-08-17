@@ -6716,9 +6716,31 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PageLoadMetricsEarlyHints" separator="."
     ordering="prefix">
+  <obsolete>
+    Removed in favor of Clients.EarlyHints2.Preload.
+  </obsolete>
   <suffix name="Clients.EarlyHints.Preload"
       label="PageLoadMetrics from a page that received preload Link headers
              via Early Hints responses. Recorded only for main frames."/>
+  <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
+  <affected-histogram
+      name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
+  <affected-histogram
+      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PageLoadMetricsEarlyHints2" separator="."
+    ordering="prefix">
+  <suffix name="Clients.EarlyHints2.Preload"
+      label="PageLoadMetrics from a page that received preload Link headers
+             via Early Hints responses. Recorded only for main frames.
+             Includes samples from prerendered pages. record duration from
+             activation start to first contentful paint for prerendered
+             pages.
+             PageLoad.Clients.EarlyHints.Preload.PaintTiming.NavigationToFirstContentfulPaint
+             and
+             PageLoad.Clients.EarlyHints.Preload.PaintTiming.NavigationToLargestContentfulPaint2
+             record activation start origined values for prerendered pages."/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
