@@ -978,8 +978,7 @@ void ClientControlledShellSurface::SetSystemModal(bool system_modal) {
   ShellSurfaceBase::SetSystemModal(system_modal);
 }
 
-void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
-                                                   bool adjusted_by_server) {
+void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
   const auto* screen = display::Screen::GetScreen();
   aura::Window* window = widget_->GetNativeWindow();
   display::Display current_display = screen->GetDisplayNearestWindow(window);
@@ -1017,7 +1016,6 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
   }
 
   // Calculate a minimum window visibility required bounds.
-  // TODO(oshima): Move this to ComputeAdjustedBounds.
   gfx::Rect adjusted_bounds = bounds;
   if (!is_display_move_pending) {
     const gfx::Rect& restriction = GetWindowState()->IsFullscreen()

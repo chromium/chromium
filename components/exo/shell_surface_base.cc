@@ -1418,21 +1418,12 @@ bool ShellSurfaceBase::IsResizing() const {
           ash::WindowResizer::kBoundsChange_Resizes);
 }
 
-gfx::Rect ShellSurfaceBase::ComputeAdjustedBounds(
-    const gfx::Rect& bounds) const {
-  return bounds;
-}
-
 void ShellSurfaceBase::UpdateWidgetBounds() {
   DCHECK(widget_);
 
   absl::optional<gfx::Rect> bounds = GetWidgetBounds();
-  if (!bounds)
-    return;
-  gfx::Rect adjusted_bounds = ComputeAdjustedBounds(*bounds);
-
-  if (overlay_widget_) {
-    gfx::Rect content_bounds(adjusted_bounds.size());
+  if (bounds && overlay_widget_) {
+    gfx::Rect content_bounds(bounds->size());
     int height = 0;
     if (!overlay_overlaps_frame_ && frame_enabled()) {
       auto* frame_view = static_cast<const ash::NonClientFrameViewAsh*>(
@@ -1463,7 +1454,8 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
       return;
   }
 
-  SetWidgetBounds(adjusted_bounds, adjusted_bounds != *bounds);
+  if (bounds)
+    SetWidgetBounds(*bounds);
 }
 
 void ShellSurfaceBase::UpdateSurfaceBounds() {

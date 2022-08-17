@@ -319,8 +319,8 @@ void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
     gfx::Rect widget_bounds = widget_->GetWindowBoundsInScreen();
     gfx::Rect new_widget_bounds(origin_, widget_bounds.size());
     if (new_widget_bounds != widget_bounds) {
-      base::AutoReset<bool> notify_bounds_changes(&notify_bounds_changes_,
-                                                  false);
+      base::AutoReset<bool> auto_ignore_window_bounds_changes(
+          &ignore_window_bounds_changes_, true);
       widget_->SetBounds(new_widget_bounds);
       UpdateSurfaceBounds();
     }
@@ -404,7 +404,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
                                          const gfx::Rect& old_bounds,
                                          const gfx::Rect& new_bounds,
                                          ui::PropertyChangeReason reason) {
-  if (!widget_ || !root_surface() || !notify_bounds_changes_)
+  if (!widget_ || !root_surface() || ignore_window_bounds_changes_)
     return;
 
   if (window == widget_->GetNativeWindow()) {
@@ -551,40 +551,21 @@ void ShellSurface::OnWindowActivated(ActivationReason reason,
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase overrides:
 
-gfx::Rect ShellSurface::ComputeAdjustedBounds(const gfx::Rect& bounds) const {
-  DCHECK(widget_);
-  auto min_size = widget_->GetMinimumSize();
-  auto max_size = widget_->GetMaximumSize();
-  gfx::Size size = bounds.size();
-  // use `minimum_size_` as the GetMinimumSize always return min size
-  // bigger or equal to 1x1.
-  if (!minimum_size_.IsEmpty() && !min_size.IsEmpty()) {
-    size.SetToMax(min_size);
-  }
-  if (!max_size.IsEmpty()) {
-    size.SetToMin(max_size);
-  }
-  // Keep the origin instead of center.
-  return gfx::Rect(bounds.origin(), size);
-}
-
-void ShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
-                                   bool adjusted_by_server) {
-  if (bounds == widget_->GetWindowBoundsInScreen() && !adjusted_by_server)
+void ShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
+  if (bounds == widget_->GetWindowBoundsInScreen())
     return;
 
-  // Set |notify_bounds_changes_| as this change to window bounds
-  // should not result in a configure request unless the bounds is modified by
-  // the server.
-  DCHECK(notify_bounds_changes_);
-  notify_bounds_changes_ = adjusted_by_server;
+  // Set |ignore_window_bounds_changes_| as this change to window bounds
+  // should not result in a configure request.
+  DCHECK(!ignore_window_bounds_changes_);
+  ignore_window_bounds_changes_ = true;
 
   // TODO(oshima): Probably ignore while dragging.
 
   widget_->SetBounds(bounds);
   UpdateSurfaceBounds();
 
-  notify_bounds_changes_ = true;
+  ignore_window_bounds_changes_ = false;
 }
 
 bool ShellSurface::OnPreWidgetCommit() {

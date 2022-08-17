@@ -134,9 +134,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                          aura::Window* lost_active) override;
 
   // Overridden from ShellSurfaceBase:
-  gfx::Rect ComputeAdjustedBounds(const gfx::Rect& bounds) const override;
-  void SetWidgetBounds(const gfx::Rect& bounds,
-                       bool adjusted_by_server) override;
+  void SetWidgetBounds(const gfx::Rect& bounds) override;
   bool OnPreWidgetCommit() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -208,7 +206,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
-  bool notify_bounds_changes_ = true;
+  bool ignore_window_bounds_changes_ = false;
   bool window_state_is_changing_ = false;
 
   base::ObserverList<ShellSurfaceObserver> observers_;
