@@ -888,10 +888,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_C.Wait();
 }
 
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+// Too slow under sanitizers, even with increased timeout:
+// https://crbug.com/1096612
+#define MAYBE_DetachedIframeUnloadHandlerABCB \
+  DISABLED_DetachedIframeUnloadHandlerABCB
+#else
+#define MAYBE_DetachedIframeUnloadHandlerABCB DetachedIframeUnloadHandlerABCB
+#endif
+
 // When an iframe is detached, check that unload handlers execute in all of its
 // child frames. Start from A(B1(C(B2))) and delete B1 from A.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DetachedIframeUnloadHandlerABCB) {
+                       MAYBE_DetachedIframeUnloadHandlerABCB) {
   // This test takes longer to run, because multiple processes are waiting on
   // each other's documents to execute unload handler before destroying their
   // documents. https://crbug.com/1311985
