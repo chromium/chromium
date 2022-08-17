@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -308,38 +307,6 @@ public class PaymentRequestMetricsTest implements MainActivityStartCallback {
 
         // Make sure the events were logged correctly.
         int expectedSample = Event.REQUEST_SHIPPING | Event.REQUEST_METHOD_GOOGLE
-                | Event.COULD_NOT_SHOW | Event.NEEDS_COMPLETION_PAYMENT;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Expect no abort metrics to be logged even if there are no matching payment methods because
-     * the Payment Request was not shown to the user (a Payment Request gets cancelled because the
-     * merchant only accepts payment methods we don't support. It should instead be logged as a
-     * reason why the Payment Request was not shown to the user.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "Test is flaky, see crbug.com/1291889")
-    @Feature({"Payments"})
-    public void testMetrics_NoSupportedPaymentMethod() throws TimeoutException {
-        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
-                "noSupported", mPaymentRequestTestRule.getShowFailed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"The payment method", "not supported"});
-
-        // Make sure that it is not logged as an abort.
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(-1 /* none */);
-        // Make sure that it was logged as a reason why the Payment Request was not shown.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.CheckoutFunnel.NoShow",
-                        NotShownReason.NO_SUPPORTED_PAYMENT_METHOD));
-
-        // Make sure the events were logged correctly.
-        int expectedSample = Event.REQUEST_SHIPPING | Event.REQUEST_METHOD_OTHER
                 | Event.COULD_NOT_SHOW | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(

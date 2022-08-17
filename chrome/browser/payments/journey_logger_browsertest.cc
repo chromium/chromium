@@ -61,14 +61,14 @@ class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {
   base::HistogramTester histogram_tester;
-  GURL merchant_url = https_server()->GetURL("/payment_handler.html");
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), merchant_url));
+  NavigateTo("/payment_handler.html");
 
   // Launch the payment request without installing the payment app.
-  ResetEventWaiterForSingleEvent(TestEvent::kNotSupportedError);
-  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
-                                       "launchWithoutWaitForResponse()"));
-  WaitForObservedEvent();
+  content::EvalJsResult eval_js_result =
+      content::EvalJs(GetActiveWebContents(), "launch()");
+  ASSERT_TRUE(eval_js_result.error.empty());
+  EXPECT_THAT(eval_js_result.ExtractString(),
+              testing::StartsWith("NotSupportedError"));
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -94,6 +94,41 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {
   histogram_tester.ExpectBucketCount(
       "PaymentRequest.CheckoutFunnel",
       JourneyLogger::CheckoutFunnelStep::kCompleted, 0U);
+}
+
+IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
+                       NoPaymentMethodSupportedWithShipping) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_request_metrics_test.html");
+
+  // Launch the payment request without installing the payment app.
+  content::EvalJsResult eval_js_result =
+      content::EvalJs(GetActiveWebContents(), "noSupportedPromise()");
+  ASSERT_TRUE(eval_js_result.error.empty());
+  EXPECT_THAT(eval_js_result.ExtractString(),
+              testing::StartsWith("NotSupportedError"));
+
+  // Make sure that it is not logged as an abort.
+  for (int i = 0; i < static_cast<int>(JourneyLogger::ABORT_REASON_MAX); ++i) {
+    histogram_tester.ExpectBucketCount(
+        "PaymentRequest.CheckoutFunnel.Aborted",
+        static_cast<JourneyLogger::AbortReason>(i), 0);
+  }
+
+  // Make sure that it was logged as a reason why the Payment Request was not
+  // shown.
+  histogram_tester.ExpectBucketCount(
+      "PaymentRequest.CheckoutFunnel.NoShow",
+      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD, 1);
+
+  // Make sure the events were logged correctly.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT);
 }
 
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
