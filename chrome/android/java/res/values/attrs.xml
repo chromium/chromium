@@ -20,4 +20,8 @@
     <declare-styleable name="ExploreSitesTileView">
         <attr name="iconCornerRadius" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="ManageAccountDevicesLinkView">
+        <attr name="showLink" format="boolean" />
+    </declare-styleable>
 </resources>

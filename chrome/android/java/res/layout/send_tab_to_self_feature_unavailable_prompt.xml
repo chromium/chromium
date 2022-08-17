@@ -19,13 +19,13 @@
         android:layout_height="wrap_content"
         android:layout_width ="match_parent"
         android:paddingTop="16dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="24dp"
         android:contentDescription="@string/sharing_hub_no_devices_available_text"
         app:srcCompat="@drawable/shared_clipboard_zero_state"/>
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
@@ -56,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        app:showLink="false" />
 
 </LinearLayout>
