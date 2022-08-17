@@ -1239,7 +1239,8 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
   // The first two buckets (each power of two and the next bucket up) remain
   // the same between the two bucket distributions.
   size_t expected_index = BucketIndexLookup::GetIndex(1 << 8);
-  for (size_t i = 1 << 8; i < 1 << 19; i <<= 1) {
+  for (size_t i = 1 << 8; i < internal::kHighThresholdForAlternateDistribution;
+       i <<= 1) {
     // The first two buckets in the order should match up to the normal bucket
     // distribution.
     for (size_t offset = 0; offset < 2; offset++) {
@@ -1266,7 +1267,8 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
 
   // The rest of the buckets all match up exactly with the existing
   // bucket distribution.
-  for (size_t i = 1 << 19; i < internal::kMaxBucketed; i <<= 1) {
+  for (size_t i = internal::kHighThresholdForAlternateDistribution;
+       i < internal::kMaxBucketed; i <<= 1) {
     for (size_t offset = 0; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),

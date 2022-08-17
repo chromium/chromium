@@ -146,6 +146,21 @@ MaxRegularSlotSpanSize() {
   return kMaxPartitionPagesPerRegularSlotSpan << PartitionPageShift();
 }
 
+// The maximum size that is used in an alternate bucket distribution. After this
+// threshold, we only have 1 slot per slot-span, so external fragmentation
+// doesn't matter. So, using the alternate bucket distribution after this
+// threshold has no benefit, and only increases internal fragmentation.
+//
+// We would like this to be |MaxRegularSlotSpanSize()| on all platforms, but
+// this is not constexpr on all platforms, so on other platforms we hardcode it,
+// even though this may be too low, e.g. on systems with a page size >4KiB.
+constexpr size_t kHighThresholdForAlternateDistribution =
+#if PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR
+    MaxRegularSlotSpanSize();
+#else
+    1 << 16;
+#endif
+
 // We reserve virtual address space in 2 MiB chunks (aligned to 2 MiB as well).
 // These chunks are called *super pages*. We do this so that we can store
 // metadata in the first few pages of each 2 MiB-aligned section. This makes
