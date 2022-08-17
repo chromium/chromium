@@ -326,6 +326,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-003.html [ Fa
 crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-004.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-005.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-006.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-007.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-avoidance-in-table-in-grid.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-expansion-001.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-expansion-002.html [ Failure ]

@@ -91,9 +91,10 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
     const NGConstraintSpace& caption_constraint_space,
     const NGBlockNode& caption,
     NGBoxStrut margins,
-    const NGBlockBreakToken* break_token = nullptr) {
+    const NGBlockBreakToken* break_token = nullptr,
+    const NGEarlyBreak* early_break = nullptr) {
   const NGLayoutResult* layout_result =
-      caption.Layout(caption_constraint_space, break_token);
+      caption.Layout(caption_constraint_space, break_token, early_break);
 
   if (layout_result->Status() == NGLayoutResult::kSuccess) {
     NGFragment fragment(table_constraint_space.GetWritingDirection(),
@@ -1150,7 +1151,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                        available_size, child_block_offset);
       CaptionResult caption = LayoutCaption(
           ConstraintSpace(), Style(), container_builder_.InlineSize(),
-          child_space, child, margins, child_break_token);
+          child_space, child, margins, child_break_token, early_break_in_child);
       if (caption.layout_result->Status() != NGLayoutResult::kSuccess) {
         DCHECK_EQ(caption.layout_result->Status(),
                   NGLayoutResult::kOutOfFragmentainerSpace);
