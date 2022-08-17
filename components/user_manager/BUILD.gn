@@ -38,6 +38,8 @@ component("user_manager") {
       "scoped_user_manager.h",
       "user.cc",
       "user.h",
+      "user_directory_integrity_manager.cc",
+      "user_directory_integrity_manager.h",
       "user_image/user_image.cc",
       "user_image/user_image.h",
       "user_manager.cc",
