@@ -15,11 +15,17 @@ namespace url {
 inline bool IsURLSlash(char16_t ch) {
   return ch == '/' || ch == '\\';
 }
+inline bool IsURLSlash(char ch) {
+  return IsURLSlash(static_cast<char16_t>(ch));
+}
 
 // Returns true if we should trim this character from the URL because it is a
 // space or a control character.
 inline bool ShouldTrimFromURL(char16_t ch) {
   return ch <= ' ';
+}
+inline bool ShouldTrimFromURL(char ch) {
+  return ShouldTrimFromURL(static_cast<char16_t>(ch));
 }
 
 // Given an already-initialized begin index and length, this shrinks the range

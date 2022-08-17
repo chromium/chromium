@@ -69,7 +69,7 @@ const unsigned char kHostCharLookup[0x80] = {
     'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',kEsc,kEsc,kEsc,  0 ,  0 };
 
 // RFC1034 maximum FQDN length.
-constexpr int kMaxHostLength = 253;
+constexpr size_t kMaxHostLength = 253;
 
 // Generous padding to account for the fact that UTS#46 normalization can cause
 // a long string to actually shrink and fit within the 253 character RFC1034
@@ -77,11 +77,11 @@ constexpr int kMaxHostLength = 253;
 // cases: An arbitrary number of characters (e.g. U+00AD SOFT HYPHEN) can be
 // removed from the input by UTS#46 processing. However, this should be
 // sufficient for all normally-encountered, non-abusive hostname strings.
-constexpr int kMaxHostBufferLength = kMaxHostLength*5;
+constexpr size_t kMaxHostBufferLength = kMaxHostLength * 5;
 
-const int kTempHostBufferLen = 1024;
-typedef RawCanonOutputT<char, kTempHostBufferLen> StackBuffer;
-typedef RawCanonOutputT<char16_t, kTempHostBufferLen> StackBufferW;
+constexpr size_t kTempHostBufferLen = 1024;
+using StackBuffer = RawCanonOutputT<char, kTempHostBufferLen>;
+using StackBufferW = RawCanonOutputT<char16_t, kTempHostBufferLen>;
 
 // Scans a host name and fills in the output flags according to what we find.
 // |has_non_ascii| will be true if there are any non-7-bit characters, and
@@ -201,8 +201,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   // Now we check the ASCII output like a normal host. It will also handle
   // unescaping. Although we unescaped everything before this function call, if
   // somebody does %00 as fullwidth, ICU will convert this to ASCII.
-  bool success = DoSimpleHost(wide_output.data(),
-                              static_cast<size_t>(wide_output.length()), output,
+  bool success = DoSimpleHost(wide_output.data(), wide_output.length(), output,
                               &has_non_ascii);
   if (has_non_ascii) {
     // ICU generated something that DoSimpleHost didn't think looked like
@@ -220,8 +219,7 @@ bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
     // ASCII isn't strictly necessary, but DoSimpleHost handles this case
     // anyway so we handle it/
     output->set_length(original_output_len);
-    AppendInvalidNarrowString(wide_output.data(), 0,
-                              static_cast<size_t>(wide_output.length()),
+    AppendInvalidNarrowString(wide_output.data(), 0, wide_output.length(),
                               output);
     return false;
   }
@@ -238,7 +236,7 @@ bool DoComplexHost(const char* host,
                    CanonOutput* output) {
   // Save the current position in the output. We may write stuff and rewind it
   // below, so we need to know where to rewind to.
-  int begin_length = output->length();
+  size_t begin_length = output->length();
 
   // Points to the UTF-8 data we want to convert. This will either be the
   // input or the unescaped version written to |*output| if necessary.
@@ -268,7 +266,7 @@ bool DoComplexHost(const char* host,
     // Save the pointer into the data was just converted (it may be appended to
     // other data in the output buffer).
     utf8_source = &output->data()[begin_length];
-    utf8_source_len = static_cast<size_t>(output->length() - begin_length);
+    utf8_source_len = output->length() - begin_length;
   } else {
     // We don't need to unescape, use input for IDNization later. (We know the
     // input has non-ASCII, or the simple version would have been called
@@ -287,15 +285,14 @@ bool DoComplexHost(const char* host,
     for (size_t i = 0; i < utf8_source_len; i++)
       utf8.push_back(utf8_source[i]);
     output->set_length(begin_length);
-    AppendInvalidNarrowString(utf8.data(), 0,
-                              static_cast<size_t>(utf8.length()), output);
+    AppendInvalidNarrowString(utf8.data(), 0, utf8.length(), output);
     return false;
   }
   output->set_length(begin_length);
 
   // This will call DoSimpleHost which will do normal ASCII canonicalization
   // and also check for IP addresses in the outpt.
-  return DoIDNHost(utf16.data(), static_cast<size_t>(utf16.length()), output) &&
+  return DoIDNHost(utf16.data(), utf16.length(), output) &&
          are_all_escaped_valid;
 }
 
@@ -324,8 +321,8 @@ bool DoComplexHost(const char16_t* host,
 
     // Once we convert to UTF-8, we can use the 8-bit version of the complex
     // host handling code above.
-    return DoComplexHost(utf8.data(), static_cast<size_t>(utf8.length()),
-                         has_non_ascii, has_escaped, output);
+    return DoComplexHost(utf8.data(), utf8.length(), has_non_ascii, has_escaped,
+                         output);
   }
 
   // No unescaping necessary, we can safely pass the input to ICU. This

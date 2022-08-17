@@ -19,7 +19,7 @@ namespace url {
 // This uses the JDK's conversion function, which uses IDNA 2003, unlike the
 // ICU implementation.
 bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
-  DCHECK_EQ(0, output->length());  // Output buffer is assumed empty.
+  DCHECK_EQ(0u, output->length());  // Output buffer is assumed empty.
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_src =
@@ -33,7 +33,7 @@ bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
 
   std::u16string utf16_result =
       base::android::ConvertJavaStringToUTF16(java_result);
-  output->Append(utf16_result.data(), static_cast<int>(utf16_result.size()));
+  output->Append(utf16_result.data(), utf16_result.size());
   return true;
 }
 

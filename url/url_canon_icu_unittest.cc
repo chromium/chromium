@@ -92,7 +92,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
     RawCanonOutput<static_size> output;
     converter.ConvertFromUTF16(input.c_str(), static_cast<int>(input.length()),
                                &output);
-    EXPECT_EQ(input.length(), static_cast<size_t>(output.length()));
+    EXPECT_EQ(input.length(), output.length());
   }
 }
 

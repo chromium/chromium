@@ -6,11 +6,10 @@
 
 namespace url {
 
-StdStringCanonOutput::StdStringCanonOutput(std::string* str)
-    : CanonOutput(), str_(str) {
-  cur_len_ = static_cast<int>(str_->size());  // Append to existing data.
-  buffer_ = str_->empty() ? NULL : &(*str_)[0];
-  buffer_len_ = static_cast<int>(str_->size());
+StdStringCanonOutput::StdStringCanonOutput(std::string* str) : str_(str) {
+  cur_len_ = str_->size();  // Append to existing data.
+  buffer_ = str_->empty() ? nullptr : &(*str_)[0];
+  buffer_len_ = str_->size();
 }
 
 StdStringCanonOutput::~StdStringCanonOutput() {
@@ -22,9 +21,9 @@ void StdStringCanonOutput::Complete() {
   buffer_len_ = cur_len_;
 }
 
-void StdStringCanonOutput::Resize(int sz) {
+void StdStringCanonOutput::Resize(size_t sz) {
   str_->resize(sz);
-  buffer_ = str_->empty() ? NULL : &(*str_)[0];
+  buffer_ = str_->empty() ? nullptr : &(*str_)[0];
   buffer_len_ = sz;
 }
 

@@ -195,7 +195,7 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   // Encode a URL so that it can be used as a param value.
   url::RawCanonOutputT<char> encoded_url;
   url::EncodeURIComponent(kImageUrl, std::size(kImageUrl), &encoded_url);
-  EXPECT_GT(encoded_url.length(), 0);
+  EXPECT_GT(encoded_url.length(), 0u);
   base::StringPiece encoded_url_str(encoded_url.data(), encoded_url.length());
 
   // Verify that param-formatted requests can be sent with auth tokens.
@@ -251,7 +251,7 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   url::RawCanonOutputT<char> encoded_bad_url;
   url::EncodeURIComponent(kBadImageUrl, std::size(kBadImageUrl),
                           &encoded_bad_url);
-  EXPECT_GT(encoded_bad_url.length(), 0);
+  EXPECT_GT(encoded_bad_url.length(), 0u);
   base::StringPiece encoded_bad_url_str(encoded_bad_url.data(),
                                         encoded_bad_url.length());
 

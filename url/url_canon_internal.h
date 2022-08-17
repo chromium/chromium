@@ -101,7 +101,7 @@ COMPONENT_EXPORT(URL) extern const char kHexCharLookup[0x10];
 extern const char kCharToHexLookup[8];
 
 // Assumes the input is a valid hex digit! Call IsHexChar before using this.
-inline unsigned char HexCharToValue(unsigned char c) {
+inline int HexCharToValue(unsigned char c) {
   return c - kCharToHexLookup[c / 0x20];
 }
 
@@ -136,8 +136,8 @@ template<typename UINCHAR, typename OUTCHAR>
 inline void AppendEscapedChar(UINCHAR ch,
                               CanonOutputT<OUTCHAR>* output) {
   output->push_back('%');
-  output->push_back(kHexCharLookup[(ch >> 4) & 0xf]);
-  output->push_back(kHexCharLookup[ch & 0xf]);
+  output->push_back(static_cast<OUTCHAR>(kHexCharLookup[(ch >> 4) & 0xf]));
+  output->push_back(static_cast<OUTCHAR>(kHexCharLookup[ch & 0xf]));
 }
 
 // The character we'll substitute for undecodable or invalid characters.
@@ -331,7 +331,8 @@ inline bool DecodeEscaped(const CHAR* spec,
   }
 
   // Valid escape sequence.
-  *unescaped_value = (HexCharToValue(first) << 4) + HexCharToValue(second);
+  *unescaped_value = static_cast<unsigned char>((HexCharToValue(first) << 4) +
+                                                HexCharToValue(second));
   *begin += 2;
   return true;
 }
@@ -418,11 +419,11 @@ bool SetupUTF16OverrideComponents(const char* base,
 // resolver as well, so we declare them here.
 bool CanonicalizePartialPathInternal(const char* spec,
                                      const Component& path,
-                                     int path_begin_in_output,
+                                     size_t path_begin_in_output,
                                      CanonOutput* output);
 bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      const Component& path,
-                                     int path_begin_in_output,
+                                     size_t path_begin_in_output,
                                      CanonOutput* output);
 
 // Find the position of a bona fide Windows drive letter in the given path. If

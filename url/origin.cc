@@ -331,9 +331,8 @@ absl::optional<std::string> Origin::SerializeWithNonceImpl() const {
     pickle.WriteUInt64(0);
   }
 
-  base::span<const uint8_t> data(
-      static_cast<const uint8_t*>(pickle.data()),
-      static_cast<const uint8_t*>(pickle.data()) + pickle.size());
+  base::span<const uint8_t> data(static_cast<const uint8_t*>(pickle.data()),
+                                 pickle.size());
   // Base64 encode the data to make it nicer to play with.
   return base::Base64Encode(data);
 }

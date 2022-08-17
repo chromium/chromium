@@ -878,10 +878,9 @@ void DecodeURLEscapeSequences(const char* input,
   int output_initial_length = output->length();
   // Convert that 8-bit to UTF-16. It's not clear IE does this at all to
   // JavaScript URLs, but Firefox and Safari do.
-  size_t unescaped_length = static_cast<size_t>(unescaped_chars.length());
+  size_t unescaped_length = unescaped_chars.length();
   for (size_t i = 0; i < unescaped_length; i++) {
-    unsigned char uch =
-        static_cast<unsigned char>(unescaped_chars.at(static_cast<int>(i)));
+    unsigned char uch = static_cast<unsigned char>(unescaped_chars.at(i));
     if (uch < 0x80) {
       // Non-UTF-8, just append directly
       output->push_back(uch);
@@ -905,7 +904,7 @@ void DecodeURLEscapeSequences(const char* input,
         // copy all characters from the beginning to the end of the
         // identified sequence.
         output->set_length(output_initial_length);
-        for (int j = 0; j < unescaped_chars.length(); ++j)
+        for (size_t j = 0; j < unescaped_chars.length(); ++j)
           output->push_back(static_cast<unsigned char>(unescaped_chars.at(j)));
         break;
       }

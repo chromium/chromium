@@ -30,6 +30,7 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -107,7 +108,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
     std::string encoded =
         encoding_->Encode(String(input, static_cast<unsigned>(input_length)),
                           WTF::kURLEncodedEntitiesForUnencodables);
-    output->Append(encoded.c_str(), static_cast<int>(encoded.length()));
+    output->Append(encoded.c_str(), encoded.length());
   }
 
  private:
@@ -748,7 +749,8 @@ String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
   url::DecodeURLEscapeSequences(string_utf8.data(), string_utf8.size(), mode,
                                 &unescaped);
   return StringImpl::Create8BitIfPossible(
-      reinterpret_cast<UChar*>(unescaped.data()), unescaped.length());
+      reinterpret_cast<UChar*>(unescaped.data()),
+      base::checked_cast<wtf_size_t>(unescaped.length()));
 }
 
 String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
@@ -756,11 +758,12 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
       UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
-  int input_length = base::checked_cast<int>(utf8.length());
+  size_t input_length = utf8.length();
   if (buffer.capacity() < input_length * 3)
     buffer.Resize(input_length * 3);
 
-  url::EncodeURIComponent(utf8.c_str(), input_length, &buffer);
+  url::EncodeURIComponent(utf8.c_str(), static_cast<wtf_size_t>(input_length),
+                          &buffer);
   String escaped(buffer.data(), static_cast<unsigned>(buffer.length()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");
@@ -882,7 +885,7 @@ void KURL::Init(const KURL& base,
   // This makes it safe to call FromUTF8() below and still keep using parsed_
   // which stores byte offsets: Since it's all ASCII, UTF-8 byte offsets
   // map 1-to-1 to UTF-16 codepoint offsets.
-  for (int i = 0; i < output.length(); ++i) {
+  for (size_t i = 0; i < output.length(); ++i) {
     DCHECK(WTF::IsASCII(output.data()[i]));
   }
 

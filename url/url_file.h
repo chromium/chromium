@@ -17,6 +17,9 @@ namespace url {
 inline bool IsWindowsDriveSeparator(char16_t ch) {
   return ch == ':' || ch == '|';
 }
+inline bool IsWindowsDriveSeparator(char ch) {
+  return IsWindowsDriveSeparator(static_cast<char16_t>(ch));
+}
 
 // Returns the index of the next slash in the input after the given index, or
 // spec_len if the end of the input is reached.

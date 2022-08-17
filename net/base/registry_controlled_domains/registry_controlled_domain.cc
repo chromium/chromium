@@ -219,11 +219,11 @@ base::StringPiece GetDomainAndRegistryAsStringPiece(
 // These two functions append the given string as-is to the given output,
 // converting to UTF-8 if necessary.
 void AppendInvalidString(base::StringPiece str, url::CanonOutput* output) {
-  output->Append(str.data(), static_cast<int>(str.length()));
+  output->Append(str.data(), str.length());
 }
 void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
   std::string utf8 = base::UTF16ToUTF8(str);
-  output->Append(utf8.data(), static_cast<int>(utf8.length()));
+  output->Append(utf8.data(), utf8.length());
 }
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
@@ -249,7 +249,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     MappedHostComponent mapping;
     mapping.original_begin = begin;
     mapping.original_end = current;
-    mapping.canonical_begin = static_cast<size_t>(canon_output.length());
+    mapping.canonical_begin = canon_output.length();
 
     // Try to append the canonicalized version of this component.
     int current_len = static_cast<int>(current - begin);
@@ -260,7 +260,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
       AppendInvalidString(host.substr(begin, current_len), &canon_output);
     }
 
-    mapping.canonical_end = static_cast<size_t>(canon_output.length());
+    mapping.canonical_end = canon_output.length();
     components.push_back(mapping);
 
     if (current < host.length())

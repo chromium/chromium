@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_parse_internal.h"
@@ -150,19 +151,19 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
 // because it is run only on the canonical output.
 //
 // The output is guaranteed to end in a slash when this function completes.
-void BackUpToPreviousSlash(int path_begin_in_output,
-                           CanonOutput* output) {
-  DCHECK(output->length() > 0);
+void BackUpToPreviousSlash(size_t path_begin_in_output, CanonOutput* output) {
+  CHECK(output->length() > 0);
+  CHECK(path_begin_in_output < output->length());
 
-  int i = output->length() - 1;
+  size_t i = output->length() - 1;
   DCHECK(output->at(i) == '/');
   if (i == path_begin_in_output)
     return;  // We're at the first slash, nothing to do.
 
   // Now back up (skipping the trailing slash) until we find another slash.
-  i--;
-  while (output->at(i) != '/' && i > path_begin_in_output)
-    i--;
+  do {
+    --i;
+  } while (output->at(i) != '/' && i > path_begin_in_output);
 
   // Now shrink the output to just include that last slash we found.
   output->set_length(i + 1);
@@ -199,9 +200,9 @@ template <typename CHAR>
 void CheckForNestedEscapes(const CHAR* spec,
                            size_t next_input_index,
                            size_t input_len,
-                           int last_invalid_percent_index,
+                           size_t last_invalid_percent_index,
                            CanonOutput* output) {
-  const int length = output->length();
+  const size_t length = output->length();
   const char last_unescaped_char = output->at(length - 1);
 
   // If |output| currently looks like "%c", we need to try appending the next
@@ -220,10 +221,9 @@ void CheckForNestedEscapes(const CHAR* spec,
   }
 
   // Now output ends like "%cc".  Try to unescape this.
-  size_t begin = static_cast<size_t>(last_invalid_percent_index);
+  size_t begin = last_invalid_percent_index;
   unsigned char temp;
-  if (DecodeEscaped(output->data(), &begin,
-                    static_cast<size_t>(output->length()), &temp)) {
+  if (DecodeEscaped(output->data(), &begin, output->length(), &temp)) {
     // New escape sequence found.  Overwrite the characters following the '%'
     // with "25", and push_back() the one or two characters that were following
     // the '%' when we were called.
@@ -253,7 +253,7 @@ void CheckForNestedEscapes(const CHAR* spec,
 template <typename CHAR, typename UCHAR>
 bool DoPartialPathInternal(const CHAR* spec,
                            const Component& path,
-                           int path_begin_in_output,
+                           size_t path_begin_in_output,
                            CanonOutput* output) {
   if (!path.is_nonempty())
     return true;
@@ -263,11 +263,10 @@ bool DoPartialPathInternal(const CHAR* spec,
   // We use this variable to minimize the amount of work done when unescaping --
   // we'll only call CheckForNestedEscapes() when this points at one of the last
   // couple of characters in |output|.
-  int last_invalid_percent_index = INT_MIN;
+  absl::optional<size_t> last_invalid_percent_index;
 
   bool success = true;
   for (size_t i = static_cast<size_t>(path.begin); i < end; i++) {
-    DCHECK_LT(last_invalid_percent_index, output->length());
     UCHAR uch = static_cast<UCHAR>(spec[i]);
     if (sizeof(CHAR) > 1 && uch >= 0x80) {
       // We only need to test wide input for having non-ASCII characters. For
@@ -307,7 +306,7 @@ bool DoPartialPathInternal(const CHAR* spec,
               case DIRECTORY_UP:
                 BackUpToPreviousSlash(path_begin_in_output, output);
                 if (last_invalid_percent_index >= output->length()) {
-                  last_invalid_percent_index = INT_MIN;
+                  last_invalid_percent_index = absl::nullopt;
                 }
                 i += dotlen + consumed_len - 1;
                 break;
@@ -339,9 +338,12 @@ bool DoPartialPathInternal(const CHAR* spec,
               // '%' from a previously-detected invalid escape sequence, we
               // might have an input string with problematic nested escape
               // sequences; detect and fix them.
-              if (last_invalid_percent_index >= (output->length() - 3)) {
+              if (last_invalid_percent_index.has_value() &&
+                  ((last_invalid_percent_index.value() + 3) >=
+                   output->length())) {
                 CheckForNestedEscapes(spec, i + 1, end,
-                                      last_invalid_percent_index, output);
+                                      last_invalid_percent_index.value(),
+                                      output);
               }
             } else {
               // Either this is an invalid escaped character, or it's a valid
@@ -455,7 +457,7 @@ bool CanonicalizePartialPath(const char16_t* spec,
 
 bool CanonicalizePartialPathInternal(const char* spec,
                                      const Component& path,
-                                     int path_begin_in_output,
+                                     size_t path_begin_in_output,
                                      CanonOutput* output) {
   return DoPartialPathInternal<char, unsigned char>(
       spec, path, path_begin_in_output, output);
@@ -463,7 +465,7 @@ bool CanonicalizePartialPathInternal(const char* spec,
 
 bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      const Component& path,
-                                     int path_begin_in_output,
+                                     size_t path_begin_in_output,
                                      CanonOutput* output) {
   return DoPartialPathInternal<char16_t, char16_t>(
       spec, path, path_begin_in_output, output);

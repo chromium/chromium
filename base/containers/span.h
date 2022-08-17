@@ -286,7 +286,10 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
       typename End,
       typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
       typename = std::enable_if_t<!std::is_convertible<End, size_t>::value>>
-  constexpr span(It begin, End end) noexcept : span(begin, end - begin) {
+  constexpr span(It begin, End end) noexcept
+      // Subtracting two iterators gives a ptrdiff_t, but the result should be
+      // non-negative: see CHECK below.
+      : span(begin, static_cast<size_t>(end - begin)) {
     // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
     CHECK(begin <= end);
   }
