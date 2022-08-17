@@ -27,11 +27,13 @@
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
@@ -546,7 +548,8 @@ class ASH_EXPORT LockContentsView
   // Tracks the visibility of the extension Ui window.
   bool extension_ui_visible_ = false;
 
-  int unlock_attempt_ = 0;
+  // Tracks the unlock attempt of each user before a successful sign-in.
+  base::flat_map<AccountId, int> unlock_attempt_by_user_;
 
   // Whether a lock screen app is currently active (i.e. lock screen note action
   // state is reported as kActive by the data dispatcher).

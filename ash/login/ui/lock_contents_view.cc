@@ -721,8 +721,10 @@ LockContentsView::~LockContentsView() {
   Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
 
   // Times a password was incorrectly entered until view is destroyed.
-  Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(
-      false /*success*/, &unlock_attempt_);
+  for (auto& unlock_attempt : unlock_attempt_by_user_) {
+    Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(
+        false /*success*/, &unlock_attempt.second);
+  }
 
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
@@ -1592,7 +1594,11 @@ void LockContentsView::OnDeviceEnterpriseInfoChanged() {
 void LockContentsView::OnEnterpriseAccountDomainChanged() {}
 
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
-  unlock_attempt_ = unlock_attempt;
+  if (!CurrentBigUserView())
+    return;
+  AccountId account_id =
+      CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id;
+  unlock_attempt_by_user_[account_id] = unlock_attempt;
   ShowAuthErrorMessage();
 }
 
@@ -2036,6 +2042,8 @@ void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
 
 void LockContentsView::OnAuthenticate(bool auth_success,
                                       bool display_error_messages) {
+  AccountId account_id =
+      CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id;
   if (auth_success) {
     HideAuthErrorMessage();
 
@@ -2055,9 +2063,9 @@ void LockContentsView::OnAuthenticate(bool auth_success,
 
     // Times a password was incorrectly entered until user succeeds.
     Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(
-        true /*success*/, &unlock_attempt_);
+        true /*success*/, &unlock_attempt_by_user_[account_id]);
   } else {
-    ++unlock_attempt_;
+    ++unlock_attempt_by_user_[account_id];
     if (display_error_messages)
       ShowAuthErrorMessage();
   }
@@ -2264,12 +2272,14 @@ void LockContentsView::ShowAuthErrorMessage() {
   if (!big_view->auth_user())
     return;
 
+  int unlock_attempt = unlock_attempt_by_user_[big_view->GetCurrentUser()
+                                                   .basic_user_info.account_id];
   // Show gaia signin if this is login and the user has failed too many times.
   // Do not show on secondary login screen – even though it has type kLogin – as
   // there is no OOBE there.
   if (!ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
     if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        unlock_attempt_ >= kLoginAttemptsBeforeGaiaDialog &&
+        unlock_attempt >= kLoginAttemptsBeforeGaiaDialog &&
         Shell::Get()->session_controller()->GetSessionState() !=
             session_manager::SessionState::LOGIN_SECONDARY) {
       Shell::Get()->login_screen_controller()->ShowGaiaSignin(
@@ -2279,8 +2289,8 @@ void LockContentsView::ShowAuthErrorMessage() {
   }
 
   std::u16string error_text = l10n_util::GetStringUTF16(
-      unlock_attempt_ > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                          : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
+      unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
+                         : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   if (ime_controller->IsCapsLockEnabled()) {
     error_text +=

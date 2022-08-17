@@ -1320,6 +1320,50 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
     submit_password();
 }
 
+// Gaia should not be shown after first failed login attempt for a user, even if
+// there are many failed login attempts made by other users on the same device.
+TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
+  // Build lock screen with two users.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(2);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  auto submit_password = [&]() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+  };
+
+  // ShowGaiaSignin is never triggered.
+  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog - 1; ++i)
+    submit_password();
+  Mock::VerifyAndClearExpectations(client.get());
+
+  // Simulate a button click on the secondary UserView.
+  LoginAuthUserView::TestApi secondary_user(LockContentsView::TestApi(contents)
+                                                .opt_secondary_big_view()
+                                                ->auth_user());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      secondary_user.user_view()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(LoginPasswordView::TestApi(secondary_user.password_view())
+                  .textfield()
+                  ->HasFocus());
+
+  // Verify ShowGaiaSignin is not triggered for other users.
+  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
+  submit_password();
+  Mock::VerifyAndClearExpectations(client.get());
+}
+
 // Gaia is shown in login on the 4th bad password attempt.
 TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
   // Build lock screen with a single user.
