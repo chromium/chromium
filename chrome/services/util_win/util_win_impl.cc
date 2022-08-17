@@ -179,9 +179,14 @@ bool IsPinnedToTaskbarHelper::DirectoryContainsPinnedShortcutForProgram(
                                      base::FileEnumerator::FILES);
   for (base::FilePath shortcut = shortcut_enum.Next(); !shortcut.empty();
        shortcut = shortcut_enum.Next()) {
-    if (IsShortcutForProgram(shortcut, program_compare) &&
-        ShortcutHasUnpinToTaskbarVerb(shortcut)) {
-      return true;
+    if (IsShortcutForProgram(shortcut, program_compare)) {
+      absl::optional<bool> is_pinned = IsShortcutPinnedToTaskbar(shortcut);
+      if (is_pinned == true)
+        return true;
+      // Fall back to checking for the taskbar verb on versions of Windows that
+      // don't support IsShortcutPinnedToTaskbar.
+      if (!is_pinned.has_value() && ShortcutHasUnpinToTaskbarVerb(shortcut))
+        return true;
     }
   }
   return false;
