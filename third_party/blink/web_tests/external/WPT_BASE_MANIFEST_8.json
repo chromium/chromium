@@ -32,7 +32,7 @@
       ]
      ],
      "aria-owns-fallback-content.html": [
-      "e0492ef547733c7d313f2938e3d316670b9d0079",
+      "8a7c9ab6d0b2dcade77af9b6b7a4a1272fa08e26",
       [
        null,
        {}
@@ -95,7 +95,7 @@
       ]
      ],
      "delayed-ignored-change.html": [
-      "1fc98a10805a58dcd9e73c1bab2a472cf06f69f0",
+      "226af19b5fe3357d7735f095d5be2b42de625741",
       [
        null,
        {}
@@ -87315,6 +87315,19 @@
       ]
      ],
      "table": {
+      "border-spacing-at-breaks.tentative.html": [
+       "67588f28b02e258539c456d55af2f421cb6ba96a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "break-after-table-cell-child.html": [
        "60e09248923e633610555d533961b4f557f420b2",
        [
@@ -87575,6 +87588,19 @@
         {}
        ]
       ],
+      "final-border-spacing-at-fragmentainer-boundary.html": [
+       "2e0540d7458dbd696ef601f04f354a2f2faf9acc",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "repeated-section": {
        "abspos-in-monolithic.tentative.html": [
         "6ec70d030d233a8183bbf281503235e2cb005b66",
@@ -87747,6 +87773,19 @@
        ],
        "multiple-row-groups.tentative.html": [
         "96e6173249c8d053c95f357161cee6b6f9fcf52c",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "repeated-header-border-spacing.tentative.html": [
+        "7471c342a90f118ef7a33ac42a1fc9921617729e",
         [
          null,
          [
@@ -136560,6 +136599,32 @@
          }
         ]
        ],
+       "clip-path-animation-missing-0-percent.html": [
+        "4d4fee1b5b6b11ea0e3efd91dc0028dd3df78d7d",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-missing-0-percent-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-animation-none.html": [
+        "73b8a473354cde40b3f9542c1616859d0412e8bd",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-none-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-animation-overflow.html": [
         "09a44fb3aac327aef0d51636edfb92dcdd355942",
         [
@@ -136651,6 +136716,45 @@
          [
           [
            "/css/css-masking/clip-path/animations/clip-path-transition-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "two-clip-path-animation-diff-length1.html": [
+        "d6d04858b5a808aad9d366b3eae26bd75dc80127",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/two-clip-path-animation-diff-length1-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "two-clip-path-animation-diff-length2.html": [
+        "0d86120ef35db999dd91b3c2cdd709429e907746",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/two-clip-path-animation-diff-length2-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "two-clip-path-animation-diff-length3.html": [
+        "3c8141ad2defe3cd50bf08942819f9b27481ee36",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/two-clip-path-animation-diff-length3-ref.html",
            "=="
           ]
          ],
@@ -152463,7 +152567,7 @@
       ]
      ],
      "highlight-currentcolor-painting-properties-001.html": [
-      "94e7e9b8f1143ebd65dcb10d02083c5885a9bc46",
+      "8f347f119e5a3105c7c80df831d927f32d3cf24c",
       [
        null,
        [
@@ -152476,12 +152580,38 @@
       ]
      ],
      "highlight-currentcolor-painting-properties-002.html": [
-      "7dbc62415b8080c2fea5d5e19103c3d16a2e9e3f",
+      "bd5d5f4abb8c44a6db5d32975c347ab52d1cfb3b",
       [
        null,
        [
         [
          "/css/css-pseudo/highlight-currentcolor-painting-properties-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-currentcolor-painting-text-shadow-001.html": [
+      "141556f935b8e38f0352fd0a0c32212f2c62debf",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-currentcolor-painting-text-shadow-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-currentcolor-painting-text-shadow-002.html": [
+      "77858729afaf8c55b435094baceb5959b67d3d46",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-currentcolor-painting-text-shadow-002-ref.html",
          "=="
         ]
        ],
@@ -152567,7 +152697,7 @@
       ]
      ],
      "highlight-painting-003.html": [
-      "e4f061f0b5d1fba48ceb99dd6078a9010293c0d2",
+      "b09ef52dd7363424c9ce958b9e4cee58279e50d7",
       [
        null,
        [
@@ -281291,6 +281421,14 @@
         "6cd7e76774bdfada51ae9fc3058db5f65f5fb2f8",
         []
        ],
+       "clip-path-animation-missing-0-percent-ref.html": [
+        "200edcd03821ba2899e43fd560c475b23e7678f3",
+        []
+       ],
+       "clip-path-animation-none-ref.html": [
+        "f47e9f31b07c993aac8e065a699d5db2bc3cd9a0",
+        []
+       ],
        "clip-path-animation-overflow-ref.html": [
         "154a56d5f07832fc7ef08b4db40acbb50faf8348",
         []
@@ -281309,6 +281447,18 @@
        ],
        "clip-path-transition-ref.html": [
         "af164c30f06808c3394cf3210ca13bc41792d53c",
+        []
+       ],
+       "two-clip-path-animation-diff-length1-ref.html": [
+        "0feacb50bae46f131931212122f2b5b0e96d9701",
+        []
+       ],
+       "two-clip-path-animation-diff-length2-ref.html": [
+        "0feacb50bae46f131931212122f2b5b0e96d9701",
+        []
+       ],
+       "two-clip-path-animation-diff-length3-ref.html": [
+        "853f47f9ba31d75417221515965ded69a2b159af",
         []
        ]
       },
@@ -284408,11 +284558,19 @@
       []
      ],
      "highlight-currentcolor-painting-properties-001-ref.html": [
-      "47a028038b8a3fcd1b6a50d712f115c3c409e1b7",
+      "93e2002f4aa2bde2c0d1adbb13e0dfd2abf82421",
       []
      ],
      "highlight-currentcolor-painting-properties-002-ref.html": [
-      "19556f6e872a9da2e9ebe6c6e96f831b73fbfd4b",
+      "11ca501065e5567345ef6ac0541515d45ff20184",
+      []
+     ],
+     "highlight-currentcolor-painting-text-shadow-001-ref.html": [
+      "d6ee33cda749a55a89b28c5f253d2d956d8081e8",
+      []
+     ],
+     "highlight-currentcolor-painting-text-shadow-002-ref.html": [
+      "fb2696a55a1da63de8bc7962ddf7d20a4f31a861",
       []
      ],
      "highlight-currentcolor-root-explicit-default-001-ref.html": [
@@ -377311,7 +377469,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "3cf7f3a0251d8d8dccc57f729f6c6ccff6a7c093",
+       "58e2b26bcf3b70ae8ba991f921996c407bf5eaa3",
        [
         null,
         {}
@@ -377612,7 +377770,7 @@
        ]
       ],
       "custom-property-style-queries.html": [
-       "aec3f9a344cb7a5156f5287aef43c968f4eb9adb",
+       "35110daea7de7a16e165e36c6a49b3065dd98857",
        [
         null,
         {}
@@ -486540,6 +486698,13 @@
       ],
       "html_content_in_foreign_context.html": [
        "7efafb4fceb44f1564dbb47522a01447459ac2db",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inhead-noscript-head.html": [
+       "bcf42d4793b9a713bcab2e50dc8e780c3cb7ec14",
        [
         null,
         {}
