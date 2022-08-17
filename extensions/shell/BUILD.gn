@@ -369,8 +369,8 @@ test("app_shell_unittests") {
     ]
     deps += [
       "//ash/components/audio",
+      "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
-      "//chromeos/dbus:test_support",
     ]
   }
 

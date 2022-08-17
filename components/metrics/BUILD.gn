@@ -538,8 +538,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/network:test_support",
-      "//chromeos/dbus:test_support",
     ]
   }
 
@@ -561,9 +561,7 @@ source_set("unit_tests") {
   }
 
   if (is_win || is_linux) {
-    sources += [
-      "motherboard_metrics_provider_unittest.cc",
-    ]
+    sources += [ "motherboard_metrics_provider_unittest.cc" ]
   }
 }
 

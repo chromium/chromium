@@ -201,8 +201,8 @@ if (enable_rlz_support) {
     ]
     if (is_chromeos_ash) {
       deps += [
+        "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/dbus/debug_daemon",
-        "//chromeos/dbus:test_support",
         "//chromeos/system",
       ]
     }
