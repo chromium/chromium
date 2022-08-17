@@ -5,6 +5,8 @@
 #ifndef ASH_WM_FLOAT_FLOAT_CONTROLLER_H_
 #define ASH_WM_FLOAT_FLOAT_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -19,9 +21,8 @@ namespace ash {
 // This controller allows windows to be on top of all app windows, but below
 // pips. When a window is 'floated', it remains always on top for the user so
 // that they can complete secondary tasks. Floated window stays in the
-// |float_container|.
-class ASH_EXPORT FloatController : public aura::WindowObserver,
-                                   public TabletModeObserver,
+// `kShellWindowId_FloatContainer`.
+class ASH_EXPORT FloatController : public TabletModeObserver,
                                    public display::DisplayObserver,
                                    public chromeos::FloatControllerBase {
  public:
@@ -52,32 +53,31 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // Determines if a window can be floated in tablet mode.
   static bool CanFloatWindowInTablet(aura::Window* window);
 
-  aura::Window* float_window() { return float_window_; }
+  // Gets the ideal float bounds of `floated_window` in tablet mode if it were
+  // to be floated.
+  gfx::Rect GetPreferredFloatWindowTabletBounds(
+      aura::Window* floated_window) const;
 
-  MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
+  // Untucks `floated_window`. Does nothing if the window is already untucked.
+  void MaybeUntuckFloatedWindowForTablet(aura::Window* floated_window);
 
-  // Gets the ideal float bounds of `window` in tablet mode if it were to be
-  // floated.
-  gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
+  // Checks if `floated_window` is tucked.
+  bool IsFloatedWindowTuckedForTablet(const aura::Window* floated_window) const;
 
-  // Tucks or untucks `float_window_`. Does nothing if the window is already
-  // tucked or untucked.
-  void MaybeTuckFloatedWindowForTablet();
-  void MaybeUntuckFloatedWindowForTablet();
+  // Called by the resizer when a drag is completed. Updates the bounds
+  // and magnetism of the `floated_window`.
+  void OnDragCompletedForTablet(aura::Window* floated_window,
+                                const gfx::PointF& last_location_in_parent);
 
-  // Called by the resizer when a drag is completed. This assumes the dragged
-  // window associated with the resizer is `float_window_`. Updates the bounds
-  // and magnetism of the floated window.
-  void OnDragCompletedForTablet(const gfx::PointF& last_location_in_parent);
-
+  // TODO(shidi): Temporary passing `floated_window` here, will follow-up in
+  // desk logic to use only `active_floated_window_`.
   // Called by the resizer when a drag is completed by a fling or swipe gesture
   // event. Updates the magnetism of the window and then tucks the window
   // offscreen. `left` and `up` are used to determine the direction of the fling
   // or swipe gesture.
-  void OnFlingOrSwipeForTablet(bool left, bool up);
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
+  void OnFlingOrSwipeForTablet(aura::Window* floated_window,
+                               bool left,
+                               bool up);
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -93,39 +93,35 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
 
  private:
   class ScopedWindowTucker;
+  class FloatedWindowInfo;
   friend class DefaultState;
   friend class TabletModeWindowState;
   friend class WindowFloatTest;
 
   // Floats/Unfloats `window`.
-  // Only one floating window is allowed, floating a new window will
-  // unfloat the other floated window (if any).
+  // Only one floating window is allowed per desk, floating a new window on the
+  // same desk or moving a floated window to that desk will unfloat the other
+  // floated window (if any).
   void Float(aura::Window* window);
   void Unfloat(aura::Window* window);
 
-  // Unfloats floated window.
-  void ResetFloatedWindow();
+  // Unfloats `floated_window` from the desk it belongs to.
+  void ResetFloatedWindow(aura::Window* floated_window);
 
-  // Only one floating window is allowed, updated when a new window
-  // is floated.
-  aura::Window* float_window_ = nullptr;
+  // Returns the `FloatedWindowInfo` for the given window if it's floated, or
+  // nullptr otherwise.
+  FloatedWindowInfo* MaybeGetFloatedWindowInfo(
+      const aura::Window* window) const;
 
-  // When a window is floated, the window position should not be auto-managed.
-  // Use this value to reset the auto-managed state when unfloat a window.
-  bool position_auto_managed_ = false;
+  // This is called by `FloatedWindowInfo::OnWindowDestroying` to remove
+  // `floated_window` from `floated_window_info_map_`.
+  void OnFloatedWindowDestroying(aura::Window* floated_window);
 
-  // The corner a floated window should be magnetized to. It persists throughout
-  // the session; if you drag a window to the bottom left and float another
-  // window, that window will also be magnetized to the bottom left.
-  MagnetismCorner magnetism_corner_ = MagnetismCorner::kBottomRight;
-
-  // Scoped class that handles the special tucked window state, which is not a
-  // normal window state. Null when there is no current tucked window.
-  std::unique_ptr<ScopedWindowTucker> scoped_window_tucker_;
-
-  // Observes floated window.
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      float_window_observation_{this};
+  // Used to map floated window to to its FloatedWindowInfo.
+  // Contains extra info for a floated window such as its pre-float auto managed
+  // state and tablet mode magnetism.
+  base::flat_map<aura::Window*, std::unique_ptr<FloatedWindowInfo>>
+      floated_window_info_map_;
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};

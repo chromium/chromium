@@ -43,7 +43,8 @@ TabletModeFloatWindowResizer::TabletModeFloatWindowResizer(
           window_state->window()->GetRootWindow())) {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   // TODO(sophiewen): Remove this once the untuck window widget is implemented.
-  Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet();
+  Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
+      window_state->window());
 }
 
 TabletModeFloatWindowResizer::~TabletModeFloatWindowResizer() {
@@ -99,7 +100,9 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
   // remains in float state and not tucked.
   auto* float_controller = Shell::Get()->float_controller();
   DCHECK(WindowState::Get(float_window)->IsFloated());
-  float_controller->OnDragCompletedForTablet(last_location_in_parent_);
+
+  float_controller->OnDragCompletedForTablet(float_window,
+                                             last_location_in_parent_);
 }
 
 void TabletModeFloatWindowResizer::RevertDrag() {
@@ -118,7 +121,8 @@ void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
     up = details.swipe_up();
   }
 
-  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(left, up);
+  Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(GetTarget(), left,
+                                                            up);
 }
 
 }  // namespace ash

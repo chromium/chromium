@@ -62,10 +62,6 @@ class WindowFloatTest : public AshTestBase {
     return floated_window;
   }
 
-  bool IsFloatedWindowTucked() const {
-    return !!Shell::Get()->float_controller()->scoped_window_tucker_;
-  }
-
   void SetUp() override {
     // Ensure float feature is enabled.
     scoped_feature_list_.InitAndEnableFeature(
@@ -451,7 +447,8 @@ TEST_F(TabletWindowFloatTest, TuckedWindow) {
   GetEventGenerator()->GestureScrollSequence(
       header_center, header_center - gfx::Vector2d(10, 10),
       base::Milliseconds(10), /*steps=*/2);
-  EXPECT_TRUE(IsFloatedWindowTucked());
+  EXPECT_TRUE(Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+      window.get()));
   EXPECT_EQ(100, window->bounds().right());
 
   // Tests that after we exit tablet mode, the window is untucked and fully
