@@ -235,7 +235,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
         // startIntent launch behavior.
         Assert.assertNotNull(startIntent);
-        Features.ensureCommandLineIsUpToDate();
+        Features.getInstance().ensureCommandLineIsUpToDate();
         super.launchActivity(startIntent);
     }
 

@@ -146,7 +146,7 @@ public final class FieldTrialsInstrumentationTest {
         Assert.assertEquals("b1", parameter.getValue());
 
         // Make sure ensureCommandLineIsUpToDate() doesn't erase the value.
-        Features.ensureCommandLineIsUpToDate();
+        Features.getInstance().ensureCommandLineIsUpToDate();
         Assert.assertEquals("b1", parameter.getValue());
     }
 

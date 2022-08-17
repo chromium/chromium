@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.util.browser;
+package org.chromium.base.test.util;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.test.util.FeaturesBase;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
@@ -27,7 +25,10 @@ import java.util.List;
  *    &#64;Rule
  *    public TestRule mProcessor = new Features.JUnitProcessor();
  *
- *    &#64;Features.EnableFeatures(ChromeFeatureList.CHROME_MODERN_DESIGN)
+ *    &#64;Features.EnableFeatures(BaseFeatures.Foo)
+ *    public void testFoo() { ... }
+ *
+ *    &#64;Features.EnableFeatures(ContentFeatureList.Foo)
  *    public void testFoo() { ... }
  * }
  * </pre>
@@ -62,23 +63,9 @@ public class Features extends FeaturesBase {
         return (Features) sInstance;
     }
 
-    @Override
-    protected void applyForJUnit() {
-        super.applyForJUnit();
-        CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
-    }
-
-    @Override
-    protected void applyForInstrumentation() {
-        super.applyForInstrumentation();
-        CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
-        FieldTrials.getInstance().applyFieldTrials();
-    }
-
     /**
-     * Feature processor intended to be used in Robolectric and {@link BlankUiTestActivityTestCase}
-     * tests. The collected feature states would be applied to {@link FeatureList}'s internal
-     * test-only feature map.
+     * Feature processor intended to be used in unit tests tests. The collected feature states would
+     * be applied to {@link FeatureList}'s internal test-only feature map.
      */
     public static class JUnitProcessor extends BaseJUnitProcessor {
         public JUnitProcessor() {
@@ -93,21 +80,14 @@ public class Features extends FeaturesBase {
         }
 
         @Override
-        protected void after() {
-            super.after();
-            resetCachedFlags(/*forInstrumentation=*/false);
-        }
-
-        @Override
         protected void collectFeatures() {
             collectFeaturesImpl(getAnnotations());
         }
     }
 
     /**
-     * Feature processor intended to be used in instrumentation tests with native library, like
-     * those run with {@link ChromeJUnit4ClassRunner}. The collected feature states would be applied
-     * to {@link CommandLine}.
+     * Feature processor intended to be used in instrumentation tests with native library. The
+     * collected feature states would be applied to {@link CommandLine}.
      */
     public static class InstrumentationProcessor extends BaseInstrumentationProcessor {
         public InstrumentationProcessor() {
@@ -116,24 +96,9 @@ public class Features extends FeaturesBase {
         }
 
         @Override
-        protected void after() {
-            super.after();
-            resetCachedFlags(/*forInstrumentation=*/true);
-        }
-
-        @Override
         protected void collectFeatures() {
             collectFeaturesImpl(getAnnotations());
         }
-    }
-
-    /** Resets Features-related state that might persist in between tests. */
-    private static void resetCachedFlags(boolean forInstrumentation) {
-        CachedFeatureFlags.resetFlagsForTesting();
-        if (forInstrumentation) {
-            CachedFeatureFlags.resetDiskForTesting();
-        }
-        FieldTrials.getInstance().reset();
     }
 
     private static void collectFeaturesImpl(List<Annotation> annotations) {
