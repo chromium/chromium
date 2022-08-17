@@ -807,7 +807,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // TODO(crbug.com/1255548): Add tests for overscroll menu.
-- (void)testMinimumHeight {
+// TODO(crbug.com/1353899): Test flaky.
+- (void)DISABLED_testMinimumHeight {
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
