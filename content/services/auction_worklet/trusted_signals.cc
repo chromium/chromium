@@ -117,6 +117,102 @@ std::map<std::string, std::string> ParseChildKeyValueMap(
   return ParseKeyValueMap(v8_helper, named_object_value.As<v8::Object>(), keys);
 }
 
+// Attempts to parse the `priorityVector` value in `per_interest_group_data`,
+// expecting it to be a string-to-number mapping. Writes the parsed mapping to
+// `priority_vector`. Returns true on success. Any case where `priorityVector`
+// exists and is an object is considered a success, even if it's empty, or
+// some/all keys in it are mapped to things other than numbers.
+absl::optional<TrustedSignals::Result::PriorityVector> ParsePriorityVector(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Object> per_interest_group_data) {
+  v8::Local<v8::Value> priority_vector_value;
+  if (!per_interest_group_data
+           ->Get(v8_helper->scratch_context(),
+                 v8_helper->CreateStringFromLiteral("priorityVector"))
+           .ToLocal(&priority_vector_value) ||
+      !priority_vector_value->IsObject() ||
+      // Arrays are considered objects, so check explicitly for them.
+      priority_vector_value->IsArray()) {
+    return absl::nullopt;
+  }
+
+  v8::Local<v8::Object> priority_vector_object =
+      priority_vector_value.As<v8::Object>();
+
+  v8::Local<v8::Array> priority_vector_keys;
+  if (!priority_vector_object->GetOwnPropertyNames(v8_helper->scratch_context())
+           .ToLocal(&priority_vector_keys)) {
+    return absl::nullopt;
+  }
+
+  // Put together a list to construct the returned `flat_map` with, since
+  // insertion is O(n) while construction is O(n log n).
+  std::vector<std::pair<std::string, double>> priority_vector_pairs;
+  for (uint32_t i = 0; i < priority_vector_keys->Length(); ++i) {
+    v8::Local<v8::Value> v8_key;
+    std::string key;
+    if (!priority_vector_keys->Get(v8_helper->scratch_context(), i)
+             .ToLocal(&v8_key) ||
+        !v8_key->IsString() ||
+        !gin::ConvertFromV8(v8_helper->isolate(), v8_key, &key)) {
+      continue;
+    }
+    v8::Local<v8::Value> v8_value;
+    double value;
+    if (!priority_vector_object->Get(v8_helper->scratch_context(), v8_key)
+             .ToLocal(&v8_value) ||
+        !v8_value->IsNumber() ||
+        !v8_value->NumberValue(v8_helper->scratch_context()).To(&value)) {
+      continue;
+    }
+    priority_vector_pairs.emplace_back(std::move(key), value);
+  }
+  return TrustedSignals::Result::PriorityVector(
+      std::move(priority_vector_pairs));
+}
+
+// Attempts to parse the `perInterestGroupData` value in `v8_object`, extracting
+// the `priorityVector` fields of all interest group in `interest_group_names`,
+// and putting them all in the returned PriorityVectorMap.
+TrustedSignals::Result::PriorityVectorMap
+ParsePriorityVectorsInPerInterestGroupMap(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Object> v8_object,
+    const std::set<std::string>& interest_group_names) {
+  v8::Local<v8::Value> per_group_data_value;
+  if (!v8_object
+           ->Get(v8_helper->scratch_context(),
+                 v8_helper->CreateStringFromLiteral("perInterestGroupData"))
+           .ToLocal(&per_group_data_value) ||
+      !per_group_data_value->IsObject()) {
+    return {};
+  }
+  v8::Local<v8::Object> per_group_data_object =
+      per_group_data_value.As<v8::Object>();
+
+  TrustedSignals::Result::PriorityVectorMap out;
+  for (const auto& interest_group_name : interest_group_names) {
+    v8::Local<v8::String> v8_name;
+    if (!v8_helper->CreateUtf8String(interest_group_name).ToLocal(&v8_name))
+      continue;
+
+    v8::Local<v8::Value> per_interest_group_data_value;
+    if (!per_group_data_object->Get(v8_helper->scratch_context(), v8_name)
+             .ToLocal(&per_interest_group_data_value) ||
+        !per_interest_group_data_value->IsObject()) {
+      continue;
+    }
+
+    v8::Local<v8::Object> per_interest_group_data =
+        per_interest_group_data_value.As<v8::Object>();
+    absl::optional<TrustedSignals::Result::PriorityVector> priority_vector =
+        ParsePriorityVector(v8_helper, per_interest_group_data);
+    if (priority_vector)
+      out.emplace(interest_group_name, std::move(*priority_vector));
+  }
+  return out;
+}
+
 // Takes a list of keys, a map of strings to JSON strings and creates a
 // corresponding v8::Object from the entries with the provided keys. `keys` must
 // not be empty.
@@ -145,9 +241,11 @@ v8::Local<v8::Object> CreateObjectFromMap(
 }  // namespace
 
 TrustedSignals::Result::Result(
+    std::map<std::string, base::flat_map<std::string, double>> priority_vectors,
     std::map<std::string, std::string> bidder_json_data,
     absl::optional<uint32_t> data_version)
-    : bidder_json_data_(std::move(bidder_json_data)),
+    : priority_vectors_(std::move(priority_vectors)),
+      bidder_json_data_(std::move(bidder_json_data)),
       data_version_(data_version) {}
 
 TrustedSignals::Result::Result(
@@ -157,6 +255,16 @@ TrustedSignals::Result::Result(
     : render_url_json_data_(std::move(render_url_json_data)),
       ad_component_json_data_(std::move(ad_component_json_data)),
       data_version_(data_version) {}
+
+const TrustedSignals::Result::PriorityVector*
+TrustedSignals::Result::GetPriorityVector(
+    const std::string& interest_group_name) const {
+  DCHECK(priority_vectors_.has_value());
+  auto result = priority_vectors_->find(interest_group_name);
+  if (result == priority_vectors_->end())
+    return nullptr;
+  return &result->second;
+}
 
 v8::Local<v8::Object> TrustedSignals::Result::GetBiddingSignals(
     AuctionV8Helper* v8_helper,
@@ -413,11 +521,14 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     }
     if (format_version == 1) {
       result = base::MakeRefCounted<Result>(
+          /*priority_vectors=*/TrustedSignals::Result::PriorityVectorMap(),
           ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
           maybe_data_version);
     } else {
       DCHECK_EQ(format_version, 2);
       result = base::MakeRefCounted<Result>(
+          ParsePriorityVectorsInPerInterestGroupMap(v8_helper.get(), v8_object,
+                                                    *interest_group_names),
           ParseChildKeyValueMap(v8_helper.get(), v8_object, "keys",
                                 *bidding_signals_keys),
           maybe_data_version);

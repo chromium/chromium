@@ -39,6 +39,10 @@ const char kBaseBiddingJson[] = R"(
       "key1": 1,
       "key2": [2],
       "key3": "3"
+    },
+    "perInterestGroupData": {
+      "name1": { "priorityVector": { "foo": 1 } },
+      "name2": { "priorityVector": { "foo": 2 } }
     }
   }
 )";
@@ -355,6 +359,10 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
           /*trusted_bidding_signals_keys=*/absl::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
@@ -368,6 +376,10 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key1":1})",
             ExtractBiddingSignals(signals.get(), kKeys));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
@@ -402,21 +414,37 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher&"
                "keys=key1,key3&interestGroupNames=name1"),
-          R"({"keys":{"key1":1,"key3":3}})", {"name1"}, kKeys1);
+          R"({"keys":{"key1":1,"key3":3},
+                      "perInterestGroupData":
+                          {"name1": {"priorityVector": {"foo": 1}}}
+                      })",
+          {"name1"}, kKeys1);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key1":1,"key3":3})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 
   scoped_refptr<TrustedSignals::Result> signals2 =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
                "&keys=key2,key3&interestGroupNames=name2"),
-          R"({"keys":{"key2":[2],"key3":[3]}})", {"name2"}, kKeys2);
+          R"({"keys":{"key2":[2],"key3":[3]},
+              "perInterestGroupData":
+                  {"name2": {"priorityVector": {"foo": 2}}}
+              })",
+          {"name2"}, kKeys2);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsSequentialRequests) {
@@ -528,21 +556,35 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   // Note that these responses use different values for the shared key.
   AddBidderJsonResponse(&url_loader_factory_, kUrl1,
-                        R"({"keys":{"key1":1,"key3":3}})");
+                        R"({"keys":{"key1":1,"key3":3},
+                            "perInterestGroupData":
+                                {"name1": {"priorityVector": {"foo": 1}}}
+                            })");
   AddBidderJsonResponse(&url_loader_factory_, kUrl2,
-                        R"({"keys":{"key2":[2],"key3":[3]}})");
+                        R"({"keys":{"key2":[2],"key3":[3]},
+                            "perInterestGroupData":
+                                {"name2": {"priorityVector": {"foo": 2}}}
+                            })");
 
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":3})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
 }
 
 // Test the case where there are multiple network requests live at once.
@@ -673,12 +715,20 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   ASSERT_TRUE(signals1);
   EXPECT_EQ(R"({"key1":1,"key3":"3"})",
             ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
             ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
@@ -810,6 +860,10 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
+  const auto* priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
 }
 
 // Make two requests, try to start a network request, then cancel both requests.
@@ -877,6 +931,10 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals2.get(), kKeys2));
+  const auto* priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
 
   // The callback of `request1` should not be invoked, since it was cancelled.
   base::RunLoop().RunUntilIdle();
@@ -1112,6 +1170,10 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
   EXPECT_FALSE(error_msg);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), kKeys));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 }
 
 // Test scoring signals request carries experiment ID.

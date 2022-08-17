@@ -43,7 +43,7 @@ const char kBiddingJsonV1[] = R"(
 )";
 
 // Common JSON used for most bidding signals tests using the latest bidding
-// format version (version 2).
+// format version (version 2). key4 and name4 entries are deliberately missing.
 const char kBaseBiddingJson[] = R"(
   {
     "keys": {
@@ -54,6 +54,29 @@ const char kBaseBiddingJson[] = R"(
       "key 6": 6,
       "key=7": 7,
       "key,8": 8
+    },
+    "perInterestGroupData": {
+      "name1": {
+        "priorityVector": {
+          "foo": 1
+        }
+      },
+      "name2": {
+        "priorityVector": {
+          "foo": 2,
+          "bar": 3,
+          "baz": -3.5
+        }
+      },
+      "name3": {
+        "priorityVector": {}
+      },
+      "name 5": {
+        "priorityVector": {"foo": 5}
+      },
+      "name6\u2603": {
+        "priorityVector": {"foo": 6}
+      }
     }
   }
 )";
@@ -379,6 +402,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
           R"({"foo":4,"bar":5})", {"name1"}, {"key1"}, kHostname);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
@@ -400,14 +424,40 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
   EXPECT_FALSE(error_msg_.has_value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntryNotObject) {
+TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntriesNotObject) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/"
                "?hostname=publisher&keys=key1&interestGroupNames=name1"),
-          R"({"keys":4.1})", {"name1"}, {"key1"}, kHostname);
+          R"({"keys":4.1,"perInterestGroupData":"42"})", {"name1"}, {"key1"},
+          kHostname);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsInvalidPriorityVectors) {
+  // Test the cases were priority vectors are or contain invalid values.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL("https://url.test/"
+               "?hostname=publisher&keys=key1&interestGroupNames=name1,name2,"
+               "name3"),
+          R"({"perInterestGroupData":{
+            "name1" : {"priorityVector" : [2]},
+            "name2" : {"priorityVector" : 6},
+            "name3" : {"priorityVector" : {"foo": "bar",
+                                           "baz": -1}}
+          }})",
+          {"name1", "name2", "name3"}, {"key1"}, kHostname);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name2"));
+  const auto* priority_vector = signals->GetPriorityVector("name3");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"baz", -1}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
@@ -438,6 +488,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
           /*experiment_group_id=*/absl::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key4":null})", ExtractBiddingSignals(signals.get(), {"key4"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name4"));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
@@ -469,6 +520,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
           /*experiment_group_id=*/absl::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
@@ -506,6 +561,21 @@ TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
   EXPECT_EQ(
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
+
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  priority_vector = signals->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{
+                {"foo", 2}, {"bar", 3}, {"baz", -3.5}}),
+            *priority_vector);
+
+  priority_vector = signals->GetPriorityVector("name3");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ(TrustedSignals::Result::PriorityVector(), *priority_vector);
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
@@ -537,6 +607,11 @@ TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsDuplicateKeys) {
+  // Unlike most bidding signals tests, only test trusted bidding signals keys,
+  // and not interest group names. Since the PriorityVector corresponding to
+  // only a single interset group can be requested at a time, unlike
+  // TrustedSignals::ExtractJson(), which takes a vector of keys, there's no
+  // analogous case for interest group names.
   std::vector<std::string> bidder_signals_vector{"key1", "key2", "key2", "key1",
                                                  "key2"};
   scoped_refptr<TrustedSignals::Result> signals =
@@ -619,6 +694,16 @@ TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
   EXPECT_EQ(R"({"key 6":6})", ExtractBiddingSignals(signals.get(), {"key 6"}));
   EXPECT_EQ(R"({"key=7":7})", ExtractBiddingSignals(signals.get(), {"key=7"}));
   EXPECT_EQ(R"({"key,8":8})", ExtractBiddingSignals(signals.get(), {"key,8"}));
+
+  const auto* priority_vector = signals->GetPriorityVector("name 5");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 5}}),
+            *priority_vector);
+
+  priority_vector = signals->GetPriorityVector("name6\xE2\x98\x83");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 6}}),
+            *priority_vector);
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsEscapeQueryParams) {
@@ -786,6 +871,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
   EXPECT_EQ(
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
+  // Format V1 doesn't support priority vectors.
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
@@ -808,6 +895,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
   EXPECT_EQ(
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
+  // Format V1 doesn't support priority vectors.
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
 }
 
 // A V2 header with a V1 body treats all values as null (since it can't find
@@ -822,6 +911,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
           /*format_version_string=*/"2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
 }
 
 // A V1 header (i.e., no version header) with a V2 body treats all values as
@@ -836,6 +926,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
           /*format_version_string=*/absl::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
 }
 
 }  // namespace
