@@ -16,10 +16,7 @@
 #include "base/task/task_runner_util.h"
 
 namespace {
-
-void FileDeleter(base::File file) {
-}
-
+void FileDeleter(base::File file) {}
 }  // namespace
 
 namespace base {

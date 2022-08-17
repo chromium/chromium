@@ -61,6 +61,7 @@ BASE_EXPORT std::string MD5DigestToBase16(const MD5Digest& digest);
 // The given 'digest' structure will be filled with the result data.
 BASE_EXPORT void MD5Sum(const void* data, size_t length, MD5Digest* digest);
 
+// 生成MD5字符串。
 // Returns the MD5 (in hexadecimal) of a string.
 BASE_EXPORT std::string MD5String(const StringPiece& str);
 

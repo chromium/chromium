@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Environment类，其派生类EnvironmentImpl负责具体的实现，通过静态方法Create，创建了一个
+// std::unique_ptr<Environment>指向具体的实现，posix标准下是通过getenv和setenv来查询
+// 和设置环境变量的。
+
 #ifndef BASE_ENVIRONMENT_H_
 #define BASE_ENVIRONMENT_H_
 

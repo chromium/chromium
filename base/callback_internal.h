@@ -37,19 +37,28 @@ struct BindStateBaseRefCountTraits {
   static void Destruct(const BindStateBase*);
 };
 
+// 传递类型：std::conditional_t<bool, Type1, Type2>
+// 即编译期根据不同的参数，选择不同的类型
+// std::is_scalar<T>表示T是否为标量
 template <typename T>
 using PassingType = std::conditional_t<std::is_scalar<T>::value, T, T&&>;
 
 // BindStateBase is used to provide an opaque handle that the Callback
-// class can use to represent a function object with bound arguments.  It
-// behaves as an existential type that is used by a corresponding
+// class can use to represent a function object with bound arguments.
+// BindStateBase 用于提供一个不透明的句柄，回调类可以使用该句柄来表示具有绑定参数的函数对象
+// It behaves as an existential type that is used by a corresponding
 // DoInvoke function to perform the function execution.  This allows
 // us to shield the Callback class from the types of the bound argument via
 // "type erasure."
+// 它表现为一种存在类型，由相应的 DoInvoke 函数用于执行函数。 这允许我们通过“类型擦除”将
+// 回调类与绑定参数的类型屏蔽开来。
 // At the base level, the only task is to add reference counting data. Avoid
 // using or inheriting any virtual functions. Creating a vtable for every
-// BindState template instantiation results in a lot of bloat. Its only task is
-// to call the destructor which can be done with a function pointer.
+// BindState template instantiation results in a lot of bloat. Its only task
+// is to call the destructor which can be done with a function pointer.
+// 在基础级别，唯一的任务是添加引用计数数据。避免使用或继承任何虚函数。
+// 为每个 BindState 模板实例化创建一个 vtable 会导致大量膨胀。 它唯一的任务是调用可以
+// 用函数指针完成的析构函数。
 class BASE_EXPORT BindStateBase
     : public RefCountedThreadSafe<BindStateBase, BindStateBaseRefCountTraits> {
  public:
@@ -68,6 +77,7 @@ class BASE_EXPORT BindStateBase
  private:
   BindStateBase(InvokeFuncStorage polymorphic_invoke,
                 void (*destructor)(const BindStateBase*));
+
   BindStateBase(InvokeFuncStorage polymorphic_invoke,
                 void (*destructor)(const BindStateBase*),
                 bool (*query_cancellation_traits)(const BindStateBase*,
@@ -102,14 +112,15 @@ class BASE_EXPORT BindStateBase
 
   // Pointer to a function that will properly destroy |this|.
   void (*destructor_)(const BindStateBase*);
-  bool (*query_cancellation_traits_)(const BindStateBase*,
-                                     CancellationQueryMode mode);
+  bool (*query_cancellation_traits_)(const BindStateBase*, CancellationQueryMode mode);
 };
 
 // Holds the Callback methods that don't require specialization to reduce
-// template bloat.
+// template bloat. 持有不需要特化以减少模板膨胀的回调方法。
 // CallbackBase<MoveOnly> is a direct base class of MoveOnly callbacks, and
 // CallbackBase<Copyable> uses CallbackBase<MoveOnly> for its implementation.
+// CallbackBase<MoveOnly> 是 MoveOnly 回调的直接基类，
+// CallbackBase<Copyable> 使用 CallbackBase<MoveOnly> 来实现。
 class BASE_EXPORT CallbackBase {
  public:
   inline CallbackBase(CallbackBase&& c) noexcept;
@@ -122,22 +133,30 @@ class BASE_EXPORT CallbackBase {
   CallbackBase& operator=(CallbackBaseCopyable&& c) noexcept;
 
   // Returns true if Callback is null (doesn't refer to anything).
-  bool is_null() const { return !bind_state_; }
-  explicit operator bool() const { return !is_null(); }
+  // 如果 Callback 为 null（不引用任何内容），则返回 true。
+  bool is_null() const {
+    return !bind_state_;
+  }
+  explicit operator bool() const {
+    return !is_null();
+  }
 
   // Returns true if the callback invocation will be nop due to an cancellation.
   // It's invalid to call this on uninitialized callback.
-  //
+  // 如果由于取消而回调调用将是 nop，则返回 true。在未初始化的回调上调用它是无效的。
   // Must be called on the Callback's destination sequence.
+  // 必须在回调的目标序列上调用。
   bool IsCancelled() const;
 
   // If this returns false, the callback invocation will be a nop due to a
   // cancellation. This may(!) still return true, even on a cancelled callback.
+  // 如果这返回false，则回调调用将是由于取消而导致的nop。即使在取消回调时，这可能（！）仍然返回 true。
   //
   // This function is thread-safe.
   bool MaybeValid() const;
 
   // Returns the Callback into an uninitialized state.
+  // 将回调返回到未初始化状态。
   void Reset();
 
  protected:
@@ -150,6 +169,7 @@ class BASE_EXPORT CallbackBase {
   using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
 
   // Returns true if this callback equals |other|. |other| may be null.
+  // 如果此回调等于 |other|，则返回 true。 |其他| 可能为空。
   bool EqualsInternal(const CallbackBase& other) const;
 
   constexpr inline CallbackBase();
@@ -158,6 +178,7 @@ class BASE_EXPORT CallbackBase {
   // initialization of the scoped_refptr.
   explicit inline CallbackBase(BindStateBase* bind_state);
 
+  // 多态调用
   InvokeFuncStorage polymorphic_invoke() const {
     return bind_state_->polymorphic_invoke_;
   }
@@ -165,6 +186,7 @@ class BASE_EXPORT CallbackBase {
   // Force the destructor to be instantiated inside this translation unit so
   // that our subclasses will not get inlined versions.  Avoids more template
   // bloat.
+  // 强制析构函数在这个翻译单元中实例化，这样我们的子类就不会得到内联版本。 避免更多的模板膨胀。
   ~CallbackBase();
 
   scoped_refptr<BindStateBase> bind_state_;

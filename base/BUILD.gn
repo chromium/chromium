@@ -17,6 +17,8 @@
 # a bit easier to see which files apply in which cases rather than having a
 # huge sequence of random-looking conditionals.
 
+# 这是base目录的最顶层构建文件：BUILD.gn
+
 import("//base/allocator/allocator.gni")
 import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
@@ -106,6 +108,7 @@ config("memory_tagging") {
 }
 
 config("base_implementation") {
+  # 这里配置 base/base_export.h 中使用到的 BASE_IMPLEMENTATION宏
   defines = [ "BASE_IMPLEMENTATION" ]
   configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }

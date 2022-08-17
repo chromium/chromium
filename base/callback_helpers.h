@@ -45,8 +45,7 @@ struct IsOnceCallbackImpl<OnceCallback<R(Args...)>> : std::true_type {};
 template <typename T>
 using IsBaseCallback = internal::IsBaseCallbackImpl<std::decay_t<T>>;
 
-// IsOnceCallback<T>::value is true when T is a OnceClosure or OnceCallback
-// type.
+// IsOnceCallback<T>::value is true when T is a OnceClosure or OnceCallback type.
 template <typename T>
 using IsOnceCallback = internal::IsOnceCallbackImpl<std::decay_t<T>>;
 

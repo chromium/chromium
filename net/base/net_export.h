@@ -22,17 +22,17 @@
 
 #else  // defined(WIN32)
 #if defined(NET_IMPLEMENTATION)
-#define NET_EXPORT __attribute__((visibility("default")))
-#define NET_EXPORT_PRIVATE __attribute__((visibility("default")))
+  #define NET_EXPORT __attribute__((visibility("default")))
+  #define NET_EXPORT_PRIVATE __attribute__((visibility("default")))
 #else
-#define NET_EXPORT
-#define NET_EXPORT_PRIVATE
+  #define NET_EXPORT
+  #define NET_EXPORT_PRIVATE
 #endif
 #endif
 
 #else  /// defined(COMPONENT_BUILD)
-#define NET_EXPORT
-#define NET_EXPORT_PRIVATE
+  #define NET_EXPORT
+  #define NET_EXPORT_PRIVATE
 #endif
 
 #endif  // NET_BASE_NET_EXPORT_H_

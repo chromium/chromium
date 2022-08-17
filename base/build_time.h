@@ -10,6 +10,8 @@
 
 namespace base {
 
+// etBuildTime 通过在build的时候，生成一个带有编译时间的常量的头文件，
+// 可以通过这个头文件得到二进制程序的编译时间。
 // GetBuildTime returns the time at which the current binary was built,
 // rounded down to 5:00:00am at the start of the day in UTC.
 //

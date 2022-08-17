@@ -13,6 +13,7 @@ namespace allocator {
 BASE_EXPORT bool IsAllocatorInitialized();
 
 }  // namespace allocator
+
 }  // namespace base
 
 #endif  // BASE_ALLOCATOR_ALLOCATOR_CHECK_H_

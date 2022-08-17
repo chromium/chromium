@@ -568,7 +568,7 @@ void DisplayDebugMessageInDialog(const std::string& str) {
 #endif  // !defined(NDEBUG)
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity)
-    : severity_(severity), file_(file), line_(line) {
+                       : severity_(severity), file_(file), line_(line) {
   Init(file, line);
 }
 
@@ -1106,9 +1106,9 @@ void RawLog(int level, const char* message) {
     const size_t message_len = strlen(message);
     int rv;
     while (bytes_written < message_len) {
-      rv = HANDLE_EINTR(
-          write(STDERR_FILENO, message + bytes_written,
-                message_len - bytes_written));
+      rv = HANDLE_EINTR(write(STDERR_FILENO,
+                              message + bytes_written,
+                              message_len - bytes_written));
       if (rv < 0) {
         // Give up, nothing we can do now.
         break;

@@ -16,31 +16,45 @@
 #include "build/build_config.h"
 
 #if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
-#include "base/mac/scoped_block.h"
+  #include "base/mac/scoped_block.h"
 #endif
+
+// Bind/CallBack 和std::bind&std::function类似，Google提供了使用文档和设计文档，
+// 说明了自己为何没有使用std标准库，而是自己造轮子的原因callback。
+
+// bind_helpers 类似于std::ref，默认的std::bind是将参数拷贝后再绑定，可以使用std::ref
+// 通过传引用的方式绑定，bind_helper提供了更丰富的传参方式，传引用，传值，所有权转移等。
 
 // -----------------------------------------------------------------------------
 // Usage documentation
 // -----------------------------------------------------------------------------
 //
-// Overview:
+// Overview: 概述
 // base::BindOnce() and base::BindRepeating() are helpers for creating
 // base::OnceCallback and base::RepeatingCallback objects respectively.
+// base::BindOnce() 和 base::BindRepeating() 分别是创建 base::OnceCallback
+// 和 base::RepeatingCallback 对象的助手。
 //
 // For a runnable object of n-arity, the base::Bind*() family allows partial
 // application of the first m arguments. The remaining n - m arguments must be
 // passed when invoking the callback with Run().
+// 对于 n-arity 的可运行对象，base::Bind*() 系列允许部分应用前 m 个参数。 使用 Run()
+// 调用回调时，必须传递剩余的 n - m 个参数。
 //
 //   // The first argument is bound at callback creation; the remaining
 //   // two must be passed when calling Run() on the callback object.
+//   // 第一个参数在回调创建时绑定； 其余两个必须在回调对象上调用 Run() 时传递。
 //   base::OnceCallback<long(int, long)> cb = base::BindOnce(
 //       [](short x, int y, long z) { return x * y * z; }, 42);
 //
 // When binding to a method, the receiver object must also be specified at
 // callback creation time. When Run() is invoked, the method will be invoked on
 // the specified receiver object.
+// 绑定到方法时，还必须在回调创建时指定接收者对象。 调用 Run() 时，将在指定的接收器对象上调用该方法。
 //
-//   class C : public base::RefCounted<C> { void F(); };
+//   class C : public base::RefCounted<C> {
+//     void F();
+//   };
 //   auto instance = base::MakeRefCounted<C>();
 //   auto cb = base::BindOnce(&C::F, instance);
 //   std::move(cb).Run();  // Identical to instance->F()
@@ -48,12 +62,14 @@
 // See //docs/callback.md for the full documentation.
 //
 // -----------------------------------------------------------------------------
-// Implementation notes
+// Implementation notes 实施说明
 // -----------------------------------------------------------------------------
 //
 // If you're reading the implementation, before proceeding further, you should
 // read the top comment of base/bind_internal.h for a definition of common
 // terms and concepts.
+// 如果您正在阅读实现，在继续之前，您应该阅读 base/bind_internal.h 的顶部注释以了解
+// 常用术语和概念的定义。
 
 namespace base {
 
@@ -62,14 +78,14 @@ template <typename Functor, typename... Args>
 inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
     Functor&& functor,
     Args&&... args) {
+
   static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
                     (std::is_rvalue_reference<Functor&&>() &&
                      !std::is_const<std::remove_reference_t<Functor>>()),
                 "BindOnce requires non-const rvalue for OnceCallback binding."
                 " I.e.: base::BindOnce(std::move(callback)).");
   static_assert(
-      conjunction<
-          internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
+      conjunction<internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
       "Use std::move() instead of base::Passed() with base::BindOnce()");
 
   return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),

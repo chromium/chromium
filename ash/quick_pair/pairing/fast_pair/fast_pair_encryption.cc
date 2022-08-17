@@ -28,6 +28,7 @@ using ash::quick_pair::fast_pair_encryption::kBlockByteSize;
 bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
     const bssl::UniquePtr<EC_GROUP>& ec_group,
     const std::string& decoded_public_anti_spoofing) {
+
   std::array<uint8_t, kPublicKeyByteSize + 1> buffer;
   buffer[0] = POINT_CONVERSION_UNCOMPRESSED;
   std::copy(decoded_public_anti_spoofing.begin(),
@@ -35,8 +36,7 @@ bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
 
   bssl::UniquePtr<EC_POINT> new_ec_point(EC_POINT_new(ec_group.get()));
 
-  if (!EC_POINT_oct2point(ec_group.get(), new_ec_point.get(), buffer.data(),
-                          buffer.size(), nullptr)) {
+  if (!EC_POINT_oct2point(ec_group.get(), new_ec_point.get(), buffer.data(), buffer.size(), nullptr)) {
     return nullptr;
   }
 
@@ -48,8 +48,7 @@ void* KDF(const void* in, size_t inlen, void* out, size_t* outlen) {
   // Set this to 16 since that's the amount of bytes we want to use
   // for the key, even though more will be written by SHA256 below.
   *outlen = kPrivateKeyByteSize;
-  return SHA256(static_cast<const uint8_t*>(in), inlen,
-                static_cast<uint8_t*>(out));
+  return SHA256(static_cast<const uint8_t*>(in), inlen, static_cast<uint8_t*>(out));
 }
 
 }  // namespace
@@ -122,8 +121,7 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
   // Ignore the first byte since it is 0x04, from the above uncompressed X9 .62
   // format.
   std::array<uint8_t, kPublicKeyByteSize> public_key;
-  std::copy(uncompressed_private_key.begin() + 1,
-            uncompressed_private_key.end(), public_key.begin());
+  std::copy(uncompressed_private_key.begin() + 1, uncompressed_private_key.end(), public_key.begin());
 
   return KeyPair(private_key, public_key);
 }
@@ -131,9 +129,9 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
 const std::array<uint8_t, kBlockByteSize> EncryptBytes(
     const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
     const std::array<uint8_t, kBlockByteSize>& bytes_to_encrypt) {
+
   AES_KEY aes_key;
-  int aes_key_was_set = AES_set_encrypt_key(aes_key_bytes.data(),
-                                            aes_key_bytes.size() * 8, &aes_key);
+  int aes_key_was_set = AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
   DCHECK(aes_key_was_set == 0) << "Invalid AES key size.";
   std::array<uint8_t, kBlockByteSize> encrypted_bytes;
   AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);

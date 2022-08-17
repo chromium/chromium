@@ -79,7 +79,9 @@ class BASE_EXPORT FileProxy : public SupportsWeakPtr<FileProxy> {
 
   // Returns true if a new file was created (or an old one truncated to zero
   // length to simulate a new file), and false otherwise.
-  bool created() const { return file_.created(); }
+  bool created() const {
+    return file_.created();
+  }
 
   // Claims ownership of |file|. It is an error to call this method when
   // IsValid() returns true.
@@ -130,7 +132,10 @@ class BASE_EXPORT FileProxy : public SupportsWeakPtr<FileProxy> {
 
  private:
   friend class FileHelper;
-  TaskRunner* task_runner() { return task_runner_.get(); }
+
+  TaskRunner* task_runner() {
+    return task_runner_.get();
+  }
 
   scoped_refptr<TaskRunner> task_runner_;
   File file_;

@@ -251,7 +251,9 @@ class BASE_EXPORT TaskQueueImpl {
 
   WeakPtr<SequenceManagerImpl> GetSequenceManagerWeakPtr();
 
-  SequenceManagerImpl* sequence_manager() const { return sequence_manager_; }
+  SequenceManagerImpl* sequence_manager() const {
+    return sequence_manager_;
+  }
 
   // Returns true if this queue is unregistered or task queue manager is deleted
   // and this queue can be safely deleted on any thread.

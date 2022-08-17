@@ -32,7 +32,7 @@ BASE_EXPORT void CompleteLazyInstance(subtle::AtomicWord* state,
                                       void (*destructor)(void*),
                                       void* destructor_arg);
 
-}  // namespace internal
+} // namespace internal
 
 namespace subtle {
 
@@ -65,8 +65,7 @@ Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
 
   // If any bit in the created mask is true, the instance has already been
   // fully constructed.
-  constexpr subtle::AtomicWord kLazyInstanceCreatedMask =
-      ~internal::kLazyInstanceStateCreating;
+  constexpr subtle::AtomicWord kLazyInstanceCreatedMask = ~internal::kLazyInstanceStateCreating;
 
   // We will hopefully have fast access when the instance is already created.
   // Since a thread sees |state| == 0 or kLazyInstanceStateCreating at most
@@ -79,10 +78,8 @@ Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
     if (internal::NeedsLazyInstance(state)) {
       // This thread won the race and is now responsible for creating the
       // instance and storing it back into |state|.
-      instance =
-          reinterpret_cast<subtle::AtomicWord>((*creator_func)(creator_arg));
-      internal::CompleteLazyInstance(state, instance, destructor,
-                                     destructor_arg);
+      instance = reinterpret_cast<subtle::AtomicWord>((*creator_func)(creator_arg));
+      internal::CompleteLazyInstance(state, instance, destructor, destructor_arg);
     } else {
       // This thread lost the race but now has visibility over the constructed
       // instance (NeedsLazyInstance() doesn't return until the constructing
@@ -94,8 +91,8 @@ Type* GetOrCreateLazyPointer(subtle::AtomicWord* state,
   return reinterpret_cast<Type*>(instance);
 }
 
-}  // namespace subtle
+} // namespace subtle
 
-}  // namespace base
+} // namespace base
 
-#endif  // BASE_LAZY_INSTANCE_HELPERS_H_
+#endif // BASE_LAZY_INSTANCE_HELPERS_H_

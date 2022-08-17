@@ -57,8 +57,7 @@ class BindPostTaskTrampoline {
   template <typename... Args>
   void Run(Args... args) {
     // If CallbackType is a OnceCallback then GetClosure() consumes `callback_`.
-    task_runner_->PostTask(location_,
-                           GetClosure(&callback_, std::forward<Args>(args)...));
+    task_runner_->PostTask(location_, GetClosure(&callback_, std::forward<Args>(args)...));
   }
 
  private:

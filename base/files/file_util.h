@@ -62,6 +62,8 @@ BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 //
 // In POSIX environment and if |path| is a symbolic link, this deletes only
 // the symlink. (even if the symlink points to a non-existent file)
+// 如果path为目录，则 recursive 必须等于 true，不然无法删除文件夹。
+// 如果path为文件，则 recursive 是否为true，都不会删除同目录下的其他文件和目录。
 BASE_EXPORT bool DeleteFile(const FilePath& path);
 
 // Deletes the given path, whether it's a file or a directory.
@@ -108,9 +110,7 @@ BASE_EXPORT bool Move(const FilePath& from_path, const FilePath& to_path);
 // temporary files. On Windows it preserves attributes of the target file.
 // Returns true on success, leaving *error unchanged.
 // Returns false on failure and sets *error appropriately, if it is non-NULL.
-BASE_EXPORT bool ReplaceFile(const FilePath& from_path,
-                             const FilePath& to_path,
-                             File::Error* error);
+BASE_EXPORT bool ReplaceFile(const FilePath& from_path, const FilePath& to_path, File::Error* error);
 
 // Copies a single file. Use CopyDirectory() to copy directories.
 // This function fails if either path contains traversal components ('..').

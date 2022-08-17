@@ -27,6 +27,8 @@ namespace base {
 // MessagePumpWin serves as the base for specialized versions of the MessagePump
 // for Windows. It provides basic functionality like handling of observers and
 // controlling the lifetime of the message pump.
+// MessagePumpWin 用作 Windows 专用版 MessagePump 的基础。它提供了基本功能，
+// 例如处理 观察者 和控制 消息泵 的生命周期。
 class BASE_EXPORT MessagePumpWin : public MessagePump {
  public:
   MessagePumpWin();
@@ -43,9 +45,11 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
     Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
+    // 用于标记当前的 Run() 调用应尽快返回。
     bool should_quit = false;
 
     // Set to true if this Run() is nested within another Run().
+    // 如果此 Run() 嵌套在另一个 Run() 中，则设置为 true。
     bool is_nested = false;
   };
 
@@ -83,12 +87,16 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 //-----------------------------------------------------------------------------
 // MessagePumpForUI extends MessagePumpWin with methods that are particular to a
 // MessageLoop instantiated with TYPE_UI.
+// MessagePumpForUI 使用特定于使用 TYPE_UI 实例化的 MessageLoop 的方法扩展 MessagePumpWin。
 //
 // MessagePumpForUI implements a "traditional" Windows message pump. It contains
 // a nearly infinite loop that peeks out messages, and then dispatches them.
 // Intermixed with those peeks are callouts to DoWork. When there are no
 // events to be serviced, this pump goes into a wait state. In most cases, this
 // message pump handles all processing.
+// MessagePumpForUI 实现了一个“传统的”Windows 消息泵。它包含一个几乎无限的循环，
+// 可以窥探消息，然后分派它们。与这些偷看相混合的是对 DoWork 的标注。当没有要服务的
+// 事件时，该泵进入等待状态。 在大多数情况下，此消息泵处理所有处理。
 //
 // However, when a task, or windows event, invokes on the stack a native dialog
 // box or such, that window typically provides a bare bones (native?) message
@@ -96,11 +104,16 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 // peek of the Windows message queue, followed by a dispatch of the peeked
 // message.  MessageLoop extends that bare-bones message pump to also service
 // Tasks, at the cost of some complexity.
+// 但是，当任务或 Windows 事件在堆栈上调用本机对话框等时，该窗口通常会提供基本的（本机？）
+// 消息泵。该准系统消息泵通常只支持查看 Windows 消息队列，然后发送已查看的消息。
+// MessageLoop 以一些复杂性为代价扩展了该准系统消息泵以服务于任务。
 //
 // The basic structure of the extension (referred to as a sub-pump) is that a
 // special message, kMsgHaveWork, is repeatedly injected into the Windows
 // Message queue.  Each time the kMsgHaveWork message is peeked, checks are made
 // for an extended set of events, including the availability of Tasks to run.
+// 扩展（称为子泵）的基本结构是一个特殊的消息，kMsgHaveWork，被重复注入到 Windows 消息队
+// 列中。每次查看 kMsgHaveWork 消息时，都会检查一组扩展的事件，包括要运行的任务的可用性。
 //
 // After running a task, the special message kMsgHaveWork is again posted to the
 // Windows Message queue, ensuring a future time slice for processing a future
@@ -126,12 +139,18 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 // an excellent choice.  It is also helpful that the starter messages that are
 // placed in the queue when new task arrive also awakens DoRunLoop.
 //
+/**
+ * @brief 创建了一个隐藏不可见窗口来处理需要在界面(UI)线程处理的消息，大体原理也就是需要执行
+ * task的时候发送一个自定义的消息，当窗口接收到task的时候调用保存起来的回调函数，还有
+ * 的是通过把回调放在消息结构体里面。
+ * 利用Windows的隐式输入窗口，接收UI线程的事件，回调事件处理函数
+ */
 class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
  public:
   MessagePumpForUI();
   ~MessagePumpForUI() override;
 
-  // MessagePump methods:
+  // MessagePump methods: 调度唤醒，继续执行消息循环，从proxy中获取消息
   void ScheduleWork() override;
   void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
 
@@ -140,23 +159,30 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 
   // An observer interface to give the scheduler an opportunity to log
   // information about MSGs before and after they are dispatched.
+  // Windows窗口的观察者
   class BASE_EXPORT Observer {
    public:
+    // 在分发消息前调用
     virtual void WillDispatchMSG(const MSG& msg) = 0;
+    // 在分发消息后调用
     virtual void DidDispatchMSG(const MSG& msg) = 0;
   };
 
   void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* obseerver);
+  void RemoveObserver(Observer* observer);
 
  private:
   bool MessageCallback(UINT message,
                        WPARAM wparam,
                        LPARAM lparam,
                        LRESULT* result);
+
+  // 真实执行消息循环的函数
   void DoRunLoop() override;
+
   NOINLINE void NOT_TAIL_CALLED
   WaitForWork(Delegate::NextWorkInfo next_work_info);
+
   void HandleWorkMessage();
   void HandleTimerMessage();
   void ScheduleNativeTimer(Delegate::NextWorkInfo next_work_info);
@@ -165,6 +191,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   bool ProcessMessageHelper(const MSG& msg);
   bool ProcessPumpReplacementMessage();
 
+  // MessageWindow即是上面讲的封装 Message-Only “隐式输入窗口”的类
+  // 通过这个字段间接利用Windows的 “隐式输入窗口”，接收消息，触发回调的。
   base::win::MessageWindow message_window_;
 
   // Whether MessagePumpForUI responds to WM_QUIT messages or not.
@@ -181,6 +209,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // Used to decide whether ScheduleDelayedWork() should start a native timer.
   bool in_native_loop_ = false;
 
+  // Windows窗口事件的观察者列表
   ObserverList<Observer>::Unchecked observers_;
 };
 
@@ -189,7 +218,13 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 // MessageLoop instantiated with TYPE_IO. This version of MessagePump does not
 // deal with Windows mesagges, and instead has a Run loop based on Completion
 // Ports so it is better suited for IO operations.
-//
+// 在Windows系统里，使用完成端口是高性能的方法之一，比如把完成端口使用到线程池和网络
+// 服务器里。现在就通过线程池的方法来介绍怎么样使用完成端口，高性能的服务器以后再仔细
+// 地介绍怎么样构造它。其实完成端口是一个队列，所有的线程都在等消息出现，如果队列里有
+// 消息，就每个线程去获取一个消息执行它。先用函数CreateIoCompletionPort来创建一个
+// 消息队列，然后使用GetQueuedCompletionStatus函数来从队列获取消息，使用函数
+// PostQueuedCompletionStatus来向队列里发送消息。通过这三个函数就实现完成端口的
+// 消息循环处理。
 class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
  public:
   struct BASE_EXPORT IOContext {
@@ -222,7 +257,7 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   //       ReadFile(file_, buffer, num_bytes, &read, &context);
   //     }
   //     HANDLE file_;
-  //   };
+  //
   //
   // Typical use #2:
   // Same as the previous example, except that in order to deal with the
@@ -293,6 +328,7 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   bool WaitForIOCompletion(DWORD timeout);
 
   // The completion port associated with this thread.
+  // 与此线程关联的完成端口。
   win::ScopedHandle port_;
 };
 

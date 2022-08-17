@@ -58,6 +58,7 @@ __stack_chk_fail() {
   GLibcStackChkFailFunction* glibc_stack_chk_fail =
       reinterpret_cast<GLibcStackChkFailFunction*>(
           dlsym(RTLD_NEXT, "__stack_chk_fail"));
+          
   (*glibc_stack_chk_fail)();
 }
 }

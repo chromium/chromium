@@ -4,7 +4,9 @@
 
 #include "base/message_loop/message_pump_android.h"
 
+// Android消息循环核心 ALoop，提供消息泵UI事件处理引擎
 #include <android/looper.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <jni.h>
@@ -56,22 +58,28 @@ int timerfd_settime(int ufc,
 
 // https://crbug.com/873588. The stack may not be aligned when the ALooper calls
 // into our code due to the inconsistent ABI on older Android OS versions.
+// 由于旧 Android OS 版本上的 ABI 不一致，当 ALooper 调用我们的代码时，堆栈可能
+// 不会对齐。
 #if defined(ARCH_CPU_X86)
 #define STACK_ALIGN __attribute__((force_align_arg_pointer))
 #else
 #define STACK_ALIGN
 #endif
 
+// 没有延时的回调函数，对应的事件是：ALOOPER_EVENT_INPUT，在ALoop消息循环中
+// 被唤醒执行
 STACK_ALIGN int NonDelayedLooperCallback(int fd, int events, void* data) {
-  if (events & ALOOPER_EVENT_HANGUP)
+  if (events & ALOOPER_EVENT_HANGUP) // 挂起事件
     return 0;
 
-  DCHECK(events & ALOOPER_EVENT_INPUT);
+  DCHECK(events & ALOOPER_EVENT_INPUT); // 读事件
   MessagePumpForUI* pump = reinterpret_cast<MessagePumpForUI*>(data);
-  pump->OnNonDelayedLooperCallback();
+  pump->OnNonDelayedLooperCallback(); // 调用没有延时的回调函数
   return 1;  // continue listening for events
 }
 
+// 有延时的定时器回调函数，对应的事件是：ALOOPER_EVENT_INPUT，
+// 在ALoop消息循环中被唤醒执行
 STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
   if (events & ALOOPER_EVENT_HANGUP)
     return 0;
@@ -84,15 +92,28 @@ STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
 
 // A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
 // native tasks below.
+// 在 |non_delayed_fd_| 中添加了一点 当我们屈服于下面的本机任务时，保持它的信号。
 constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
 }  // namespace
 
+/**
+ * @brief 使用 Android系统的ALoop(pipe+epoll)来监听定时器事件fd和非定时器事件fd,
+ * 并设置回调函数.
+ */
 MessagePumpForUI::MessagePumpForUI()
     : env_(base::android::AttachCurrentThread()) {
+
   // The Android native ALooper uses epoll to poll our file descriptors and wake
   // us up. We use a simple level-triggered eventfd to signal that non-delayed
   // work is available, and a timerfd to signal when delayed work is ready to
   // be run.
+  // Android 原生 ALooper，本质是 fifo + epoll，使用 epoll 来轮询我们的文件描述符(fd)
+  // 并唤醒我们。我们使用一个简单的电平触发 eventfd 来表示非延迟工作可用，并使用 timerfd
+  // 来表示延迟工作何时可以运行。
+  // eventfd()其实是内核为应用程序提供的信号量。它相比于POSIX信号量的优势是，在内核
+  // 里以文件形式存在，可用于select/epoll循环中，因此可以实现异步的信号量，避免了消
+  // 费者在资源不可用时的阻塞。这也是为什么取名叫eventfd的原因：event表示它可用来作
+  // 事件通知（当然是异步的），fd表示它是一个“文件”。
   non_delayed_fd_ = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
   CHECK_NE(non_delayed_fd_, -1);
   DCHECK_EQ(TimeTicks::GetClock(), TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
@@ -101,23 +122,36 @@ MessagePumpForUI::MessagePumpForUI()
   // include timerfd.h. See comments above on __NR_timerfd_create. It looks like
   // they're just aliases to O_NONBLOCK and O_CLOEXEC anyways, so this should be
   // fine.
+  // 我们无法使用 TFD_NONBLOCK | 创建 timerfd | TFD_CLOEXEC，因为我们不能包含 timerfd.h。
+  // 请参阅上面关于 __NR_timerfd_create 的评论。 看起来它们只是 O_NONBLOCK 和 O_CLOEXEC
+  // 的别名，所以这应该没问题。
+  // 创建定时器事件fd
   delayed_fd_ = timerfd_create(CLOCK_MONOTONIC, O_NONBLOCK | O_CLOEXEC);
   CHECK_NE(delayed_fd_, -1);
 
-  looper_ = ALooper_prepare(0);
+  // 准备一个与调用线程关联的循环器，并返回它
+  looper_ = ALooper_prepare(0); // Android消息循环初始化
   DCHECK(looper_);
   // Add a reference to the looper so it isn't deleted on us.
+  // 添加对 looper 的引用，这样当我们使用时它就不会被删除.
   ALooper_acquire(looper_);
-  ALooper_addFd(looper_, non_delayed_fd_, 0, ALOOPER_EVENT_INPUT,
-                &NonDelayedLooperCallback, reinterpret_cast<void*>(this));
+  // 添加由 ALoop 轮询的fd：未延时和延时fd，并设置时间过滤器和回调函数
+  ALooper_addFd(looper_, non_delayed_fd_, // 监听的文件描述符
+                0,
+                ALOOPER_EVENT_INPUT, // 读事件
+                &NonDelayedLooperCallback, // 回调函数
+                reinterpret_cast<void*>(this)); // 把this传递给回调函数中使用
   ALooper_addFd(looper_, delayed_fd_, 0, ALOOPER_EVENT_INPUT,
                 &DelayedLooperCallback, reinterpret_cast<void*>(this));
 }
 
 MessagePumpForUI::~MessagePumpForUI() {
+  // ALooper_forThread()()返回与调用线程关联的 ALoop实例，如果没有则返回 NULL
   DCHECK_EQ(ALooper_forThread(), looper_);
+  // 从 looper 中删除先前添加的文件描述符
   ALooper_removeFd(looper_, non_delayed_fd_);
   ALooper_removeFd(looper_, delayed_fd_);
+  // 删除以前使用ALooper_acquire()获取的引用
   ALooper_release(looper_);
   looper_ = nullptr;
 
@@ -125,6 +159,9 @@ MessagePumpForUI::~MessagePumpForUI() {
   close(delayed_fd_);
 }
 
+/**
+ * @brief 间接在定时器时间fd触发时调用的回调函数
+ */
 void MessagePumpForUI::OnDelayedLooperCallback() {
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
@@ -141,6 +178,7 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
 
   // Clear the fd.
   uint64_t value;
+  // 从定时器事件fd中从读取
   int ret = read(delayed_fd_, &value, sizeof(value));
 
   // TODO(mthiesse): Figure out how it's possible to hit EAGAIN here.
@@ -153,7 +191,7 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
   // the timerfd, and they both run on the same thread as this callback, so
   // there are no obvious timing or multi-threading related issues.
   DPCHECK(ret >= 0 || errno == EAGAIN);
-  DoDelayedLooperWork();
+  DoDelayedLooperWork(); // 执行delete->DoWork()，即执行外部消息队列
 }
 
 void MessagePumpForUI::DoDelayedLooperWork() {
@@ -174,6 +212,9 @@ void MessagePumpForUI::DoDelayedLooperWork() {
     ScheduleDelayedWork(next_work_info.delayed_run_time);
 }
 
+/**
+ * @brief 间接在事件fd中触发时调用的回调函数
+ */
 void MessagePumpForUI::OnNonDelayedLooperCallback() {
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
@@ -199,7 +240,10 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   int ret = read(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
   DCHECK_GT(value, 0U);
+  // 判断是否是idel事件类型
   bool do_idle_work = value == kTryNativeTasksBeforeIdleBit;
+  // 根据 do_idle_work 而执行 delegate_->DoWork() 和 delegate_->DoIdleWork()
+  // 这些函数上面说过是对外的消息队的接口
   DoNonDelayedLooperWork(do_idle_work);
 }
 
@@ -314,6 +358,9 @@ void MessagePumpForUI::Quit() {
   }
 }
 
+/**
+ * @brief 唤醒ALoop，进而驱动消息泵
+ */
 void MessagePumpForUI::ScheduleWork() {
   ScheduleWorkInternal(/*do_idle_work=*/false);
 }
@@ -335,10 +382,17 @@ void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
   // work from being run and trigger another call to this method with
   // |do_idle_work| set to true.
   uint64_t value = do_idle_work ? kTryNativeTasksBeforeIdleBit : 1;
+  // 向 ALoop(pipe+epoll)监听的 non_delayed_fd_ 写入数据，唤醒ALoop的回调函数执行：
+  // NonDelayedLooperCallback()
   int ret = write(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
 }
 
+/**
+ * @brief 设置定时器事件fd：delayed_fd_，此时ALoop在监听这个 delayed_fd_，定时器到期
+ * 则会触发callback的执行：DelayedLooperCallback()，从而触发deleagte设定的定时器回调
+ * 函数：
+ */
 void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
   if (ShouldQuit())
     return;
@@ -354,7 +408,9 @@ void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
   ts.it_interval.tv_nsec = 0;
   ts.it_value.tv_sec = nanos / TimeTicks::kNanosecondsPerSecond;
   ts.it_value.tv_nsec = nanos % TimeTicks::kNanosecondsPerSecond;
-
+  // 给delayed_fd（延时文件描述符）设置延时的绝对时间，等时间到了后，delayed_fd_会
+  // 有可读事件，这样会在回调函数中处理了
+  // syscall(__NR_timerfd_settime, ufc, flags, utmr, otmr);
   int ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
 }

@@ -14,7 +14,8 @@ namespace pp {
 
 namespace {
 
-template <> const char* interface_name<PPB_MessageLoop>() {
+template <>
+const char* interface_name<PPB_MessageLoop>() {
   return PPB_MESSAGELOOP_INTERFACE_1_0;
 }
 
@@ -36,31 +37,26 @@ MessageLoop& MessageLoop::operator=(const MessageLoop& other) {
   return *this;
 }
 
-MessageLoop::MessageLoop(PP_Resource pp_message_loop)
-    : Resource(pp_message_loop) {
-}
+MessageLoop::MessageLoop(PP_Resource pp_message_loop) : Resource(pp_message_loop) {}
 
 // static
 MessageLoop MessageLoop::GetForMainThread() {
   if (!has_interface<PPB_MessageLoop>())
     return MessageLoop();
-  return MessageLoop(
-      get_interface<PPB_MessageLoop>()->GetForMainThread());
+  return MessageLoop(get_interface<PPB_MessageLoop>()->GetForMainThread());
 }
 
 // static
 MessageLoop MessageLoop::GetCurrent() {
   if (!has_interface<PPB_MessageLoop>())
     return MessageLoop();
-  return MessageLoop(
-      get_interface<PPB_MessageLoop>()->GetCurrent());
+  return MessageLoop(get_interface<PPB_MessageLoop>()->GetCurrent());
 }
 
 int32_t MessageLoop::AttachToCurrentThread() {
   if (!has_interface<PPB_MessageLoop>())
     return PP_ERROR_NOINTERFACE;
-  return get_interface<PPB_MessageLoop>()->AttachToCurrentThread(
-      pp_resource());
+  return get_interface<PPB_MessageLoop>()->AttachToCurrentThread(pp_resource());
 }
 
 int32_t MessageLoop::Run() {
@@ -69,21 +65,19 @@ int32_t MessageLoop::Run() {
   return get_interface<PPB_MessageLoop>()->Run(pp_resource());
 }
 
-int32_t MessageLoop::PostWork(const CompletionCallback& callback,
-                                  int64_t delay_ms) {
+int32_t MessageLoop::PostWork(const CompletionCallback& callback, int64_t delay_ms) {
   if (!has_interface<PPB_MessageLoop>())
     return PP_ERROR_NOINTERFACE;
-  return get_interface<PPB_MessageLoop>()->PostWork(
-      pp_resource(),
-      callback.pp_completion_callback(),
-      delay_ms);
+  return get_interface<PPB_MessageLoop>()->PostWork(pp_resource(),
+                                                    callback.pp_completion_callback(),
+                                                    delay_ms);
 }
 
 int32_t MessageLoop::PostQuit(bool should_destroy) {
   if (!has_interface<PPB_MessageLoop>())
     return PP_ERROR_NOINTERFACE;
-  return get_interface<PPB_MessageLoop>()->PostQuit(
-      pp_resource(), PP_FromBool(should_destroy));
+  return get_interface<PPB_MessageLoop>()->PostQuit(pp_resource(),
+                                                    PP_FromBool(should_destroy));
 }
 
 }  // namespace pp

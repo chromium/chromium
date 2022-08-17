@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+// 资料：https://www.cnblogs.com/haomiao/p/4790298.html
+
 #ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 
@@ -160,15 +163,15 @@ BASE_EXPORT void ConfigurePartitionAlloc();
 #endif  // defined(OS_WIN)
 
 #if defined(OS_APPLE)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-void InitializeDefaultAllocatorPartitionRoot();
+  #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    void InitializeDefaultAllocatorPartitionRoot();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-// On macOS, the allocator shim needs to be turned on during runtime.
-BASE_EXPORT void InitializeAllocatorShim();
+  // On macOS, the allocator shim needs to be turned on during runtime.
+  BASE_EXPORT void InitializeAllocatorShim();
 #endif  // defined(OS_APPLE)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
+  BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 

@@ -25,6 +25,11 @@
 // to use these.
 //
 
+// atomicops 对C++11的std::atomic的封装，默认情况下C++11的std::atomic是
+// SC(sequence consistent)顺序一致性模型的，也就是内部做了Barrier(有性能损耗),但是大
+// 多数场景下我们只是想使用atomic特性，因此base针对不同的内存模型进行了封装，有NoBarrier，
+// Barrier，accquire，release等等。
+
 #ifndef BASE_ATOMICOPS_H_
 #define BASE_ATOMICOPS_H_
 

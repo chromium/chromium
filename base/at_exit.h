@@ -17,16 +17,28 @@ namespace base {
 // we control when the callbacks are executed. Under Windows for a DLL they
 // happen at a really bad time and under the loader lock. This facility is
 // mostly used by base::Singleton.
+// 此类提供类似于 CRT atexit() 的工具，除了我们控制何时执行回调。在 Windows 下，
+// 对于 DLL，它们发生在非常糟糕的时间和加载程序锁定下。这个工具主要由
+// base::Singleton 使用。
 //
 // The usage is simple. Early in the main() or WinMain() scope create an
 // AtExitManager object on the stack:
+// 用法很简单。在 main() 或 WinMain() 作用域的早期，在堆栈上创建一个
+// AtExitManager 对象：
 // int main(...) {
 //    base::AtExitManager exit_manager;
 //
 // }
 // When the exit_manager object goes out of scope, all the registered
 // callbacks and singleton destructors will be called.
-
+// 当 exit_manager 对象超出范围时，将调用所有注册的回调和单例析构函数。
+// 参考：https://chowdera.com/2022/02/202202280550401719.html
+// 参考：https://illx10000.github.io/2018/12/26/4.html
+// AtExitManager离开作用域，所有的回调函数将会被调用。
+// AtExitManager类似于Linux下的atexit，注册退出清理函数，不过base库的实现机制是
+// 利用了C++的RAII
+// AtExitManager 类似于linux下的atexit，注册退出清理函数，不过base库的实现机制是利用了C++的RAII
+// https://zyfforlinux.blog.csdn.net/article/details/52754141?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-52754141-blog-105949165.pc_relevant_multi_platform_whitelistv3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-52754141-blog-105949165.pc_relevant_multi_platform_whitelistv3&utm_relevant_index=6
 class BASE_EXPORT AtExitManager {
  public:
   typedef void (*AtExitCallbackType)(void*);

@@ -18,8 +18,7 @@ bool FileEnumerator::ShouldSkip(const FilePath& path) {
 }
 
 bool FileEnumerator::IsTypeMatched(bool is_dir) const {
-  return (file_type_ &
-          (is_dir ? FileEnumerator::DIRECTORIES : FileEnumerator::FILES)) != 0;
+  return (file_type_ & (is_dir ? FileEnumerator::DIRECTORIES : FileEnumerator::FILES)) != 0;
 }
 
 }  // namespace base

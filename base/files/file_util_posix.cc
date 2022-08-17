@@ -247,13 +247,13 @@ bool DoCopyDirectory(const FilePath& from_path,
     // source file's permissions into account. On the other platforms, we just
     // use the base::File constructor. On Chrome OS, base::File uses a different
     // set of permissions than it does on other POSIX platforms.
-#if defined(OS_APPLE)
+  #if defined(OS_APPLE)
     int mode = 0600 | (stat_at_use.st_mode & 0177);
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     int mode = 0644;
-#else
+  #else
     int mode = 0600;
-#endif
+  #endif
     File outfile(open(target_path.value().c_str(), open_flags, mode));
     if (!outfile.IsValid()) {
       DPLOG(ERROR) << "CopyDirectory() couldn't create file: "

@@ -50,9 +50,7 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // Registers |callback| to be invoked when |fd| is readable or writable
     // without blocking (depending on |mode|).
-    Controller(MessagePumpForIO::Mode mode,
-               int fd,
-               const RepeatingClosure& callback);
+    Controller(MessagePumpForIO::Mode mode, int fd, const RepeatingClosure& callback);
 
     // Starts watching the file descriptor.
     void StartWatching();
@@ -113,12 +111,8 @@ class BASE_EXPORT FileDescriptorWatcher {
   // (current) SequencedTaskRunner enters its shutdown phase (i.e.
   // ThreadPool::Shutdown() or Thread::Stop()) regardless of the
   // SequencedTaskRunner's TaskShutdownBehavior.
-  static std::unique_ptr<Controller> WatchReadable(
-      int fd,
-      const RepeatingClosure& callback);
-  static std::unique_ptr<Controller> WatchWritable(
-      int fd,
-      const RepeatingClosure& callback);
+  static std::unique_ptr<Controller> WatchReadable(int fd, const RepeatingClosure& callback);
+  static std::unique_ptr<Controller> WatchWritable(int fd, const RepeatingClosure& callback);
 
   // Asserts that usage of this API is allowed on this thread.
   static void AssertAllowed()

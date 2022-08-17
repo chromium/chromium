@@ -250,6 +250,7 @@ Pickle::Pickle(const char* data, size_t data_len)
       header_size_(0),
       capacity_after_header_(kCapacityReadOnly),
       write_offset_(0) {
+        
   if (data_len >= static_cast<int>(sizeof(Header)))
     header_size_ = data_len - header_->payload_size;
 

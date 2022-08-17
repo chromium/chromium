@@ -77,6 +77,8 @@ class MyInstance : public pp::Instance, public pp::Graphics3DClient {
     // particular need to delete context_ and re-create textures.
     // Probably have to recreate the decoder from scratch, because old textures
     // can still be outstanding in the decoder!
+    // 在丢失图形上下文后正确重置。 特别需要删除 context_ 并重新创建纹理。
+    // 可能必须从头开始重新创建解码器，因为旧纹理在解码器中仍然很出色！
     assert(false && "Unexpectedly lost graphics context");
   }
 

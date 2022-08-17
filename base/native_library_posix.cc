@@ -55,8 +55,7 @@ void UnloadNativeLibrary(NativeLibrary library) {
   }
 }
 
-void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                          StringPiece name) {
+void* GetFunctionPointerFromNativeLibrary(NativeLibrary library, StringPiece name) {
   return dlsym(library, name.data());
 }
 

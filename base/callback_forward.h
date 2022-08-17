@@ -7,9 +7,11 @@
 
 namespace base {
 
-template <typename Signature>
+//1次callback接口
+template <typename Signature> // 模板类前向声明是完整模板类型声明
 class OnceCallback;
 
+//重复次callback接口
 template <typename Signature>
 class RepeatingCallback;
 

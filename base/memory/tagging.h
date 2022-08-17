@@ -137,4 +137,4 @@ ALWAYS_INLINE T* UnmaskPtr(T* ptr) {
 }  // namespace memory
 }  // namespace base
 
-#endif  // BASE_MEMORY_TAGGING_H_
+#endif // BASE_MEMORY_TAGGING_H_

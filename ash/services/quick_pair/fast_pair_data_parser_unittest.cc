@@ -37,17 +37,18 @@ const std::string kAccountKeyFilter = "112233445566";
 const std::string kSalt = "01";
 const std::string kBattery = "01048F";
 
-std::vector<uint8_t> aes_key_bytes = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
-                                      0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
-                                      0x61, 0xC3, 0x32, 0x1D};
+std::vector<uint8_t> aes_key_bytes = {
+  0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
+  0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
+  0x61, 0xC3, 0x32, 0x1D
+};
 
 std::vector<uint8_t> EncryptBytes(const std::vector<uint8_t>& bytes) {
   AES_KEY aes_key;
   AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
   uint8_t encrypted_bytes[16];
   AES_encrypt(bytes.data(), encrypted_bytes, &aes_key);
-  return std::vector<uint8_t>(std::begin(encrypted_bytes),
-                              std::end(encrypted_bytes));
+  return std::vector<uint8_t>(std::begin(encrypted_bytes), std::end(encrypted_bytes));
 }
 
 }  // namespace
@@ -58,8 +59,7 @@ namespace quick_pair {
 class FastPairDataParserTest : public testing::Test {
  public:
   void SetUp() override {
-    data_parser_ = std::make_unique<FastPairDataParser>(
-        remote_.BindNewPipeAndPassReceiver());
+    data_parser_ = std::make_unique<FastPairDataParser>(remote_.BindNewPipeAndPassReceiver());
   }
 
  protected:
@@ -94,8 +94,7 @@ TEST_F(FastPairDataParserTest, DecryptResponseUnsuccessfully) {
         run_loop.Quit();
       });
 
-  data_parser_->ParseDecryptedResponse(aes_key_bytes, encrypted_bytes,
-                                       std::move(callback));
+  data_parser_->ParseDecryptedResponse(aes_key_bytes, encrypted_bytes, std::move(callback));
   run_loop.Run();
 }
 
@@ -112,19 +111,19 @@ TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
             std::back_inserter(response_bytes));
 
   // Random salt
-  std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
-                                 0x0D, 0x0E, 0x0F, 0x00};
+  std::array<uint8_t, 9> salt = {
+    0x08, 0x09, 0x0A, 0x0B, 0x0C,
+    0x0D, 0x0E, 0x0F, 0x00
+  };
   std::copy(salt.begin(), salt.end(), std::back_inserter(response_bytes));
 
   std::vector<uint8_t> encrypted_bytes = EncryptBytes(response_bytes);
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&run_loop, &address_bytes,
-       &salt](const absl::optional<DecryptedResponse>& response) {
+      [&run_loop, &address_bytes, &salt](const absl::optional<DecryptedResponse>& response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(response->message_type,
-                  FastPairMessageType::kKeyBasedPairingResponse);
+        EXPECT_EQ(response->message_type, FastPairMessageType::kKeyBasedPairingResponse);
         EXPECT_EQ(response->address_bytes, address_bytes);
         EXPECT_EQ(response->salt, salt);
         run_loop.Quit();
@@ -190,8 +189,7 @@ TEST_F(FastPairDataParserTest, DecryptSeekerPasskeySuccessfully) {
       [&run_loop, &passkey,
        &salt](const absl::optional<DecryptedPasskey>& decrypted_passkey) {
         EXPECT_TRUE(decrypted_passkey.has_value());
-        EXPECT_EQ(decrypted_passkey->message_type,
-                  FastPairMessageType::kSeekersPasskey);
+        EXPECT_EQ(decrypted_passkey->message_type, FastPairMessageType::kSeekersPasskey);
         EXPECT_EQ(decrypted_passkey->passkey, passkey);
         EXPECT_EQ(decrypted_passkey->salt, salt);
         run_loop.Quit();
@@ -288,8 +286,7 @@ TEST_F(FastPairDataParserTest,
       [&run_loop](
           const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
         EXPECT_TRUE(advertisement.has_value());
-        EXPECT_EQ(kAccountKeyFilter,
-                  base::HexEncode(advertisement->account_key_filter));
+        EXPECT_EQ(kAccountKeyFilter, base::HexEncode(advertisement->account_key_filter));
         EXPECT_EQ(kSaltByte, advertisement->salt);
         EXPECT_TRUE(advertisement->show_ui);
         EXPECT_FALSE(advertisement->battery_notification.has_value());
@@ -301,8 +298,7 @@ TEST_F(FastPairDataParserTest,
   run_loop.Run();
 }
 
-TEST_F(FastPairDataParserTest,
-       ParseNotDiscoverableAdvertisement_AccountKeyFilterNoNotification) {
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_AccountKeyFilterNoNotification) {
   std::vector<uint8_t> bytes =
       FastPairServiceDataCreator::Builder()
           .SetHeader(kNotDiscoverableAdvHeader)
@@ -315,8 +311,7 @@ TEST_F(FastPairDataParserTest,
           ->CreateServiceData();
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&run_loop](
-          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+      [&run_loop](const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
         EXPECT_TRUE(advertisement.has_value());
         EXPECT_EQ(kAccountKeyFilter,
                   base::HexEncode(advertisement->account_key_filter));

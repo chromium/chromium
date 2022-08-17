@@ -10,6 +10,9 @@
 
 namespace base {
 
+// BarrierClosure 类似于java的CountDownLatch，需要传一个次数和callback函数，
+// 每调用一次次数就减1，直到最后一次才会真正的调用callback函数。
+
 // BarrierClosure executes |done_closure| after it has been invoked
 // |num_closures| times.
 //

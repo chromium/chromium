@@ -36,17 +36,24 @@
 #elif defined(OS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
-
 namespace base {
 
 using StringType = FilePath::StringType;
 using StringPieceType = FilePath::StringPieceType;
 
-namespace {
+namespace { // 匿名命名空间，是比static更好的源代码文件局部性语法
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2", "z",
-                                                      "bz"};
-const char* const kCommonDoubleExtensions[] = { "user.js" };
+const char* const kCommonDoubleExtensionSuffixes[] = {
+  "gz",
+  "xz",
+  "bz2",
+  "z",
+  "bz"
+};
+
+const char* const kCommonDoubleExtensions[] = {
+  "user.js"
+};
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 
@@ -92,12 +99,12 @@ bool IsPathAbsolute(StringPieceType path) {
   StringType::size_type letter = FindDriveLetter(path);
   if (letter != StringType::npos) {
     // Look for a separator right after the drive specification.
-    return path.length() > letter + 1 &&
-        FilePath::IsSeparator(path[letter + 1]);
+    return path.length() > letter + 1 && FilePath::IsSeparator(path[letter + 1]);
   }
   // Look for a pair of leading separators.
   return path.length() > 1 &&
-      FilePath::IsSeparator(path[0]) && FilePath::IsSeparator(path[1]);
+      FilePath::IsSeparator(path[0]) &&
+      FilePath::IsSeparator(path[1]);
 #else  // FILE_PATH_USES_DRIVE_LETTERS
   // Look for a separator in the first position.
   return path.length() > 0 && FilePath::IsSeparator(path[0]);
@@ -106,10 +113,10 @@ bool IsPathAbsolute(StringPieceType path) {
 
 bool AreAllSeparators(const StringType& input) {
   for (auto it : input) {
-    if (!FilePath::IsSeparator(it))
-      return false;
+    if (!FilePath::IsSeparator(it)) {
+       return false;
+    }
   }
-
   return true;
 }
 
@@ -169,7 +176,8 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
 // Returns true if path is "", ".", or "..".
 bool IsEmptyOrSpecialCase(const StringType& path) {
   // Special cases "", ".", and ".."
-  if (path.empty() || path == FilePath::kCurrentDirectory ||
+  if (path.empty() ||
+      path == FilePath::kCurrentDirectory ||
       path == FilePath::kParentDirectory) {
     return true;
   }
@@ -193,7 +201,6 @@ FilePath::FilePath(StringPieceType path) : path_(path) {
 FilePath::~FilePath() = default;
 
 FilePath& FilePath::operator=(const FilePath& that) = default;
-
 FilePath& FilePath::operator=(FilePath&& that) noexcept = default;
 
 bool FilePath::operator==(const FilePath& that) const {
@@ -223,7 +230,6 @@ bool FilePath::IsSeparator(CharType character) {
       return true;
     }
   }
-
   return false;
 }
 
@@ -266,21 +272,19 @@ bool FilePath::IsParent(const FilePath& child) const {
   return AppendRelativePath(child, nullptr);
 }
 
-bool FilePath::AppendRelativePath(const FilePath& child,
-                                  FilePath* path) const {
+bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
   std::vector<StringType> parent_components;
   std::vector<StringType> child_components;
   GetComponents(&parent_components);
   child.GetComponents(&child_components);
 
   if (parent_components.empty() ||
-      parent_components.size() >= child_components.size())
+      parent_components.size() >= child_components.size()) {
     return false;
+  }
 
-  std::vector<StringType>::const_iterator parent_comp =
-      parent_components.begin();
-  std::vector<StringType>::const_iterator child_comp =
-      child_components.begin();
+  std::vector<StringType>::const_iterator parent_comp = parent_components.begin();
+  std::vector<StringType>::const_iterator child_comp = child_components.begin();
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // Windows can access case sensitive filesystems, so component
@@ -565,8 +569,9 @@ bool FilePath::IsAbsolute() const {
 }
 
 bool FilePath::IsNetwork() const {
-  return path_.length() > 1 && FilePath::IsSeparator(path_[0]) &&
-         FilePath::IsSeparator(path_[1]);
+  return path_.length() > 1 &&
+        FilePath::IsSeparator(path_[0]) &&
+        FilePath::IsSeparator(path_[1]);
 }
 
 bool FilePath::EndsWithSeparator() const {
@@ -745,6 +750,7 @@ bool FilePath::ReadFromPickle(PickleIterator* iter) {
 
 int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
+
   // CharUpperW within user32 is used here because it will provide unicode
   // conversions regardless of locale. The STL alternative, towupper, has a
   // locale consideration that prevents it from converting all characters by
@@ -1385,6 +1391,7 @@ FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
   DCHECK_NE(kSeparators + kSeparatorsLength,
             std::find(kSeparators, kSeparators + kSeparatorsLength, separator));
+
   StringType copy = path_;
   for (size_t i = 0; i < kSeparatorsLength; ++i) {
     std::replace(copy.begin(), copy.end(), kSeparators[i], separator);

@@ -12,11 +12,9 @@ namespace base {
 namespace allocator {
 
 MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
-static_assert(std::is_pod<MallocZoneFunctions>::value,
-              "MallocZoneFunctions must be POD");
+static_assert(std::is_pod<MallocZoneFunctions>::value, "MallocZoneFunctions must be POD");
 
-void StoreZoneFunctions(const ChromeMallocZone* zone,
-                        MallocZoneFunctions* functions) {
+void StoreZoneFunctions(const ChromeMallocZone* zone, MallocZoneFunctions* functions) {
   memset(functions, 0, sizeof(MallocZoneFunctions));
   functions->malloc = zone->malloc;
   functions->calloc = zone->calloc;
@@ -24,6 +22,7 @@ void StoreZoneFunctions(const ChromeMallocZone* zone,
   functions->free = zone->free;
   functions->realloc = zone->realloc;
   functions->size = zone->size;
+  
   CHECK(functions->malloc && functions->calloc && functions->valloc &&
         functions->free && functions->realloc && functions->size);
 

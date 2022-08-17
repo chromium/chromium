@@ -25,20 +25,27 @@
 // A callback is similar in concept to a function pointer: it wraps a runnable
 // object such as a function, method, lambda, or even another callback, allowing
 // the runnable object to be invoked later via the callback object.
+// 回调在概念上类似于函数指针：它包装了一个可运行对象，例如函数、方法、lambda，甚至另一个回调，
+// 允许稍后通过回调对象调用可运行对象。
 //
 // Unlike function pointers, callbacks are created with base::BindOnce() or
 // base::BindRepeating() and support partial function application.
+// 与函数指针不同，回调是使用 base::BindOnce() 或 base::BindRepeating() 创建的，
+// 并且支持部分函数应用。
 //
 // A base::OnceCallback may be Run() at most once; a base::RepeatingCallback may
 // be Run() any number of times. |is_null()| is guaranteed to return true for a
 // moved-from callback.
+// 一个 base::OnceCallback 最多可能是 Run() 一次； base::RepeatingCallback 可以 Run()
+// 任意次数。 |is_null()| 对于移出的回调，保证返回 true。
 //
 //   // The lambda takes two arguments, but the first argument |x| is bound at
 //   // callback creation.
+//   // lambda 有两个参数，但第一个参数 |x| 在回调创建时绑定。
 //   base::OnceCallback<int(int)> cb = base::BindOnce([] (int x, int y) {
 //     return x + y;
 //   }, 1);
-//   // Run() only needs the remaining unbound argument |y|.
+//   // Run() only needs the remaining unbound（未绑定） argument |y|.
 //   printf("1 + 2 = %d\n", std::move(cb).Run(2));  // Prints 3
 //   printf("cb is null? %s\n",
 //          cb.is_null() ? "true" : "false");  // Prints true
@@ -48,11 +55,15 @@
 // object as a WeakPtr<T>. If that weak pointer is invalidated, calling Run()
 // will be a no-op. Note that |IsCancelled()| and |is_null()| are distinct:
 // simply cancelling a callback will not also make it null.
+// 回调也支持取消。一个常见的用途是将接收器对象绑定为 WeakPtr<T>。 如果该弱指针无效，则
+// 调用 Run() 将是空操作。 注意 |IsCancelled()| 和 |is_null()| 是不同的：
+// 简单地取消回调也不会使其为空。
 //
 // See //docs/callback.md for the full documentation.
 
 namespace base {
 
+// 这个编程技巧也可以学习：一个文件中内部使用的数据结构，namespace命名为 internal
 namespace internal {
 
 struct NullCallbackTag {
@@ -72,8 +83,10 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
  public:
   using ResultType = R;
   using RunType = R(Args...);
-  using PolymorphicInvoke = R (*)(internal::BindStateBase*,
-                                  internal::PassingType<Args>...);
+
+  // 多态调用
+  using PolymorphicInvoke = R(*)(internal::BindStateBase*,
+                                 internal::PassingType<Args>...);
 
   constexpr OnceCallback() = default;
   OnceCallback(std::nullptr_t) = delete;
@@ -86,14 +99,15 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 
   constexpr OnceCallback(internal::NullCallbackTag::WithSignature<RunType>)
       : OnceCallback(internal::NullCallbackTag()) {}
-  constexpr OnceCallback& operator=(
-      internal::NullCallbackTag::WithSignature<RunType>) {
+
+  constexpr OnceCallback& operator=(internal::NullCallbackTag::WithSignature<RunType>) {
     *this = internal::NullCallbackTag();
     return *this;
   }
 
   constexpr OnceCallback(internal::DoNothingCallbackTag)
       : OnceCallback(BindOnce([](Args... args) {})) {}
+
   constexpr OnceCallback& operator=(internal::DoNothingCallbackTag) {
     *this = BindOnce([](Args... args) {});
     return *this;
@@ -137,8 +151,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
     // It's not safe to touch |this| after the invocation, since running the
     // bound function may destroy |this|.
     OnceCallback cb = std::move(*this);
-    PolymorphicInvoke f =
-        reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
+    PolymorphicInvoke f = reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
     return f(cb.bind_state_.get(), std::forward<Args>(args)...);
   }
 
@@ -152,6 +165,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   // Since this method generates a callback that is a replacement for `this`,
   // `this` will be consumed and reset to a null callback to ensure the
   // originally-bound functor can be run at most once.
+  // 该成员函数后面的 "&&" 表示这个Callback被使用时，是右值引用时才能调用这个成员函数.
   template <typename ThenR, typename... ThenArgs>
   OnceCallback<ThenR(Args...)> Then(OnceCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
@@ -165,13 +179,11 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   // convertible to OnceCallback, that conversion will not used when matching
   // for template argument deduction.
   template <typename ThenR, typename... ThenArgs>
-  OnceCallback<ThenR(Args...)> Then(
-      RepeatingCallback<ThenR(ThenArgs...)> then) && {
+  OnceCallback<ThenR(Args...)> Then(RepeatingCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
-    return BindOnce(
-        internal::ThenHelper<
-            OnceCallback,
-            RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
+    return BindOnce(internal::ThenHelper<
+        OnceCallback,
+        RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
   }
 };
@@ -196,8 +208,10 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
 
   constexpr RepeatingCallback(internal::NullCallbackTag::WithSignature<RunType>)
       : RepeatingCallback(internal::NullCallbackTag()) {}
+
   constexpr RepeatingCallback& operator=(
       internal::NullCallbackTag::WithSignature<RunType>) {
+
     *this = internal::NullCallbackTag();
     return *this;
   }

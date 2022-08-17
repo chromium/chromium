@@ -15,7 +15,6 @@
 #include "components/cronet/cronet_url_request.h"
 #include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
-
 namespace net {
 enum LoadState;
 }  // namespace net
@@ -78,9 +77,11 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   // Helper methods to invoke application |callback_|.
   void InvokeCallbackOnRedirectReceived(const std::string& new_location);
   void InvokeCallbackOnResponseStarted();
+  
   void InvokeCallbackOnReadCompleted(
       std::unique_ptr<Cronet_Buffer> cronet_buffer,
       int bytes_read);
+
   void InvokeCallbackOnSucceeded();
   void InvokeCallbackOnFailed();
   void InvokeCallbackOnCanceled();

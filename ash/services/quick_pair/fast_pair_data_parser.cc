@@ -166,6 +166,7 @@ void FastPairDataParser::ParseDecryptedResponse(
     const std::vector<uint8_t>& aes_key_bytes,
     const std::vector<uint8_t>& encrypted_response_bytes,
     ParseDecryptedResponseCallback callback) {
+
   if (!ValidateInputSizes(aes_key_bytes, encrypted_response_bytes)) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -175,8 +176,7 @@ void FastPairDataParser::ParseDecryptedResponse(
   std::array<uint8_t, kEncryptedDataByteSize> bytes;
   ConvertVectorsToArrays(aes_key_bytes, encrypted_response_bytes, key, bytes);
 
-  std::move(callback).Run(
-      fast_pair_decryption::ParseDecryptedResponse(key, bytes));
+  std::move(callback).Run(fast_pair_decryption::ParseDecryptedResponse(key, bytes));
 }
 
 void FastPairDataParser::ParseDecryptedPasskey(
@@ -251,27 +251,23 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
 
   std::vector<uint8_t> salt_bytes;
   if (field_indices.contains(kFieldTypeAccountKeyFilterSalt)) {
-    CopyFieldBytes(service_data, field_indices, kFieldTypeAccountKeyFilterSalt,
-                   &salt_bytes);
+    CopyFieldBytes(service_data, field_indices, kFieldTypeAccountKeyFilterSalt, &salt_bytes);
   }
 
   std::vector<uint8_t> battery_bytes;
   bool show_ui_for_battery = false;
   if (field_indices.contains(kFieldTypeBattery)) {
-    CopyFieldBytes(service_data, field_indices, kFieldTypeBattery,
-                   &battery_bytes);
+    CopyFieldBytes(service_data, field_indices, kFieldTypeBattery, &battery_bytes);
     show_ui_for_battery = true;
   } else if (field_indices.contains(kFieldTypeBatteryNoNotification)) {
-    CopyFieldBytes(service_data, field_indices, kFieldTypeBatteryNoNotification,
-                   &battery_bytes);
+    CopyFieldBytes(service_data, field_indices, kFieldTypeBatteryNoNotification, &battery_bytes);
     show_ui_for_battery = false;
   }
 
   if (account_key_filter_bytes.empty()) {
     std::move(callback).Run(absl::nullopt);
   } else if (salt_bytes.size() != 1) {
-    QP_LOG(WARNING) << "Parsed a salt field larger than one byte: "
-                    << salt_bytes.size();
+    QP_LOG(WARNING) << "Parsed a salt field larger than one byte: " << salt_bytes.size();
     std::move(callback).Run(absl::nullopt);
   } else {
     std::move(callback).Run(NotDiscoverableAdvertisement(
@@ -367,13 +363,11 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseMessageStreamMessage(
         return nullptr;
       return ParseCompanionAppEvent(message_code);
     case mojom::MessageGroup::kDeviceInformationEvent:
-      return ParseDeviceInformationEvent(message_code,
-                                         std::move(additional_data));
+      return ParseDeviceInformationEvent(message_code, std::move(additional_data));
     case mojom::MessageGroup::kDeviceActionEvent:
       return ParseDeviceActionEvent(message_code, std::move(additional_data));
     case mojom::MessageGroup::kAcknowledgementEvent:
-      return ParseAcknowledgementEvent(message_code,
-                                       std::move(additional_data));
+      return ParseAcknowledgementEvent(message_code, std::move(additional_data));
   }
 }
 

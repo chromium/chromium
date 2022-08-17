@@ -57,8 +57,7 @@ struct TaskRunnerTraits;
 //
 //   - A TaskRunner that stores the list of posted tasks and has a
 //     method Run() that runs each runnable task in random order.
-class BASE_EXPORT TaskRunner
-    : public RefCountedThreadSafe<TaskRunner, TaskRunnerTraits> {
+class BASE_EXPORT TaskRunner : public RefCountedThreadSafe<TaskRunner, TaskRunnerTraits> {
  public:
   // Posts the given task to be run.  Returns true if the task may be
   // run at some point in the future, and false if the task definitely

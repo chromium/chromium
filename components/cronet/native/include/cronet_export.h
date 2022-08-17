@@ -6,9 +6,9 @@
 #define COMPONENTS_CRONET_NATIVE_INCLUDE_CRONET_EXPORT_H_
 
 #if defined(WIN32)
-#define CRONET_EXPORT __declspec(dllexport)
+  #define CRONET_EXPORT __declspec(dllexport)
 #else
-#define CRONET_EXPORT __attribute__((visibility("default")))
+  #define CRONET_EXPORT __attribute__((visibility("default")))
 #endif
 
 #endif  // COMPONENTS_CRONET_NATIVE_INCLUDE_CRONET_EXPORT_H_

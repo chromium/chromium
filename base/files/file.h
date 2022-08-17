@@ -18,24 +18,30 @@
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
-#if defined(OS_BSD) || defined(OS_APPLE) || defined(OS_NACL) || \
-    defined(OS_FUCHSIA) || (defined(OS_ANDROID) && __ANDROID_API__ < 21)
-struct stat;
-namespace base {
-typedef struct stat stat_wrapper_t;
-}
-#elif defined(OS_POSIX)
-struct stat64;
-namespace base {
-typedef struct stat64 stat_wrapper_t;
-}
+#if defined(OS_BSD) ||      \
+    defined(OS_APPLE) ||    \
+    defined(OS_NACL) ||     \
+    defined(OS_FUCHSIA) ||  \
+    (defined(OS_ANDROID) && __ANDROID_API__ < 21)
+
+  struct stat; // 这里都是基于Linux平台
+  namespace base {
+  typedef struct stat stat_wrapper_t;
+  }
+#elif defined(OS_POSIX) // 基于Posix接口
+  struct stat64;
+  namespace base {
+  typedef struct stat64 stat_wrapper_t;
+  }
 #endif
 
 namespace base {
 
+// OS级别的轻量级文件包装器
 // Thin wrapper around an OS-level file.
 // Note that this class does not provide any support for asynchronous IO, other
 // than the ability to create asynchronous handles on Windows.
+// 请注意，除了在 Windows 上创建异步句柄的能力之外，此类不提供任何对异步 IO 的支持。
 //
 // Note about const: this class does not attempt to determine if the underlying
 // file system object is affected by a particular method in order to consider
@@ -43,7 +49,7 @@ namespace base {
 // obvious non-modifying way are marked as const. Any method that forward calls
 // to the OS is not considered const, even if there is no apparent change to
 // member variables.
-class BASE_EXPORT File {
+class BASE_EXPORT File { // BASE_EXPORT 是宏定义，用于定义跨平台的可导出符号属性标识
  public:
   // FLAG_(OPEN|CREATE).* are mutually exclusive. You should specify exactly one
   // of the five (possibly combining with other flags) when opening or creating
@@ -52,6 +58,7 @@ class BASE_EXPORT File {
   // will be consistent with O_APPEND on POSIX.
   enum Flags {
     FLAG_OPEN = 1 << 0,            // Opens a file, only if it exists.
+    // 创建一个新文件，仅当它不存在时
     FLAG_CREATE = 1 << 1,          // Creates a new file, only if it does not
                                    // already exist.
     FLAG_OPEN_ALWAYS = 1 << 2,     // May create a new file.
@@ -66,7 +73,7 @@ class BASE_EXPORT File {
     FLAG_ASYNC = 1 << 10,
     FLAG_WIN_TEMPORARY = 1 << 11,  // Windows only.
     FLAG_WIN_HIDDEN = 1 << 12,     // Windows only.
-    FLAG_DELETE_ON_CLOSE = 1 << 13,
+    FLAG_DELETE_ON_CLOSE = 1 << 13, // 文件关闭后自动删除
     FLAG_WRITE_ATTRIBUTES = 1 << 14,  // File opened in a mode allowing writing
                                       // attributes, such as with SetTimes().
     FLAG_WIN_SHARE_DELETE = 1 << 15,  // Windows only.
@@ -74,6 +81,7 @@ class BASE_EXPORT File {
     FLAG_WIN_BACKUP_SEMANTICS = 1 << 17,  // Windows only.
     FLAG_WIN_EXECUTE = 1 << 18,           // Windows only.
     FLAG_WIN_SEQUENTIAL_SCAN = 1 << 19,   // Windows only.
+    // 文件手动选择关闭后是否删除
     FLAG_CAN_DELETE_ON_CLOSE = 1 << 20,  // Requests permission to delete a file
                                          // via DeleteOnClose() (Windows only).
                                          // See DeleteOnClose() for details.
@@ -90,7 +98,7 @@ class BASE_EXPORT File {
     FLAG_SEQUENTIAL_SCAN = FLAG_WIN_SEQUENTIAL_SCAN,
   };
 
-  // This enum has been recorded in multiple histograms using PlatformFileError
+  // This enum has been recorded in multiple histograms(直方图) using PlatformFileError
   // enum. If the order of the fields needs to change, please ensure that those
   // histograms are obsolete or have been moved to a different enum.
   //
@@ -120,7 +128,7 @@ class BASE_EXPORT File {
   };
 
   // This explicit mapping matches both FILE_ on Windows and SEEK_ on Linux.
-  enum Whence {
+  enum Whence { // Linux的seek操作，windows的FILE_操作
     FROM_BEGIN   = 0,
     FROM_CURRENT = 1,
     FROM_END     = 2
@@ -134,13 +142,13 @@ class BASE_EXPORT File {
   struct BASE_EXPORT Info {
     Info();
     ~Info();
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+  #if defined(OS_POSIX) || defined(OS_FUCHSIA)
     // Fills this struct with values from |stat_info|.
     void FromStat(const stat_wrapper_t& stat_info);
-#endif
+  #endif
 
     // The size of the file in bytes.  Undefined when is_directory is true.
-    int64_t size = 0;
+    int64_t size = 0; // 问价字节大小，如果是目录时，则未定义
 
     // True if the file corresponds to a directory.
     bool is_directory = false;
@@ -178,34 +186,36 @@ class BASE_EXPORT File {
   // Creates an object with a specific error_details code.
   explicit File(Error error_details);
 
-  File(File&& other);
-
-  File(const File&) = delete;
-  File& operator=(const File&) = delete;
-
   ~File();
 
-  File& operator=(File&& other);
+  File(File&& other); // 允许 移动构造
+  File& operator=(File&& other); // 允许 移动operator=
+  File(const File&) = delete; // 禁止copy-constructor
+  File& operator=(const File&) = delete; // 禁止operator=
 
   // Creates or opens the given file.
   void Initialize(const FilePath& path, uint32_t flags);
 
   // Returns |true| if the handle / fd wrapped by this object is valid.  This
   // method doesn't interact with the file system and is thus safe to be called
-  // from threads that disallow blocking.
+  // from threads that disallow(禁止) blocking(阻塞).
   bool IsValid() const;
 
   // Returns true if a new file was created (or an old one truncated to zero
   // length to simulate a new file, which can happen with
   // FLAG_CREATE_ALWAYS), and false otherwise.
-  bool created() const { return created_; }
+  bool created() const {
+    return created_;
+  }
 
   // Returns the OS result of opening this file. Note that the way to verify
   // the success of the operation is to use IsValid(), not this method:
   //   File file(path, flags);
   //   if (!file.IsValid())
   //     return;
-  Error error_details() const { return error_details_; }
+  Error error_details() const {
+    return error_details_;
+  }
 
   PlatformFile GetPlatformFile() const;
   PlatformFile TakePlatformFile();
@@ -290,8 +300,8 @@ class BASE_EXPORT File {
 
 #if !defined(OS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
   enum class LockMode {
-    kShared,
-    kExclusive,
+    kShared,    // 共享锁(读锁)
+    kExclusive, // 互斥锁(写锁)
   };
 
   // Attempts to take an exclusive write lock on the file. Returns immediately
@@ -299,6 +309,9 @@ class BASE_EXPORT File {
   // was obtained, the result will be FILE_OK. A lock only guarantees
   // that other processes may not also take a lock on the same file with the
   // same API - it may still be opened, renamed, unlinked, etc.
+  // 尝试对文件进行独占写入锁定。 立即返回尝试对文件进行排他写锁定。 立即返回（即不等待另一
+  // 个进程解锁文件）。 如果获得了锁，结果将是 FILE_OK。 锁仅保证其他进程可能不会也使用相同
+  // 的 API 对同一文件进行锁定 - 它仍可能被打开、重命名、取消链接等。
   //
   // Common semantics:
   //  * Locks are held by processes, but not inherited by child processes.
@@ -314,10 +327,10 @@ class BASE_EXPORT File {
   //  * Within a process, locking the same file (by the same or new handle)
   //    will succeed. The new lock replaces the old lock.
   //  * Closing any descriptor on a given file releases the lock.
-  Error Lock(LockMode mode);
+  Error Lock(LockMode mode); // 文件锁
 
   // Unlock a file previously locked.
-  Error Unlock();
+  Error Unlock(); // 文件锁
 
 #endif  // !defined(OS_FUCHSIA)
 
@@ -328,7 +341,9 @@ class BASE_EXPORT File {
   // underlying file is deleted when the last handle to it is closed.
   File Duplicate() const;
 
-  bool async() const { return async_; }
+  bool async() const {
+    return async_;
+  }
 
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;

@@ -74,4 +74,5 @@ int GetCallStack(void** stack, int max_stack_size) {
 }
 
 }  // namespace allocator
+
 }  // namespace base

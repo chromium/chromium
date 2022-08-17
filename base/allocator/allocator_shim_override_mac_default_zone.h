@@ -184,6 +184,10 @@ malloc_zone_t g_mac_malloc_zone{};
 // allocated memory will be deallocated with the default zone's `free` at that
 // moment without using a zone dispatcher.  Hence, our own `free` function
 // receives an address allocated by the system allocator.
+// 请注意，尽管初始化顺序的优先级最高，但不幸的是 [NSThread init] 在
+// InitializeDefaultMallocZoneWithPartitionAlloc 之前运行，并使用系统分配器分配内存。
+// 另外，此时分配的内存将使用默认区域的“空闲”释放，而无需使用区域调度程序。因此，我们自己的
+// “free”函数接收系统分配器分配的地址。
 __attribute__((constructor(0))) void
 InitializeDefaultMallocZoneWithPartitionAlloc() {
   // Instantiate the existing regular and purgeable zones in order to make the

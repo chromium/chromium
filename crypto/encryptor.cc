@@ -41,9 +41,7 @@ bool Encryptor::Init(const SymmetricKey* key, Mode mode, base::StringPiece iv) {
   return Init(key, mode, base::as_bytes(base::make_span(iv)));
 }
 
-bool Encryptor::Init(const SymmetricKey* key,
-                     Mode mode,
-                     base::span<const uint8_t> iv) {
+bool Encryptor::Init(const SymmetricKey* key, Mode mode, base::span<const uint8_t> iv) {
   DCHECK(key);
   DCHECK(mode == CBC || mode == CTR);
 
@@ -68,8 +66,7 @@ bool Encryptor::Encrypt(base::StringPiece plaintext, std::string* ciphertext) {
   return CryptString(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
-bool Encryptor::Encrypt(base::span<const uint8_t> plaintext,
-                        std::vector<uint8_t>* ciphertext) {
+bool Encryptor::Encrypt(base::span<const uint8_t> plaintext, std::vector<uint8_t>* ciphertext) {
   CHECK(!plaintext.empty() || mode_ == CBC);
   return CryptBytes(/*do_encrypt=*/true, plaintext, ciphertext);
 }
@@ -79,8 +76,7 @@ bool Encryptor::Decrypt(base::StringPiece ciphertext, std::string* plaintext) {
   return CryptString(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
-bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext,
-                        std::vector<uint8_t>* plaintext) {
+bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext, std::vector<uint8_t>* plaintext) {
   CHECK(!ciphertext.empty());
   return CryptBytes(/*do_encrypt=*/false, ciphertext, plaintext);
 }
@@ -99,9 +95,7 @@ bool Encryptor::SetCounter(base::span<const uint8_t> counter) {
   return true;
 }
 
-bool Encryptor::CryptString(bool do_encrypt,
-                            base::StringPiece input,
-                            std::string* output) {
+bool Encryptor::CryptString(bool do_encrypt, base::StringPiece input, std::string* output) {
   size_t out_size = MaxOutput(do_encrypt, input.size());
   CHECK_GT(out_size + 1, out_size);  // Overflow
   std::string result;

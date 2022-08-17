@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/stack_trace.h"
+
 #include <stddef.h>
 
 #include <limits>
@@ -9,7 +11,6 @@
 #include <string>
 
 #include "base/debug/debugging_buildflags.h"
-#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -21,16 +22,16 @@
 #include "testing/multiprocess_func_list.h"
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_IOS)
-#include "base/test/multiprocess_test.h"
+  #include "base/test/multiprocess_test.h"
 #endif
 
 namespace base {
 namespace debug {
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_IOS)
-typedef MultiProcessTest StackTraceTest;
+  typedef MultiProcessTest StackTraceTest;
 #else
-typedef testing::Test StackTraceTest;
+  typedef testing::Test StackTraceTest;
 #endif
 
 #if !defined(__UCLIBC__) && !defined(_AIX)
@@ -51,14 +52,13 @@ TEST_F(StackTraceTest, OutputToStream) {
   size_t frames_found = 0;
   const void* const* addresses = trace.Addresses(&frames_found);
 
-#if defined(OFFICIAL_BUILD) && \
-    ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
+#  if defined(OFFICIAL_BUILD) && ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
   // Stack traces require an extra data table that bloats our binaries,
   // so they're turned off for official builds. Stop the test here, so
   // it at least verifies that StackTrace calls don't crash.
   return;
-#endif  // defined(OFFICIAL_BUILD) &&
-        // ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
+#  endif // defined(OFFICIAL_BUILD) &&
+         // ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
 
   ASSERT_TRUE(addresses);
   ASSERT_GT(frames_found, 5u) << "Too few frames found.";
@@ -67,15 +67,13 @@ TEST_F(StackTraceTest, OutputToStream) {
     return;
 
   // Check if the output has symbol initialization warning.  If it does, fail.
-  ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"),
-            std::string::npos)
+  ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"), std::string::npos)
       << "Unable to resolve symbols.";
 
   // Expect a demangled symbol.
   // Note that Windows Release builds omit the function parameters from the
   // demangled stack output, otherwise this could be "testing::UnitTest::Run()".
-  EXPECT_TRUE(backtrace_message.find("testing::UnitTest::Run") !=
-              std::string::npos)
+  EXPECT_TRUE(backtrace_message.find("testing::UnitTest::Run") != std::string::npos)
       << "Expected a demangled symbol in backtrace:\n"
       << backtrace_message;
 
@@ -105,7 +103,7 @@ TEST_F(StackTraceTest, TruncatedTrace) {
   truncated.Addresses(&count);
   EXPECT_EQ(2u, count);
 }
-#endif  // !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
+#  endif // !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
 
 // The test is used for manual testing, e.g., to see the raw output.
 TEST_F(StackTraceTest, DebugOutputToStream) {
@@ -153,10 +151,10 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
   trace.ToStringWithPrefix(nullptr);
 }
 
-#endif  // !defined(__UCLIBC__) && !defined(_AIX)
+#endif // !defined(__UCLIBC__) && !defined(_AIX)
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
-#if !defined(OS_IOS)
+#  if !defined(OS_IOS)
 static char* newArray() {
   // Clang warns about the mismatched new[]/delete if they occur in the same
   // function.
@@ -177,10 +175,9 @@ TEST_F(StackTraceTest, AsyncSignalUnsafeSignalHandlerHang) {
   Process child = SpawnChild("MismatchedMallocChildProcess");
   ASSERT_TRUE(child.IsValid());
   int exit_code;
-  ASSERT_TRUE(
-      child.WaitForExitWithTimeout(TestTimeouts::action_timeout(), &exit_code));
+  ASSERT_TRUE(child.WaitForExitWithTimeout(TestTimeouts::action_timeout(), &exit_code));
 }
-#endif  // !defined(OS_IOS)
+#  endif // !defined(OS_IOS)
 
 namespace {
 
@@ -193,7 +190,7 @@ std::string itoa_r_wrapper(intptr_t i, size_t sz, int base, size_t padding) {
   return std::string(buffer);
 }
 
-}  // namespace
+} // namespace
 
 TEST_F(StackTraceTest, itoa_r) {
   EXPECT_EQ("0", itoa_r_wrapper(0, 128, 10, 0));
@@ -202,29 +199,20 @@ TEST_F(StackTraceTest, itoa_r) {
   // Test edge cases.
   if (sizeof(intptr_t) == 4) {
     EXPECT_EQ("ffffffff", itoa_r_wrapper(-1, 128, 16, 0));
-    EXPECT_EQ("-2147483648",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
-    EXPECT_EQ("2147483647",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 10, 0));
+    EXPECT_EQ("-2147483648", itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
+    EXPECT_EQ("2147483647", itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 10, 0));
 
-    EXPECT_EQ("80000000",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 16, 0));
-    EXPECT_EQ("7fffffff",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 16, 0));
+    EXPECT_EQ("80000000", itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 16, 0));
+    EXPECT_EQ("7fffffff", itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 16, 0));
   } else if (sizeof(intptr_t) == 8) {
     EXPECT_EQ("ffffffffffffffff", itoa_r_wrapper(-1, 128, 16, 0));
-    EXPECT_EQ("-9223372036854775808",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
-    EXPECT_EQ("9223372036854775807",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 10, 0));
+    EXPECT_EQ("-9223372036854775808", itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 10, 0));
+    EXPECT_EQ("9223372036854775807", itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 10, 0));
 
-    EXPECT_EQ("8000000000000000",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 16, 0));
-    EXPECT_EQ("7fffffffffffffff",
-              itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 16, 0));
+    EXPECT_EQ("8000000000000000", itoa_r_wrapper(std::numeric_limits<intptr_t>::min(), 128, 16, 0));
+    EXPECT_EQ("7fffffffffffffff", itoa_r_wrapper(std::numeric_limits<intptr_t>::max(), 128, 16, 0));
   } else {
-    ADD_FAILURE() << "Missing test case for your size of intptr_t ("
-                  << sizeof(intptr_t) << ")";
+    ADD_FAILURE() << "Missing test case for your size of intptr_t (" << sizeof(intptr_t) << ")";
   }
 
   // Test hex output.
@@ -255,7 +243,7 @@ TEST_F(StackTraceTest, itoa_r) {
   EXPECT_EQ("0688", itoa_r_wrapper(0x688, 128, 16, 4));
   EXPECT_EQ("00688", itoa_r_wrapper(0x688, 128, 16, 5));
 }
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif // defined(OS_POSIX) && !defined(OS_ANDROID)
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
@@ -266,26 +254,24 @@ class CopyFunction : public StackCopier {
 
 // Copies the current stack segment, starting from the frame pointer of the
 // caller frame. Also fills in |stack_end| for the copied stack.
-static std::unique_ptr<StackBuffer> NOINLINE
-CopyCurrentStackAndRewritePointers(uintptr_t* out_fp, uintptr_t* stack_end) {
-  const uint8_t* fp =
-      reinterpret_cast<const uint8_t*>(__builtin_frame_address(0));
+static std::unique_ptr<StackBuffer> NOINLINE CopyCurrentStackAndRewritePointers(uintptr_t* out_fp,
+                                                                                uintptr_t* stack_end) {
+  const uint8_t* fp = reinterpret_cast<const uint8_t*>(__builtin_frame_address(0));
   uintptr_t original_stack_end = GetStackEnd();
   size_t stack_size = original_stack_end - reinterpret_cast<uintptr_t>(fp);
   auto buffer = std::make_unique<StackBuffer>(stack_size);
-  *out_fp = reinterpret_cast<uintptr_t>(
-      CopyFunction::CopyStackContentsAndRewritePointers(
-          fp, reinterpret_cast<const uintptr_t*>(original_stack_end),
-          StackBuffer::kPlatformStackAlignment, buffer->buffer()));
+  *out_fp = reinterpret_cast<uintptr_t>(CopyFunction::CopyStackContentsAndRewritePointers(
+      fp,
+      reinterpret_cast<const uintptr_t*>(original_stack_end),
+      StackBuffer::kPlatformStackAlignment,
+      buffer->buffer()));
   *stack_end = *out_fp + stack_size;
   return buffer;
 }
 
 template <size_t Depth>
-void NOINLINE ExpectStackFramePointers(const void** frames,
-                                       size_t max_depth,
-                                       bool copy_stack) {
-  code_start:
+void NOINLINE ExpectStackFramePointers(const void** frames, size_t max_depth, bool copy_stack) {
+code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
   EXPECT_NE(nullptr, __builtin_frame_address(0));
@@ -295,24 +281,21 @@ void NOINLINE ExpectStackFramePointers(const void** frames,
   const void* frame = frames[frame_index];
   EXPECT_GE(frame, &&code_start) << "For frame at index " << frame_index;
   EXPECT_LE(frame, &&code_end) << "For frame at index " << frame_index;
-  code_end: return;
-  }
+code_end:
+  return;
+}
 
-  template <>
-  void NOINLINE ExpectStackFramePointers<1>(const void** frames,
-                                            size_t max_depth,
-                                            bool copy_stack) {
-  code_start:
+template <>
+void NOINLINE ExpectStackFramePointers<1>(const void** frames, size_t max_depth, bool copy_stack) {
+code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
   EXPECT_NE(nullptr, __builtin_frame_address(0));
   size_t count = 0;
   if (copy_stack) {
     uintptr_t stack_end = 0, fp = 0;
-    std::unique_ptr<StackBuffer> copy =
-        CopyCurrentStackAndRewritePointers(&fp, &stack_end);
-    count =
-        TraceStackFramePointersFromBuffer(fp, stack_end, frames, max_depth, 0);
+    std::unique_ptr<StackBuffer> copy = CopyCurrentStackAndRewritePointers(&fp, &stack_end);
+    count = TraceStackFramePointersFromBuffer(fp, stack_end, frames, max_depth, 0);
   } else {
     count = TraceStackFramePointers(frames, max_depth, 0);
   }
@@ -321,18 +304,19 @@ void NOINLINE ExpectStackFramePointers(const void** frames,
   const void* frame = frames[0];
   EXPECT_GE(frame, &&code_start) << "For the top frame";
   EXPECT_LE(frame, &&code_end) << "For the top frame";
-  code_end: return;
+code_end:
+  return;
 }
 
-#if defined(MEMORY_SANITIZER)
+#  if defined(MEMORY_SANITIZER)
 // The test triggers use-of-uninitialized-value errors on MSan bots.
 // This is expected because we're walking and reading the stack, and
 // sometimes we read fp / pc from the place that previously held
 // uninitialized value.
-#define MAYBE_TraceStackFramePointers DISABLED_TraceStackFramePointers
-#else
-#define MAYBE_TraceStackFramePointers TraceStackFramePointers
-#endif
+#    define MAYBE_TraceStackFramePointers DISABLED_TraceStackFramePointers
+#  else
+#    define MAYBE_TraceStackFramePointers TraceStackFramePointers
+#  endif
 TEST_F(StackTraceTest, MAYBE_TraceStackFramePointers) {
   constexpr size_t kDepth = 5;
   const void* frames[kDepth];
@@ -344,36 +328,34 @@ TEST_F(StackTraceTest, MAYBE_TraceStackFramePointers) {
 // sometimes we read fp / pc from the place that previously held
 // uninitialized value.
 // TODO(crbug.com/1132511): Enable this test on Fuchsia.
-#if defined(MEMORY_SANITIZER) || defined(OS_FUCHSIA)
-#define MAYBE_TraceStackFramePointersFromBuffer \
-  DISABLED_TraceStackFramePointersFromBuffer
-#else
-#define MAYBE_TraceStackFramePointersFromBuffer \
-  TraceStackFramePointersFromBuffer
-#endif
+#  if defined(MEMORY_SANITIZER) || defined(OS_FUCHSIA)
+#    define MAYBE_TraceStackFramePointersFromBuffer DISABLED_TraceStackFramePointersFromBuffer
+#  else
+#    define MAYBE_TraceStackFramePointersFromBuffer TraceStackFramePointersFromBuffer
+#  endif
 TEST_F(StackTraceTest, MAYBE_TraceStackFramePointersFromBuffer) {
   constexpr size_t kDepth = 5;
   const void* frames[kDepth];
   ExpectStackFramePointers<kDepth>(frames, kDepth, /*copy_stack=*/true);
 }
 
-#if defined(OS_ANDROID) || defined(OS_APPLE)
-#define MAYBE_StackEnd StackEnd
-#else
-#define MAYBE_StackEnd DISABLED_StackEnd
-#endif
+#  if defined(OS_ANDROID) || defined(OS_APPLE)
+#    define MAYBE_StackEnd StackEnd
+#  else
+#    define MAYBE_StackEnd DISABLED_StackEnd
+#  endif
 
 TEST_F(StackTraceTest, MAYBE_StackEnd) {
   EXPECT_NE(0u, GetStackEnd());
 }
 
-#endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#endif // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 #if defined(OS_LINUX) || defined(OS_ANDROID)
 
-#if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
+#  if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
-#if !defined(ARCH_CPU_ARM_FAMILY)
+#    if !defined(ARCH_CPU_ARM_FAMILY)
 // On Arm architecture invalid math operations such as division by zero are not
 // trapped and do not trigger a SIGFPE.
 // Hence disable the test for Arm platforms.
@@ -389,7 +371,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
               ::testing::KilledBySignal(SIGFPE), "");
   ALLOW_UNUSED_LOCAL(result);
 }
-#endif  // !defined(ARCH_CPU_ARM_FAMILY)
+#    endif // !defined(ARCH_CPU_ARM_FAMILY)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
   // Pointee and pointer are volatile to prevent reordering of instructions,
@@ -400,23 +382,23 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
   EXPECT_EXIT(*p_int = 1234, ::testing::KilledBySignal(SIGSEGV), "");
 }
 
-#endif  // #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
+#  endif // #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
   auto const raise_sigill = []() {
-#if defined(ARCH_CPU_X86_FAMILY)
+#  if defined(ARCH_CPU_X86_FAMILY)
     asm("ud2");
-#elif defined(ARCH_CPU_ARM_FAMILY)
+#  elif defined(ARCH_CPU_ARM_FAMILY)
     asm("udf 0");
-#else
-#error Unsupported platform!
-#endif
+#  else
+#    error Unsupported platform!
+#  endif
   };
 
   EXPECT_EXIT(raise_sigill(), ::testing::KilledBySignal(SIGILL), "");
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif // defined(OS_LINUX) || defined(OS_ANDROID)
 
-}  // namespace debug
-}  // namespace base
+} // namespace debug
+} // namespace base

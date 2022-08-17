@@ -79,8 +79,7 @@ struct BASE_EXPORT NativeLibraryOptions {
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path,
-                                            NativeLibraryLoadError* error);
+BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path, NativeLibraryLoadError* error);
 
 #if defined(OS_WIN)
 // Loads a native library from the system directory using the appropriate flags.
@@ -88,8 +87,7 @@ BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path,
 // get a handle if so. This method results in a lock that may block the calling
 // thread.
 BASE_EXPORT NativeLibrary
-LoadSystemLibrary(FilePath::StringPieceType name,
-                  NativeLibraryLoadError* error = nullptr);
+LoadSystemLibrary(FilePath::StringPieceType name, NativeLibraryLoadError* error = nullptr);
 
 // Gets the module handle for the specified system library and pins it to
 // ensure it never gets unloaded. If the module is not loaded, it will first
@@ -97,8 +95,7 @@ LoadSystemLibrary(FilePath::StringPieceType name,
 // method returns null and includes the error. This method results in a lock
 // that may block the calling thread.
 BASE_EXPORT NativeLibrary
-PinSystemLibrary(FilePath::StringPieceType name,
-                 NativeLibraryLoadError* error = nullptr);
+PinSystemLibrary(FilePath::StringPieceType name, NativeLibraryLoadError* error = nullptr);
 #endif
 
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when

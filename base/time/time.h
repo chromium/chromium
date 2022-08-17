@@ -206,8 +206,8 @@ class BASE_EXPORT TimeDelta {
   ABI::Windows::Foundation::DateTime ToWinrtDateTime() const;
 #endif
 
-  // Returns the frequency in Hertz (cycles per second) that has a period of
-  // *this.
+  // Returns the frequency in Hertz (cycles per second) that has a period of *this.
+  // 返回周期为 *this 的频率，单位为赫兹（每秒周期数）
   constexpr double ToHz() const;
 
   // Returns the time delta in some unit. Minimum argument values return as
@@ -398,8 +398,7 @@ class TimeBase {
   static constexpr int64_t kHoursPerDay = 24;
   static constexpr int64_t kSecondsPerMinute = 60;
   static constexpr int64_t kMinutesPerHour = 60;
-  static constexpr int64_t kSecondsPerHour =
-      kSecondsPerMinute * kMinutesPerHour;
+  static constexpr int64_t kSecondsPerHour = kSecondsPerMinute * kMinutesPerHour;
   static constexpr int64_t kMillisecondsPerSecond = 1000;
   static constexpr int64_t kMillisecondsPerDay =
       kMillisecondsPerSecond * kSecondsPerHour * kHoursPerDay;

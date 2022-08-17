@@ -13,6 +13,9 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
+// base::AtExitManager 这个对象在析构的时候，会去回调注册的callback
+//
+
 namespace base {
 
 // Keep a stack of registered AtExitManagers.  We always operate on the most
@@ -34,6 +37,9 @@ AtExitManager::AtExitManager() : next_manager_(g_top_manager) {
   g_top_manager = this;
 }
 
+/**
+ * @brief 这个对象在析构的时候，会去回调注册的callback
+ */
 AtExitManager::~AtExitManager() {
   if (!g_top_manager) {
     NOTREACHED() << "Tried to ~AtExitManager without an AtExitManager";
@@ -46,12 +52,18 @@ AtExitManager::~AtExitManager() {
   g_top_manager = next_manager_;
 }
 
+/**
+ * @brief 注册callback
+ */
 // static
 void AtExitManager::RegisterCallback(AtExitCallbackType func, void* param) {
   DCHECK(func);
   RegisterTask(base::BindOnce(func, param));
 }
 
+/**
+ * @brief 指出注册base::Bind绑定的callback
+ */
 // static
 void AtExitManager::RegisterTask(base::OnceClosure task) {
   if (!g_top_manager) {

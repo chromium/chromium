@@ -30,9 +30,7 @@ BASE_EXPORT bool IsRunningOnIOS14OrLater();
 BASE_EXPORT bool IsRunningOnIOS15OrLater();
 
 // Returns whether the operating system is at the given version or later.
-BASE_EXPORT bool IsRunningOnOrLater(int32_t major,
-                                    int32_t minor,
-                                    int32_t bug_fix);
+BASE_EXPORT bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix);
 
 // Returns whether iOS is signalling that an RTL text direction should be used
 // regardless of the current locale. This should not return true if the current

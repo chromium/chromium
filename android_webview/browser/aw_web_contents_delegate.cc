@@ -92,8 +92,7 @@ void AwWebContentsDelegate::RendererResponsive(
 
 content::JavaScriptDialogManager*
 AwWebContentsDelegate::GetJavaScriptDialogManager(WebContents* source) {
-  static base::NoDestructor<AwJavaScriptDialogManager>
-      javascript_dialog_manager;
+  static base::NoDestructor<AwJavaScriptDialogManager> javascript_dialog_manager;
   return javascript_dialog_manager.get();
 }
 
