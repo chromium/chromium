@@ -30,7 +30,6 @@
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #include "components/ukm/test_ukm_recorder.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #endif
 
 namespace dom_distiller {

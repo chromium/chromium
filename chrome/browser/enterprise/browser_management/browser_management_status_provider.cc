@@ -17,7 +17,6 @@
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/user_manager/user_manager.h"
 #endif
