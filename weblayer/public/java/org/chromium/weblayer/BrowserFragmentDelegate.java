@@ -167,4 +167,15 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
             });
         });
     }
+
+    @Override
+    public void createTab(ITabCallback callback) {
+        mHandler.post(() -> {
+            Tab newTab = mFragment.getBrowser().createTab();
+            try {
+                callback.onResult(TabParams.buildParcelable(newTab));
+            } catch (RemoteException e) {
+            }
+        });
+    }
 }
