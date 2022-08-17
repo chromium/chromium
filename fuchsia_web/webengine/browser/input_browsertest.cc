@@ -36,15 +36,9 @@ const char kKeyPress[] = "keypress";
 const char kKeyUp[] = "keyup";
 const char kKeyDicts[] = "keyDicts";
 
-KeyEvent CreateKeyEvent(Key key, KeyEventType event_type) {
-  KeyEvent key_event;
-  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
-  key_event.set_type(event_type);
-  key_event.set_key(key);
-  return key_event;
-}
-
-KeyEvent CreateCharacterEvent(uint32_t codepoint, KeyEventType event_type) {
+// Returns a KeyEvent with |key_meaning| set based on the supplied codepoint,
+// the |key| field left not set.
+KeyEvent CreateCharacterKeyEvent(uint32_t codepoint, KeyEventType event_type) {
   KeyEvent key_event;
 
   fuchsia::ui::input3::KeyMeaning meaning;
@@ -53,6 +47,35 @@ KeyEvent CreateCharacterEvent(uint32_t codepoint, KeyEventType event_type) {
   key_event.set_type(event_type);
   key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
   return key_event;
+}
+
+// Returns a KeyEvent with only the |key| field set, and |key_meaning| not set.
+KeyEvent CreateKeyEventNoMeaning(Key key, KeyEventType event_type) {
+  KeyEvent key_event;
+  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
+  key_event.set_type(event_type);
+  key_event.set_key(key);
+  return key_event;
+}
+
+// Returns a KeyEvent with both |key| and |key_meaning| set.
+KeyEvent CreateKeyEvent(Key key,
+                        KeyMeaning key_meaning,
+                        KeyEventType event_type) {
+  KeyEvent key_event = CreateKeyEventNoMeaning(key, event_type);
+  key_event.set_key_meaning(std::move(key_meaning));
+  return key_event;
+}
+KeyEvent CreateKeyEvent(Key key, uint32_t codepoint, KeyEventType event_type) {
+  return CreateKeyEvent(key, KeyMeaning::WithCodepoint(std::move(codepoint)),
+                        event_type);
+}
+KeyEvent CreateKeyEvent(Key key,
+                        NonPrintableKey non_printable_key,
+                        KeyEventType event_type) {
+  return CreateKeyEvent(
+      key, KeyMeaning::WithNonPrintableKey(std::move(non_printable_key)),
+      event_type);
 }
 
 base::Value ExpectedKeyValue(base::StringPiece code,
@@ -201,13 +224,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, PrintableKeys) {
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::A, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::A, 'a', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_8, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_8, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::RELEASED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::A, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::A, 'a', KeyEventType::RELEASED));
 
   ExpectKeyEventsEqual(ExpectedKeyValue("KeyA", "a", kKeyDown),
                        ExpectedKeyValue("KeyA", "a", kKeyPress),
@@ -223,30 +246,36 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Characters) {
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('A', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('A', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('A', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('A', KeyEventType::RELEASED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('b', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('b', KeyEventType::PRESSED));
 
-  ExpectKeyEventsEqual(ExpectedKeyValue("", "A", kKeyPress),
-                       ExpectedKeyValue("", "b", kKeyPress));
+  ExpectKeyEventsEqual(
+      ExpectedKeyValue("", "A", kKeyDown), ExpectedKeyValue("", "A", kKeyPress),
+      ExpectedKeyValue("", "A", kKeyUp), ExpectedKeyValue("", "b", kKeyDown),
+      ExpectedKeyValue("", "b", kKeyPress));
 }
 
 // Verify that character events are not affected by active modifiers.
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftCharacter) {
+  // TODO(fxbug.dev/106600): Update the WithCodepoint(0)s when the platform is
+  // fixed to provide valid KeyMeanings for these keys.
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('a', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('a', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('a', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('a', KeyEventType::RELEASED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::RELEASED));
 
   ExpectKeyEventsEqual(
       ExpectedKeyValue("ShiftLeft", "Shift", kKeyDown),
-      ExpectedKeyValue("", "a", kKeyPress),  // Remains lowercase.
+      ExpectedKeyValue("", "a", kKeyDown),   // Remains lowercase.
+      ExpectedKeyValue("", "a", kKeyPress),  // You guessed it! Still lowercase.
+      ExpectedKeyValue("", "a", kKeyUp),     // Wow, lowercase just won't quit.
       ExpectedKeyValue("ShiftLeft", "Shift", kKeyUp));
 }
 
@@ -254,13 +283,15 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftCharacter) {
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterInBmp) {
   const wchar_t kSigma = 0x03C3;
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent(kSigma, KeyEventType::PRESSED));
+      CreateCharacterKeyEvent(kSigma, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent(kSigma, KeyEventType::RELEASED));
+      CreateCharacterKeyEvent(kSigma, KeyEventType::RELEASED));
 
   std::string expected_utf8;
   ASSERT_TRUE(base::WideToUTF8(&kSigma, 1, &expected_utf8));
-  ExpectKeyEventsEqual(ExpectedKeyValue("", expected_utf8, kKeyPress));
+  ExpectKeyEventsEqual(ExpectedKeyValue("", expected_utf8, kKeyDown),
+                       ExpectedKeyValue("", expected_utf8, kKeyPress),
+                       ExpectedKeyValue("", expected_utf8, kKeyUp));
 }
 
 // Verifies that codepoints beyond the range of allowable UCS-2 values
@@ -268,34 +299,33 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterInBmp) {
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterBeyondBmp) {
   const uint32_t kRamenEmoji = 0x1F35C;
 
-  // Send key press events from the Fuchsia keyboard service.
-  // Pressing character keys will generate a JavaScript keydown event followed
-  // by a keypress event. Releasing any key generates a keyup event.
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent(kRamenEmoji, KeyEventType::PRESSED));
+      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent(kRamenEmoji, KeyEventType::RELEASED));
+      CreateCharacterKeyEvent(kRamenEmoji, KeyEventType::RELEASED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('a', KeyEventType::PRESSED));
+      CreateCharacterKeyEvent('a', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateCharacterEvent('a', KeyEventType::RELEASED));
+      CreateCharacterKeyEvent('a', KeyEventType::RELEASED));
 
-  ExpectKeyEventsEqual(ExpectedKeyValue("", "a", kKeyPress));
+  ExpectKeyEventsEqual(ExpectedKeyValue("", "a", kKeyDown),
+                       ExpectedKeyValue("", "a", kKeyPress),
+                       ExpectedKeyValue("", "a", kKeyUp));
 }
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::B, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::B, 'B', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::KEY_1, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::KEY_1, '!', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::SPACE, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::SPACE, ' ', KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::LEFT_SHIFT, 0, KeyEventType::RELEASED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::DOT, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::DOT, '.', KeyEventType::PRESSED));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.
@@ -313,13 +343,13 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftPrintableKeys) {
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftNonPrintableKeys) {
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::RIGHT_SHIFT, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::RIGHT_SHIFT, 0, KeyEventType::PRESSED));
+  keyboard_service_->SendKeyEvent(CreateKeyEvent(
+      Key::ENTER, NonPrintableKey::ENTER, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::ENTER, KeyEventType::PRESSED));
+      CreateKeyEvent(Key::LEFT_CTRL, 0, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::LEFT_CTRL, KeyEventType::PRESSED));
-  keyboard_service_->SendKeyEvent(
-      CreateKeyEvent(Key::RIGHT_SHIFT, KeyEventType::RELEASED));
+      CreateKeyEvent(Key::RIGHT_SHIFT, 0, KeyEventType::RELEASED));
 
   // Note that non-character keys (e.g. shift, control) only generate key down
   // and key up web events. They do not generate key pressed events.

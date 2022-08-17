@@ -9,8 +9,6 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/events/event.h"
 
 namespace ui {
 
@@ -36,10 +34,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
 
  private:
   bool IsValid(const fuchsia::ui::input3::KeyEvent& key_event);
-
-  // Returns an unset value if the |key_event| type is unsupported.
-  absl::optional<ui::KeyEvent> ConvertKeystrokeEvent(
-      const fuchsia::ui::input3::KeyEvent& key_event);
 
   // Handles converting and propagating |key_event|. Returns false if critical
   // information about |key_event| is missing, or if the key's event type is not

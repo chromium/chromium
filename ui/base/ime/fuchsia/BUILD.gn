@@ -19,6 +19,8 @@ component("fuchsia") {
   defines = [ "IS_UI_BASE_IME_FUCHSIA_IMPL" ]
 
   public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
