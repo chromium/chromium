@@ -24,7 +24,7 @@ js_library("smb_credentials_dialog") {
   deps = [
     "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",

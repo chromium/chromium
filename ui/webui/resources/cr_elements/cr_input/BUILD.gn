@@ -3,49 +3,21 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_input" ]
-}
-
-js_library("cr_input") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":cr_input_module",
-    ":cr_input_style_css_module",
-  ]
-}
-
-polymer_modulizer("cr_input") {
-  js_file = "cr_input.js"
-  html_file = "cr_input.html"
-  html_type = "dom-module"
-  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
-}
-
-polymer_modulizer("cr_input_style_css") {
-  js_file = "cr_input_style_css.m.js"
-  html_file = "cr_input_style_css.html"
-  html_type = "style-module"
+html_to_js("web_components") {
+  js_files = [ "cr_input.js" ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_input.m" ]
+  deps = [ ":cr_input" ]
 }
 
-js_library("cr_input.m") {
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_input/cr_input.m.js" ]
+js_library("cr_input") {
   deps = [
     "../../js:assert.m",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":cr_input_module" ]
 }

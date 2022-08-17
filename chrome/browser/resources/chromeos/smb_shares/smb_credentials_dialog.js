@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import './strings.m.js';
 
 import {SmbBrowserProxy, SmbBrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.js';

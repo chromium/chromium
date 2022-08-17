@@ -8,7 +8,7 @@
  */
 import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../cr_elements/cr_input/cr_input.m.js';
+import '../../cr_elements/cr_input/cr_input.js';
 import './certificate_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

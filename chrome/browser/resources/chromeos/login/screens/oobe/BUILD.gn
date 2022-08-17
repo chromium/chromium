@@ -113,7 +113,7 @@ js_library("enterprise_enrollment.m") {
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../common:offline_ad_login.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":enterprise_enrollment_module" ]
@@ -173,13 +173,13 @@ js_library("packaged_license.m") {
 js_library("update.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.m.js" ]
   deps = [
+    "../../components:oobe_slide.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_back_button.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components:oobe_slide.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":update_module" ]
@@ -200,7 +200,7 @@ js_library("welcome.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   extra_deps = [ ":welcome_module" ]
   externs_list = [ "$externs_path/tts.js" ]
@@ -249,6 +249,7 @@ polymer_modulizer("enable_debugging") {
   html_file = "enable_debugging.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -257,6 +258,7 @@ polymer_modulizer("enterprise_enrollment") {
   html_file = "enterprise_enrollment.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -305,6 +307,7 @@ polymer_modulizer("welcome") {
   html_file = "welcome.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

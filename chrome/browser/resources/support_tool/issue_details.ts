@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './support_tool_shared.css.js';
 

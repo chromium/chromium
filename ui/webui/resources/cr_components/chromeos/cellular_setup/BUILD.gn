@@ -306,6 +306,7 @@ polymer_modulizer("activation_code_page") {
   html_file = "activation_code_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 

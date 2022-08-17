@@ -8,7 +8,7 @@
  */
 import '//resources/cr_elements/hidden_style_css.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
-import '//resources/cr_elements/cr_input/cr_input_style_css.m.js';
+import '//resources/cr_elements/cr_input/cr_input_style.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './settings_textarea.html.js';

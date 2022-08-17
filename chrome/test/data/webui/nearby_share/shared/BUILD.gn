@@ -64,7 +64,7 @@ js_library("nearby_onboarding_one_page_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -75,7 +75,7 @@ js_library("nearby_onboarding_page_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

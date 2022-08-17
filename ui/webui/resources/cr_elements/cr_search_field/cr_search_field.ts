@@ -9,8 +9,8 @@
  */
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_input/cr_input.m.js';
-import '../cr_input/cr_input_style_css.m.js';
+import '../cr_input/cr_input.js';
+import '../cr_input/cr_input_style.css.js';
 import '../icons.m.js';
 import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
@@ -18,7 +18,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrInputElement} from '../cr_input/cr_input.m.js';
+import {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getTemplate} from './cr_search_field.html.js';
 import {CrSearchFieldMixin} from './cr_search_field_mixin.js';

@@ -1,12 +1,12 @@
-<link rel="import" href="../../html/polymer.html">
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
 
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="../shared_vars_css.html">
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../../cr_elements/shared_vars_css.m.js
+ * #css_wrapper_metadata_end */
 
-<!-- Common input styling for Material Design WebUI. -->
-<dom-module id="cr-input-style">
-  <template>
-    <style>
       :host {
         --cr-input-background-color: var(--google-grey-100);
         --cr-input-color: var(--cr-primary-text-color);
@@ -101,6 +101,3 @@
         transition: opacity 120ms ease-in, width 180ms ease-out;
         width: 100%;
       }
-    </style>
-  </template>
-</dom-module>

@@ -127,7 +127,7 @@ Polymer({
   attemptToFocusFirstEditableCrInput_() {
     Polymer.dom.flush();
 
-    const crInput = /** @type {?CrInputElement} */
+    const crInput = /** @type {?HTMLElement} */
         (this.shadowRoot.querySelector('cr-input:not([readonly])'));
     if (!crInput) {
       return;
@@ -136,7 +136,7 @@ Polymer({
     // Note that |this.hasAnyInputFocused_| should not change here because a
     // CrInputElement's focus event may not properly fire before
     // |this.propertyDict| reaches steady state.
-    crInput.focusInput();
+    /** @type {{focusInput: function():void}} */ (crInput).focusInput();
   },
 
   /**
@@ -151,7 +151,7 @@ Polymer({
       return;
     }
 
-    const crInput = /** @type {!CrInputElement} */ (e.target);
+    const crInput = /** @type {!HTMLElement} */ (e.target);
     // Subsequent focuses to the same CrInputElement after the first will not
     // select the entire text.
     if (crInput.getAttribute('edited') === 'true') {

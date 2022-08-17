@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';

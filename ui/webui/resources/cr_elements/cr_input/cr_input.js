@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../hidden_style_css.m.js';
+import '../shared_style_css.m.js';
+import '../shared_vars_css.m.js';
+import './cr_input_style.css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+
 
 /**
  * Input types supported by cr-input.
@@ -50,6 +59,8 @@ const SUPPORTED_INPUT_TYPES = new Set([
  */
 Polymer({
   is: 'cr-input',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /** @type {string|undefined} */
@@ -330,5 +341,3 @@ Polymer({
     return !this.invalid;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
-})();

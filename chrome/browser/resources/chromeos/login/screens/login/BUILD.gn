@@ -154,6 +154,7 @@ polymer_modulizer("active_directory_password_change") {
   html_file = "active_directory_password_change.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -162,6 +163,7 @@ polymer_modulizer("gaia_password_changed") {
   html_file = "gaia_password_changed.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
