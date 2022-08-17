@@ -7,15 +7,12 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 
 class PrefService;
 class Profile;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace chromeos {
 
@@ -67,16 +64,17 @@ using SettingZippyList = google::protobuf::RepeatedPtrField<
 using ActivityControlUi =
     ash::assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
 // Helper method to create zippy data.
-base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
-                            bool is_minor_mode);
+base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
+                                  bool is_minor_mode);
 
 // Helper method to create disclosure data.
-base::Value CreateDisclosureData(const SettingZippyList& disclosure_list);
+base::Value::List CreateDisclosureData(const SettingZippyList& disclosure_list);
 
 // Get string constants for settings ui.
-base::Value GetSettingsUiStrings(const ash::assistant::SettingsUi& settings_ui,
-                                 bool activity_control_needed,
-                                 bool equal_weight_buttons);
+base::Value::Dict GetSettingsUiStrings(
+    const ash::assistant::SettingsUi& settings_ui,
+    bool activity_control_needed,
+    bool equal_weight_buttons);
 
 void RecordActivityControlConsent(
     Profile* profile,

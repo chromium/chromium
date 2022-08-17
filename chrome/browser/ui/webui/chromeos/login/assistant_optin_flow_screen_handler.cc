@@ -252,27 +252,23 @@ void AssistantOptInFlowScreenHandler::InitializeDeprecated() {
 }
 
 void AssistantOptInFlowScreenHandler::OnListeningHotword() {
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate",
-         base::Value("listen"));
+  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "listen");
 }
 
 void AssistantOptInFlowScreenHandler::OnProcessingHotword() {
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate",
-         base::Value("process"));
+  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "process");
 }
 
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentDone() {
   StopSpeakerIdEnrollment();
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate",
-         base::Value("done"));
+  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "done");
 }
 
 void AssistantOptInFlowScreenHandler::OnSpeakerIdEnrollmentFailure() {
   StopSpeakerIdEnrollment();
   RecordAssistantOptInStatus(VOICE_MATCH_ENROLLMENT_ERROR);
   voice_match_enrollment_error_ = true;
-  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate",
-         base::Value("failure"));
+  CallJS("login.AssistantOptInFlowScreen.onVoiceMatchUpdate", "failure");
   LOG(ERROR) << "Speaker ID enrollment failure.";
 }
 
@@ -394,12 +390,12 @@ void AssistantOptInFlowScreenHandler::StopSpeakerIdEnrollment() {
   ResetReceiver();
 }
 
-void AssistantOptInFlowScreenHandler::ReloadContent(base::Value dict) {
+void AssistantOptInFlowScreenHandler::ReloadContent(base::Value::Dict dict) {
   CallJS("login.AssistantOptInFlowScreen.reloadContent", std::move(dict));
 }
 
 void AssistantOptInFlowScreenHandler::AddSettingZippy(const std::string& type,
-                                                      base::Value data) {
+                                                      base::Value::List data) {
   CallJS("login.AssistantOptInFlowScreen.addSettingZippy", type,
          std::move(data));
 }
@@ -461,7 +457,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
 
   RecordAssistantOptInStatus(FLOW_STARTED);
 
-  base::Value zippy_data(base::Value::Type::LIST);
+  base::Value::List zippy_data;
   bool skip_activity_control = true;
   pending_consent_data_.clear();
   // We read from `multi_consent_ui` field if it is populated and we assume user
@@ -525,18 +521,15 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   auto dictionary = GetSettingsUiStrings(settings_ui, activity_control_needed_,
                                          equal_weight_buttons);
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  dictionary.SetKey(
-      "voiceMatchEnforcedOff",
-      base::Value(IsVoiceMatchEnforcedOff(prefs, is_oobe_in_progress)));
-  dictionary.SetKey(
-      "shouldSkipVoiceMatch",
-      base::Value(!ash::AssistantState::Get()->HasAudioInputDevice()));
-  dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
-  dictionary.SetKey(
-      "isTabletMode",
-      base::Value(ash::TabletMode::Get()->InTabletMode() ||
-                  (is_oobe_in_progress &&
-                   ash::switches::ShouldOobeUseTabletModeFirstRun())));
+  dictionary.Set("voiceMatchEnforcedOff",
+                 IsVoiceMatchEnforcedOff(prefs, is_oobe_in_progress));
+  dictionary.Set("shouldSkipVoiceMatch",
+                 !ash::AssistantState::Get()->HasAudioInputDevice());
+  dictionary.Set("childName", GetGivenNameIfIsChild());
+  dictionary.Set("isTabletMode",
+                 ash::TabletMode::Get()->InTabletMode() ||
+                     (is_oobe_in_progress &&
+                      ash::switches::ShouldOobeUseTabletModeFirstRun()));
   ReloadContent(std::move(dictionary));
 
   // Skip activity control and users will be in opted out mode.
