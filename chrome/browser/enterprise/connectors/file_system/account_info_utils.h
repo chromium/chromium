@@ -69,8 +69,6 @@ void SetFileSystemAccountInfo(PrefService* prefs,
                               base::Value account_info);
 bool ClearFileSystemAccountInfo(PrefService* prefs,
                                 const std::string& service_provider);
-base::Value GetFileSystemAccountInfo(PrefService* prefs,
-                                     const std::string& service_provider);
 
 struct AccountInfo {
   std::string account_name;

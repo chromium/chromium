@@ -237,13 +237,12 @@ bool ClearFileSystemAccountInfo(PrefService* prefs,
   return true;
 }
 
-base::Value GetFileSystemAccountInfo(PrefService* prefs,
-                                     const std::string& service_provider) {
+const base::Value::Dict& GetFileSystemAccountInfo(
+    PrefService* prefs,
+    const std::string& service_provider) {
   const auto path = GetPrefPath(kAccountInfoPrefPathTemplate, service_provider);
 
-  const base::Value* val = prefs->GetDictionary(path);
-  DCHECK(val);
-  return val->Clone();
+  return prefs->GetValueDict(path);
 }
 
 AccountInfo::AccountInfo() = default;
@@ -254,11 +253,11 @@ absl::optional<AccountInfo> GetFileSystemAccountInfoFromPrefs(
     const FileSystemSettings& settings,
     PrefService* prefs) {
   const std::string& provider = settings.service_provider;
-  base::Value stored_account_info = GetFileSystemAccountInfo(prefs, provider);
-  std::string *account_name, *account_login;
-  if (stored_account_info.DictEmpty() ||
-      !(account_name = stored_account_info.FindStringPath("name")) ||
-      !(account_login = stored_account_info.FindStringPath("login"))) {
+  const base::Value::Dict& stored_account_info =
+      GetFileSystemAccountInfo(prefs, provider);
+  const std::string* account_name = stored_account_info.FindString("name");
+  const std::string* account_login = stored_account_info.FindString("login");
+  if (!account_name || !account_login) {
     return absl::nullopt;
   }
 
