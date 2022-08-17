@@ -171,4 +171,23 @@ TEST_F(TooltipControllerTest, TooltipsOnMultiDisplayShouldNotCrash) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
 }
 
+TEST_F(TooltipControllerTest, HideTooltipWhenViewHidden) {
+  std::unique_ptr<views::Widget> widget(CreateNewWidgetOn(0));
+  TooltipTestView* view = new TooltipTestView;
+  AddViewToWidgetAndResize(widget.get(), view);
+  view->set_tooltip_text(u"Tooltip Text");
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.MoveMouseRelativeTo(widget->GetNativeView(),
+                                view->bounds().CenterPoint());
+
+  // Mouse event triggers tooltip update so it becomes visible.
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  view->SetVisible(false);
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+}
+
 }  // namespace ash
