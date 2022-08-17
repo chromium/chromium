@@ -238,6 +238,7 @@ class WaylandEventSource : public PlatformEventSource,
   int last_pointer_button_pressed_ = 0;
 
   // Bitmask of EventFlags used to keep track of the the keyboard state.
+  // See ui/events/event_constants.h for examples and details.
   int keyboard_modifiers_ = 0;
 
   // Last known pointer location.
