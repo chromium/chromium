@@ -1881,22 +1881,17 @@
   {
     "name": "enable-cros-system-chinese-physical-typing",
     "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-system-japanese-physical-typing",
     "owners": [ "keithlee", "essential-inputs-team@google.com" ],
     "expiry_milestone": 108
   },
-  {
-    "name": "enable-cros-system-korean-physical-typing",
-    "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
+   {
     "name": "enable-cros-system-transliteration-physical-typing",
     "owners": [ "shend", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-virtual-keyboard-api",
