@@ -119,19 +119,12 @@ WaylandEventSource::PointerScrollData::operator=(const PointerScrollData&) =
 WaylandEventSource::PointerScrollData&
 WaylandEventSource::PointerScrollData::operator=(PointerScrollData&&) = default;
 
-// WaylandEventSource::PointerFrame implementation
-WaylandEventSource::PointerFrame::PointerFrame(const Event& e,
-                                               base::OnceCallback<void()> cb)
+// WaylandEventSource::FrameData implementation
+WaylandEventSource::FrameData::FrameData(const Event& e,
+                                         base::OnceCallback<void()> cb)
     : event(e.Clone()), completion_cb(std::move(cb)) {}
 
-WaylandEventSource::PointerFrame::~PointerFrame() = default;
-
-// WaylandEventSource::TouchFrame implementation
-WaylandEventSource::TouchFrame::TouchFrame(const Event& e,
-                                           base::OnceCallback<void()> cb)
-    : event(e.Clone()), completion_cb(std::move(cb)) {}
-
-WaylandEventSource::TouchFrame::~TouchFrame() = default;
+WaylandEventSource::FrameData::~FrameData() = default;
 
 // WaylandEventSource implementation
 
@@ -277,7 +270,7 @@ void WaylandEventSource::OnPointerFocusChanged(
       SetTargetAndDispatchEvent(&event, target);
     } else {
       pointer_frames_.push_back(
-          std::make_unique<PointerFrame>(event, std::move(closure)));
+          std::make_unique<FrameData>(event, std::move(closure)));
       return;
     }
   }
@@ -406,7 +399,7 @@ void WaylandEventSource::OnTouchPressEvent(
                    keyboard_modifiers_);
   DCHECK_EQ(dispatch_policy, wl::EventDispatchPolicy::kOnFrame);
   touch_frames_.push_back(
-      std::make_unique<TouchFrame>(event, base::NullCallback()));
+      std::make_unique<FrameData>(event, base::NullCallback()));
 }
 
 void WaylandEventSource::OnTouchReleaseEvent(
@@ -430,7 +423,7 @@ void WaylandEventSource::OnTouchReleaseEvent(
     SetTouchTargetAndDispatchTouchEvent(&event);
     OnTouchReleaseInternal(id);
   } else {
-    touch_frames_.push_back(std::make_unique<TouchFrame>(
+    touch_frames_.push_back(std::make_unique<FrameData>(
         event, base::BindOnce(&WaylandEventSource::OnTouchReleaseInternal,
                               base::Unretained(this), id)));
   }
@@ -504,7 +497,7 @@ void WaylandEventSource::OnTouchMotionEvent(
     SetTouchTargetAndDispatchTouchEvent(&event);
   } else {
     touch_frames_.push_back(
-        std::make_unique<TouchFrame>(event, base::NullCallback()));
+        std::make_unique<FrameData>(event, base::NullCallback()));
   }
 }
 
@@ -765,7 +758,7 @@ void WaylandEventSource::ProcessPointerScrollData() {
         pointer_location_, pointer_location_, EventTimeForNow(), flags, vx, vy,
         vx, vy, kGestureScrollFingerCount);
     pointer_frames_.push_back(
-        std::make_unique<PointerFrame>(event, base::NullCallback()));
+        std::make_unique<FrameData>(event, base::NullCallback()));
   } else if (pointer_scroll_data_->axis_source) {
     if (*pointer_scroll_data_->axis_source == WL_POINTER_AXIS_SOURCE_WHEEL ||
         *pointer_scroll_data_->axis_source ==
@@ -774,7 +767,7 @@ void WaylandEventSource::ProcessPointerScrollData() {
           gfx::Vector2d(pointer_scroll_data_->dx, pointer_scroll_data_->dy),
           pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
       pointer_frames_.push_back(
-          std::make_unique<PointerFrame>(event, base::NullCallback()));
+          std::make_unique<FrameData>(event, base::NullCallback()));
     } else if (*pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_FINGER ||
                *pointer_scroll_data_->axis_source ==
@@ -784,7 +777,7 @@ void WaylandEventSource::ProcessPointerScrollData() {
                         pointer_scroll_data_->dy, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, kGestureScrollFingerCount);
       pointer_frames_.push_back(
-          std::make_unique<PointerFrame>(event, base::NullCallback()));
+          std::make_unique<FrameData>(event, base::NullCallback()));
     }
 
     if (pointer_scroll_data_set_.size() + 1 > kPointerScrollDataSetMaxSize)

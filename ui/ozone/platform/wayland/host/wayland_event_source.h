@@ -181,23 +181,11 @@ class WaylandEventSource : public PlatformEventSource,
     bool is_axis_stop = false;
   };
 
-  // TODO(https://crrev.com/c/1298504): Unify |PointerFrame| and |TouchFrame|
-  // and make them non-copyable/move-only.
-  struct PointerFrame {
-    PointerFrame(const Event& event, base::OnceCallback<void()> completion_cb);
-    PointerFrame(const PointerFrame& other) = delete;
-    PointerFrame(PointerFrame&&) = delete;
-    ~PointerFrame();
-
-    std::unique_ptr<Event> event;
-    base::OnceCallback<void()> completion_cb;
-  };
-
-  struct TouchFrame {
-    TouchFrame(const Event& event, base::OnceCallback<void()> completion_cb);
-    TouchFrame(const TouchFrame& other) = delete;
-    TouchFrame(TouchFrame&&) = delete;
-    ~TouchFrame();
+  struct FrameData {
+    FrameData(const Event& event, base::OnceCallback<void()> completion_cb);
+    FrameData(const FrameData& other) = delete;
+    FrameData(FrameData&&) = delete;
+    ~FrameData();
 
     std::unique_ptr<Event> event;
     base::OnceCallback<void()> completion_cb;
@@ -281,11 +269,11 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Order set of touch events to be dispatching on the next
   // wl_touch::frame event.
-  std::deque<std::unique_ptr<TouchFrame>> touch_frames_;
+  std::deque<std::unique_ptr<FrameData>> touch_frames_;
 
   // Order set of pointer events to be dispatching on the next
   // wl_pointer::frame event.
-  std::deque<std::unique_ptr<PointerFrame>> pointer_frames_;
+  std::deque<std::unique_ptr<FrameData>> pointer_frames_;
 
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.
