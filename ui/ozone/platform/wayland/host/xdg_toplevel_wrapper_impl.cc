@@ -62,6 +62,23 @@ absl::optional<wl::Serial> GetSerialForMoveResize(
                                                  wl::SerialType::kKeyPress});
 }
 
+zaura_toplevel_z_order_level ToZauraToplevelZOrderLevel(
+    ZOrderLevel z_order_level) {
+  switch (z_order_level) {
+    case ZOrderLevel::kNormal:
+      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_NORMAL;
+    case ZOrderLevel::kFloatingWindow:
+      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_FLOATING_WINDOW;
+    case ZOrderLevel::kFloatingUIElement:
+      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_FLOATING_UI_ELEMENT;
+    case ZOrderLevel::kSecuritySurface:
+      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_SECURITY_SURFACE;
+  }
+
+  NOTREACHED();
+  return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_NORMAL;
+}
+
 }  // namespace
 
 XDGToplevelWrapperImpl::XDGToplevelWrapperImpl(
@@ -432,6 +449,14 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
 
   zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
                               this);
+}
+
+void XDGToplevelWrapperImpl::SetZOrder(ZOrderLevel z_order) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_Z_ORDER_SINCE_VERSION) {
+    zaura_toplevel_set_z_order(aura_toplevel_.get(),
+                               ToZauraToplevelZOrderLevel(z_order));
+  }
 }
 
 void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,

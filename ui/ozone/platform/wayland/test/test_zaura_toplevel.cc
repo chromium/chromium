@@ -68,6 +68,20 @@ void SetDecoration(struct wl_client* client,
   NOTREACHED();
 }
 
+void SetFloat(struct wl_client* client, struct wl_resource* resource) {
+  NOTREACHED();
+}
+
+void UnSetFloat(struct wl_client* client, struct wl_resource* resource) {
+  NOTREACHED();
+}
+
+void SetZOrder(struct wl_client* client,
+               struct wl_resource* resource,
+               uint32_t z_order) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 }  // namespace
 
 TestZAuraToplevel::TestZAuraToplevel(wl_resource* resource)
@@ -86,6 +100,9 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &SetRestoreInfoWithWindowIdSource,
     &SetDecoration,
     &DestroyResource,
+    &SetFloat,
+    &UnSetFloat,
+    &SetZOrder,
 };
 
 }  // namespace wl

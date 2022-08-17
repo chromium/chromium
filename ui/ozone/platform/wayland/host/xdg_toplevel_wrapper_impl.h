@@ -53,6 +53,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void EnableScreenCoordinates() override;
   void SetFloat() override;
   void UnSetFloat() override;
+  void SetZOrder(ZOrderLevel z_order) override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

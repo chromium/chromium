@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -111,6 +112,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool visible_on_all_workspaces = false;
   bool remove_standard_frame = false;
   std::string workspace;
+  ZOrderLevel z_order = ZOrderLevel::kNormal;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate = nullptr;
 

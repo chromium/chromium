@@ -503,6 +503,8 @@ bool WaylandToplevelWindow::OnInitialize(
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
   SetDeskExtension(this, static_cast<DeskExtension*>(this));
 
+  z_order_ = properties.z_order;
+
   if (!properties.workspace.empty()) {
     int workspace;
     base::StringToInt(properties.workspace, &workspace);
@@ -899,6 +901,7 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     }
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
+    SetInitialZOrder();
     SetInitialWorkspace();
     if (restore_window_id_) {
       DCHECK(!restore_window_id_source_);
@@ -962,6 +965,10 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
     zaura_surface_set_initial_workspace(
         aura_surface_.get(), base::NumberToString(workspace_.value()).c_str());
   }
+}
+
+void WaylandToplevelWindow::SetInitialZOrder() {
+  shell_toplevel_->SetZOrder(z_order_);
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {

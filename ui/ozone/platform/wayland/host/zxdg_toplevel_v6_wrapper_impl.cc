@@ -219,4 +219,6 @@ void ZXDGToplevelV6WrapperImpl::SetFloat() {}
 
 void ZXDGToplevelV6WrapperImpl::UnSetFloat() {}
 
+void ZXDGToplevelV6WrapperImpl::SetZOrder(ZOrderLevel z_order) {}
+
 }  // namespace ui

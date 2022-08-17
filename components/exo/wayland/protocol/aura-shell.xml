@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="39">
+  <interface name="zaura_shell" version="40">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -684,7 +684,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_toplevel" version="39">
+  <interface name="zaura_toplevel" version="40">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -877,6 +877,24 @@
         Request that the surface resets floating.
       </description>
     </request>
+
+    <!-- version 40 additions -->
+    <request name="set_z_order" since="40">
+      <description summary="set z order for window">
+        Sets the z order for a toplevel surface. See z_order_level for available options.
+      </description>
+      <arg name="z_order" type="uint" summary="z order value for the window"/>
+    </request>
+
+    <enum name="z_order_level">
+      <description summary="z order levels for windows">
+        Different z order levels that are used to set the z order for a toplevel surface.
+      </description>
+      <entry name="normal" value="0" summary="the default level for windows"/>
+      <entry name="floating_window" value="1" summary="a floating window z-ordered above other normal windows"/>
+      <entry name="floating_ui_element" value="2" summary="used to show non-window style UIs that are shown above floating windows"/>
+      <entry name="security_surface" value="3" summary="cannot be interfered with or covered up"/>
+    </enum>
   </interface>
 
   <interface name="zaura_popup" version="38">

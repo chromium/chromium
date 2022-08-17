@@ -57,6 +57,7 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void EnableScreenCoordinates() override;
   void SetFloat() override;
   void UnSetFloat() override;
+  void SetZOrder(ZOrderLevel z_order) override;
 
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 

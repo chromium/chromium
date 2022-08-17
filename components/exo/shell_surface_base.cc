@@ -1262,6 +1262,10 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.show_state = show_state;
+
+  if (initial_z_order_.has_value())
+    params.z_order = initial_z_order_.value();
+
   if (initial_workspace_.has_value()) {
     const std::string kToggleVisibleOnAllWorkspacesValue = "-1";
     if (initial_workspace_ == kToggleVisibleOnAllWorkspacesValue) {
@@ -1820,6 +1824,17 @@ void ShellSurfaceBase::SetOrientationLock(
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShellSurfaceBase::SetZOrder(ui::ZOrderLevel z_order) {
+  // If there is already a widget, we can immediately set its z order.
+  if (widget_) {
+    widget_->SetZOrderLevel(z_order);
+    return;
+  }
+
+  // Otherwise, we want to save `z_order` for when `widget_` is initialized.
+  initial_z_order_ = z_order;
 }
 
 }  // namespace exo

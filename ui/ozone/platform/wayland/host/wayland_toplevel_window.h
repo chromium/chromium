@@ -216,6 +216,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // This must be called in SetUpShellIntegration().
   void SetInitialWorkspace();
 
+  // Sets `z_order_` in the `shell_toplevel_`.
+  // Must be called in SetUpShellIntegration().
+  void SetInitialZOrder();
+
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
@@ -295,6 +299,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.
   absl::optional<int> workspace_ = absl::nullopt;
+
+  // The z order for the window.
+  ZOrderLevel z_order_ = ZOrderLevel::kNormal;
 
   // True when screen coordinates is enabled.
   bool screen_coordinates_enabled_;

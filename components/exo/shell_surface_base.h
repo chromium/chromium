@@ -209,6 +209,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // //ash/display/screen_orientation_controller.h.
   void SetOrientationLock(chromeos::OrientationType orientation_lock);
 
+  // Sets the z order for the window. If the window's widget has not yet been
+  // initialized, it saves `z_order` for when it is initialized.
+  void SetZOrder(ui::ZOrderLevel z_order);
+
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
   bool IsInputEnabled(Surface* surface) const override;
@@ -470,6 +474,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool pending_pip_ = false;
   bool in_extended_drag_ = false;
   absl::optional<std::string> initial_workspace_;
+  absl::optional<ui::ZOrderLevel> initial_z_order_;
 
   // Restore members. These pass window restore related ids from exo clients,
   // e.g. Lacros, so that the window can be created with the correct restore

@@ -17,6 +17,7 @@ class Rect;
 namespace ui {
 
 class WaylandConnection;
+enum class ZOrderLevel;
 
 // A wrapper around different versions of xdg toplevels. Allows
 // WaylandToplevelWindow to set window-like properties such as maximize,
@@ -132,6 +133,9 @@ class ShellToplevelWrapper {
   // windows.
   virtual void SetFloat() = 0;
   virtual void UnSetFloat() = 0;
+
+  // Sets the z order of the window.
+  virtual void SetZOrder(ZOrderLevel z_order) = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.
