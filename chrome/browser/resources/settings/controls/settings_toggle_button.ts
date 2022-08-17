@@ -67,6 +67,8 @@ export class SettingsToggleButtonElement extends
         type: String,
         reflectToAttribute: true,
       },
+
+      icon: String,
       // </if>
 
       subLabelIcon: String,
@@ -81,6 +83,11 @@ export class SettingsToggleButtonElement extends
 
   override ariaLabel: string;
   elideLabel: boolean;
+
+  // <if expr="chromeos_ash">
+  icon: string;
+  // </if>
+
   learnMoreUrl: string;
 
   // <if expr="chromeos_ash">

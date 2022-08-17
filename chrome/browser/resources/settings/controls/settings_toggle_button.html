@@ -1,5 +1,6 @@
 <style include="cr-actionable-row-style settings-shared iron-flex">
   :host {
+    --cr-icon-button-margin-end: 20px;
     padding: 0 var(--cr-section-padding);
   }
 
@@ -26,6 +27,12 @@
     min-height: var(--settings-row-min-height);
   }
 
+<if expr="chromeos_ash">
+  #icon {
+    margin-inline-end: var(--cr-icon-button-margin-end);
+  }
+</if>
+
   #labelWrapper {
     padding: var(--cr-section-vertical-padding) 0;
   }
@@ -40,6 +47,14 @@
   }
 </style>
 <div id="outerRow" noSubLabel$="[[!subLabel]]">
+  <if expr="chromeos_ash">
+    <template is="dom-if" if="[[icon]]">
+      <span id="icon" aria-hidden="true">
+        <iron-icon slot="icon" icon="[[icon]]">
+        </iron-icon>
+      </span>
+    </template>
+  </if>
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="secondary label" id="sub-label">

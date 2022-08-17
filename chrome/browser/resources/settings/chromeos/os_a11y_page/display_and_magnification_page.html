@@ -27,6 +27,7 @@
   }
 </style>
 <settings-toggle-button
+    icon="os-settings:contrast"
     pref="{{prefs.settings.a11y.high_contrast_enabled}}"
     label="$i18n{highContrastLabel}"
     sub-label="$i18n{highContrastDescription}"
@@ -34,6 +35,7 @@
 </settings-toggle-button>
 <settings-toggle-button
     class="hr"
+    icon="os-settings:fullscreen-magnifier"
     pref="{{prefs.settings.a11y.screen_magnifier}}"
     label="$i18n{screenMagnifierLabel}"
     sub-label="[[getScreenMagnifierDescription_(
@@ -94,6 +96,7 @@
 </template>
 <settings-toggle-button
     class="hr"
+    icon="os-settings:docked-magnifier"
     pref="{{prefs.ash.docked_magnifier.enabled}}"
     label="$i18n{dockedMagnifierLabel}"
     sub-label="$i18n{dockedMagnifierDescription}"
