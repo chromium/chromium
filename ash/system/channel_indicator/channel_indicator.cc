@@ -33,17 +33,16 @@ namespace {
 // Background rounded rectangle corner radius.
 constexpr int kIndicatorBgCornerRadius = 50;
 
-// Size of vertical padding area around the icon or text.
-constexpr int kIndicatorVerticalInset = 8;
+// Size of padding area around the icon or text.
+constexpr int kIndicatorInset = 8;
 
 }  // namespace
 
 ChannelIndicatorView::ChannelIndicatorView(Shelf* shelf,
                                            version_info::Channel channel)
     : TrayItemView(shelf), channel_(channel), session_observer_(this) {
+  shell_observer_.Observe(Shell::Get());
   SetVisible(false);
-  SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(kIndicatorVerticalInset, 0)));
   Update();
 }
 
@@ -118,6 +117,12 @@ void ChannelIndicatorView::SetImageOrText() {
 
     DestroyLabel();
     CreateImageView();
+
+    // Border insets depend on shelf horizontal alignment.
+    SetBorder(views::CreateEmptyBorder(
+        IsHorizontalAlignment() ? gfx::Insets::VH(kIndicatorInset, 0)
+                                : gfx::Insets::VH(0, kIndicatorInset)));
+
     image_view()->SetBackground(views::CreateRoundedRectBackground(
         channel_indicator_utils::GetBgColor(channel_),
         kIndicatorBgCornerRadius));
@@ -135,6 +140,12 @@ void ChannelIndicatorView::SetImageOrText() {
 
   DestroyImageView();
   CreateLabel();
+
+  // Label is only displayed if the user is in a non-active `SessionState`,
+  // where side-shelf isn't possible (for now at least!), so nothing here is
+  // adjusted for shelf alignment.
+  DCHECK(IsHorizontalAlignment());
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(kIndicatorInset, 0)));
   label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 6)));
   label()->SetBackground(views::CreateRoundedRectBackground(
       channel_indicator_utils::GetBgColor(channel_), kIndicatorBgCornerRadius));
@@ -174,6 +185,17 @@ void ChannelIndicatorView::SetTooltip() {
 void ChannelIndicatorView::OnSessionStateChanged(
     session_manager::SessionState state) {
   Update();
+}
+
+void ChannelIndicatorView::OnShelfAlignmentChanged(
+    aura::Window* root_window,
+    ShelfAlignment old_alignment) {
+  if (image_view()) {
+    // Border insets depend on shelf horizontal alignment.
+    SetBorder(views::CreateEmptyBorder(
+        IsHorizontalAlignment() ? gfx::Insets::VH(kIndicatorInset, 0)
+                                : gfx::Insets::VH(0, kIndicatorInset)));
+  }
 }
 
 bool ChannelIndicatorView::IsLabelVisibleForTesting() {
