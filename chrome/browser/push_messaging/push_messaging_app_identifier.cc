@@ -159,10 +159,10 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
   DCHECK_EQ(app_id.substr(app_id.size() - kGuidLength),
             base::ToUpperASCII(app_id.substr(app_id.size() - kGuidLength)));
 
-  const base::Value* map =
-      profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
+  const base::Value::Dict& map =
+      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
 
-  const std::string* map_value = map->FindStringKey(app_id);
+  const std::string* map_value = map.FindString(app_id);
 
   if (!map_value || map_value->empty())
     return PushMessagingAppIdentifier();
@@ -193,9 +193,9 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
   const std::string base_pref_value =
       MakePrefValue(origin, service_worker_registration_id);
 
-  const base::Value* map =
-      profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
-  for (auto entry : map->DictItems()) {
+  const base::Value::Dict& map =
+      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
+  for (auto entry : map) {
     if (entry.second.is_string() &&
         base::StartsWith(entry.second.GetString(), base_pref_value,
                          base::CompareCase::SENSITIVE)) {
@@ -210,9 +210,9 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
     Profile* profile) {
   std::vector<PushMessagingAppIdentifier> result;
 
-  const base::Value* map =
-      profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
-  for (auto entry : map->DictItems()) {
+  const base::Value::Dict& map =
+      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
+  for (auto entry : map) {
     result.push_back(FindByAppId(profile, entry.first));
   }
 
@@ -230,8 +230,8 @@ void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
 // static
 size_t PushMessagingAppIdentifier::GetCount(Profile* profile) {
   return profile->GetPrefs()
-      ->GetDictionary(prefs::kPushMessagingAppIdentifierMap)
-      ->DictSize();
+      ->GetValueDict(prefs::kPushMessagingAppIdentifierMap)
+      .size();
 }
 
 PushMessagingAppIdentifier::PushMessagingAppIdentifier(
