@@ -215,6 +215,16 @@ void TextInput::InsertText(const std::u16string& text,
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
+  // TODO(b/240618514): Short term workaround to accept temporary fix in IME
+  // for urgent production breakage.
+  // We should come up with the proper solution of what to be done.
+  if (event.key_code() == ui::VKEY_UNKNOWN) {
+    // On some specific cases, IME use InsertChar, even if there's no clear
+    // key mapping from key_code. Then, use InsertText().
+    InsertText(std::u16string(1u, event.GetCharacter()),
+               InsertTextCursorBehavior::kMoveCursorAfterText);
+    return;
+  }
   // TextInput is currently used only for Lacros, and this is the
   // short term workaround not to duplicate KeyEvent there.
   // This is what we do for ARC, which is being removed in the near
