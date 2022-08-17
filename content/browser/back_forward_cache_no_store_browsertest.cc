@@ -524,10 +524,14 @@ const char kResponseWithNoCacheWithHTTPOnlyCookie2[] =
 #if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
   DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeader
+#elif BUILDFLAG(IS_LINUX)
+// Flaky: https://crbug.com/1353858
+#define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
+  DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeader
 #else
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
   PagesWithCacheControlNoStoreSetFromResponseHeader
-#endif  // BUILDFLAG(IS_CASTOS)
+#endif
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified while it is in bfcache via response header, gets
 // evicted with cookie modified marked.
