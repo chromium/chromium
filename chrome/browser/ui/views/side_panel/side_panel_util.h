@@ -42,6 +42,9 @@ class SidePanelUtil {
 
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
+  static void RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
+                                           int side_panel_contents_width,
+                                           int browser_window_width);
   static void RecordEntryShownMetrics(SidePanelEntry::Id id);
   static void RecordEntryHiddenMetrics(SidePanelEntry::Id id,
                                        base::TimeTicks shown_timestamp);

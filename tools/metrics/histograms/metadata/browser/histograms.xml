@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AboutThisSite"/>
   <variant name="Assistant"/>
   <variant name="Bookmarks"/>
+  <variant name="CustomizeChrome"/>
   <variant name="Feed"/>
   <variant name="HistoryClusters"/>
   <variant name="Lens"/>
@@ -1166,6 +1167,48 @@ chromium-metrics-reviews@google.com.
     Logs the UI location from which the side panel is triggered to be opened.
     Recorded when the side panel is shown and a trigger is provided.
   </summary>
+</histogram>
+
+<histogram name="SidePanel.ResizedWidth" units="px" expires_after="2023-06-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the width of the side panel contents after the side panel was
+    resized.
+  </summary>
+</histogram>
+
+<histogram name="SidePanel.ResizedWidthPercentage" units="% of window width"
+    expires_after="2023-06-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the width of the side panel contents as a percentage of the browser
+    window width after the side panel was resized.
+  </summary>
+</histogram>
+
+<histogram name="SidePanel.{SidePanelEntry}.ResizedWidth" units="px"
+    expires_after="2023-06-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the width of the side panel contents after the side panel was
+    resized, while the {SidePanelEntry} side panel entry was displayed.
+  </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="SidePanel.{SidePanelEntry}.ResizedWidthPercentage"
+    units="% of window width" expires_after="2023-06-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the width of the side panel contents as a percentage of the browser
+    window width after the side panel was resized, while the {SidePanelEntry}
+    side panel entry was displayed.
+  </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
 </histogram>
 
 <histogram name="SidePanel.{SidePanelEntry}.ShownDuration" units="ms"

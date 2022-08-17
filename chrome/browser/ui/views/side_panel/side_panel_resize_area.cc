@@ -19,7 +19,8 @@
 
 namespace views {
 
-SidePanelResizeHandle::SidePanelResizeHandle() {
+SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
+    : side_panel_(side_panel) {
   const gfx::Size preferred_resize_handle_size = gfx::Size(16, 24);
   SetPreferredSize(preferred_resize_handle_size);
   SetCanProcessEventsWithinSubtree(false);
@@ -41,6 +42,24 @@ void SidePanelResizeHandle::OnThemeChanged() {
   SetImage(icon);
 }
 
+void SidePanelResizeHandle::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void SidePanelResizeHandle::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void SidePanelResizeHandle::OnWillChangeFocus(views::View* before,
+                                              views::View* now) {}
+
+void SidePanelResizeHandle::OnDidChangeFocus(views::View* before,
+                                             views::View* now) {
+  if (before == this && now != this) {
+    side_panel_->RecordMetricsIfResized();
+  }
+}
+
 BEGIN_METADATA(SidePanelResizeHandle, ImageView)
 END_METADATA
 
@@ -54,7 +73,13 @@ SidePanelResizeArea::SidePanelResizeArea(SidePanel* side_panel)
       .SetMainAxisAlignment(LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(LayoutAlignment::kStart);
 
-  resize_handle_ = AddChildView(std::make_unique<SidePanelResizeHandle>());
+  resize_handle_ =
+      AddChildView(std::make_unique<SidePanelResizeHandle>(side_panel));
+}
+
+void SidePanelResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
+  ResizeArea::OnMouseReleased(event);
+  side_panel_->RecordMetricsIfResized();
 }
 
 bool SidePanelResizeArea::OnKeyPressed(const ui::KeyEvent& event) {

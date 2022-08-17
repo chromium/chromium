@@ -41,6 +41,10 @@ class SidePanel : public views::AccessiblePaneView,
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
+  // Log UMA data for the side panel resize feature. Will only log if the side
+  // panel has been resized since metrics were last logged.
+  void RecordMetricsIfResized();
+
  private:
   void UpdateVisibility();
 
@@ -58,6 +62,10 @@ class SidePanel : public views::AccessiblePaneView,
   // -1 if a side panel resize is not in progress, otherwise the width of the
   // side panel when the current resize was initiated.
   int starting_width_on_resize_ = -1;
+
+  // Should be true if the side panel was resized since metrics were last
+  // logged.
+  bool did_resize_ = false;
 
   // Keeps track of the side the side panel will appear on (left or right).
   HorizontalAlignment horizontal_alignment_;

@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -248,7 +250,23 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   if (proposed_width < minimum_width) {
     proposed_width = minimum_width;
   }
-  SetPanelWidth(proposed_width);
+  if (width() != proposed_width) {
+    SetPanelWidth(proposed_width);
+    did_resize_ = true;
+  }
+}
+
+void SidePanel::RecordMetricsIfResized() {
+  if (did_resize_) {
+    absl::optional<SidePanelEntry::Id> id =
+        browser_view_->side_panel_coordinator()->GetCurrentEntryId();
+    CHECK(id.has_value());
+    int side_panel_contents_width = width() - kBorderInsets.width();
+    int browser_window_width = browser_view_->width();
+    SidePanelUtil::RecordSidePanelResizeMetrics(
+        id.value(), side_panel_contents_width, browser_window_width);
+    did_resize_ = false;
+  }
 }
 
 void SidePanel::UpdateVisibility() {
