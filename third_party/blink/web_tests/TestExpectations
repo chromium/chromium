@@ -3270,8 +3270,8 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
 crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
@@ -6743,7 +6743,7 @@ crbug.com/1318456 [ Win ] virtual/prerender/external/wpt/speculation-rules/prere
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 
 # Sheriff 2022-04-25
-crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Skip ]
+crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Skip ]
 
 # Sheriff 2022-04-26
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disallowed-navigations.https.html [ Pass Timeout ]
@@ -6821,7 +6821,7 @@ crbug.com/1229084 [ Win ] external/wpt/storage-access-api/requestStorageAccess.s
 crbug.com/1277696 fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 
 # Flaky on Windows
-crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
+crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
 
 # Manual test fails when run under automation due to lack of pop-up blocking. https://github.com/web-platform-tests/wpt/issues/3867
 crbug.com/1337125 external/wpt/window-placement/fullscreen-companion-window-manual.tentative.https.html [ Failure ]
