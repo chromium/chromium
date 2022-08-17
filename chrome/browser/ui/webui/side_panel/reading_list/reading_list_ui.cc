@@ -20,6 +20,7 @@
 #include "chrome/grit/side_panel_resources.h"
 #include "chrome/grit/side_panel_resources_map.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -138,6 +139,19 @@ void ReadingListUI::CreatePageHandler(
   DCHECK(page);
   read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
       std::move(page), std::move(receiver));
+}
+
+void ReadingListUI::BindInterface(
+    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
+        receiver) {
+  shopping_list_factory_receiver_.reset();
+  shopping_list_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReadingListUI::CreateShoppingListHandler(
+    mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver) {
+  shopping_list_handler_ =
+      std::make_unique<commerce::ShoppingListHandler>(std::move(receiver));
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {

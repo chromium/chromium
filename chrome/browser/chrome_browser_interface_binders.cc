@@ -176,6 +176,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/commerce/core/mojom/shopping_list.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -939,9 +940,14 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
         map);
+    RegisterWebUIControllerInterfaceBinder<
+        shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
+        map);
   } else {
     RegisterWebUIControllerInterfaceBinder<
         side_panel::mojom::BookmarksPageHandlerFactory, ReadingListUI>(map);
+    RegisterWebUIControllerInterfaceBinder<
+        shopping_list::mojom::ShoppingListHandlerFactory, ReadingListUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {

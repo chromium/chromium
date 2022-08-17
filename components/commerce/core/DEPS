@@ -18,4 +18,5 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/test",
   "+ui/base",
+  "+mojo/public/cpp/bindings",
 ]

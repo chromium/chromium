@@ -5,6 +5,7 @@
 non_web_component_files = [
   "bookmarks/bookmarks_api_proxy.ts",
   "bookmarks/bookmarks_drag_manager.ts",
+  "bookmarks/commerce/shopping_list_api_proxy.ts",
   "reading_list/reading_list_api_proxy.ts",
 ]
 
@@ -37,5 +38,6 @@ ts_files = web_component_files + non_web_component_files
 
 mojo_files = [
   "bookmarks/bookmarks.mojom-webui.js",
+  "bookmarks/commerce/shopping_list.mojom-webui.js",
   "reading_list/reading_list.mojom-webui.js",
 ]

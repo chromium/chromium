@@ -66,6 +66,12 @@ copy("copy_mojo_reading_list") {
       [ "$target_gen_dir/$preprocess_folder/reading_list/{{source_file_part}}" ]
 }
 
+copy("copy_mojo_shopping_list") {
+  deps = [ "//components/commerce/core/mojom:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/components/commerce/core/mojom/shopping_list.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/bookmarks/commerce/{{source_file_part}}" ]
+}
+
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir/$preprocess_folder"
@@ -87,6 +93,7 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_mojo_bookmarks",
     ":copy_mojo_reading_list",
+    ":copy_mojo_shopping_list",
     ":preprocess_gen",
     ":preprocess_src",
   ]

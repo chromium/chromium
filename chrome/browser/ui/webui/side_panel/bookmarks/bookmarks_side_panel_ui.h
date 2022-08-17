@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,9 +17,14 @@
 
 class BookmarksPageHandler;
 
+namespace commerce {
+class ShoppingListHandler;
+}
+
 class BookmarksSidePanelUI
     : public ui::MojoBubbleWebUIController,
-      public side_panel::mojom::BookmarksPageHandlerFactory {
+      public side_panel::mojom::BookmarksPageHandlerFactory,
+      public shopping_list::mojom::ShoppingListHandlerFactory {
  public:
   explicit BookmarksSidePanelUI(content::WebUI* web_ui);
   BookmarksSidePanelUI(const BookmarksSidePanelUI&) = delete;
@@ -31,15 +37,27 @@ class BookmarksSidePanelUI
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
+          receiver);
+
  private:
-  // side_panel::mojom::BookmarksPageHandlerFactory
+  // side_panel::mojom::BookmarksPageHandlerFactory:
   void CreateBookmarksPageHandler(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver)
+      override;
+
+  // shopping_list::mojom::ShoppingListHandlerFactory:
+  void CreateShoppingListHandler(
+      mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver)
       override;
 
   std::unique_ptr<BookmarksPageHandler> bookmarks_page_handler_;
   mojo::Receiver<side_panel::mojom::BookmarksPageHandlerFactory>
       bookmarks_page_factory_receiver_{this};
+  std::unique_ptr<commerce::ShoppingListHandler> shopping_list_handler_;
+  mojo::Receiver<shopping_list::mojom::ShoppingListHandlerFactory>
+      shopping_list_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -1794,6 +1794,8 @@ static_library("ui") {
       "//components/commerce/content/browser:hint",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:feature_list",
+      "//components/commerce/core/mojom:mojo_bindings",
+      "//components/commerce/core/webui",
       "//components/enterprise/common:download_item_reroute_info",
       "//components/feedback/proto",
       "//components/keep_alive_registry",

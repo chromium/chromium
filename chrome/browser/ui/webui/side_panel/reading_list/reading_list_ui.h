@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,10 +21,15 @@ class BookmarksPageHandler;
 class ReadAnythingPageHandler;
 class ReadingListPageHandler;
 
+namespace commerce {
+class ShoppingListHandler;
+}
+
 class ReadingListUI : public ui::MojoBubbleWebUIController,
                       public reading_list::mojom::PageHandlerFactory,
                       public side_panel::mojom::BookmarksPageHandlerFactory,
-                      public read_anything::mojom::PageHandlerFactory {
+                      public read_anything::mojom::PageHandlerFactory,
+                      public shopping_list::mojom::ShoppingListHandlerFactory {
  public:
   explicit ReadingListUI(content::WebUI* web_ui);
   ReadingListUI(const ReadingListUI&) = delete;
@@ -42,6 +48,10 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
+          receiver);
+
   void SetActiveTabURL(const GURL& url);
 
  private:
@@ -50,7 +60,7 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
                          mojo::PendingReceiver<reading_list::mojom::PageHandler>
                              receiver) override;
 
-  // side_panel::mojom::BookmarksPageHandlerFactory
+  // side_panel::mojom::BookmarksPageHandlerFactory:
   void CreateBookmarksPageHandler(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver)
       override;
@@ -59,6 +69,11 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
   void CreatePageHandler(
       mojo::PendingRemote<read_anything::mojom::Page> page,
       mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
+      override;
+
+  // shopping_list::mojom::ShoppingListHandlerFactory:
+  void CreateShoppingListHandler(
+      mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver)
       override;
 
   std::unique_ptr<ReadingListPageHandler> page_handler_;
@@ -72,6 +87,10 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
   std::unique_ptr<ReadAnythingPageHandler> read_anything_page_handler_;
   mojo::Receiver<read_anything::mojom::PageHandlerFactory>
       read_anything_page_factory_receiver_{this};
+
+  std::unique_ptr<commerce::ShoppingListHandler> shopping_list_handler_;
+  mojo::Receiver<shopping_list::mojom::ShoppingListHandlerFactory>
+      shopping_list_factory_receiver_{this};
 
   WebuiLoadTimer webui_load_timer_;
 
