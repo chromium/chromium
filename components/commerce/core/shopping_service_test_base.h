@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_TEST_BASE_H_
 #define COMPONENTS_COMMERCE_CORE_SHOPPING_SERVICE_TEST_BASE_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -20,10 +21,12 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::OptimizationType;
+using optimization_guide::proto::RequestContext;
 
 class TestingPrefServiceSimple;
 
@@ -64,6 +67,16 @@ class MockOptGuideDecider
       OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata) override;
 
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<OptimizationType>& optimization_types,
+      RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback) override;
+
+  void AddOnDemandShoppingResponse(const GURL& url,
+                                   const OptimizationGuideDecision decision,
+                                   const OptimizationMetadata& data);
+
   void SetResponse(const GURL& url,
                    const OptimizationType type,
                    const OptimizationGuideDecision decision,
@@ -88,6 +101,11 @@ class MockOptGuideDecider
   absl::optional<OptimizationType> optimization_type_;
   absl::optional<OptimizationGuideDecision> optimization_decision_;
   absl::optional<OptimizationMetadata> optimization_data_;
+
+  // Shopping responses for the on-demand API.
+  std::unordered_map<std::string,
+                     optimization_guide::OptimizationGuideDecisionWithMetadata>
+      on_demand_shopping_responses_;
 };
 
 // A mock WebWrapper where returned values can be manually set.

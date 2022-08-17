@@ -251,6 +251,21 @@ void OptimizationGuideService::CanApplyOptimizationAsync(
       navigation_context->GetUrl(), optimization_type, std::move(callback));
 }
 
+void OptimizationGuideService::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types,
+    optimization_guide::proto::RequestContext request_context,
+    optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(request_context !=
+         optimization_guide::proto::RequestContext::CONTEXT_UNSPECIFIED);
+
+  hints_manager_->CanApplyOptimizationOnDemand(urls, optimization_types,
+                                               request_context, callback);
+}
+
 void OptimizationGuideService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   hints_manager_->Shutdown();

@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -18,11 +19,14 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+using optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
+using optimization_guide::OptimizationGuideDecisionWithMetadata;
 using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::Any;
 using optimization_guide::proto::OptimizationType;
+using optimization_guide::proto::RequestContext;
 
 namespace commerce {
 
@@ -58,6 +62,39 @@ OptimizationGuideDecision MockOptGuideDecider::CanApplyOptimization(
   NOTREACHED();
 
   return OptimizationGuideDecision::kUnknown;
+}
+
+void MockOptGuideDecider::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<OptimizationType>& optimization_types,
+    RequestContext request_context,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
+    for (const GURL& url : urls) {
+      if (on_demand_shopping_responses_.find(url.spec()) ==
+          on_demand_shopping_responses_.end()) {
+        continue;
+      }
+
+      base::flat_map<OptimizationType, OptimizationGuideDecisionWithMetadata>
+          decision_map;
+      decision_map[OptimizationType::PRICE_TRACKING] =
+          on_demand_shopping_responses_[url.spec()];
+
+      callback.Run(url, std::move(decision_map));
+    }
+  }
+}
+
+void MockOptGuideDecider::AddOnDemandShoppingResponse(
+    const GURL& url,
+    const OptimizationGuideDecision decision,
+    const OptimizationMetadata& data) {
+  optimization_guide::OptimizationGuideDecisionWithMetadata response;
+  response.decision = decision;
+  response.metadata = data;
+
+  on_demand_shopping_responses_[url.spec()] = response;
 }
 
 void MockOptGuideDecider::SetResponse(const GURL& url,

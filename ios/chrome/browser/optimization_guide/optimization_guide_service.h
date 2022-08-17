@@ -155,6 +155,15 @@ class OptimizationGuideService
   // KeyedService implementation:
   void Shutdown() override;
 
+  // optimization_guide::NewOptimizationGuideDecider implementation:
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) override;
+
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
 

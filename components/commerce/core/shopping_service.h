@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -139,6 +140,11 @@ using ProductInfoCallback =
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
 
+// A callback for getting updated ProductInfo for a bookmark. This provides the
+// bookmark ID being updated, the URL, and the product info.
+using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
+    void(const int64_t, const GURL&, absl::optional<ProductInfo>)>;
+
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
   ShoppingService(
@@ -170,6 +176,13 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // processed or information being available from the backend.
   virtual absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
       const GURL& url);
+
+  // Get updated product info (including price) for the provided list of
+  // bookmark IDs. The information for each bookmark will be provided via a
+  // repeating callback that provides the bookmark's ID, URL, and product info.
+  virtual void GetUpdatedProductInfoForBookmarks(
+      const std::vector<int64_t>& bookmark_ids,
+      BookmarkProductInfoUpdatedCallback info_updated_callback);
 
   // This API fetches information about a merchant for the provided |url| and
   // passes the payload back to the caller via |callback|. Call will run after
@@ -252,6 +265,23 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  // Handle a response from the optimization guide on-demand API for product
+  // info.
+  void OnProductInfoUpdatedOnDemand(
+      BookmarkProductInfoUpdatedCallback callback,
+      std::unordered_map<std::string, int64_t> url_to_id_map,
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
+  // Produce a ProductInfo object given OptimizationGuideMeta. The returned
+  // unique_ptr is owned by the caller and will be empty if conversion failed
+  // or there was no info.
+  std::unique_ptr<ProductInfo> OptGuideResultToProductInfo(
+      const optimization_guide::OptimizationMetadata& metadata);
+
   // Handle the result of running the javascript fallback for product info.
   void OnProductInfoJavascriptResult(const GURL url, base::Value result);
 
@@ -293,6 +323,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_;
 
   raw_ptr<PrefService> pref_service_;
+
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // The service's means of observing the bookmark model which is automatically
   // removed from the model when destroyed. This will be null if no

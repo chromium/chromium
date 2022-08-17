@@ -6,12 +6,18 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -19,6 +25,8 @@ using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::Any;
 using optimization_guide::proto::OptimizationType;
+
+namespace commerce {
 
 namespace {
 const char kProductUrl[] = "http://example.com/";
@@ -34,9 +42,31 @@ const uint32_t kCountRating = 1000;
 const char kDetailsPageUrl[] = "http://example.com/merchant_details_page";
 const bool kHasReturnPolicy = true;
 const bool kContainsSensitiveContent = false;
-}  // namespace
 
-namespace commerce {
+// Create a product bookmark with the specified cluster ID and place it in the
+// "other" bookmarks folder.
+const bookmarks::BookmarkNode* AddProductBookmark(
+    bookmarks::BookmarkModel* bookmark_model,
+    const std::u16string& title,
+    const GURL& url,
+    uint64_t cluster_id,
+    bool is_price_tracked) {
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url);
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+  meta->set_type(power_bookmarks::PowerBookmarkType::SHOPPING);
+  power_bookmarks::ShoppingSpecifics* specifics =
+      meta->mutable_shopping_specifics();
+  specifics->set_product_cluster_id(cluster_id);
+  specifics->set_is_price_tracked(is_price_tracked);
+
+  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model, node,
+                                            std::move(meta));
+  return node;
+}
+
+}  // namespace
 
 class ShoppingServiceTest : public ShoppingServiceTestBase {
  public:
@@ -316,6 +346,41 @@ TEST_F(ShoppingServiceTest, TestMerchantInfoResponse) {
   // Make sure the callback was actually run. In testing the callback is run
   // immediately, this check ensures that is actually the case.
   ASSERT_TRUE(callback_executed);
+}
+
+TEST_F(ShoppingServiceTest, TestGetUpdatedProductInfoForBookmarks) {
+  const bookmarks::BookmarkNode* product1 = AddProductBookmark(
+      bookmark_model_.get(), u"title", GURL(kProductUrl), kClusterId, false);
+
+  OptimizationMetadata updated_meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, "", kOfferId, kClusterId, kCountryCode);
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(kProductUrl), OptimizationGuideDecision::kTrue, updated_meta);
+
+  std::vector<int64_t> bookmark_ids;
+  bookmark_ids.push_back(product1->id());
+  int expected_calls = bookmark_ids.size();
+
+  base::RunLoop run_loop;
+
+  auto callback = base::BindRepeating(
+      [](bookmarks::BookmarkModel* model, int* call_count,
+         base::RunLoop* run_loop, const int64_t id, const GURL& url,
+         absl::optional<ProductInfo> info) {
+        const bookmarks::BookmarkNode* node =
+            bookmarks::GetBookmarkNodeByID(model, id);
+        EXPECT_EQ(url.spec(), node->url().spec());
+
+        (*call_count)--;
+        if (*call_count <= 0)
+          run_loop->Quit();
+      },
+      bookmark_model_.get(), &expected_calls, &run_loop);
+
+  shopping_service_->GetUpdatedProductInfoForBookmarks(bookmark_ids, callback);
+  run_loop.Run();
+
+  EXPECT_EQ(0, expected_calls);
 }
 
 TEST_F(ShoppingServiceTest, TestDataMergeWithLeadImage) {

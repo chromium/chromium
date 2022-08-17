@@ -116,6 +116,14 @@ class TestOptimizationGuideDecider
                ? optimization_guide::OptimizationGuideDecision::kFalse
                : optimization_guide::OptimizationGuideDecision::kTrue;
   }
+
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) override {}
 };
 
 class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {

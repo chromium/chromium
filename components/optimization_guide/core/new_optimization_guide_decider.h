@@ -10,9 +10,14 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 class GURL;
+
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 namespace optimization_guide {
 
@@ -48,6 +53,27 @@ class NewOptimizationGuideDecider {
  protected:
   NewOptimizationGuideDecider() = default;
   virtual ~NewOptimizationGuideDecider() = default;
+
+ private:
+  // ShoppingService is a friend class since it is a consumer of the
+  // CanApplyOptimizationOnDemand API.
+  friend class commerce::ShoppingService;
+
+  // Invokes |callback| with the decision for all types contained in
+  // |optimization_types| for each URL contained in |urls|, when sufficient
+  // information has been collected to make decisions. |request_context| must be
+  // included to indicate when the request is being made to determine the
+  // appropriate permissions to make the request for accounting purposes.
+  // Consumers must call `RegisterOptimizationTypes` once during the session
+  // before calling this method.
+  //
+  // It is expected for consumers to consult with the Optimization Guide team
+  // before using this API. If approved, add your class as a friend class here.
+  virtual void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback) = 0;
 };
 
 }  // namespace optimization_guide
