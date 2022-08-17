@@ -1811,7 +1811,7 @@
   {
     "name": "enable-cros-diacritics-on-physical-keyboard-longpress",
     "owners": ["jhtin", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-ime-assist-emoji-enhanced",
