@@ -39,16 +39,29 @@ t.step(function() {
   video.setAttribute("height", "100");
   video.src = getVideoURI('/media/2x2-green');
   document.body.appendChild(video);
-  // Videos default to a size of 300x150px and calculate their aspect ratio
-  // based on that before the video is loaded. So this should be 2, ignoring
-  // the 2.5 that it would be based on the attributes.
-  assert_ratio(video, 2);
+  assert_ratio(video, 2.5);
 
   video.onloadeddata = t.step_func_done(function() {
     // When loaded this video is square.
     assert_ratio(video, 1);
   });
 }, "aspect ratio for regular video");
+
+// Same but with auto width.
+t.step(function() {
+  video = document.createElement("video");
+  video.setAttribute("width", "250");
+  video.setAttribute("height", "100");
+  video.style.width = "auto";
+  video.src = getVideoURI('/media/2x2-green');
+  document.body.appendChild(video);
+  assert_ratio(video, 2.5);
+
+  video.onloadeddata = t.step_func_done(function() {
+    // When loaded this video is square.
+    assert_ratio(video, 1);
+  });
+}, "aspect ratio for regular video with width: auto and height: auto");
 
 test_computed_style("10", "20", "auto 10 / 20");
 test_computed_style("0.5", "1.5", "auto 0.5 / 1.5");

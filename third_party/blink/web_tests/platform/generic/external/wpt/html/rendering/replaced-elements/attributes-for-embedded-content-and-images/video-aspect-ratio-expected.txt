@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL Video width and height attributes are not used to infer aspect-ratio assert_approx_equals: expected 2.5 +/- 0.001 but got 2
+PASS Computed style test: video with {"width":"10","height":"20"}
+PASS Computed style test: video with {"width":"0.5","height":"1.5"}
+PASS Computed style test: video with {"width":"0","height":"1"}
+PASS Computed style test: video with {"width":"1","height":"0"}
+PASS Computed style test: video with {"width":"0","height":"0"}
+PASS Computed style test: video with {"width":null,"height":null}
+PASS Computed style test: video with {"width":"10","height":null}
+PASS Computed style test: video with {"width":null,"height":"20"}
+PASS Computed style test: video with {"width":"xx","height":"20"}
+PASS Computed style test: video with {"width":"10%","height":"20"}
+Harness: the test ran to completion.
+
