@@ -72,8 +72,11 @@ class UserPerformanceTuningManager {
   // power, false otherwise.
   bool DeviceHasBattery() const;
 
-  // Called to enable or disable the temporary battery saver mode.
-  void SetTemporaryBatterySaver(bool enabled);
+  // If called with `disabled = true`, will disable battery saver mode until the
+  // device is plugged in or the user configures the battery saver mode state
+  // preference.
+  void SetTemporaryBatterySaverDisabledForSession(bool disabled);
+  bool IsBatterySaverModeDisabledForSession() const;
 
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect
@@ -102,7 +105,7 @@ class UserPerformanceTuningManager {
 
   bool was_started_ = false;
   bool battery_saver_mode_enabled_ = false;
-  bool temporary_battery_saver_enabled_ = false;
+  bool battery_saver_mode_disabled_for_session_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
   std::unique_ptr<HighEfficiencyModeToggleDelegate>
       high_efficiency_mode_toggle_delegate_;

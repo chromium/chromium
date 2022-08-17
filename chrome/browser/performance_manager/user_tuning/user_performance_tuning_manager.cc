@@ -77,13 +77,19 @@ bool UserPerformanceTuningManager::DeviceHasBattery() const {
   return true;
 }
 
-void UserPerformanceTuningManager::SetTemporaryBatterySaver(bool enabled) {
+void UserPerformanceTuningManager::SetTemporaryBatterySaverDisabledForSession(
+    bool disabled) {
   // Setting the temporary mode to its current state is a no-op.
-  if (temporary_battery_saver_enabled_ == enabled)
+  if (battery_saver_mode_disabled_for_session_ == disabled)
     return;
 
-  temporary_battery_saver_enabled_ = enabled;
+  battery_saver_mode_disabled_for_session_ = disabled;
   UpdateBatterySaverModeState();
+}
+
+bool UserPerformanceTuningManager::IsBatterySaverModeDisabledForSession()
+    const {
+  return battery_saver_mode_disabled_for_session_;
 }
 
 bool UserPerformanceTuningManager::IsBatterySaverActive() const {
@@ -158,6 +164,7 @@ void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
 }
 
 void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
+  battery_saver_mode_disabled_for_session_ = false;
   UpdateBatterySaverModeState();
 }
 
@@ -169,10 +176,10 @@ void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
           pref_change_registrar_.prefs());
 
   bool previously_enabled = battery_saver_mode_enabled_;
-  battery_saver_mode_enabled_ =
-      (state == performance_manager::user_tuning::prefs::BatterySaverModeState::
-                    kEnabled) ||
-      temporary_battery_saver_enabled_;
+  battery_saver_mode_enabled_ = !battery_saver_mode_disabled_for_session_ &&
+                                state ==
+                                    performance_manager::user_tuning::prefs::
+                                        BatterySaverModeState::kEnabled;
 
   // Don't change throttling or notify observers if the mode didn't change.
   if (previously_enabled == battery_saver_mode_enabled_)

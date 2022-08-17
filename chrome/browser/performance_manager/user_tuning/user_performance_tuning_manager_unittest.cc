@@ -63,13 +63,32 @@ TEST_F(UserPerformanceTuningManagerTest, TemporaryBatterySaver) {
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
 
-  manager()->SetTemporaryBatterySaver(true);
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
 
-  manager()->SetTemporaryBatterySaver(false);
+  manager()->SetTemporaryBatterySaverDisabledForSession(true);
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
+
+  manager()->SetTemporaryBatterySaverDisabledForSession(false);
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+
+  // Changing the pref resets the "disabled for session" flag.
+  manager()->SetTemporaryBatterySaverDisabledForSession(true);
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabledOnBattery));
+  EXPECT_FALSE(manager()->IsBatterySaverModeDisabledForSession());
+
+  // TODO(anthonyvd): Test the flag is cleared when the device is plugged in
+  // once that CL lands.
 }
 
 TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
@@ -90,24 +109,6 @@ TEST_F(UserPerformanceTuningManagerTest, BatterySaverModePref) {
                            BatterySaverModeState::kDisabled));
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
-}
-
-TEST_F(UserPerformanceTuningManagerTest, PrefSupersedesTemporary) {
-  StartManager();
-  local_state_.SetInteger(
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      static_cast<int>(performance_manager::user_tuning::prefs::
-                           BatterySaverModeState::kEnabled));
-  EXPECT_TRUE(manager()->IsBatterySaverActive());
-  EXPECT_TRUE(throttling_enabled());
-
-  manager()->SetTemporaryBatterySaver(true);
-  EXPECT_TRUE(manager()->IsBatterySaverActive());
-  EXPECT_TRUE(throttling_enabled());
-
-  manager()->SetTemporaryBatterySaver(false);
-  EXPECT_TRUE(manager()->IsBatterySaverActive());
-  EXPECT_TRUE(throttling_enabled());
 }
 
 TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
