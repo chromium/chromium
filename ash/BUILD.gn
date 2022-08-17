@@ -1564,6 +1564,8 @@ component("ash") {
     "system/power/video_activity_notifier.h",
     "system/privacy/privacy_indicators_controller.cc",
     "system/privacy/privacy_indicators_controller.h",
+    "system/privacy/privacy_indicators_tray_item_view.cc",
+    "system/privacy/privacy_indicators_tray_item_view.h",
     "system/privacy_hub/camera_privacy_switch_controller.cc",
     "system/privacy_hub/camera_privacy_switch_controller.h",
     "system/privacy_hub/microphone_privacy_switch_controller.cc",

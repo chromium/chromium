@@ -25,6 +25,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
@@ -192,7 +193,10 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)) {
+      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)),
+      privacy_indicators_view_(features::IsPrivacyIndicatorsEnabled()
+                                   ? new PrivacyIndicatorsTrayItemView(shelf)
+                                   : nullptr) {
   if (media::ShouldEnableAutoFraming()) {
     autozoom_toast_controller_ = std::make_unique<AutozoomToastController>(
         this, std::make_unique<AutozoomToastController::Delegate>());
@@ -259,6 +263,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     AddTrayItemToContainer(time_view_);
   }
 
+  if (features::IsPrivacyIndicatorsEnabled())
+    AddTrayItemToContainer(privacy_indicators_view_);
+
   set_separator_visibility(false);
   set_use_bounce_in_animation(false);
 
@@ -312,6 +319,14 @@ void UnifiedSystemTray::MaybeUpdateVerticalClockPadding() {
   const bool should_show_padding = MoreThanOneVisibleTrayItem();
   if (padding_is_visible != should_show_padding)
     vertical_clock_padding_->SetVisible(should_show_padding);
+}
+
+void UnifiedSystemTray::UpdatePrivacyIndicatorsTrayItem(
+    bool camera_is_used,
+    bool microphone_is_used) {
+  if (!features::IsPrivacyIndicatorsEnabled())
+    return;
+  privacy_indicators_view_->Update(camera_is_used, microphone_is_used);
 }
 
 void UnifiedSystemTray::OnViewVisibilityChanged(views::View* observed_view,

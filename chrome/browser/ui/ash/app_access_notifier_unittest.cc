@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -18,6 +19,7 @@
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 
@@ -50,11 +52,10 @@ class AppAccessNotifierTest : public testing::Test,
   ~AppAccessNotifierTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
-    message_center::MessageCenter::Initialize();
-
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled());
+
+    ash_test_helper_.SetUp();
 
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
@@ -69,8 +70,7 @@ class AppAccessNotifierTest : public testing::Test,
 
   void TearDown() override {
     microphone_mute_notification_delegate_.reset();
-    message_center::MessageCenter::Shutdown();
-    testing::Test::TearDown();
+    ash_test_helper_.TearDown();
   }
 
   bool IsPrivacyIndicatorsFeatureEnabled() const { return GetParam(); }
@@ -183,6 +183,12 @@ class AppAccessNotifierTest : public testing::Test,
 
   user_manager::FakeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
+  // This instance is needed for setting up `ash_test_helper_`.
+  // See //docs/threading_and_tasks_testing.md.
+  content::BrowserTaskEnvironment task_environment_;
+
+  ash::AshTestHelper ash_test_helper_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
