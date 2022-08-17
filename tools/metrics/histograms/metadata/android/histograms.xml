@@ -4373,7 +4373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.OriginsVisited" units="origins"
-    expires_after="2022-11-11">
+    expires_after="2023-02-15">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
