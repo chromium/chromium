@@ -139,6 +139,13 @@ public class CastWebContentsActivity extends Activity {
                 .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
                 .subscribe(Observers.onEnter(x -> turnScreenOn()));
 
+        mCreatedState.and(mGotIntentState)
+                .map(Both::getSecond)
+                .filter(CastWebContentsIntentUtils::shouldKeepScreenOn)
+                .subscribe(Observers.onEnter(x -> {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }));
+
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
         mGotIntentState.and(Observable.not(mIsFinishingState))

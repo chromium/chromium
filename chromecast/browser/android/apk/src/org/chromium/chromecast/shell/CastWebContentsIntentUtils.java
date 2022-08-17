@@ -75,6 +75,13 @@ public class CastWebContentsIntentUtils {
             "com.google.android.apps.castshell.intent.extra.TURN_ON_SCREEN";
 
     /**
+     * Key for extra value fot intent to start web contents. true if the app should keep the
+     * screen on.
+     */
+    static final String INTENT_EXTRA_KEEP_SCREEN_ON =
+            "com.google.android.apps.castshell.intent.extra.KEEP_SCREEN_ON";
+
+    /**
      * Key of extra value of the intent ACTION_REQUEST_VISIBILITY, value is visibility priority
      * (int).
      */
@@ -141,7 +148,7 @@ public class CastWebContentsIntentUtils {
     // CastWebContentsComponent.Receiver -> CastWebContentsActivity
     public static Intent requestStartCastActivity(Context context, WebContents webContents,
             boolean enableTouch, boolean isRemoteControlMode, boolean turnOnScreen,
-            String instanceId) {
+            boolean keepScreenOn, String instanceId) {
         WebContentsRegistry.addWebContents(instanceId, webContents);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, null, context, CastWebContentsActivity.class);
@@ -149,6 +156,7 @@ public class CastWebContentsIntentUtils {
         intent.putExtra(INTENT_EXTRA_SESSION_ID, instanceId);
         intent.putExtra(INTENT_EXTRA_TOUCH_INPUT_ENABLED, enableTouch);
         intent.putExtra(INTENT_EXTRA_TURN_ON_SCREEN, turnOnScreen);
+        intent.putExtra(INTENT_EXTRA_KEEP_SCREEN_ON, keepScreenOn);
         intent.putExtra(INTENT_EXTRA_REMOTE_CONTROL_MODE, isRemoteControlMode);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
                 | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
@@ -227,6 +235,11 @@ public class CastWebContentsIntentUtils {
     // Used by ACTION_VIEW
     public static boolean shouldTurnOnScreen(Intent intent) {
         return intent.getBooleanExtra(INTENT_EXTRA_TURN_ON_SCREEN, true);
+    }
+
+    // Used by ACTION_VIEW and ACTION_SHOW_WEB_CONTENT
+    public static boolean shouldKeepScreenOn(Intent intent) {
+        return intent.getBooleanExtra(INTENT_EXTRA_KEEP_SCREEN_ON, false);
     }
 
     // CastWebContentsComponent -> CastWebContentsSurfaceHelper
