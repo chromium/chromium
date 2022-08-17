@@ -485,6 +485,7 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-siz
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-style-changes-003.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-style-changes-004.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-container-baseline-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-content-alignment-overflow-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-content-alignment-with-abspos-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-1.html [ Failure ]
@@ -1462,6 +1463,8 @@ crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bs-column-001.xh
 crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bs-rowgroup-001.xht [ Failure ]
 
 ### external/wpt/css/css-align/baseline-rules/
+crbug.com/591099 external/wpt/css/css-align/baseline-rules/grid-item-input-type-number.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-align/baseline-rules/grid-item-input-type-text.html [ Failure ]
 crbug.com/799016 external/wpt/css/css-align/baseline-rules/synthesized-baseline-table-cell-001.html [ Failure ]
 
 ### external/wpt/css/css-flexbox/

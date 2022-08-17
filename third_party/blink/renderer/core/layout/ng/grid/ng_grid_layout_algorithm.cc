@@ -2803,6 +2803,9 @@ class BaselineAccumulator {
   STACK_ALLOCATED();
 
  public:
+  explicit BaselineAccumulator(FontBaseline font_baseline)
+      : font_baseline_(font_baseline) {}
+
   void Accumulate(const GridItemData& grid_item,
                   const NGBoxFragment& fragment,
                   const LayoutUnit block_offset) {
@@ -2819,7 +2822,7 @@ class BaselineAccumulator {
     };
 
     const LayoutUnit baseline =
-        block_offset + fragment.Baseline().value_or(fragment.BlockSize());
+        block_offset + fragment.BaselineOrSynthesize(font_baseline_);
     if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
       if (!alignment_baseline_ ||
           IsBeforeInGridOrder(grid_item.resolved_position,
@@ -2849,6 +2852,7 @@ class BaselineAccumulator {
     LayoutUnit baseline;
   };
 
+  FontBaseline font_baseline_;
   absl::optional<PositionAndBaseline> alignment_baseline_;
   absl::optional<PositionAndBaseline> fallback_baseline_;
 };
@@ -2873,7 +2877,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
         layout_data.Rows()->GetSetCount() + 1, EBreakBetween::kAuto);
   }
 
-  BaselineAccumulator baseline_accumulator;
+  BaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
 
   for (const auto& grid_item : grid_items) {
     LogicalRect containing_grid_area;
@@ -3060,7 +3064,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   HeapVector<ResultAndOffsets> result_and_offsets;
   HeapVector<GridItemPlacementData*> out_of_fragmentainer_space_item_placement;
-  BaselineAccumulator baseline_accumulator;
+  BaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
   LayoutUnit max_row_expansion;
   wtf_size_t expansion_row_set_index;
   wtf_size_t breakpoint_row_set_index;
@@ -3087,7 +3091,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     // Reset our state.
     result_and_offsets.clear();
     out_of_fragmentainer_space_item_placement.clear();
-    baseline_accumulator = BaselineAccumulator();
+    baseline_accumulator = BaselineAccumulator(Style().GetFontBaseline());
     max_row_expansion = LayoutUnit();
     expansion_row_set_index = kNotFound;
     breakpoint_row_set_index = kNotFound;
