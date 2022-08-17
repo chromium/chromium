@@ -394,6 +394,12 @@ void DirectRenderer::DrawFrame(
   if (overlay_processor_)
     overlay_processor_->ScheduleOverlays(resource_provider_);
 
+  // The current drawing frame is valid only during the duration of this
+  // function. Clear the pointers held inside to avoid holding dangling
+  // pointers.
+  current_frame()->render_passes_in_draw_order = nullptr;
+  current_frame()->root_render_pass = nullptr;
+
   render_passes_in_draw_order->clear();
   render_pass_filters_.clear();
   render_pass_backdrop_filters_.clear();
