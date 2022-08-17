@@ -628,6 +628,16 @@ bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
 }
 
+LacrosMode GetLacrosMode() {
+  if (!IsAshWebBrowserEnabled())
+    return LacrosMode::kOnly;
+  if (IsLacrosPrimaryBrowser())
+    return LacrosMode::kPrimary;
+  if (IsLacrosEnabled())
+    return LacrosMode::kSideBySide;
+  return LacrosMode::kDisabled;
+}
+
 void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value) {
   g_lacros_primary_browser_for_test = value;
 }
