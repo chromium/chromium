@@ -1071,12 +1071,6 @@ void Value::Append(Value&& value) {
   GetList().Append(std::move(value));
 }
 
-CheckedContiguousIterator<Value> Value::Insert(
-    CheckedContiguousConstIterator<Value> pos,
-    Value&& value) {
-  return GetList().Insert(pos, std::move(value));
-}
-
 bool Value::EraseListIter(CheckedContiguousConstIterator<Value> iter) {
   const auto offset = iter - ListView(list()).begin();
   auto list_iter = list().begin() + offset;

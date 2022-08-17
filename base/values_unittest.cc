@@ -520,35 +520,31 @@ TEST(ValuesTest, Append) {
   EXPECT_TRUE(value.GetListDeprecated().back().is_list());
 }
 
-TEST(ValuesTest, Insert) {
-  ListValue value;
-  auto GetListDeprecated = [&value]() -> decltype(auto) {
-    return value.GetListDeprecated();
-  };
-  auto GetConstList = [&value] { return as_const(value).GetListDeprecated(); };
+TEST(ValuesTest, ListInsert) {
+  Value::List list;
+  const Value::List& const_list = list;
 
-  auto storage_iter = value.Insert(GetListDeprecated().end(), Value(true));
-  EXPECT_TRUE(GetListDeprecated().begin() == storage_iter);
-  EXPECT_TRUE(storage_iter->is_bool());
+  auto iter = list.Insert(list.end(), Value(true));
+  EXPECT_TRUE(list.begin() == iter);
+  EXPECT_EQ(*iter, true);
 
-  auto span_iter = value.Insert(GetConstList().begin(), Value(123));
-  EXPECT_TRUE(GetConstList().begin() == span_iter);
-  EXPECT_TRUE(span_iter->is_int());
+  iter = list.Insert(const_list.begin(), Value(123));
+  EXPECT_TRUE(const_list.begin() == iter);
+  EXPECT_EQ(*iter, 123);
 
-  Value::List& list = value.GetList();
-  auto list_iter = list.Insert(list.begin() + 1, Value("Hello world!"));
-  EXPECT_TRUE(list.begin() + 1 == list_iter);
-  EXPECT_TRUE(list_iter->is_string());
+  iter = list.Insert(list.begin() + 1, Value("Hello world!"));
+  EXPECT_TRUE(list.begin() + 1 == iter);
+  EXPECT_EQ(*iter, "Hello world!");
 }
 
 // Test all three behaviors of EnsureDict() (Create a new dict where no
 // matchining values exist, return an existing dict, create a dict overwriting
 // a value of another type).
 TEST(ValuesTest, DictEnsureDict) {
-  base::Value::Dict root;
+  Value::Dict root;
 
   // This call should create a new nested dictionary.
-  base::Value::Dict* foo_dict = root.EnsureDict("foo");
+  Value::Dict* foo_dict = root.EnsureDict("foo");
   EXPECT_TRUE(foo_dict->empty());
   foo_dict->Set("a", "b");
 
@@ -560,7 +556,7 @@ TEST(ValuesTest, DictEnsureDict) {
 
   // Use EnsureDict() to overwrite an existing non-dictionary value.
   root.Set("bar", 3);
-  base::Value::Dict* bar_dict = root.EnsureDict("bar");
+  Value::Dict* bar_dict = root.EnsureDict("bar");
   EXPECT_TRUE(bar_dict->empty());
   bar_dict->Set("b", "c");
 
@@ -576,10 +572,10 @@ TEST(ValuesTest, DictEnsureDict) {
 // matchining value exists, return an existing list, create a list overwriting
 // a value of another type).
 TEST(ValuesTest, DictEnsureList) {
-  base::Value::Dict root;
+  Value::Dict root;
 
   // This call should create a new list.
-  base::Value::List* foo_list = root.EnsureList("foo");
+  Value::List* foo_list = root.EnsureList("foo");
   EXPECT_TRUE(foo_list->empty());
   foo_list->Append("a");
 
@@ -587,11 +583,11 @@ TEST(ValuesTest, DictEnsureList) {
   // new one.
   foo_list = root.EnsureList("foo");
   ASSERT_EQ(1u, foo_list->size());
-  EXPECT_EQ((*foo_list)[0], base::Value("a"));
+  EXPECT_EQ((*foo_list)[0], Value("a"));
 
   // Use EnsureList() to overwrite an existing non-list value.
   root.Set("bar", 3);
-  base::Value::List* bar_list = root.EnsureList("bar");
+  Value::List* bar_list = root.EnsureList("bar");
   EXPECT_TRUE(bar_list->empty());
   bar_list->Append("b");
 
@@ -599,7 +595,7 @@ TEST(ValuesTest, DictEnsureList) {
   bar_list = root.FindList("bar");
   ASSERT_NE(nullptr, bar_list);
   ASSERT_EQ(1u, bar_list->size());
-  EXPECT_EQ((*bar_list)[0], base::Value("b"));
+  EXPECT_EQ((*bar_list)[0], Value("b"));
 }
 
 // TODO(dcheng): Add more tests directly exercising the updated dictionary and

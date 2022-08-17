@@ -728,13 +728,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(std::string&& value);
 
-  // Inserts `value` before `pos`.
-  //
-  // DEPRECATED: prefer `Value::List::Insert()`.
-  CheckedContiguousIterator<Value> Insert(
-      CheckedContiguousConstIterator<Value> pos,
-      Value&& value);
-
   // Erases the Value pointed to by `iter`. Returns false if `iter` is out of
   // bounds.
   //
