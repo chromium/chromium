@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/gtest_prod_util.h"
 #include "ui/aura/window.h"
@@ -183,6 +184,10 @@ class ASH_EXPORT RootWindowController {
     return lock_screen_action_background_controller_.get();
   }
 
+  AshColorProviderSource* color_provider_source() {
+    return color_provider_source_.get();
+  }
+
   // Deletes associated objects and clears the state, but doesn't delete
   // the root window yet. This is used to delete a secondary displays'
   // root window safely when the display disconnect signal is received,
@@ -312,6 +317,8 @@ class ASH_EXPORT RootWindowController {
       lock_screen_action_background_controller_;
 
   std::unique_ptr<views::Widget> ambient_widget_;
+
+  std::unique_ptr<AshColorProviderSource> color_provider_source_;
 
   // Whether child windows have been closed during shutdown. Exists to avoid
   // calling related cleanup code more than once.

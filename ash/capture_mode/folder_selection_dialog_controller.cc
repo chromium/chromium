@@ -9,6 +9,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/files/file_path.h"
 #include "ui/aura/client/aura_constants.h"
@@ -67,9 +68,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
   owner->SetId(kShellWindowId_CaptureModeFolderSelectionDialogOwner);
   window_observation_.Observe(wm::TransientWindowManager::GetOrCreate(owner));
 
-  dialog_background_dimmer_.SetDimColor(
-      AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield40));
+  dialog_background_dimmer_.SetDimColor(kColorAshShieldAndBase40);
   owner->Show();
 
   select_folder_dialog_->SelectFile(

@@ -4,10 +4,14 @@
 
 #include "ash/wm/window_dimmer.h"
 
-#include <memory>
-
+#include "ash/root_window_controller.h"
+#include "ash/style/ash_color_provider_source.h"
+#include "ash/style/style_util.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
@@ -50,6 +54,16 @@ WindowDimmer::WindowDimmer(aura::Window* parent,
   window_->SetTransparent(true);
 
   window_->SetBounds(gfx::Rect(parent_->bounds().size()));
+
+  // `this` may already start observing the color provider source through
+  // `OnWindowAddedToRootWindow` if `window_` is alreadyed added to the root
+  // window.
+  if (!GetColorProviderSource()) {
+    auto* color_provider_source =
+        StyleUtil::GetColorProviderSourceForWindow(window_);
+    if (color_provider_source)
+      ui::ColorProviderSourceObserver::Observe(color_provider_source);
+  }
 }
 
 WindowDimmer::~WindowDimmer() {
@@ -63,14 +77,20 @@ WindowDimmer::~WindowDimmer() {
 }
 
 void WindowDimmer::SetDimOpacity(float target_opacity) {
+  // Once this function is called, reset the `dim_color_type_`, which means we
+  // don't need to update the color on window's layer on native theme updated.
+  // Since after this call the color on the layer will be updated to the default
+  // dimming color which is Black.
+  dim_color_type_.reset();
+
   DCHECK(window_);
   window_->layer()->SetColor(SkColorSetA(SK_ColorBLACK, 255 * target_opacity));
 }
 
-void WindowDimmer::SetDimColor(SkColor dimming_color) {
+void WindowDimmer::SetDimColor(ui::ColorId color_id) {
   DCHECK(window_);
-  DCHECK_NE(SkColorGetA(dimming_color), SK_AlphaOPAQUE);
-  window_->layer()->SetColor(dimming_color);
+  dim_color_type_ = color_id;
+  UpdateDimColor();
 }
 
 void WindowDimmer::OnWindowBoundsChanged(aura::Window* window,
@@ -109,6 +129,41 @@ void WindowDimmer::OnWindowParentChanged(aura::Window* window,
                                          aura::Window* parent) {
   if (delegate_ && window == parent_)
     delegate_->OnDimmedWindowParentChanged(window);
+}
+
+void WindowDimmer::OnWindowAddedToRootWindow(aura::Window* window) {
+  if (GetColorProviderSource())
+    return;
+
+  // There's a chance when `this` is being created, `window_` is not added to
+  // the root window yet, hence we should observe the `color_provider_source`
+  // which is owned by the `RootWindowController` here.
+  auto* color_provider_source =
+      StyleUtil::GetColorProviderSourceForWindow(window);
+  DCHECK(color_provider_source);
+  ui::ColorProviderSourceObserver::Observe(color_provider_source);
+  UpdateDimColor();
+}
+
+void WindowDimmer::OnColorProviderChanged() {
+  UpdateDimColor();
+}
+
+void WindowDimmer::UpdateDimColor() {
+  if (!window_)
+    return;
+
+  if (!dim_color_type_.has_value())
+    return;
+
+  auto* color_provider_source = GetColorProviderSource();
+  if (!color_provider_source)
+    return;
+
+  auto dimming_color = color_provider_source->GetColorProvider()->GetColor(
+      dim_color_type_.value());
+  DCHECK_NE(SkColorGetA(dimming_color), SK_AlphaOPAQUE);
+  window_->layer()->SetColor(dimming_color);
 }
 
 }  // namespace ash

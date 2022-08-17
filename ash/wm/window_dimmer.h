@@ -6,9 +6,9 @@
 #define ASH_WM_WINDOW_DIMMER_H_
 
 #include "ash/ash_export.h"
-#include "base/callback_helpers.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_source_observer.h"
 
 namespace ash {
 
@@ -23,7 +23,8 @@ namespace ash {
 // deleted out from under it (this generally happens if the parent of the
 // window is deleted). If WindowDimmer is deleted and the window it created is
 // still valid, then WindowDimmer deletes the window.
-class ASH_EXPORT WindowDimmer : public aura::WindowObserver {
+class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
+                                public ui::ColorProviderSourceObserver {
  public:
   // Defines an interface for an optional delegate to the WindowDimmer, which
   // will be notified with certain events happening to the window being dimmed.
@@ -66,9 +67,9 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver {
   // SetDimColor().
   void SetDimOpacity(float target_opacity);
 
-  // Sets the color of the dimming |window_|'s layer. This color must not be
-  // opaque.
-  void SetDimColor(SkColor dimming_color);
+  // Sets the color of the dimming `window_`'s layer based on the given
+  // `color_id`. This color must not be opaque.
+  void SetDimColor(ui::ColorId color_id);
 
   // NOTE: WindowDimmer is an observer for both |parent_| and |window_|.
   // aura::WindowObserver:
@@ -80,13 +81,25 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver {
   void OnWindowHierarchyChanging(const HierarchyChangeParams& params) override;
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
  private:
+  // Sets / updates the color of the dimming `window_`'s layer based on
+  // `dim_color_type_`.
+  void UpdateDimColor();
+
   aura::Window* parent_;
   // See class description for details on ownership.
   aura::Window* window_;
 
   Delegate* delegate_;  // Not owned.
+
+  // Used to get the color for the dimming `window_`'s layer. It's updated
+  // through `SetDimColor`. It will be reset when SetDimOpacity() is called.
+  absl::optional<ui::ColorId> dim_color_type_;
 };
 
 }  // namespace ash

@@ -45,6 +45,7 @@
 #include "ash/shelf/shelf_window_targeter.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider_source.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -953,6 +954,7 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   // `shelf_` was created in the constructor.
   shelf_->shelf_widget()->PostCreateShelf();
 
+  color_provider_source_ = std::make_unique<AshColorProviderSource>();
   if (Shell::GetPrimaryRootWindowController()
           ->GetSystemModalLayoutManager(nullptr)
           ->has_window_dimmer()) {

@@ -16,6 +16,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -680,10 +681,6 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
     return;
   }
 
-  // For windows that are above the recorded window in the z-order and on the
-  // same display, they're dimmed separately.
-  const SkColor dimming_color = AshColorProvider::Get()->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield40);
   // We use |kAllDesks| here for the following reasons:
   // 1- A dimmed window can move out from the desk where the window being
   //    recorded is (either by keyboard shortcut or drag and drop in overview).
@@ -712,10 +709,12 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
       continue;
     }
 
+    // Dim windows that are above the recorded window in the z-order and on the
+    // same display.
     auto& dimmer = dimmers_[window];
     if (!dimmer) {
       dimmer = std::make_unique<WindowDimmer>(window, /*animate=*/false, this);
-      dimmer->SetDimColor(dimming_color);
+      dimmer->SetDimColor(kColorAshShieldAndBase40);
       dimmer->window()->Show();
     }
   }
