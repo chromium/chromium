@@ -12,6 +12,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
@@ -44,7 +45,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   bool IsInitializationComplete() const override;
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
 
   // Methods of PersistentPrefStore.
   bool GetMutableValue(const std::string& key, base::Value** result) override;

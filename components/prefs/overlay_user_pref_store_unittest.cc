@@ -261,17 +261,19 @@ TEST_F(OverlayUserPrefStoreTest, GetValues) {
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   auto values = overlay_->GetValues();
-  const Value* value = nullptr;
   // Check that an overlay preference is returned.
-  ASSERT_TRUE(values->Get(persistent_key, &value));
+  const Value* value = values.FindByDottedPath(persistent_key);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(42), *value);
 
   // Check that an underlay preference is returned.
-  ASSERT_TRUE(values->Get(regular_key, &value));
+  value = values.FindByDottedPath(regular_key);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(43), *value);
 
   // Check that the overlay is preferred.
-  ASSERT_TRUE(values->Get(shared_key, &value));
+  value = values.FindByDottedPath(shared_key);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(43), *value);
 }
 

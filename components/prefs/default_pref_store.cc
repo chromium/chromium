@@ -18,8 +18,8 @@ bool DefaultPrefStore::GetValue(const std::string& key,
   return prefs_.GetValue(key, result);
 }
 
-std::unique_ptr<base::DictionaryValue> DefaultPrefStore::GetValues() const {
-  return prefs_.AsDictionaryValue();
+base::Value::Dict DefaultPrefStore::GetValues() const {
+  return prefs_.AsDict();
 }
 
 void DefaultPrefStore::AddObserver(PrefStore::Observer* observer) {

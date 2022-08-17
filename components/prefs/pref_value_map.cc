@@ -169,10 +169,10 @@ void PrefValueMap::GetDifferingKeys(
     differing_keys->push_back(other_pref->first);
 }
 
-std::unique_ptr<base::DictionaryValue> PrefValueMap::AsDictionaryValue() const {
-  auto dictionary = std::make_unique<base::DictionaryValue>();
+base::Value::Dict PrefValueMap::AsDict() const {
+  base::Value::Dict dictionary;
   for (const auto& value : prefs_)
-    dictionary->SetPath(value.first, value.second.Clone());
+    dictionary.SetByDottedPath(value.first, value.second.Clone());
 
   return dictionary;
 }

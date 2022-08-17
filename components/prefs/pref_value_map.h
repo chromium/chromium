@@ -6,16 +6,11 @@
 #define COMPONENTS_PREFS_PREF_VALUE_MAP_H_
 
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/prefs/prefs_export.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 // A generic string to value map used by the PrefStore implementations.
 class COMPONENTS_PREFS_EXPORT PrefValueMap {
@@ -89,8 +84,8 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   void GetDifferingKeys(const PrefValueMap* other,
                         std::vector<std::string>* differing_keys) const;
 
-  // Copies the map into a dictionary value.
-  std::unique_ptr<base::DictionaryValue> AsDictionaryValue() const;
+  // Copies the map into a Value::Dict.
+  base::Value::Dict AsDict() const;
 
  private:
   Map prefs_;

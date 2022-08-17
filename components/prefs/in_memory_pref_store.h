@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_map.h"
 
@@ -28,7 +29,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   // PrefStore implementation.
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;

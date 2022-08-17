@@ -88,11 +88,10 @@ bool ConfigurationPolicyPrefStore::GetValue(const std::string& key,
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> ConfigurationPolicyPrefStore::GetValues()
-    const {
+base::Value::Dict ConfigurationPolicyPrefStore::GetValues() const {
   if (!prefs_)
-    return std::make_unique<base::DictionaryValue>();
-  return prefs_->AsDictionaryValue();
+    return base::Value::Dict();
+  return prefs_->AsDict();
 }
 
 void ConfigurationPolicyPrefStore::OnPolicyUpdated(const PolicyNamespace& ns,

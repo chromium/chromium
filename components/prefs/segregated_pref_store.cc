@@ -89,14 +89,15 @@ bool SegregatedPrefStore::GetValue(const std::string& key,
   return StoreForKey(key)->GetValue(key, result);
 }
 
-std::unique_ptr<base::DictionaryValue> SegregatedPrefStore::GetValues() const {
-  auto values = default_pref_store_->GetValues();
-  auto selected_pref_store_values = selected_pref_store_->GetValues();
+base::Value::Dict SegregatedPrefStore::GetValues() const {
+  base::Value::Dict values = default_pref_store_->GetValues();
+  base::Value::Dict selected_pref_store_values =
+      selected_pref_store_->GetValues();
   for (const auto& key : selected_preference_names_) {
-    if (const base::Value* value = selected_pref_store_values->FindPath(key)) {
-      values->SetPath(key, value->Clone());
+    if (base::Value* value = selected_pref_store_values.FindByDottedPath(key)) {
+      values.SetByDottedPath(key, std::move(*value));
     } else {
-      values->RemoveKey(key);
+      values.Remove(key);
     }
   }
   return values;

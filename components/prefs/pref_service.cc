@@ -62,7 +62,7 @@ void CheckForNewPrefChangesInPrefStore(
   if (!pref_store)
     return;
   auto values = pref_store->GetValues();
-  for (auto item : values->DictItems()) {
+  for (auto item : values) {
     // If the key already presents, skip it as a store with higher precedence
     // already sets the entry.
     if (pref_changed_map->find(item.first) != pref_changed_map->end())

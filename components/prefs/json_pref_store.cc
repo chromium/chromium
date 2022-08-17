@@ -179,8 +179,8 @@ bool JsonPrefStore::GetValue(const std::string& key,
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> JsonPrefStore::GetValues() const {
-  return prefs_->CreateDeepCopy();
+base::Value::Dict JsonPrefStore::GetValues() const {
+  return prefs_->GetDict().Clone();
 }
 
 void JsonPrefStore::AddObserver(PrefStore::Observer* observer) {

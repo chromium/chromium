@@ -27,7 +27,7 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   // PrefStore implementation:
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;

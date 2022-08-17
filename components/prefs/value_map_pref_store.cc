@@ -17,8 +17,8 @@ bool ValueMapPrefStore::GetValue(const std::string& key,
   return prefs_.GetValue(key, value);
 }
 
-std::unique_ptr<base::DictionaryValue> ValueMapPrefStore::GetValues() const {
-  return prefs_.AsDictionaryValue();
+base::Value::Dict ValueMapPrefStore::GetValues() const {
+  return prefs_.AsDict();
 }
 
 void ValueMapPrefStore::AddObserver(PrefStore::Observer* observer) {

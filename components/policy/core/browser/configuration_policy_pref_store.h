@@ -49,7 +49,7 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
   bool IsInitializationComplete() const override;
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
 
   // PolicyService::Observer methods:
   void OnPolicyUpdated(const PolicyNamespace& ns,

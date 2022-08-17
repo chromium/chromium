@@ -378,17 +378,19 @@ TEST_F(SegregatedPrefStoreTest, GetValues) {
                             WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   auto values = segregated_store_->GetValues();
-  const base::Value* value = nullptr;
   // Check that a selected preference is returned.
-  ASSERT_TRUE(values->Get(kSelectedPref, &value));
+  const base::Value* value = values.Find(kSelectedPref);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(kValue1), *value);
 
   // Check that a a default preference is returned.
-  ASSERT_TRUE(values->Get(kUnselectedPref, &value));
+  value = values.Find(kUnselectedPref);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(kValue2), *value);
 
   // Check that the selected preference is preferred.
-  ASSERT_TRUE(values->Get(kSharedPref, &value));
+  value = values.Find(kSharedPref);
+  ASSERT_TRUE(value);
   EXPECT_EQ(base::Value(kValue1), *value);
 }
 

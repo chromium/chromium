@@ -86,7 +86,7 @@ bool OverlayUserPrefStore::GetValue(const std::string& key,
   return persistent_user_pref_store_->GetValue(key, result);
 }
 
-std::unique_ptr<base::DictionaryValue> OverlayUserPrefStore::GetValues() const {
+base::Value::Dict OverlayUserPrefStore::GetValues() const {
   auto values = ephemeral_user_pref_store_->GetValues();
   auto persistent_values = persistent_user_pref_store_->GetValues();
 
@@ -95,9 +95,10 @@ std::unique_ptr<base::DictionaryValue> OverlayUserPrefStore::GetValues() const {
   // overwritten by the content of |persistent_user_pref_store_| (the persistent
   // store).
   for (const auto& key : persistent_names_set_) {
-    absl::optional<base::Value> out_value = persistent_values->ExtractPath(key);
+    absl::optional<base::Value> out_value =
+        persistent_values.ExtractByDottedPath(key);
     if (out_value.has_value()) {
-      values->SetPath(key, std::move(*out_value));
+      values.SetByDottedPath(key, std::move(*out_value));
     }
   }
   return values;
