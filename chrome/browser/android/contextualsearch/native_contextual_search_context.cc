@@ -32,7 +32,7 @@ NativeContextualSearchContext::FromJavaContextualSearchContext(
           Java_ContextualSearchContext_getNativePointer(
               base::android::AttachCurrentThread(),
               j_contextual_search_context));
-  return contextual_search_context->GetWeakPtr();
+  return base::AsWeakPtr(contextual_search_context);
 }
 
 void NativeContextualSearchContext::SetResolveProperties(
@@ -103,13 +103,6 @@ void NativeContextualSearchContext::SetTranslationLanguages(
       base::android::ConvertJavaStringToUTF8(env, j_fluent_languages);
   ContextualSearchContext::SetTranslationLanguages(
       detected_language, target_language, fluent_languages);
-}
-
-// Boilerplate.
-
-base::WeakPtr<NativeContextualSearchContext>
-NativeContextualSearchContext::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 // Java wrapper boilerplate

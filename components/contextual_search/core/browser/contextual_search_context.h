@@ -7,11 +7,13 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
 // Encapsulates key parts of a Contextual Search Context, including surrounding
 // text.
-struct ContextualSearchContext {
+struct ContextualSearchContext
+    : public base::SupportsWeakPtr<ContextualSearchContext> {
  public:
   // Languages used for translation.
   struct TranslationLanguages {
@@ -37,12 +39,6 @@ struct ContextualSearchContext {
   // Sets the properties needed to resolve a context.
   void SetResolveProperties(const std::string& home_country,
                             bool may_send_base_page_url);
-
-  // Sets the surrounding text to the given string and the selection to the
-  // given start/end range.
-  void SetSurroundingsAndSelection(const std::string& surrounding_text,
-                                   int selection_start,
-                                   int selection_end);
 
   // Adjust the current selection offsets by the given signed amounts.
   void AdjustSelection(int start_adjust, int end_adjust);

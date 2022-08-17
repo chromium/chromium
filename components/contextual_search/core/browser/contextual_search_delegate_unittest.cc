@@ -37,24 +37,17 @@ const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 
 }  // namespace
 
-class WeakContextualSearchContext : public ContextualSearchContext {
- public:
-  WeakContextualSearchContext(const std::string& home_country,
-                              const GURL& page_url,
-                              const std::string& encoding) {
-    SetResolveProperties(home_country, /*may_send_base_page_url=*/true);
-    SetBasePageUrl(page_url);
-    SetBasePageEncoding(encoding);
-  }
-  ~WeakContextualSearchContext() = default;
-
-  base::WeakPtr<WeakContextualSearchContext> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<WeakContextualSearchContext> weak_factory_{this};
-};
+std::unique_ptr<ContextualSearchContext> MakeTestContext(
+    const std::string& home_country,
+    const GURL& page_url,
+    const std::string& encoding) {
+  std::unique_ptr<ContextualSearchContext> context =
+      std::make_unique<ContextualSearchContext>();
+  context->SetResolveProperties(home_country, /*may_send_base_page_url=*/true);
+  context->SetBasePageUrl(page_url);
+  context->SetBasePageEncoding(encoding);
+  return context;
+}
 
 // Unit tests for the native |ContextualSearchDelegate|.
 class ContextualSearchDelegateTest : public testing::Test {
@@ -112,12 +105,12 @@ class ContextualSearchDelegateTest : public testing::Test {
       const std::u16string& surrounding_text,
       int start_offset,
       int end_offset) {
-    test_context_ = std::make_unique<WeakContextualSearchContext>(
-        std::string(), GURL(kSomeSpecificBasePage), "utf-8");
+    test_context_ =
+        MakeTestContext(std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     test_context_->SetSelectionSurroundings(start_offset, end_offset,
                                             surrounding_text);
     delegate_->ResolveSearchTermFromContext(
-        test_context_->GetWeakPtr(),
+        test_context_->AsWeakPtr(),
         base::BindRepeating(
             &ContextualSearchDelegateTest::recordSearchTermResolutionResponse,
             base::Unretained(this)));
@@ -150,8 +143,8 @@ class ContextualSearchDelegateTest : public testing::Test {
   // from tests, but can be called here because this is a friend class.
   //-------------------------------------------------------------------
   void CreateTestContext() {
-    test_context_ = std::make_unique<WeakContextualSearchContext>(
-        std::string(), GURL(kSomeSpecificBasePage), "utf-8");
+    test_context_ =
+        MakeTestContext(std::string(), GURL(kSomeSpecificBasePage), "utf-8");
   }
 
   void DestroyTestContext() { test_context_.reset(); }
@@ -202,8 +195,8 @@ class ContextualSearchDelegateTest : public testing::Test {
   void SetSurroundingContext(const std::u16string& surrounding_text,
                              int start_offset,
                              int end_offset) {
-    test_context_ = std::make_unique<WeakContextualSearchContext>(
-        std::string(), GURL(kSomeSpecificBasePage), "utf-8");
+    test_context_ =
+        MakeTestContext(std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     test_context_->SetSelectionSurroundings(start_offset, end_offset,
                                             surrounding_text);
   }
@@ -271,7 +264,7 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
-  std::unique_ptr<WeakContextualSearchContext> test_context_;
+  std::unique_ptr<ContextualSearchContext> test_context_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -691,7 +684,7 @@ TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithThumbnail) {
 // Test that we can destroy the context while resolving without a crash.
 TEST_F(ContextualSearchDelegateTest, DestroyContextDuringResolve) {
   CreateTestContext();
-  CallResolveSearchTermFromContext(test_context_->GetWeakPtr());
+  CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
   DestroyTestContext();
 
   std::string response("Any response as it does not matter here.");
@@ -704,7 +697,7 @@ TEST_F(ContextualSearchDelegateTest, DestroyContextDuringResolve) {
 TEST_F(ContextualSearchDelegateTest, DestroyContextDuringGatherSurroundings) {
   CreateTestContext();
   base::WeakPtr<ContextualSearchContext> weak_context =
-      test_context_->GetWeakPtr();
+      test_context_->AsWeakPtr();
   DestroyTestContext();
   CallOnTextSurroundingSelectionAvailable(weak_context);
 }
