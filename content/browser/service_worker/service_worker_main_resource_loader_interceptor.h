@@ -107,6 +107,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
+  // Attempts to get the |StorageKey|, using a |RenderFrameHostImpl|, which is
+  // obtained from the associated |FrameTreeNode|, if it exists. This allows to
+  // correctly account for extension URLs.
+  absl::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
+      const url::Origin& origin,
+      const base::UnguessableToken* nonce);
+
   // For navigations, |handle_| outlives |this|. It's owned by
   // NavigationRequest which outlives NavigationURLLoaderImpl which owns |this|.
   // For workers, |handle_| may be destroyed during interception. It's owned by

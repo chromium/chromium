@@ -10,6 +10,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "base/unguessable_token.h"
+#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,6 +78,15 @@ class BLINK_COMMON_EXPORT StorageKey {
       const net::SchemefulSite& top_level_site,
       const base::UnguessableToken* nonce,
       blink::mojom::AncestorChainBit ancestor_chain_bit);
+
+  // Takes an origin and populates the rest of the data using |isolation_info|.
+  // Note: |frame_origin| from |IsolationInfo| should not be used, as that is
+  // not a reliable source to get the origin.
+  // Note 2: This probably does not correctly account for extension URLs. See
+  // https://crbug.com/1346450 for more context.
+  static StorageKey CreateFromOriginAndIsolationInfo(
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info);
 
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;

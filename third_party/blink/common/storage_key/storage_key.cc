@@ -234,6 +234,18 @@ StorageKey StorageKey::CreateWithOptionalNonce(
   return StorageKey(origin, top_level_site, nonce, ancestor_chain_bit);
 }
 
+// static
+StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
+    const url::Origin& origin,
+    const net::IsolationInfo& isolation_info) {
+  return CreateWithOptionalNonce(
+      origin, net::SchemefulSite(isolation_info.top_frame_origin().value()),
+      base::OptionalOrNullptr(isolation_info.nonce()),
+      isolation_info.site_for_cookies().IsNull()
+          ? blink::mojom::AncestorChainBit::kCrossSite
+          : blink::mojom::AncestorChainBit::kSameSite);
+}
+
 std::string StorageKey::Serialize() const {
   using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());

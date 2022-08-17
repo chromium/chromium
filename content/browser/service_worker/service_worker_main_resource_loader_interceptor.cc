@@ -216,16 +216,20 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       isolation_info_.nonce().has_value() ? &(isolation_info_.nonce().value())
                                           : nullptr);
 
+  // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
+  // accounts for extension URLs. The absence of this logic was a potential
+  // cause for https://crbug.com/1346450.
+  absl::optional<blink::StorageKey> from_frame_host =
+      GetStorageKeyFromRenderFrameHost(
+          new_origin, base::OptionalOrNullptr(isolation_info_.nonce()));
+  blink::StorageKey storage_key =
+      from_frame_host.has_value()
+          ? from_frame_host.value()
+          : blink::StorageKey::CreateFromOriginAndIsolationInfo(
+                new_origin, isolation_info_);
+
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
-  blink::StorageKey storage_key = blink::StorageKey::CreateWithOptionalNonce(
-      new_origin,
-      net::SchemefulSite(isolation_info_.top_frame_origin().value()),
-      base::OptionalOrNullptr(isolation_info_.nonce()),
-      isolation_info_.site_for_cookies().IsNull()
-          ? blink::mojom::AncestorChainBit::kCrossSite
-          : blink::mojom::AncestorChainBit::kSameSite);
-
   bool skip_service_worker =
       skip_service_worker_ ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
@@ -332,6 +336,23 @@ bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url) ||
          SchemeMaySupportRedirectingToHTTPS(browser_context, url);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
+    const url::Origin& origin,
+    const base::UnguessableToken* nonce) {
+  // In this case |frame_tree_node_id_| is invalid.
+  if (!blink::IsRequestDestinationFrame(request_destination_))
+    return absl::nullopt;
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node)
+    return absl::nullopt;
+  RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
+  if (!frame_host)
+    return absl::nullopt;
+  return frame_host->CalculateStorageKey(origin, nonce);
 }
 
 }  // namespace content
