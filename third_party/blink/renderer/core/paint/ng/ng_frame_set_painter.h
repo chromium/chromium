@@ -25,7 +25,11 @@ class NGFrameSetPainter {
   void PaintObject(const PaintInfo&, const PhysicalOffset&);
 
  private:
-  [[maybe_unused]] const NGPhysicalBoxFragment& box_fragment_;
+  void PaintChildren(const PaintInfo& paint_info);
+  void PaintBorders(const PaintInfo& paint_info,
+                    const PhysicalOffset& paint_offset);
+
+  const NGPhysicalBoxFragment& box_fragment_;
   [[maybe_unused]] const DisplayItemClient& display_item_client_;
 };
 
