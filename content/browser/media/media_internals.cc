@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include <type_traits>
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
@@ -55,12 +54,9 @@ namespace content {
 
 namespace {
 
-template <typename T>
-std::u16string SerializeUpdate(const std::string& function, const T* value) {
-  static_assert(std::is_same<T, base::Value>::value ||
-                std::is_same<T, base::Value::List>::value ||
-                std::is_same<T, base::Value::Dict>::value);
-  base::ValueView args[] = {*value};
+std::u16string SerializeUpdate(base::StringPiece function,
+                               const base::ValueView value) {
+  base::ValueView args[] = {value};
   return content::WebUI::GetJavascriptCall(function, args);
 }
 
@@ -388,7 +384,7 @@ static bool ConvertEventToUpdate(int render_process_id,
   const double ticks_millis = ticks / base::Time::kMicrosecondsPerMillisecond;
   dict.Set("ticksMillis", ticks_millis);
 
-  base::Value cloned_params = event.params.Clone();
+  base::Value::Dict cloned_params = event.params.GetDict().Clone();
   switch (event.type) {
     case media::MediaLogRecord::Type::kMessage:
       dict.Set("type", "MEDIA_LOG_ENTRY");
@@ -398,7 +394,7 @@ static bool ConvertEventToUpdate(int render_process_id,
       break;
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
-      absl::optional<base::Value> exists = cloned_params.ExtractKey("event");
+      absl::optional<base::Value> exists = cloned_params.Extract("event");
       DCHECK(exists.has_value());
       dict.Set("type", std::move(exists.value()));
       break;
@@ -407,13 +403,13 @@ static bool ConvertEventToUpdate(int render_process_id,
       dict.Set("type", "PIPELINE_ERROR");
       base::Value::Dict wrapped_parameters;
       wrapped_parameters.Set("error", std::move(cloned_params));
-      cloned_params = base::Value(std::move(wrapped_parameters));
+      cloned_params = std::move(wrapped_parameters);
       break;
   }
 
   dict.Set("params", std::move(cloned_params));
 
-  *update = SerializeUpdate("media.onMediaEvent", &dict);
+  *update = SerializeUpdate("media.onMediaEvent", dict);
   return true;
 }
 
@@ -532,7 +528,7 @@ void MediaInternals::SendGeneralAudioInformation() {
                       base::Value(chrome_wide_echo_cancellation_value_string));
 #endif
   std::u16string audio_info_update =
-      SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);
+      SerializeUpdate("media.updateGeneralAudioInformation", audio_info_data);
   SendUpdate(audio_info_update);
 }
 
@@ -541,7 +537,7 @@ void MediaInternals::SendAudioStreamData() {
   {
     base::AutoLock auto_lock(lock_);
     audio_stream_update = SerializeUpdate("media.onReceiveAudioStreamData",
-                                          &audio_streams_cached_data_);
+                                          audio_streams_cached_data_);
   }
   SendUpdate(audio_stream_update);
 }
@@ -553,7 +549,7 @@ void MediaInternals::SendVideoCaptureDeviceCapabilities() {
     return;
 
   SendUpdate(SerializeUpdate("media.onReceiveVideoCaptureCapabilities",
-                             &video_capture_capabilities_cached_data_));
+                             video_capture_capabilities_cached_data_));
 }
 
 void MediaInternals::SendAudioFocusState() {
@@ -684,8 +680,8 @@ void MediaInternals::SaveEvent(int process_id,
 }
 
 void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
-                                    const std::string& cache_key,
-                                    const std::string& function,
+                                    base::StringPiece cache_key,
+                                    base::StringPiece function,
                                     const base::Value::Dict& value) {
   {
     base::AutoLock auto_lock(lock_);
@@ -708,7 +704,7 @@ void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
   }
 
   if (CanUpdate())
-    SendUpdate(SerializeUpdate(function, &value));
+    SendUpdate(SerializeUpdate(function, value));
 }
 
 }  // namespace content

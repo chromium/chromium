@@ -154,8 +154,8 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
     UPDATE_AND_DELETE,  // Deletes an existing AudioLog cache entry.
   };
   void UpdateAudioLog(AudioLogUpdateType type,
-                      const std::string& cache_key,
-                      const std::string& function,
+                      base::StringPiece cache_key,
+                      base::StringPiece function,
                       const base::Value::Dict& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,
