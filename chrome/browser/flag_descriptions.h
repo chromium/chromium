@@ -873,6 +873,9 @@ extern const char kHandwritingLegacyRecognitionDescription[];
 extern const char kHandwritingLegacyRecognitionAllLangName[];
 extern const char kHandwritingLegacyRecognitionAllLangDescription[];
 
+extern const char kHandwritingLibraryDlcName[];
+extern const char kHandwritingLibraryDlcDescription[];
+
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 

@@ -824,6 +824,10 @@ const base::Feature kHandwritingLegacyRecognition{
 const base::Feature kHandwritingLegacyRecognitionAllLang{
     "HandwritingLegacyRecognitionAllLang", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables downloading the handwriting libraries via DLC.
+const base::Feature kHandwritingLibraryDlc{"HandwritingLibraryDlc",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Background Page in the help app.
 const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

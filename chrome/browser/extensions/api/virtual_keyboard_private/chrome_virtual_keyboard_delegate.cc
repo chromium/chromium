@@ -598,6 +598,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       GenerateFeatureFlag("autocorrectparamstuning",
                           base::FeatureList::IsEnabled(
                               chromeos::features::kAutocorrectParamsTuning)));
+  features.Append(
+      GenerateFeatureFlag("handwritinglibrarydlc",
+                          base::FeatureList::IsEnabled(
+                              chromeos::features::kHandwritingLibraryDlc)));
 
   results.Set("features", std::move(features));
 

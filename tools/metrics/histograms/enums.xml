@@ -59785,6 +59785,7 @@ from previous Chrome versions.
   <int value="348449023"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:enabled"/>
   <int value="348854923" label="v8-cache-strategies-for-cache-storage"/>
+  <int value="348887417" label="HandwritingLibraryDlc:enabled"/>
   <int value="349469694" label="WebGPUService:disabled"/>
   <int value="350362421"
       label="AutofillEnableAugmentedPhoneCountryCode:enabled"/>
@@ -61877,6 +61878,7 @@ from previous Chrome versions.
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>
+  <int value="1687272287" label="HandwritingLibraryDlc:disabled"/>
   <int value="1687544136" label="AndroidManagedByMenuItem:enabled"/>
   <int value="1688075820" label="OmniboxExperimentalKeywordMode:disabled"/>
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>
