@@ -48,15 +48,15 @@ constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
-    const base::Value& dictionary) {
-  const base::Value* id_value = dictionary.FindKey("id");
-  DCHECK(id_value);
-  const std::string id = id_value->GetString();
-  DCHECK(!id.empty());
+    const base::Value::Dict& dictionary) {
+  const std::string* id = dictionary.FindString("id");
+  DCHECK(id);
+  DCHECK(!id->empty());
 
-  const base::Value* account_type_value = dictionary.FindKey("accountType");
+  const absl::optional<int> account_type_value =
+      dictionary.FindInt("accountType");
   DCHECK(account_type_value);
-  const int account_type_int = account_type_value->GetInt();
+  const int account_type_int = *account_type_value;
   DCHECK((account_type_int >=
           static_cast<int>(account_manager::AccountType::kGaia)) &&
          (account_type_int <=
@@ -64,13 +64,13 @@ constexpr char kAccountRemovedToastId[] =
   const account_manager::AccountType account_type =
       static_cast<account_manager::AccountType>(account_type_int);
 
-  return ::account_manager::AccountKey{id, account_type};
+  return ::account_manager::AccountKey{*id, account_type};
 }
 
 ::account_manager::Account GetAccountFromJsCallback(
-    const base::Value& dictionary) {
+    const base::Value::Dict& dictionary) {
   ::account_manager::AccountKey key = GetAccountKeyFromJsCallback(dictionary);
-  const std::string* email = dictionary.FindStringKey("email");
+  const std::string* email = dictionary.FindString("email");
   DCHECK(email);
   return ::account_manager::Account{key, *email};
 }
@@ -102,80 +102,80 @@ class AccountBuilder {
 
   ~AccountBuilder() = default;
 
-  void PopulateFrom(base::DictionaryValue account) {
+  void PopulateFrom(base::Value::Dict account) {
     account_ = std::move(account);
   }
 
-  bool IsEmpty() const { return account_.DictEmpty(); }
+  bool IsEmpty() const { return account_.empty(); }
 
   AccountBuilder& SetId(const std::string& value) {
-    account_.SetStringKey("id", value);
+    account_.Set("id", value);
     return *this;
   }
 
   AccountBuilder& SetEmail(const std::string& value) {
-    account_.SetStringKey("email", value);
+    account_.Set("email", value);
     return *this;
   }
 
   AccountBuilder& SetFullName(const std::string& value) {
-    account_.SetStringKey("fullName", value);
+    account_.Set("fullName", value);
     return *this;
   }
 
   AccountBuilder& SetAccountType(const int& value) {
-    account_.SetIntKey("accountType", value);
+    account_.Set("accountType", value);
     return *this;
   }
 
   AccountBuilder& SetIsDeviceAccount(const bool& value) {
-    account_.SetBoolKey("isDeviceAccount", value);
+    account_.Set("isDeviceAccount", value);
     return *this;
   }
 
   AccountBuilder& SetIsSignedIn(const bool& value) {
-    account_.SetBoolKey("isSignedIn", value);
+    account_.Set("isSignedIn", value);
     return *this;
   }
 
   AccountBuilder& SetUnmigrated(const bool& value) {
-    account_.SetBoolKey("unmigrated", value);
+    account_.Set("unmigrated", value);
     return *this;
   }
 
   AccountBuilder& SetIsManaged(const bool& value) {
-    account_.SetBoolKey("isManaged", value);
+    account_.Set("isManaged", value);
     return *this;
   }
 
   AccountBuilder& SetPic(const std::string& value) {
-    account_.SetStringKey("pic", value);
+    account_.Set("pic", value);
     return *this;
   }
 
   AccountBuilder& SetOrganization(const std::string& value) {
-    account_.SetStringKey("organization", value);
+    account_.Set("organization", value);
     return *this;
   }
 
   AccountBuilder& SetIsAvailableInArc(bool value) {
-    account_.SetBoolKey("isAvailableInArc", value);
+    account_.Set("isAvailableInArc", value);
     return *this;
   }
 
   // Should be called only once.
-  base::DictionaryValue Build() {
+  base::Value::Dict Build() {
     // Check that values were set.
-    DCHECK(account_.FindStringKey("id"));
-    DCHECK(account_.FindStringKey("email"));
-    DCHECK(account_.FindStringKey("fullName"));
-    DCHECK(account_.FindIntKey("accountType"));
-    DCHECK(account_.FindBoolKey("isDeviceAccount"));
-    DCHECK(account_.FindBoolKey("isSignedIn"));
-    DCHECK(account_.FindBoolKey("unmigrated"));
-    DCHECK(account_.FindStringKey("pic"));
+    DCHECK(account_.FindString("id"));
+    DCHECK(account_.FindString("email"));
+    DCHECK(account_.FindString("fullName"));
+    DCHECK(account_.FindInt("accountType"));
+    DCHECK(account_.FindBool("isDeviceAccount"));
+    DCHECK(account_.FindBool("isSignedIn"));
+    DCHECK(account_.FindBool("unmigrated"));
+    DCHECK(account_.FindString("pic"));
     if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-      DCHECK(account_.FindBoolKey("isAvailableInArc"));
+      DCHECK(account_.FindBool("isAvailableInArc"));
     }
     // "organization" is an optional field.
 
@@ -183,7 +183,7 @@ class AccountBuilder {
   }
 
  private:
-  base::DictionaryValue account_;
+  base::Value::Dict account_;
 };
 
 }  // namespace
@@ -278,8 +278,8 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
-  base::DictionaryValue gaia_device_account;
-  base::ListValue accounts = GetSecondaryGaiaAccounts(
+  base::Value::Dict gaia_device_account;
+  base::Value::List accounts = GetSecondaryGaiaAccounts(
       account_dummy_token_list, arc_accounts, user->GetAccountId(),
       profile_->IsChild(), &gaia_device_account);
 
@@ -328,21 +328,20 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
     }
 
     // Device account must show up at the top.
-    accounts.Insert(accounts.GetListDeprecated().begin(),
-                    device_account.Build());
+    accounts.Insert(accounts.begin(), base::Value(device_account.Build()));
   }
 
   ResolveJavascriptCallback(callback_id, accounts);
 }
 
-base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
+base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list,
     const base::flat_set<account_manager::Account>& arc_accounts,
     const AccountId device_account_id,
     const bool is_child_user,
-    base::DictionaryValue* device_account) {
-  base::ListValue accounts;
+    base::Value::Dict* device_account) {
+  base::Value::List accounts;
   for (const auto& account_token_pair : account_dummy_token_list) {
     const ::account_manager::Account& stored_account = account_token_pair.first;
     const ::account_manager::AccountKey& account_key = stored_account.key;
@@ -432,13 +431,13 @@ void AccountManagerUIHandler::HandleRemoveAccount(
   AllowJavascript();
 
   CHECK(!args.empty());
-  const base::Value& dictionary = args[0];
-  CHECK(dictionary.is_dict());
+  const base::Value::Dict* dictionary = args[0].GetIfDict();
+  CHECK(dictionary);
 
   const AccountId device_account_id =
       ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
   const ::account_manager::AccountKey account_key =
-      GetAccountKeyFromJsCallback(dictionary);
+      GetAccountKeyFromJsCallback(*dictionary);
   if (IsSameAccount(account_key, device_account_id)) {
     // It should not be possible to remove a device account.
     return;
@@ -447,14 +446,14 @@ void AccountManagerUIHandler::HandleRemoveAccount(
   account_manager_->RemoveAccount(account_key);
 
   // Show toast with removal message.
-  const base::Value* email_value = dictionary.FindKey("email");
-  const std::string email = email_value->GetString();
-  DCHECK(!email.empty());
+  const std::string* email = dictionary->FindString("email");
+  DCHECK(email);
+  DCHECK(!email->empty());
 
   ShowToast(kAccountRemovedToastId, ash::ToastCatalogName::kAccountRemoved,
             l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE,
-                base::UTF8ToUTF16(email)));
+                base::UTF8ToUTF16(*email)));
 }
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(
@@ -463,13 +462,13 @@ void AccountManagerUIHandler::HandleChangeArcAvailability(
 
   // 2 args: account, is_available.
   CHECK_GT(args.size(), 1u);
-  const base::Value& account_dict = args[0];
-  CHECK(account_dict.is_dict());
+  const base::Value::Dict* account_dict = args[0].GetIfDict();
+  CHECK(account_dict);
   const absl::optional<bool> is_available = args[1].GetIfBool();
   CHECK(is_available.has_value());
 
   const ::account_manager::Account account =
-      GetAccountFromJsCallback(account_dict);
+      GetAccountFromJsCallback(*account_dict);
   account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                          is_available.value());
   // Note: the observer call will update the UI.
