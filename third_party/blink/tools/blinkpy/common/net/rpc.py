@@ -56,14 +56,14 @@ class Build(NamedTuple):
 class RPCError(Exception):
     """Base type for all pRPC errors."""
 
-    def __init__(self, message, method, request=None, code=None):
+    def __init__(self, message, method, request_body=None, code=None):
         message = '%s: %s' % (method, message)
         if code:
             message += ' (code: %d)' % code
         super().__init__(message)
         self.method = method
         self.code = code
-        self.request = request
+        self.request_body = request_body
 
 
 class BaseRPC:
@@ -254,12 +254,12 @@ class BuildbucketClient(BaseRPC):
         if not self._batch_requests:
             return
         batch_requests, self._batch_requests = self._batch_requests, []
-        request = {
+        batch_request_body = {
             'requests': [{
                 method: body
             } for method, body, _, _ in batch_requests]
         }
-        batch_response = self._luci_rpc('Batch', request) or {}
+        batch_response = self._luci_rpc('Batch', batch_request_body) or {}
         responses = batch_response.get('responses') or []
         for request, response_body in zip(batch_requests, responses):
             method, request_body, field, count = request
@@ -269,7 +269,7 @@ class BuildbucketClient(BaseRPC):
                 # Avoid the built-in `str.capitalize`, since it lowercases the
                 # remaining letters.
                 raise RPCError(message, method[0].upper() + method[1:],
-                               request, error.get('code'))
+                               request_body, error.get('code'))
             unwrapped_response = response_body[method]
             if field:
                 yield from unwrapped_response[field][:count]

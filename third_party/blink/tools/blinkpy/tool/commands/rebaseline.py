@@ -71,8 +71,8 @@ class AbstractRebaseliningCommand(Command):
         '--dry-run',
         action='store_true',
         default=False,
-        help=('Dry run mode; list actions that would be performed '
-              'but do not actually download any new baselines.'))
+        help=('Dry run mode. List actions that would be performed '
+              'but do not actually write to disk.'))
     results_directory_option = optparse.make_option(
         '--results-directory',
         action='callback',

@@ -38,19 +38,34 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     show_in_main_help = True
     argument_names = '[testname,...]'
 
+    only_changed_tests_option = optparse.make_option(
+        '--only-changed-tests',
+        action='store_true',
+        default=False,
+        help='Only update files for tests directly modified in the CL.')
+    no_trigger_jobs_option = optparse.make_option(
+        '--no-trigger-jobs',
+        dest='trigger_jobs',
+        action='store_false',
+        default=True,
+        help='Do not trigger any try jobs.')
+    test_name_file_option = optparse.make_option(
+        '--test-name-file',
+        action='callback',
+        callback=check_file_option,
+        type='string',
+        help=('Read names of tests to update from this file, '
+              'one test per line.'))
+    patchset_option = optparse.make_option(
+        '--patchset',
+        default=None,
+        type='int',
+        help='Patchset number to fetch results from.')
+
     def __init__(self):
         super(RebaselineCL, self).__init__(options=[
-            optparse.make_option(
-                '--only-changed-tests',
-                action='store_true',
-                default=False,
-                help='Only download new baselines for tests that are directly '
-                'modified in the CL.'),
-            optparse.make_option('--no-trigger-jobs',
-                                 dest='trigger_jobs',
-                                 action='store_false',
-                                 default=True,
-                                 help='Do not trigger any try jobs.'),
+            self.only_changed_tests_option,
+            self.no_trigger_jobs_option,
             optparse.make_option(
                 '--fill-missing',
                 dest='fill_missing',
@@ -69,14 +84,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 help='Use only the try jobs results for rebaselining. '
                 'Default behavior is to use results from both CQ builders '
                 'and try bots.'),
-            optparse.make_option(
-                '--test-name-file',
-                dest='test_name_file',
-                action='callback',
-                callback=check_file_option,
-                type='string',
-                help='Read names of tests to rebaseline from this file, one '
-                'test per line.'),
+            self.test_name_file_option,
             optparse.make_option(
                 '--builders',
                 default=None,
@@ -97,10 +105,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                       'FlagSpecificConfig. This option will rebaseline '
                       'results for the given FlagSpecificConfig while '
                       'ignoring results from other builders.')),
-            optparse.make_option(
-                '--patchset',
-                default=None,
-                help='Patchset number to fetch new baselines from.'),
+            self.patchset_option,
             optparse.make_option('--resultDB',
                                  dest='resultDB',
                                  default=False,
@@ -156,8 +161,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             jobs = build_resolver.resolve_builds(builds, options.patchset)
         except RPCError as error:
             _log.error('%s', error)
-            _, payload, _, _ = error.request
-            _log.error('Request payload: %s', json.dumps(payload, indent=2))
+            _log.error('Request payload: %s',
+                       json.dumps(error.request_body, indent=2))
             return 1
         except UnresolvedBuildException as error:
             _log.error('%s', error)

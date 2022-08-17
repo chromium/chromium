@@ -50,6 +50,7 @@ from blinkpy.tool.commands.queries import PrintExpectations
 from blinkpy.tool.commands.rebaseline import Rebaseline
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.tool.commands.rebaseline_test import RebaselineTest
+from blinkpy.tool.commands.update_metadata import UpdateMetadata
 
 _log = logging.getLogger(__name__)
 
@@ -83,6 +84,7 @@ class BlinkTool(Host):
             Rebaseline(),
             RebaselineCL(),
             RebaselineTest(),
+            UpdateMetadata(self),
         ]
         self.help_command = HelpCommand(tool=self)
         self.commands.append(self.help_command)
