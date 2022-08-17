@@ -126,7 +126,7 @@ class BackgroundDownloadServiceTest
         browser_state_.get());
   }
 
-  // Download a file from embedded test server. Use different |relative_url| for
+  // Download a file from embedded test server. Use different `relative_url` for
   // different http responses.
   void Download(const std::string& relative_url) {
     download::DownloadParams params;
