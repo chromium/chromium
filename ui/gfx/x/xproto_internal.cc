@@ -14,7 +14,7 @@ MallocedRefCountedMemory::MallocedRefCountedMemory(void* data)
     : data_(reinterpret_cast<uint8_t*>(data)) {}
 
 const uint8_t* MallocedRefCountedMemory::front() const {
-  return data_;
+  return data_.get();
 }
 
 size_t MallocedRefCountedMemory::size() const {
@@ -23,9 +23,7 @@ size_t MallocedRefCountedMemory::size() const {
   return 0;
 }
 
-MallocedRefCountedMemory::~MallocedRefCountedMemory() {
-  free(data_);
-}
+MallocedRefCountedMemory::~MallocedRefCountedMemory() = default;
 
 OffsetRefCountedMemory::OffsetRefCountedMemory(
     scoped_refptr<base::RefCountedMemory> memory,

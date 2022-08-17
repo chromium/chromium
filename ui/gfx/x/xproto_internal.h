@@ -55,9 +55,16 @@ class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
   size_t size() const override;
 
  private:
+  struct deleter {
+    void operator()(uint8_t* data) {
+      if (data) {
+        free(data);
+      }
+    }
+  };
   ~MallocedRefCountedMemory() override;
 
-  const raw_ptr<uint8_t, DanglingUntriaged> data_;
+  std::unique_ptr<uint8_t, deleter> data_;
 };
 
 // Wraps another RefCountedMemory, giving a view into it.  Similar to
