@@ -229,6 +229,14 @@ void PillButton::SetIconColor(const SkColor icon_color) {
   OnThemeChanged();
 }
 
+void PillButton::SetPillButtonType(Type type) {
+  if (type_ == type)
+    return;
+
+  type_ = type;
+  OnThemeChanged();
+}
+
 void PillButton::SetUseDefaultLabelFont() {
   label()->SetFontList(views::Label::GetDefaultFontList());
 }
