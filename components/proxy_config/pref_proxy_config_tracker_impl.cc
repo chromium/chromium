@@ -263,10 +263,9 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
       pref_service->FindPreference(proxy_config::prefs::kProxy);
   DCHECK(pref);
 
-  const base::Value* dict =
-      pref_service->GetDictionary(proxy_config::prefs::kProxy);
-  DCHECK(dict);
-  ProxyConfigDictionary proxy_dict(dict->Clone());
+  const base::Value::Dict& dict =
+      pref_service->GetValueDict(proxy_config::prefs::kProxy);
+  ProxyConfigDictionary proxy_dict(base::Value(dict.Clone()));
 
   if (PrefConfigToNetConfig(proxy_dict, config)) {
     if (!pref->IsUserModifiable() || pref->HasUserSetting()) {
