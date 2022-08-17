@@ -448,18 +448,21 @@ export class RealboxElement extends PolymerElement {
       return;
     }
 
-    // Query for zero-prefix matches if user is tabbing into an empty input.
-    if (!this.$.input.value) {
+    // Query for zero-prefix matches if user is tabbing into an empty input and
+    // matches are not visible.
+    if (!this.$.input.value && !this.matchesAreVisible) {
       this.queryAutocomplete_('');
     }
   }
 
   private onInputMouseDown_(e: MouseEvent) {
     if (e.button !== 0) {
-      // Only handle main (generally left) button presses.
       return;
     }
-    if (!this.$.input.value) {
+
+    // Query for zero-prefix matches when the main (generally left) mouse button
+    // is pressed on an empty input and matches are not visible.
+    if (!this.$.input.value && !this.matchesAreVisible) {
       this.queryAutocomplete_('');
     }
   }
