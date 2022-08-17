@@ -661,6 +661,19 @@ template <typename T>
 MaybeShared<T> NativeValueTraits<
     IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>,
     typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>::
+    NativeValue(v8::Isolate* isolate,
+                v8::Local<v8::Value> value,
+                ExceptionState& exception_state) {
+  return NativeValueImpl<
+      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck, T>(
+      isolate, value, exception_state);
+}
+
+template <typename T>
+MaybeShared<T> NativeValueTraits<
+    IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>,
+    typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>::
     ArgumentValue(v8::Isolate* isolate,
                   int argument_index,
                   v8::Local<v8::Value> value,
@@ -827,6 +840,9 @@ INSTANTIATE_NVT(MaybeShared<DOMFloat64Array>)
 INSTANTIATE_NVT(MaybeShared<DOMDataView>)
 // IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>
 INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<MaybeShared<DOMArrayBufferView>>)
+INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<MaybeShared<DOMFloat32Array>>)
+INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<MaybeShared<DOMInt32Array>>)
+INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<MaybeShared<DOMUint32Array>>)
 // IDLNullable<NotShared<T>>
 INSTANTIATE_NVT(IDLNullable<NotShared<DOMArrayBufferView>>)
 INSTANTIATE_NVT(IDLNullable<NotShared<DOMInt8Array>>)
@@ -873,6 +889,7 @@ INSTANTIATE_NVT(FlexibleBigUint64Array)
 INSTANTIATE_NVT(FlexibleFloat32Array)
 INSTANTIATE_NVT(FlexibleFloat64Array)
 // IDLBufferSourceTypeNoSizeLimit<FlexibleArrayBufferView>
+INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleArrayBufferView>)
 INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleInt32Array>)
 INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleUint32Array>)
 INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleFloat32Array>)

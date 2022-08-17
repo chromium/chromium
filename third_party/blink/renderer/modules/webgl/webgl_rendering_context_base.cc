@@ -2154,6 +2154,24 @@ void WebGLRenderingContextBase::blendFuncSeparate(GLenum src_rgb,
   ContextGL()->BlendFuncSeparate(src_rgb, dst_rgb, src_alpha, dst_alpha);
 }
 
+bool WebGLRenderingContextBase::ValidateBufferDataBufferSize(
+    const char* function_name,
+    int64_t size) {
+  if (size < 0) {
+    String error_msg = "data size is invalid";
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      error_msg.Ascii().c_str());
+    return false;
+  }
+  if (static_cast<size_t>(size) > kMaximumSupportedArrayBufferSize) {
+    String error_msg = "data size exceeds the maximum supported size";
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      error_msg.Ascii().c_str());
+    return false;
+  }
+  return true;
+}
+
 void WebGLRenderingContextBase::BufferDataImpl(GLenum target,
                                                int64_t size,
                                                const void* data,
@@ -2166,6 +2184,9 @@ void WebGLRenderingContextBase::BufferDataImpl(GLenum target,
     return;
 
   if (!ValidateValueFitNonNegInt32("bufferData", "size", size))
+    return;
+
+  if (!ValidateBufferDataBufferSize("bufferData", size))
     return;
 
   buffer->SetSize(size);
@@ -2205,13 +2226,18 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
 
 void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
                                                   int64_t offset,
-                                                  GLsizeiptr size,
+                                                  int64_t size,
                                                   const void* data) {
   WebGLBuffer* buffer = ValidateBufferDataTarget("bufferSubData", target);
   if (!buffer)
     return;
   if (!ValidateValueFitNonNegInt32("bufferSubData", "offset", offset))
     return;
+  if (!ValidateValueFitNonNegInt32("bufferSubData", "size", size))
+    return;
+  if (!ValidateBufferDataBufferSize("bufferSubData", size))
+    return;
+
   if (!data)
     return;
   if (offset + static_cast<int64_t>(size) > buffer->GetSize()) {
@@ -2219,7 +2245,8 @@ void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
     return;
   }
 
-  ContextGL()->BufferSubData(target, static_cast<GLintptr>(offset), size, data);
+  ContextGL()->BufferSubData(target, static_cast<GLintptr>(offset),
+                             static_cast<GLintptr>(size), data);
 }
 
 void WebGLRenderingContextBase::bufferSubData(GLenum target,
@@ -4684,18 +4711,26 @@ bool WebGLRenderingContextBase::ValidateReadPixelsFuncParameters(
     return false;
 
   // Calculate array size, taking into consideration of pack parameters.
-  unsigned total_bytes_required = 0, total_skip_bytes = 0;
+  unsigned bytes_required = 0;
+  unsigned skip_bytes = 0;
   GLenum error = WebGLImageConversion::ComputeImageSizeInBytes(
       format, type, width, height, 1, GetPackPixelStoreParams(),
-      &total_bytes_required, nullptr, &total_skip_bytes);
+      &bytes_required, nullptr, &skip_bytes);
   if (error != GL_NO_ERROR) {
     SynthesizeGLError(error, "readPixels", "invalid dimensions");
     return false;
   }
-  if (buffer_size <
-      static_cast<int64_t>(total_bytes_required + total_skip_bytes)) {
+  int64_t total_bytes_required =
+      static_cast<int64_t>(bytes_required) + static_cast<int64_t>(skip_bytes);
+  if (buffer_size < total_bytes_required) {
     SynthesizeGLError(GL_INVALID_OPERATION, "readPixels",
                       "buffer is not large enough for dimensions");
+    return false;
+  }
+  if (kMaximumSupportedArrayBufferSize <
+      static_cast<size_t>(total_bytes_required)) {
+    SynthesizeGLError(GL_INVALID_VALUE, "readPixels",
+                      "amount of read pixels is too high");
     return false;
   }
   return true;

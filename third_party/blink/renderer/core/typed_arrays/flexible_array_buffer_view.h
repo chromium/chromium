@@ -69,9 +69,9 @@ class CORE_EXPORT FlexibleArrayBufferView {
       small_length_ = size;
     } else {
       NonThrowableExceptionState exception_state;
-      full_ = NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
-                  array_buffer_view->GetIsolate(), array_buffer_view,
-                  exception_state)
+      full_ = NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<MaybeShared<
+          DOMArrayBufferView>>>::NativeValue(array_buffer_view->GetIsolate(),
+                                             array_buffer_view, exception_state)
                   .Get();
     }
   }

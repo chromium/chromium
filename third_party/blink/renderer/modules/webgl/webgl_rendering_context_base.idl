@@ -483,10 +483,11 @@ interface mixin WebGLRenderingContextBase {
     // FIXME: should be union type
     // https://www.khronos.org/bugzilla/show_bug.cgi?id=1172
     void bufferData(GLenum target, GLsizeiptr size, GLenum usage);
-    void bufferData(GLenum target, [AllowShared] ArrayBufferView data, GLenum usage);
-    void bufferData(GLenum target, [AllowShared] ArrayBuffer? data, GLenum usage);
-    void bufferSubData(GLenum target, GLintptr offset, [AllowShared, FlexibleArrayBufferView] ArrayBufferView data);
-    void bufferSubData(GLenum target, GLintptr offset, [AllowShared] ArrayBuffer data);
+    void bufferData(GLenum target, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data, GLenum usage);
+    void bufferData(GLenum target, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer? data, GLenum usage);
+    void bufferSubData(GLenum target, GLintptr offset,
+        [AllowShared, FlexibleArrayBufferView, BufferSourceTypeNoSizeLimit] ArrayBufferView data);
+    void bufferSubData(GLenum target, GLintptr offset, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data);
 
     GLenum checkFramebufferStatus(GLenum target);
     [NoAllocDirectCall] void clear(GLbitfield mask);
@@ -592,7 +593,8 @@ interface mixin WebGLRenderingContextBase {
     void pixelStorei(GLenum pname, GLint param);
     void polygonOffset(GLfloat factor, GLfloat units);
 
-    void readPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, [AllowShared] ArrayBufferView? pixels);
+    void readPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView? pixels);
 
     void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
     void sampleCoverage(GLclampf value, GLboolean invert);
@@ -699,16 +701,16 @@ interface mixin WebGLRenderingContextBase {
     void validateProgram(WebGLProgram program);
 
     [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);
-    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, [AllowShared] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array values);
     [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
-    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, [AllowShared] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array values);
     [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
-    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, [AllowShared] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array values);
     [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, [AllowShared] Float32Array values);
+    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array values);
     [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, sequence<GLfloat> values);
     [NoAllocDirectCall] void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized,
                                                     GLsizei stride, GLintptr offset);

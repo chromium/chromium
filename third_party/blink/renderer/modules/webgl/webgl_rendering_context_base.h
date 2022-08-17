@@ -668,6 +668,20 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   void UpdateNumberOfUserAllocatedMultisampledRenderbuffers(int delta);
 
+  // The maximum supported size of an ArrayBuffer is the maximum size that can
+  // be allocated in JavaScript. This maximum is defined by the maximum size
+  // partition alloc can allocate.
+  // We limit the maximum size of ArrayBuffers we support to avoid integer
+  // overflows in the WebGL implementation. WebGL stores the data size as
+  // uint32_t, so if sizes just below uint32_t::max() were passed in, integer
+  // overflows could happen. The limit defined here is (2GB-2MB), which should
+  // be enough buffer to avoid integer overflow.
+  // This limit should restrict the usability of WebGL2 only insignificantly, as
+  // JavaScript cannot allocate bigger ArrayBuffers anyways. Only with
+  // WebAssembly it is possible to allocate bigger ArrayBuffers.
+  static constexpr size_t kMaximumSupportedArrayBufferSize =
+      ::partition_alloc::internal::MaxDirectMapped();
+
  protected:
   // WebGL object types.
   friend class WebGLContextObject;
@@ -1665,7 +1679,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     // command buffer.
     constexpr int32_t kExtraCommandSize = 1024;
     total_size += kExtraCommandSize;
-    if (!total_size.IsValid()) {
+    int32_t total_size_val;
+    if (!total_size.AssignIfValid(&total_size_val) ||
+        static_cast<size_t>(total_size_val) >
+            kMaximumSupportedArrayBufferSize) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
                         "size * elementSize, plus a constant, is too large");
       return false;
@@ -1776,13 +1793,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   virtual void OnBeforeDrawCall(CanvasPerformanceMonitor::DrawType);
 
   // Helper functions to bufferData() and bufferSubData().
+  bool ValidateBufferDataBufferSize(const char* function_name, int64_t size);
+
   void BufferDataImpl(GLenum target,
                       int64_t size,
                       const void* data,
                       GLenum usage);
   void BufferSubDataImpl(GLenum target,
                          int64_t offset,
-                         GLsizeiptr,
+                         int64_t size,
                          const void* data);
 
   // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.

@@ -438,6 +438,10 @@ void WebGL2RenderingContextBase::getBufferSubData(
     // validateGetBufferSubData, so it's not done here.
     return;
   }
+  if (!ValidateBufferDataBufferSize("getBufferSubData",
+                                    destination_byte_length)) {
+    return;
+  }
 
   // If the length of the copy is zero, this is a no-op.
   if (!destination_byte_length) {

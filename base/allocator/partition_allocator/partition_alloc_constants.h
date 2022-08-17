@@ -383,8 +383,10 @@ constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // fails. This is a security choice in Chrome, to help making size_t vs int bugs
 // harder to exploit.
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
-MaxDirectMapped() {
+// The definition of MaxDirectMapped does only depend on constants that are
+// unconditionally constexpr. Therefore it is not necessary to use
+// PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR here.
+constexpr PA_ALWAYS_INLINE size_t MaxDirectMapped() {
   // Subtract kSuperPageSize to accommodate for granularity inside
   // PartitionRoot::GetDirectMapReservationSize.
   return (1UL << 31) - kSuperPageSize;

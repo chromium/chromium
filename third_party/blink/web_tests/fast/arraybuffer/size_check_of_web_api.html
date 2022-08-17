@@ -17,11 +17,10 @@ test(() => {
       "WebAssembly.Memory(): could not allocate memory");
     return;
   }
-  let canvas = document.createElement("canvas");
-  let context = canvas.getContext("webgl");
+  const encoder = new TextEncoder();
   let data = new Uint8Array(mem.buffer);
   assert_throws_js(RangeError,
-    () => context.bufferSubData(context.ARRAY_BUFFER, 0, data));
+    () => encoder.encodeInto("Hello World", data));
 }, "Test that webgl rejects an ArrayBuffer bigger than 2GB.");
 
 test(() => {
@@ -35,10 +34,9 @@ test(() => {
       "WebAssembly.Memory(): could not allocate memory");
     return;
   }
-  let canvas = document.createElement("canvas");
-  let context = canvas.getContext("webgl");
+  const encoder = new TextEncoder();
   let data = new Uint8Array(mem.buffer, 10, 16);
-  context.bufferSubData(context.ARRAY_BUFFER, 0, data);
+  encoder.encodeInto("Hello World", data);
 }, "Test that webgl accepts a small view of ArrayBuffer bigger than 2GB.");
   </script>
 </body>

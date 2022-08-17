@@ -707,10 +707,11 @@ struct NativeValueTraits<
     IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>,
     typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>>
     : public NativeValueTraitsBase<MaybeShared<T>> {
-  // BufferSourceTypeNoSizeLimit must be used only as arguments.
+  // FlexibleArrayBufferView uses this in its implementation, so we cannot
+  // delete it.
   static MaybeShared<T> NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
-                                    ExceptionState& exception_state) = delete;
+                                    ExceptionState& exception_state);
 
   static MaybeShared<T> ArgumentValue(v8::Isolate* isolate,
                                       int argument_index,

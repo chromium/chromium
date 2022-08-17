@@ -77,7 +77,10 @@ function onLoad() {
 
   gl.useProgram(program);
 
-  // 2 GB memory pool, if possible. (64KB Wasm page size)
+  // Make the memory pool, if possible:
+  // ::partition_alloc::internal::MaxDirectMapped.
+  // = 2 GB - 2 MB.
+  // 64KB Wasm page size)
   //
   // If allocation fails (for example, on 32-bit Android), fall back
   // to 128 MB, and skip the portion of the test which tests the
@@ -86,7 +89,7 @@ function onLoad() {
   let memory;
 
   try {
-    memory = new WebAssembly.Memory({initial: 32768});
+    memory = new WebAssembly.Memory({initial: 32736});
     gotLargeAllocation = true;
   } catch (e) {
     // Must be on a system that can't allocate that much memory. Try
