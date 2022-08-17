@@ -494,12 +494,9 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kBaseUrlForDataUrl;
   }
 
-  // TODO(crbug.com/1352891): This if branch should be removed because method
-  // parameter change is detected earlier by checking the HTTP request headers
-  // changes.
-  if (potential_activation.method != common_params_->method) {
-    return ActivationNavigationParamsMatch::kHttpRequestHeader;
-  }
+  // The method parameter is compared only by DCHECK_EQ because that change is
+  // detected earlier by checking the HTTP request headers changes.
+  DCHECK_EQ(potential_activation.method, common_params_->method);
 
   // Initial prerender navigation can't be a form submission.
   DCHECK(!common_params_->post_data);

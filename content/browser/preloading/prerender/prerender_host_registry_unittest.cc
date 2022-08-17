@@ -928,6 +928,7 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetMethod("POST");
       })));
+  // The method parameter change is detected as a HTTP request header change.
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
       PrerenderHost::ActivationNavigationParamsMatch::kHttpRequestHeader);
 }
