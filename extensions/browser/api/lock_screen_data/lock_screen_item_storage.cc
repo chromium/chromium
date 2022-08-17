@@ -597,15 +597,13 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
     bool include_empty) {
   std::set<std::string> result;
 
-  const base::Value* items =
-      local_state_->GetDictionary(kLockScreenDataPrefKey);
-  if (!items)
-    return result;
-  const base::Value* user_data = items->FindDictPath(user_id_);
+  const base::Value::Dict& items =
+      local_state_->GetValueDict(kLockScreenDataPrefKey);
+  const base::Value::Dict* user_data = items.FindDictByDottedPath(user_id_);
   if (!user_data)
     return result;
 
-  for (auto it : user_data->DictItems()) {
+  for (auto it : *user_data) {
     if (it.second.is_int() && (include_empty || it.second.GetInt() > 0)) {
       result.insert(it.first);
     } else if (it.second.is_dict()) {
@@ -622,16 +620,14 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
 std::set<ExtensionId> LockScreenItemStorage::GetExtensionsToMigrate() {
   std::set<ExtensionId> result;
 
-  const base::Value* items =
-      local_state_->GetDictionary(kLockScreenDataPrefKey);
+  const base::Value::Dict& items =
+      local_state_->GetValueDict(kLockScreenDataPrefKey);
 
-  if (!items)
-    return result;
-  const base::Value* user_data = items->FindDictPath(user_id_);
+  const base::Value::Dict* user_data = items.FindDictByDottedPath(user_id_);
   if (!user_data)
     return result;
 
-  for (auto it : user_data->DictItems()) {
+  for (auto it : *user_data) {
     if (it.second.is_int())
       result.insert(it.first);
   }
