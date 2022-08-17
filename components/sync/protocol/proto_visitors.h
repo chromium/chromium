@@ -784,6 +784,15 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT(originator_referring_visit_id);
   VISIT(originator_opener_visit_id);
   VISIT(visit_duration_micros);
+  VISIT_ENUM(browser_type);
+  VISIT(window_id);
+  VISIT(tab_id);
+  VISIT(task_id);
+  VISIT(root_task_id);
+  VISIT(parent_task_id);
+  VISIT(http_response_code);
+  VISIT(page_language);
+  VISIT_ENUM(password_state);
 }
 
 VISIT_PROTO_FIELDS(

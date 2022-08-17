@@ -161,9 +161,8 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
             navigation.blocked_state()));
   }
 
-  sync_data.set_password_state(
-      static_cast<sync_pb::TabNavigation_PasswordState>(
-          navigation.password_state()));
+  sync_data.set_password_state(static_cast<sync_pb::SyncEnums_PasswordState>(
+      navigation.password_state()));
 
   // Copy all redirect chain entries except the last URL (which should match
   // the virtual_url).

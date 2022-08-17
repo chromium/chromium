@@ -157,6 +157,14 @@ message SyncEnums {
     TYPE_CUSTOM_TAB = 3;  // A custom tab within an app.
   }
 
+  // The "password state" is the presence/absence of a password field on a
+  // website; used for history-related data types.
+  enum PasswordState {
+    PASSWORD_STATE_UNKNOWN = 0;
+    NO_PASSWORD_FIELD = 1;
+    HAS_PASSWORD_FIELD = 2;
+  }
+
   // This is the successor to GetUpdatesSource.  It merges the "normal mode"
   // values (LOCAL, NOTIFICATION and DATATYPE_REFRESH), which were never really
   // mutually exclusive to being with, into the GU_TRIGGER value.  It also
