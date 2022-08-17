@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -27,7 +27,7 @@ class UrlParamFilterThrottle : public blink::URLLoaderThrottle {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttle_list);
   explicit UrlParamFilterThrottle(
       const absl::optional<url::Origin>& request_initiator_origin,
-      base::WeakPtr<CrossOtrObserver> observer);
+      base::WeakPtr<CrossOtrWebContentsObserver> observer);
   ~UrlParamFilterThrottle() override;
 
   UrlParamFilterThrottle(const UrlParamFilterThrottle&) = delete;
@@ -49,7 +49,7 @@ class UrlParamFilterThrottle : public blink::URLLoaderThrottle {
  private:
   GURL last_hop_initiator_;
   bool should_filter_;
-  base::WeakPtr<CrossOtrObserver> observer_;
+  base::WeakPtr<CrossOtrWebContentsObserver> observer_;
 };
 }  // namespace url_param_filter
 #endif  // COMPONENTS_URL_PARAM_FILTER_CONTENT_URL_PARAM_FILTER_THROTTLE_H_

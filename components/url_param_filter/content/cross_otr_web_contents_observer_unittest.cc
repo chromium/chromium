@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
@@ -30,58 +30,63 @@ constexpr char kExperimentalCrossOtrRefreshCountMetricName[] =
 constexpr char kCrossOtrRefreshCountMetricName[] =
     "Navigation.CrossOtr.ContextMenu.RefreshCount";
 
-class CrossOtrObserverTest : public content::RenderViewHostTestHarness {
+class CrossOtrWebContentsObserverTest
+    : public content::RenderViewHostTestHarness {
  public:
-  CrossOtrObserverTest() = default;
+  CrossOtrWebContentsObserverTest() = default;
 };
 
-TEST_F(CrossOtrObserverTest, NotContextMenuInitiated) {
-  CrossOtrObserver::MaybeCreateForWebContents(
+TEST_F(CrossOtrWebContentsObserverTest, NotContextMenuInitiated) {
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       web_contents(), /*is_cross_otr=*/false,
       /*started_from_context_menu=*/false, ui::PAGE_TRANSITION_LINK);
 
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
+  ASSERT_EQ(CrossOtrWebContentsObserver::FromWebContents(web_contents()),
+            nullptr);
 }
-TEST_F(CrossOtrObserverTest, DefaultSensitivity) {
-  CrossOtrObserver::MaybeCreateForWebContents(
+TEST_F(CrossOtrWebContentsObserverTest, DefaultSensitivity) {
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       web_contents(), /*is_cross_otr=*/false,
       /*started_from_context_menu=*/false, ui::PAGE_TRANSITION_LINK);
 
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
+  ASSERT_EQ(CrossOtrWebContentsObserver::FromWebContents(web_contents()),
+            nullptr);
 }
-TEST_F(CrossOtrObserverTest, BookmarkLink) {
-  CrossOtrObserver::MaybeCreateForWebContents(
+TEST_F(CrossOtrWebContentsObserverTest, BookmarkLink) {
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       web_contents(), /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
+  ASSERT_EQ(CrossOtrWebContentsObserver::FromWebContents(web_contents()),
+            nullptr);
 }
-TEST_F(CrossOtrObserverTest, CreateKey) {
+TEST_F(CrossOtrWebContentsObserverTest, CreateKey) {
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
 
-  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
+  ASSERT_NE(CrossOtrWebContentsObserver::FromWebContents(contents), nullptr);
 }
-TEST_F(CrossOtrObserverTest, DuplicateCreateKey) {
+TEST_F(CrossOtrWebContentsObserverTest, DuplicateCreateKey) {
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
 
-  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
+  ASSERT_NE(CrossOtrWebContentsObserver::FromWebContents(contents), nullptr);
 }
-TEST_F(CrossOtrObserverTest, HandleRedirects) {
+TEST_F(CrossOtrWebContentsObserverTest, HandleRedirects) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -112,13 +117,14 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(307),
       2);
 }
-TEST_F(CrossOtrObserverTest, HandleRedirectsExperimentalMetrics) {
+TEST_F(CrossOtrWebContentsObserverTest, HandleRedirectsExperimentalMetrics) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(true,
@@ -156,14 +162,15 @@ TEST_F(CrossOtrObserverTest, HandleRedirectsExperimentalMetrics) {
       kExperimentalResponseCodeMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(307), 2);
 }
-TEST_F(CrossOtrObserverTest,
+TEST_F(CrossOtrWebContentsObserverTest,
        HandleRedirectsExperimentalAndNonExperimentalMetrics) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   // The `ClassificationExperimentStatus::EXPERIMENTAL` should take precedence,
@@ -207,13 +214,14 @@ TEST_F(CrossOtrObserverTest,
       kExperimentalResponseCodeMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(307), 2);
 }
-TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
+TEST_F(CrossOtrWebContentsObserverTest, HandleRedirectsNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -228,13 +236,14 @@ TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(302),
       0);
 }
-TEST_F(CrossOtrObserverTest, FinishedNavigation) {
+TEST_F(CrossOtrWebContentsObserverTest, FinishedNavigation) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -256,14 +265,15 @@ TEST_F(CrossOtrObserverTest, FinishedNavigation) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
-TEST_F(CrossOtrObserverTest,
+TEST_F(CrossOtrWebContentsObserverTest,
        FinishedNavigationNonExperimentalThenExperimental) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -297,13 +307,14 @@ TEST_F(CrossOtrObserverTest,
       kExperimentalResponseCodeMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
 }
-TEST_F(CrossOtrObserverTest, FinishedNavigationNoParamsFiltering) {
+TEST_F(CrossOtrWebContentsObserverTest, FinishedNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -320,13 +331,14 @@ TEST_F(CrossOtrObserverTest, FinishedNavigationNoParamsFiltering) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       0);
 }
-TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
+TEST_F(CrossOtrWebContentsObserverTest, BadRedirectResponse) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -340,13 +352,14 @@ TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
   observer->DidRedirectNavigation(handle.get());
   histogram_tester.ExpectTotalCount(kResponseCodeMetricName, 0);
 }
-TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
+TEST_F(CrossOtrWebContentsObserverTest, BadNavigationResponse) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -364,15 +377,16 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
   // The observer should not cease observation after first load, regardless of
   // whether the headers include a response code. We still want to see
   // the refresh count.
-  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
+  ASSERT_NE(CrossOtrWebContentsObserver::FromWebContents(contents), nullptr);
 }
-TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
+TEST_F(CrossOtrWebContentsObserverTest, RefreshedAfterNavigation) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -400,13 +414,14 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
-TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationExperimental) {
+TEST_F(CrossOtrWebContentsObserverTest, RefreshedAfterNavigationExperimental) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(true,
@@ -442,13 +457,15 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationExperimental) {
       kExperimentalResponseCodeMetricName,
       net::HttpUtil::MapStatusCodeForHistogram(200), 1);
 }
-TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationNoParamsFiltering) {
+TEST_F(CrossOtrWebContentsObserverTest,
+       RefreshedAfterNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -472,13 +489,14 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationNoParamsFiltering) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       0);
 }
-TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
+TEST_F(CrossOtrWebContentsObserverTest, UncommittedNavigationWithRefresh) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -522,14 +540,15 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
-TEST_F(CrossOtrObserverTest,
+TEST_F(CrossOtrWebContentsObserverTest,
        UncommittedNavigationWithRefreshNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -568,13 +587,14 @@ TEST_F(CrossOtrObserverTest,
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       0);
 }
-TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
+TEST_F(CrossOtrWebContentsObserverTest, MultipleRefreshesAfterNavigation) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -607,7 +627,7 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   observer->DidStartNavigation(handle.get());
   observer->DidFinishNavigation(handle.get());
 
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(contents), nullptr);
+  ASSERT_EQ(CrossOtrWebContentsObserver::FromWebContents(contents), nullptr);
 
   histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);
   ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 2);
@@ -616,13 +636,14 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
-TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
+TEST_F(CrossOtrWebContentsObserverTest, RedirectsAfterNavigation) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
   observer->SetDidFilterParams(
@@ -659,13 +680,15 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       1);
 }
-TEST_F(CrossOtrObserverTest, RedirectsAfterNavigationNoParamsFiltering) {
+TEST_F(CrossOtrWebContentsObserverTest,
+       RedirectsAfterNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -697,13 +720,14 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigationNoParamsFiltering) {
       kResponseCodeMetricName, net::HttpUtil::MapStatusCodeForHistogram(200),
       0);
 }
-TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
+TEST_F(CrossOtrWebContentsObserverTest, ClientRedirectCrossOtr) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -729,13 +753,15 @@ TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
   // filtering.
   ASSERT_FALSE(observer->IsCrossOtrState());
 }
-TEST_F(CrossOtrObserverTest, ClientRedirectAfterActivationNotCrossOtr) {
+TEST_F(CrossOtrWebContentsObserverTest,
+       ClientRedirectAfterActivationNotCrossOtr) {
   base::HistogramTester histogram_tester;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(
+  CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       contents, /*is_cross_otr=*/true,
       /*started_from_context_menu=*/true, ui::PAGE_TRANSITION_LINK);
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);

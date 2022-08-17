@@ -45,7 +45,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -574,7 +574,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
         ->set_is_captive_portal_window();
   }
 #endif
-  url_param_filter::CrossOtrObserver::MaybeCreateForWebContents(
+  url_param_filter::CrossOtrWebContentsObserver::MaybeCreateForWebContents(
       target_contents.get(),
       params.privacy_sensitivity ==
           NavigateParams::PrivacySensitivity::CROSS_OTR,

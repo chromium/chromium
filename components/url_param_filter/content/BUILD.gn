@@ -7,8 +7,8 @@ static_library("content") {
     check_includes = false
   }
   sources = [
-    "cross_otr_observer.cc",
-    "cross_otr_observer.h",
+    "cross_otr_web_contents_observer.cc",
+    "cross_otr_web_contents_observer.h",
     "url_param_filter_throttle.cc",
     "url_param_filter_throttle.h",
   ]
@@ -28,7 +28,7 @@ static_library("content") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "cross_otr_observer_unittest.cc",
+    "cross_otr_web_contents_observer_unittest.cc",
     "url_param_filter_throttle_unittest.cc",
   ]
   deps = [

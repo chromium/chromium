@@ -5,7 +5,7 @@
 #include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +22,8 @@ TEST_F(CrossOtrObserverAndroidTest,
   MaybeCreateCrossOtrObserverForTabLaunchType(
       web_contents.get(), TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND);
 
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
+  ASSERT_EQ(CrossOtrWebContentsObserver::FromWebContents(web_contents.get()),
+            nullptr);
 }
 
 TEST_F(CrossOtrObserverAndroidTest, LongPressIncognitoTabLaunchTypeObserved) {
@@ -31,6 +32,7 @@ TEST_F(CrossOtrObserverAndroidTest, LongPressIncognitoTabLaunchTypeObserved) {
   MaybeCreateCrossOtrObserverForTabLaunchType(
       web_contents.get(), TabModel::TabLaunchType::FROM_LONGPRESS_INCOGNITO);
 
-  ASSERT_NE(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
+  ASSERT_NE(CrossOtrWebContentsObserver::FromWebContents(web_contents.get()),
+            nullptr);
 }
 }  // namespace url_param_filter

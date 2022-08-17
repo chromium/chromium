@@ -8,7 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "components/url_param_filter/core/url_param_filterer.h"
@@ -53,7 +53,8 @@ void UrlParamFilterThrottle::MaybeCreateThrottle(
   if (!request.is_outermost_main_frame) {
     return;
   }
-  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(web_contents);
+  CrossOtrWebContentsObserver* observer =
+      CrossOtrWebContentsObserver::FromWebContents(web_contents);
   if (observer && observer->IsCrossOtrState()) {
     throttle_list->push_back(std::make_unique<UrlParamFilterThrottle>(
         request.request_initiator, observer->GetWeakPtr()));
@@ -62,7 +63,7 @@ void UrlParamFilterThrottle::MaybeCreateThrottle(
 
 UrlParamFilterThrottle::UrlParamFilterThrottle(
     const absl::optional<url::Origin>& request_initiator_origin,
-    base::WeakPtr<CrossOtrObserver> observer)
+    base::WeakPtr<CrossOtrWebContentsObserver> observer)
     : should_filter_(base::GetFieldTrialParamByFeatureAsBool(
           features::kIncognitoParamFilterEnabled,
           "should_filter",

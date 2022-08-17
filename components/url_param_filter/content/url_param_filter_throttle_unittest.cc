@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_web_contents_observer.h"
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "content/public/test/test_renderer_host.h"
@@ -42,7 +42,7 @@ class UrlParamFilterThrottleTest : public content::RenderViewHostTestHarness {
 
   void CreateCrossOtrState() {
     content::WebContents* contents = web_contents();
-    CrossOtrObserver::MaybeCreateForWebContents(
+    CrossOtrWebContentsObserver::MaybeCreateForWebContents(
         contents, /*is_cross_otr=*/true, /*started_from_context_menu=*/true,
         ui::PAGE_TRANSITION_LINK);
   }

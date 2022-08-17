@@ -119,7 +119,7 @@ TEST_P(CrossOtrTabHelperTest, TransitionsWithNonTypedLink_NotCrossOtr) {
   // We don't enter cross-OTR state since we didn't navigate to OTR via "Open In
   // Incognito".
   observer->DidStartNavigation(web_state, &context);
-  EXPECT_FALSE(observer->GetCrossOtrStateForTesting());
+  EXPECT_FALSE(observer->IsCrossOtrState());
 }
 
 TEST_P(CrossOtrTabHelperTest, NonUserInitiatedNavigation_NotCrossOtr) {
@@ -145,7 +145,7 @@ TEST_P(CrossOtrTabHelperTest, NonUserInitiatedNavigation_NotCrossOtr) {
   // We don't enter cross-OTR state since we didn't navigate to OTR via
   // user-initiated press.
   observer->DidStartNavigation(web_state, &context);
-  EXPECT_FALSE(observer->GetCrossOtrStateForTesting());
+  EXPECT_FALSE(observer->IsCrossOtrState());
 }
 
 TEST_P(CrossOtrTabHelperTest, FinishedNavigation) {
@@ -159,7 +159,7 @@ TEST_P(CrossOtrTabHelperTest, FinishedNavigation) {
   observer()->DidStartNavigation(web_state(), context());
   observer()->DidFinishNavigation(web_state(), context());
 
-  ASSERT_TRUE(observer()->GetCrossOtrStateForTesting());
+  ASSERT_TRUE(observer()->IsCrossOtrState());
   histogram_tester.ExpectTotalCount(StandardResponseCodeMetric, 1);
   histogram_tester.ExpectUniqueSample(
       StandardResponseCodeMetric, net::HttpUtil::MapStatusCodeForHistogram(200),
@@ -231,7 +231,7 @@ TEST_P(CrossOtrTabHelperTest, UncommittedNavigationWithRefresh) {
 
   observer()->DidStartNavigation(web_state(), context());
   observer()->DidFinishNavigation(web_state(), context());
-  ASSERT_TRUE(observer()->GetCrossOtrStateForTesting());
+  ASSERT_TRUE(observer()->IsCrossOtrState());
 
   // Finish a non-reload navigation, but one that isn't committed (so no
   // actual navigation away from the monitored page)
@@ -245,7 +245,7 @@ TEST_P(CrossOtrTabHelperTest, UncommittedNavigationWithRefresh) {
   observer()->DidFinishNavigation(web_state(), context());
   // We just observed another navigation not due to a client redirect, so
   // should no longer be in the cross-OTR state.
-  ASSERT_FALSE(observer()->GetCrossOtrStateForTesting());
+  ASSERT_FALSE(observer()->IsCrossOtrState());
 
   // After that uncommitted navigation, trigger a refresh, then destroy.
   context()->SetPageTransition(ui::PAGE_TRANSITION_RELOAD);
@@ -283,7 +283,7 @@ TEST_P(CrossOtrTabHelperTest, MultipleRefreshesAfterNavigation) {
   context()->SetPageTransition(ui::PAGE_TRANSITION_RELOAD);
   observer()->DidStartNavigation(web_state(), context());
   // With the refresh navigation started, we are no longer in cross-OTR mode.
-  ASSERT_FALSE(observer()->GetCrossOtrStateForTesting());
+  ASSERT_FALSE(observer()->IsCrossOtrState());
   observer()->DidFinishNavigation(web_state(), context());
   observer()->DidStartNavigation(web_state(), context());
   observer()->DidFinishNavigation(web_state(), context());

@@ -6,6 +6,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("core") {
   sources = [
+    "cross_otr_observer.cc",
+    "cross_otr_observer.h",
     "features.cc",
     "features.h",
     "url_param_classifications_loader.cc",
