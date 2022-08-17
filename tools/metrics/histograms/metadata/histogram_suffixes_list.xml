@@ -7050,6 +7050,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.InterstitialAction"/>
   <affected-histogram name="PasswordProtection.ModalWarningDialogAction"/>
   <affected-histogram name="PasswordProtection.PageInfoAction"/>
+  <affected-histogram name="PasswordProtection.PasswordAlertModeOutcome"/>
   <affected-histogram name="PasswordProtection.RequestOutcome"/>
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
