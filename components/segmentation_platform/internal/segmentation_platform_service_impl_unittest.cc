@@ -98,9 +98,6 @@ class SegmentationPlatformServiceImplTest
     std::move(closure).Run();
   }
 
-  void OnOnDemandSegmentSelection(const SegmentSelectionResult& result,
-                                  const TriggerContext& trigger_context) {}
-
   void AssertSelectedSegment(
       const std::string& segmentation_key,
       bool is_ready,
@@ -265,38 +262,6 @@ TEST_F(SegmentationPlatformServiceImplTest,
       base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
                      base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
-}
-
-TEST_F(SegmentationPlatformServiceImplTest, RegisterAndUnregisterCallback) {
-  CallbackId callback_id1 =
-      segmentation_platform_service_impl_
-          ->RegisterOnDemandSegmentSelectionCallback(
-              kTestSegmentationKey1,
-              base::BindRepeating(&SegmentationPlatformServiceImplTest::
-                                      OnOnDemandSegmentSelection,
-                                  base::Unretained(this)));
-  CallbackId callback_id2 =
-      segmentation_platform_service_impl_
-          ->RegisterOnDemandSegmentSelectionCallback(
-              kTestSegmentationKey1,
-              base::BindRepeating(&SegmentationPlatformServiceImplTest::
-                                      OnOnDemandSegmentSelection,
-                                  base::Unretained(this)));
-  ASSERT_EQ(callback_id2.value(), callback_id1.value() + 1);
-
-  segmentation_platform_service_impl_
-      ->UnregisterOnDemandSegmentSelectionCallback(callback_id1,
-                                                   kTestSegmentationKey1);
-  segmentation_platform_service_impl_
-      ->UnregisterOnDemandSegmentSelectionCallback(callback_id2,
-                                                   kTestSegmentationKey1);
-
-  // Calling unregister multiple times have no effect.
-  segmentation_platform_service_impl_
-      ->UnregisterOnDemandSegmentSelectionCallback(callback_id2,
-                                                   kTestSegmentationKey1);
-
-  // TODO(shaktisahu): Add test for OnTrigger that invokes the callback.
 }
 
 class SegmentationPlatformServiceImplEmptyConfigTest

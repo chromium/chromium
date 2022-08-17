@@ -13,7 +13,6 @@
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/segmentation_platform/public/trigger_context.h"
 
 using base::android::AttachCurrentThread;
 
@@ -30,18 +29,6 @@ void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
       j_callback,
       SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
           env, result));
-}
-
-void RunOnDemandSegmentSelectionCallback(
-    const JavaRef<jobject>& j_callback,
-    const SegmentSelectionResult& result,
-    const TriggerContext& trigger_context) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_on_demand_result =
-      SegmentationPlatformConversionBridge::
-          CreateJavaOnDemandSegmentSelectionResult(env, result,
-                                                   trigger_context);
-  RunObjectCallbackAndroid(j_callback, j_on_demand_result);
 }
 
 }  // namespace
@@ -98,31 +85,6 @@ SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
   return SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
       env, segmentation_platform_service_->GetCachedSegmentResult(
                ConvertJavaStringToUTF8(env, j_segmentation_key)));
-}
-
-int SegmentationPlatformServiceAndroid::
-    RegisterOnDemandSegmentSelectionCallback(
-        JNIEnv* env,
-        const JavaParamRef<jobject>& jcaller,
-        const JavaParamRef<jstring>& j_segmentation_key,
-        const JavaParamRef<jobject>& jcallback) {
-  CallbackId callback_id =
-      segmentation_platform_service_->RegisterOnDemandSegmentSelectionCallback(
-          ConvertJavaStringToUTF8(env, j_segmentation_key),
-          base::BindRepeating(&RunOnDemandSegmentSelectionCallback,
-                              ScopedJavaGlobalRef<jobject>(jcallback)));
-  return callback_id.value();
-}
-
-void SegmentationPlatformServiceAndroid::
-    UnregisterOnDemandSegmentSelectionCallback(
-        JNIEnv* env,
-        const JavaParamRef<jobject>& jcaller,
-        const JavaParamRef<jstring>& j_segmentation_key,
-        jint j_callback_id) {
-  segmentation_platform_service_->UnregisterOnDemandSegmentSelectionCallback(
-      CallbackId::FromUnsafeValue(j_callback_id),
-      ConvertJavaStringToUTF8(env, j_segmentation_key));
 }
 
 ScopedJavaLocalRef<jobject>

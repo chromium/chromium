@@ -11,7 +11,6 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/segmentation_platform/public/trigger_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,13 +39,6 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
               (const std::string&,
                scoped_refptr<InputContext>,
                SegmentSelectionCallback));
-  MOCK_METHOD(CallbackId,
-              RegisterOnDemandSegmentSelectionCallback,
-              (const std::string&, const OnDemandSegmentSelectionCallback&));
-  MOCK_METHOD(void,
-              UnregisterOnDemandSegmentSelectionCallback,
-              (CallbackId, const std::string&));
-  MOCK_METHOD(void, OnTrigger, (std::unique_ptr<TriggerContext>));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
   MOCK_METHOD(bool, IsPlatformInitialized, ());

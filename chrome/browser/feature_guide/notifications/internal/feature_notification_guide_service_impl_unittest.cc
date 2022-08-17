@@ -21,7 +21,6 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/segmentation_platform/public/trigger_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,16 +114,6 @@ class TestSegmentationPlatformService
       const std::string& segmentation_key,
       scoped_refptr<segmentation_platform::InputContext> input_context,
       SegmentSelectionCallback callback) override {}
-  segmentation_platform::CallbackId RegisterOnDemandSegmentSelectionCallback(
-      const std::string& segmentation_key,
-      const OnDemandSegmentSelectionCallback& callback) override {
-    return segmentation_platform::CallbackId::FromUnsafeValue(0);
-  }
-  void UnregisterOnDemandSegmentSelectionCallback(
-      segmentation_platform::CallbackId callback_id,
-      const std::string& segmentation_key) override {}
-  void OnTrigger(std::unique_ptr<segmentation_platform::TriggerContext>
-                     trigger_context) override {}
   void EnableMetrics(bool signal_collection_allowed) override {}
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;
