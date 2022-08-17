@@ -43,13 +43,6 @@ AccountCapabilities::GetSupportedAccountCapabilityNames() {
 bool AccountCapabilities::AreAllCapabilitiesKnown() const {
   for (const std::string& capability_name :
        GetSupportedAccountCapabilityNames()) {
-    // kIsAllowedForMachineLearningCapabilityName has not been rolled out yet.
-    // It's expected to be unknown for now.
-    // TODO(https://crbug.com/1352081): remove this once the capability is
-    // ready.
-    if (capability_name == kIsAllowedForMachineLearningCapabilityName)
-      continue;
-
     if (GetCapabilityByName(capability_name) == signin::Tribool::kUnknown) {
       return false;
     }

@@ -50,8 +50,6 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
-            case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
-                return capabilities.isAllowedForMachineLearning();
             case AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.canStopParentalSupervision();
             case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
@@ -95,11 +93,7 @@ public final class AccountCapabilitiesTest {
                                         .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("CanToggleAutoUpdates")
-                        .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME),
-                new ParameterSet()
-                        .name("IsAllowedForMachineLearning")
-                        .value(AccountCapabilitiesConstants
-                                        .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME));
+                        .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {
