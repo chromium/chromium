@@ -74,6 +74,21 @@ void AppPublisher::Uninstall(const std::string& app_id,
   LOG(ERROR) << "Uninstall failed, could not remove the app with id " << app_id;
 }
 
+void AppPublisher::StopApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
+void AppPublisher::ExecuteContextMenuCommand(const std::string& app_id,
+                                             int command_id,
+                                             const std::string& shortcut_id,
+                                             int64_t display_id) {
+  NOTIMPLEMENTED();
+}
+
+void AppPublisher::OpenNativeSettings(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {

@@ -124,6 +124,15 @@ class AppPublisher {
                          bool clear_site_data,
                          bool report_abuse);
 
+  virtual void StopApp(const std::string& app_id);
+
+  virtual void ExecuteContextMenuCommand(const std::string& app_id,
+                                         int command_id,
+                                         const std::string& shortcut_id,
+                                         int64_t display_id);
+
+  virtual void OpenNativeSettings(const std::string& app_id);
+
   // Indicates that the app identified by |app_id| has been set as a preferred
   // app for |intent_filter|, and the |replaced_app_preferences| is the apps
   // that are no longer preferred apps for their corresponding |intent_filters|.

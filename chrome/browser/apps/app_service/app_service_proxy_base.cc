@@ -590,6 +590,14 @@ void AppServiceProxyBase::UninstallSilently(
 }
 
 void AppServiceProxyBase::StopApp(const std::string& app_id) {
+  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+    if (publisher) {
+      publisher->StopApp(app_id);
+    }
+    return;
+  }
+
   if (!app_service_.is_connected()) {
     return;
   }
@@ -616,6 +624,15 @@ void AppServiceProxyBase::ExecuteContextMenuCommand(
     int command_id,
     const std::string& shortcut_id,
     int64_t display_id) {
+  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+    if (publisher) {
+      publisher->ExecuteContextMenuCommand(app_id, command_id, shortcut_id,
+                                           display_id);
+    }
+    return;
+  }
+
   if (!app_service_.is_connected()) {
     return;
   }
@@ -627,6 +644,14 @@ void AppServiceProxyBase::ExecuteContextMenuCommand(
 }
 
 void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {
+  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+    if (publisher) {
+      publisher->OpenNativeSettings(app_id);
+    }
+    return;
+  }
+
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(
         app_id, [this](const apps::AppUpdate& update) {
