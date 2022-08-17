@@ -30,13 +30,10 @@ namespace {
 // Returns the popup row containing the `url` as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   NSString* urlString = base::SysUTF8ToNSString(url.GetContent());
-  id<GREYMatcher> URLMatcher =
-      [ChromeEarlGrey isNewOmniboxPopupEnabled]
-          ? grey_descendant(grey_accessibilityValue(urlString))
-          : grey_allOf(grey_descendant(
-                           chrome_test_util::StaticTextWithAccessibilityLabel(
-                               urlString)),
-                       grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> URLMatcher = grey_allOf(
+      grey_descendant(
+          chrome_test_util::StaticTextWithAccessibilityLabel(urlString)),
+      grey_sufficientlyVisible(), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
@@ -49,26 +46,17 @@ id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
 }
 
 void TapSwitchToTabButton(const GURL& url) {
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    [app.buttons[kOmniboxPopupRowSwitchTabAccessibilityIdentifier] tap];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
-                                                   grey_interactable(), nil)]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
+                                                 grey_interactable(), nil)]
+      performAction:grey_tap()];
 }
 
 void ScrollToSwitchToTabElement(const GURL& url) {
-  if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
-    // No need to scroll, tapping works without scrolling.
-  } else {
-    [[[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
-                                                    grey_interactable(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-        assertWithMatcher:grey_interactable()];
-  }
+  [[[EarlGrey selectElementWithMatcher:grey_allOf(SwitchTabElementForUrl(url),
+                                                  grey_interactable(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:chrome_test_util::OmniboxPopupList()]
+      assertWithMatcher:grey_interactable()];
 }
 
 // Web page 1.
@@ -125,6 +113,22 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @implementation OmniboxPopupTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  auto bundledConfig = std::string("OmniboxBundledExperimentV1");
+  config.additional_args.push_back("--enable-features=" + bundledConfig + "<" +
+                                   bundledConfig);
+  config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
+                                   "/Test");
+
+  // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" + bundledConfig +
+      ".Test:" + "DisableProviders" + "/" + "1056");
+
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -138,21 +142,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that tapping the switch to open tab button, switch to the open tab,
 // doesn't close the tab.
-// TOOD(crbug.com/1346362): Test failing regularly.
-- (void)DISABLED_testSwitchToOpenTab {
-// TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
-
-  if (@available(iOS 15, *)) {
-    // Run the test.
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
-  }
-
+- (void)testSwitchToOpenTab {
   // Open the first page.
   GURL firstPageURL = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:firstPageURL];
@@ -552,88 +542,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // The keyboard should be dismissed.
   GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
                   @"Keyboard Should not be Shown");
-}
-
-@end
-
-// Test case for the omnibox popup, except new popup flag is enabled.
-@interface NewOmniboxPopupTestCase : OmniboxPopupTestCase {
-  // Which variant of the new popup flag to use.
-  std::string _variant;
-}
-
-@end
-
-@implementation NewOmniboxPopupTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kIOSOmniboxUpdatedPopupUI.name) + "<" +
-      std::string(kIOSOmniboxUpdatedPopupUI.name));
-
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kIOSOmniboxUpdatedPopupUI.name) +
-      "/Test");
-
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" +
-      std::string(kIOSOmniboxUpdatedPopupUI.name) + ".Test:" +
-      std::string(kIOSOmniboxUpdatedPopupUIVariationName) + "/" + _variant);
-
-  return config;
-}
-
-// TODO(crbug.com/1322120): Reenable this test.
-- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
-  if (@available(iOS 15, *)) {
-    [super DISABLED_testNotSwitchButtonOnCurrentTab];
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
-  }
-}
-
-@end
-
-// Test case for the omnibox popup, except new popup flag is enabled with
-// variant 1.
-@interface NewOmniboxPopupVariant1TestCase : NewOmniboxPopupTestCase
-@end
-
-@implementation NewOmniboxPopupVariant1TestCase
-
-- (void)setUp {
-  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
-
-  // `appConfigurationForTestCase` is called during [super setUp], and
-  // depends on _variant.
-  [super setUp];
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
-}
-
-@end
-
-// Test case for the omnibox popup, except new popup flag is enabled with
-// variant 2.
-@interface NewOmniboxPopupVariant2TestCase : NewOmniboxPopupTestCase
-@end
-
-@implementation NewOmniboxPopupVariant2TestCase
-
-- (void)setUp {
-  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
-
-  // `appConfigurationForTestCase` is called during [super setUp], and
-  // depends on _variant.
-  [super setUp];
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
 }
 
 @end
