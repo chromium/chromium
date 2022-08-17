@@ -95,8 +95,7 @@ class ReadingListSectionHeader {
         int paddingTop = read ? context.getResources().getDimensionPixelSize(
                                  R.dimen.bookmark_reading_list_section_header_padding_top)
                               : 0;
-        return BookmarkListEntry.createSectionHeader(
-                title, /*description=*/null, paddingTop, context);
+        return BookmarkListEntry.createSectionHeader(title, paddingTop, context);
     }
 
     private static void recordMetrics(List<BookmarkListEntry> listItems) {

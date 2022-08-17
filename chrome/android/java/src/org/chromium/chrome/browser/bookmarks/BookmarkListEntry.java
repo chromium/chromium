@@ -48,13 +48,10 @@ public final class BookmarkListEntry {
      */
     static final class SectionHeaderData {
         public final CharSequence headerTitle;
-        public final CharSequence headerDescription;
         public final int topPadding;
 
-        SectionHeaderData(
-                @Nullable CharSequence title, @Nullable CharSequence description, int topPadding) {
+        SectionHeaderData(@Nullable CharSequence title, int topPadding) {
             headerTitle = title;
-            headerDescription = description;
             this.topPadding = topPadding;
         }
     }
@@ -126,14 +123,13 @@ public final class BookmarkListEntry {
     /**
      * Create an entry representing the reading list read/unread section header.
      * @param title The title of the section header.
-     * @param description The description of the section header.
      * @param topPadding The top padding of the section header. Only impacts the padding when
      *         greater than 0.
      * @param context The context to use.
      */
     static BookmarkListEntry createSectionHeader(
-            CharSequence title, CharSequence description, int topPadding, Context context) {
-        SectionHeaderData sectionHeaderData = new SectionHeaderData(title, description, topPadding);
+            CharSequence title, int topPadding, Context context) {
+        SectionHeaderData sectionHeaderData = new SectionHeaderData(title, topPadding);
         return new BookmarkListEntry(ViewType.SECTION_HEADER, null, sectionHeaderData);
     }
 
@@ -157,12 +153,6 @@ public final class BookmarkListEntry {
     @Nullable
     CharSequence getHeaderTitle() {
         return mSectionHeaderData.headerTitle;
-    }
-
-    /** @return The description text to be shown if it is a section header. */
-    @Nullable
-    CharSequence getHeaderDescription() {
-        return mSectionHeaderData.headerDescription;
     }
 
     /**

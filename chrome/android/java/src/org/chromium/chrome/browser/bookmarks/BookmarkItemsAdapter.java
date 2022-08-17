@@ -326,11 +326,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
 
     private void bindSectionHeaderViewHolder(View view, BookmarkListEntry listItem) {
         TextView title = view.findViewById(R.id.title);
-        TextView description = view.findViewById(R.id.description);
         title.setText(listItem.getHeaderTitle());
-        description.setText(listItem.getHeaderDescription());
-        description.setVisibility(
-                TextUtils.isEmpty(listItem.getHeaderDescription()) ? View.GONE : View.VISIBLE);
         if (listItem.getSectionHeaderData().topPadding > 0) {
             title.setPaddingRelative(title.getPaddingStart(),
                     listItem.getSectionHeaderData().topPadding, title.getPaddingEnd(),
