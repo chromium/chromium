@@ -59,14 +59,6 @@ constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
     base::Hours(1);
 constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
 
-// Synthetic field trial names and group names should match those specified
-// in google3/analysis/uma/dashboards/variations/
-// .../generate_server_hashes.py and
-// .../synthetic_trials.py
-const char kTriggeredSyntheticTrial[] = "AutofillAssistantTriggered";
-const char kEnabledGroupName[] = "Enabled";
-const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
-
 // String parameter containing the JSON-encoded parameter dictionary.
 const char kUrlHeuristicParametersKey[] = "json_parameters";
 // The 5 URL heuristics features that are defined for future use cases.
@@ -355,15 +347,8 @@ void Starter::RegisterSyntheticFieldTrials(
     NOTREACHED();
     return;
   }
-
-  field_trial_util->RegisterSyntheticFieldTrial(kTriggeredSyntheticTrial,
-                                                kEnabledGroupName);
-  // Synthetic trial for experiments.
-  for (const std::string& experiment_id :
-       trigger_context.GetScriptParameters().GetExperiments()) {
-    field_trial_util->RegisterSyntheticFieldTrial(kExperimentsSyntheticTrial,
-                                                  experiment_id);
-  }
+  field_trial_util->RegisterSyntheticFieldTrialsForParameters(
+      trigger_context.GetScriptParameters());
 }
 
 void Starter::OnTabInteractabilityChanged(bool is_interactable) {

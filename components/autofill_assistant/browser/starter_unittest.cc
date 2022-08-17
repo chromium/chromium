@@ -2210,7 +2210,9 @@ TEST_F(StarterTest, StartupRegistersTriggerFieldTrial) {
 
 TEST_F(StarterTest, StartupRegistersExperimentFieldTrials) {
   base::flat_map<std::string, std::string> script_parameters = {
-      {"EXPERIMENT_IDS", "1001,1002"}};
+      {"EXPERIMENT_IDS", "1002,1001"},
+      {"FIELD_TRIAL_2", "1002"},
+      {"FIELD_TRIAL_1", "1001"}};
   auto mock_field_trial_util =
       std::make_unique<NiceMock<MockAssistantFieldTrialUtil>>();
   const auto* mock_field_trial_util_ptr = mock_field_trial_util.get();
@@ -2220,13 +2222,20 @@ TEST_F(StarterTest, StartupRegistersExperimentFieldTrials) {
 
   EXPECT_CALL(*mock_field_trial_util_ptr,
               RegisterSyntheticFieldTrial(
-                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("AutofillAssistantExperimentsTrial-1"),
                   base::StringPiece("1001")));
 
   EXPECT_CALL(*mock_field_trial_util_ptr,
               RegisterSyntheticFieldTrial(
-                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("AutofillAssistantExperimentsTrial-2"),
                   base::StringPiece("1002")));
+
+  // Backwards compatibility.
+  // TODO(b/242171397): Remove
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("1001")));
 
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),

@@ -68,6 +68,8 @@ class ScriptParameters {
   absl::optional<bool> GetDisableRpcSigning() const;
   absl::optional<bool> GetSendAnnotateDomModelVersion() const;
   absl::optional<bool> GetRunHeadless() const;
+  absl::optional<std::string> GetFieldTrialGroup(
+      const int field_trial_slot) const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;

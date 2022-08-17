@@ -142,6 +142,7 @@ static_library("browser") {
     "actions/wait_for_dom_action.h",
     "actions/wait_for_navigation_action.cc",
     "actions/wait_for_navigation_action.h",
+    "assistant_field_trial_util.cc",
     "assistant_field_trial_util.h",
     "autofill_assistant_factory.cc",
     "autofill_assistant_impl.cc",

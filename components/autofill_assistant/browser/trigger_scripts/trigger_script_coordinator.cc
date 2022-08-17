@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/version_info/version_info.h"
@@ -24,13 +25,6 @@ bool IsDialogOnboardingEnabled() {
   return base::FeatureList::IsEnabled(
       autofill_assistant::features::kAutofillAssistantDialogOnboarding);
 }
-
-// Synthetic field trial names and group names should match those specified
-// in google3/analysis/uma/dashboards/variations/
-// .../generate_server_hashes.py and
-// .../synthetic_trials.py
-const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
-
 }  // namespace
 
 namespace autofill_assistant {
@@ -125,7 +119,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
   RegisterExperimentSyntheticFieldTrial(
-      trigger_context_->GetScriptParameters().GetExperiments());
+      trigger_context_->GetScriptParameters());
   trigger_condition_check_interval_ = base::Milliseconds(check_interval_ms);
   if (trigger_condition_timeout_ms.has_value()) {
     // Note: add 1 for the initial, not-delayed check.
@@ -148,7 +142,7 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
 }
 
 void TriggerScriptCoordinator::RegisterExperimentSyntheticFieldTrial(
-    const std::vector<std::string>& experiments) const {
+    const ScriptParameters& parameters) const {
   std::unique_ptr<AssistantFieldTrialUtil> field_trial_util =
       starter_delegate_->CreateFieldTrialUtil();
   if (!field_trial_util) {
@@ -156,11 +150,7 @@ void TriggerScriptCoordinator::RegisterExperimentSyntheticFieldTrial(
     NOTREACHED();
     return;
   }
-  // Synthetic trial for experiments.
-  for (const std::string& experiment_id : experiments) {
-    field_trial_util->RegisterSyntheticFieldTrial(kExperimentsSyntheticTrial,
-                                                  experiment_id);
-  }
+  field_trial_util->RegisterSyntheticFieldTrialsForParameters(parameters);
 }
 
 void TriggerScriptCoordinator::PerformTriggerScriptAction(

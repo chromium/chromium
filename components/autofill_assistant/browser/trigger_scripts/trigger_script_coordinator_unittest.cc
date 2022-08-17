@@ -1348,7 +1348,14 @@ TEST_F(TriggerScriptCoordinatorTest, RegisterSyntheticFieldTrial) {
   response.add_trigger_scripts();
   auto* param_1 = response.add_script_parameters();
   param_1->set_name("EXPERIMENT_IDS");
-  param_1->set_value("1337,1001");
+  param_1->set_value("1337,1002,1001");
+  auto* trial_1 = response.add_script_parameters();
+  trial_1->set_name("FIELD_TRIAL_1");
+  trial_1->set_value("1001");
+  auto* trial_2 = response.add_script_parameters();
+  trial_2->set_name("FIELD_TRIAL_2");
+  trial_2->set_value("1002");
+
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
 
@@ -1359,8 +1366,19 @@ TEST_F(TriggerScriptCoordinatorTest, RegisterSyntheticFieldTrial) {
                                    ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_field_trial_util_ptr,
               RegisterSyntheticFieldTrial(
-                  base::StringPiece("AutofillAssistantExperimentsTrial"),
-                  base::StringPiece("1337")));
+                  base::StringPiece("AutofillAssistantTriggered"),
+                  base::StringPiece("Enabled")));
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial-1"),
+                  base::StringPiece("1001")));
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial-2"),
+                  base::StringPiece("1002")));
+
+  // Backwards compatibility.
+  // TODO(b/242171397): Remove
   EXPECT_CALL(*mock_field_trial_util_ptr,
               RegisterSyntheticFieldTrial(
                   base::StringPiece("AutofillAssistantExperimentsTrial"),
