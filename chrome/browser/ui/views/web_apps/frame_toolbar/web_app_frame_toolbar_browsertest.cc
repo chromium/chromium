@@ -1086,3 +1086,43 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
       browser_view->GetWidget()->GetNativeView(), draggable_point));
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       FencedFrame) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  BrowserView* browser_view = helper()->browser_view();
+  gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+  EXPECT_FALSE(bounds.IsEmpty());
+  EXPECT_NE(0, bounds.width());
+  EXPECT_NE(0, bounds.height());
+
+  // Ensure window controls overlay values are not sent to a fenced frame.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_helper_.CreateFencedFrame(
+          browser_view->GetActiveWebContents()->GetPrimaryMainFrame(),
+          fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+
+  EXPECT_EQ(false, EvalJs(fenced_frame_rfh,
+                          "window.navigator.windowControlsOverlay.visible"));
+  EXPECT_EQ(
+      0,
+      EvalJs(fenced_frame_rfh,
+             "window.navigator.windowControlsOverlay.getTitlebarAreaRect().x"));
+  EXPECT_EQ(
+      0,
+      EvalJs(fenced_frame_rfh,
+             "window.navigator.windowControlsOverlay.getTitlebarAreaRect().y"));
+  EXPECT_EQ(0, EvalJs(fenced_frame_rfh,
+                      "window.navigator.windowControlsOverlay."
+                      "getTitlebarAreaRect().width"));
+  EXPECT_EQ(0, EvalJs(fenced_frame_rfh,
+                      "window.navigator.windowControlsOverlay."
+                      "getTitlebarAreaRect().height"));
+}

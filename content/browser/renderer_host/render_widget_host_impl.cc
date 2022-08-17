@@ -1005,8 +1005,6 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   }
 
   visual_properties.is_fullscreen_granted = delegate_->IsFullscreen();
-  visual_properties.window_controls_overlay_rect =
-      delegate_->GetWindowsControlsOverlayRect();
 
   if (is_frame_widget)
     visual_properties.display_mode = delegate_->GetDisplayMode();
@@ -1083,6 +1081,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   if (is_top_most_widget) {
     visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(view_->GetCompositorViewportPixelSize());
+    visual_properties.window_controls_overlay_rect =
+        delegate_->GetWindowsControlsOverlayRect();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
