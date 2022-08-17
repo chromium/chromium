@@ -1634,7 +1634,7 @@ void HTMLElement::AddHTMLLengthToStyle(MutableCSSPropertyValueSet* style,
                                           unit);
 }
 
-static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
+static Color ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   // Per spec, only look at the first 128 digits of the string.
   const size_t kMaxColorLength = 128;
   // We'll pad the buffer with two extra 0s later, so reserve two more than the
@@ -1658,16 +1658,17 @@ static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   }
 
   if (!digit_buffer.size())
-    return Color::kBlack.Rgb();
+    return Color::kBlack;
 
   // Pad the buffer out to at least the next multiple of three in size.
   digit_buffer.push_back('0');
   digit_buffer.push_back('0');
 
-  if (digit_buffer.size() < 6)
-    return MakeRGB(ToASCIIHexValue(digit_buffer[0]),
-                   ToASCIIHexValue(digit_buffer[1]),
-                   ToASCIIHexValue(digit_buffer[2]));
+  if (digit_buffer.size() < 6) {
+    return Color::FromRGB(ToASCIIHexValue(digit_buffer[0]),
+                          ToASCIIHexValue(digit_buffer[1]),
+                          ToASCIIHexValue(digit_buffer[2]));
+  }
 
   // Split the digits into three components, then search the last 8 digits of
   // each component.
@@ -1700,7 +1701,7 @@ static RGBA32 ParseColorStringWithCrazyLegacyRules(const String& color_string) {
       ToASCIIHexValue(digit_buffer[green_index], digit_buffer[green_index + 1]);
   int blue_value =
       ToASCIIHexValue(digit_buffer[blue_index], digit_buffer[blue_index + 1]);
-  return MakeRGB(red_value, green_value, blue_value);
+  return Color::FromRGB(red_value, green_value, blue_value);
 }
 
 // Color parsing that matches HTML's "rules for parsing a legacy color value"
@@ -1729,7 +1730,7 @@ bool HTMLElement::ParseColorWithLegacyRules(const String& attribute_value,
   if (!success)
     success = parsed_color.SetNamedColor(color_string);
   if (!success) {
-    parsed_color.SetRGB(ParseColorStringWithCrazyLegacyRules(color_string));
+    parsed_color = ParseColorStringWithCrazyLegacyRules(color_string);
     success = true;
   }
 

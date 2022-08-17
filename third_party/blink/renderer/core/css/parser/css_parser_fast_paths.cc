@@ -611,15 +611,15 @@ static inline bool MightBeHSLOrHSLA(const CharacterType* characters,
 }
 
 template <typename CharacterType>
-static bool FastParseColorInternal(RGBA32& rgb,
+static bool FastParseColorInternal(Color& color,
                                    const CharacterType* characters,
                                    unsigned length,
                                    bool quirks_mode) {
   if (length >= 4 && characters[0] == '#')
-    return Color::ParseHexColor(characters + 1, length - 1, rgb);
+    return Color::ParseHexColor(characters + 1, length - 1, color);
 
   if (quirks_mode && (length == 3 || length == 6)) {
-    if (Color::ParseHexColor(characters, length, rgb))
+    if (Color::ParseHexColor(characters, length, color))
       return true;
   }
 
@@ -669,11 +669,11 @@ static bool FastParseColorInternal(RGBA32& rgb,
     if (should_have_alpha) {
       if (!ParseAlphaValue(current, end, ')', alpha))
         return false;
-      rgb = MakeRGBA(red, green, blue, alpha);
+      color = Color::FromRGBA(red, green, blue, alpha);
     } else {
       if (current != end)
         return false;
-      rgb = MakeRGB(red, green, blue);
+      color = Color::FromRGB(red, green, blue);
     }
     return true;
   }
@@ -706,8 +706,7 @@ static bool FastParseColorInternal(RGBA32& rgb,
       return false;
     }
 
-    // We need to convert the hue to the 0..6 scale that MakeRGBAFromHSLA()
-    // expects.
+    // We need to convert the hue to the 0..6 scale that FromHSLA() expects.
     switch (hue_unit) {
       case CSSPrimitiveValue::UnitType::kNumber:
       case CSSPrimitiveValue::UnitType::kDegrees:
@@ -775,11 +774,12 @@ static bool FastParseColorInternal(RGBA32& rgb,
         return false;
       if (current != end)
         return false;
-      rgb = MakeRGBAFromHSLA(hue, saturation, lightness, alpha * (1.0 / 255.0));
+      color =
+          Color::FromHSLA(hue, saturation, lightness, alpha * (1.0 / 255.0));
     } else {
       if (current != end)
         return false;
-      rgb = MakeRGBAFromHSLA(hue, saturation, lightness, 1.0);
+      color = Color::FromHSLA(hue, saturation, lightness, 1.0);
     }
     return true;
   }
@@ -801,7 +801,7 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
     return CSSIdentifierValue::Create(value_id);
   }
 
-  RGBA32 color;
+  Color color;
   bool quirks_mode = IsQuirksModeBehavior(parser_mode) &&
                      ColorPropertyAllowsQuirkyColor(property_id);
 
@@ -812,7 +812,7 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
       });
   if (!parse_result)
     return nullptr;
-  return cssvalue::CSSColor::Create(Color::FromRGBA32(color));
+  return cssvalue::CSSColor::Create(color);
 }
 
 CSSValue* CSSParserFastPaths::ParseColor(const String& string,

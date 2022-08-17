@@ -68,7 +68,7 @@ int ColorFloatToRGBAByte(float f) {
 template <typename CharacterType>
 inline bool ParseHexColorInternal(const CharacterType* name,
                                   unsigned length,
-                                  RGBA32& rgb) {
+                                  Color& color) {
   if (length != 3 && length != 4 && length != 6 && length != 8)
     return false;
   if ((length == 8 || length == 4) &&
@@ -82,26 +82,28 @@ inline bool ParseHexColorInternal(const CharacterType* name,
     value |= ToASCIIHexValue(name[i]);
   }
   if (length == 6) {
-    rgb = 0xFF000000 | value;
+    color = Color::FromRGBA32(0xFF000000 | value);
     return true;
   }
   if (length == 8) {
     // We parsed the values into RGBA order, but the RGBA32 type
     // expects them to be in ARGB order, so we right rotate eight bits.
-    rgb = value << 24 | value >> 8;
+    color = Color::FromRGBA32(value << 24 | value >> 8);
     return true;
   }
   if (length == 4) {
     // #abcd converts to ddaabbcc in RGBA32.
-    rgb = (value & 0xF) << 28 | (value & 0xF) << 24 | (value & 0xF000) << 8 |
-          (value & 0xF000) << 4 | (value & 0xF00) << 4 | (value & 0xF00) |
-          (value & 0xF0) | (value & 0xF0) >> 4;
+    color = Color::FromRGBA32((value & 0xF) << 28 | (value & 0xF) << 24 |
+                              (value & 0xF000) << 8 | (value & 0xF000) << 4 |
+                              (value & 0xF00) << 4 | (value & 0xF00) |
+                              (value & 0xF0) | (value & 0xF0) >> 4);
     return true;
   }
   // #abc converts to #aabbcc
-  rgb = 0xFF000000 | (value & 0xF00) << 12 | (value & 0xF00) << 8 |
-        (value & 0xF0) << 8 | (value & 0xF0) << 4 | (value & 0xF) << 4 |
-        (value & 0xF);
+  color = Color::FromRGBA32(0xFF000000 | (value & 0xF00) << 12 |
+                            (value & 0xF00) << 8 | (value & 0xF0) << 8 |
+                            (value & 0xF0) << 4 | (value & 0xF) << 4 |
+                            (value & 0xF));
   return true;
 }
 
@@ -141,20 +143,20 @@ RGBA32 MakeRGBAFromCMYKA(float c, float m, float y, float k, float a) {
   return MakeRGBA(r, g, b, static_cast<float>(nextafter(256, 0) * a));
 }
 
-bool Color::ParseHexColor(const LChar* name, unsigned length, RGBA32& rgb) {
-  return ParseHexColorInternal(name, length, rgb);
+bool Color::ParseHexColor(const LChar* name, unsigned length, Color& color) {
+  return ParseHexColorInternal(name, length, color);
 }
 
-bool Color::ParseHexColor(const UChar* name, unsigned length, RGBA32& rgb) {
-  return ParseHexColorInternal(name, length, rgb);
+bool Color::ParseHexColor(const UChar* name, unsigned length, Color& color) {
+  return ParseHexColorInternal(name, length, color);
 }
 
-bool Color::ParseHexColor(const StringView& name, RGBA32& rgb) {
+bool Color::ParseHexColor(const StringView& name, Color& color) {
   if (name.IsEmpty())
     return false;
   if (name.Is8Bit())
-    return ParseHexColor(name.Characters8(), name.length(), rgb);
-  return ParseHexColor(name.Characters16(), name.length(), rgb);
+    return ParseHexColor(name.Characters8(), name.length(), color);
+  return ParseHexColor(name.Characters16(), name.length(), color);
 }
 
 int DifferenceSquared(const Color& c1, const Color& c2) {
@@ -168,8 +170,8 @@ bool Color::SetFromString(const String& name) {
   if (name[0] != '#')
     return SetNamedColor(name);
   if (name.Is8Bit())
-    return ParseHexColor(name.Characters8() + 1, name.length() - 1, color_);
-  return ParseHexColor(name.Characters16() + 1, name.length() - 1, color_);
+    return ParseHexColor(name.Characters8() + 1, name.length() - 1, *this);
+  return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
 }
 
 String Color::Serialized() const {

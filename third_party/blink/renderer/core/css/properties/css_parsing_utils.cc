@@ -1397,7 +1397,7 @@ static int ClampRGBComponent(const CSSPrimitiveValue& value) {
 
 static bool ParseRGBParameters(CSSParserTokenRange& range,
                                const CSSParserContext& context,
-                               RGBA32& result) {
+                               Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kRgb ||
          range.Peek().FunctionId() == CSSValueID::kRgba);
   CSSParserTokenRange args = ConsumeFunction(range);
@@ -1448,17 +1448,17 @@ static bool ParseRGBParameters(CSSParserTokenRange& range,
     // W3 standard stipulates a 2.55 alpha value multiplication factor.
     int alpha_component =
         static_cast<int>(lround(ClampTo<double>(alpha, 0.0, 1.0) * 255.0));
-    result = MakeRGBA(color_array[0], color_array[1], color_array[2],
-                      alpha_component);
+    result = Color::FromRGBA(color_array[0], color_array[1], color_array[2],
+                             alpha_component);
   } else {
-    result = MakeRGB(color_array[0], color_array[1], color_array[2]);
+    result = Color::FromRGB(color_array[0], color_array[1], color_array[2]);
   }
   return args.AtEnd();
 }
 
 static bool ParseHSLParameters(CSSParserTokenRange& range,
                                const CSSParserContext& context,
-                               RGBA32& result) {
+                               Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHsl ||
          range.Peek().FunctionId() == CSSValueID::kHsla);
   CSSParserTokenRange args = ConsumeFunction(range);
@@ -1504,13 +1504,13 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
     alpha = ClampTo<double>(alpha, 0.0, 1.0);
   }
   result =
-      MakeRGBAFromHSLA(color_array[0], color_array[1], color_array[2], alpha);
+      Color::FromHSLA(color_array[0], color_array[1], color_array[2], alpha);
   return args.AtEnd();
 }
 
 static bool ParseHWBParameters(CSSParserTokenRange& range,
                                const CSSParserContext& context,
-                               RGBA32& result) {
+                               Color& result) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume hue, an angle.
@@ -1544,12 +1544,12 @@ static bool ParseHWBParameters(CSSParserTokenRange& range,
     alpha = ClampTo<double>(alpha, 0.0, 1.0);
   }
 
-  result = MakeRGBAFromHWBA(hue, percentages[0], percentages[1], alpha);
+  result = Color::FromHWBA(hue, percentages[0], percentages[1], alpha);
   return args.AtEnd();
 }
 
 static bool ParseHexColor(CSSParserTokenRange& range,
-                          RGBA32& result,
+                          Color& result,
                           bool accept_quirky_colors) {
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kHashToken) {
@@ -1586,7 +1586,7 @@ static bool ParseHexColor(CSSParserTokenRange& range,
 
 static bool ParseColorFunction(CSSParserTokenRange& range,
                                const CSSParserContext& context,
-                               RGBA32& result) {
+                               Color& result) {
   CSSParserTokenRange color_range = range;
   switch (range.Peek().FunctionId()) {
     case CSSValueID::kRgb:
@@ -1741,13 +1741,13 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     CSSIdentifierValue* color = ConsumeIdent(range);
     return color;
   }
-  RGBA32 color = Color::kTransparent.Rgb();
+  Color color = Color::kTransparent;
   if (!ParseHexColor(range, color, accept_quirky_colors) &&
       !ParseColorFunction(range, context, color)) {
     return ConsumeInternalLightDark(ConsumeColor, range, context,
                                     accept_quirky_colors, allowed_keywords);
   }
-  return cssvalue::CSSColor::Create(Color::FromRGBA32(color));
+  return cssvalue::CSSColor::Create(color);
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,

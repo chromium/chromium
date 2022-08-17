@@ -108,7 +108,7 @@ void CSSHSL::setAlpha(
 }
 
 Color CSSHSL::ToColor() const {
-  // MakeRGBAFromHSLA expects hue in the range [0, 6)
+  // FromHSLA expects hue in the range [0, 6)
   return Color::FromHSLA(
       h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value() / 60,
       ComponentToColorInput(s_), ComponentToColorInput(l_),

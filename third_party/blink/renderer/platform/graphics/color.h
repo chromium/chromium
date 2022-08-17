@@ -265,9 +265,9 @@ class PLATFORM_EXPORT Color {
   Color Blend(const Color&) const;
   Color BlendWithWhite() const;
 
-  static bool ParseHexColor(const StringView&, RGBA32&);
-  static bool ParseHexColor(const LChar*, unsigned, RGBA32&);
-  static bool ParseHexColor(const UChar*, unsigned, RGBA32&);
+  static bool ParseHexColor(const StringView&, Color&);
+  static bool ParseHexColor(const LChar*, unsigned, Color&);
+  static bool ParseHexColor(const UChar*, unsigned, Color&);
 
   static const Color kBlack;
   static const Color kWhite;
