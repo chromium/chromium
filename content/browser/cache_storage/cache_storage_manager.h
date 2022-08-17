@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +23,7 @@
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
+#include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,7 +54,8 @@ class CONTENT_EXPORT CacheStorageManager
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
+      base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host);
 
   // Create a new manager using the underlying configuration of the given
   // manager, but with its own list of storage objects.  This is only used
@@ -62,12 +65,6 @@ class CONTENT_EXPORT CacheStorageManager
 
   CacheStorageManager(const CacheStorageManager&) = delete;
   CacheStorageManager& operator=(const CacheStorageManager&) = delete;
-
-  // Map a database identifier (computed from a storage key) to the path.
-  static base::FilePath ConstructStorageKeyPath(
-      const base::FilePath& profile_path,
-      const blink::StorageKey& storage_key,
-      storage::mojom::CacheStorageOwner owner);
 
   // Map a database identifier (computed from a BucketLocator) to the path.
   static base::FilePath ConstructBucketPath(
@@ -92,8 +89,8 @@ class CONTENT_EXPORT CacheStorageManager
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
           callback);
-  void GetStorageKeyUsage(
-      const blink::StorageKey& storage_key,
+  void GetBucketUsage(
+      const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetBucketUsageCallback callback);
   void GetStorageKeys(
@@ -103,13 +100,17 @@ class CONTENT_EXPORT CacheStorageManager
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
+  void DeleteBucketData(
+      const storage::BucketLocator& bucket_locator,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             storage::mojom::CacheStorageOwner owner);
   void AddObserver(
       mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer);
 
-  void NotifyCacheListChanged(const blink::StorageKey& storage_key);
-  void NotifyCacheContentChanged(const blink::StorageKey& storage_key,
+  void NotifyCacheListChanged(const storage::BucketLocator& bucket_locator);
+  void NotifyCacheContentChanged(const storage::BucketLocator& bucket_locator,
                                  const std::string& name);
 
   base::FilePath profile_path() const { return profile_path_; }
@@ -117,21 +118,28 @@ class CONTENT_EXPORT CacheStorageManager
   static base::FilePath ConstructFirstPartyDefaultRootPath(
       const base::FilePath& profile_path);
 
+  static base::FilePath ConstructThirdPartyAndNonDefaultRootPath(
+      const base::FilePath& profile_path);
+
   // This method is called when the last CacheStorageHandle for a particular
   // instance is destroyed and its reference count drops to zero.
   void CacheStorageUnreferenced(CacheStorage* cache_storage,
-                                const blink::StorageKey& storage_key,
+                                const storage::BucketLocator& bucket_locator,
                                 storage::mojom::CacheStorageOwner owner);
 
  protected:
   friend class base::RefCounted<CacheStorageManager>;
 
-  CacheStorageManager(
+  // TODO(https://crbug.com/1353198): NOINLINE here is needed to prevent a crash
+  // when ThinLTO is enabled on x86 Android chrome-branded release-mode builds.
+  // Remove this once the underlying issue is resolved.
+  NOINLINE CacheStorageManager(
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
+      base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host);
   virtual ~CacheStorageManager();
 
  private:
@@ -139,7 +147,7 @@ class CONTENT_EXPORT CacheStorageManager
   friend class CacheStorageContextImpl;
 
   typedef std::map<
-      std::pair<blink::StorageKey, storage::mojom::CacheStorageOwner>,
+      std::pair<storage::BucketLocator, storage::mojom::CacheStorageOwner>,
       std::unique_ptr<CacheStorage>>
       CacheStorageMap;
 
@@ -147,22 +155,33 @@ class CONTENT_EXPORT CacheStorageManager
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
           callback,
-      std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
+      std::vector<std::tuple<storage::BucketLocator,
+                             storage::mojom::StorageUsageInfoPtr>>
+          usage_tuples);
 
-  void GetStorageKeyUsageDidGetExists(
-      const blink::StorageKey& storage_key,
+  void DeleteStorageKeyDataGotAllBucketInfo(
+      const blink::StorageKey storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
+          callback,
+      std::vector<std::tuple<storage::BucketLocator,
+                             storage::mojom::StorageUsageInfoPtr>>
+          usage_tuples);
+
+  void GetBucketUsageDidGetExists(
+      const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetBucketUsageCallback callback,
       bool exists);
 
-  void DeleteStorageKeyDataDidGetExists(
-      const blink::StorageKey& storage_key,
+  void DeleteBucketDataDidGetExists(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
+      storage::BucketLocator bucket_locator,
       bool exists);
 
-  void DeleteStorageKeyDidClose(
-      const blink::StorageKey& storage_key,
+  void DeleteBucketDidClose(
+      const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
       std::unique_ptr<CacheStorage> cache_storage,
@@ -178,13 +197,19 @@ class CONTENT_EXPORT CacheStorageManager
 
   void ListStorageKeysOnTaskRunner(
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      std::vector<mojo::StructPtr<storage::mojom::StorageUsageInfo>> usages);
+      std::vector<std::tuple<storage::BucketLocator,
+                             storage::mojom::StorageUsageInfoPtr>>
+          usage_tuples);
 
   bool IsMemoryBacked() const { return profile_path_.empty(); }
 
   // MemoryPressureListener callback
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+#if DCHECK_IS_ON()
+  bool CacheStoragePathIsUnique(const base::FilePath& path);
+#endif
 
   // Stores the storage partition (profile) path unless the CacheStorage should
   // be in-memory only, in which case this is empty.
@@ -202,9 +227,14 @@ class CONTENT_EXPORT CacheStorageManager
 
   const scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
 
+  const base::WeakPtr<CacheStorageDispatcherHost>
+      cache_storage_dispatcher_host_;
+
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CacheStorageManager> weak_ptr_factory_{this};
 };
 
 }  // namespace content
