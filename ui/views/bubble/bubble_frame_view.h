@@ -69,6 +69,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // label. If there is an existing title view it will be deleted.
   void SetTitleView(std::unique_ptr<View> title_view);
 
+  // Signals that the main image may have changed and needs to be fetched again.
+  void UpdateMainImage();
+
   // Updates the current progress value of |progress_indicator_|. If progress is
   // absent, hides |the progress_indicator|.
   void SetProgress(absl::optional<double> progress);
@@ -250,11 +253,13 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // client views to the bubble border's bounds.
   void UpdateClientLayerCornerRadius();
 
+  int GetMainImageLeftInsets() const;
+
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;
 
   // Margins around the title label.
-  gfx::Insets title_margins_;
+  const gfx::Insets title_margins_;
 
   // Margins between the content and the inside of the border, in pixels.
   gfx::Insets content_margins_;
@@ -264,6 +269,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   // The optional title icon.
   raw_ptr<ImageView> title_icon_ = nullptr;
+
+  // The optional main image.
+  raw_ptr<ImageView> main_image_ = nullptr;
 
   // One of these fields is used as the dialog title. If SetTitleView is called
   // the custom title view is stored in |custom_title_| and this class assumes

@@ -25,9 +25,11 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -48,6 +50,25 @@
 namespace views {
 
 namespace {
+
+// Returns an image of |size| that contains as much of |image| as possible
+// without distorting the |image|.  Unused areas are cropped away.
+gfx::ImageSkia ScaleAspectRatioAndCropCenter(const gfx::Size& size,
+                                             const gfx::ImageSkia& image) {
+  // TODO(pbos): Crop out the corners or repaint them in the main_image_ border.
+  // This may submit before that is done to allow the API to be used while being
+  // polished.
+  float scale = std::min(static_cast<float>(image.width()) / size.width(),
+                         static_cast<float>(image.height()) / size.height());
+  gfx::Size scaled_size = {base::ClampFloor(scale * size.width()),
+                           base::ClampFloor(scale * size.height())};
+  gfx::Rect bounds{{0, 0}, image.size()};
+  bounds.ClampToCenteredSize(scaled_size);
+  auto scaled_and_cropped_image = gfx::ImageSkiaOperations::CreateTiledImage(
+      image, bounds.x(), bounds.y(), bounds.width(), bounds.height());
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      scaled_and_cropped_image, skia::ImageOperations::RESIZE_LANCZOS3, size);
+}
 
 // Get the |vertical| or horizontal amount that |available_bounds| overflows
 // |window_bounds|.
@@ -83,12 +104,12 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
     : title_margins_(title_margins),
       content_margins_(content_margins),
       footnote_margins_(content_margins_),
-      title_icon_(new views::ImageView()),
+      title_icon_(AddChildView(std::make_unique<ImageView>())),
+      main_image_(AddChildView(std::make_unique<ImageView>())),
       default_title_(CreateDefaultTitleLabel(std::u16string()).release()) {
-  AddChildView(title_icon_.get());
-
   default_title_->SetVisible(false);
   AddChildView(default_title_.get());
+  main_image_->SetVisible(false);
 
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
@@ -338,6 +359,26 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   AddChildViewAt(title_view.release(), GetIndexOf(title_icon_).value() + 1);
 }
 
+void BubbleFrameView::UpdateMainImage() {
+  views::BubbleDialogDelegate* const bubble_delegate =
+      GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  if (!bubble_delegate)
+    return;
+  const ui::ImageModel& model = bubble_delegate->GetMainImage();
+  if (model.IsEmpty()) {
+    main_image_->SetVisible(false);
+  } else {
+    main_image_->SetImage(ScaleAspectRatioAndCropCenter(
+        gfx::Size(128, 128), model.GetImage().AsImageSkia()));
+    main_image_->SetBorder(views::CreateRoundedRectBorder(
+        1, 8, gfx::Insets(16),
+        GetColorProvider()
+            ? GetColorProvider()->GetColor(ui::kColorBubbleBorder)
+            : gfx::kPlaceholderColor));
+    main_image_->SetVisible(true);
+  }
+}
+
 void BubbleFrameView::SetProgress(absl::optional<double> progress) {
   bool visible = progress.has_value();
   progress_indicator_->SetVisible(visible);
@@ -451,8 +492,8 @@ void BubbleFrameView::Layout() {
   gfx::Size title_icon_pref_size(title_icon_->GetPreferredSize());
   const int title_icon_padding =
       title_icon_pref_size.width() > 0 ? title_margins_.left() : 0;
-  const int title_label_x =
-      bounds.x() + title_icon_pref_size.width() + title_icon_padding;
+  const int title_label_x = bounds.x() + title_icon_pref_size.width() +
+                            title_icon_padding + GetMainImageLeftInsets();
 
   // TODO(tapted): Layout() should skip more surrounding code when !HasTitle().
   // Currently DCHECKs fail since title_insets is 0 when there is no title.
@@ -475,6 +516,9 @@ void BubbleFrameView::Layout() {
 
   title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
                          title_height);
+
+  main_image_->SetBounds(0, 0, main_image_->GetPreferredSize().width(),
+                         main_image_->GetPreferredSize().height());
 }
 
 void BubbleFrameView::OnThemeChanged() {
@@ -482,6 +526,7 @@ void BubbleFrameView::OnThemeChanged() {
   UpdateWindowTitle();
   ResetWindowControls();
   UpdateWindowIcon();
+  UpdateMainImage();
   UpdateClientViewBackground();
   SchedulePaint();
 }
@@ -847,8 +892,10 @@ int BubbleFrameView::GetFrameWidthForClientWidth(int client_width) const {
   const int title_bar_width = title()->GetMinimumSize().width() +
                               GetTitleLabelInsetsFromFrame().width();
   const int client_area_width = client_width + content_margins_.width();
-  const int frame_width = std::max(title_bar_width, client_area_width);
-  DialogDelegate* dialog_delegate =
+  const int frame_width =
+      std::max(title_bar_width, client_area_width) + GetMainImageLeftInsets();
+
+  DialogDelegate* const dialog_delegate =
       GetWidget()->widget_delegate()->AsDialogDelegate();
   bool snapping = dialog_delegate &&
                   dialog_delegate->GetDialogButtons() != ui::DIALOG_BUTTON_NONE;
@@ -867,6 +914,11 @@ gfx::Size BubbleFrameView::GetFrameSizeForClientSize(
   // content_margins_ adds extra padding even if all child views are invisible.
   if (footnote_container_ && footnote_container_->GetVisible())
     size.Enlarge(0, footnote_container_->GetHeightForWidth(size.width()));
+
+  if (main_image_->GetVisible()) {
+    size.set_height(
+        std::max(size.height(), main_image_->GetPreferredSize().height()));
+  }
 
   return size;
 }
@@ -899,8 +951,8 @@ gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
   const gfx::Size title_icon_pref_size = title_icon_->GetPreferredSize();
   const int title_icon_padding =
       title_icon_pref_size.width() > 0 ? title_margins_.left() : 0;
-  const int insets_left =
-      title_margins_.left() + title_icon_pref_size.width() + title_icon_padding;
+  const int insets_left = GetMainImageLeftInsets() + title_margins_.left() +
+                          title_icon_pref_size.width() + title_icon_padding;
   return gfx::Insets::TLBR(header_height + title_margins_.top(), insets_left,
                            title_margins_.bottom(), insets_right);
 }
@@ -919,7 +971,8 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
 
   if (!HasTitle()) {
     return content_margins_ +
-           gfx::Insets::TLBR(std::max(header_height, close_height), 0, 0, 0);
+           gfx::Insets::TLBR(std::max(header_height, close_height),
+                             GetMainImageLeftInsets(), 0, 0);
   }
 
   const int icon_height = title_icon_->GetPreferredSize().height();
@@ -929,7 +982,7 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
       std::max(icon_height, label_height) + title_margins_.height();
   return content_margins_ +
          gfx::Insets::TLBR(std::max(title_height + header_height, close_height),
-                           0, 0, 0);
+                           GetMainImageLeftInsets(), 0, 0);
 }
 
 int BubbleFrameView::GetHeaderHeightForFrameWidth(int frame_width) const {
@@ -946,6 +999,13 @@ void BubbleFrameView::UpdateClientLayerCornerRadius() {
     GetWidget()->client_view()->layer()->SetRoundedCornerRadius(
         GetClientCornerRadii());
   }
+}
+
+int BubbleFrameView::GetMainImageLeftInsets() const {
+  if (!main_image_->GetVisible())
+    return 0;
+  return main_image_->GetPreferredSize().width() -
+         main_image_->GetBorder()->GetInsets().right();
 }
 
 BEGIN_METADATA(BubbleFrameView, NonClientFrameView)

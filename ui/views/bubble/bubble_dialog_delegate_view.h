@@ -68,6 +68,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchorView(View* view);
   View* GetAnchorView() const;
 
+  void SetMainImage(ui::ImageModel main_image);
+  const ui::ImageModel& GetMainImage() const { return main_image_; }
+
   // GetAnchorRect() takes into account the presence of an anchor view, while
   // anchor_rect() always returns the configured anchor rect, regardless of
   // whether there is also an anchor view. While it is possible to override
@@ -384,6 +387,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
+  ui::ImageModel main_image_;
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;
@@ -486,6 +490,7 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, FootnoteView)
 VIEW_BUILDER_PROPERTY(bool, FocusTraversesOut)
 VIEW_BUILDER_PROPERTY(bool, EnableArrowKeyTraversal)
 VIEW_BUILDER_PROPERTY(gfx::ImageSkia, Icon)
+VIEW_BUILDER_PROPERTY(gfx::ImageSkia, MainImage)
 VIEW_BUILDER_PROPERTY(gfx::ImageSkia, AppIcon)
 VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
 VIEW_BUILDER_PROPERTY(bool, OwnedByWidget)

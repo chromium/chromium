@@ -621,6 +621,17 @@ View* BubbleDialogDelegate::GetAnchorView() const {
   return anchor_view_observer_->anchor_view();
 }
 
+void BubbleDialogDelegate::SetMainImage(ui::ImageModel main_image) {
+  // Adding a main image while the bubble is showing is not supported (but
+  // changing it is). Adding an image while it's showing would require a jarring
+  // re-layout.
+  if (main_image_.IsEmpty())
+    DCHECK(!GetBubbleFrameView());
+  main_image_ = std::move(main_image);
+  if (GetBubbleFrameView())
+    GetBubbleFrameView()->UpdateMainImage();
+}
+
 bool BubbleDialogDelegate::ShouldCloseOnDeactivate() const {
   return close_on_deactivate_ && !close_on_deactivate_pins_->is_pinned();
 }

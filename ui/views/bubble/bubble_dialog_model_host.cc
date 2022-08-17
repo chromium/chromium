@@ -372,6 +372,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetTitle(model_->title(GetPassKey()));
 
+  if (!model_->main_image(GetPassKey()).IsEmpty())
+    SetMainImage(model_->main_image(GetPassKey()));
+
   if (model_->override_show_close_button(GetPassKey())) {
     SetShowCloseButton(*model_->override_show_close_button(GetPassKey()));
   } else {

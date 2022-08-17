@@ -149,6 +149,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    Builder& SetMainImage(ImageModel main_image) {
+      model_->main_image_ = std::move(main_image);
+      return *this;
+    }
+
     // Make screen readers announce the contents of the dialog as it appears.
     // See |ax::mojom::Role::kAlertDialog|.
     Builder& SetIsAlertDialog() {
@@ -372,6 +377,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return title_;
   }
 
+  const ImageModel& main_image(base::PassKey<DialogModelHost>) const {
+    return main_image_;
+  }
+
   const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
 
   const ImageModel& dark_mode_icon(base::PassKey<DialogModelHost>) const {
@@ -439,6 +448,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::u16string title_;
   ImageModel icon_;
   ImageModel dark_mode_icon_;
+
+  ImageModel main_image_;
 
   ImageModel banner_;
   ImageModel dark_mode_banner_;
