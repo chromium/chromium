@@ -89,6 +89,9 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 // The Return To Recent Tab view.
 @property(nonatomic, strong)
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
+// Module container of |returnToRecentTabTile|.
+@property(nonatomic, strong)
+    ContentSuggestionsModuleContainer* returnToRecentTabContainer;
 // The WhatsNew view.
 @property(nonatomic, strong) ContentSuggestionsWhatsNewView* whatsNewView;
 // StackView holding all of `mostVisitedViews`.
@@ -181,13 +184,13 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
   if (self.returnToRecentTabTile) {
     UIView* parentView = self.returnToRecentTabTile;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      ContentSuggestionsModuleContainer* returnToRecentTabContainer =
-          [[ContentSuggestionsModuleContainer alloc]
-              initWithContentView:self.returnToRecentTabTile
-                       moduleType:
-                           ContentSuggestionsModuleTypeReturnToRecentTab];
-      parentView = returnToRecentTabContainer;
-      [self.verticalStackView addArrangedSubview:returnToRecentTabContainer];
+      self.returnToRecentTabContainer = [[ContentSuggestionsModuleContainer
+          alloc]
+          initWithContentView:self.returnToRecentTabTile
+                   moduleType:ContentSuggestionsModuleTypeReturnToRecentTab];
+      parentView = self.returnToRecentTabContainer;
+      [self.verticalStackView
+          addArrangedSubview:self.returnToRecentTabContainer];
     } else {
       [self addUIElement:self.returnToRecentTabTile
           withCustomBottomSpacing:content_suggestions::
@@ -394,6 +397,12 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 
 - (void)showReturnToRecentTabTileWithConfig:
     (ContentSuggestionsReturnToRecentTabItem*)config {
+  if (self.returnToRecentTabTile &&
+      IsContentSuggestionsUIModuleRefreshEnabled()) {
+    [self.returnToRecentTabTile removeFromSuperview];
+    [self.returnToRecentTabContainer removeFromSuperview];
+  }
+
   self.returnToRecentTabTile = [[ContentSuggestionsReturnToRecentTabView alloc]
       initWithConfiguration:config];
   self.returnToRecentTabTapRecognizer = [[UITapGestureRecognizer alloc]
@@ -407,14 +416,14 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
   if ([[self.verticalStackView arrangedSubviews] count]) {
     UIView* parentView = self.returnToRecentTabTile;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      ContentSuggestionsModuleContainer* returnToRecentTabContainer =
-          [[ContentSuggestionsModuleContainer alloc]
-              initWithContentView:self.returnToRecentTabTile
-                       moduleType:
-                           ContentSuggestionsModuleTypeReturnToRecentTab];
-      parentView = returnToRecentTabContainer;
-      [self.verticalStackView insertArrangedSubview:returnToRecentTabContainer
-                                            atIndex:0];
+      self.returnToRecentTabContainer = [[ContentSuggestionsModuleContainer
+          alloc]
+          initWithContentView:self.returnToRecentTabTile
+                   moduleType:ContentSuggestionsModuleTypeReturnToRecentTab];
+      parentView = self.returnToRecentTabContainer;
+      [self.verticalStackView
+          insertArrangedSubview:self.returnToRecentTabContainer
+                        atIndex:0];
     } else {
       [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
                                             atIndex:0];
@@ -446,12 +455,11 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 }
 
 - (void)hideReturnToRecentTabTile {
-  UIView* moduleView = [self.returnToRecentTabTile superview];
   [self.returnToRecentTabTile removeFromSuperview];
   self.returnToRecentTabTile = nil;
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
     // Remove module container.
-    [moduleView removeFromSuperview];
+    [self.returnToRecentTabContainer removeFromSuperview];
   }
 }
 
