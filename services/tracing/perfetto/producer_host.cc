@@ -13,7 +13,6 @@
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
-#include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -68,6 +67,8 @@ ProducerHost::InitializationResult ProducerHost::Initialize(
     return InitializationResult::kSmbNotAdopted;
   }
 
+  // TODO(skyostil): Implement arbiter binding for the client API.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // When we are in-process, we don't use the in-process arbiter perfetto would
   // provide (thus pass |in_process = false| to ConnectProducer), but rather
   // bind the ProducerClient's arbiter to the service's endpoint and task runner
@@ -77,15 +78,14 @@ ProducerHost::InitializationResult ProducerHost::Initialize(
   base::ProcessId pid;
   if (PerfettoService::ParsePidFromProducerName(name, &pid)) {
     bool in_process = (pid == base::Process::Current().Pid());
-    // TODO(skyostil): Implement arbiter binding for the client API.
-    if (in_process && !base::FeatureList::IsEnabled(
-                          features::kEnablePerfettoClientApiProducer)) {
+    if (in_process) {
       PerfettoTracedProcess::Get()
           ->producer_client()
           ->BindInProcessSharedMemoryArbiter(producer_endpoint_.get(),
                                              task_runner_);
     }
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   return InitializationResult::kSuccess;
 }

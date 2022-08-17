@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -24,7 +23,6 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
-#include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "services/tracing/public/mojom/traced_process.mojom.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
@@ -278,6 +276,7 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   EXPECT_TRUE(result->FindKey("traceEvents"));
 }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class CustomDataSource : public perfetto::DataSource<CustomDataSource> {
  public:
   struct Events {
@@ -303,12 +302,6 @@ class CustomDataSource : public perfetto::DataSource<CustomDataSource> {
 CustomDataSource::Events* CustomDataSource::events_;
 
 TEST_F(TracingServiceTest, PerfettoClientProducer) {
-  // Use the client API as the producer for this process instead of
-  // ProducerClient.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEnablePerfettoClientApiProducer);
-
   // Set up API bindings.
   EnableClientApiConsumer();
   EnableClientApiProducer();
@@ -371,6 +364,7 @@ TEST_F(TracingServiceTest, PerfettoClientProducer) {
   // Read and verify the data.
   EXPECT_EQ(kNumPackets, ReadAndCountTestPackets(*session));
 }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 #if !BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1158482): Support tracing to file on Windows.

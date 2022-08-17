@@ -21,9 +21,6 @@ extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
 extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
     kEnablePerfettoSystemTracing;
 
-extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
-    kEnablePerfettoClientApiProducer;
-
 }  // namespace features
 
 namespace tracing {

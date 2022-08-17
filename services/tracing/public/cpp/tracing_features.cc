@@ -39,17 +39,6 @@ const base::Feature kEnablePerfettoSystemTracing{
 #endif
 };
 
-// Controls whether trace points are implemented using Perfetto's client library
-// (enabled) or legacy TraceLog (disabled).
-const base::Feature kEnablePerfettoClientApiProducer {
-  "EnablePerfettoClientApiProducer",
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 }  // namespace features
 
 namespace tracing {

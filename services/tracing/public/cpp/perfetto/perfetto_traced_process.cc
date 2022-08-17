@@ -207,13 +207,12 @@ void PerfettoTracedProcess::SetConsumerConnectionFactory(
 
 void PerfettoTracedProcess::ConnectProducer(
     mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
-  if (base::FeatureList::IsEnabled(
-          features::kEnablePerfettoClientApiProducer)) {
-    DCHECK(pending_producer_callback_);
-    std::move(pending_producer_callback_).Run(std::move(perfetto_service));
-  } else {
-    producer_client_->Connect(std::move(perfetto_service));
-  }
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  DCHECK(pending_producer_callback_);
+  std::move(pending_producer_callback_).Run(std::move(perfetto_service));
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  producer_client_->Connect(std::move(perfetto_service));
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void PerfettoTracedProcess::ClearDataSourcesForTesting() {
