@@ -521,21 +521,20 @@ TouchIdCredentialStore::FindCredentialsImpl(
 
     // Decode `CredentialMetadata` from the `kSecAttrApplicationTag` attribute
     // for V3 credentials, or from the credential ID for version <= 2.
+    absl::optional<CredentialMetadata> metadata;
     CFDataRef application_tag_ref =
         base::mac::GetValueFromDictionary<CFDataRef>(attributes,
                                                      kSecAttrApplicationTag);
-    if (!application_tag_ref) {
-      FIDO_LOG(ERROR) << "credential with missing application tag";
-      return absl::nullopt;
-    }
-    const base::span<const uint8_t> application_tag(
-        CFDataGetBytePtr(application_tag_ref),
-        CFDataGetBytePtr(application_tag_ref) +
-            CFDataGetLength(application_tag_ref));
-    absl::optional<CredentialMetadata> metadata =
-        UnsealMetadataFromApplicationTag(config_.metadata_secret, rp_id,
-                                         application_tag);
-    if (!metadata) {
+    // On version < 3 credentials, kSecAttrApplicationTag is a CFStringRef,
+    // which means `application_tag_ref` would be nullptr.
+    if (application_tag_ref) {
+      const base::span<const uint8_t> application_tag(
+          CFDataGetBytePtr(application_tag_ref),
+          CFDataGetBytePtr(application_tag_ref) +
+              CFDataGetLength(application_tag_ref));
+      metadata = UnsealMetadataFromApplicationTag(config_.metadata_secret,
+                                                  rp_id, application_tag);
+    } else {
       metadata = UnsealMetadataFromLegacyCredentialId(config_.metadata_secret,
                                                       rp_id, credential_id);
     }

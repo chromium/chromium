@@ -46,8 +46,9 @@ class CredentialStoreTest : public testing::Test {
     PublicKeyCredentialUserEntity user = kUser;
     user.id = std::move(user_id);
     return store_
-        .CreateCredential(kRpId, std::move(user),
-                          TouchIdCredentialStore::kNonDiscoverable)
+        .CreateCredentialLegacyCredentialForTesting(
+            version, kRpId, std::move(user),
+            TouchIdCredentialStore::kNonDiscoverable)
         ->first;
   }
 

@@ -33,8 +33,13 @@ base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
   DCHECK(base::mac::GetValueFromDictionary<CFStringRef>(params, kSecAttrLabel));
   DCHECK(base::mac::GetValueFromDictionary<CFDataRef>(
       params, kSecAttrApplicationLabel));
+  // kSecAttrApplicationTag is CFDataRef for new credentials and CFStringRef for
+  // version < 3. Keychain docs say it should be CFDataRef
+  // (https://developer.apple.com/documentation/security/ksecattrapplicationtag).
   DCHECK(base::mac::GetValueFromDictionary<CFDataRef>(params,
-                                                      kSecAttrApplicationTag));
+                                                      kSecAttrApplicationTag) ||
+         base::mac::GetValueFromDictionary<CFStringRef>(
+             params, kSecAttrApplicationTag));
   DCHECK_EQ(
       base::mac::GetValueFromDictionary<CFStringRef>(params, kSecAttrTokenID),
       kSecAttrTokenIDSecureEnclave);
@@ -122,20 +127,16 @@ OSStatus FakeKeychain::ItemCopyMatching(CFDictionaryRef query,
         base::mac::GetValueFromDictionary<CFStringRef>(query, kSecAttrLabel);
     CFDataRef application_label = base::mac::GetValueFromDictionary<CFDataRef>(
         query, kSecAttrApplicationLabel);
-    CFStringRef application_tag =
-        base::mac::GetValueFromDictionary<CFStringRef>(query,
-                                                       kSecAttrApplicationTag);
+    // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
+    // CFDataRef for new ones. We currently don't need to query for either.
+    DCHECK(!CFDictionaryGetValue(query, kSecAttrApplicationTag));
     if ((label &&
          !CFEqual(label, base::mac::GetValueFromDictionary<CFStringRef>(
                              item, kSecAttrLabel))) ||
         (application_label &&
          !CFEqual(application_label,
                   base::mac::GetValueFromDictionary<CFStringRef>(
-                      item, kSecAttrApplicationLabel))) ||
-        (application_tag &&
-         !CFEqual(application_tag,
-                  base::mac::GetValueFromDictionary<CFStringRef>(
-                      item, kSecAttrApplicationTag)))) {
+                      item, kSecAttrApplicationLabel)))) {
       continue;
     }
     base::ScopedCFTypeRef<CFDictionaryRef> item_copy(
