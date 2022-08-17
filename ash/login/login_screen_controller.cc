@@ -18,6 +18,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -319,9 +320,15 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
         ->set_default_last_focusable_child(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->GetStatusAreaWidget());
   } else if (shelf->shelf_widget()->GetLoginShelfView()->IsFocusable()) {
-    // Otherwise focus goes to shelf buttons when there is any.
-    shelf->shelf_widget()->set_default_last_focusable_child(reverse);
-    Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
+    // Otherwise focus goes to login shelf buttons when there is any.
+    if (features::IsUseLoginShelfWidgetEnabled()) {
+      LoginShelfWidget* login_shelf_widget = shelf->login_shelf_widget();
+      login_shelf_widget->SetDefaultLastFocusableChild(reverse);
+      Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
+    } else {
+      shelf->shelf_widget()->set_default_last_focusable_child(reverse);
+      Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
+    }
   } else {
     // No elements to focus on the shelf.
     NOTREACHED();
