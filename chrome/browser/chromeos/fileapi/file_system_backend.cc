@@ -175,7 +175,7 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                               base::File::FILE_ERROR_SECURITY);
       return;
     }
-    std::string inner_mount_name = components[1];
+    std::string inner_mount_name = base::EscapePath(components[1]);
     root_url += inner_mount_name + "/";
     name = inner_mount_name;
   } else if (id == arc::kDocumentsProviderMountPointName) {
