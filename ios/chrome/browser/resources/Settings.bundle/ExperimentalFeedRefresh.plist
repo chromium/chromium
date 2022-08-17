@@ -5,6 +5,36 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
+			<key>Title</key>
+			<string>Debug Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>This is not available in stable.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable notifications when background refreshes are completed</string>
+			<key>Key</key>
+			<string>FeedBackgroundRefreshNotificationEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Last Foreground Refresh Timestamp</string>
+			<key>Key</key>
+			<string>FeedLastForegroundRefreshTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
@@ -40,7 +70,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Foreground refreshes occur on cold starts and new NTPs. They do not occur on app foregrounding.</string>
+			<string>Foreground refreshes occur on cold starts, new NTPs, and switching tabs to an NTP. They do not occur on app foregrounding.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -101,24 +131,6 @@
 			<string>Enable recurring schedule</string>
 			<key>Key</key>
 			<string>FeedRecurringBackgroundRefreshScheduleEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Debug Settings</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>This is not available in stable.</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Enable notifications when background refreshes are completed</string>
-			<key>Key</key>
-			<string>FeedBackgroundRefreshNotificationEnabled</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
