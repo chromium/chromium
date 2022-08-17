@@ -76,11 +76,11 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore(bool set_first_time_sync_flag);
 
-  // Add credentials from |forms|.
+  // Add credentials from `forms`.
   void AddCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
-  // Removes credentials from |forms|.
+  // Removes credentials from `forms`.
   void RemoveCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
@@ -113,7 +113,7 @@ class CredentialProviderService
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Observer for when |saving_passwords_enabled_| changes.
+  // Observer for when `saving_passwords_enabled_` changes.
   void OnSavingPasswordsEnabledChanged();
 
   // The interface for getting and manipulating a user's saved passwords.
