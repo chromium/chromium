@@ -23,11 +23,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
@@ -330,30 +332,41 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   DCHECK(navigation_request.IsInPrimaryMainFrame());
 
   // Compare BeginNavigationParams.
-  if (!AreBeginNavigationParamsCompatibleWithNavigation(
-          navigation_request.begin_params())) {
+  ActivationNavigationParamsMatch result =
+      AreBeginNavigationParamsCompatibleWithNavigation(
+          navigation_request.begin_params());
+  if (result != ActivationNavigationParamsMatch::kOk) {
+    RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
+                                                   embedder_histogram_suffix());
     return false;
   }
 
   // Compare CommonNavigationParams.
-  if (!AreCommonNavigationParamsCompatibleWithNavigation(
-          navigation_request.common_params())) {
+  result = AreCommonNavigationParamsCompatibleWithNavigation(
+      navigation_request.common_params());
+  if (result != ActivationNavigationParamsMatch::kOk) {
+    RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
+                                                   embedder_histogram_suffix());
     return false;
   }
 
+  RecordPrerenderActivationNavigationParamsMatch(
+      ActivationNavigationParamsMatch::kOk, trigger_type(),
+      embedder_histogram_suffix());
   return true;
 }
 
-bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
+PrerenderHost::ActivationNavigationParamsMatch
+PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     const blink::mojom::BeginNavigationParams& potential_activation) {
   if (potential_activation.initiator_frame_token !=
       begin_params_->initiator_frame_token) {
-    return false;
+    return ActivationNavigationParamsMatch::kInitiatorFrameToken;
   }
 
   if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
                                        begin_params_->headers)) {
-    return false;
+    return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 
   // Don't activate a prerendered page if the potential activation request
@@ -365,37 +378,37 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   int cache_load_flags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
                          net::LOAD_DISABLE_CACHE;
   if (potential_activation.load_flags & cache_load_flags) {
-    return false;
+    return ActivationNavigationParamsMatch::kCacheLoadFlags;
   }
   if (potential_activation.load_flags != begin_params_->load_flags) {
-    return false;
+    return ActivationNavigationParamsMatch::kLoadFlags;
   }
 
   if (potential_activation.skip_service_worker !=
       begin_params_->skip_service_worker) {
-    return false;
+    return ActivationNavigationParamsMatch::kSkipServiceWorker;
   }
 
   if (potential_activation.mixed_content_context_type !=
       begin_params_->mixed_content_context_type) {
-    return false;
+    return ActivationNavigationParamsMatch::kMixedContentContextType;
   }
 
   // Initial prerender navigation cannot be a form submission.
   DCHECK(!begin_params_->is_form_submission);
   if (potential_activation.is_form_submission !=
       begin_params_->is_form_submission) {
-    return false;
+    return ActivationNavigationParamsMatch::kIsFormSubmission;
   }
 
   if (potential_activation.searchable_form_url !=
       begin_params_->searchable_form_url) {
-    return false;
+    return ActivationNavigationParamsMatch::kSearchableFormUrl;
   }
 
   if (potential_activation.searchable_form_encoding !=
       begin_params_->searchable_form_encoding) {
-    return false;
+    return ActivationNavigationParamsMatch::kSearchableFormEncoding;
   }
 
   // Trust token params can be set only on subframe navigations, so both values
@@ -403,14 +416,14 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   DCHECK(!begin_params_->trust_token_params);
   if (potential_activation.trust_token_params !=
       begin_params_->trust_token_params) {
-    return false;
+    return ActivationNavigationParamsMatch::kTrustTokenParams;
   }
 
   // Web bundle token cannot be set due because it is only set for child
   // frame navigations.
   DCHECK(!begin_params_->web_bundle_token);
   if (potential_activation.web_bundle_token) {
-    return false;
+    return ActivationNavigationParamsMatch::kWebBundleToken;
   }
 
   // Don't require equality for request_context_type because link clicks
@@ -423,23 +436,24 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     case blink::mojom::RequestContextType::LOCATION:
       break;
     default:
-      return false;
+      return ActivationNavigationParamsMatch::kRequestContextType;
   }
 
   // Since impression should not be set, no need to compare contents.
   DCHECK(!begin_params_->impression);
   if (potential_activation.impression.has_value()) {
-    return false;
+    return ActivationNavigationParamsMatch::kImpressionHasValue;
   }
 
   // No need to test for devtools_initiator because this field is used for
   // tracking what triggered a network request, and prerender activation will
   // not use network requests.
 
-  return true;
+  return ActivationNavigationParamsMatch::kOk;
 }
 
-bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
+PrerenderHost::ActivationNavigationParamsMatch
+PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     const blink::mojom::CommonNavigationParams& potential_activation) {
   // The CommonNavigationParams::url field is expected to be the same for both
   // initial and activation prerender navigations, as the PrerenderHost
@@ -453,17 +467,17 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   }
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
-    return false;
+    return ActivationNavigationParamsMatch::kInitiatorOrigin;
   }
 
   if (potential_activation.transition != common_params_->transition) {
-    return false;
+    return ActivationNavigationParamsMatch::kTransition;
   }
 
   DCHECK_EQ(common_params_->navigation_type,
             blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
   if (potential_activation.navigation_type != common_params_->navigation_type) {
-    return false;
+    return ActivationNavigationParamsMatch::kNavigationType;
   }
 
   // We don't check download_policy as it affects whether the download triggered
@@ -477,21 +491,24 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   DCHECK(common_params_->base_url_for_data_url.is_empty());
   if (potential_activation.base_url_for_data_url !=
       common_params_->base_url_for_data_url) {
-    return false;
+    return ActivationNavigationParamsMatch::kBaseUrlForDataUrl;
   }
 
   // The previews_state is always set to NO_PREVIEWS in BeginNavigation and the
   // previews code was removed, so no need to compare it here as it's not used.
   // TODO(crbug.com/1232909): remove this previews_state.
 
+  // TODO(crbug.com/1352891): This if branch should be removed because method
+  // parameter change is detected earlier by checking the HTTP request headers
+  // changes.
   if (potential_activation.method != common_params_->method) {
-    return false;
+    return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 
   // Initial prerender navigation can't be a form submission.
   DCHECK(!common_params_->post_data);
   if (potential_activation.post_data != common_params_->post_data) {
-    return false;
+    return ActivationNavigationParamsMatch::kPostData;
   }
 
   // No need to compare source_location, as it's only passed to the DevTools for
@@ -501,7 +518,7 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   DCHECK(!common_params_->started_from_context_menu);
   if (potential_activation.started_from_context_menu !=
       common_params_->started_from_context_menu) {
-    return false;
+    return ActivationNavigationParamsMatch::kStartedFromContextMenu;
   }
 
   // has_user_gesture doesn't affect any of the security properties of the
@@ -522,18 +539,18 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
 
   if (potential_activation.initiator_origin_trial_features !=
       common_params_->initiator_origin_trial_features) {
-    return false;
+    return ActivationNavigationParamsMatch::kInitiatorOriginTrialFeature;
   }
 
   if (potential_activation.href_translate != common_params_->href_translate) {
-    return false;
+    return ActivationNavigationParamsMatch::kHrefTranslate;
   }
 
   // Initial prerender navigation can't be a history navigation.
   DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
   if (potential_activation.is_history_navigation_in_new_child_frame !=
       common_params_->is_history_navigation_in_new_child_frame) {
-    return false;
+    return ActivationNavigationParamsMatch::kIsHistoryNavigationInNewChildFrame;
   }
 
   // The spec mandates matching the referrer policy, and not the referrer URL
@@ -542,15 +559,15 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // https://wicg.github.io/nav-speculation/prerendering.html#navigate-activation
   if (potential_activation.referrer->policy !=
       common_params_->referrer->policy) {
-    return false;
+    return ActivationNavigationParamsMatch::kReferrerPolicy;
   }
 
   if (potential_activation.request_destination !=
       common_params_->request_destination) {
-    return false;
+    return ActivationNavigationParamsMatch::kRequestDestination;
   }
 
-  return true;
+  return ActivationNavigationParamsMatch::kOk;
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {

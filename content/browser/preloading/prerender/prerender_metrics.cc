@@ -130,4 +130,15 @@ void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
   }
 }
 
+void RecordPrerenderActivationNavigationParamsMatch(
+    PrerenderHost::ActivationNavigationParamsMatch result,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_suffix) {
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.ActivationNavigationParamsMatch",
+          trigger_type, embedder_suffix),
+      result);
+}
+
 }  // namespace content

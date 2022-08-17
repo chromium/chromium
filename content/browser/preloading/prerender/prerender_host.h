@@ -101,6 +101,39 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMaxValue = kDataSaverEnabled,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. This enum corresponds to
+  // PrerenderActivationNavigationParamsMatch in
+  // tools/metrics/histograms/test_data/enums.xml
+  enum class ActivationNavigationParamsMatch {
+    kOk = 0,
+    kInitiatorFrameToken = 1,
+    kHttpRequestHeader = 2,
+    kCacheLoadFlags = 3,
+    kLoadFlags = 4,
+    kSkipServiceWorker = 5,
+    kMixedContentContextType = 6,
+    kIsFormSubmission = 7,
+    kSearchableFormUrl = 8,
+    kSearchableFormEncoding = 9,
+    kTrustTokenParams = 10,
+    kWebBundleToken = 11,
+    kRequestContextType = 12,
+    kImpressionHasValue = 13,
+    kInitiatorOrigin = 14,
+    kTransition = 15,
+    kNavigationType = 16,
+    kBaseUrlForDataUrl = 17,
+    kPostData = 18,
+    kStartedFromContextMenu = 19,
+    kInitiatorOriginTrialFeature = 20,
+    kHrefTranslate = 21,
+    kIsHistoryNavigationInNewChildFrame = 22,
+    kReferrerPolicy = 23,
+    kRequestDestination = 24,
+    kMaxValue = kRequestDestination,
+  };
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContents& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);
@@ -221,9 +254,11 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void SetEligibility(PreloadingEligibility eligibility);
   void SetFailureReason(FinalStatus status);
 
-  bool AreBeginNavigationParamsCompatibleWithNavigation(
+  ActivationNavigationParamsMatch
+  AreBeginNavigationParamsCompatibleWithNavigation(
       const blink::mojom::BeginNavigationParams& potential_activation);
-  bool AreCommonNavigationParamsCompatibleWithNavigation(
+  ActivationNavigationParamsMatch
+  AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
 
   const PrerenderAttributes attributes_;

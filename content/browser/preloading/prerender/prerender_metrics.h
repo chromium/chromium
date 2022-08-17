@@ -48,6 +48,13 @@ void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
                                     const PrerenderAttributes& attributes,
                                     ukm::SourceId prerendered_ukm_id);
 
+// Records which navigation parameters are different between activation and
+// initial prerender navigation when activation fails.
+void RecordPrerenderActivationNavigationParamsMatch(
+    PrerenderHost::ActivationNavigationParamsMatch result,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_suffix);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_

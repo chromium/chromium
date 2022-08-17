@@ -252,6 +252,23 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         status, 1);
   }
 
+  void ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch result) {
+    histogram_tester_.ExpectUniqueSample(
+        "Prerender.Experimental.ActivationNavigationParamsMatch."
+        "SpeculationRule",
+        result, 1);
+  }
+
+  void ExpectBucketCountOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch result,
+      base::HistogramBase::Count count) {
+    histogram_tester_.ExpectBucketCount(
+        "Prerender.Experimental.ActivationNavigationParamsMatch."
+        "SpeculationRule",
+        result, count);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   PrerenderWebContentsDelegate web_contents_delegate_;
@@ -766,6 +783,8 @@ TEST_F(PrerenderHostRegistryTest, SameInitialAndActivationParams) {
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         // Do not change any params, so activation happens.
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kOk);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -776,6 +795,8 @@ TEST_F(PrerenderHostRegistryTest,
         navigation->SetInitiatorFrame(nullptr);
         navigation->set_initiator_origin(url::Origin::Create(kOriginalUrl));
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kInitiatorFrameToken);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -784,6 +805,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_request_headers("User-Agent: Test");
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kHttpRequestHeader);
 }
 
 // Tests that the Purpose header is ignored when comparing request headers.
@@ -792,6 +815,8 @@ TEST_F(PrerenderHostRegistryTest, PurposeHeaderIsIgnoredForParamMatching) {
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_request_headers("Purpose: Test");
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kOk);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -800,6 +825,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_ONLY_FROM_CACHE);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kLoadFlags);
 
   // If the potential activation request requires validation or bypass of the
   // browser cache, the prerendered page should not be activated.
@@ -815,6 +842,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_load_flags(net::LOAD_DISABLE_CACHE);
       })));
+  ExpectBucketCountOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kCacheLoadFlags, 3);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -823,6 +852,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_skip_service_worker(true);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kSkipServiceWorker);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -832,6 +863,8 @@ TEST_F(PrerenderHostRegistryTest,
         navigation->set_mixed_content_context_type(
             blink::mojom::MixedContentContextType::kNotMixedContent);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kMixedContentContextType);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -840,6 +873,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetIsFormSubmission(true);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kIsFormSubmission);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -849,6 +884,8 @@ TEST_F(PrerenderHostRegistryTest,
         const GURL kOriginalUrl("https://example.com/");
         navigation->set_searchable_form_url(kOriginalUrl);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kSearchableFormUrl);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -857,6 +894,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_searchable_form_encoding("Test encoding");
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kSearchableFormEncoding);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -865,6 +904,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_initiator_origin(url::Origin());
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kInitiatorOrigin);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -877,6 +918,8 @@ TEST_F(PrerenderHostRegistryTest,
         navigation->set_should_check_main_world_csp(
             network::mojom::CSPDisposition::DO_NOT_CHECK);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kOk);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -885,6 +928,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetMethod("POST");
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kHttpRequestHeader);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -893,6 +938,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->set_href_translate("test");
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kHrefTranslate);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -901,6 +948,8 @@ TEST_F(PrerenderHostRegistryTest,
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
         navigation->SetTransition(ui::PAGE_TRANSITION_FORM_SUBMIT);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kTransition);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -910,6 +959,8 @@ TEST_F(PrerenderHostRegistryTest,
         navigation->set_request_context_type(
             blink::mojom::RequestContextType::AUDIO);
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kRequestContextType);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -920,6 +971,8 @@ TEST_F(PrerenderHostRegistryTest,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
             network::mojom::ReferrerPolicy::kAlways));
       })));
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kReferrerPolicy);
 }
 
 // End navigation parameter matching tests ---------

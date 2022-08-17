@@ -78893,6 +78893,34 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Deferred to native init"/>
 </enum>
 
+<enum name="PrerenderActivationNavigationParamsMatch">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kInitiatorFrameToken"/>
+  <int value="2" label="kHttpRequestHeader"/>
+  <int value="3" label="kCacheLoadFlags"/>
+  <int value="4" label="kLoadFlags"/>
+  <int value="5" label="kSkipServiceWorker"/>
+  <int value="6" label="kMixedContentContextType"/>
+  <int value="7" label="kIsFormSubmission"/>
+  <int value="8" label="kSearchableFormUrl"/>
+  <int value="9" label="kSearchableFormEncoding"/>
+  <int value="10" label="kTrustTokenParams"/>
+  <int value="11" label="kWebBundleToken"/>
+  <int value="12" label="kRequestContextType"/>
+  <int value="13" label="kImpressionHasValue"/>
+  <int value="14" label="kInitiatorOrigin"/>
+  <int value="15" label="kTransition"/>
+  <int value="16" label="kNavigationType"/>
+  <int value="17" label="kBaseUrlForDataUrl"/>
+  <int value="18" label="kPostData"/>
+  <int value="19" label="kStartedFromContextMenu"/>
+  <int value="20" label="kInitiatorOriginTrialFeature"/>
+  <int value="21" label="kHrefTranslate"/>
+  <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
+  <int value="23" label="kReferrerPolicy"/>
+  <int value="24" label="kRequestDestination"/>
+</enum>
+
 <enum name="PrerenderCancelledInterface">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kGamepadHapticsManager"/>

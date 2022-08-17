@@ -1542,6 +1542,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Prerender.Experimental.ActivationNavigationParamsMatch"
+    enum="PrerenderActivationNavigationParamsMatch" expires_after="2022-12-05">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the mismatched parameters between the prerender initial navigation
+    parameters and the prerender activation navigation parameters. Recorded by
+    PrerenderHost in the browser process when comparing these two parameters.
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.DefaultSearchEngine.SearchTermExtractorCorrectness"
     enum="Boolean" expires_after="2022-07-27">
