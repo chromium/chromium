@@ -125,7 +125,7 @@ double GetFeedMaxCacheAgeInSeconds() {
   }
   return base::GetFieldTrialParamByFeatureAsDouble(kEnableFeedBackgroundRefresh,
                                                    kMaxCacheAgeInSeconds,
-                                                   /*default=*/60 * 60);
+                                                   /*default=*/8 * 60 * 60);
 }
 
 double GetBackgroundRefreshIntervalInSeconds() {
