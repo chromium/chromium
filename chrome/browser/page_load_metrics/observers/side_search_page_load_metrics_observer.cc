@@ -52,6 +52,20 @@ SideSearchPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SideSearchPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // There is no prerendering trigger for contents in the side panel.
+
+  // Note that here is not reachable because this class is only registered for
+  // the WebContents of the side panel. Especially, the navigation is not
+  // prerendering. See
+  // chrome/browser/page_load_metrics/page_load_metrics_initialize.cc
+  NOTREACHED();
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SideSearchPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   RecordSessionEndHistograms();
