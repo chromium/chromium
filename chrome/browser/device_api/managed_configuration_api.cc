@@ -248,8 +248,8 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
     const std::string& configuration_hash) {
   const std::string* last_hash_value =
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kLastManagedConfigurationHashForOrigin)
-          ->FindStringKey(GetOriginEncoded(origin));
+          ->GetValueDict(prefs::kLastManagedConfigurationHashForOrigin)
+          .FindString(GetOriginEncoded(origin));
 
   // Nothing to be stored here, the hash value is the same.
   if (last_hash_value && *last_hash_value == configuration_hash)
