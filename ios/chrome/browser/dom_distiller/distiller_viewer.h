@@ -54,17 +54,17 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
 // A very simple and naive implementation of the DistillerViewer.
 class DistillerViewer : public DistillerViewerInterface {
  public:
-  // Creates a |DistillerView| that will be used to distill |url|.
-  // |callback| is called when distillation is finished with the protobuf
+  // Creates a `DistillerView` that will be used to distill `url`.
+  // `callback` is called when distillation is finished with the protobuf
   // containing the distilled page.
   DistillerViewer(dom_distiller::DomDistillerService* distillerService,
                   PrefService* prefs,
                   const GURL& url,
                   DistillationFinishedCallback callback);
 
-  // Creates a |DistillerView| without depending on the DomDistillerService.
-  // Caller must provide |distiller_factory| and |page| which cannot be null.
-  // |callback| is called when distillation is finished with the protobuf
+  // Creates a `DistillerView` without depending on the DomDistillerService.
+  // Caller must provide `distiller_factory` and `page` which cannot be null.
+  // `callback` is called when distillation is finished with the protobuf
   // containing the distilled page.
   DistillerViewer(dom_distiller::DistillerFactory* distiller_factory,
                   std::unique_ptr<dom_distiller::DistillerPage> page,
