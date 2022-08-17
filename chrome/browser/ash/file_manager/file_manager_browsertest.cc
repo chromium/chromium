@@ -2168,6 +2168,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FilesSwa(),
         TestCase("trashDragDropRootPerformsTrashAction")
             .EnableTrash()
+            .FilesSwa(),
+        TestCase("trashTraversingFolderShowsDisallowedDialog")
+            .EnableTrash()
             .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

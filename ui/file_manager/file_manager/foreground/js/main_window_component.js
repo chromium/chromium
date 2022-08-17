@@ -251,6 +251,12 @@ export class MainWindowComponent {
     }
 
     const entry = selection.entries[0];
+    // A TrashEntry must have a key on it called `restoreEntry` and thus we use
+    // that as a signal this is a TrashEntry and should not be traversable.
+    if (entry.restoreEntry) {
+      this.ui_.alertDialog.show(str('OPEN_TRASHED_FILES_ERROR'), null, null);
+      return false;
+    }
     if (entry.isDirectory) {
       this.directoryModel_.changeDirectoryEntry(
           /** @type {!DirectoryEntry} */ (entry));
