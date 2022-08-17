@@ -31,6 +31,10 @@ class ASH_EXPORT GlanceablesController {
   // Destroys the glanceables widget and view.
   void DestroyUi();
 
+  // Triggers a fetch of data from the server. This method is separate from
+  // CreateUi() so we can avoid triggering server fetches in tests.
+  void FetchData();
+
   views::Widget* widget_for_test() { return widget_.get(); }
   GlanceablesView* view_for_test() { return view_; }
 

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -46,6 +48,14 @@ void GlanceablesController::CreateUi() {
 void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
+}
+
+void GlanceablesController::FetchData() {
+  // GlanceablesWeatherView observes the weather model for updates.
+  Shell::Get()
+      ->ambient_controller()
+      ->ambient_weather_controller()
+      ->FetchWeather();
 }
 
 }  // namespace ash

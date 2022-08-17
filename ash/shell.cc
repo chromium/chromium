@@ -1612,6 +1612,7 @@ void Shell::OnFirstSessionStarted() {
     // Show glanceables after signin.
     // TODO(crbug.com/1353119): Show only when session restore would trigger.
     glanceables_controller_->CreateUi();
+    glanceables_controller_->FetchData();
   }
 }
 

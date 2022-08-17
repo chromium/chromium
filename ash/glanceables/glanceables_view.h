@@ -10,6 +10,7 @@
 
 namespace ash {
 
+class GlanceablesWeatherView;
 class GlanceablesWelcomeLabel;
 
 // Container view for the "welcome back" glanceables screen shown on login.
@@ -21,9 +22,11 @@ class ASH_EXPORT GlanceablesView : public views::View {
   ~GlanceablesView() override;
 
   GlanceablesWelcomeLabel* welcome_label_for_test() { return welcome_label_; }
+  GlanceablesWeatherView* weather_view_for_test() { return weather_view_; }
 
  private:
   GlanceablesWelcomeLabel* welcome_label_ = nullptr;
+  GlanceablesWeatherView* weather_view_ = nullptr;
 };
 
 }  // namespace ash
