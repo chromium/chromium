@@ -13,8 +13,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -74,7 +74,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
     @Override
     public void onNativeInitialized() {
-        mDropdownItemRoundingEnabled = ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled();
+        mDropdownItemRoundingEnabled = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
     }
 
     @Override

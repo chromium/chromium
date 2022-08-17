@@ -2399,6 +2399,20 @@ const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =
          std::size(kOmniboxAssistantVoiceSearchNoMultiAccountCheck), nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateExcludeTablets[] =
+    {{"enable_modernize_visual_update_on_tablet", "false"}};
+
+const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateIncludeTablets[] =
+    {{"enable_modernize_visual_update_on_tablet", "true"}};
+
+const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
+    {
+        {"(exclude tablet)", kOmniboxModernizeVisualUpdateExcludeTablets,
+         std::size(kOmniboxModernizeVisualUpdateExcludeTablets), nullptr},
+        {"(include tablet)", kOmniboxModernizeVisualUpdateIncludeTablets,
+         std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails[] = {
         {"animate_thumbnails", "true"}};
@@ -5223,7 +5237,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-modernize-visual-update",
      flag_descriptions::kOmniboxModernizeVisualUpdateName,
      flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOmniboxModernizeVisualUpdate)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kOmniboxModernizeVisualUpdate,
+         kOmniboxModernizeVisualUpdateVariations,
+         "OmniboxModernizeVisualUpdate")},
 
     {"omnibox-most-visited-tiles",
      flag_descriptions::kOmniboxMostVisitedTilesName,
