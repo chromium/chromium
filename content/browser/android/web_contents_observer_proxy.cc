@@ -148,7 +148,7 @@ void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1337446) Remove when NotifyJavaSupriouslyToMeasurePerf
+  // TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf
   // experiment is finished.
   TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_didStartNavigation");
 
@@ -198,12 +198,24 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
 void WebContentsObserverProxy::DOMContentLoaded(
     RenderFrameHost* render_frame_host) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_documentLoadedInFrame(
-      env, java_observer_, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(),
-      render_frame_host->IsInPrimaryMainFrame(),
-      static_cast<jint>(render_frame_host->GetLifecycleState()));
+  // TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf
+  // experiment is finished.
+  TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_DOMContentLoaded");
+
+  if (render_frame_host->IsInPrimaryMainFrame()) {
+    Java_WebContentsObserverProxy_documentLoadedInPrimaryMainFrame(
+        AttachCurrentThread(), java_observer_,
+        render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetRoutingID(),
+        static_cast<jint>(render_frame_host->GetLifecycleState()));
+  } else if (base::FeatureList::IsEnabled(
+                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
+    Java_WebContentsObserverProxy_documentLoadedInFrameNoop(
+        AttachCurrentThread(), java_observer_,
+        render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetRoutingID(), false,
+        static_cast<jint>(render_frame_host->GetLifecycleState()));
+  }
 }
 
 void WebContentsObserverProxy::NavigationEntryCommitted(

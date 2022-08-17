@@ -1087,7 +1087,7 @@ public class UrlOverridingTest {
         final CallbackHelper frameFinishCallback = new CallbackHelper();
         WebContentsObserver observer = new WebContentsObserver() {
             @Override
-            public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId,
+            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
                     boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
                 if (!isInPrimaryMainFrame) frameFinishCallback.notifyCalled();
             }

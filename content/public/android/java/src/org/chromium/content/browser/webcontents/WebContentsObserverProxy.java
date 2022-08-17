@@ -282,18 +282,35 @@ class WebContentsObserverProxy extends WebContentsObserver {
     }
 
     @CalledByNative
-    private void documentLoadedInFrame(int renderProcessId, int renderFrameId,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-        documentLoadedInFrame(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
-                isInPrimaryMainFrame, rfhLifecycleState);
+    private void documentLoadedInPrimaryMainFrame(
+            int renderProcessId, int renderFrameId, @LifecycleState int rfhLifecycleState) {
+        documentLoadedInPrimaryMainFrame(
+                new GlobalRenderFrameHostId(renderProcessId, renderFrameId), rfhLifecycleState);
     }
 
     @Override
-    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isInPrimaryMainFrame,
-            @LifecycleState int rfhLifecycleState) {
+    public void documentLoadedInPrimaryMainFrame(
+            GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().documentLoadedInFrame(
+            mObserversIterator.next().documentLoadedInPrimaryMainFrame(rfhId, rfhLifecycleState);
+        }
+        finishObserverCall();
+    }
+
+    @CalledByNative
+    private void documentLoadedInFrameNoop(int renderProcessId, int renderFrameId,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+        documentLoadedInFrameNoop(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
+                false, rfhLifecycleState);
+    }
+
+    @Override
+    public void documentLoadedInFrameNoop(GlobalRenderFrameHostId rfhId,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+        handleObserverCall();
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().documentLoadedInFrameNoop(
                     rfhId, isInPrimaryMainFrame, rfhLifecycleState);
         }
         finishObserverCall();
