@@ -38,8 +38,8 @@ public class SyncConsentFirstRunFragment
      * and false if this will be deferred until the main activity starts.
      */
     public static boolean shouldEnableImmediately() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS);
     }
 
     @Override
