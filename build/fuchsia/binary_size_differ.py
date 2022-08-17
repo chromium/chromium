@@ -64,8 +64,10 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file):
         summary = ('Size check failed! The following package(s) are affected:'
                    '<br>')
       status_code = 1
-      summary += ('- {} grew by {} bytes<br>'.format(
-          package_name, growth['compressed'][package_name]))
+      summary += (('- {} (compressed) grew by {} bytes (uncompressed growth:'
+                   ' {} bytes).<br>').format(
+                       package_name, growth['compressed'][package_name],
+                       growth['uncompressed'][package_name]))
 
   growth['status_code'] = status_code
   summary += ('<br>See the following document for more information about'
