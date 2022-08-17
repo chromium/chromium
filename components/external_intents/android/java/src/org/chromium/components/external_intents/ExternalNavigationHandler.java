@@ -653,7 +653,8 @@ public class ExternalNavigationHandler {
                     if (params.isMainFrame()
                             && params.getAsyncActionTakenInMainFrameCallback() != null) {
                         params.getAsyncActionTakenInMainFrameCallback().onResult(
-                                new ExternalNavigationParams.AsyncActionTakenParams(false, true));
+                                new ExternalNavigationParams.AsyncActionTakenParams(
+                                        false, true, params));
                     }
                     clobberCurrentTab(params.getUrl(), params.getReferrerUrl(),
                             params.getInitiatorOrigin(), params.isRendererInitiated());
@@ -663,7 +664,8 @@ public class ExternalNavigationHandler {
                     if (params.isMainFrame()
                             && params.getAsyncActionTakenInMainFrameCallback() != null) {
                         params.getAsyncActionTakenInMainFrameCallback().onResult(
-                                new ExternalNavigationParams.AsyncActionTakenParams(true, false));
+                                new ExternalNavigationParams.AsyncActionTakenParams(
+                                        true, false, params));
                     }
                 }
             }
@@ -1410,7 +1412,7 @@ public class ExternalNavigationHandler {
                         && params.getAsyncActionTakenInMainFrameCallback() != null) {
                     params.getAsyncActionTakenInMainFrameCallback().onResult(
                             new ExternalNavigationParams.AsyncActionTakenParams(
-                                    mDelegate.canCloseTabOnIncognitoIntentLaunch(), false));
+                                    mDelegate.canCloseTabOnIncognitoIntentLaunch(), false, params));
                 }
                 return;
             } catch (ActivityNotFoundException e) {
@@ -1426,12 +1428,12 @@ public class ExternalNavigationHandler {
                 // There was no fallback URL and we can't handle the URL the intent was targeting.
                 // In this case we'll return to the last committed URL.
                 params.getAsyncActionTakenInMainFrameCallback().onResult(
-                        new ExternalNavigationParams.AsyncActionTakenParams(false, false));
+                        new ExternalNavigationParams.AsyncActionTakenParams(false, false, params));
             } else {
                 assert result.getResultType()
                         == OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
                 params.getAsyncActionTakenInMainFrameCallback().onResult(
-                        new ExternalNavigationParams.AsyncActionTakenParams(false, true));
+                        new ExternalNavigationParams.AsyncActionTakenParams(false, true, params));
             }
         }
     }

@@ -25,9 +25,13 @@ public class ExternalNavigationParams {
         // Whether the tab will be clobbered as a result of this async action.
         public boolean willClobberTab;
 
-        public AsyncActionTakenParams(boolean canCloseTab, boolean willClobberTab) {
+        public ExternalNavigationParams externalNavigationParams;
+
+        public AsyncActionTakenParams(
+                boolean canCloseTab, boolean willClobberTab, ExternalNavigationParams params) {
             this.canCloseTab = canCloseTab;
             this.willClobberTab = willClobberTab;
+            this.externalNavigationParams = params;
 
             // We can't both close the tab and clobber it.
             assert !willClobberTab || !canCloseTab;

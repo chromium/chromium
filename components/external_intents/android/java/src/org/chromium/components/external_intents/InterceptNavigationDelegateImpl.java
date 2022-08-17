@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -28,6 +29,9 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Class that controls navigations and allows to intercept them. It is used on Android to 'convert'
  * certain navigations to Intents to 3rd party applications.
@@ -38,6 +42,41 @@ import org.chromium.url.Origin;
  */
 @JNINamespace("external_intents")
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
+    /**
+     * Histogram for the source of a main frame intent launch.
+     * This enum is used in UMA, do not reorder values.
+     */
+    @IntDef({MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_INTENT_SCHEME,
+            MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME,
+            MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME,
+            MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_INTENT_SCHEME,
+            MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME,
+            MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME,
+            MainFrameIntentLaunch.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MainFrameIntentLaunch {
+        /* The tab was not opened by an external app, and the URL navigated to had an intent:
+         * scheme. */
+        int NOT_FROM_EXTERNAL_APP_TO_INTENT_SCHEME = 0;
+        /* The tab was not opened by an external app, and the URL navigated to had a custom
+         * scheme. */
+        int NOT_FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME = 1;
+        /* The tab was not opened by an external app, and the URL navigated to had a supported
+         * scheme. */
+        int NOT_FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME = 2;
+        /* Tab was opened by an external app, and the URL navigated to had an intent: scheme. */
+        int FROM_EXTERNAL_APP_TO_INTENT_SCHEME = 3;
+        /* Tab was opened by an external app, and the URL navigated to had a custom scheme. */
+        int FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME = 4;
+        /* Tab was opened by an external app, and the URL navigated to had a supported scheme. */
+        int FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME = 5;
+
+        int NUM_ENTRIES = 6;
+    }
+
+    private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
+            "Android.Intent.MainFrameIntentLaunch";
+
     private final AuthenticatorNavigationInterceptor mAuthenticatorHelper;
     private InterceptNavigationDelegateClient mClient;
     private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
@@ -159,7 +198,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 assert mExternalNavHandler.canExternalAppHandleUrl(url);
                 if (navigationHandle.isInPrimaryMainFrame()) {
-                    onDidFinishMainFrameUrlOverriding(true, false);
+                    onDidFinishMainFrameUrlOverriding(true, false, params);
                 }
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
@@ -270,17 +309,38 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void onDidTakeMainFrameAsyncAction(AsyncActionTakenParams params) {
-        onDidFinishMainFrameUrlOverriding(params.canCloseTab, params.willClobberTab);
+        onDidFinishMainFrameUrlOverriding(
+                params.canCloseTab, params.willClobberTab, params.externalNavigationParams);
     }
 
     /**
      * Called when Chrome decides to override URL loading and launch an intent or an asynchronous
      * action.
      */
-    private void onDidFinishMainFrameUrlOverriding(boolean canCloseTab, boolean willClobberTab) {
+    private void onDidFinishMainFrameUrlOverriding(
+            boolean canCloseTab, boolean willClobberTab, ExternalNavigationParams params) {
         if (mClient.getWebContents() == null) return;
 
         boolean shouldCloseTab = canCloseTab && isTabOnInitialNavigationChain();
+
+        @MainFrameIntentLaunch
+        int mainFrameLaunchType;
+        boolean fromApp = mClient.wasTabLaunchedFromExternalApp();
+        if (UrlUtilities.hasIntentScheme(params.getUrl())) {
+            mainFrameLaunchType = fromApp
+                    ? MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_INTENT_SCHEME
+                    : MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_INTENT_SCHEME;
+        } else if (UrlUtilities.isAcceptedScheme(params.getUrl())) {
+            mainFrameLaunchType = fromApp
+                    ? MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME
+                    : MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_SUPPORTED_SCHEME;
+        } else {
+            mainFrameLaunchType = fromApp
+                    ? MainFrameIntentLaunch.FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME
+                    : MainFrameIntentLaunch.NOT_FROM_EXTERNAL_APP_TO_CUSTOM_SCHEME;
+        }
+        RecordHistogram.recordEnumeratedHistogram(MAIN_FRAME_INTENT_LAUNCH_NAME,
+                mainFrameLaunchType, MainFrameIntentLaunch.NUM_ENTRIES);
 
         // Before leaving Chrome, close any tab created for the navigation chain.
         if (shouldCloseTab) {
