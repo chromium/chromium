@@ -97,20 +97,6 @@ class CORE_EXPORT DocumentAnimations final
   // reattached if needed.
   void DetachCompositorTimelines();
 
-  // Add an element to the set of elements with a pending animation update.
-  // The elements in the set can be applied later using,
-  // ApplyPendingElementUpdates.
-  //
-  // It's invalid to call this function if there is no current
-  // PostStyleUpdateScope.
-  void AddElementWithPendingAnimationUpdate(Element&);
-
-  // Apply pending updates for any elements previously added during AddElement-
-  // WithPendingAnimationUpdate.
-  void ApplyPendingElementUpdates();
-
-  void AddPendingOldStyleForElement(Element&);
-
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
     return timelines_;
