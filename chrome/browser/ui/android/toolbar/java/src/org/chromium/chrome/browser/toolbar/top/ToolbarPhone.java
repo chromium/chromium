@@ -744,13 +744,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int getBoundsAfterAccountingForRightButtons() {
         if (mStartSurfaceScrollFraction == 1.0f) return mToolbarSidePadding;
 
-        int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getWidth();
+        int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
 
-        // If the button container changed but there's no optional button animation running then we
-        // must have shown the optional button without an animation, use measuredWidth() to take
-        // into account the optional button's space.
-        if (mToolbarButtonsContainer.isDirty() && !mOptionalButtonAnimationRunning) {
-            toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
+        // MeasuredWidth() represents the desired width of the container which is accurate most
+        // time, except during the optional button animations, where the MeasuredWidth changes
+        // instantly to the final size and Width() represents the actual size at that frame.
+        if (mOptionalButtonAnimationRunning) {
+            toolbarButtonsContainerWidth = mToolbarButtonsContainer.getWidth();
         }
 
         return Math.max(mToolbarSidePadding, toolbarButtonsContainerWidth);
