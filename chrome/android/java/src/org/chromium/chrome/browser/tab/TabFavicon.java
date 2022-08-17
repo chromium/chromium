@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -102,7 +104,12 @@ public class TabFavicon extends TabWebContentsUserData {
      * @return true iff the new favicon should replace the current one.
      */
     private boolean isBetterFavicon(int width, int height) {
+        assert width >= 0 && height >= 0;
+
         if (isIdealFaviconSize(width, height)) return true;
+
+        // The page may be dynamically updating its URL, let it through.
+        if (mFaviconWidth == width && mFaviconHeight == height) return true;
 
         // Prefer square favicons over rectangular ones
         if (mFaviconWidth != mFaviconHeight && width == height) return true;
@@ -121,7 +128,8 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     @CalledByNative
-    private void onFaviconAvailable(Bitmap icon) {
+    @VisibleForTesting
+    void onFaviconAvailable(Bitmap icon) {
         if (icon == null) return;
         GURL url = mTab.getUrl();
         boolean pageUrlChanged = !url.equals(mFaviconUrl);
