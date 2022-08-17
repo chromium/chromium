@@ -222,7 +222,10 @@ void ServiceImpl::ReportProgress(
     const std::string& token,
     const std::string& payload,
     ServiceRequestSender::ResponseCallback callback) {
-  // TODO(b/242136158): Check for UMA & MSBB here before sending request.
+  if (!client_->GetMakeSearchesAndBrowsingBetterEnabled() ||
+      !client_->GetMetricsReportingEnabled()) {
+    return;
+  }
   request_sender_->SendRequest(
       script_action_server_url_,
       ProtocolUtils::CreateReportProgressRequest(token, payload),

@@ -268,6 +268,12 @@ TEST_F(ServiceImplTest, ReportProgress) {
   const std::string token = "token";
   const std::string payload = "payload";
 
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kActionServerUrl),
@@ -276,6 +282,46 @@ TEST_F(ServiceImplTest, ReportProgress) {
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(""),
                                    ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, std::string(""), _));
+
+  service_->ReportProgress("token", "payload", mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, ReportProgressMSBBDisabled) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled).Times(0);
+
+  EXPECT_CALL(
+      *mock_request_sender_,
+      OnSendRequest(GURL(kActionServerUrl),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .Times(0);
+
+  service_->ReportProgress("token", "payload", mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, ReportProgressMetricsDisabled) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled)
+      .Times(1)
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(
+      *mock_request_sender_,
+      OnSendRequest(GURL(kActionServerUrl),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .Times(0);
 
   service_->ReportProgress("token", "payload", mock_response_callback_.Get());
 }

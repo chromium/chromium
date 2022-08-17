@@ -130,6 +130,12 @@ class Client {
   virtual void GetAnnotateDomModelVersion(
       base::OnceCallback<void(absl::optional<int64_t>)> callback) const = 0;
 
+  // Return whether MSBB is enabled.
+  virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const = 0;
+
+  // Return whether metrics reporting is enable.
+  virtual bool GetMetricsReportingEnabled() const = 0;
+
  protected:
   Client() = default;
 };

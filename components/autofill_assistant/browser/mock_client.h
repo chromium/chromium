@@ -58,6 +58,8 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
   MOCK_CONST_METHOD1(GetAnnotateDomModelVersion,
                      void(base::OnceCallback<void(absl::optional<int64_t>)>));
+  MOCK_CONST_METHOD0(GetMakeSearchesAndBrowsingBetterEnabled, bool());
+  MOCK_CONST_METHOD0(GetMetricsReportingEnabled, bool());
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;

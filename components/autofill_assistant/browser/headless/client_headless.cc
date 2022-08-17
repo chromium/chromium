@@ -240,4 +240,14 @@ void ClientHeadless::InvalidateAccessToken(const std::string& access_token) {
       {kOAuth2Scope}, access_token);
 }
 
+bool ClientHeadless::GetMakeSearchesAndBrowsingBetterEnabled() const {
+  return common_dependencies_->GetMakeSearchesAndBrowsingBetterEnabled(
+      GetWebContents()->GetBrowserContext());
+}
+
+bool ClientHeadless::GetMetricsReportingEnabled() const {
+  return common_dependencies_->GetMetricsReportingEnabled(
+      GetWebContents()->GetBrowserContext());
+}
+
 }  // namespace autofill_assistant

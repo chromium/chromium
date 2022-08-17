@@ -83,6 +83,8 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   void GetAnnotateDomModelVersion(
       base::OnceCallback<void(absl::optional<int64_t>)> callback)
       const override;
+  bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetMetricsReportingEnabled() const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(

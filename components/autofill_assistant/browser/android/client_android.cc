@@ -751,6 +751,17 @@ bool ClientAndroid::NeedsUI() {
   return !ui_controller_android_ && controller_ && controller_->NeedsUI();
 }
 
+bool ClientAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
+  return dependencies_->GetCommonDependencies()
+      ->GetMakeSearchesAndBrowsingBetterEnabled(
+          GetWebContents()->GetBrowserContext());
+}
+
+bool ClientAndroid::GetMetricsReportingEnabled() const {
+  return dependencies_->GetCommonDependencies()->GetMetricsReportingEnabled(
+      GetWebContents()->GetBrowserContext());
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientAndroid);
 
 }  // namespace autofill_assistant
