@@ -16,8 +16,6 @@ namespace blink {
 class ScriptCacheConsumerClient : public GarbageCollectedMixin {
  public:
   virtual void NotifyCacheConsumeFinished() = 0;
-  virtual const ParkableString& GetSourceText() = 0;
-  virtual v8::ScriptOrigin GetScriptOrigin() = 0;
 };
 
 }  // namespace blink

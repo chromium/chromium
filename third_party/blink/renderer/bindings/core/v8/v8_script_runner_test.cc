@@ -165,11 +165,8 @@ class V8ScriptRunnerTest : public testing::Test {
     return resource;
   }
 
-  ClassicScript* CreateScript(ScriptResource* resource,
-                              ScriptCacheConsumer* cache_consumer = nullptr) {
-    return ClassicScript::CreateFromResource(
-        resource, KURL(), ScriptFetchOptions(), nullptr,
-        ScriptStreamer::NotStreamingReason::kScriptTooSmall, cache_consumer);
+  ClassicScript* CreateScript(ScriptResource* resource) {
+    return ClassicScript::CreateFromResource(resource, ScriptFetchOptions());
   }
 
   Vector<uint8_t> CreateCachedData() {
@@ -626,19 +623,12 @@ class StubScriptCacheConsumerClient final
     : public GarbageCollected<StubScriptCacheConsumerClient>,
       public ScriptCacheConsumerClient {
  public:
-  StubScriptCacheConsumerClient(base::OnceClosure finish_closure,
-                                v8::Isolate* isolate)
-      : finish_closure_(std::move(finish_closure)), isolate_(isolate) {}
+  explicit StubScriptCacheConsumerClient(base::OnceClosure finish_closure)
+      : finish_closure_(std::move(finish_closure)) {}
 
   void NotifyCacheConsumeFinished() override {
     cache_consume_finished_ = true;
     std::move(finish_closure_).Run();
-  }
-
-  const ParkableString& GetSourceText() override { return source_text_; }
-
-  v8::ScriptOrigin GetScriptOrigin() override {
-    return v8::ScriptOrigin(isolate_, V8String(isolate_, ""));
   }
 
   bool cache_consume_finished() { return cache_consume_finished_; }
@@ -646,8 +636,6 @@ class StubScriptCacheConsumerClient final
  private:
   base::OnceClosure finish_closure_;
   bool cache_consume_finished_ = false;
-  ParkableString source_text_;
-  v8::Isolate* isolate_;
 };
 
 }  // namespace
@@ -664,14 +652,12 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource = CreateResource(UTF8Encoding(), cached_data);
   EXPECT_TRUE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
-
-  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
-  EXPECT_NE(cache_consumer, nullptr);
-
+  ClassicScript* classic_script = CreateScript(resource);
+  EXPECT_NE(classic_script->CacheConsumer(), nullptr);
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure(), scope.GetIsolate());
-  cache_consumer->NotifyClientWaiting(consumer_client,
-                                      base::ThreadTaskRunnerHandle::Get());
+      run_loop_.QuitClosure());
+  classic_script->CacheConsumer()->NotifyClientWaiting(
+      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will
@@ -679,8 +665,6 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   RunLoopUntilQuit();
 
   EXPECT_TRUE(consumer_client->cache_consume_finished());
-
-  ClassicScript* classic_script = CreateScript(resource, cache_consumer);
 
   base::HistogramTester tester;
   HistogramCounter counter(tester);
@@ -712,21 +696,17 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource =
       CreateResource(UTF8Encoding(), cached_data, DifferentCode());
-
-  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
-  EXPECT_NE(cache_consumer, nullptr);
-
+  ClassicScript* classic_script = CreateScript(resource);
+  EXPECT_NE(classic_script->CacheConsumer(), nullptr);
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure(), scope.GetIsolate());
-  cache_consumer->NotifyClientWaiting(consumer_client,
-                                      base::ThreadTaskRunnerHandle::Get());
+      run_loop_.QuitClosure());
+  classic_script->CacheConsumer()->NotifyClientWaiting(
+      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will
   // post a QuitClosure to this RunLoop.
   RunLoopUntilQuit();
-
-  ClassicScript* classic_script = CreateScript(resource, cache_consumer);
 
   base::HistogramTester tester;
   HistogramCounter counter(tester);
@@ -766,21 +746,17 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
 
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource = CreateResource(UTF8Encoding(), corrupted_data);
-
-  ScriptCacheConsumer* cache_consumer = resource->TakeCacheConsumer();
-  EXPECT_NE(cache_consumer, nullptr);
-
+  ClassicScript* classic_script = CreateScript(resource);
+  EXPECT_NE(classic_script->CacheConsumer(), nullptr);
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure(), scope.GetIsolate());
-  cache_consumer->NotifyClientWaiting(consumer_client,
-                                      base::ThreadTaskRunnerHandle::Get());
+      run_loop_.QuitClosure());
+  classic_script->CacheConsumer()->NotifyClientWaiting(
+      consumer_client, classic_script, base::ThreadTaskRunnerHandle::Get());
 
   // Wait until the ScriptCacheConsumer completes. ScriptCacheConsumer will
   // post a task for the client to signal that it has completed, which will
   // post a QuitClosure to this RunLoop.
   RunLoopUntilQuit();
-
-  ClassicScript* classic_script = CreateScript(resource, cache_consumer);
 
   base::HistogramTester tester;
   HistogramCounter counter(tester);

@@ -20,7 +20,7 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class CachedMetadata;
-class ScriptResource;
+class ClassicScript;
 class ScriptCacheConsumerClient;
 
 // A V8 code cache consumer for a script's code cache, which consumes the code
@@ -68,6 +68,7 @@ class CORE_EXPORT ScriptCacheConsumer final
   //      NotifyCacheConsumeFinished using the given task runner.
   void NotifyClientWaiting(
       ScriptCacheConsumerClient* client,
+      ClassicScript* classic_script,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Take ownership of the consume task, clearing it from the consumer so that

@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -174,21 +173,7 @@ class ScriptStreamingTest : public testing::Test {
   }
 
   ClassicScript* CreateClassicScript() const {
-    ResourceScriptStreamer* streamer = resource_->TakeStreamer();
-    ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
-    if (streamer) {
-      if (streamer->IsStreamingSuppressed()) {
-        return ClassicScript::CreateFromResource(
-            resource_, KURL(), ScriptFetchOptions(), nullptr,
-            streamer->StreamingSuppressedReason(), cache_consumer);
-      }
-      return ClassicScript::CreateFromResource(
-          resource_, KURL(), ScriptFetchOptions(), streamer,
-          ScriptStreamer::NotStreamingReason::kInvalid, cache_consumer);
-    }
-    return ClassicScript::CreateFromResource(
-        resource_, KURL(), ScriptFetchOptions(), nullptr,
-        resource_->NoStreamerReason(), cache_consumer);
+    return ClassicScript::CreateFromResource(resource_, ScriptFetchOptions());
   }
 
  protected:

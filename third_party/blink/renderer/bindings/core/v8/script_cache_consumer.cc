@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -144,6 +145,7 @@ void ScriptCacheConsumer::Trace(Visitor* visitor) const {
 
 void ScriptCacheConsumer::NotifyClientWaiting(
     ScriptCacheConsumerClient* client,
+    ClassicScript* classic_script,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(WTF::IsMainThread());
 
@@ -159,8 +161,8 @@ void ScriptCacheConsumer::NotifyClientWaiting(
   {
     v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
     v8::HandleScope scope(isolate);
-    const ParkableString& source_text = client->GetSourceText();
-    v8::ScriptOrigin origin = client->GetScriptOrigin();
+    const ParkableString& source_text = classic_script->SourceText();
+    v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     if (consume_task_) {
       consume_task_->SourceTextAvailable(
           isolate, V8String(isolate, source_text), origin);

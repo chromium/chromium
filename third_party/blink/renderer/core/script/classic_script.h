@@ -20,12 +20,6 @@ class CORE_EXPORT ClassicScript final : public Script {
  public:
   // For `source_url`.
   static KURL StripFragmentIdentifier(const KURL&);
-  static KURL SourceUrlFromResource(const ScriptResource& resource);
-
-  static String SourceMapUrlFromResponse(const ResourceResponse& response);
-
-  static SanitizeScriptErrors ShouldSanitizeScriptErrors(
-      const ResourceResponse& response);
 
   // For scripts specified in the HTML spec or for tests.
   // Please leave spec comments and spec links that explain given argument
@@ -43,11 +37,7 @@ class CORE_EXPORT ClassicScript final : public Script {
           ScriptStreamer::NotStreamingReason::kInlineScript,
       InlineScriptStreamer* = nullptr);
   static ClassicScript* CreateFromResource(ScriptResource*,
-                                           const KURL& base_url,
-                                           const ScriptFetchOptions&,
-                                           ResourceScriptStreamer*,
-                                           ScriptStreamer::NotStreamingReason,
-                                           ScriptCacheConsumer*);
+                                           const ScriptFetchOptions&);
 
   // For scripts not specified in the HTML spec.
   //

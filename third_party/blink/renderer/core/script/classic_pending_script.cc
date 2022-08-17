@@ -51,17 +51,6 @@ InlineScriptStreamer* GetInlineScriptStreamer(const String& source,
   return scriptable_parser->TakeInlineScriptStreamer(source);
 }
 
-}  // namespace
-
-namespace {
-// The base URL for external classic script is
-//
-// <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
-// ... the URL from which the script was obtained, ...</spec>
-KURL BaseUrl(const ScriptResource& resource) {
-  return resource.GetResponse().ResponseUrl();
-}
-
 bool CheckIfEligibleForDelay(const KURL& url,
                              const Document& element_document,
                              const ScriptElementBase& element) {
@@ -181,10 +170,23 @@ ClassicPendingScript::~ClassicPendingScript() = default;
 NOINLINE void ClassicPendingScript::CheckState() const {
   DCHECK(GetElement());
   DCHECK_EQ(is_external_, !!GetResource());
-  if (ready_state_ == kWaitingForCacheConsumer) {
-    DCHECK(cache_consumer_);
-  } else if (ready_state_ == kWaitingForResource) {
-    DCHECK(!cache_consumer_);
+  switch (ready_state_) {
+    case kWaitingForResource:
+      DCHECK(is_external_);
+      DCHECK(!classic_script_);
+      break;
+    case kWaitingForCacheConsumer:
+      DCHECK(is_external_);
+      DCHECK(classic_script_);
+      DCHECK(classic_script_->CacheConsumer());
+      break;
+    case kReady:
+      DCHECK(!is_external_ || classic_script_);
+      break;
+    case kErrorOccurred:
+      DCHECK(is_external_);
+      DCHECK(!classic_script_);
+      break;
   }
 }
 
@@ -347,17 +349,18 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
     return;
   }
 
-  auto* script_resource = To<ScriptResource>(GetResource());
-  CHECK(!cache_consumer_);
-  cache_consumer_ = script_resource->TakeCacheConsumer();
+  // At this point, the load is successful, and ClassicScript is created.
+  classic_script_ =
+      ClassicScript::CreateFromResource(To<ScriptResource>(resource), options_);
 
-  if (cache_consumer_) {
-    // Only wait for the cache consume if there is an execution context it can
-    // notify us on.
+  // We'll still wait for ScriptCacheConsumer before marking this PendingScript
+  // ready.
+  if (classic_script_->CacheConsumer()) {
     AdvanceReadyState(kWaitingForCacheConsumer);
     // TODO(leszeks): Decide whether kNetworking is the right task type here.
-    cache_consumer_->NotifyClientWaiting(
-        this, execution_context->GetTaskRunner(TaskType::kNetworking));
+    classic_script_->CacheConsumer()->NotifyClientWaiting(
+        this, classic_script_,
+        execution_context->GetTaskRunner(TaskType::kNetworking));
   } else {
     // Either there was never a cache consume, or it was dropped. Either way, we
     // are ready.
@@ -370,45 +373,8 @@ void ClassicPendingScript::NotifyCacheConsumeFinished() {
   AdvanceReadyState(kReady);
 }
 
-const ParkableString& ClassicPendingScript::GetSourceText() {
-  // This method is an implementation of a virtual function defined by
-  // ScriptCacheConsumerClient, and is only used for external scripts.
-  CHECK(is_external_);
-
-  return To<ScriptResource>(GetResource())->SourceText();
-}
-
-v8::ScriptOrigin ClassicPendingScript::GetScriptOrigin() {
-  // This method is an implementation of a virtual function defined by
-  // ScriptCacheConsumerClient, and is only used for external scripts.
-  CHECK(is_external_);
-
-  v8::Isolate* isolate = GetElement()->GetExecutionContext()->GetIsolate();
-  auto* resource = To<ScriptResource>(GetResource());
-  const KURL& source_url = ClassicScript::SourceUrlFromResource(*resource);
-  TextPosition script_start_position = TextPosition::MinimumPosition();
-  SanitizeScriptErrors sanitize_script_errors =
-      ClassicScript::ShouldSanitizeScriptErrors(resource->GetResponse());
-  String source_map_url =
-      ClassicScript::SourceMapUrlFromResponse(resource->GetResponse());
-  const KURL& base_url = BaseUrl(*resource);
-  const ReferrerScriptInfo referrer_info(base_url, options_);
-  v8::Local<v8::Data> host_defined_options =
-      referrer_info.ToV8HostDefinedOptions(isolate, source_url);
-  return v8::ScriptOrigin(
-      isolate, V8String(isolate, source_url),
-      script_start_position.line_.ZeroBasedInt(),
-      script_start_position.column_.ZeroBasedInt(),
-      sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize, -1,
-      V8String(isolate, source_map_url),
-      sanitize_script_errors == SanitizeScriptErrors::kSanitize,
-      false,  // is_wasm
-      false,  // is_module
-      host_defined_options);
-}
-
 void ClassicPendingScript::Trace(Visitor* visitor) const {
-  visitor->Trace(cache_consumer_);
+  visitor->Trace(classic_script_);
   ResourceClient::Trace(visitor);
   MemoryPressureListener::Trace(visitor);
   PendingScript::Trace(visitor);
@@ -476,34 +442,23 @@ ClassicScript* ClassicPendingScript::GetSource() const {
         streamer);
   }
 
+  DCHECK(classic_script_);
+
+  // Record histograms here, because these uses `GetSchedulingType()` but it
+  // might be unavailable yet at the time of `NotifyFinished()`.
   DCHECK(GetResource()->IsLoaded());
-  auto* resource = To<ScriptResource>(GetResource());
-  RecordThirdPartyRequestWithCookieIfNeeded(resource->GetResponse());
+  RecordThirdPartyRequestWithCookieIfNeeded(GetResource()->GetResponse());
 
-  // Check if we can use the script streamer.
-  ResourceScriptStreamer* streamer;
-  ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
-      resource, mojom::blink::ScriptType::kClassic);
-
-  if (ready_state_ == kErrorOccurred) {
-    not_streamed_reason = ScriptStreamer::NotStreamingReason::kErrorOccurred;
-    streamer = nullptr;
-  }
-  if (streamer)
-    CHECK_EQ(ready_state_, kReady);
-  ScriptStreamer::RecordStreamingHistogram(GetSchedulingType(), streamer,
-                                           not_streamed_reason);
+  ScriptStreamer::RecordStreamingHistogram(
+      GetSchedulingType(), classic_script_->Streamer(),
+      classic_script_->NotStreamingReason());
 
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
                          "ClassicPendingScript::GetSource", this,
                          TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
-                         not_streamed_reason);
+                         classic_script_->NotStreamingReason());
 
-  const KURL& base_url = BaseUrl(*resource);
-  return ClassicScript::CreateFromResource(resource, base_url, options_,
-                                           streamer, not_streamed_reason,
-                                           cache_consumer_);
+  return classic_script_;
 }
 
 // static
