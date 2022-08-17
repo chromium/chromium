@@ -150,7 +150,7 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
                          is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
                                     : SafeBrowsingState::STANDARD_PROTECTION,
                          /*is_esb_enabled_in_sync=*/is_enabled);
-    DisplayDesktopDialog(web_contents, is_enabled);
+    DisplayDesktopDialog(browser, web_contents, is_enabled);
   } else {
     DisplayTailoredSecurityConsentedModalDesktop(profile_, is_enabled);
   }
@@ -162,12 +162,13 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::DisplayDesktopDialog(
+    Browser* browser,
     content::WebContents* web_contents,
     bool show_enable_modal) {
   if (show_enable_modal) {
-    ShowEnabledDialogForWebContents(web_contents);
+    ShowEnabledDialogForWebContents(browser, web_contents);
   } else {
-    ShowDisabledDialogForWebContents(web_contents);
+    ShowDisabledDialogForWebContents(browser, web_contents);
   }
 }
 #endif

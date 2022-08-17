@@ -9,7 +9,9 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -68,7 +70,8 @@ class EnabledDialogModelDelegate : public ui::DialogModelDelegate {
   }
 };
 
-void ShowEnabledDialogForWebContents(content::WebContents* web_contents) {
+void ShowEnabledDialogForWebContents(Browser* browser,
+                                     content::WebContents* web_contents) {
   auto model_delegate = std::make_unique<EnabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -101,10 +104,12 @@ void ShowEnabledDialogForWebContents(content::WebContents* web_contents) {
                   IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON))
           .Build();
 
-  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+  constrained_window::ShowBrowserModal(std::move(dialog_model),
+                                       browser->window()->GetNativeWindow());
 }
 
-void ShowDisabledDialogForWebContents(content::WebContents* web_contents) {
+void ShowDisabledDialogForWebContents(Browser* browser,
+                                      content::WebContents* web_contents) {
   auto model_delegate = std::make_unique<DisabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -132,7 +137,8 @@ void ShowDisabledDialogForWebContents(content::WebContents* web_contents) {
                   IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON))
           .Build();
 
-  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+  constrained_window::ShowBrowserModal(std::move(dialog_model),
+                                       browser->window()->GetNativeWindow());
 }
 
 }  // namespace safe_browsing
