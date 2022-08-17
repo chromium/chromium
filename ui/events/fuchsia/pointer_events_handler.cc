@@ -405,8 +405,10 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
       // Update mouse_down_ for the next Fuchsia event.
       mouse_down_[id] = pressed_buttons;
 
-      const bool is_wheel_event =
-          sample.has_scroll_v() || sample.has_scroll_h();
+      const bool is_wheel_event = sample.has_scroll_v() ||
+                                  sample.has_scroll_h() ||
+                                  sample.has_scroll_h_physical_pixel() ||
+                                  sample.has_scroll_v_physical_pixel();
       // Do not filterout mouse wheel here, because the wheel event may be
       // bundled with button down and button up event. Chromium will need to
       // split it to 2 events.
