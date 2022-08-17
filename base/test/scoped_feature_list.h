@@ -145,7 +145,7 @@ class ScopedFeatureList final {
   void InitWithFeatureState(const Feature& feature, bool enabled);
 
  private:
-  using PassKey = PassKey<ScopedFeatureList>;
+  using PassKey = base::PassKey<ScopedFeatureList>;
 
   // Initializes and registers a FeatureList instance based on the current
   // FeatureList and overridden with the given enabled and disabled features.
