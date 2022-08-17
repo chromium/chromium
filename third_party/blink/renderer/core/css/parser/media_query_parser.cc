@@ -74,8 +74,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kColorGamutMediaFeature ||
            feature == media_feature_names::kImmersiveMediaFeature ||
            feature == media_feature_names::kPrefersColorSchemeMediaFeature ||
-           (feature == media_feature_names::kPrefersContrastMediaFeature &&
-            RuntimeEnabledFeatures::PrefersContrastEnabled()) ||
+           feature == media_feature_names::kPrefersContrastMediaFeature ||
            feature == media_feature_names::kPrefersReducedMotionMediaFeature ||
            (feature == media_feature_names::kPrefersReducedDataMediaFeature &&
             RuntimeEnabledFeatures::PrefersReducedDataEnabled()) ||

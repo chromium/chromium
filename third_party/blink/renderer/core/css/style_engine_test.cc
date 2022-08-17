@@ -1642,7 +1642,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangeColorSchemeForcedDarkMode) {
 
 TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrast) {
   ScopedForcedColorsForTest forced_scoped_feature(true);
-  ScopedPrefersContrastForTest contrast_scoped_feature(true);
 
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredContrast(
@@ -1690,7 +1689,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrast) {
 
 TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
   ScopedForcedColorsForTest forced_scoped_feature(true);
-  ScopedPrefersContrastForTest contrast_scoped_feature(true);
 
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredContrast(
@@ -1741,7 +1739,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
 
 TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrastOverride) {
   ScopedForcedColorsForTest forced_scoped_feature(true);
-  ScopedPrefersContrastForTest contrast_scoped_feature(true);
 
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredContrast(

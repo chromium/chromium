@@ -525,7 +525,6 @@ TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
 
 TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   ScopedForcedColorsForTest forced_scoped_feature(true);
-  ScopedPrefersContrastForTest contrast_scoped_feature(true);
 
   MediaValuesCached::MediaValuesCachedData data;
   data.forced_colors = ForcedColors::kNone;
