@@ -427,6 +427,8 @@ static_library("ui") {
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
+    "//chrome/services/media_gallery_util/public/cpp",
+    "//chrome/services/media_gallery_util/public/mojom",
     "//chrome/services/qrcode_generator/public/cpp",
     "//chrome/services/qrcode_generator/public/mojom",
     "//components/about_ui",

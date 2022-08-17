@@ -32,6 +32,8 @@ extern const base::FilePath::CharType kProjectorMetadataFileExtension[];
 // File extension of Projector media file.
 extern const base::FilePath::CharType kProjectorMediaFileExtension[];
 
+extern const char kProjectorMediaMimeType[];
+
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_

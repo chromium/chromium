@@ -9,6 +9,10 @@
 
 #include "ash/webui/projector_app/projector_app_client.h"
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace ash {
 
 // Class to get and modify screencast data through IO and DriveFS.
@@ -26,6 +30,10 @@ class ScreencastManager {
   void GetVideo(const std::string& video_file_id,
                 const std::string& resource_key,
                 ProjectorAppClient::OnGetVideoCallback callback) const;
+
+ private:
+  // The task runner to get video metadata.
+  scoped_refptr<base::SequencedTaskRunner> video_metadata_task_runner_;
 };
 
 }  // namespace ash

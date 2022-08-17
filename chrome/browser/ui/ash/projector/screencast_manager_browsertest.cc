@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/projector/screencast_manager.h"
-
 #include <memory>
 
 #include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/webui/projector_app/buildflags.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_screencast.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,14 +24,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -41,6 +40,10 @@ constexpr char kVideoFileName[] = "MyTestScreencast.webm";
 constexpr char kVideoFileId[] = "videoFileId";
 constexpr char kResourceKey[] = "resourceKey";
 constexpr char kTestFileContents[] = "This is some test content.";
+
+// Name and duration of a real video file located at //media/test/data.
+constexpr char kTestVideoFile[] = "tulip2.webm";
+constexpr char kTestVideoDurationMilliesecond[] = "16682";
 
 void VerifyResponse(const content::EvalJsResult& result) {
   EXPECT_TRUE(result.error.empty());
@@ -55,17 +58,14 @@ void VerifyResponse(const content::EvalJsResult& result) {
   // differs across test runs, even for the same file. Just check that the url
   // begins with blob:chrome-untrusted://projector/.
   EXPECT_EQ(src_url->rfind("blob:chrome-untrusted://projector/", 0), 0);
+  const std::string* duration_millis = dict.FindString("durationMillis");
+  ASSERT_TRUE(duration_millis);
+  EXPECT_EQ(*duration_millis, kTestVideoDurationMilliesecond);
 }
 
 }  // namespace
 
-class ScreencastManagerTest : public SystemWebAppIntegrationTest {
- protected:
-  ScreencastManager& screencast_manager() { return screencast_manager_; }
-
- private:
-  ScreencastManager screencast_manager_;
-};
+using ScreencastManagerTest = SystemWebAppIntegrationTest;
 
 class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
  public:
@@ -80,6 +80,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
         &create_drive_integration_service_);
   }
 
+  // ScreencastManagerTest:
   void SetUpOnMainThread() override {
     ScreencastManagerTest::SetUpOnMainThread();
     WaitForTestSystemAppInstall();
@@ -110,11 +111,26 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
 
     const base::FilePath& absolute_path =
         GetTestFile(title, /*relative=*/false);
-    EXPECT_TRUE(base::WriteFile(absolute_path, kTestFileContents));
+    // Writes a file with `kTestFileContents` if path doesn't exist.
+    if (!base::PathExists(absolute_path))
+      EXPECT_TRUE(base::WriteFile(absolute_path, kTestFileContents));
 
     const base::FilePath& relative_path = GetTestFile(title, /*relative=*/true);
     fake->SetMetadata(relative_path, content_type, title, false, shared_with_me,
                       {}, {}, file_id, "");
+  }
+
+  // Copies a file from //media/test/data with `original_name` to default test
+  // folder with `dest_name`.
+  void AddTestMediaFileToDefaultFolder(const std::string& original_name,
+                                       const std::string& dest_name,
+                                       const std::string& content_type,
+                                       bool shared_with_me) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CopyFile(media::GetTestDataFilePath(original_name),
+                               GetTestFile(dest_name, /*relative=*/false)));
+    AddFileToDefaultFolder(kVideoFileId, content_type, dest_name,
+                           /*shared_with_me=*/shared_with_me);
   }
 
  protected:
@@ -147,7 +163,7 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
 // there's no DriveFS mount point available.
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
   base::RunLoop run_loop;
-  screencast_manager().GetVideo(
+  ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
           [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
@@ -167,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
 // logs in on a new device, before the files have fully synced.
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, FileNotFound) {
   base::RunLoop run_loop;
-  screencast_manager().GetVideo(
+  ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
           [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
@@ -185,11 +201,12 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, FileNotFound) {
 
 // Tests that the ScreencastManager rejects files that don't look like a video.
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideo) {
-  AddFileToDefaultFolder(kVideoFileId, "video/webm", "MyTestScreencast.exe",
+  AddFileToDefaultFolder(kVideoFileId, kProjectorMediaMimeType,
+                         "MyTestScreencast.exe",
                          /*shared_with_me=*/true);
 
   base::RunLoop run_loop;
-  screencast_manager().GetVideo(
+  ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
           [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
@@ -205,18 +222,40 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideo) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
-  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
-                         /*shared_with_me=*/false);
-
+  // Uses a real webm video file for this test and renames it to
+  // `kVideoFileName`.
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName,
+                                  kProjectorMediaMimeType, false);
   base::RunLoop run_loop;
-  screencast_manager().GetVideo(
+  ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
           [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
                       const std::string& error_message) {
             EXPECT_EQ(video->file_id, kVideoFileId);
+            EXPECT_EQ(video->duration_millis, kTestVideoDurationMilliesecond);
             EXPECT_TRUE(error_message.empty());
-            // Quits the run loop.
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+// Tests that the ScreencastManager rejects malformed video files.
+IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
+                       GetMalFormedVideoFail) {
+  // Uses a binary file for this test and renames it to `kVideoFileName`.
+  AddTestMediaFileToDefaultFolder("bear-audio-mp4a.69.ts", kVideoFileName,
+                                  kProjectorMediaMimeType, true);
+  base::RunLoop run_loop;
+  ProjectorAppClient::Get()->GetVideo(
+      kVideoFileId, kResourceKey,
+      base::BindLambdaForTesting(
+          [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
+                      const std::string& error_message) {
+            EXPECT_EQ(error_message,
+                      base::StringPrintf(
+                          "Media might be malformed with video file id=%s",
+                          kVideoFileId));
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -244,8 +283,10 @@ constexpr char kGetVideoScript[] = R"(
 // returns before getVideo().
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                        LoadFileBeforeGetVideo) {
-  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
-                         /*shared_with_me=*/true);
+  // Uses a real webm video file for this test and renames it to
+  // `kVideoFileName`.
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName,
+                                  kProjectorMediaMimeType, true);
 
   // Launch the app for the first time.
   content::WebContents* app = LaunchApp(SystemWebAppType::PROJECTOR);
@@ -280,8 +321,11 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
 // getVideo() returns before onFileLoaded().
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                        GetVideoBeforeLoadFile) {
-  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
-                         /*shared_with_me=*/false);
+  // Uses a real webm video file for this test and renames it to
+  // `kVideoFileName`.
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName,
+                                  kProjectorMediaMimeType,
+                                  /*shared_with_me=*/false);
 
   // Launch the app for the first time.
   content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
@@ -315,8 +359,11 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
 // Tests a disk I/O error when trying to access the file handle in launch.js.
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
                        NotFoundErrorDOMException) {
-  AddFileToDefaultFolder(kVideoFileId, "video/webm", kVideoFileName,
-                         /*shared_with_me=*/true);
+  // Uses a real webm video file for this test and renames it to
+  // `kVideoFileName`.
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName,
+                                  kProjectorMediaMimeType,
+                                  /*shared_with_me=*/true);
 
   // Launch the app for the first time.
   content::WebContents* app = LaunchApp(ash::SystemWebAppType::PROJECTOR);
@@ -349,8 +396,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
   app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
                                         absolute_path);
 
-  AddFileToDefaultFolder(kVideoFileId, "text/plain", kVideoFileName,
-                         /*shared_with_me=*/true);
+  AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName, "text/plain",
+                                  /*shared_with_me=*/true);
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result =

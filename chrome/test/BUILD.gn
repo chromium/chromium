@@ -4033,6 +4033,10 @@ if (!is_android) {
         "$root_out_dir/content_shell.pak",
         "$root_out_dir/resources/chromeos/",
         "../browser/resources/chromeos/accessibility/switch_access/test_support.js",
+
+        # For projectorscreencast manager browser tests:
+        "//media/test/data/bear-audio-mp4a.69.ts",
+        "//media/test/data/tulip2.webm",
       ]
       data_deps += [
         "//ash/keyboard/ui:resources",

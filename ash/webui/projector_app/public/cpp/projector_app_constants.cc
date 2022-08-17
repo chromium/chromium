@@ -35,4 +35,6 @@ const base::FilePath::CharType kProjectorMetadataFileExtension[] =
 const base::FilePath::CharType kProjectorMediaFileExtension[] =
     FILE_PATH_LITERAL(".webm");
 
+const char kProjectorMediaMimeType[] = "video/webm";
+
 }  // namespace ash

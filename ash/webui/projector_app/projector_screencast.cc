@@ -9,6 +9,7 @@ namespace ash {
 base::Value::Dict ProjectorScreencastVideo::ToValue() const {
   base::Value::Dict dict;
   dict.Set("fileId", file_id);
+  dict.Set("durationMillis", duration_millis);
   return dict;
 }
 
