@@ -174,9 +174,7 @@ testcase.mountAndroidVolumeSuccess = async () => {
       `.tree-item[volume-type-for-testing="android_files"][entry-label="${
           guestName}"]`;
 
-  // TODO(b/215255080): Change this into just one click.
   await remoteCall.waitAndClickElement(appId, placeholderQuery);
-  await remoteCall.waitAndClickElement(appId, volumeQuery);
 
   // Wait until it's loaded.
   await remoteCall.waitForElement(

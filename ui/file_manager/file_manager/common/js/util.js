@@ -1758,6 +1758,19 @@ util.getLocaleBasedWeekStart = () => {
 };
 
 /**
+ * Returns a boolean indicating whether the volume is a GuestOs volume. And
+ * ANDROID_FILES type volume can also be a GuestOs volume if we are using
+ * virtio-blk.
+ * @param {VolumeManagerCommon.VolumeType} type
+ * @return {boolean}
+ */
+util.isGuestOs = type => {
+  return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
+      (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
+       util.isArcVirtioBlkForDataEnabled());
+};
+
+/**
  * A kind of error that represents user electing to cancel an operation. We use
  * this specialization to differentiate between system errors and errors
  * generated through legitimate user actions.

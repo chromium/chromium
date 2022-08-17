@@ -1414,8 +1414,7 @@ export class DirectoryModel extends EventTarget {
          this.getCurrentRootType() === VolumeManagerCommon.RootType.CROSTINI) ||
         // TODO(crbug/1293229): Don't redirect if the user is looking at a
         // different Guest OS folder.
-        (event.added[0].volumeType ===
-             VolumeManagerCommon.VolumeType.GUEST_OS &&
+        (util.isGuestOs(event.added[0].volumeType) &&
          this.getCurrentRootType() === VolumeManagerCommon.RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.
