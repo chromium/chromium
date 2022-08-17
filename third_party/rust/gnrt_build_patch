@@ -1,0 +1,96 @@
+diff --git a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+index fe406a9f2e5dd..3cfe7dfba38f2 100644
+--- a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+@@ -40,7 +40,9 @@ cargo_crate("autocxx_bindgen") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
++    # "runtime",
+     "static",
+     "which",
+     "which-rustfmt",
+@@ -86,7 +88,9 @@ cargo_crate("lib") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
++    # "runtime",
+     "static",
+     "which",
+     "which-rustfmt",
+diff --git a/third_party/rust/bindgen/v0_59/BUILD.gn b/third_party/rust/bindgen/v0_59/BUILD.gn
+index 92399f19804e6..b22eee5268d53 100644
+--- a/third_party/rust/bindgen/v0_59/BUILD.gn
++++ b/third_party/rust/bindgen/v0_59/BUILD.gn
+@@ -40,7 +40,9 @@ cargo_crate("bindgen") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
++    # "runtime",
+     "static",
+     "which",
+     "which-rustfmt",
+@@ -86,7 +88,9 @@ cargo_crate("lib") {
+     "env_logger",
+     "log",
+     "logging",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
++    # "runtime",
+     "static",
+     "which",
+     "which-rustfmt",
+diff --git a/third_party/rust/clang_sys/v1/BUILD.gn b/third_party/rust/clang_sys/v1/BUILD.gn
+index 3fe8b1675d5b1..f4ad4cfbb0b88 100644
+--- a/third_party/rust/clang_sys/v1/BUILD.gn
++++ b/third_party/rust/clang_sys/v1/BUILD.gn
+@@ -38,9 +38,15 @@ cargo_crate("lib") {
+     "clang_5_0",
+     "clang_6_0",
+     "libloading",
+-    "runtime",
++
++    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
++    # "runtime",
+     "static",
+   ]
+   build_root = "crate/build.rs"
+   build_sources = [ "crate/build.rs" ]
++
++  # TODO(crbug.com/1304251): The following line arranges for dependent targets
++  # to link against clang's static libraries.
++  deps += [ "//build/rust/clanglibs" ]
+ }
+diff --git a/third_party/rust/memoffset/v0_6/BUILD.gn b/third_party/rust/memoffset/v0_6/BUILD.gn
+index b458171faf7d5..f238f50824870 100644
+--- a/third_party/rust/memoffset/v0_6/BUILD.gn
++++ b/third_party/rust/memoffset/v0_6/BUILD.gn
+@@ -5,7 +5,17 @@
+ import("//build/rust/cargo_crate.gni")
+ 
+ cargo_crate("lib") {
+-  crate_name = "memoffset"
++  # `crate_name` has been manually changed from `memoffset` to
++  # `memoffset_unstable_const` to match Crubit's expectations.  It is not 100%
++  # clear what a long-term solution should look like, but this particular
++  # problem will probably go away on its own once related Rust features get
++  # stabilized and there is no need to opt into "unstable_const" in `features`
++  # below.
++  #
++  # TODO(https://crbug.com/1344314): Automate renaming crates under
++  # //third_party/rust and then remove the comment above.
++  crate_name = "memoffset_unstable_const"
++
+   epoch = "0.6"
+   crate_type = "rlib"
+   crate_root = "crate/src/lib.rs"

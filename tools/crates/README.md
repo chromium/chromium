@@ -26,15 +26,16 @@ bar = { version = "3", features = [ "spaceships" ] }
 # Generating `BUILD.gn` files for third-party crates
 
 To generate `BUILD.gn` files for all third-party crates, and find missing
-transitive dependencies to download:
+transitive dependencies to download, use the `gnrt` tool:
+1. Build `gnrt` to run on host machine, e.g. `ninja -C out/Default gnrt`.
 1. Change directory to the root src/ dir of Chromium.
-1. `tools/crates/crates.py gen`
+2. Run `gnrt`: e.g. `out/Default/gnrt`.
 
 This will generate a `BUILD.gn` file for each third-party crate and apply the
-patch at `//third_party/rust/crates_py_build_patch`. The `BUILD.gn` file changes
+patch at `//third_party/rust/gnrt_build_patch`. The `BUILD.gn` file changes
 will be visible in `git status` and can be added with `git add`.
 
-The `crates_py_build_patch` file allows fixing generated build rules as well as
+The `gnrt_build_patch` file allows fixing generated build rules as well as
 adding missing `BUILD.gn` files which result from bugs. The patch should *only*
 contain `BUILD.gn` file changes. [Other patches](#patching-third-party-crates)
 should be placed in a crate's `patches` subdirectory.
@@ -70,6 +71,7 @@ patched with a couple of changes:
 
 To update a crate "foo" to the latest version you must just re-import it at this
 time. To update from version "1.2" to "1.3":
+1. Build `gnrt` before making any changes to `//third_party/rust`.
 1. Remove the `//third_party/rust/foo/v1/crate` directory, which contains the
 upstream code.
 1. Re-download the crate with `tools/crates/crates.py download foo 1`. This will
@@ -77,8 +79,9 @@ find the latest matching version on https://crates.io. If a more specific
 version is desired, you may specify the full version.
 1. If there are any, re-apply local patches with
 `for i in $(find third_party/rust/foo/v1/patches/*); do patch -p1 < $i; done`
-1. Run `tools/crates/crates.py gen` to re-generate all third-party `BUILD.gn`
-files.
+1. Run `out/<conf>/gnrt` to re-generate all third-party `BUILD.gn` files.
+1. Re-build `gnrt` and `gnrt_unittests`. Run `gnrt` and ensure no further
+`BUILD.gn` outputs are the same as before. Run `gnrt_unittests`.
 
 # Directory structure for third-party crates
 

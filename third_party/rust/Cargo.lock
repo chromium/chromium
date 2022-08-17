@@ -234,6 +234,7 @@ dependencies = [
  "clap 3.1.12",
  "cxx",
  "cxxbridge-cmd",
+ "memoffset",
  "once_cell",
  "rstest",
  "rustversion",
@@ -241,6 +242,7 @@ dependencies = [
  "serde",
  "serde_json_lenient",
  "small_ctor",
+ "static_assertions",
  "syn",
  "tempfile",
  "toml",
@@ -474,6 +476,13 @@ name = "memchr"
 version = "2.4.1"
 
 [[package]]
+name = "memoffset"
+version = "0.6.5"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
 name = "miette"
 version = "4.3.0"
 dependencies = [
@@ -704,6 +713,10 @@ version = "0.1.0"
 [[package]]
 name = "smawk"
 version = "0.3.1"
+
+[[package]]
+name = "static_assertions"
+version = "1.1.0"
 
 [[package]]
 name = "strsim"

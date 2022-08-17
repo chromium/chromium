@@ -14,13 +14,15 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, ExitCode};
 
+use clap::arg;
+
 fn main() -> ExitCode {
     let args = clap::Command::new("gnrt")
         .about("Generate GN build rules from third_party/rust crates")
         .arg(
-            clap::Arg::new("output_cargo_toml")
-                .help("Output third_party/rust/Cargo.toml then exit immediately"),
+            arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit immediately")
         )
+        .arg(arg!(--"skip-patch" "Don't apply gnrt_build_patch after generating build files. Useful when updating the patch."))
         .get_matches();
 
     let paths = paths::ChromiumPaths::new().unwrap();
@@ -84,7 +86,7 @@ fn main() -> ExitCode {
         }),
     );
 
-    if args.is_present("output_cargo_toml") {
+    if args.is_present("output-cargo-toml") {
         println!("{}", toml::ser::to_string(&cargo_manifest).unwrap());
         return ExitCode::SUCCESS;
     }
@@ -210,7 +212,7 @@ fn main() -> ExitCode {
 
     // Apply patch for BUILD.gn files.
     let build_patch = paths.root.join(paths.third_party.join("gnrt_build_patch"));
-    if build_patch.exists() {
+    if !args.is_present("skip-patch") && build_patch.exists() {
         let status = process::Command::new("git")
             .arg("apply")
             .arg(build_patch)

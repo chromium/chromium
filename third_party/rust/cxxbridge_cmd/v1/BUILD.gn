@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,9 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("cxxbridge") {
   crate_type = "bin"
   crate_root = "crate/src/main.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
   sources = [ "crate/src/main.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.68"
@@ -15,6 +18,7 @@ cargo_crate("cxxbridge") {
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   deps = [
+    ":lib",
     "//third_party/rust/clap/v3:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",
     "//third_party/rust/proc_macro2/v1:lib",

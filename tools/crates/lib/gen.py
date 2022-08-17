@@ -242,6 +242,12 @@ class FeatureSet:
 
 def run(args: argparse.Namespace):
     """Entry point for the 'gen' action."""
+
+    if not args.force:
+        print("Build file generation is deprecated. Use gnrt instead.")
+        print("To run anyway, pass --force.")
+        return
+
     # This step constructs a BuildData which has all the information we need to
     # construct build rules in GN. This is slow as it has to query `cargo tree`
     # a lot.

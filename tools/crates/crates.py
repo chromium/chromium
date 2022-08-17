@@ -43,6 +43,9 @@ download_parser.set_defaults(func=download.run)
 
 gen_parser = subparsers.add_parser("gen")
 gen_parser.add_argument(
+    "--force",
+    help="Run anyway, despite deprecation and replacement with gnrt.")
+gen_parser.add_argument(
     "--target",
     help=("The single target to generate BUILD.gn files for, from " +
           "'rustc --print=target-list'. When not specified, the BUILD.gn " +

@@ -13,6 +13,7 @@ autocxx = "0.22"
 cxx = "1"
 cxxbridge-cmd = "1"
 serde = "1"
+static_assertions = "1"
 
 [dependencies.autocxx-bindgen]
 version = "0.59"
@@ -27,6 +28,10 @@ features = ["static"]
 version = "0.59"
 features = ["static"]
 build-script-outputs = ["host-target.txt"]
+
+[dependencies.memoffset]
+version = "0.6"
+features = ["unstable_const"]
 
 [dependencies.rustversion]
 version = "1"
@@ -265,6 +270,10 @@ package = "log"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/memchr/v2/crate"
 package = "memchr"
 
+[patch.crates-io.memoffset_v0_6]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/memoffset/v0_6/crate"
+package = "memoffset"
+
 [patch.crates-io.miette-derive_v4]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/miette_derive/v4/crate"
 package = "miette-derive"
@@ -396,6 +405,10 @@ package = "small_ctor"
 [patch.crates-io.smawk_v0_3]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/smawk/v0_3/crate"
 package = "smawk"
+
+[patch.crates-io.static_assertions_v1]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/static_assertions/v1/crate"
+package = "static_assertions"
 
 [patch.crates-io.strsim_v0_10]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/strsim/v0_10/crate"
