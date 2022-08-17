@@ -303,7 +303,7 @@ if (!is_android && !is_mac) {
       # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
       # a metadata.json file in root directory containing Chrome version.
       if (is_chromeos) {
-        deps += [ "//build:version_metadata" ]
+        data_deps += [ "//build:version_metadata" ]
       }
 
       # Chrome OS debug builds for arm need to pass --long-plt to the linker.
