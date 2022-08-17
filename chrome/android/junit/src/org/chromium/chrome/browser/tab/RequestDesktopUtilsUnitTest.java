@@ -36,6 +36,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.SiteLayout;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -478,6 +480,18 @@ public class RequestDesktopUtilsUnitTest {
                 shown);
     }
 
+    @Test
+    public void testUpdateDesktopSiteGlobalSettingOnUserRequest_DesktopSite() {
+        RequestDesktopUtils.updateDesktopSiteGlobalSettingOnUserRequest(mProfile, true);
+        verifyUpdateDesktopSiteGlobalSettingOnUserRequest(true);
+    }
+
+    @Test
+    public void testUpdateDesktopSiteGlobalSettingOnUserRequest_MobileSite() {
+        RequestDesktopUtils.updateDesktopSiteGlobalSettingOnUserRequest(mProfile, false);
+        verifyUpdateDesktopSiteGlobalSettingOnUserRequest(false);
+    }
+
     private void enableFeatureRequestDesktopSiteDefaults(Map<String, String> params) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, true);
         if (params != null) {
@@ -488,5 +502,22 @@ public class RequestDesktopUtilsUnitTest {
             }
         }
         FeatureList.setTestValues(mTestValues);
+    }
+
+    private void verifyUpdateDesktopSiteGlobalSettingOnUserRequest(boolean requestDesktopSite) {
+        Assert.assertEquals("Desktop site content setting should be set correctly.",
+                requestDesktopSite ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK,
+                mRdsDefaultValue);
+        Assert.assertEquals(
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be set correctly.",
+                requestDesktopSite,
+                mSharedPreferencesManager.readBoolean(
+                        SingleCategorySettings
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
+                        !requestDesktopSite));
+        Assert.assertEquals("Histogram Android.RequestDesktopSite.Changed should be updated.", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.RequestDesktopSite.Changed",
+                        requestDesktopSite ? SiteLayout.DESKTOP : SiteLayout.MOBILE));
     }
 }

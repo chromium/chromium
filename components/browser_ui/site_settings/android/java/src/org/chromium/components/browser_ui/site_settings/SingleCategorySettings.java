@@ -145,7 +145,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     // Note: these values must match the SiteLayout enum in enums.xml.
     @IntDef({SiteLayout.MOBILE, SiteLayout.DESKTOP})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface SiteLayout {
+    public @interface SiteLayout {
         int MOBILE = 0;
         int DESKTOP = 1;
         int NUM_ENTRIES = 2;
@@ -496,12 +496,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 } else if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
                     recordSiteLayoutChanged((boolean) newValue);
                     updateDesktopSiteSecondaryControls();
-                    // TODO(crbug.com/1069897): Use SharedPreferencesManager if it is componentized.
-                    ContextUtils.getAppSharedPreferences()
-                            .edit()
-                            .putBoolean(USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
-                                    (boolean) newValue)
-                            .apply();
                 }
                 break;
             }
@@ -1210,13 +1204,21 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     }
 
     /**
-     * Records the changes of request desktop site content settings.
-     * @param enabled Whether request desktop site is enabled after the change.
+     * Performs a set of tasks when the user updates the desktop site content setting.
+     * 1. Records the desktop site content setting change.
+     * 2. Updates the Shared Preference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY.
+     * @param enabled Whether the desktop site is enabled after the change.
      */
-    private void recordSiteLayoutChanged(boolean enabled) {
+    public static void recordSiteLayoutChanged(boolean enabled) {
         @SiteLayout
         int layout = enabled ? SiteLayout.DESKTOP : SiteLayout.MOBILE;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.RequestDesktopSite.Changed", layout, SiteLayout.NUM_ENTRIES);
+
+        // TODO(crbug.com/1069897): Use SharedPreferencesManager if it is componentized.
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY, enabled)
+                .apply();
     }
 }

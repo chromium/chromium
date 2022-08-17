@@ -365,8 +365,7 @@ public class RequestDesktopUtils {
                                 resources.getString(R.string.yes))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    WebsitePreferenceBridge.setCategoryEnabled(profile,
-                                            ContentSettingsType.REQUEST_DESKTOP_SITE, true);
+                                    updateDesktopSiteGlobalSettingOnUserRequest(profile, true);
                                     // TODO(crbug.com/1350274): Remove this explicit load when this
                                     // bug is addressed.
                                     if (tab != null) {
@@ -382,5 +381,17 @@ public class RequestDesktopUtils {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN, true);
         return true;
+    }
+
+    /**
+     * Updates the desktop site content setting on user request.
+     * @param profile The current {@link Profile}.
+     * @param requestDesktopSite Whether the user requested for desktop sites globally.
+     */
+    static void updateDesktopSiteGlobalSettingOnUserRequest(
+            Profile profile, boolean requestDesktopSite) {
+        WebsitePreferenceBridge.setCategoryEnabled(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, requestDesktopSite);
+        SingleCategorySettings.recordSiteLayoutChanged(requestDesktopSite);
     }
 }
