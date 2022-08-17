@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -28,7 +27,10 @@ namespace content {
 class CONTENT_EXPORT FirstPartySetParser {
  public:
   using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
+  // Keys are alias sites, values are their canonical representatives.
+  using Aliases = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SingleSet = SetsMap;
+  using SetsAndAliases = std::pair<SetsMap, Aliases>;
   using ParseError = FirstPartySetsHandler::ParseError;
   using PolicySetType = FirstPartySetsHandler::PolicySetType;
   using PolicyParsingError = FirstPartySetsHandler::PolicyParsingError;
@@ -63,7 +65,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // received by Component Updater.
   //
   // Returns an empty map if parsing or validation of any set failed.
-  static SetsMap ParseSetsFromStream(std::istream& input);
+  static SetsAndAliases ParseSetsFromStream(std::istream& input);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered

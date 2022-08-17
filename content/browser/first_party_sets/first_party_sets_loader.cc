@@ -126,7 +126,10 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
   DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
 
   std::istringstream stream(raw_sets);
-  sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
+  FirstPartySetParser::SetsAndAliases public_sets =
+      FirstPartySetParser::ParseSetsFromStream(stream);
+  sets_ = public_sets.first;
+  aliases_ = public_sets.second;
 
   component_sets_parse_progress_ = Progress::kFinished;
   UmaHistogramTimes(
@@ -201,6 +204,7 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
   network::mojom::PublicFirstPartySetsPtr public_sets =
       network::mojom::PublicFirstPartySets::New();
   public_sets->sets = std::move(sets_);
+  public_sets->aliases = std::move(aliases_);
   std::move(on_load_complete_).Run(std::move(public_sets));
 }
 

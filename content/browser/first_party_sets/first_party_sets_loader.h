@@ -78,6 +78,9 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // manually specified) have been merged, and then holds the merged data.
   FlattenedSets sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Aliases that were defined by the public set declarations.
+  FirstPartySetParser::Aliases aliases_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Holds the set that was provided on the command line (if any). There are two
   // layers of absl::optional here because the value is initially unset (outer
   // optional), and may be empty if no command-line flag was provided (or one

@@ -104,12 +104,6 @@ FirstPartySetParser::ParsedPolicySetLists MakeParsedPolicyFromMap(
   return result;
 }
 
-FirstPartySetsHandlerImpl::FlattenedSets ParseSetsFromStream(
-    const std::string& sets) {
-  std::istringstream stream(sets);
-  return FirstPartySetParser::ParseSetsFromStream(stream);
-}
-
 network::mojom::PublicFirstPartySetsPtr GetSetsAndWait() {
   base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future;
   absl::optional<network::mojom::PublicFirstPartySetsPtr> result =
@@ -137,11 +131,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 1)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(
-                  R"({"owner": "https://example.test", "members": )"
-                  R"(["https://member1.test", "https://member3.test"]})"),
-              old_sets);
 
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -160,13 +149,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kAssociated, 0)},
   };
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(
-          R"({"owner": "https://example.test", )"
-          R"("members": ["https://member1.test", "https://member3.test"]}
-      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
-      current_sets);
 
   // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
   // site data upon joining, so the computed diff should be empty set.
@@ -193,12 +175,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://member1.test", "https://member3.test"]}
-      { "owner": "https://foo.test", "members": ["https://member2.test"]})"),
-      old_sets);
 
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -207,10 +183,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
-                                  R"("members": ["https://member1.test"]})"),
-              current_sets);
 
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
@@ -239,13 +211,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
       {net::SchemefulSite(GURL("https://member3.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kAssociated, 1)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(
-                  R"({"owner": "https://example.test", "members": )"
-                  R"(["https://member1.test"]}
-      {"owner": "https://foo.test", "members": )"
-                  R"(["https://member2.test", "https://member3.test"]})"),
-              old_sets);
 
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -263,12 +228,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://member1.test", "https://member3.test"]}
-      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
-      current_sets);
 
   // Expected diff: "https://member3.test" changed owner.
   EXPECT_THAT(
@@ -288,11 +247,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
       {net::SchemefulSite(GURL("https://bar.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 1)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://foo.test", "https://bar.test"]})"),
-      old_sets);
 
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://foo.test")),
@@ -301,10 +255,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
       {net::SchemefulSite(GURL("https://bar.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"(
-      {"owner": "https://foo.test", "members": ["https://bar.test"]})"),
-              current_sets);
 
   // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
   // "https://bar.test" changed owner.
@@ -327,11 +277,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://foo.test"]})"),
-      old_sets);
 
   FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -340,11 +285,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
       {net::SchemefulSite(GURL("https://foo.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
                                net::SiteType::kPrimary, absl::nullopt)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(
-          R"({"owner": "https://foo.test", "members": ["https://example.test"]})"),
-      current_sets);
 
   // Expected diff: "https://example.test" and "https://foo.test" changed owner.
   // It would be valid to not include example.test and foo.test in the result,
@@ -365,10 +305,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyOldSets) {
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
-                                  R"("members": ["https://member1.test"]})"),
-              current_sets);
 
   EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
                   /*old_sets=*/{}, /*old_policy=*/{}, current_sets,
@@ -385,10 +321,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyCurrentSets) {
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
-                                  R"("members": ["https://member1.test"]})"),
-              old_sets);
 
   EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(
                   old_sets, /*old_policy=*/{}, /*current_sets=*/{},
@@ -423,10 +355,6 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_PolicyRemovedSitesJoined) {
       {net::SchemefulSite(GURL("https://member1.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kAssociated, 0)}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test",)"
-                                  R"("members": ["https://member1.test"]})"),
-              sets);
 
   // "https://example.test" was removed from FPSs by policy modifications.
   FirstPartySetsHandlerImpl::PolicyCustomization old_policy = {

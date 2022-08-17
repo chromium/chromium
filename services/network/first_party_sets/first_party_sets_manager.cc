@@ -262,6 +262,8 @@ void FirstPartySetsManager::SetCompleteSets(
   if (sets_.has_value())
     return;
   sets_ = std::move(public_sets->sets);
+  // TODO(https://crbug.com/1349781): store aliases and read them when resolving
+  // queries.
   InvokePendingQueries();
 }
 

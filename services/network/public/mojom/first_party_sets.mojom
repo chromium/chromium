@@ -58,4 +58,7 @@ struct FirstPartySetMetadata {
 struct PublicFirstPartySets {
   // The mapping from site to FPS entry.
   map<SchemefulSite, FirstPartySetEntry> sets;
+
+  // The mapping from site alias to canonical site.
+  map<SchemefulSite, SchemefulSite> aliases;
 };
