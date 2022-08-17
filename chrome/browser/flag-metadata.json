@@ -35,8 +35,8 @@
   },
   {
     "name": "accessible-pdf-form",
-    "owners": [ "asku@microsoft.com", "mohitb@microsoft.com" ],
-    "expiry_milestone": 105
+    "owners": [ "bravi@microsoft.com", "mohitb@microsoft.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "account-id-migration",
