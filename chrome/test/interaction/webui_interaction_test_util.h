@@ -21,6 +21,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace views {
@@ -183,11 +184,8 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   static bool IsTruthy(const base::Value& value);
 
   // Takes a screenshot based on the contents of `element` and compares with
-  // Skia Gold. Not all element types may be supported. On platforms where
-  // screenshots are unsupported or flaky, may trivially return true.
-  //
-  // If `element` is a TrackedElementWebPage that corresponds to a tab, the tab
-  // must be the active tab in the browser window.
+  // Skia Gold. On platforms where screenshots are unsupported or flaky, may
+  // trivially return true.
   //
   // The name of the screenshot will be composed as follows:
   //   TestFixture_TestName[_screenshot_name]_baseline
@@ -197,33 +195,27 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   //
   // IMPORTANT USAGE NOTES:
   //
+  // If `element` is a TrackedElementWebPage that corresponds to a tab, the tab
+  // must be the active tab in the browser window.
+  //
+  // If `element` is a TrackedElementWebPage of any sort, it is useful to verify
+  // that the contents you intend to take a screenshot of are present and
+  // rendered before taking the screenshot. One way to do this is by calling:
+  //  - SendEventOnElementMinimumSize() for pages in browser tabs
+  //  - SendEventOnWebViewMinimumSize() for secondary WebUI
+  // These are especially important if your WebView contains any dynamic content
+  // that may populate and display after the page is loaded. After you receive
+  // the event, you should be able to call CompareScreenshot() safely.
+  //
   // In order to actually take screenshots:
-  // - Your test must be in browser_tests rather than interactive_ui_tests
-  // - Your test must be included in pixel_browser_tests.filter
+  // - Your test must be in browser_tests or interactive_ui_tests
+  // - Your test must be included in pixel_tests.filter
   //
-  // Note that test in browser_tests (when not running in the
-  // pixel_browser_tests CQ task) may run at the same time as other tests, which
-  // can result in flakiness for interaction tests (especially if mouse
-  // position, window activation, or occlusion could change the behavior of a
-  // test). So if you need to both test complex interaction and take screenshots
-  // you have several options:
-  //  1. Make a detailed test for interactive_ui_tests and one or more simple
-  //     tests that just verify the UI visuals in browser_tests (downside: code
-  //     duplication)
-  //  2. Put a test in browser_tests that only runs when the command line flag
-  //     for pixel tests is set (downside: won't run on platforms that don't
-  //     support pixel tests)
-  //  3. Put the full test in browser_tests and harden it against activation and
-  //     focus changes, mouse position, etc. - e.g. by using things like
-  //     BubbleDialogDelegate::PreventCloseOnDeactivate() (downside: more
-  //     complicated test, still potential for flaking)
-  //
-  // In general, if (3) is possible and you can be sure your test won't flake,
-  // it's probably the best choice, followed by (1) if you can't guarantee
-  // stability in non-single-process tests.
-  //
-  // We are currently considering enabling pixel tests in interactive_ui_tests,
-  // which would solve the problem by providing a single safe place for both.
+  // Note that test in browser_tests may run at the same time as other tests,
+  // which can result in flakiness (especially if mouse position, window
+  // activation, or occlusion could change the behavior of a test). So if you
+  // need to both test complex interaction and take screenshots, prefer putting
+  // your test in interactive_ui_tests.
   static bool CompareScreenshot(ui::TrackedElement* element,
                                 const std::string& screenshot_name,
                                 const std::string& baseline);
@@ -350,6 +342,35 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   // will be returned.
   gfx::Rect GetElementBoundsInScreen(const DeepQuery& where);
   gfx::Rect GetElementBoundsInScreen(const std::string& where);
+
+  // Miscellaneous Tools ///////////////////////////////////////////////////////
+
+  // Convenience method to wait on a state change when the element at `where`
+  // reaches `minimum_size`. If `must_already_exist` is false (recommended),
+  // Type::kExistsAndConditionTrue is used; if true, then Type::kConditionTrue
+  // is used instead.
+  void SendEventOnElementMinimumSize(ui::CustomElementEventType event_type,
+                                     const DeepQuery& where,
+                                     const gfx::Size& minimum_size,
+                                     bool must_already_exist);
+
+  // Sends an event on the instrumented WebView when its size exceeds some
+  // minimum, then checks that an element within the WebView is present and of
+  // minimum size. If no `element_to_check` is specified, the body element of
+  // the document is checked instead.
+  //
+  // Currently only supported for WebView instrumented with ForNonTabWebView().
+  //
+  // Useful when you expect a secondary UI to resize in response to loading data
+  // but that resize might not be synchronous (and you have some idea how large
+  // the surface should be).
+  //
+  // If the surface never reaches the minimum size, the current test will fail.
+  void SendEventOnWebViewMinimumSize(
+      const gfx::Size& minimum_webui_size,
+      ui::CustomElementEventType event_type,
+      const DeepQuery& element_to_check = DeepQuery({"body"}),
+      const gfx::Size& minimum_element_size = gfx::Size(1, 1));
 
  protected:
   // content::WebContentsObserver:

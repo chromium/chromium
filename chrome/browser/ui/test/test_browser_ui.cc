@@ -18,6 +18,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/test/skia_gold_matching_algorithm.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/widget/widget.h"
@@ -95,8 +96,11 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
   // and some not due to tests being run in parallel.
   view->GetWidget()->GetFocusManager()->ClearFocus();
 
-  // Wait for painting complete.
-  auto* compositor = view->GetWidget()->GetCompositor();
+  // Request that the compositor perform a frame and then wait for it to
+  // complete. Because there might not be anything left to draw after waiting
+  // for the mouse move above, request compositing so we don't wait forever.
+  ui::Compositor* const compositor = view->GetWidget()->GetCompositor();
+  compositor->ScheduleFullRedraw();
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   views::ViewSkiaGoldPixelDiff pixel_diff;

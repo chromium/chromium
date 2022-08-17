@@ -168,6 +168,8 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
   const WebUIInteractionTestUtil::DeepQuery kTabSearchListQuery = {
       "tab-search-app", "#tabsList"};
 
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMinimumSizeEvent);
+
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -208,7 +210,19 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                              EXPECT_TRUE(tab_search_page->Exists(
                                  kTabSearchListQuery, &not_found))
                                  << "Not found: " << not_found;
+
+                             // Verify that we can use
+                             // SendEventOnWebViewMinimumSize with default
+                             // parameters. The four-argument version is tested
+                             // in a subsequent test.
+                             tab_search_page->SendEventOnWebViewMinimumSize(
+                                 gfx::Size(1, 1), kMinimumSizeEvent);
                            }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kMinimumSizeEvent)
+                       .SetElementID(kTabSearchPageElementId)
                        .Build())
           .Build();
 
@@ -342,6 +356,90 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
                                      element, std::string(), "3654539"));
                            }))
                        .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+// This test checks that we can attach to a WebUI that is not embedded in a tab.
+IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
+                       CompareScreenshot_SecondaryWebUI) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto test_util = CreateInteractionTestUtil();
+
+  // This will capture the tab search page when it is displayed.
+  std::unique_ptr<WebUIInteractionTestUtil> tab_search_page;
+
+  // Need to wait for the tab items to actually show up in the tab list (this
+  // can be asynchronous).
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTabDataDisplayedEvent);
+  const WebUIInteractionTestUtil::DeepQuery kTabSearchItemQuery{
+      "tab-search-app", "tab-search-item"};
+
+  // We expect a tab search bubble with a single tab listed to be somewhere
+  // north of 150 DIP tall, and 300 DIP wide, but this value gives us a nice
+  // cushion in case styling changes.
+  constexpr gfx::Size kMinimumBubbleSize(200, 120);
+  // Similarly, we underestimate entry size.
+  constexpr gfx::Size kMinimumEntrySize(200, 20);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          // Press the Tab Search button.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           })))
+          // Wait for the tab search bubble to appear and instrument its WEbUI.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchBubbleElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             auto* const bubble_view =
+                                 views::AsViewClass<WebUIBubbleDialogView>(
+                                     element->AsA<views::TrackedElementViews>()
+                                         ->view());
+                             tab_search_page =
+                                 WebUIInteractionTestUtil::ForNonTabWebView(
+                                     bubble_view->web_view(),
+                                     kTabSearchPageElementId);
+                           })))
+          // Wait for the tab search page to appear, and then ensure it is
+          // rendered at an appropriate size.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchPageElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             tab_search_page->SendEventOnWebViewMinimumSize(
+                                 kMinimumBubbleSize, kTabDataDisplayedEvent,
+                                 kTabSearchItemQuery, kMinimumEntrySize);
+                           })))
+          // With both the bubble and data at nonzero size, it should be safe to
+          // take a screenshot.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kTabDataDisplayedEvent)
+                       .SetElementID(kTabSearchPageElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_TRUE(
+                                 WebUIInteractionTestUtil::CompareScreenshot(
+                                     element, std::string(), "3664291"));
+                           })))
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
