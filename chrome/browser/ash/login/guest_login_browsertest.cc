@@ -79,6 +79,7 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   LoginManagerMixin login_manager_{&mixin_host_, {}};
+  base::HistogramTester histogram_tester_;
 };
 
 class GuestLoginWithLoginSwitchesTest : public GuestLoginTest {
@@ -113,6 +114,13 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_Login) {
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
   CheckCryptohomeMountAssertions();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 1);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTimeByExitReason.Guest-tos.Accept", 1);
+    histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
@@ -240,6 +248,10 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_SkipGuestToS) {
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 0);
+    histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, SkipGuestToS) {

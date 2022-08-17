@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Fingerprint-setup"/>
   <variant name="Gaia-signin"/>
   <variant name="Gesture-navigation"/>
+  <variant name="Guest-tos"/>
   <variant name="Hid-detection"/>
   <variant name="Image"/>
   <variant name="Kiosk-enable"/>
@@ -134,6 +135,9 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-signin.SAMLVideoTimeout"/>
   <variant name="Gaia-signin.StartConsumerKiosk"/>
   <variant name="Gesture-navigation.Next"/>
+  <variant name="Guest-Tos.Accept"/>
+  <variant name="Guest-Tos.Back"/>
+  <variant name="Guest-Tos.Cancel"/>
   <variant name="Hid-detection.Next"/>
   <variant name="Hid-detection.StartDemo"/>
   <variant name="Kiosk-enable.Next"/>
