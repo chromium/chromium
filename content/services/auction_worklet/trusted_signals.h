@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
@@ -125,6 +126,7 @@ class CONTENT_EXPORT TrustedSignals {
   // There are no lifetime constraints of `url_loader_factory`.
   static std::unique_ptr<TrustedSignals> LoadBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      std::set<std::string> interest_group_names,
       std::set<std::string> bidding_signals_keys,
       const std::string& hostname,
       const GURL& trusted_bidding_signals_url,
@@ -144,7 +146,8 @@ class CONTENT_EXPORT TrustedSignals {
       LoadSignalsCallback load_signals_callback);
 
  private:
-  TrustedSignals(absl::optional<std::set<std::string>> bidding_signals_keys,
+  TrustedSignals(absl::optional<std::set<std::string>> interest_group_names,
+                 absl::optional<std::set<std::string>> bidding_signals_keys,
                  absl::optional<std::set<std::string>> render_urls,
                  absl::optional<std::set<std::string>> ad_component_render_urls,
                  const GURL& trusted_signals_url,
@@ -165,6 +168,7 @@ class CONTENT_EXPORT TrustedSignals {
   static void HandleDownloadResultOnV8Thread(
       scoped_refptr<AuctionV8Helper> v8_helper,
       const GURL& signals_url,
+      absl::optional<std::set<std::string>> interest_group_names,
       absl::optional<std::set<std::string>> bidding_signals_keys,
       absl::optional<std::set<std::string>> render_urls,
       absl::optional<std::set<std::string>> ad_component_render_urls,
@@ -185,11 +189,12 @@ class CONTENT_EXPORT TrustedSignals {
   void DeliverCallbackOnUserThread(scoped_refptr<Result>,
                                    absl::optional<std::string> error_msg);
 
-  // Keys being fetched. For bidding signals, only `bidding_signals_keys_` is
-  // non-null. For scoring signals, only `render_urls_` and
-  // `ad_component_render_urls_` are non-null. These are cleared and ownership
-  // is passed to the V8 thread once the download completes, as they're no
-  // longer on the main thread after that point.
+  // Keys being fetched. For bidding signals, only `bidding_signals_keys_` and
+  // `interest_group_names_` are non-null. For scoring signals, only
+  // `render_urls_` and `ad_component_render_urls_` are non-null. These are
+  // cleared and ownership is passed to the V8 thread once the download
+  // completes, as they're no longer on the main thread after that point.
+  absl::optional<std::set<std::string>> interest_group_names_;
   absl::optional<std::set<std::string>> bidding_signals_keys_;
   absl::optional<std::set<std::string>> render_urls_;
   absl::optional<std::set<std::string>> ad_component_render_urls_;

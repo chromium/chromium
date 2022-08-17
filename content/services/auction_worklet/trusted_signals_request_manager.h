@@ -103,7 +103,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // StartBatchedTrustedSignalsRequest() is invoked. `this` must be of Type
   // kBiddingSignals.
   std::unique_ptr<Request> RequestBiddingSignals(
-      const std::vector<std::string>& keys,
+      const std::string& interest_group_name,
+      const absl::optional<std::vector<std::string>>& keys,
       LoadSignalsCallback load_signals_callback);
 
   // Queues a scoring signals request. Does not start a network request until
@@ -129,6 +130,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   class RequestImpl : public Request {
    public:
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
+                const std::string& interest_group_name,
                 std::set<std::string> bidder_keys,
                 LoadSignalsCallback load_signals_callback);
 
@@ -146,6 +148,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
     // Used for requests for bidder signals. Must be non-null and non-empty for
     // bidder signals requests, null for scoring signals requests.
+    absl::optional<std::string> interest_group_name_;
     absl::optional<std::set<std::string>> bidder_keys_;
 
     // Used for requests for scoring signals. `render_url_` must be non-null

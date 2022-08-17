@@ -3069,8 +3069,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
        "application/javascript", /*expect_trusted_params=*/true},
       {https_server_->GetURL(
            "a.test",
-           "/interest_group/"
-           "trusted_bidding_signals.json?hostname=a.test&keys=key1"),
+           "/interest_group/trusted_bidding_signals.json?"
+           "hostname=a.test&keys=key1&interestGroupNames=cars"),
        "application/json", /*expect_trusted_params=*/true},
       {https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
        "application/javascript", /*expect_trusted_params=*/false},
@@ -3577,8 +3577,8 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
        "application/javascript", /*expect_trusted_params=*/true},
       {https_server_->GetURL(
            "a.test",
-           "/interest_group/"
-           "trusted_bidding_signals.json?hostname=a.test&keys=key1"),
+           "/interest_group/trusted_bidding_signals.json"
+           "?hostname=a.test&keys=key1&interestGroupNames=cars"),
        "application/json", /*expect_trusted_params=*/true},
       {https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
        "application/javascript", /*expect_trusted_params=*/false},
@@ -6690,7 +6690,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // the experiment group ID.
   WaitForURL(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
-      "&experimentGroupId=3498"));
+      "&interestGroupNames=cars&experimentGroupId=3498"));
   WaitForURL(https_server_->GetURL(
       "/interest_group/trusted_scoring_signals.json?hostname=a.test"
       "&renderUrls=https%3A%2F%2Fexample.com%2Frender&experimentGroupId=8349"));
@@ -6778,10 +6778,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // the experiment group IDs.
   WaitForURL(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1"
-      "&experimentGroupId=3498"));
+      "&interestGroupNames=cars&experimentGroupId=3498"));
   WaitForURL(https_server_->GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key2"
-      "&experimentGroupId=1203"));
+      "&interestGroupNames=cars_and_trucks&experimentGroupId=1203"));
 }
 
 // Validate that createAdRequest is available and be successfully called as part
@@ -7009,9 +7009,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       "a.test", "/interest_group/bidding_logic_report_to_name.js");
   GURL trusted_bidding_signals_url = remote_test_server_.GetURL(
       "a.test", "/interest_group/trusted_bidding_signals.json");
-  GURL trusted_bidding_signals_url_with_query = remote_test_server_.GetURL(
-      "a.test",
-      "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key1");
 
   GURL seller_url = remote_test_server_.GetURL(
       "a.test", "/interest_group/decision_logic_report_to_seller_signals.js");
@@ -7029,6 +7026,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   GURL seller_debug_win_report_url =
       remote_test_server_.GetURL("a.test", "/seller_report_debug_win_report");
   URLLoaderMonitor url_loader_monitor;
+
+  GURL trusted_bidding_signals_url_with_query = remote_test_server_.GetURL(
+      "a.test",
+      base::StringPrintf("/interest_group/trusted_bidding_signals.json"
+                         "?hostname=a.test&keys=key1&interestGroupNames=%s",
+                         base::EscapeQueryParamValue(
+                             bidder_report_to_url.spec(), /*use_plus=*/true)
+                             .c_str()));
 
   ASSERT_EQ(
       kSuccess,

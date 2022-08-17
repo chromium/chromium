@@ -204,24 +204,28 @@ TrustedSignals::Result::~Result() = default;
 
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    std::set<std::string> interest_group_names,
     std::set<std::string> bidding_signals_keys,
     const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
     absl::optional<uint16_t> experiment_group_id,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
-  DCHECK(!bidding_signals_keys.empty());
+  DCHECK(!interest_group_names.empty());
 
-  std::unique_ptr<TrustedSignals> trusted_signals = base::WrapUnique(
-      new TrustedSignals(std::move(bidding_signals_keys),
-                         /*render_urls=*/absl::nullopt,
-                         /*ad_component_render_urls=*/absl::nullopt,
-                         trusted_bidding_signals_url, std::move(v8_helper),
-                         std::move(load_signals_callback)));
+  std::unique_ptr<TrustedSignals> trusted_signals =
+      base::WrapUnique(new TrustedSignals(
+          std::move(interest_group_names), std::move(bidding_signals_keys),
+          /*render_urls=*/absl::nullopt,
+          /*ad_component_render_urls=*/absl::nullopt,
+          trusted_bidding_signals_url, std::move(v8_helper),
+          std::move(load_signals_callback)));
 
   std::string query_params = base::StrCat(
       {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_)});
+       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_),
+       CreateQueryParam("interestGroupNames",
+                        *trusted_signals->interest_group_names_)});
   if (experiment_group_id.has_value()) {
     base::StrAppend(&query_params,
                     {"&experimentGroupId=",
@@ -250,6 +254,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
 
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
+          /*interest_group_names=*/absl::nullopt,
           /*bidding_signals_keys=*/absl::nullopt, std::move(render_urls),
           std::move(ad_component_render_urls), trusted_scoring_signals_url,
           std::move(v8_helper), std::move(load_signals_callback)));
@@ -275,13 +280,15 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
 }
 
 TrustedSignals::TrustedSignals(
+    absl::optional<std::set<std::string>> interest_group_names,
     absl::optional<std::set<std::string>> bidding_signals_keys,
     absl::optional<std::set<std::string>> render_urls,
     absl::optional<std::set<std::string>> ad_component_render_urls,
     const GURL& trusted_signals_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback)
-    : bidding_signals_keys_(std::move(bidding_signals_keys)),
+    : interest_group_names_(std::move(interest_group_names)),
+      bidding_signals_keys_(std::move(bidding_signals_keys)),
       render_urls_(std::move(render_urls)),
       ad_component_render_urls_(std::move(ad_component_render_urls)),
       trusted_signals_url_(trusted_signals_url),
@@ -291,8 +298,9 @@ TrustedSignals::TrustedSignals(
   DCHECK(load_signals_callback_);
 
   // Either this should be for bidding signals or scoring signals.
-  DCHECK(bidding_signals_keys_ || (render_urls_ && ad_component_render_urls_));
-  DCHECK(!bidding_signals_keys_ ||
+  DCHECK((interest_group_names_ && bidding_signals_keys_) ||
+         (render_urls_ && ad_component_render_urls_));
+  DCHECK((!interest_group_names_ && !bidding_signals_keys_) ||
          (!render_urls_ && !ad_component_render_urls_));
 }
 
@@ -320,6 +328,7 @@ void TrustedSignals::OnDownloadComplete(
       FROM_HERE,
       base::BindOnce(&TrustedSignals::HandleDownloadResultOnV8Thread,
                      v8_helper_, trusted_signals_url_,
+                     std::move(interest_group_names_),
                      std::move(bidding_signals_keys_), std::move(render_urls_),
                      std::move(ad_component_render_urls_), std::move(body),
                      std::move(headers), std::move(error_msg),
@@ -331,6 +340,7 @@ void TrustedSignals::OnDownloadComplete(
 void TrustedSignals::HandleDownloadResultOnV8Thread(
     scoped_refptr<AuctionV8Helper> v8_helper,
     const GURL& signals_url,
+    absl::optional<std::set<std::string>> interest_group_names,
     absl::optional<std::set<std::string>> bidding_signals_keys,
     absl::optional<std::set<std::string>> render_urls,
     absl::optional<std::set<std::string>> ad_component_render_urls,

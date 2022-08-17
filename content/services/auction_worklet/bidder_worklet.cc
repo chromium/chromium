@@ -223,7 +223,8 @@ void BidderWorklet::GenerateBid(
                                       trace_id);
     generate_bid_task->trusted_bidding_signals_request =
         trusted_signals_request_manager_->RequestBiddingSignals(
-            *trusted_bidding_signals_keys,
+            generate_bid_task->bidder_worklet_non_shared_params->name,
+            trusted_bidding_signals_keys,
             base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                            base::Unretained(this), generate_bid_task));
     return;

@@ -1735,7 +1735,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
-          "https://signals.test/?hostname=top.window.test&keys=%s",
+          "https://signals.test/"
+          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
           keys.c_str())),
       signals_json, /*data_version=*/10u);
 
@@ -1828,7 +1829,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
-          "https://signals.test/?hostname=top.window.test&keys=%s",
+          "https://signals.test/"
+          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
           keys.c_str())),
       signals_json, /*data_version=*/42u);
 
@@ -1935,7 +1937,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(base::StringPrintf(
-          "https://signals.test/?hostname=top.window.test&keys=%s",
+          "https://signals.test/"
+          "?hostname=top.window.test&keys=%s&interestGroupNames=Fred",
           keys.c_str())),
       signals_json, /*data_version=*/22u);
 
@@ -2022,7 +2025,9 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
     AddBidderJsonResponse(
         &url_loader_factory_,
         GURL(base::StringPrintf(
-            "https://signals.test/?hostname=top.window.test&keys=%zu", i)),
+            "https://signals.test/"
+            "?hostname=top.window.test&keys=%zu&interestGroupNames=Fred",
+            i)),
         base::StringPrintf(R"({"keys":{"%zu":%zu}})", i, i + 1), i);
   }
 
@@ -2603,7 +2608,8 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   const GURL kBaseSignalsUrl("https://signals.test/");
   const GURL kFullSignalsUrl(
-      "https://signals.test/?hostname=top.window.test&keys=key1,key2");
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
 
   const char kJson[] = R"(
     {
@@ -2664,7 +2670,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
                                    base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       {"Failed to load "
-       "https://signals.test/?hostname=top.window.test&keys=key1,key2 HTTP "
+       "https://signals.test/"
+       "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
        "status = 404 Not Found."});
 
   // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
@@ -2683,7 +2690,8 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
   interest_group_trusted_bidding_signals_keys_->push_back("key1");
   AddBidderJsonResponse(
       &url_loader_factory_,
-      GURL("https://signals.test/?hostname=top.window.test&keys=key1"),
+      GURL("https://signals.test/"
+           "?hostname=top.window.test&keys=key1&interestGroupNames=Fred"),
       R"({"keys":{"key1":1}})", /*data_version=*/7u);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
@@ -2716,7 +2724,8 @@ TEST_F(BidderWorkletTest, GenerateBidExperimentGroupId) {
   interest_group_trusted_bidding_signals_keys_->push_back("key1");
   AddBidderJsonResponse(
       &url_loader_factory_,
-      GURL("https://signals.test/?hostname=top.window.test&keys=key1"
+      GURL("https://signals.test/"
+           "?hostname=top.window.test&keys=key1&interestGroupNames=Fred"
            "&experimentGroupId=48384"),
       R"({"keys":{"key1":1}})");
   RunGenerateBidWithReturnValueExpectingResult(

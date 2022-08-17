@@ -50,12 +50,15 @@ TrustedSignalsRequestManager::~TrustedSignalsRequestManager() {
 
 std::unique_ptr<TrustedSignalsRequestManager::Request>
 TrustedSignalsRequestManager::RequestBiddingSignals(
-    const std::vector<std::string>& keys,
+    const std::string& interest_group_name,
+    const absl::optional<std::vector<std::string>>& keys,
     LoadSignalsCallback load_signals_callback) {
   DCHECK_EQ(Type::kBiddingSignals, type_);
 
   std::unique_ptr<RequestImpl> request = std::make_unique<RequestImpl>(
-      this, std::set<std::string>(keys.begin(), keys.end()),
+      this, interest_group_name,
+      keys ? std::set<std::string>(keys->begin(), keys->end())
+           : std::set<std::string>(),
       std::move(load_signals_callback));
   QueueRequest(request.get());
   return request;
@@ -93,19 +96,23 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
           .first->get();
   batched_request->requests = std::move(queued_requests_);
   if (type_ == Type::kBiddingSignals) {
-    // Append all keys into a single set, and clear each request's list of keys,
-    // as it's no longer needed. Consumers provide their own list of keys again
-    // when they request v8 objects from the TrustedSignals::Results returned by
-    // `this`.
+    // Append all interest group names and keys into a single set, and clear
+    // them from each request, as they're no longer needed. Consumers provide
+    // their own values again when they request data from the
+    // TrustedSignals::Results returned by `this`.
+    std::set<std::string> interest_group_names;
     std::set<std::string> keys;
     for (RequestImpl* request : batched_request->requests) {
+      interest_group_names.emplace(
+          std::move(request->interest_group_name_).value());
       keys.insert(request->bidder_keys_->begin(), request->bidder_keys_->end());
       request->bidder_keys_.reset();
       request->batched_request_ = batched_request;
     }
     batched_request->trusted_signals = TrustedSignals::LoadBiddingSignals(
-        url_loader_factory_, std::move(keys), top_level_origin_.host(),
-        trusted_signals_url_, experiment_group_id_, v8_helper_,
+        url_loader_factory_, std::move(interest_group_names), std::move(keys),
+        top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
+        v8_helper_,
         base::BindOnce(&TrustedSignalsRequestManager::OnSignalsLoaded,
                        base::Unretained(this), batched_request));
     return;
@@ -134,13 +141,13 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
 
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
     TrustedSignalsRequestManager* trusted_signals_request_manager,
+    const std::string& interest_group_name,
     std::set<std::string> bidder_keys,
     LoadSignalsCallback load_signals_callback)
-    : bidder_keys_(std::move(bidder_keys)),
+    : interest_group_name_(interest_group_name),
+      bidder_keys_(std::move(bidder_keys)),
       load_signals_callback_(std::move(load_signals_callback)),
-      trusted_signals_request_manager_(trusted_signals_request_manager) {
-  DCHECK(!bidder_keys_->empty());
-}
+      trusted_signals_request_manager_(trusted_signals_request_manager) {}
 
 TrustedSignalsRequestManager::RequestImpl::RequestImpl(
     TrustedSignalsRequestManager* trusted_signals_request_manager,
