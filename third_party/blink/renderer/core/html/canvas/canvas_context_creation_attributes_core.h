@@ -33,8 +33,7 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   bool preserve_drawing_buffer = false;
   String power_preference = "default";
   bool stencil = false;
-  // Help to determine whether to use GPU or CPU for the canvas. It can only
-  // be set to true when the new-canvas-2d-api flag is enabled.
+  // Help to determine whether to use GPU or CPU for the canvas.
   bool will_read_frequently = false;
   bool xr_compatible = false;
 };
