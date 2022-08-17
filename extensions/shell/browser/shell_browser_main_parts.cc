@@ -128,13 +128,13 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
     ash::shill_clients::Initialize(bus);
     ash::hermes_clients::Initialize(bus);
     ash::CrasAudioClient::Initialize(bus);
-    chromeos::CrosDisksClient::Initialize(bus);
+    ash::CrosDisksClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
     ash::shill_clients::InitializeFakes();
     ash::hermes_clients::InitializeFakes();
     ash::CrasAudioClient::InitializeFake();
-    chromeos::CrosDisksClient::InitializeFake();
+    ash::CrosDisksClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }
 
@@ -309,7 +309,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   ash::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
-  chromeos::CrosDisksClient::Shutdown();
+  ash::CrosDisksClient::Shutdown();
   ash::CrasAudioClient::Shutdown();
   ash::shill_clients::Shutdown();
 #endif

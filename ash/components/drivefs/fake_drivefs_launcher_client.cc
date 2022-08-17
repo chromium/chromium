@@ -64,7 +64,7 @@ FakeDriveFsLauncherClient::FakeDriveFsLauncherClient(
       base::BindOnce(&ConnectAsync, launcher_.BindNewPipeAndPassReceiver(),
                      socket_path_.value()));
 
-  static_cast<chromeos::FakeCrosDisksClient*>(chromeos::CrosDisksClient::Get())
+  static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
       ->AddCustomMountPointCallback(
           base::BindRepeating(&FakeDriveFsLauncherClient::MaybeMountDriveFs,
                               base::Unretained(this)));

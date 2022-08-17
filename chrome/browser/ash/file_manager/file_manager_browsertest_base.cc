@@ -2063,13 +2063,11 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
         crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
                                 "testuser", "/home/testuser",
                                 "PLACEHOLDER_IP"));
-    static_cast<chromeos::FakeCrosDisksClient*>(
-        chromeos::CrosDisksClient::Get())
+    static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
         ->AddCustomMountPointCallback(
             base::BindRepeating(&FileManagerBrowserTestBase::MaybeMountCrostini,
                                 base::Unretained(this)));
-    static_cast<chromeos::FakeCrosDisksClient*>(
-        chromeos::CrosDisksClient::Get())
+    static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
         ->AddCustomMountPointCallback(
             base::BindRepeating(&FileManagerBrowserTestBase::MaybeMountGuestOs,
                                 base::Unretained(this)));
@@ -3170,8 +3168,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "blockMounts") {
-    static_cast<chromeos::FakeCrosDisksClient*>(
-        chromeos::CrosDisksClient::Get())
+    static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
         ->BlockMount();
     return;
   }

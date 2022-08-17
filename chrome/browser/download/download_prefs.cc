@@ -652,7 +652,7 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   }
 
   // Allow removable media.
-  if (chromeos::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(path))
+  if (ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(path))
     return path;
 
   // Allow paths under the Android files mount point.

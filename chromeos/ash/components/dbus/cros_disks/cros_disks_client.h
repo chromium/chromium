@@ -165,20 +165,6 @@ enum RemountOption {
   // MountError::kPathNotMounted error code.
   kRemountExistingDevice,
 };
-}  // namespace ash
-
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-using ::ash::DeviceType;
-using ::ash::FormatError;
-using ::ash::MountAccessMode;
-using ::ash::MountError;
-using ::ash::MountEventType;
-using ::ash::MountType;
-using ::ash::PartitionError;
-using ::ash::RemountOption;
-using ::ash::RenameError;
 
 // A class to represent information about a disk sent from cros-disks.
 class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
@@ -450,13 +436,6 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
   ~CrosDisksClient() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::CrosDisksClient;
-using ::chromeos::DiskInfo;
-using ::chromeos::MountEntry;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

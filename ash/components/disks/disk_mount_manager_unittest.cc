@@ -576,7 +576,7 @@ class DiskMountManagerTest : public testing::Test {
   }
 
  protected:
-  chromeos::FakeCrosDisksClient* fake_cros_disks_client_;
+  FakeCrosDisksClient* fake_cros_disks_client_;
   std::unique_ptr<MockDiskMountManagerObserver> observer_;
 
  private:

@@ -63,7 +63,7 @@ void TrashBaseTest::SetUp() {
   ash::ChunneldClient::InitializeFake();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
-  chromeos::CrosDisksClient::InitializeFake();
+  ash::CrosDisksClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
 
   // Ensure Crostini is setup correctly.
@@ -97,7 +97,7 @@ void TrashBaseTest::TearDown() {
   scoped_user_manager_.reset();
   profile_.reset();
   ash::SeneschalClient::Shutdown();
-  chromeos::CrosDisksClient::Shutdown();
+  ash::CrosDisksClient::Shutdown();
   ash::ConciergeClient::Shutdown();
   ash::CiceroneClient::Shutdown();
   ash::ChunneldClient::Shutdown();

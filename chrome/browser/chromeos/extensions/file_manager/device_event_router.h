@@ -51,9 +51,9 @@ class DeviceEventRouter : public VolumeManagerObserver,
   void OnDiskRemoved(const ash::disks::Disk& disk) override;
   void OnDeviceAdded(const std::string& device_path) override;
   void OnDeviceRemoved(const std::string& device_path) override;
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const Volume& volume) override;
   void OnFormatStarted(const std::string& device_path,
                        const std::string& device_label,

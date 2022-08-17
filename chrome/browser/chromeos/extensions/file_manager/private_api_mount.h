@@ -65,7 +65,7 @@ class FileManagerPrivateCancelMountingFunction
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-  void OnCancelled(chromeos::MountError error);
+  void OnCancelled(ash::MountError error);
 };
 
 // Implements chrome.fileManagerPrivate.removeMount method.
@@ -81,7 +81,7 @@ class FileManagerPrivateRemoveMountFunction : public LoggedExtensionFunction {
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-  void OnDiskUnmounted(chromeos::MountError error);
+  void OnDiskUnmounted(ash::MountError error);
 
   void OnSshFsUnmounted(bool ok);
 };

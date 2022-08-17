@@ -59,8 +59,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
           }));
 
   std::vector<base::FilePath> file_paths(
-      {chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
-          "numbers.csv")});
+      {ash::CrosDisksClient::GetArchiveMountPoint().Append("numbers.csv")});
   std::vector<std::string> content_types({"text/csv"});
   apps::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, std::move(file_paths), std::move(content_types));

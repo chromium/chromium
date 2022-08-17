@@ -125,7 +125,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   // CrosDisksClient already has a convention for its removable media directory
   // when running on Linux workstations.
   default_paths->removable_media =
-      chromeos::CrosDisksClient::GetRemovableDiskMountPoint();
+      ash::CrosDisksClient::GetRemovableDiskMountPoint();
 
   // Ash expects to find shared files in the share cache.
   default_paths->share_cache =

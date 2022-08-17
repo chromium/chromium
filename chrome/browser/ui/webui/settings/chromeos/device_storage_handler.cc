@@ -236,9 +236,9 @@ void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const DiskMountManager::MountPoint& mount_info) {
-  if (error_code != chromeos::MountError::kNone)
+  if (error_code != ash::MountError::kNone)
     return;
 
   if (!IsEligibleForAndroidStorage(mount_info.source_path))

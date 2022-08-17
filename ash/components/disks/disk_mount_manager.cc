@@ -1029,7 +1029,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Mount event change observers.
   base::ObserverList<DiskMountManager::Observer> observers_;
 
-  CrosDisksClient* const cros_disks_client_ = chromeos::CrosDisksClient::Get();
+  CrosDisksClient* const cros_disks_client_ = CrosDisksClient::Get();
 
   // The list of disks found.
   DiskMountManager::Disks disks_;

@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -199,4 +199,4 @@ TEST(CrosDisksClientTest, ComposeMountOptions) {
   EXPECT_EQ(kExpectedMountLabelOption, custom_mount_options[3]);
 }
 
-}  // namespace chromeos
+}  // namespace ash

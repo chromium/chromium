@@ -15,7 +15,7 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of CrosDiskeClient. This class provides a fake behavior
 // and the user of this class can raise a fake mouse events.
@@ -200,11 +200,6 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   base::WeakPtrFactory<FakeCrosDisksClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::FakeCrosDisksClient;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_

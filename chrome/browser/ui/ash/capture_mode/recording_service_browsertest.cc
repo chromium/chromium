@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
   auto* download_prefs =
       DownloadPrefs::FromBrowserContext(browser()->profile());
   const base::FilePath removable_path =
-      chromeos::CrosDisksClient::GetRemovableDiskMountPoint();
+      ash::CrosDisksClient::GetRemovableDiskMountPoint();
   const base::FilePath invalid_path =
       removable_path.Append(FILE_PATH_LITERAL("backup"));
   download_prefs->SetDownloadPath(invalid_path);

@@ -105,11 +105,11 @@ void FileSystemBackend::AddSystemMountPoints() {
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
-      chromeos::CrosDisksClient::GetArchiveMountPoint());
+      ash::CrosDisksClient::GetArchiveMountPoint());
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(storage::FlushPolicy::FLUSH_ON_COMPLETION),
-      chromeos::CrosDisksClient::GetRemovableDiskMountPoint());
+      ash::CrosDisksClient::GetRemovableDiskMountPoint());
   system_mount_points_->RegisterFileSystem(
       kSystemMountNameOem, storage::kFileSystemTypeRestrictedLocal,
       storage::FileSystemMountOption(),

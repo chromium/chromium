@@ -15,7 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -260,4 +260,4 @@ void FakeCrosDisksClient::AddCustomMountPointCallback(
   custom_mount_point_callbacks_.emplace_back(custom_mount_point_callback);
 }
 
-}  // namespace chromeos
+}  // namespace ash

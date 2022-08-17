@@ -87,7 +87,7 @@ void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   }
 }
 
-void DeviceEventRouter::OnVolumeMounted(chromeos::MountError error_code,
+void DeviceEventRouter::OnVolumeMounted(ash::MountError error_code,
                                         const Volume& volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -95,7 +95,7 @@ void DeviceEventRouter::OnVolumeMounted(chromeos::MountError error_code,
   SetDeviceState(device_path, DEVICE_STATE_USUAL);
 }
 
-void DeviceEventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
+void DeviceEventRouter::OnVolumeUnmounted(ash::MountError error_code,
                                           const Volume& volume) {
   // Do nothing.
 }

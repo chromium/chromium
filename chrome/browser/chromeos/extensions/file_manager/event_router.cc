@@ -485,62 +485,62 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 }  // namespace
 
 file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
-    chromeos::MountError error) {
+    ash::MountError error) {
   switch (error) {
-    case chromeos::MountError::kNone:
+    case ash::MountError::kNone:
       return file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
-    case chromeos::MountError::kUnknown:
+    case ash::MountError::kUnknown:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
-    case chromeos::MountError::kInternal:
+    case ash::MountError::kInternal:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INTERNAL;
-    case chromeos::MountError::kInvalidArgument:
+    case ash::MountError::kInvalidArgument:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARGUMENT;
-    case chromeos::MountError::kInvalidPath:
+    case ash::MountError::kInvalidPath:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_PATH;
-    case chromeos::MountError::kPathAlreadyMounted:
+    case ash::MountError::kPathAlreadyMounted:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_PATH_ALREADY_MOUNTED;
-    case chromeos::MountError::kPathNotMounted:
+    case ash::MountError::kPathNotMounted:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
-    case chromeos::MountError::kDirectoryCreationFailed:
+    case ash::MountError::kDirectoryCreationFailed:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
-    case chromeos::MountError::kInvalidMountOptions:
+    case ash::MountError::kInvalidMountOptions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
-    case chromeos::MountError::kInvalidUnmountOptions:
+    case ash::MountError::kInvalidUnmountOptions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
-    case chromeos::MountError::kInsufficientPermissions:
+    case ash::MountError::kInsufficientPermissions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
-    case chromeos::MountError::kMountProgramNotFound:
+    case ash::MountError::kMountProgramNotFound:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_NOT_FOUND;
-    case chromeos::MountError::kMountProgramFailed:
+    case ash::MountError::kMountProgramFailed:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_FAILED;
-    case chromeos::MountError::kInvalidDevicePath:
+    case ash::MountError::kInvalidDevicePath:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_DEVICE_PATH;
-    case chromeos::MountError::kUnknownFilesystem:
+    case ash::MountError::kUnknownFilesystem:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN_FILESYSTEM;
-    case chromeos::MountError::kUnsupportedFilesystem:
+    case ash::MountError::kUnsupportedFilesystem:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
-    case chromeos::MountError::kInvalidArchive:
+    case ash::MountError::kInvalidArchive:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
-    case chromeos::MountError::kNeedPassword:
+    case ash::MountError::kNeedPassword:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
-    case chromeos::MountError::kInProgress:
+    case ash::MountError::kInProgress:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
-    case chromeos::MountError::kCancelled:
+    case ash::MountError::kCancelled:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
     // Not a real error.
-    case chromeos::MountError::kCount:
+    case ash::MountError::kCount:
       NOTREACHED();
   }
   NOTREACHED();
@@ -1015,7 +1015,7 @@ void EventRouter::OnDeviceRemoved(const std::string& device_path) {
   // Do nothing.
 }
 
-void EventRouter::OnVolumeMounted(chromeos::MountError error_code,
+void EventRouter::OnVolumeMounted(ash::MountError error_code,
                                   const Volume& volume) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // profile_ is NULL if ShutdownOnUIThread() is called earlier. This can
@@ -1040,7 +1040,7 @@ void EventRouter::OnVolumeMounted(chromeos::MountError error_code,
   extensions::file_system_api::DispatchVolumeListChangeEventAsh(profile_);
 }
 
-void EventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
+void EventRouter::OnVolumeUnmounted(ash::MountError error_code,
                                     const Volume& volume) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DispatchMountCompletedEvent(
@@ -1055,7 +1055,7 @@ void EventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
 
 void EventRouter::DispatchMountCompletedEvent(
     file_manager_private::MountCompletedEventType event_type,
-    chromeos::MountError error,
+    ash::MountError error,
     const Volume& volume) {
   // Build an event object.
   file_manager_private::MountCompletedEvent event;

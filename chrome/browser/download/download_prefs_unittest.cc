@@ -536,7 +536,7 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   base::FilePath linux_files_dir;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  removable_media_dir = chromeos::CrosDisksClient::GetRemovableDiskMountPoint();
+  removable_media_dir = ash::CrosDisksClient::GetRemovableDiskMountPoint();
   android_files_dir = base::FilePath(file_manager::util::kAndroidFilesPath);
   linux_files_dir = file_manager::util::GetCrostiniMountDirectory(&profile);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

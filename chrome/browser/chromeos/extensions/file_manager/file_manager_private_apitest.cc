@@ -236,7 +236,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
     const TestMountPoint kTestMountPoints[] = {
       {
         "device_path1",
-        chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
+        ash::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path1").AsUTF8Unsafe(),
         ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
@@ -244,7 +244,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
       },
       {
         "device_path2",
-        chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
+        ash::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path2").AsUTF8Unsafe(),
         ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
@@ -252,7 +252,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
       },
       {
         "device_path3",
-        chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
+        ash::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path3").AsUTF8Unsafe(),
         ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
@@ -260,9 +260,9 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
       },
       {
         // Set source path inside another mounted volume.
-        chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
+        ash::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path3/archive.zip").AsUTF8Unsafe(),
-        chromeos::CrosDisksClient::GetArchiveMountPoint().AppendASCII(
+        ash::CrosDisksClient::GetArchiveMountPoint().AppendASCII(
             "archive_mount_path").AsUTF8Unsafe(),
         ash::MountType::kArchive,
         ash::disks::MOUNT_CONDITION_NONE,
@@ -325,15 +325,15 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                   const std::string& mount_label,
                   const std::vector<std::string>& mount_options,
                   ash::MountType type,
-                  chromeos::MountAccessMode access_mode,
+                  ash::MountAccessMode access_mode,
                   DiskMountManager::MountPathCallback callback) {
     DiskMountManager::MountPoint mount_point_info{
         source_path, "/media/fuse/" + mount_label,
         ash::MountType::kNetworkStorage};
     disk_mount_manager_mock_->NotifyMountEvent(
-        DiskMountManager::MountEvent::MOUNTING, chromeos::MountError::kNone,
+        DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
         mount_point_info);
-    std::move(callback).Run(chromeos::MountError::kNone, mount_point_info);
+    std::move(callback).Run(ash::MountError::kNone, mount_point_info);
   }
 
   void ExpectCrostiniMount() {
@@ -348,7 +348,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 MountPath("sshfs://testuser@hostname:", "",
                           "crostini_user_termina_penguin", mount_options,
                           ash::MountType::kNetworkStorage,
-                          chromeos::MountAccessMode::kReadWrite, _))
+                          ash::MountAccessMode::kReadWrite, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }
 
@@ -385,12 +385,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
   // verify them by name and occurrence count.
   int events[4] = {0, 0, 0, 0};
 
-  EXPECT_CALL(
-      *disk_mount_manager_mock_,
-      UnmountPath(chromeos::CrosDisksClient::GetRemovableDiskMountPoint()
-                      .AppendASCII("mount_path1")
-                      .AsUTF8Unsafe(),
-                  _))
+  EXPECT_CALL(*disk_mount_manager_mock_,
+              UnmountPath(ash::CrosDisksClient::GetRemovableDiskMountPoint()
+                              .AppendASCII("mount_path1")
+                              .AsUTF8Unsafe(),
+                          _))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
                     DiskMountManager::UnmountPathCallback callback) {
@@ -398,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("mount_path1", name.value());
             ++events[0];
             EXPECT_EQ(1, events[0]);
-            std::move(callback).Run(chromeos::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kNone);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
@@ -407,11 +406,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("mount_path1", name.value());
             ++events[1];
             EXPECT_EQ(1, events[1]);
-            std::move(callback).Run(chromeos::MountError::kCancelled);
+            std::move(callback).Run(ash::MountError::kCancelled);
           }));
 
   EXPECT_CALL(*disk_mount_manager_mock_,
-              UnmountPath(chromeos::CrosDisksClient::GetArchiveMountPoint()
+              UnmountPath(ash::CrosDisksClient::GetArchiveMountPoint()
                               .AppendASCII("archive_mount_path")
                               .AsUTF8Unsafe(),
                           _))
@@ -422,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("archive_mount_path", name.value());
             ++events[2];
             EXPECT_EQ(1, events[2]);
-            std::move(callback).Run(chromeos::MountError::kNone);
+            std::move(callback).Run(ash::MountError::kNone);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
@@ -431,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("archive_mount_path", name.value());
             ++events[3];
             EXPECT_EQ(1, events[3]);
-            std::move(callback).Run(chromeos::MountError::kNeedPassword);
+            std::move(callback).Run(ash::MountError::kNeedPassword);
           }));
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},
@@ -449,26 +448,26 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, FormatVolume) {
   // other arguments that don't match the rules below.
   EXPECT_CALL(*disk_mount_manager_mock_, FormatMountedDevice(_, _, _)).Times(0);
 
-  EXPECT_CALL(*disk_mount_manager_mock_,
-              FormatMountedDevice(
-                  chromeos::CrosDisksClient::GetRemovableDiskMountPoint()
-                      .AppendASCII("mount_path1")
-                      .AsUTF8Unsafe(),
-                  FormatFileSystemType::kVfat, "NEWLABEL1"))
+  EXPECT_CALL(
+      *disk_mount_manager_mock_,
+      FormatMountedDevice(ash::CrosDisksClient::GetRemovableDiskMountPoint()
+                              .AppendASCII("mount_path1")
+                              .AsUTF8Unsafe(),
+                          FormatFileSystemType::kVfat, "NEWLABEL1"))
       .Times(1);
-  EXPECT_CALL(*disk_mount_manager_mock_,
-              FormatMountedDevice(
-                  chromeos::CrosDisksClient::GetRemovableDiskMountPoint()
-                      .AppendASCII("mount_path2")
-                      .AsUTF8Unsafe(),
-                  FormatFileSystemType::kExfat, "NEWLABEL2"))
+  EXPECT_CALL(
+      *disk_mount_manager_mock_,
+      FormatMountedDevice(ash::CrosDisksClient::GetRemovableDiskMountPoint()
+                              .AppendASCII("mount_path2")
+                              .AsUTF8Unsafe(),
+                          FormatFileSystemType::kExfat, "NEWLABEL2"))
       .Times(1);
-  EXPECT_CALL(*disk_mount_manager_mock_,
-              FormatMountedDevice(
-                  chromeos::CrosDisksClient::GetRemovableDiskMountPoint()
-                      .AppendASCII("mount_path3")
-                      .AsUTF8Unsafe(),
-                  FormatFileSystemType::kNtfs, "NEWLABEL3"))
+  EXPECT_CALL(
+      *disk_mount_manager_mock_,
+      FormatMountedDevice(ash::CrosDisksClient::GetRemovableDiskMountPoint()
+                              .AppendASCII("mount_path3")
+                              .AsUTF8Unsafe(),
+                          FormatFileSystemType::kNtfs, "NEWLABEL3"))
       .Times(1);
 
   ASSERT_TRUE(RunExtensionTest("file_browser/format_test", {},

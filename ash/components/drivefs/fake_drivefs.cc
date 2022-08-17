@@ -267,7 +267,7 @@ FakeDriveFs::~FakeDriveFs() = default;
 
 void FakeDriveFs::RegisterMountingForAccountId(
     base::RepeatingCallback<std::string()> account_id_getter) {
-  static_cast<chromeos::FakeCrosDisksClient*>(chromeos::CrosDisksClient::Get())
+  static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
       ->AddCustomMountPointCallback(base::BindRepeating(&MaybeMountDriveFs));
 
   GetRegisteredFakeDriveFsIntances().emplace_back(std::move(account_id_getter),

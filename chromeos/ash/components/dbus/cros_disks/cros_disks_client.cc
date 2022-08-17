@@ -35,7 +35,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kReadOnlyOption[] = "ro";
@@ -630,9 +630,6 @@ class CrosDisksClientImpl : public CrosDisksClient {
 };
 
 }  // namespace
-}  // namespace chromeos
-
-namespace ash {
 
 std::ostream& operator<<(std::ostream& out, const MountType type) {
   switch (type) {
@@ -697,10 +694,6 @@ std::ostream& operator<<(std::ostream& out, const MountError error) {
 
   return out << std::underlying_type_t<MountError>(error);
 }
-
-}  // namespace ash
-
-namespace chromeos {
 
 std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
   return out << "error_code = " << entry.error_code << ", source_path = '"
@@ -917,7 +910,7 @@ CrosDisksClient* CrosDisksClient::Get() {
 void CrosDisksClient::Initialize(dbus::Bus* bus) {
   // See ArcDataSnapshotdManager for code that sets this flag.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kCrosDisksFake)) {
+          chromeos::switches::kCrosDisksFake)) {
     InitializeFake();
     return;
   }
@@ -989,4 +982,4 @@ std::vector<std::string> CrosDisksClient::ComposeMountOptions(
   return mount_options;
 }
 
-}  // namespace chromeos
+}  // namespace ash

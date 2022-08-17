@@ -154,9 +154,9 @@ class EventRouter
   void OnDiskRemoved(const ash::disks::Disk& disk) override;
   void OnDeviceAdded(const std::string& device_path) override;
   void OnDeviceRemoved(const std::string& device_path) override;
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const Volume& volume) override;
   void OnFormatStarted(const std::string& device_path,
                        const std::string& device_label,
@@ -250,7 +250,7 @@ class EventRouter
   // Dispatches the mount completed event.
   void DispatchMountCompletedEvent(
       extensions::api::file_manager_private::MountCompletedEventType event_type,
-      chromeos::MountError error,
+      ash::MountError error,
       const Volume& volume);
 
   // Send crostini path shared or unshared event.
@@ -324,7 +324,7 @@ class EventRouter
 };
 
 file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
-    chromeos::MountError error);
+    ash::MountError error);
 
 }  // namespace file_manager
 

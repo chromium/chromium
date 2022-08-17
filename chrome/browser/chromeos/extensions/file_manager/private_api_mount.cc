@@ -127,7 +127,7 @@ void FileManagerPrivateAddMountFunction::FinishMounting() {
   disk_mount_manager->MountPath(path_.AsUTF8Unsafe(), std::move(extension_),
                                 path_.BaseName().AsUTF8Unsafe(),
                                 std::move(options_), ash::MountType::kArchive,
-                                chromeos::MountAccessMode::kReadWrite,
+                                ash::MountAccessMode::kReadWrite,
                                 base::DoNothing());
 }
 
@@ -168,8 +168,8 @@ FileManagerPrivateCancelMountingFunction::Run() {
 }
 
 void FileManagerPrivateCancelMountingFunction::OnCancelled(
-    chromeos::MountError error) {
-  if (error == chromeos::MountError::kNone) {
+    ash::MountError error) {
+  if (error == ash::MountError::kNone) {
     Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
@@ -261,8 +261,8 @@ void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
 }
 
 void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
-    chromeos::MountError error) {
-  if (error == chromeos::MountError::kNone) {
+    ash::MountError error) {
+  if (error == ash::MountError::kNone) {
     Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
