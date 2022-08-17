@@ -1389,6 +1389,8 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
+    cores = 16,
+    ssd = True,
 )
 
 # TODO(crbug.com/1137474): Update the console view config once on CQ
