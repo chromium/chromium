@@ -12477,6 +12477,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Android reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Android reporting',
+        },
+      ],
       'example_value': True,
       'id': 349,
       'caption': '''Report information about status of Android''',
@@ -12496,6 +12506,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Linux apps usage reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Linux apps usage reporting',
+        },
+      ],
       'example_value': False,
       'id': 484,
       'caption': '''Report information about usage of Linux apps''',
@@ -12515,6 +12535,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device health monitoring',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device health monitoring',
+        },
+      ],
       'example_value': False,
       'id': 293,
       'caption': '''Send network packets to the management server to monitor online status''',
@@ -12555,6 +12585,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device system log upload',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device system log upload',
+        },
+      ],
       'example_value': False,
       'id': 306,
       'caption': '''Send system logs to the management server''',
@@ -12626,6 +12666,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow any user to sign in',
+        },
+        {
+          'value': False,
+          'caption': 'Restrict sign-in to a list of users',
+        },
+      ],
       'example_value': True,
       'id': 123,
       'caption': '''Allow creation of new user accounts''',
@@ -12647,6 +12697,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable guest mode',
+        },
+        {
+          'value': False,
+          'caption': 'Disable guest mode',
+        },
+      ],
       'example_value': True,
       'id': 124,
       'caption': '''Enable guest mode''',
@@ -12665,6 +12725,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always show user names and photos',
+        },
+        {
+          'value': False,
+          'caption': 'Never show user names and photos',
+        },
+      ],
       'example_value': True,
       'id': 125,
       'caption': '''Show usernames on login screen''',
@@ -12685,6 +12755,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow mobile data roaming',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow mobile data roaming',
+        },
+      ],
       'example_value': True,
       'id': 126,
       'caption': '''Enable data roaming''',
