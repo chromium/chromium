@@ -167,7 +167,9 @@ class AssistiveSuggester : public SuggestionsSource {
   void RecordTextInputStateMetrics(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  void HandleLongpressEnabledKeyEvent(const ui::KeyEvent& key_character);
+  void HandleLongpressEnabledKeyEvent(
+      const ui::KeyEvent& key_character,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   void OnLongpressDetected();
 

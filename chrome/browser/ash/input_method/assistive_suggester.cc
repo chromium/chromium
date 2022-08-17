@@ -411,13 +411,20 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
         kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
       return true;  // Do not propagate this event.
     }
-    HandleLongpressEnabledKeyEvent(event);
+    suggester_switch_->FetchEnabledSuggestionsThen(
+        base::BindOnce(&AssistiveSuggester::HandleLongpressEnabledKeyEvent,
+                       weak_ptr_factory_.GetWeakPtr(), event));
   }
   return false;
 }
 
 void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
-    const ui::KeyEvent& event) {
+    const ui::KeyEvent& event,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
+  if (!enabled_suggestions.diacritic_suggestions) {
+    return;
+  }
+
   if (const char c = event.GetCharacter();
       kDefaultLongpressEnabledKeys.contains(c) &&
       IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {

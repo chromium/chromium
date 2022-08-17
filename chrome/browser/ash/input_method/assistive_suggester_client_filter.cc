@@ -135,6 +135,10 @@ const char* kAllowedAppsForMultiWordSuggester[] = {
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
+const char* kDeniedAppsForDiacritics[] = {
+    "iodihamcpbpeioajjeobimgagajmlibd"  // SSH app
+};
+
 bool IsTestUrl(GURL url) {
   std::string filename = url.ExtractFileName();
   for (const char* test_url : kTestUrls) {
@@ -218,10 +222,15 @@ void ReturnEnabledSuggestions(
                                  *current_url) ||
       IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
 
+  // Deny-list (will block if matched, otherwise allow)
+  bool diacritic_suggestions_allowed =
+      !IsMatchedApp(kDeniedAppsForDiacritics, window_properties);
+
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
       .emoji_suggestions = emoji_suggestions_allowed,
       .multi_word_suggestions = multi_word_suggestions_allowed,
       .personal_info_suggestions = personal_info_suggestions_allowed,
+      .diacritic_suggestions = diacritic_suggestions_allowed,
   });
 }
 
