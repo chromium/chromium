@@ -23,9 +23,20 @@ ts_library("color_internals_ts") {
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
 }
 
+generate_grd("build_cros_styles_grdp") {
+  grd_prefix = "webui"
+  out_grd = "$target_gen_dir/${grd_prefix}_cros_styles_resources.grdp"
+  public_deps = [ "//ui/chromeos/styles:color_internals_tokens_json" ]
+  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
+  input_files = [ "ui/chromeos/styles/color_internals_tokens.json" ]
+  resource_path_rewrites = [ "ui/chromeos/styles/color_internals_tokens.json|chromeos/colors/color_internals_tokens.json" ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "ash_color_internals"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+  grdp_files = [ "$target_gen_dir/webui_cros_styles_resources.grdp" ]
 
   input_files = [ "index.html" ]
   input_files_base_dir = rebase_path(".", "//")
@@ -35,5 +46,8 @@ generate_grd("build_grd") {
   manifest_files = filter_include(get_target_outputs(":color_internals_ts"),
                                   [ "*.manifest" ])
 
-  deps = [ ":color_internals_ts" ]
+  deps = [
+    ":build_cros_styles_grdp",
+    ":color_internals_ts",
+  ]
 }

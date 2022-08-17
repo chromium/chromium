@@ -21,6 +21,9 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
           kChromeUIColorInternalsHost);
 
   data_source->AddResourcePath("", IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
+  data_source->AddResourcePath(
+      "color_internals_tokens.json",
+      IDR_WEBUI_UI_CHROMEOS_STYLES_COLOR_INTERNALS_TOKENS_JSON);
   data_source->AddResourcePaths(base::make_span(
       kAshColorInternalsResources, kAshColorInternalsResourcesSize));
 }

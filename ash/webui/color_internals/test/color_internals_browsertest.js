@@ -32,3 +32,11 @@ TEST_F('ColorInternalsUIBrowserTest', 'HasChromeSchemeURL', async () => {
   assertEquals(document.location.origin, HOST_ORIGIN);
   testDone();
 });
+
+// Tests that the table body has been constructed properly and has had token
+// rows added into it.
+TEST_F('ColorInternalsUIBrowserTest', 'BuildsTokenTable', async () => {
+  const table = document.querySelector('table');
+  assertNotEquals(table.tBodies[0].rows.length, 0);
+  testDone();
+});
