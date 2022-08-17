@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/signatures.h"
@@ -24,6 +25,8 @@ using CapabilitiesInfo =
 namespace {
 constexpr uint32_t kFastCheckoutHashPrefixSize = 15u;
 constexpr char kFastCheckoutIntent[] = "CHROME_FAST_CHECKOUT";
+constexpr char kUmaKeyHttpCode[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode";
 }  // namespace
 
 FastCheckoutCapabilitiesFetcherImpl::FastCheckoutCapabilitiesFetcherImpl(
@@ -87,7 +90,7 @@ void FastCheckoutCapabilitiesFetcherImpl::OnGetCapabilitiesInformationReceived(
     return;
   }
 
-  // TODO(crbug.com/1350456): Record UMA for network status.
+  base::UmaHistogramSparse(kUmaKeyHttpCode, http_status);
 
   // Short-hand for executing all callbacks.
   auto inform_callers = [request](bool outcome) {

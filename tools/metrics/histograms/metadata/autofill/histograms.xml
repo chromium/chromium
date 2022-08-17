@@ -1202,6 +1202,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2023-08-15">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    HTTP response code of fetching a list of available fast checkout scripts.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2023-02-12">
   <owner>kolos@chromium.org</owner>
