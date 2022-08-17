@@ -191,7 +191,7 @@ class DMRegisterRequestCallbackHandler : public DMRequestCallbackHandler {
     if (expect_registered_) {
       EXPECT_EQ(result, expected_result_);
       if (result == DMClient::RequestResult::kSuccess ||
-          result == DMClient::RequestResult::kAleadyRegistered) {
+          result == DMClient::RequestResult::kAlreadyRegistered) {
         EXPECT_EQ(storage_->GetDmToken(), "test-dm-token");
       } else {
         EXPECT_TRUE(storage_->GetDmToken().empty());
@@ -490,7 +490,7 @@ TEST_F(DMRegisterClientTest, AlreadyRegistered) {
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/false);
   callback_handler_->SetExpectedRequestResult(
-      DMClient::RequestResult::kAleadyRegistered);
+      DMClient::RequestResult::kAlreadyRegistered);
   StartTestServerWithResponse(net::HTTP_OK, GetDefaultResponse());
 
   base::RunLoop run_loop;

@@ -39,12 +39,12 @@
 #include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/device_management_task.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/refresh_dm_policies_task.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -921,8 +921,8 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   AppServerSingletonInstance()->main_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&RefreshDMPoliciesTask::Run,
-                     base::MakeRefCounted<RefreshDMPoliciesTask>(
+      base::BindOnce(&DeviceManagementTask::RunFetchPolicy,
+                     base::MakeRefCounted<DeviceManagementTask>(
                          AppServerSingletonInstance()->config(),
                          AppServerSingletonInstance()->main_task_runner()),
                      base::DoNothing()));

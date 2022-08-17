@@ -34,11 +34,11 @@
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/device_management_task.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/refresh_dm_policies_task.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_block_check.h"
@@ -306,8 +306,11 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                          GetUpdaterScope(), persisted_data_)));
 
   new_tasks.push_back(base::BindOnce(
-      &RefreshDMPoliciesTask::Run,
-      base::MakeRefCounted<RefreshDMPoliciesTask>(config_, main_task_runner_)));
+      &DeviceManagementTask::RunRegisterDevice,
+      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)));
+  new_tasks.push_back(base::BindOnce(
+      &DeviceManagementTask::RunFetchPolicy,
+      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)));
   new_tasks.push_back(base::BindOnce(
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(

@@ -232,7 +232,7 @@ void DMFetch::PostRequest(const std::string& request_type,
     if (storage_->GetEnrollmentToken().empty()) {
       result = DMClient::RequestResult::kNotManaged;
     } else if (!storage_->GetDmToken().empty()) {
-      result = DMClient::RequestResult::kAleadyRegistered;
+      result = DMClient::RequestResult::kAlreadyRegistered;
     }
   } else if (storage_->GetDmToken().empty()) {
     result = DMClient::RequestResult::kNoDMToken;

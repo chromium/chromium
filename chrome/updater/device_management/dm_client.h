@@ -49,7 +49,7 @@ class DMClient {
     kNoDeviceID,
 
     // Register request is not sent since the device is already registered.
-    kAleadyRegistered,
+    kAlreadyRegistered,
 
     // Request is not sent because the device is not managed.
     kNotManaged,

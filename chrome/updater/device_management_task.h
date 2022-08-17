@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_REFRESH_DM_POLICIES_TASK_H_
-#define CHROME_UPDATER_REFRESH_DM_POLICIES_TASK_H_
+#ifndef CHROME_UPDATER_DEVICE_MANAGEMENT_TASK_H_
+#define CHROME_UPDATER_DEVICE_MANAGEMENT_TASK_H_
 
 #include <vector>
 
@@ -18,23 +18,29 @@
 
 namespace updater {
 
-// The RefreshDMPolicies refreshes the DM policies from the DM server, and if
-// successful, reloads the policy service with the new policies.
-// TODO(crbug.com/1345407) : do device registration.
-class RefreshDMPoliciesTask
-    : public base::RefCountedThreadSafe<RefreshDMPoliciesTask> {
+// The DeviceManagementTask handles registration and DM policy refreshes.
+class DeviceManagementTask
+    : public base::RefCountedThreadSafe<DeviceManagementTask> {
  public:
-  RefreshDMPoliciesTask(
+  DeviceManagementTask(
       scoped_refptr<Configurator> config,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
-  void Run(base::OnceClosure callback);
+  void RunRegisterDevice(base::OnceClosure callback);
+  void RunFetchPolicy(base::OnceClosure callback);
+
+  DMClient::RequestResult result() const { return result_; }
 
  private:
-  friend class base::RefCountedThreadSafe<RefreshDMPoliciesTask>;
-  virtual ~RefreshDMPoliciesTask();
+  friend class base::RefCountedThreadSafe<DeviceManagementTask>;
+  virtual ~DeviceManagementTask();
+
+  void Run(base::OnceClosure callback);
+
+  void RegisterDevice(base::OnceClosure callback);
+  void OnRegisterDeviceRequestComplete(DMClient::RequestResult result);
 
   void FetchPolicy(base::OnceClosure callback);
-  void OnRequestComplete(
+  void OnFetchPolicyRequestComplete(
       DMClient::RequestResult result,
       const std::vector<PolicyValidationResult>& validation_results);
 
@@ -42,8 +48,9 @@ class RefreshDMPoliciesTask
   const scoped_refptr<Configurator> config_;
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  DMClient::RequestResult result_ = DMClient::RequestResult::kSuccess;
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_REFRESH_DM_POLICIES_TASK_H_
+#endif  // CHROME_UPDATER_DEVICE_MANAGEMENT_TASK_H_
