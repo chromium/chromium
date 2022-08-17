@@ -111,6 +111,16 @@ crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProce
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
+# Flaky hangs on Mac Debug Intel. Attempted to suppress with
+# RetryOnFailure, but test was persistently flaky. Test is reliable in
+# Release mode, and no root cause was obvious, so permanently skipping
+# on this configuration.
+crbug.com/1297151 [ mac intel debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+
+# Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
@@ -130,10 +140,6 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
-# Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
-crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
-crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -145,7 +151,6 @@ crbug.com/1282821 [ win10 intel ] ContextLost_WebGPUBlockedAfterJSNavigation [ R
 # Flaking on Mac / Linux
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 crbug.com/1284424 [ linux ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
-crbug.com/1338955 [ mac debug intel-0x3e9b passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
@@ -162,9 +167,6 @@ crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAf
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 crbug.com/1337793 [ linux display-server-wayland ] ContextLost_WebGLContextLostOverlyLargeUniform [ Failure ]
-
-# GpuCrash_Info* flakes on Mac Debug (AMD, Intel)
-crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaky on Fuchsia
 crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
