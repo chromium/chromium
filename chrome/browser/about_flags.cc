@@ -8875,10 +8875,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"launcher-lacros-integration",
-     flag_descriptions::kLauncherLacrosIntegrationName,
-     flag_descriptions::kLauncherLacrosIntegrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kLauncherLacrosIntegration)},
     {"always-enable-hdcp", flag_descriptions::kAlwaysEnableHdcpName,
      flag_descriptions::kAlwaysEnableHdcpDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAlwaysEnableHdcpChoices)},

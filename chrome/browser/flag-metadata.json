@@ -4127,11 +4127,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "launcher-lacros-integration",
-    "owners": ["wrong", "thanhdng", "tby"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "launcher-play-store-search",
     "owners": [ "amandadeacon", "tby", "wrong" ],
     "expiry_milestone": 108
