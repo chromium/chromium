@@ -101,41 +101,28 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-absl::optional<int> GetUserBirthYear(const base::Value* demographics) {
-  const base::Value* value =
-      demographics->FindPath(kSyncDemographicsBirthYearPath);
-  int birth_year = (value != nullptr && value->is_int())
-                       ? value->GetInt()
-                       : kUserDemographicsBirthYearDefaultValue;
-
-  // Verify that there is a birth year.
-  if (birth_year == kUserDemographicsBirthYearDefaultValue)
-    return absl::nullopt;
-
-  return birth_year;
+absl::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
+  return demographics.FindInt(kSyncDemographicsBirthYearPath);
 }
 
 // Gets the synced user's gender from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
 absl::optional<UserDemographicsProto_Gender> GetUserGender(
-    const base::Value* demographics) {
-  const base::Value* value =
-      demographics->FindPath(kSyncDemographicsGenderPath);
-  int gender_int = (value != nullptr && value->is_int())
-                       ? value->GetInt()
-                       : kUserDemographicsGenderDefaultValue;
+    const base::Value::Dict& demographics) {
+  const absl::optional<int> gender_int =
+      demographics.FindInt(kSyncDemographicsGenderPath);
 
-  // Verify that the gender is not default.
-  if (gender_int == kUserDemographicsGenderDefaultValue)
+  // Verify that the gender is unset.
+  if (!gender_int)
     return absl::nullopt;
 
   // Verify that the gender number is a valid UserDemographicsProto_Gender
   // encoding.
-  if (!UserDemographicsProto_Gender_IsValid(gender_int))
+  if (!UserDemographicsProto_Gender_IsValid(*gender_int))
     return absl::nullopt;
 
-  auto gender = UserDemographicsProto_Gender(gender_int);
+  const auto gender = UserDemographicsProto_Gender(*gender_int);
 
   // Verify that the gender is in a large enough population set to preserve
   // anonymity.
@@ -215,9 +202,8 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
-  const base::Value* demographics =
-      pref_service->GetDictionary(kSyncDemographicsPrefName);
-  DCHECK(demographics != nullptr);
+  const base::Value::Dict& demographics =
+      pref_service->GetValueDict(kSyncDemographicsPrefName);
 
   // Get the user's birth year.
   absl::optional<int> birth_year = GetUserBirthYear(demographics);
