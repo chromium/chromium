@@ -235,15 +235,15 @@ bool SearchPrefetchService::MaybePrefetchURL(
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
 
-  // TODO(crbug.com/1346344): Integrate PreloadingAPIs with
-  // OmniboxSearchPredictor prefetch attempts.
-  if (!navigation_prefetch) {
-    // Create new PreloadingAttempt and pass all the values corresponding to
-    // this DefaultSearchEngine prefetch attempt.
-    attempt = preloading_data->AddPreloadingAttempt(
-        ToPreloadingPredictor(ChromePreloadingPredictor::kDefaultSearchEngine),
-        content::PreloadingType::kPrefetch, same_url_matcher);
-  }
+  // Create new PreloadingAttempt and pass all the values corresponding to
+  // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
+  // |navigation_prefetch| is true.
+  content::PreloadingPredictor predictor = ToPreloadingPredictor(
+      navigation_prefetch ? ChromePreloadingPredictor::kOmniboxSearchPredictor
+                          : ChromePreloadingPredictor::kDefaultSearchEngine);
+  attempt = preloading_data->AddPreloadingAttempt(
+      predictor, content::PreloadingType::kPrefetch, same_url_matcher);
+
   if (search_terms.size() == 0) {
     recorder.reason_ =
         SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms;
@@ -680,8 +680,26 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
            .prefetch_likely_navigations) {
     return;
   }
-  MaybePrefetchURL(GetPreloadURLFromMatch(match, template_url_service,
-                                          /*attach_prefetch_information=*/true),
+
+  GURL preload_url =
+      GetPreloadURLFromMatch(match, template_url_service,
+                             /*attach_prefetch_information=*/true);
+
+  std::u16string search_terms;
+  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+      preload_url, template_url_service->search_terms_data(), &search_terms);
+
+  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
+      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents);
+
+  // Create PreloadingPrediction for this match. We set the confidence to 100 as
+  // when the user changed the selected match, we always trigger prefetch.
+  preloading_data->AddPreloadingPrediction(
+      ToPreloadingPredictor(ChromePreloadingPredictor::kOmniboxSearchPredictor),
+      100, std::move(same_url_matcher));
+  MaybePrefetchURL(preload_url,
                    /*navigation_prefetch=*/true, web_contents);
 }
 
