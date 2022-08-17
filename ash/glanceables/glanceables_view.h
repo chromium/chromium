@@ -8,11 +8,9 @@
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
-namespace views {
-class Label;
-}  // namespace views
-
 namespace ash {
+
+class GlanceablesWelcomeLabel;
 
 // Container view for the "welcome back" glanceables screen shown on login.
 class ASH_EXPORT GlanceablesView : public views::View {
@@ -22,10 +20,10 @@ class ASH_EXPORT GlanceablesView : public views::View {
   GlanceablesView& operator=(const GlanceablesView&) = delete;
   ~GlanceablesView() override;
 
-  views::Label* welcome_label_for_test() { return welcome_label_; }
+  GlanceablesWelcomeLabel* welcome_label_for_test() { return welcome_label_; }
 
  private:
-  views::Label* welcome_label_ = nullptr;
+  GlanceablesWelcomeLabel* welcome_label_ = nullptr;
 };
 
 }  // namespace ash

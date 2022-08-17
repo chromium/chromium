@@ -6,8 +6,7 @@
 
 #include <memory>
 
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/views/controls/label.h"
+#include "ash/glanceables/welcome_label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -20,12 +19,7 @@ GlanceablesView::GlanceablesView() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  welcome_label_ = AddChildView(std::make_unique<views::Label>());
-  welcome_label_->SetAutoColorReadabilityEnabled(false);
-  // TODO(crbug.com/1353119): Use color provider and move to OnThemeChanged().
-  welcome_label_->SetEnabledColor(SK_ColorWHITE);
-  // TODO(crbug.com/1353119): Localized text.
-  welcome_label_->SetText(u"Placeholder");
+  welcome_label_ = AddChildView(std::make_unique<GlanceablesWelcomeLabel>());
 }
 
 GlanceablesView::~GlanceablesView() = default;

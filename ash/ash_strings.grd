@@ -5155,6 +5155,11 @@ New install
       <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the multitask menu nudge is displayed.">
         Keep hovering for more layout options
       </message>
+
+      <!-- Glanceables -->
+      <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
+        Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

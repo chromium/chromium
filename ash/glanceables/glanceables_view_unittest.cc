@@ -6,10 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/welcome_label.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/views/controls/label.h"
 
 namespace ash {
 namespace {
@@ -32,7 +32,7 @@ TEST_F(GlanceablesViewTest, Basics) {
   ASSERT_TRUE(view);
 
   // Welcome label was created.
-  views::Label* welcome_label = view->welcome_label_for_test();
+  GlanceablesWelcomeLabel* welcome_label = view->welcome_label_for_test();
   ASSERT_TRUE(welcome_label);
   EXPECT_FALSE(welcome_label->GetText().empty());
 }
