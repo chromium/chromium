@@ -187,6 +187,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.clipsToBounds = YES;
 
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   self.locationBarSteadyView.badgeView = self.badgeView;
