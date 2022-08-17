@@ -6071,6 +6071,9 @@ void RenderFrameHostImpl::DidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
+  // Cross-origin navigations are not allowed in prerendering so we can not
+  // reach here while prerendering.
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
   delegate_->OnDidBlockNavigation(blocked_url, initiator_url, reason);
 }
 
