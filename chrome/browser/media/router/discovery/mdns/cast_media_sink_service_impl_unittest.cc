@@ -744,6 +744,37 @@ TEST_P(CastMediaSinkServiceImplTest,
   EXPECT_TRUE(media_sink_service_impl_.dial_sink_failure_count_.empty());
 }
 
+TEST_P(CastMediaSinkServiceImplTest, IgnoreDialSinkIfSameIdAsCast) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal dial_sink = CreateDialSink(1);
+  ASSERT_EQ(cast_sink.id(),
+            CastMediaSinkServiceImpl::GetCastSinkIdFromDial(dial_sink.id()));
+
+  media_sink_service_impl_.AddOrUpdateSink(cast_sink);
+
+  // Since there already exists a sink with the same ID, we should not try to
+  // open a channel again.
+  EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(_, _)).Times(0);
+  media_sink_service_impl_.OnSinkAddedOrUpdated(dial_sink);
+}
+
+TEST_P(CastMediaSinkServiceImplTest, IgnoreDialSinkIfSameIpAddressAsCast) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  media_sink_service_impl_.AddOrUpdateSink(cast_sink);
+
+  // Create a DIAL sink whose ID is different from that of |cast_sink| but the
+  // IP address is the same.
+  MediaSinkInternal dial_sink = CreateDialSink(2);
+  media_router::DialSinkExtraData extra_data = dial_sink.dial_data();
+  extra_data.ip_address = cast_sink.cast_data().ip_endpoint.address();
+  dial_sink.set_dial_data(extra_data);
+
+  // Since there already exists a sink with the same IP address, we should
+  // not try to open a channel again.
+  EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(_, _)).Times(0);
+  media_sink_service_impl_.OnSinkAddedOrUpdated(dial_sink);
+}
+
 TEST_P(CastMediaSinkServiceImplTest, OpenChannelsNow) {
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);

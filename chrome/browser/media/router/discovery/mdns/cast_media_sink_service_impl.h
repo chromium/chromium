@@ -183,6 +183,10 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            TestOnSinkAddedOrUpdatedSkipsIfNonCastDevice);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           IgnoreDialSinkIfSameIdAsCast);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           IgnoreDialSinkIfSameIpAddressAsCast);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            TestSuccessOnChannelErrorRetry);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            TestFailureOnChannelErrorRetry);
@@ -321,6 +325,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // for the device description URL advertised by Cast devices to determine the
   // long term solution for restricting dual discovery.
   bool IsProbablyNonCastDevice(const MediaSinkInternal& sink) const;
+
+  bool HasSinkWithIPAddress(const net::IPAddress& ip_address) const;
 
   base::WeakPtr<CastMediaSinkServiceImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

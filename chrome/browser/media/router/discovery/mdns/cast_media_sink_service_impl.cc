@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -684,19 +685,17 @@ void CastMediaSinkServiceImpl::OnSinkAddedOrUpdated(
 }
 
 void CastMediaSinkServiceImpl::OnSinkRemoved(const MediaSinkInternal& sink) {
-  // No-op
+  // No-op.
 }
 
 void CastMediaSinkServiceImpl::TryConnectDialDiscoveredSink(
     const MediaSinkInternal& dial_sink) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/753175): Dual discovery should not try to open cast channel
-  // for non-Cast device.
+  // Dual discovery should not try to open cast channel for non-Cast device.
   if (IsProbablyNonCastDevice(dial_sink)) {
     return;
   }
-
   MediaSinkInternal sink = CreateCastSinkFromDialSink(dial_sink);
   if (GetSinkById(sink.sink().id())) {
     metrics_.RecordCastSinkDiscoverySource(SinkSource::kMdnsDial);
@@ -705,6 +704,13 @@ void CastMediaSinkServiceImpl::TryConnectDialDiscoveredSink(
     if (dial_media_sink_service_) {
       dial_media_sink_service_->RemoveSink(dial_sink);
     }
+    return;
+  }
+  if (HasSinkWithIPAddress(dial_sink.dial_data().ip_address)) {
+    // We're already connected to a Cast sink whose ID is different from that of
+    // |dial_sink| but has the same IP address. In this case we do not try to
+    // reopen a channel because that'd be redundant and would cause a teardown
+    // of any existing session.
     return;
   }
 
@@ -762,6 +768,13 @@ void CastMediaSinkServiceImpl::DisconnectAndRemoveSink(
           base::IgnoreResult(&cast_channel::CastSocketService::CloseSocket),
           base::Unretained(cast_socket_service_),
           sink.cast_data().cast_channel_id));
+}
+
+bool CastMediaSinkServiceImpl::HasSinkWithIPAddress(
+    const net::IPAddress& ip_address) const {
+  return base::Contains(GetSinks(), ip_address, [](const auto& sink) {
+    return sink.second.cast_data().ip_endpoint.address();
+  });
 }
 
 }  // namespace media_router
