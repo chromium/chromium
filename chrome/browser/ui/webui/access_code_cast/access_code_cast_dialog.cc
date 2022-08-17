@@ -36,7 +36,7 @@ constexpr int kSystemDialogCornerRadiusDp = 12;
 
 // The default width, height without footnote, height with footnote for the dialog container.
 const int kDialogWidthDefault = 448;
-const int kDialogHeightDefault = 271;
+const int kDialogHeightDefault = 295;
 const int kDialogHeightFootnote = 330;
 
 AccessCodeCastDialog::AccessCodeCastDialog(
