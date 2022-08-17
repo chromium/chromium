@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<meta charset='utf-8'>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480">
+<foreignObject x="0" y="0" width="300">
+<div xmlns="http://www.w3.org/1999/xhtml">
+Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+</div>
+</foreignObject>
+</svg>
+<script>
+test(() => {
+  const foreign = document.querySelector('foreignObject');
+  const previousHeight = foreign.clientHeight;
+  foreign.setAttribute('height', 100);
+  assert_not_equals(foreign.clientHeight, previousHeight);
+}, 'crbug.com/1352482; foreignObject should have the correct height after a dynamic change of height attribute.');
+</script>
+</body>
+</html>

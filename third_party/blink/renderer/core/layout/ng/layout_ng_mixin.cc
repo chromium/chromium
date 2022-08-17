@@ -32,6 +32,26 @@
 
 namespace blink {
 
+namespace {
+
+bool CanUseConstraintSpaceForCaching(const NGLayoutResult* previous_result,
+                                     const LayoutBox& box) {
+  if (!previous_result)
+    return false;
+  const auto& space = previous_result->GetConstraintSpaceForCaching();
+  if (space.IsFixedInlineSize() && box.HasOverrideLogicalWidth()) {
+    if (space.AvailableSize().inline_size != box.OverrideLogicalWidth())
+      return false;
+  }
+  if (space.IsFixedBlockSize() && box.HasOverrideLogicalHeight()) {
+    if (space.AvailableSize().block_size != box.OverrideLogicalHeight())
+      return false;
+  }
+  return space.GetWritingMode() == box.StyleRef().GetWritingMode();
+}
+
+}  // namespace
+
 template <typename Base>
 LayoutNGMixin<Base>::LayoutNGMixin(ContainerNode* node) : Base(node) {
   Base::CheckIsNotDestroyed();
@@ -413,9 +433,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   // If we are a layout root, use the previous space if available. This will
   // include any stretched sizes if applicable.
   NGConstraintSpace constraint_space =
-      is_layout_root && previous_result &&
-              previous_result->GetConstraintSpaceForCaching()
-                      .GetWritingMode() == Base::StyleRef().GetWritingMode()
+      is_layout_root && CanUseConstraintSpaceForCaching(previous_result, *this)
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
