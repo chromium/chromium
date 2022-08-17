@@ -106,18 +106,16 @@ std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
   return std::make_unique<WindowPlacementPrefUpdate>(prefs, window_name);
 }
 
-const base::Value* GetWindowPlacementDictionaryReadOnly(
+const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs) {
   DCHECK(!window_name.empty());
   if (prefs->FindPreference(window_name))
-    return prefs->GetDictionary(window_name);
+    return &prefs->GetValueDict(window_name);
 
-  const base::Value* app_windows =
-      prefs->GetDictionary(prefs::kAppWindowPlacement);
-  if (!app_windows)
-    return nullptr;
-  return app_windows->FindDictKey(window_name);
+  const base::Value::Dict& app_windows =
+      prefs->GetValueDict(prefs::kAppWindowPlacement);
+  return app_windows.FindDict(window_name);
 }
 
 bool ShouldSaveWindowPlacement(const Browser* browser) {

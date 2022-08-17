@@ -34,10 +34,9 @@ std::string GetWindowName(const Browser* browser);
 std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
     const std::string& window_name,
     PrefService* prefs);
-// TODO(crbug.com/1187061): Refactor this to remove DictionaryValue.
 // Returns NULL if the window corresponds to an app that doesn't have placement
 // information stored in the preferences system.
-const base::Value* GetWindowPlacementDictionaryReadOnly(
+const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs);
 

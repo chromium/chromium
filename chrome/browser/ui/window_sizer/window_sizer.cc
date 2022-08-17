@@ -53,14 +53,15 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     if (!browser_ || !browser_->profile()->GetPrefs())
       return false;
 
-    const base::Value* pref = chrome::GetWindowPlacementDictionaryReadOnly(
-        chrome::GetWindowName(browser_), browser_->profile()->GetPrefs());
+    const base::Value::Dict* pref =
+        chrome::GetWindowPlacementDictionaryReadOnly(
+            chrome::GetWindowName(browser_), browser_->profile()->GetPrefs());
 
     absl::optional<gfx::Rect> pref_bounds = RectFromPrefixedPref(pref, "");
     absl::optional<gfx::Rect> pref_area =
         RectFromPrefixedPref(pref, "work_area_");
     absl::optional<bool> maximized =
-        pref ? pref->FindBoolPath("maximized") : absl::nullopt;
+        pref ? pref->FindBool("maximized") : absl::nullopt;
 
     if (!pref_bounds || !maximized)
       return false;
@@ -120,17 +121,17 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
 
  private:
   static absl::optional<gfx::Rect> RectFromPrefixedPref(
-      const base::Value* pref,
+      const base::Value::Dict* pref,
       const std::string& prefix) {
     if (!pref)
       return absl::nullopt;
 
     absl::optional<int> top, left, bottom, right;
 
-    top = pref->FindIntKey(prefix + "top");
-    left = pref->FindIntKey(prefix + "left");
-    bottom = pref->FindIntKey(prefix + "bottom");
-    right = pref->FindIntKey(prefix + "right");
+    top = pref->FindInt(prefix + "top");
+    left = pref->FindInt(prefix + "left");
+    bottom = pref->FindInt(prefix + "bottom");
+    right = pref->FindInt(prefix + "right");
 
     if (!top || !left || !bottom || !right)
       return absl::nullopt;
