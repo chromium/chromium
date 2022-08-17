@@ -46,7 +46,11 @@ source_set("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "promos_manager_unittest.mm" ]
+  sources = [
+    "promos_manager_unittest.h",
+    "promos_manager_unittest.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":promos_manager",
     "//base",
@@ -56,5 +60,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
