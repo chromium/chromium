@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
@@ -90,7 +89,7 @@ constexpr base::FilePath::CharType kArcDownloadRoot[] =
 constexpr base::FilePath::CharType kArcExternalFilesRoot[] =
     FILE_PATH_LITERAL("/external_files");
 // Sync with the volume provider in ARC++ side.
-constexpr char kArcRemovableMediaContentUrlPrefix[] =
+constexpr char kArcStorageContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // A predefined removable media UUID for testing. Defined in
 // ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
@@ -657,7 +656,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
       GetDownloadsFolderForProfile(primary_profile);
   base::FilePath result_path(kArcDownloadRoot);
   if (primary_downloads.AppendRelativePath(path, &result_path)) {
-    *arc_url_out = GURL(arc::kFileSystemFileproviderUrl)
+    *arc_url_out = GURL(kArcStorageContentUrlPrefix)
                        .Resolve(base::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
@@ -666,7 +665,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   result_path = base::FilePath(kArcExternalFilesRoot);
   if (base::FilePath(kAndroidFilesPath)
           .AppendRelativePath(path, &result_path)) {
-    *arc_url_out = GURL(arc::kFileSystemFileproviderUrl)
+    *arc_url_out = GURL(kArcStorageContentUrlPrefix)
                        .Resolve(base::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
@@ -692,7 +691,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
       return false;
     }
     *arc_url_out =
-        GURL(kArcRemovableMediaContentUrlPrefix)
+        GURL(kArcStorageContentUrlPrefix)
             .Resolve(base::EscapePath(relative_path_with_uuid.AsUTF8Unsafe()));
     return true;
   }

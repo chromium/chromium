@@ -937,10 +937,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
              const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
-            EXPECT_EQ(
-                GURL("content://org.chromium.arc.file_system.fileprovider/"
-                     "download/a/b/c"),
-                urls[0]);
+            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                           "download/a/b/c"),
+                      urls[0]);
           },
           &run_loop));
   run_loop.Run();
@@ -1055,10 +1054,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_AndroidFiles) {
              const std::vector<base::FilePath>& paths_to_share) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
-            EXPECT_EQ(
-                GURL("content://org.chromium.arc.file_system.fileprovider/"
-                     "external_files/Pictures/a/b.jpg"),
-                urls[0]);
+            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                           "external_files/Pictures/a/b.jpg"),
+                      urls[0]);
           },
           &run_loop));
 }
@@ -1105,10 +1103,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
                            "externalfile%3Adrivefs-b1f44746e7144c3caafeacaa8bb5"
                            "c569%2Fa%2Fb%2Fc"),
                       urls[2]);
-            EXPECT_EQ(
-                GURL("content://org.chromium.arc.file_system.fileprovider/"
-                     "external_files/a/b/c"),
-                urls[3]);
+            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                           "external_files/a/b/c"),
+                      urls[3]);
           },
           &run_loop));
   run_loop.Run();

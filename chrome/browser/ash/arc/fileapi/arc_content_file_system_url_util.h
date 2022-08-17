@@ -19,9 +19,6 @@ namespace arc {
 // The name of the ARC content file system mount point.
 extern const char kContentFileSystemMountPointName[];
 
-// ARC FileProvider URL.
-extern const char kFileSystemFileproviderUrl[];
-
 // The path of the ARC content file system mount point.
 extern const base::FilePath::CharType kContentFileSystemMountPointPath[];
 
