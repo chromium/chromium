@@ -119,7 +119,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // The device settings used in Lacros.
   crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
 
-  DeviceSettingsLacros* device_settings_for_test() {
+  DeviceSettingsLacros* device_settings_lacros() {
     return device_settings_.get();
   }
 

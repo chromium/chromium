@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(
   // TODO(crbug.com/1330310): Ideally this should be done as part of
   // `SetInitParamsForTests()`.
   g_browser_process->browser_policy_connector()
-      ->device_settings_for_test()
+      ->device_settings_lacros()
       ->UpdateDeviceSettings(std::move(device_settings));
 
   base::RunLoop run_loop;
