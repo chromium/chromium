@@ -58674,6 +58674,7 @@ from previous Chrome versions.
   <int value="-373233195" label="SyncUSSAutofillWalletData:enabled"/>
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
   <int value="-371397346" label="ChromeOSSharingHub:enabled"/>
+  <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
@@ -59390,6 +59391,7 @@ from previous Chrome versions.
   <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
+  <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86233339" label="MessagesForAndroidOfferNotification:disabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
@@ -62157,6 +62159,7 @@ from previous Chrome versions.
   <int value="1841976850" label="FeedLoadingPlaceholder:enabled"/>
   <int value="1842219851" label="enable-incognito-window-counter"/>
   <int value="1843088575" label="OutOfBlinkCors:enabled"/>
+  <int value="1843847665" label="SyncPromoAfterSigninIntercept:disabled"/>
   <int value="1844110073" label="enable-app-view"/>
   <int value="1844222711" label="AssistantConsentV2:disabled"/>
   <int value="1845781020" label="DesktopSharePreview:disabled"/>
@@ -62453,6 +62456,7 @@ from previous Chrome versions.
   <int value="2022153130" label="MobileIdentityConsistencyVar:disabled"/>
   <int value="2022294878" label="WifiSyncAndroid:enabled"/>
   <int value="2022716687" label="ReadLaterReminderNotification:enabled"/>
+  <int value="2023455217" label="SigninInterceptBubbleV2:enabled"/>
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>

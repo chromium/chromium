@@ -5897,6 +5897,11 @@
     "expiry_milestone" : 107
   },
   {
+    "name": "signin-intercept-bubble-v2",
+    "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "sim-lock-policy",
     "owners": [ "hsuregan@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 106
@@ -6043,6 +6048,11 @@
     "name": "sync-chromeos-explicit-passphrase-sharing",
     "owners": ["mmoskvitin@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 111
+  },
+  {
+    "name": "sync-promo-after-signin-intercept",
+    "owners": [ "gabolvr@google.com", "alexilin", "my-chrome-everywhere@google.com" ],
+    "expiry_milestone": 108
   },
   {
     "name": "sync-settings-categorization",

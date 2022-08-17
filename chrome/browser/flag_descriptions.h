@@ -3673,6 +3673,12 @@ extern const char kUIDebugToolsDescription[];
 
 extern const char kDesktopDetailedLanguageSettingsName[];
 extern const char kDesktopDetailedLanguageSettingsDescription[];
+
+extern const char kSyncPromoAfterSigninInterceptName[];
+extern const char kSyncPromoAfterSigninInterceptDescription[];
+
+extern const char kSigninInterceptBubbleV2Name[];
+extern const char kSigninInterceptBubbleV2Description[];
 #endif
 
 #if defined(WEBRTC_USE_PIPEWIRE)
