@@ -152,7 +152,8 @@ preprocess_if_expr("preprocess_unconditional_existing") {
   in_files = [
     "i18n_setup.js",
     "oobe.css",
-    "oobe_polymer3.js",
+    "oobe.html",
+    "oobe.js",
     "oobe_popup_overlay.css",
     "oobe_screen.css",
     "screens.js",

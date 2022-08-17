@@ -120,6 +120,7 @@
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/oobe_conditional_resources.h"
+#include "chrome/grit/oobe_unconditional_resources.h"
 #include "chrome/grit/oobe_unconditional_resources_map.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -286,7 +287,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
 
   OobeUI::AddOobeComponents(source);
 
-  source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
+  source->SetDefaultResource(IDR_OOBE_UNCONDITIONAL_OOBE_HTML);
 
   // Add boolean variables that are used to add screens
   // dynamically depending on the flow type.
