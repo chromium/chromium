@@ -68,7 +68,7 @@ edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_authors = "Somebody <somebody@foo.org>"
 cargo_pkg_name = "foo"
-cargo_pkg_description = "A generic framework for fooNewline\""
+cargo_pkg_description = "A generic framework for fooNewline'"
 deps = [
 "//third_party/rust/bar:lib",
 ]
@@ -366,4 +366,18 @@ fn test() {
         Condition::from(platform_set).get_if().unwrap(),
         "(is_android && target_cpu == \"arm\") || (is_win)"
     );
+}
+
+#[gtest(GnTest, StringEscaping)]
+fn test() {
+    fn escaped(s: &str) -> String {
+        let mut out = String::new();
+        write_str_escaped_for_testing(&mut out, s).unwrap();
+        out
+    }
+
+    expect_eq!("foo bar", escaped("foo bar"));
+    expect_eq!("foobar", escaped("foo\nbar"));
+    expect_eq!(r#"foo 'bar'"#, escaped(r#"foo "bar""#));
+    expect_eq!("foo 'bar'", escaped("foo 'bar'"));
 }

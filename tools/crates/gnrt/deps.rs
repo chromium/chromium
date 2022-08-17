@@ -4,7 +4,7 @@
 
 //! Utilities to process `cargo metadata` dependency graph.
 
-use crate::crates::{Epoch, NormalizedName};
+use crate::crates::{self, Epoch, NormalizedName};
 use crate::platforms::{self, Platform, PlatformSet};
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
@@ -53,6 +53,12 @@ pub struct ThirdPartyDep {
     /// valid packages. Returning `false` for a dependency allows better error
     /// messages later.
     pub is_local: bool,
+}
+
+impl ThirdPartyDep {
+    pub fn crate_id(&self) -> crates::ThirdPartyCrate {
+        crates::ThirdPartyCrate { name: self.package_name.clone(), epoch: self.epoch }
+    }
 }
 
 /// A dependency of a `ThirdPartyDep`. Cross-references another `ThirdPartyDep`

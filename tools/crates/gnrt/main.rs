@@ -5,14 +5,16 @@
 use gnrt_lib::*;
 
 use crates::ThirdPartyCrate;
+use deps::ThirdPartyDep;
 use manifest::*;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::{self, ExitCode};
 
-fn main() {
+fn main() -> ExitCode {
     let args = clap::Command::new("gnrt")
         .about("Generate GN build rules from third_party/rust crates")
         .arg(
@@ -27,6 +29,41 @@ fn main() {
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
     let third_party_manifest: ThirdPartyManifest = toml::de::from_str(&manifest_contents).unwrap();
 
+    // Collect special fields from third_party.toml.
+    //
+    // TODO(crbug.com/1291994): handle visibility separately for each kind.
+    let mut pub_deps = HashSet::<ThirdPartyCrate>::new();
+    let mut build_script_outputs = HashMap::<ThirdPartyCrate, Vec<String>>::new();
+
+    for (dep_name, dep_spec) in [
+        &third_party_manifest.dependency_spec.dependencies,
+        &third_party_manifest.dependency_spec.dev_dependencies,
+        &third_party_manifest.dependency_spec.build_dependencies,
+    ]
+    .into_iter()
+    .flatten()
+    {
+        let (version_req, is_public, dep_outputs): (&_, bool, &[_]) = match dep_spec {
+            Dependency::Short(version_req) => (version_req, true, &[]),
+            Dependency::Full(dep) => (
+                dep.version.as_ref().unwrap(),
+                dep.allow_first_party_usage,
+                &dep.build_script_outputs,
+            ),
+        };
+        let epoch = crates::Epoch::from_version_req_str(&version_req.0);
+        let crate_id = crates::ThirdPartyCrate { name: dep_name.clone(), epoch };
+        if is_public {
+            pub_deps.insert(crate_id.clone());
+        }
+        if !dep_outputs.is_empty() {
+            build_script_outputs.insert(crate_id, dep_outputs.to_vec());
+        }
+    }
+
+    // Rebind as immutable.
+    let (pub_deps, build_script_outputs) = (pub_deps, build_script_outputs);
+
     // Traverse our third-party directory to collect the set of vendored crates.
     // Used to generate Cargo.toml [patch] sections, and later to check against
     // `cargo metadata`'s dependency resolution to ensure we have all the crates
@@ -34,7 +71,7 @@ fn main() {
     let mut crates = crates::collect_third_party_crates(paths.third_party.clone()).unwrap();
     crates.sort_unstable_by(|a, b| a.0.cmp(&b.0));
 
-    // Generate a fake Cargo.toml for dependency resolution.
+    // Generate a fake root Cargo.toml for dependency resolution.
     let cargo_manifest = generate_fake_cargo_toml(
         third_party_manifest,
         crates.iter().map(|(c, _)| {
@@ -49,7 +86,7 @@ fn main() {
 
     if args.is_present("output_cargo_toml") {
         println!("{}", toml::ser::to_string(&cargo_manifest).unwrap());
-        return;
+        return ExitCode::SUCCESS;
     }
 
     // Create a fake package: Cargo.toml and an empty main.rs. This allows cargo
@@ -75,38 +112,156 @@ fn main() {
     command.current_dir(paths.third_party.clone());
     let dependencies = deps::collect_dependencies(&command.exec().unwrap());
 
-    // Compare cargo's dependency resolution with the crates we have on disk.
+    // Compare cargo's dependency resolution with the crates we have on disk. We
+    // want to ensure:
+    // * Each resolved dependency matches with a crate we discovered (no missing
+    //   deps).
+    // * Each discovered crate matches with a resolved dependency (no unused
+    //   crates).
+    let mut has_error = false;
     let present_crates: HashSet<&ThirdPartyCrate> = crates.iter().map(|(c, _)| c).collect();
-    let mut unused_crates: HashSet<&ThirdPartyCrate> = present_crates.clone();
-    let mut missing_deps: Vec<&deps::ThirdPartyDep> = Vec::new();
+    let req_crates: HashSet<ThirdPartyCrate> =
+        dependencies.iter().map(ThirdPartyDep::crate_id).collect();
+
     for dep in dependencies.iter() {
-        let dep_crate = ThirdPartyCrate { name: dep.package_name.clone(), epoch: dep.epoch };
-
-        if present_crates.contains(&dep_crate) {
-            assert!(unused_crates.remove(&dep_crate));
-        } else {
-            missing_deps.push(dep);
+        if !present_crates.contains(&dep.crate_id()) {
+            has_error = true;
+            println!("Missing dependency: {} {}", dep.package_name, dep.epoch);
+            for edge in dep.dependency_path.iter() {
+                println!("    {edge}");
+            }
         }
     }
 
-    for dep in missing_deps.iter() {
-        println!("Missing dependency: {} {}", dep.package_name, dep.epoch);
-        for edge in dep.dependency_path.iter() {
-            println!("    {edge}");
+    for present_crate in present_crates.iter() {
+        if !req_crates.contains(present_crate) {
+            has_error = true;
+            println!("Unused crate: {present_crate}");
         }
     }
 
-    for c in unused_crates.iter() {
-        println!("Crate not used: {c}");
-    }
-
+    // Transitive deps may be requested with version requirements stricter than
+    // ours: e.g. 1.57 instead of just major version 1. If the version we have
+    // checked in, e.g. 1.56, has the same epoch but doesn't meet the version
+    // requirement, the symptom is Cargo will resolve the dependency to an
+    // upstream source instead of our local path. We must detect this case to
+    // ensure correctness.
     for nonlocal_dep in dependencies.iter().filter(|dep| !dep.is_local) {
+        has_error = true;
         println!(
-            "Error: dependency {} {} resolved to an upstream source. The checked-in version likely \
-                does not satisfy another crate's dependency version requirement. Resolved \
-                version: {}",
-            nonlocal_dep.package_name, nonlocal_dep.epoch, nonlocal_dep.version
+            "Resolved {} {} to an upstream source. The requested version \
+                 likely has the same epoch as the discovered crate but \
+                 something has a more stringent version requirement.",
+            nonlocal_dep.package_name, nonlocal_dep.epoch
         );
+        println!("    Resolved version: {}", nonlocal_dep.version);
+    }
+
+    if has_error {
+        return ExitCode::FAILURE;
+    }
+
+    let build_files: HashMap<ThirdPartyCrate, gn::BuildFile> = gn::build_files_from_deps(
+        &dependencies,
+        &paths,
+        &crates.iter().cloned().collect(),
+        &build_script_outputs,
+        &pub_deps,
+    );
+
+    // Before modifying anything make sure we have a one-to-one mapping of
+    // discovered crates and build file data.
+    for (crate_id, _) in build_files.iter() {
+        // This shouldn't happen, but check anyway in case we have a strange
+        // logic error above.
+        assert!(present_crates.contains(&crate_id));
+    }
+
+    for crate_id in present_crates.iter() {
+        if !build_files.contains_key(*crate_id) {
+            println!("Error: discovered crate {crate_id}, but no build file was generated.");
+            has_error = true;
+        }
+    }
+
+    if has_error {
+        return ExitCode::FAILURE;
+    }
+
+    // Wipe all previous BUILD.gn files. If we fail, we don't want to leave a
+    // mix of old and new build files.
+    for build_file in crates.iter().map(|(crate_id, _)| build_file_path(crate_id, &paths)) {
+        if build_file.exists() {
+            fs::remove_file(&build_file).unwrap();
+        }
+    }
+
+    // Generate build files, wiping the previous ones so we don't have any stale
+    // build rules.
+    for (crate_id, _) in crates.iter() {
+        let build_file_path = build_file_path(crate_id, &paths);
+        let build_file_data = match build_files.get(&crate_id) {
+            Some(build_file) => build_file,
+            None => panic!("missing build data for {crate_id}"),
+        };
+
+        write_build_file(&build_file_path, build_file_data).unwrap();
+    }
+
+    // Apply patch for BUILD.gn files.
+    let build_patch = paths.root.join(paths.third_party.join("gnrt_build_patch"));
+    if build_patch.exists() {
+        let status = process::Command::new("git")
+            .arg("apply")
+            .arg(build_patch)
+            .current_dir(paths.root)
+            .status()
+            .unwrap();
+        check_exit_status(status, "applying build patch").unwrap();
+    }
+
+    ExitCode::SUCCESS
+}
+
+fn build_file_path(crate_id: &ThirdPartyCrate, paths: &paths::ChromiumPaths) -> PathBuf {
+    let mut path = paths.root.clone();
+    path.push(&paths.third_party);
+    path.push(crate_id.build_path());
+    path.push("BUILD.gn");
+    path
+}
+
+fn write_build_file(path: &Path, build_file: &gn::BuildFile) -> io::Result<()> {
+    let output_handle = fs::File::create(path).unwrap();
+
+    // Run our GN output through the official formatter. The gn invocation will
+    // write directly to the output file.
+    let mut formatter = process::Command::new("gn")
+        .arg("format")
+        .arg("--stdin")
+        .stdin(process::Stdio::piped())
+        .stdout(output_handle)
+        .spawn()
+        .unwrap();
+
+    write!(io::BufWriter::new(formatter.stdin.take().unwrap()), "{}", build_file.display())?;
+
+    let status = formatter.wait()?;
+    check_exit_status(status, "formatting GN output")
+}
+
+fn check_exit_status(status: process::ExitStatus, cmd_msg: &str) -> io::Result<()> {
+    use std::fmt::Write;
+
+    if status.success() {
+        Ok(())
+    } else {
+        let mut msg: String = format!("{cmd_msg} failed with ");
+        match status.code() {
+            Some(code) => write!(msg, "{code}").unwrap(),
+            None => write!(msg, "no code").unwrap(),
+        };
+        Err(io::Error::new(io::ErrorKind::Other, msg))
     }
 }
 
