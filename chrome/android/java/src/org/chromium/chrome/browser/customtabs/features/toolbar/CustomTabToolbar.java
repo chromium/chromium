@@ -648,8 +648,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Used for After branding runnables
         private static final int KEY_UPDATE_TITLE_POST_BRANDING = 0;
         private static final int KEY_UPDATE_URL_POST_BRANDING = 1;
-        private static final int KEY_UPDATE_ICON_POST_BRANDING = 2;
-        private static final int TOTAL_POST_BRANDING_KEYS = 3;
+        private static final int TOTAL_POST_BRANDING_KEYS = 2;
 
         private LocationBarDataProvider mLocationBarDataProvider;
         private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -689,25 +688,25 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return mState == STATE_TITLE_ONLY;
         }
 
-        // TODO(https://crbug.com/1343056): Remove this method after feature default enabled.
+        // TODO(https://crbug.com/1343056): Remove this method after CCT Brand default enabled.
         public void showBranding() {
             mBrandingStarted = true;
             mCurrentlyShowingBranding = true;
 
             // Store the title and domain setting.
-            final boolean showTitle = mState != STATE_DOMAIN_ONLY;
-            final boolean showUrlBar = mState != STATE_TITLE_ONLY;
+            final boolean wasShowingTitle = mState != STATE_DOMAIN_ONLY;
+            final boolean wasShowingUrl = mState != STATE_TITLE_ONLY;
 
-            // We use title bar to show the branding text and hide the url bar so the text will
+            // We use url bar to show the branding text and hide the title bar so the text will
             // align with the security icon.
-            setShowTitle(true);
-            setUrlBarHidden(true);
+            if (wasShowingTitle) setShowTitleIgnoreBranding(false);
+            if (!wasShowingUrl) setUrlBarHiddenIgnoreBranding(false);
             showBrandingIconAndText();
 
             Runnable hideBranding = mCallbackController.makeCancelable(() -> {
                 mCurrentlyShowingBranding = false;
-                setUrlBarHidden(!showUrlBar);
-                setShowTitle(showTitle);
+                if (wasShowingTitle) setShowTitle(true);
+                if (!wasShowingUrl) setUrlBarHidden(true);
                 runAfterBrandingRunnables();
             });
             PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, hideBranding, BRANDING_DELAY_MS);
@@ -723,11 +722,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 cacheRegularState();
             }
 
-            // We use title bar to show the branding text and hide the url bar so the text will
+            // We use url bar to show the branding text and hide the title bar so the text will
             // align with the security icon.
-            // TODO(https://crbug.com/1338307): Use Url bar to show branding information.
-            setShowTitle(true);
-            setUrlBarHidden(true);
+            setUrlBarHiddenIgnoreBranding(false);
+            setShowTitleIgnoreBranding(false);
             showBrandingIconAndText();
         }
 
@@ -814,6 +812,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         public void setUrlBarHidden(boolean hideUrlBar) {
+            if (mCurrentlyShowingBranding) {
+                mAfterBrandingRunnables[KEY_UPDATE_URL_POST_BRANDING] =
+                        () -> setUrlBarHiddenIgnoreBranding(hideUrlBar);
+                return;
+            }
+            setUrlBarHiddenIgnoreBranding(hideUrlBar);
+        }
+
+        private void setUrlBarHiddenIgnoreBranding(boolean hideUrlBar) {
             // Urlbar visibility cannot be toggled if it is the only visible element.
             if (mState == STATE_DOMAIN_ONLY) return;
 
@@ -973,11 +980,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
             mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
 
-            mTitleBar.setText(R.string.twa_running_in_chrome);
-            mTitleAnimationStarter.run();
+            mUrlBar.setText(R.string.twa_running_in_chrome);
         }
 
         private void runAfterBrandingRunnables() {
+            // Always refresh the security icon and URL bar when branding is finished.
+            // If Title is changed during branding, it should already get addressed in
+            // #setShowTitle.
+            mLocationBarModel.notifyUrlChanged();
+            mLocationBarModel.notifySecurityStateChanged();
+
             for (int i = 0; i < mAfterBrandingRunnables.length; i++) {
                 Runnable runnable = mAfterBrandingRunnables[i];
                 if (runnable != null) {
@@ -988,11 +1000,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateSecurityIcon() {
-            if (mState == STATE_TITLE_ONLY) return;
-            if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables[KEY_UPDATE_ICON_POST_BRANDING] = this::updateSecurityIcon;
-                return;
-            }
+            if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
             int securityIconResource = mLocationBarDataProvider.getSecurityIconResource(
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
@@ -1010,10 +1018,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateTitleBar() {
-            if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables[KEY_UPDATE_TITLE_POST_BRANDING] = this::updateTitleBar;
-                return;
-            }
+            if (mCurrentlyShowingBranding) return;
             String title = mLocationBarDataProvider.getTitle();
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)) {
                 mTitleBar.setText("");
@@ -1036,10 +1041,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateUrlBar() {
-            if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables[KEY_UPDATE_URL_POST_BRANDING] = this::updateUrlBar;
-                return;
-            }
+            if (mCurrentlyShowingBranding) return;
             Tab tab = getCurrentTab();
             if (tab == null) {
                 mUrlCoordinator.setUrlBarData(
@@ -1105,6 +1107,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void setShowTitle(boolean showTitle) {
+            if (mCurrentlyShowingBranding) {
+                mAfterBrandingRunnables[KEY_UPDATE_TITLE_POST_BRANDING] =
+                        () -> setShowTitleIgnoreBranding(showTitle);
+                return;
+            }
+            setShowTitleIgnoreBranding(showTitle);
+        }
+
+        private void setShowTitleIgnoreBranding(boolean showTitle) {
             if (showTitle) {
                 if (mState == STATE_EMPTY) {
                     // Only happened when CCT_BRAND_TRANSPARENCY enabled.
@@ -1176,11 +1187,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @VisibleForTesting
         void setAnimDelegateForTesting(CustomTabToolbarAnimationDelegate animDelegate) {
             mAnimDelegate = animDelegate;
-        }
-
-        @VisibleForTesting
-        Runnable[] getAfterBrandingRunnablesForTesting() {
-            return mAfterBrandingRunnables;
         }
     }
 }

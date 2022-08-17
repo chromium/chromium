@@ -58,21 +58,17 @@
                 android:paddingEnd="@dimen/toolbar_edge_padding"
                 style="@style/TextAppearance.TextLarge.Primary"
                 android:visibility="gone" />
-            <LinearLayout
+
+            <org.chromium.chrome.browser.omnibox.UrlBarApi26
+                android:id="@+id/url_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom" >
-
-                <org.chromium.chrome.browser.omnibox.UrlBarApi26
-                    android:id="@+id/url_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:inputType="none"
-                    android:singleLine="true"
-                    android:paddingEnd="@dimen/toolbar_edge_padding"
-                    style="@style/TextAppearance.TextSmall.Primary" />
-            </LinearLayout>
+                android:background="@null"
+                android:inputType="none"
+                android:singleLine="true"
+                android:paddingEnd="@dimen/toolbar_edge_padding"
+                android:layout_gravity="bottom"
+                style="@style/TextAppearance.TextSmall.Primary" />
         </view>
     </FrameLayout>
     <LinearLayout

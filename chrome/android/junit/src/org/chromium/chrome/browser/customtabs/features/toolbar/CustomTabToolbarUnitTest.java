@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -124,15 +127,14 @@ public class CustomTabToolbarUnitTest {
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showBranding();
         ShadowLooper.idleMainLooper();
-        verify(mLocationBarModel).notifyTitleChanged();
-        verify(mAnimationDelegate).prepareTitleAnim(mUrlBar, mTitleBar);
-        verify(mAnimationDelegate).startTitleAnimation(any());
-        assertEquals("URL bar should not be visible during branding.", mUrlBar.getVisibility(),
-                View.GONE);
+        verify(mLocationBarModel, never()).notifyTitleChanged();
+        verify(mAnimationDelegate, never()).prepareTitleAnim(mUrlBar, mTitleBar);
+        verify(mAnimationDelegate, never()).startTitleAnimation(any());
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
 
         // Run all UI tasks, until the branding is finished.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mLocationBarModel, times(2)).notifyTitleChanged();
+        verify(mLocationBarModel, never()).notifyTitleChanged();
         verify(mLocationBarModel).notifyUrlChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
 
@@ -149,19 +151,18 @@ public class CustomTabToolbarUnitTest {
         // Animation not started since branding is not completed.
         verify(mAnimationDelegate, never()).startTitleAnimation(any());
 
+        // Title should be hidden, title animation is not necessary yet.
         mLocationBar.showBranding();
         ShadowLooper.idleMainLooper();
         verify(mLocationBarModel, times(2)).notifyTitleChanged();
-        verify(mAnimationDelegate, times(2)).prepareTitleAnim(mUrlBar, mTitleBar);
-        verify(mAnimationDelegate).startTitleAnimation(any());
-        assertEquals("URL bar should not be visible during branding.", mUrlBar.getVisibility(),
-                View.GONE);
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
 
         // Run all UI tasks, until the branding is finished.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLocationBarModel, times(3)).notifyTitleChanged();
         verify(mLocationBarModel).notifyUrlChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
+        verify(mAnimationDelegate, times(2)).prepareTitleAnim(mUrlBar, mTitleBar);
 
         assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
     }
@@ -177,13 +178,14 @@ public class CustomTabToolbarUnitTest {
         // Attempt to update title and URL, should noop since location bar is still in empty state.
         mLocationBar.onTitleChanged();
         mLocationBar.onUrlChanged();
-        assertEquals("Runnables should queue up since location bar is empty.", 2,
-                postBrandingRunnableCounts());
+        verify(mLocationBarModel, never()).notifyUrlChanged();
+        verify(mLocationBarModel, never()).notifySecurityStateChanged();
 
         mLocationBar.showRegularToolbar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
-                postBrandingRunnableCounts());
+        verify(mLocationBarModel).notifyUrlChanged();
+        verify(mLocationBarModel).notifyTitleChanged();
+        verify(mLocationBarModel).notifySecurityStateChanged();
         verifyBrowserControlVisibleForRequiredDuration();
     }
 
@@ -196,35 +198,27 @@ public class CustomTabToolbarUnitTest {
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/false);
 
         // Attempt to update title and URL, should noop since location bar is still in empty state.
-        mLocationBar.onTitleChanged();
-        mLocationBar.onUrlChanged();
-        assertEquals("Runnables should queue up since location bar is empty.", 2,
-                postBrandingRunnableCounts());
+        mLocationBar.setShowTitle(true);
+        mLocationBar.setUrlBarHidden(false);
+        verify(mLocationBarModel, never()).notifyUrlChanged();
+        verify(mLocationBarModel, never()).notifySecurityStateChanged();
 
         mLocationBar.showBrandingLocationBar();
-        assertUrlAndTitleVisible(/*titleVisible=*/true, /*urlVisible=*/false);
-
-        // Attempt to update title and URL,
-        mLocationBar.onTitleChanged();
-        mLocationBar.onUrlChanged();
-        assertEquals("Runnables should queue up during branding.", 2, postBrandingRunnableCounts());
-
-        mLocationBar.showRegularToolbar();
         assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
-        assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
-                postBrandingRunnableCounts());
-        verifyBrowserControlVisibleForRequiredDuration();
-    }
 
-    private int postBrandingRunnableCounts() {
-        Runnable[] runnables = mLocationBar.getAfterBrandingRunnablesForTesting();
-        int count = 0;
-        for (Runnable r : runnables) {
-            if (r != null) {
-                count++;
-            }
-        }
-        return count;
+        // Attempt to update title and URL to show Title only - should be ignored during branding.
+        reset(mLocationBarModel);
+        mLocationBar.setShowTitle(true);
+        mLocationBar.setUrlBarHidden(true);
+        verifyNoMoreInteractions(mLocationBarModel);
+
+        // After getting back to regular toolbar, title should become visible now.
+        mLocationBar.showRegularToolbar();
+        assertUrlAndTitleVisible(/*titleVisible=*/true, /*urlVisible=*/false);
+        verify(mLocationBarModel, atLeastOnce()).notifyUrlChanged();
+        verify(mLocationBarModel, atLeastOnce()).notifyTitleChanged();
+        verify(mLocationBarModel, atLeastOnce()).notifySecurityStateChanged();
+        verifyBrowserControlVisibleForRequiredDuration();
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
