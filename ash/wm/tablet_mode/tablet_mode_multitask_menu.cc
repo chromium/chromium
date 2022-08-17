@@ -4,8 +4,12 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/aura/window.h"
 #include "ui/views/background.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -14,15 +18,29 @@ namespace {
 constexpr int kMultitaskMenuVerticalPadding = 4;
 constexpr int kMultitaskMenuWidth = 540;
 constexpr int kMultitaskMenuHeight = 124;
+constexpr int kBetweenButtonSpacing = 16;
 
 }  // namespace
 
 // The contents view of the multitask menu.
 class TabletModeMultitaskMenuView : public views::View {
  public:
-  TabletModeMultitaskMenuView() {
-    // TODO(sophiewen): Placeholder.
-    SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
+  TabletModeMultitaskMenuView(aura::Window* window,
+                              base::RepeatingClosure hide_menu) {
+    SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+    SetUseDefaultFillLayout(true);
+
+    auto* multitask_menu_view = AddChildView(
+        std::make_unique<chromeos::MultitaskMenuView>(window, hide_menu));
+
+    auto* layout = multitask_menu_view->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+            kBetweenButtonSpacing));
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
   }
 
   TabletModeMultitaskMenuView(const TabletModeMultitaskMenuView&) = delete;
@@ -47,7 +65,9 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(aura::Window* window)
 
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetContentsView(
-      std::make_unique<TabletModeMultitaskMenuView>());
+      std::make_unique<TabletModeMultitaskMenuView>(
+          window, base::BindRepeating(&TabletModeMultitaskMenu::Hide,
+                                      base::Unretained(this))));
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;

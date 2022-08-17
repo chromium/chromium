@@ -682,7 +682,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(
-      CenterPointInScreen(multitask_menu()->float_button_for_testing()));
+      CenterPointInScreen(multitask_menu()
+                              ->multitask_menu_view_for_testing()
+                              ->float_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFloated());
 }
@@ -693,6 +695,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(multitask_menu()
+                             ->multitask_menu_view_for_testing()
                              ->half_button_for_testing()
                              ->GetBoundsInScreen()
                              .left_center());
@@ -711,6 +714,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   // Snap to primary with 0.67f screen ratio.
   ShowMultitaskMenu();
   generator->MoveMouseTo(multitask_menu()
+                             ->multitask_menu_view_for_testing()
                              ->partial_button_for_testing()
                              ->GetBoundsInScreen()
                              .left_center());
@@ -722,8 +726,10 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
-  gfx::Rect partial_bounds(
-      multitask_menu()->partial_button_for_testing()->GetBoundsInScreen());
+  gfx::Rect partial_bounds(multitask_menu()
+                               ->multitask_menu_view_for_testing()
+                               ->partial_button_for_testing()
+                               ->GetBoundsInScreen());
   gfx::Point secondary_center(
       gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
                  partial_bounds.y() + partial_bounds.y() / 2));
@@ -741,7 +747,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(
-      CenterPointInScreen(multitask_menu()->full_button_for_testing()));
+      CenterPointInScreen(multitask_menu()
+                              ->multitask_menu_view_for_testing()
+                              ->full_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
 }

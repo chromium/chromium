@@ -5,12 +5,9 @@
 #ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_H_
 
-#include <cstddef>
-
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
-#include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -33,45 +30,27 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
   ~MultitaskMenu() override;
 
-  // For testing.
-  SplitButtonView* half_button_for_testing() const {
-    return half_button_.get();
-  }
-  SplitButtonView* partial_button_for_testing() const {
-    return partial_button_.get();
-  }
-  MultitaskBaseButton* full_button_for_testing() const {
-    return full_button_.get();
-  }
-  MultitaskBaseButton* float_button_for_testing() const {
-    return float_button_.get();
-  }
+  views::Widget* bubble_widget_for_testing() { return bubble_widget_.get(); }
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Displays the MultitaskMenu.
   void ShowBubble();
+
   // Hides the currently-showing MultitaskMenu.
   void HideBubble();
 
+  MultitaskMenuView* multitask_menu_view_for_testing() {
+    return multitask_menu_view_.get();
+  }
+
  private:
-  // Callbacks for the buttons in the multitask menu view.
-  void SplitButtonPressed(SnapDirection snap);
-  void PartialButtonPressed(SnapDirection snap);
-
-  void FullScreenButtonPressed();
-  void FloatButtonPressed();
-
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observer_{this};
 
-  // Saved for testing purpose.
-  raw_ptr<SplitButtonView> half_button_;
-  raw_ptr<SplitButtonView> partial_button_;
-  raw_ptr<MultitaskBaseButton> full_button_;
-  raw_ptr<MultitaskBaseButton> float_button_;
+  raw_ptr<MultitaskMenuView> multitask_menu_view_;
 };
 
 }  // namespace chromeos

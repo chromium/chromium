@@ -54,6 +54,8 @@ source_set("frame") {
     "multitask_menu/multitask_menu.cc",
     "multitask_menu/multitask_menu.h",
     "multitask_menu/multitask_menu_constants.h",
+    "multitask_menu/multitask_menu_view.cc",
+    "multitask_menu/multitask_menu_view.h",
     "multitask_menu/split_button.cc",
     "multitask_menu/split_button.h",
   ]
