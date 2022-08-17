@@ -22,7 +22,7 @@
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
-#include "ui/gl/gl_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>

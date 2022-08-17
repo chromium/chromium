@@ -283,11 +283,6 @@ const base::Feature kDXGIWaitableSwapChain{"DXGIWaitableSwapChain",
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{
     &kDXGIWaitableSwapChain, "DXGIWaitableSwapChainMaxQueuedFrames", 2};
 
-// Use a 100-command limit before forcing context switch per command buffer
-// instead of 20.
-const base::Feature kIncreasedCmdBufferParseSlice{
-    "IncreasedCmdBufferParseSlice", base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool SupportsEGLDualGpuRendering() {
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   gl::GLDisplayEGL* display_default =

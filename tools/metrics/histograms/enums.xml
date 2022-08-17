@@ -57666,6 +57666,7 @@ from previous Chrome versions.
   <int value="-1007856269" label="CssSelectorFragmentAnchor:disabled"/>
   <int value="-1007267652"
       label="NtpPhotosModuleCustomizedOptInArtWork:disabled"/>
+  <int value="-1007219628" label="IncreasedCmdBufferParseSlice:enabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
@@ -62532,6 +62533,7 @@ from previous Chrome versions.
   <int value="2078599705" label="ShelfAppScaling:enabled"/>
   <int value="2078879219"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:disabled"/>
+  <int value="2079658706" label="IncreasedCmdBufferParseSlice:disabled"/>
   <int value="2079672348" label="ExperimentalKeyboardLockUI:disabled"/>
   <int value="2080666644"
       label="KeyboardBasedDisplayArrangementInSettings:disabled"/>

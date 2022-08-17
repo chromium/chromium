@@ -82,6 +82,8 @@ GPU_EXPORT extern const base::Feature kEnableDrDcVulkan;
 
 GPU_EXPORT extern const base::Feature kWebGPUService;
 
+GPU_EXPORT extern const base::Feature kIncreasedCmdBufferParseSlice;
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
