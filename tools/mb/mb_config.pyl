@@ -329,7 +329,7 @@
       },
       'Comparison Mac (reclient)': {
         'goma': 'gpu_tests_release_bot_minimal_symbols_no_nacl',
-        'reclient': 'gpu_tests_release_bot_minimal_symbols_reclient',
+        'reclient': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       },
       'Comparison Mac arm64 (reclient)': {
         'goma': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
@@ -372,7 +372,7 @@
       'Mac Builder Next': 'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
-      'Mac deterministic (reclient shadow)': 'release_bot_mac_strip_minimal_symbols_reclient',
+      'Mac deterministic (reclient shadow)': 'release_bot_mac_strip_minimal_symbols_no_nacl_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'VR Linux': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
@@ -2738,6 +2738,10 @@
       'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
     ],
 
+    'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
+    ],
+
     'gpu_tests_release_bot_minimal_symbols_reclient': [
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
     ],
@@ -3420,8 +3424,8 @@
       'release_bot', 'mac_strip', 'minimal_symbols', 'arm64',
     ],
 
-    'release_bot_mac_strip_minimal_symbols_reclient': [
-      'release_bot_reclient', 'mac_strip', 'minimal_symbols',
+    'release_bot_mac_strip_minimal_symbols_no_nacl_reclient': [
+      'release_bot_reclient', 'mac_strip', 'minimal_symbols', 'disable_nacl',
     ],
 
     'release_bot_minimal_symbols': [

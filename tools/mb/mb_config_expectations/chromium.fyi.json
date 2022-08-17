@@ -95,6 +95,7 @@
     "reclient": {
       "gn_args": {
         "dcheck_always_on": false,
+        "enable_nacl": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
@@ -478,6 +479,7 @@
   "Mac deterministic (reclient shadow)": {
     "gn_args": {
       "dcheck_always_on": false,
+      "enable_nacl": false,
       "enable_stripping": true,
       "is_component_build": false,
       "is_debug": false,

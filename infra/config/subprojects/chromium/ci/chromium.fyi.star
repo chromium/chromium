@@ -960,6 +960,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.MAC_DEFAULT,
     cores = None,
+    reclient_rewrapper_env = {
+        "RBE_exec_strategy": "racing",
+    },
 )
 
 ci.builder(
@@ -977,6 +980,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.MAC_DEFAULT,
     cores = None,
+    reclient_rewrapper_env = {
+        "RBE_exec_strategy": "racing",
+    },
 )
 
 ci.builder(
@@ -1046,6 +1052,9 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     xcode = xcode.x14main,
+    reclient_rewrapper_env = {
+        "RBE_exec_strategy": "racing",
+    },
 )
 
 ci.builder(
