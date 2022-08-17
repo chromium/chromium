@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js_sandbox.client;
+package androidx.javascriptengine;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +14,7 @@ import android.os.RemoteException;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
@@ -39,9 +40,9 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Sandbox that provides APIs for JavaScript evaluation in a restricted environment.
  *
- * JsSandbox represents a connection to an isolated process. The isolated process will be exclusive
- * to the calling app (i.e. it doesn't share anything with, and can't be compromised by another
- * app's isolated process).
+ * JavaScriptSandbox represents a connection to an isolated process. The isolated process is
+ * exclusive to the calling app (i.e. it doesn't share anything with, and can't be compromised by
+ * another app's isolated process).
  * <p>
  * Code that is run in a sandbox does not have any access to data
  * belonging to the original app unless explicitly passed into it by using the methods of this
@@ -51,30 +52,33 @@ import javax.annotation.concurrent.GuardedBy;
  * The calling app can only have only one isolated process at a time, so only one
  * instance of this object can exist at a time.
  * <p>
- * It's safe to share a single {@link JsSandbox}
+ * It's safe to share a single {@link JavaScriptSandbox}
  * object with multiple threads and use it from multiple threads at once.
- * For example, {@link JsSandbox} can be stored at a global location and multiple threads can create
- * their own {@link JsIsolate} objects from it but the {@link JsIsolate} object cannot be shared.
+ * For example, {@link JavaScriptSandbox} can be stored at a global location and multiple threads
+ * can create their own {@link JavaScriptIsolate} objects from it but the
+ * {@link JavaScriptIsolate} object cannot be shared.
  */
-public class JsSandbox implements AutoCloseable {
+public final class JavaScriptSandbox implements AutoCloseable {
     // TODO(crbug.com/1297672): Add capability to this class to support spawning
     // different processes as needed. This might require that we have a static
     // variable in here that tracks the existing services we are connected to and
     // connect to a different one when creating a new object.
-    private static final String TAG = "JsSandbox";
+    private static final String TAG = "JavaScriptSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
-    private static AtomicBoolean sIsReadyToConnect = new AtomicBoolean(true);
+    static AtomicBoolean sIsReadyToConnect = new AtomicBoolean(true);
     private final Object mLock = new Object();
     private CloseGuardHelper mGuard = CloseGuardHelper.create();
 
+    @Nullable
     @GuardedBy("mLock")
     private IJsSandboxService mJsSandboxService;
 
     private final ConnectionSetup mConnection;
 
+    @Nullable
     @GuardedBy("mLock")
-    private HashSet<JsIsolate> mActiveIsolateSet = new HashSet<JsIsolate>();
+    private HashSet<JavaScriptIsolate> mActiveIsolateSet = new HashSet<JavaScriptIsolate>();
 
     /**
      * @hide
@@ -82,10 +86,10 @@ public class JsSandbox implements AutoCloseable {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @StringDef(value =
                        {
-                               ISOLATE_TERMINATION,
-                               PROMISE_RETURN,
-                               PROVIDE_CONSUME_ARRAY_BUFFER,
-                               WASM_COMPILATION,
+                               JS_FEATURE_ISOLATE_TERMINATION,
+                               JS_FEATURE_PROMISE_RETURN,
+                               JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER,
+                               JS_FEATURE_WASM_COMPILATION,
                        })
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.PARAMETER, ElementType.METHOD})
@@ -95,63 +99,70 @@ public class JsSandbox implements AutoCloseable {
      * Feature for {@link #isFeatureSupported(String)}.
      *
      * When this
-     * feature is present, {@link JsIsolate#close()} will terminate the currently running JS
-     * evaluation and close the isolate. If it is absent, {@link JsIsolate#close()} cannot terminate
-     * any running or queued evaluations in the background,
-     * so the isolate will continue to consume resources until they complete.
+     * feature is present, {@link JavaScriptIsolate#close()} terminates the currently running JS
+     * evaluation and close the isolate. If it is absent, {@link JavaScriptIsolate#close()} cannot
+     * terminate any running or queued evaluations in the background, so the isolate continues to
+     * consume resources until they complete.
      * <p>
-     * Irrespective of this feature, calling {@link JsSandbox#close()} will terminate all
-     * {@link JsIsolate} objects (and the isolated process) immediately and all pending
-     * {@link JsIsolate#evaluateJavascriptAsync(String)} futures will resolve with {@link
+     * Irrespective of this feature, calling {@link JavaScriptSandbox#close()} terminates all
+     * {@link JavaScriptIsolate} objects (and the isolated process) immediately and all pending
+     * {@link JavaScriptIsolate#evaluateJavaScriptAsync(String)} futures resolve with {@link
      * IsolateTerminatedException}.
      */
-    public static final String ISOLATE_TERMINATION = "ISOLATE_TERMINATION";
+    public static final String JS_FEATURE_ISOLATE_TERMINATION = "JS_FEATURE_ISOLATE_TERMINATION";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
      *
      * When this feature is present, JS expressions may return promises. The Future returned by
-     * {@link JsIsolate#evaluateJavascriptAsync(String)} will resolve to the promise's result,
+     * {@link JavaScriptIsolate#evaluateJavaScriptAsync(String)} resolves to the promise's result,
      * once the promise resolves.
      */
-    public static final String PROMISE_RETURN = "PROMISE_RETURN";
+    public static final String JS_FEATURE_PROMISE_RETURN = "JS_FEATURE_PROMISE_RETURN";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
-     * When this feature is present, {@link JsIsolate#provideNamedData(String, byte[])} can be used.
+     * When this feature is present, {@link JavaScriptIsolate#provideNamedData(String, byte[])}
+     * can be used.
      * <p>
      * This also covers the JS API android.consumeNamedDataAsArrayBuffer(string).
      */
-    public static final String PROVIDE_CONSUME_ARRAY_BUFFER = "PROVIDE_CONSUME_ARRAY_BUFFER";
+    public static final String JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER =
+            "JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
      *
-     * This features provides additional behaviour to {@link
-     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, the JS API
-     * WebAssembly.compile(ArrayBuffer) can be used.
+     * This features provides additional behavior to {@link
+     * JavaScriptIsolate#evaluateJavaScriptAsync(String)} ()}. When this feature is present, the JS
+     * API WebAssembly.compile(ArrayBuffer) can be used.
      */
-    public static final String WASM_COMPILATION = "WASM_COMPILATION";
+    public static final String JS_FEATURE_WASM_COMPILATION = "JS_FEATURE_WASM_COMPILATION";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
      *
      * When this feature is present,
-     * {@link JsSandbox#createIsolate(IsolateSettings)} can be used.
+     * {@link JavaScriptSandbox#createIsolate(IsolateStartupParameters)} can be used.
      */
-    public static final String ISOLATE_MAX_HEAP_SIZE = "ISOLATE_MAX_HEAP_SIZE";
+    public static final String JS_FEATURE_ISOLATE_MAX_HEAP_SIZE =
+            "JS_FEATURE_ISOLATE_MAX_HEAP_SIZE";
 
+    @Nullable
     private HashSet<String> mClientSideFeatureSet;
 
     static class ConnectionSetup implements ServiceConnection {
-        private CallbackToFutureAdapter.Completer<JsSandbox> mCompleter;
-        private JsSandbox mJsSandbox;
+        @Nullable
+        private CallbackToFutureAdapter.Completer<JavaScriptSandbox> mCompleter;
+        @Nullable
+        private JavaScriptSandbox mJsSandbox;
         Context mContext;
 
         @Override
+        @SuppressWarnings("NullAway")
         public void onServiceConnected(ComponentName name, IBinder service) {
             IJsSandboxService jsSandboxService = IJsSandboxService.Stub.asInterface(service);
-            mJsSandbox = new JsSandbox(this, jsSandboxService);
+            mJsSandbox = new JavaScriptSandbox(this, jsSandboxService);
             mCompleter.set(mJsSandbox);
             mCompleter = null;
         }
@@ -161,18 +172,20 @@ public class JsSandbox implements AutoCloseable {
         // one of the methods and have it fail.
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            runShutdownTasks(
-                    new RuntimeException("JsSandbox internal error: onServiceDisconnected()"));
+            runShutdownTasks(new RuntimeException(
+                    "JavaScriptSandbox internal error: onServiceDisconnected()"));
         }
 
         @Override
         public void onBindingDied(ComponentName name) {
-            runShutdownTasks(new RuntimeException("JsSandbox internal error: onBindingDead()"));
+            runShutdownTasks(
+                    new RuntimeException("JavaScriptSandbox internal error: onBindingDead()"));
         }
 
         @Override
         public void onNullBinding(ComponentName name) {
-            runShutdownTasks(new RuntimeException("JsSandbox internal error: onNullBinding()"));
+            runShutdownTasks(
+                    new RuntimeException("JavaScriptSandbox internal error: onNullBinding()"));
         }
 
         private void runShutdownTasks(Exception e) {
@@ -188,7 +201,8 @@ public class JsSandbox implements AutoCloseable {
             mCompleter = null;
         }
 
-        ConnectionSetup(Context context, CallbackToFutureAdapter.Completer<JsSandbox> completer) {
+        ConnectionSetup(Context context,
+                @NonNull CallbackToFutureAdapter.Completer<JavaScriptSandbox> completer) {
             mContext = context;
             mCompleter = completer;
         }
@@ -198,17 +212,18 @@ public class JsSandbox implements AutoCloseable {
      * Asynchronously create and connect to the sandbox process.
      *
      * Only one sandbox process can exist at a time. Attempting to create a new instance before
-     * the previous instance has been closed will fail with an {@link IllegalStateException}.
+     * the previous instance has been closed fails with an {@link IllegalStateException}.
      *
-     * @param context When the context is destroyed, the connection will be closed. Use an
+     * @param context When the context is destroyed, the connection is closed. Use an
      *         application
-     *     context if the connection is expected to outlive a single activity/service.
+     *     context if the connection is expected to outlive a single activity or service.
      *
-     * @return Future that evaluates to a connected {@link JsSandbox} instance or an exception if
-     *     binding to service fails.
+     * @return Future that evaluates to a connected {@link JavaScriptSandbox} instance or an
+     *         exception if binding to service fails.
      */
     @NonNull
-    public static ListenableFuture<JsSandbox> newConnectedInstanceAsync(@NonNull Context context) {
+    public static ListenableFuture<JavaScriptSandbox> createConnectedInstanceAsync(
+            @NonNull Context context) {
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
@@ -216,9 +231,25 @@ public class JsSandbox implements AutoCloseable {
         return bindToServiceWithCallback(context, compName, flag);
     }
 
+    /**
+     * Asynchronously create and connect to the sandbox process for testing.
+     *
+     * Only one sandbox process can exist at a time. Attempting to create a new instance before
+     * the previous instance has been closed will fail with an {@link IllegalStateException}.
+     *
+     * @param context When the context is destroyed, the connection will be closed. Use an
+     *         application
+     *     context if the connection is expected to outlive a single activity/service.
+     *
+     * @return Future that evaluates to a connected {@link JavaScriptSandbox} instance or an
+     *         exception if binding to service fails.
+     *
+     * @hide
+     */
     @NonNull
     @VisibleForTesting
-    public static ListenableFuture<JsSandbox> newConnectedInstanceForTestingAsync(
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    public static ListenableFuture<JavaScriptSandbox> createConnectedInstanceForTestingAsync(
             @NonNull Context context) {
         ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
@@ -226,7 +257,7 @@ public class JsSandbox implements AutoCloseable {
     }
 
     @NonNull
-    private static ListenableFuture<JsSandbox> bindToServiceWithCallback(
+    private static ListenableFuture<JavaScriptSandbox> bindToServiceWithCallback(
             Context context, ComponentName compName, int flag) {
         Intent intent = new Intent();
         intent.setComponent(compName);
@@ -242,11 +273,13 @@ public class JsSandbox implements AutoCloseable {
                                 () -> { context.unbindService(connectionSetup); }, mainExecutor);
                     } else {
                         context.unbindService(connectionSetup);
+                        sIsReadyToConnect.set(true);
                         completer.setException(
                                 new RuntimeException("bindService() returned false " + intent));
                     }
                 } catch (SecurityException e) {
                     context.unbindService(connectionSetup);
+                    sIsReadyToConnect.set(true);
                     completer.setException(e);
                 }
             } else {
@@ -255,12 +288,13 @@ public class JsSandbox implements AutoCloseable {
             }
 
             // Debug string.
-            return "JsSandbox Future";
+            return "JavaScriptSandbox Future";
         });
     }
 
-    // We prevent direct initializations of this class. Use JsSandbox.newConnectedInstance().
-    JsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
+    // We prevent direct initializations of this class.
+    // Use JavaScriptSandbox.createConnectedInstance().
+    JavaScriptSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
         mConnection = connectionSetup;
         mJsSandboxService = jsSandboxService;
         mGuard.open("close");
@@ -268,11 +302,11 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Creates and returns an {@link JsIsolate} within which JS can be executed with default
+     * Creates and returns an {@link JavaScriptIsolate} within which JS can be executed with default
      * settings.
      */
     @NonNull
-    public JsIsolate createIsolate() {
+    public JavaScriptIsolate createIsolate() {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 throw new IllegalStateException(
@@ -289,13 +323,13 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Creates and returns an {@link JsIsolate} within which JS can be executed with the specified
-     * settings.
+     * Creates and returns an {@link JavaScriptIsolate} within which JS can be executed with the
+     * specified settings.
      *
      * @param settings configuration used to set up the isolate
      */
     @NonNull
-    public JsIsolate createIsolate(IsolateSettings settings) {
+    public JavaScriptIsolate createIsolate(@NonNull IsolateStartupParameters settings) {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 throw new IllegalStateException(
@@ -303,7 +337,8 @@ public class JsSandbox implements AutoCloseable {
             }
             IJsSandboxIsolate isolateStub;
             try {
-                if (settings.getMaxHeapSizeBytes() == 0) {
+                if (settings.getMaxHeapSizeBytes()
+                        == IsolateStartupParameters.DEFAULT_ISOLATE_HEAP_SIZE) {
                     isolateStub = mJsSandboxService.createIsolate();
                 } else {
                     isolateStub = mJsSandboxService.createIsolateWithMaxHeapSizeBytes(
@@ -321,33 +356,32 @@ public class JsSandbox implements AutoCloseable {
     }
 
     @GuardedBy("mLock")
+    @SuppressWarnings("NullAway")
     private void populateClientFeatureSet() {
-        mClientSideFeatureSet = new HashSet<String>();
         List<String> features;
         try {
             features = mJsSandboxService.getSupportedFeatures();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-
+        mClientSideFeatureSet = new HashSet<String>();
         if (features.contains(IJsSandboxService.ISOLATE_TERMINATION)) {
-            mClientSideFeatureSet.add(ISOLATE_TERMINATION);
+            mClientSideFeatureSet.add(JS_FEATURE_ISOLATE_TERMINATION);
         }
         if (features.contains(IJsSandboxService.WASM_FROM_ARRAY_BUFFER)) {
-            mClientSideFeatureSet.add(PROMISE_RETURN);
-            mClientSideFeatureSet.add(PROVIDE_CONSUME_ARRAY_BUFFER);
-            mClientSideFeatureSet.add(WASM_COMPILATION);
+            mClientSideFeatureSet.add(JS_FEATURE_PROMISE_RETURN);
+            mClientSideFeatureSet.add(JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER);
+            mClientSideFeatureSet.add(JS_FEATURE_WASM_COMPILATION);
         }
         if (features.contains(IJsSandboxService.ISOLATE_MAX_HEAP_SIZE_LIMIT)) {
-            mClientSideFeatureSet.add(ISOLATE_MAX_HEAP_SIZE);
+            mClientSideFeatureSet.add(JS_FEATURE_ISOLATE_MAX_HEAP_SIZE);
         }
     }
 
     @GuardedBy("mLock")
-    private JsIsolate createJsIsolateLocked(IJsSandboxIsolate isolateStub) {
-        Executor mainExecutor;
-        mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
-        JsIsolate isolate = new JsIsolate(isolateStub, this, mainExecutor);
+    @SuppressWarnings("NullAway")
+    private JavaScriptIsolate createJsIsolateLocked(IJsSandboxIsolate isolateStub) {
+        JavaScriptIsolate isolate = new JavaScriptIsolate(isolateStub, this);
         mActiveIsolateSet.add(isolate);
         return isolate;
     }
@@ -359,13 +393,13 @@ public class JsSandbox implements AutoCloseable {
      * The app must use this method to check which library features are supported by the device's
      * implementation before using them.
      * <p>
-     * A feature check should be made prior to depending
-     * on features enlisted in {@link JsSandboxFeature}.
+     * A feature check should be made prior to depending on certain features.
      *
      * @param feature feature to be checked
      *
      * @return {@code true} if supported, {@code false} otherwise
      */
+    @SuppressWarnings("NullAway")
     public boolean isFeatureSupported(@NonNull @JsSandboxFeature String feature) {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
@@ -379,7 +413,7 @@ public class JsSandbox implements AutoCloseable {
         }
     }
 
-    void removeFromIsolateSet(JsIsolate isolate) {
+    void removeFromIsolateSet(JavaScriptIsolate isolate) {
         synchronized (mLock) {
             if (mActiveIsolateSet != null) {
                 mActiveIsolateSet.remove(isolate);
@@ -388,21 +422,22 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Closes the {@link JsSandbox} object and renders it unusable.
+     * Closes the {@link JavaScriptSandbox} object and renders it unusable.
      *
      * The client is expected to call this method explicitly to terminate the isolated process.
      * <p>
-     * Once closed, no more {@link JsSandbox} and {@link JsIsolate} method calls can be made.
-     * Closing will terminate the isolated process immediately. All pending evaluations are
-     * immediately terminated. Once closed, the client may call {@link
-     * JsSandbox#newConnectedInstanceAsync(Context)} to create another {@link JsSandbox}.
+     * Once closed, no more {@link JavaScriptSandbox} and {@link JavaScriptIsolate} method calls
+     * can be made. Closing terminates the isolated process immediately. All pending evaluations are
+     * immediately terminated. Once closed, the client may call
+     * {@link JavaScriptSandbox#createConnectedInstanceAsync(Context)} to create another
+     * {@link JavaScriptSandbox}.
      */
     @Override
     public void close() {
         doClose(new IsolateTerminatedException());
     }
 
-    private void doClose(Exception cancelPendingWith) {
+    void doClose(Exception cancelPendingWith) {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 return;
@@ -419,13 +454,14 @@ public class JsSandbox implements AutoCloseable {
 
     @GuardedBy("mLock")
     private void cancelPendingEvaluationsLocked(Exception e) {
-        for (JsIsolate ele : mActiveIsolateSet) {
+        for (JavaScriptIsolate ele : mActiveIsolateSet) {
             ele.cancelAllPendingEvaluations(e);
         }
         mActiveIsolateSet = null;
     }
 
     @Override
+    @SuppressWarnings("GenericException") // super.finalize() throws Throwable
     protected void finalize() throws Throwable {
         try {
             if (mGuard != null) {

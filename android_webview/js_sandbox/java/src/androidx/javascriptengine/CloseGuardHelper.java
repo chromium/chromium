@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js_sandbox.client;
+package androidx.javascriptengine;
 
 import android.os.Build;
 import android.util.CloseGuard;
@@ -14,10 +14,10 @@ import androidx.core.util.Preconditions;
 /**
  * Helper for accessing CloseGuard on API levels that support it.
  *
- * <p>All operations will be no-ops on non-supported API levels.
+ * <p>All operations are no-ops on non-supported API levels.
  */
-@RequiresApi(21)
-public final class CloseGuardHelper {
+@SuppressWarnings("NotCloseable")
+final class CloseGuardHelper {
     private final CloseGuardImpl mImpl;
 
     private CloseGuardHelper(CloseGuardImpl impl) {

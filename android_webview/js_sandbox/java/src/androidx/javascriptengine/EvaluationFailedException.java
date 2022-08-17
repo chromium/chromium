@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js_sandbox.client;
+package androidx.javascriptengine;
 
 import androidx.annotation.NonNull;
 
 /** Wrapper for the exception thrown by the JS evaluation engine. */
-public class EvaluationFailedException extends JsException {
+public final class EvaluationFailedException extends JavaScriptException {
     public EvaluationFailedException(@NonNull String error) {
         super(error);
     }

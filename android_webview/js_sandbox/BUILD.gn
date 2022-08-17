@@ -42,15 +42,15 @@ android_library("js_sandbox_service_java") {
 
 android_library("js_sandbox_java") {
   sources = [
-    "java/src/org/chromium/android_webview/js_sandbox/client/CloseGuardHelper.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/EvaluationFailedException.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/IsolateSettings.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/IsolateTerminatedException.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/JsException.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/JsIsolate.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/JsSandbox.java",
-    "java/src/org/chromium/android_webview/js_sandbox/client/SandboxDeadException.java",
-    "java/src/org/chromium/android_webview/js_sandbox/common/ExecutionErrorTypes.java",
+    "java/src/androidx/javascriptengine/CloseGuardHelper.java",
+    "java/src/androidx/javascriptengine/EvaluationFailedException.java",
+    "java/src/androidx/javascriptengine/ExecutionErrorTypes.java",
+    "java/src/androidx/javascriptengine/IsolateStartupParameters.java",
+    "java/src/androidx/javascriptengine/IsolateTerminatedException.java",
+    "java/src/androidx/javascriptengine/JavaScriptException.java",
+    "java/src/androidx/javascriptengine/JavaScriptIsolate.java",
+    "java/src/androidx/javascriptengine/JavaScriptSandbox.java",
+    "java/src/androidx/javascriptengine/SandboxDeadException.java",
   ]
 
   deps = [
@@ -66,5 +66,8 @@ android_library("js_sandbox_java") {
 dist_aar("js_sandbox_client_aar") {
   deps = [ ":js_sandbox_java" ]
   output = "$root_build_dir/JsSandboxClient.aar"
-  jar_included_patterns = [ "org/chromium/android_webview/js_sandbox/*" ]
+  jar_included_patterns = [
+    "androidx/javascriptengine/*",
+    "org/chromium/android_webview/js_sandbox/*",
+  ]
 }

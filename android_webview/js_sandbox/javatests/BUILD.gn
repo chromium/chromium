@@ -13,9 +13,8 @@ group("webview_js_sandbox_test_app") {
 instrumentation_test_apk("webview_js_sandbox_test_app_test_apk") {
   apk_name = "WebViewJsSandboxTestAppTest"
   android_manifest = "AndroidManifest.xml"
-  sources = [
-    "src/org/chromium/webview_js_sandbox_test/test/WebViewJsSandboxTest.java",
-  ]
+  sources =
+      [ "src/androidx/javascriptengine/WebViewJavaScriptSandboxTest.java" ]
   deps = [
     "//android_webview/js_sandbox:js_sandbox_java",
     "//base:base_java",
