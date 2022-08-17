@@ -218,7 +218,6 @@
     title = @"Feed Bg Refresh Failure";
   }
   [self maybeRequestNotification:title];
-  SetFeedLastBackgroundRefreshTimestamp([NSDate now]);
 }
 
 @end

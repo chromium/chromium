@@ -58,10 +58,6 @@ bool IsFeedBackgroundRefreshEnabled();
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
-// Sets the last background refresh timestamp to be displayed in Experimental
-// Settings in the Settings App. This is not available in stable.
-void SetFeedLastBackgroundRefreshTimestamp(NSDate* timestamp);
-
 // Returns the override value from Experimental Settings in the Settings App. If
 // enabled, all values in Experimental Settings will override all corresponding
 // defaults.

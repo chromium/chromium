@@ -67,16 +67,6 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
        forKey:kEnableFeedBackgroundRefreshForNextColdStart];
 }
 
-void SetFeedLastBackgroundRefreshTimestamp(NSDate* timestamp) {
-  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-  dateFormatter.dateStyle = NSDateFormatterShortStyle;
-  dateFormatter.timeStyle = NSDateFormatterShortStyle;
-  dateFormatter.locale = [NSLocale autoupdatingCurrentLocale];
-  [[NSUserDefaults standardUserDefaults]
-      setObject:[dateFormatter stringFromDate:timestamp]
-         forKey:@"FeedLastBackgroundRefreshTimestamp"];
-}
-
 bool IsFeedOverrideDefaultsEnabled() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"FeedOverrideDefaultsEnabled"];
@@ -95,7 +85,7 @@ bool IsFollowingFeedBackgroundRefreshEnabled() {
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh, kEnableFollowingFeedBackgroundRefresh,
-      /*default=*/true);
+      /*default=*/false);
 }
 
 bool IsServerDrivenBackgroundRefreshScheduleEnabled() {

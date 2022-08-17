@@ -26,21 +26,9 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Last Foreground Refresh Timestamp</string>
+			<string>Last Refresh Timestamp</string>
 			<key>Key</key>
-			<string>FeedLastForegroundRefreshTimestamp</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Last Background Refresh Timestamp</string>
-			<key>Key</key>
-			<string>FeedLastBackgroundRefreshTimestamp</string>
+			<string>FeedLastRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>KeyboardType</key>
