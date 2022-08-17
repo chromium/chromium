@@ -74,6 +74,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void SetBrowseModeInvisible(bool invisible) override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   bool MustUseBackendData() const override;
+  bool IsXmlSigned(const std::string& xml_string) const override;
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
   void OnActionsResponseReceived(
       const RoundtripNetworkStats& network_stats) override;
 

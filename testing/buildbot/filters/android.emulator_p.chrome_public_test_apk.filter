@@ -124,6 +124,7 @@
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUpdateClientSettingsIntegrationTest*
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTtsIntegrationTest*
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantQrCodeIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantParseSingleTagXmlIntegrationTest*
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest*
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPasswordManagerIntegrationTest*
 

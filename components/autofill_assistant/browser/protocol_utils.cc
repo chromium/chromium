@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 #include "components/autofill_assistant/browser/actions/js_flow_action.h"
 #include "components/autofill_assistant/browser/actions/navigate_action.h"
+#include "components/autofill_assistant/browser/actions/parse_single_tag_xml_action.h"
 #include "components/autofill_assistant/browser/actions/perform_on_single_element_action.h"
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
 #include "components/autofill_assistant/browser/actions/presave_generated_password_action.h"
@@ -482,6 +483,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
                          action.set_native_checked().checked()));
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       return std::make_unique<PromptQrCodeScanAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kParseSingleTagXml:
+      return std::make_unique<ParseSingleTagXmlAction>(delegate, action);
     case ActionProto::ActionInfoCase::kReportProgress:
       return std::make_unique<ReportProgressAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
@@ -768,6 +771,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_prompt_qr_code_scan());
+      break;
+    case ActionProto::ActionInfoCase::kParseSingleTagXml:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_parse_single_tag_xml());
       break;
     case ActionProto::ActionInfoCase::kReportProgress:
       success = ParseActionFromString(action_id, bytes, error_message,

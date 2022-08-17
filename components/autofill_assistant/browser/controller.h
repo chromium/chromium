@@ -140,6 +140,16 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowWarning() override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   bool MustUseBackendData() const override;
+
+  // Checks if given XML is signed or not.
+  bool IsXmlSigned(const std::string& xml_string) const override;
+
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|.
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
+
   void OnActionsResponseReceived(
       const RoundtripNetworkStats& network_stats) override;
 

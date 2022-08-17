@@ -2636,4 +2636,18 @@ TEST_F(ControllerTest, JsFlowLibraryNotLoadedForEmpty) {
   controller_->SetJsFlowLibrary("");
 }
 
+TEST_F(ControllerTest, SuccessfullyExtractsValuesFromSingleTagXml) {
+  EXPECT_CALL(mock_client_, ExtractValuesFromSingleTagXml)
+      .Times(1)
+      .WillOnce(Return((const std::vector<std::string>){}));
+  EXPECT_EQ(
+      controller_->ExtractValuesFromSingleTagXml("some_xml", {"some_key"}),
+      (const std::vector<std::string>){});
+}
+
+TEST_F(ControllerTest, SuccessfullyValidatesIfXmlIsSigned) {
+  EXPECT_CALL(mock_client_, IsXmlSigned).Times(1).WillOnce(Return(true));
+  EXPECT_EQ(controller_->IsXmlSigned("1234567890"), true);
+}
+
 }  // namespace autofill_assistant

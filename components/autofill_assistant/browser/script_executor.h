@@ -287,6 +287,10 @@ class ScriptExecutor : public ActionDelegate,
       const ProcessedActionProto& processed_action) override;
   absl::optional<std::string> GetIntent() const override;
   const std::string GetLocale() const override;
+  bool IsXmlSigned(const std::string& xml_string) const override;
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
   void ReportProgress(const std::string& payload,
                       base::OnceCallback<void(bool)> callback) override;
 

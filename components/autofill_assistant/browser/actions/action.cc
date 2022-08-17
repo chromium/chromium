@@ -285,6 +285,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSetNativeChecked:
       out << "SetNativeChecked";
       break;
+    case ActionProto::ActionInfoCase::kParseSingleTagXml:
+      out << "ParseSingleTagXml";
+      break;
     case ActionProto::ActionInfoCase::kPromptQrCodeScan:
       out << "PromptQrCodeScan";
       break;

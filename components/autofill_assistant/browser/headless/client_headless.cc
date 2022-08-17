@@ -161,6 +161,16 @@ bool ClientHeadless::IsSpokenFeedbackAccessibilityServiceEnabled() const {
   return false;
 }
 
+bool ClientHeadless::IsXmlSigned(const std::string& xml_string) const {
+  return false;
+}
+
+const std::vector<std::string> ClientHeadless::ExtractValuesFromSingleTagXml(
+    const std::string& xml_string,
+    const std::vector<std::string>& keys) const {
+  return (const std::vector<std::string>){};
+}
+
 content::WebContents* ClientHeadless::GetWebContents() const {
   return web_contents_;
 }

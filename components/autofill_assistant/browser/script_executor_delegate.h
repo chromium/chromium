@@ -158,6 +158,15 @@ class ScriptExecutorDelegate {
   // backend endpoint to query data.
   virtual bool MustUseBackendData() const = 0;
 
+  // Checks if given XML is signed or not.
+  virtual bool IsXmlSigned(const std::string& xml_string) const = 0;
+
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|.
+  virtual const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const = 0;
+
   // Called when a new action response has been received. Used for metrics.
   virtual void OnActionsResponseReceived(
       const RoundtripNetworkStats& network_stats) = 0;

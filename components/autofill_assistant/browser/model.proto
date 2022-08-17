@@ -87,7 +87,7 @@ message LoginOptionList {
 // a boolean field would have.
 message Empty {}
 
-// Next Id: 43
+// Next Id: 45
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -253,6 +253,14 @@ enum ProcessedActionStatusProto {
 
   // The QR code scan failed because of some camera issues.
   QR_CODE_SCAN_CAMERA_ERROR = 42;
+
+  // Parse XML action returned without successfully resolving the XML
+  // because of the input XML data not satisfying the XML config.
+  XML_PARSE_INCORRECT_DATA = 43;
+
+  // Parse XML action returned without successfully resolving the XML because
+  // of the input XML data being signed.
+  XML_PARSE_SIGNED_DATA = 44;
 
   reserved 15, 23, 25, 32, 36;
 }

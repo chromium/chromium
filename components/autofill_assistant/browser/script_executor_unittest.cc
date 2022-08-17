@@ -2453,6 +2453,16 @@ TEST_F(ScriptExecutorTest, ExternalActionAppliesAndRestoresTouchableArea) {
                           AutofillAssistantState::RUNNING));
 }
 
+TEST_F(ScriptExecutorTest,
+       TestDelegateIsCalledForExtractValuesFromSingleTagXml) {
+  EXPECT_EQ(executor_->ExtractValuesFromSingleTagXml("some_xml", {"some_key"}),
+            (const std::vector<std::string>){});
+}
+
+TEST_F(ScriptExecutorTest, TestDelegateIsCalledForIsXmlSigned) {
+  EXPECT_EQ(executor_->IsXmlSigned("some_xml"), true);
+}
+
 TEST_F(ScriptExecutorTest, ReportProgress) {
   EXPECT_CALL(mock_service_, ReportProgress)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),

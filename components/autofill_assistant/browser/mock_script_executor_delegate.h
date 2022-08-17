@@ -108,6 +108,11 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               OnActionsResponseReceived,
               (const RoundtripNetworkStats& network_stats),
               (override));
+  MOCK_CONST_METHOD1(IsXmlSigned, bool(const std::string& xml_string));
+  MOCK_CONST_METHOD2(
+      ExtractValuesFromSingleTagXml,
+      const std::vector<std::string>(const std::string& xml_string,
+                                     const std::vector<std::string>& keys));
 
  private:
   ClientSettings client_settings_;

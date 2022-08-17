@@ -86,6 +86,14 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetMetricsReportingEnabled() const override;
 
+  // Checks if given XML is signed or not.
+  bool IsXmlSigned(const std::string& xml_string) const override;
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|.
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
+
   // Overrides AccessTokenFetcher
   void FetchAccessToken(
       base::OnceCallback<void(bool, const std::string&)>) override;

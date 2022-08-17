@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_tick_clock.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantParseSingleTagXmlUtilWrapper_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantClient_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
@@ -41,6 +42,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
+using ::base::android::AppendJavaStringArrayToStringVector;
 using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF8ToJavaString;
@@ -48,6 +50,7 @@ using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
+using ::base::android::ToJavaArrayOfStrings;
 
 namespace autofill_assistant {
 namespace {
@@ -643,6 +646,28 @@ void ClientAndroid::GetAnnotateDomModelVersion(
   annotate_dom_model_service_->NotifyOnModelFileAvailable(
       base::BindOnce(&ClientAndroid::OnAnnotateDomModelFileAvailable,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool ClientAndroid::IsXmlSigned(const std::string& xml_string) const {
+  JNIEnv* env = AttachCurrentThread();
+  jboolean j_output = Java_AssistantParseSingleTagXmlUtilWrapper_isXmlSigned(
+      env, ConvertUTF8ToJavaString(env, xml_string));
+
+  return (j_output == JNI_TRUE);
+}
+
+const std::vector<std::string> ClientAndroid::ExtractValuesFromSingleTagXml(
+    const std::string& xml_string,
+    const std::vector<std::string>& keys) const {
+  JNIEnv* env = AttachCurrentThread();
+  auto j_output_values =
+      Java_AssistantParseSingleTagXmlUtilWrapper_extractValuesFromSingleTagXml(
+          env, ConvertUTF8ToJavaString(env, xml_string),
+          ToJavaArrayOfStrings(env, std::move(keys)));
+
+  std::vector<std::string> output_values;
+  AppendJavaStringArrayToStringVector(env, j_output_values, &output_values);
+  return output_values;
 }
 
 void ClientAndroid::OnAnnotateDomModelFileAvailable(

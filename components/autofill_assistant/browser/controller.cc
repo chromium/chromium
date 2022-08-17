@@ -235,6 +235,16 @@ bool Controller::MustUseBackendData() const {
   return client_->MustUseBackendData();
 }
 
+bool Controller::IsXmlSigned(const std::string& xml_string) const {
+  return client_->IsXmlSigned(xml_string);
+}
+
+const std::vector<std::string> Controller::ExtractValuesFromSingleTagXml(
+    const std::string& xml_string,
+    const std::vector<std::string>& keys) const {
+  return client_->ExtractValuesFromSingleTagXml(xml_string, keys);
+}
+
 void Controller::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.AddObserver(listener);

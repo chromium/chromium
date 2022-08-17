@@ -763,6 +763,16 @@ void ScriptExecutor::SetOverlayBehavior(
   delegate_->SetOverlayBehavior(overlay_behavior);
 }
 
+bool ScriptExecutor::IsXmlSigned(const std::string& xml_string) const {
+  return delegate_->IsXmlSigned(xml_string);
+}
+
+const std::vector<std::string> ScriptExecutor::ExtractValuesFromSingleTagXml(
+    const std::string& xml_string,
+    const std::vector<std::string>& keys) const {
+  return delegate_->ExtractValuesFromSingleTagXml(xml_string, keys);
+}
+
 void ScriptExecutor::MaybeShowSlowWebsiteWarning(
     base::OnceCallback<void(bool)> callback) {
   bool should_show_warning =

@@ -519,6 +519,16 @@ class ActionDelegate {
   // Returns the client's locale.
   virtual const std::string GetLocale() const = 0;
 
+  // Checks if given XML is signed or not.
+  virtual bool IsXmlSigned(const std::string& xml_string) const = 0;
+
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|. In case if |xml_string| is not successfully parsed or data for all
+  // the |keys| is not found, it returns an empty vector.
+  virtual const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
   // Make a fire-and-forget call to report progress.

@@ -1099,6 +1099,7 @@ message ActionProto {
     SetNativeCheckedProto set_native_checked = 97;
     PromptQrCodeScanProto prompt_qr_code_scan = 98;
     ReportProgressProto report_progress = 99;
+    ParseSingleTagXmlProto parse_single_tag_xml = 100;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1923,6 +1924,34 @@ message PromptQrCodeScanProto {
   // UI strings shown during image picker. This is a mandatory field when QR
   // Code Scanning via Image Picker is to be triggered.
   optional ImagePickerUiStrings image_picker_ui_strings = 4;
+}
+
+// Reads a single tag XML from client memory, extracts select fields based on
+// XML config specified and writes them back in the client memory.
+message ParseSingleTagXmlProto {
+  // Key to read the input single tag XML from client memory, |UserModel|. This
+  // is a mandatory field.
+  optional string input_client_memory_key = 1;
+
+  message Field {
+    // XML key for the field.
+    optional string key = 1;
+
+    // Key to store the extracted value in |UserModel| on the client.
+    optional string output_client_memory_key = 2;
+  }
+
+  // Spec for a field that needs to be extracted from the XML.
+  repeated Field fields = 2;
+
+  // Cases where the XML input does not match the specified XML Spec, we return
+  // a failure to the server in the form of Action Status. If this boolean
+  // is set to true, we further check if the failure was because the XML was
+  // signed(*) and show a different error message accordingly.
+  // *Note: We currently check for a XML being signed by simply checking
+  // if it only contains a plain numerical string. This may lead to
+  // misclassification when the input data is a random numeric string.
+  optional bool custom_failure_for_signed_input_data = 3 [default = true];
 }
 
 // Contain a localized text message from the server.

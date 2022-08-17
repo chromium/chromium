@@ -149,6 +149,10 @@ class ClientAndroid : public Client,
   void GetAnnotateDomModelVersion(
       base::OnceCallback<void(absl::optional<int64_t>)> callback)
       const override;
+  bool IsXmlSigned(const std::string& xml_string) const override;
+  const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetMetricsReportingEnabled() const override;
 

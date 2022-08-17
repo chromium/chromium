@@ -30,6 +30,11 @@ class MockClient : public Client {
 
   MOCK_CONST_METHOD0(GetChannel, version_info::Channel());
   MOCK_CONST_METHOD0(GetLocale, std::string());
+  MOCK_CONST_METHOD1(IsXmlSigned, bool(const std::string& xml_string));
+  MOCK_CONST_METHOD2(
+      ExtractValuesFromSingleTagXml,
+      const std::vector<std::string>(const std::string& xml_string,
+                                     const std::vector<std::string>& keys));
   MOCK_CONST_METHOD0(GetCountryCode, std::string());
   MOCK_CONST_METHOD0(GetDeviceContext, DeviceContext());
   MOCK_CONST_METHOD0(GetWindowSize, absl::optional<std::pair<int, int>>());

@@ -130,6 +130,15 @@ class Client {
   virtual void GetAnnotateDomModelVersion(
       base::OnceCallback<void(absl::optional<int64_t>)> callback) const = 0;
 
+  // Checks if given XML is signed or not.
+  virtual bool IsXmlSigned(const std::string& xml_string) const = 0;
+
+  // Extracts attribute values from the |xml_string| corresponding to the
+  // |keys|.
+  virtual const std::vector<std::string> ExtractValuesFromSingleTagXml(
+      const std::string& xml_string,
+      const std::vector<std::string>& keys) const = 0;
+
   // Return whether MSBB is enabled.
   virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const = 0;
 

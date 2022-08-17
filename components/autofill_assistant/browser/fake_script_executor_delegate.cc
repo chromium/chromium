@@ -39,6 +39,18 @@ WebController* FakeScriptExecutorDelegate::GetWebController() {
   return web_controller_;
 }
 
+bool FakeScriptExecutorDelegate::IsXmlSigned(
+    const std::string& xml_string) const {
+  return true;
+}
+
+const std::vector<std::string>
+FakeScriptExecutorDelegate::ExtractValuesFromSingleTagXml(
+    const std::string& xml_string,
+    const std::vector<std::string>& keys) const {
+  return (const std::vector<std::string>){};
+}
+
 TriggerContext* FakeScriptExecutorDelegate::GetTriggerContext() {
   return trigger_context_.get();
 }
