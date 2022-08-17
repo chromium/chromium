@@ -68,6 +68,11 @@ abstract class RemoteFragment extends Fragment {
     // Whetner saveToViewModel() was called. In other words, state was saved to ViewModelImpl.
     private boolean mSavedStateToViewModel;
 
+    // Whether to forward the onCreate and onDestroy events to the remote fragment.
+    // TODO(rayankans): Remove this hack once BrowserFragmentDelegate is merged with
+    // BrowserFragment.
+    protected boolean mForwardCreateDestroyEvents = true;
+
     private static final class IRemoteFragmentClientImpl extends IRemoteFragmentClient.Stub {
         private RemoteFragment mRemoteFragment;
         // Used to track when destroy is being called because a ViewModel is being destroyed. When
@@ -339,6 +344,9 @@ abstract class RemoteFragment extends Fragment {
             super.onCreate(savedInstanceState);
             return;
         }
+        if (!mForwardCreateDestroyEvents) {
+            return;
+        }
         try {
             mRemoteFragment.handleOnCreate(ObjectWrapper.wrap(savedInstanceState));
         } catch (RemoteException e) {
@@ -447,6 +455,11 @@ abstract class RemoteFragment extends Fragment {
             return;
         }
         ThreadCheck.ensureOnUiThread();
+
+        if (!mForwardCreateDestroyEvents) {
+            return;
+        }
+
         try {
             mRemoteFragment.handleOnDestroy();
             // The other side does the clean up automatically in handleOnDestroy()

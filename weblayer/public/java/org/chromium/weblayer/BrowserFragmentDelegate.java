@@ -112,7 +112,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onDestroy() {
-        mHandler.post(() -> mFragment.onDestroy());
+        mHandler.post(() -> mFragment.onDestroy(/* force= */ true));
     }
 
     @Override

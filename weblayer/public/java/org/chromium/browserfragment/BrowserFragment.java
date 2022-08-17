@@ -139,10 +139,11 @@ public class BrowserFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            mDelegate.onDestroy();
-        } catch (RemoteException e) {
-        }
+
+        // We intentionally do not forward the onDestroy call here to avoid destroying/recreating
+        // the WebLayer implementations every time.
+        // onDestroy is called once the ViewModel is cleared because that guarantees that the
+        // Fragment will no longer be used.
     }
 
     @Override
@@ -282,6 +283,16 @@ public class BrowserFragment extends Fragment {
 
         boolean hasSavedState() {
             return mBrowser != null;
+        }
+
+        @Override
+        public void onCleared() {
+            if (mDelegate != null) {
+                try {
+                    mDelegate.onDestroy();
+                } catch (RemoteException e) {
+                }
+            }
         }
     }
 }
