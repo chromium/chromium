@@ -90,12 +90,12 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   // Adds a tokenizer for |source| which can be later retrieved with
   // TakeCSSTokenizer(). This may be called on any thread.
   void AddCSSTokenizer(const String& source,
-                       std::unique_ptr<CSSTokenizerBase> tokenizer);
+                       std::unique_ptr<CachedCSSTokenizer> tokenizer);
 
   // Takes ownership of a tokenizer previously added with AddCSSTokenizer().
   // The returned tokenizer is guaranteed to be correct for CSS text that
   // matches the passed in |source|.
-  std::unique_ptr<CSSTokenizerBase> TakeCSSTokenizer(const String& source);
+  std::unique_ptr<CachedCSSTokenizer> TakeCSSTokenizer(const String& source);
 
  protected:
   explicit ScriptableDocumentParser(
@@ -116,7 +116,7 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
       inline_script_streamers_ GUARDED_BY(streamers_lock_);
 
   base::Lock tokenizers_lock_;
-  HashMap<String, std::unique_ptr<CSSTokenizerBase>> inline_css_tokenizers_
+  HashMap<String, std::unique_ptr<CachedCSSTokenizer>> inline_css_tokenizers_
       GUARDED_BY(tokenizers_lock_);
 };
 

@@ -120,7 +120,7 @@ class CORE_EXPORT CSSParserImpl {
       StyleSheetContents*,
       CSSDeferPropertyParsing = CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true,
-      std::unique_ptr<CSSTokenizerBase> tokenizer = nullptr);
+      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
   static CSSSelectorList ParsePageSelector(CSSParserTokenRange,
                                            StyleSheetContents*,
                                            const CSSParserContext& context);

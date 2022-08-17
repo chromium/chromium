@@ -6011,37 +6011,19 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
   EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
 }
 
-class TestCSSTokenizer : public CSSTokenizerBase {
- public:
-  explicit TestCSSTokenizer(bool* tokenizer_used)
-      : tokenizer_used_(tokenizer_used) {}
-
-  wtf_size_t Offset() const override { return 0; }
-  wtf_size_t PreviousOffset() const override { return 0; }
-  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const override {
-    return StringView();
-  }
-  CSSParserToken TokenizeSingle() override {
-    *tokenizer_used_ = true;
-    return CSSParserToken(kEOFToken);
-  }
-  CSSParserToken TokenizeSingleWithComments() override {
-    return TokenizeSingle();
-  }
-  wtf_size_t TokenCount() override { return 0; }
-
-  bool* tokenizer_used_;
-};
-
 TEST_F(StyleEngineTest, UsesCachedTokenizer) {
   // Make sure the parser exists.
   GetDocument().write("<body></body>");
-  bool tokenizer_used = false;
-  auto tokenizer = std::make_unique<TestCSSTokenizer>(&tokenizer_used);
+
   GetDocument().GetScriptableDocumentParser()->AddCSSTokenizer(
-      ".foo{}", std::move(tokenizer));
-  GetDocument().body()->setInnerHTML("<style>.foo{}</style>");
-  EXPECT_TRUE(tokenizer_used);
+      ".foo{}", CSSTokenizer::CreateCachedTokenizer(".foo{} .bar{}"));
+  GetDocument().body()->setInnerHTML("<style id=style>.foo{}</style>");
+
+  // If the cached tokenizer is used, the resulting sheet should have 2 rules
+  // (.foo and .bar).
+  auto& style_element =
+      To<HTMLStyleElement>(*GetDocument().getElementById("style"));
+  EXPECT_EQ(style_element.sheet()->length(), 2u);
 }
 
 }  // namespace blink

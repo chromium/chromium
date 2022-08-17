@@ -470,7 +470,7 @@ TEST(CSSTokenizerTest, CommentToken) {
   TEST_TOKENS(";/******", Semicolon());
 }
 
-StringView GetLastTokenRange(const CSSTokenizerBase& tokenizer) {
+StringView GetLastTokenRange(const CSSTokenizerWrapper& tokenizer) {
   wtf_size_t start = tokenizer.PreviousOffset();
   return tokenizer.StringRangeAt(start, tokenizer.Offset() - start);
 }
@@ -482,10 +482,14 @@ class CachedCSSTokenizerTest
 TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
   // Make sure the cached tokenizer gives the exact same results as
   // CSSTokenizer.
-  CSSTokenizer tokenizer1(kCSSText);
-  auto tokenizer2 = CSSTokenizer::CreateCachedTokenizer(kCSSText);
-  EXPECT_EQ(tokenizer1.Offset(), tokenizer2->Offset());
-  EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2->PreviousOffset());
+  CSSTokenizer uncached_tokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer1(uncached_tokenizer);
+
+  auto cached_tokenizer = CSSTokenizer::CreateCachedTokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer2(*cached_tokenizer);
+
+  EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+  EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
 
   // Tokenize the full CSS text with comments and verify the tokens and state.
   bool last_token_eof = false;
@@ -494,15 +498,15 @@ TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
     CSSParserToken token2(kEOFToken);
     if (GetParam()) {
       token1 = tokenizer1.TokenizeSingleWithComments();
-      token2 = tokenizer2->TokenizeSingleWithComments();
+      token2 = tokenizer2.TokenizeSingleWithComments();
     } else {
       token1 = tokenizer1.TokenizeSingle();
-      token2 = tokenizer2->TokenizeSingle();
+      token2 = tokenizer2.TokenizeSingle();
     }
     CompareTokens(token1, token2);
-    EXPECT_EQ(tokenizer1.Offset(), tokenizer2->Offset());
-    EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2->PreviousOffset());
-    EXPECT_EQ(GetLastTokenRange(tokenizer1), GetLastTokenRange(*tokenizer2));
+    EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+    EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
+    EXPECT_EQ(GetLastTokenRange(tokenizer1), GetLastTokenRange(tokenizer2));
     if (last_token_eof)
       break;
 
@@ -512,7 +516,7 @@ TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
 
     // CSSTokenizer keeps adding to token count after EOF and CachedCSSTokenizer
     // doesn't match this behavior.
-    EXPECT_EQ(tokenizer1.TokenCount(), tokenizer2->TokenCount());
+    EXPECT_EQ(tokenizer1.TokenCount(), tokenizer2.TokenCount());
   }
 }
 

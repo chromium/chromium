@@ -73,7 +73,7 @@ class CORE_EXPORT StyleSheetContents final
   ParseSheetResult ParseString(
       const String&,
       bool allow_import_rules = true,
-      std::unique_ptr<CSSTokenizerBase> tokenizer = nullptr);
+      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;

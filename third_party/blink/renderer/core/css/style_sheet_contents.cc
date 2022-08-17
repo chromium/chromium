@@ -442,7 +442,7 @@ void StyleSheetContents::ParseAuthorStyleSheet(
 ParseSheetResult StyleSheetContents::ParseString(
     const String& sheet_text,
     bool allow_import_rules,
-    std::unique_ptr<CSSTokenizerBase> tokenizer) {
+    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
   return CSSParser::ParseSheet(context, this, sheet_text,

@@ -76,7 +76,7 @@ ParseSheetResult CSSParser::ParseSheet(
     const String& text,
     CSSDeferPropertyParsing defer_property_parsing,
     bool allow_import_rules,
-    std::unique_ptr<CSSTokenizerBase> tokenizer) {
+    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
   return CSSParserImpl::ParseStyleSheet(
       text, context, style_sheet, defer_property_parsing, allow_import_rules,
       std::move(tokenizer));

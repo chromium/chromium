@@ -50,7 +50,7 @@ class CORE_EXPORT CSSParser {
       CSSDeferPropertyParsing defer_property_parsing =
           CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true,
-      std::unique_ptr<CSSTokenizerBase> tokenizer = nullptr);
+      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
   static CSSSelectorVector ParseSelector(const CSSParserContext*,
                                          StyleSheetContents*,
                                          const String&);

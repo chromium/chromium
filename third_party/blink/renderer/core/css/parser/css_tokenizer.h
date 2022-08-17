@@ -19,25 +19,76 @@ namespace blink {
 
 class CSSTokenizerInputStream;
 
-// Base class for all CSSTokenizer implementations.
-class CORE_EXPORT CSSTokenizerBase {
+// A tokenizer which contains an already tokenized list of tokens. This can be
+// used transparently in place of CSSTokenizer.
+class CORE_EXPORT CachedCSSTokenizer {
  public:
-  virtual ~CSSTokenizerBase() = default;
+  CachedCSSTokenizer(const String& input,
+                     Vector<CSSParserToken> tokens,
+                     Vector<wtf_size_t> offsets,
+                     Vector<String> string_pool)
+      : input_(input),
+        tokens_(std::move(tokens)),
+        offsets_(std::move(offsets)),
+        string_pool_(std::move(string_pool)) {
+    DCHECK_EQ(tokens_.size(), offsets_.size() - 1);
+  }
 
-  virtual wtf_size_t Offset() const = 0;
-  virtual wtf_size_t PreviousOffset() const = 0;
-  virtual StringView StringRangeAt(wtf_size_t start,
-                                   wtf_size_t length) const = 0;
-  virtual CSSParserToken TokenizeSingle() = 0;
-  virtual CSSParserToken TokenizeSingleWithComments() = 0;
-  virtual wtf_size_t TokenCount() = 0;
+  wtf_size_t Offset() const { return offsets_[index_]; }
+  wtf_size_t PreviousOffset() const {
+    if (index_ == 0)
+      return 0;
+    return offsets_[index_ - 1];
+  }
+
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const {
+    return input_.RangeAt(start, length);
+  }
+
+  CSSParserToken TokenizeSingle() {
+    while (true) {
+      const CSSParserToken token = NextToken();
+      if (token.GetType() == kCommentToken)
+        continue;
+      return token;
+    }
+  }
+
+  CSSParserToken TokenizeSingleWithComments() { return NextToken(); }
+  wtf_size_t TokenCount() { return index_; }
+
+ private:
+  CSSParserToken NextToken() {
+    if (index_ >= tokens_.size()) {
+      DCHECK_EQ(tokens_.back().GetType(), kEOFToken);
+      return tokens_.back();
+    }
+    return tokens_[index_++];
+  }
+
+  // Holds the source text of this sheet.
+  CSSTokenizerInputStream input_;
+
+  // The full list of tokens in the sheet.
+  Vector<CSSParserToken> tokens_;
+
+  // Offsets into the source text for each token.
+  Vector<wtf_size_t> offsets_;
+
+  // String pool to hold allocated strings, taken from CSSTokenizer.
+  Vector<String> string_pool_;
+
+  // The current token index.
+  wtf_size_t index_ = 0;
 };
 
-class CORE_EXPORT CSSTokenizer : public CSSTokenizerBase {
+class CORE_EXPORT CSSTokenizer {
+  DISALLOW_NEW();
+
  public:
   // Immediately tokenizes the input string and saves the resulting tokens in
   // the returned tokenizer, which can be iterated on later.
-  static std::unique_ptr<CSSTokenizerBase> CreateCachedTokenizer(
+  static std::unique_ptr<CachedCSSTokenizer> CreateCachedTokenizer(
       const String& input);
 
   explicit CSSTokenizer(const String&, wtf_size_t offset = 0);
@@ -45,13 +96,13 @@ class CORE_EXPORT CSSTokenizer : public CSSTokenizerBase {
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
   Vector<CSSParserToken, 32> TokenizeToEOF();
-  wtf_size_t TokenCount() override;
+  wtf_size_t TokenCount();
 
-  wtf_size_t Offset() const override { return input_.Offset(); }
-  wtf_size_t PreviousOffset() const override { return prev_offset_; }
-  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const override;
-  CSSParserToken TokenizeSingle() override;
-  CSSParserToken TokenizeSingleWithComments() override;
+  wtf_size_t Offset() const { return input_.Offset(); }
+  wtf_size_t PreviousOffset() const { return prev_offset_; }
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;
+  CSSParserToken TokenizeSingle();
+  CSSParserToken TokenizeSingleWithComments();
 
  private:
   CSSParserToken NextToken();
@@ -129,6 +180,47 @@ class CORE_EXPORT CSSTokenizer : public CSSTokenizerBase {
 
   wtf_size_t prev_offset_ = 0;
   wtf_size_t token_count_ = 0;
+};
+
+// A wrapper which can pass through calls to either a CachedCSSTokenizer or
+// CSSTokenizer.
+class CORE_EXPORT CSSTokenizerWrapper {
+  DISALLOW_NEW();
+
+ public:
+  explicit CSSTokenizerWrapper(CSSTokenizer& tokenizer)
+      : tokenizer_(&tokenizer) {}
+
+  explicit CSSTokenizerWrapper(CachedCSSTokenizer& cached_tokenizer)
+      : cached_tokenizer_(&cached_tokenizer) {}
+
+  wtf_size_t Offset() const {
+    return tokenizer_ ? tokenizer_->Offset() : cached_tokenizer_->Offset();
+  }
+  wtf_size_t PreviousOffset() const {
+    return tokenizer_ ? tokenizer_->PreviousOffset()
+                      : cached_tokenizer_->PreviousOffset();
+  }
+  StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const {
+    return tokenizer_ ? tokenizer_->StringRangeAt(start, length)
+                      : cached_tokenizer_->StringRangeAt(start, length);
+  }
+  CSSParserToken TokenizeSingle() {
+    return tokenizer_ ? tokenizer_->TokenizeSingle()
+                      : cached_tokenizer_->TokenizeSingle();
+  }
+  CSSParserToken TokenizeSingleWithComments() {
+    return tokenizer_ ? tokenizer_->TokenizeSingleWithComments()
+                      : cached_tokenizer_->TokenizeSingleWithComments();
+  }
+  wtf_size_t TokenCount() {
+    return tokenizer_ ? tokenizer_->TokenCount()
+                      : cached_tokenizer_->TokenCount();
+  }
+
+ private:
+  CSSTokenizer* tokenizer_ = nullptr;
+  CachedCSSTokenizer* cached_tokenizer_ = nullptr;
 };
 
 }  // namespace blink

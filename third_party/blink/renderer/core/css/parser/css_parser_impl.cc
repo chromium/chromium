@@ -291,7 +291,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
     StyleSheetContents* style_sheet,
     CSSDeferPropertyParsing defer_property_parsing,
     bool allow_import_rules,
-    std::unique_ptr<CSSTokenizerBase> tokenizer) {
+    std::unique_ptr<CachedCSSTokenizer> cached_tokenizer) {
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> timer;
   if (context->GetDocument() && context->GetDocument()->View()) {
     timer.emplace(
@@ -304,8 +304,14 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
 
   TRACE_EVENT_BEGIN0("blink,blink_style",
                      "CSSParserImpl::parseStyleSheet.parse");
-  if (!tokenizer)
-    tokenizer = std::make_unique<CSSTokenizer>(string);
+  absl::optional<CSSTokenizerWrapper> tokenizer;
+  absl::optional<CSSTokenizer> uncached_tokenizer;
+  if (cached_tokenizer) {
+    tokenizer.emplace(*cached_tokenizer);
+  } else {
+    uncached_tokenizer.emplace(string);
+    tokenizer.emplace(*uncached_tokenizer);
+  }
   CSSParserTokenStream stream(*tokenizer);
   CSSParserImpl parser(context, style_sheet);
   if (defer_property_parsing == CSSDeferPropertyParsing::kYes) {
