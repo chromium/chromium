@@ -5,7 +5,7 @@
 #include "components/metrics/structured/neutrino_logging_util.h"
 
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace metrics {
 namespace structured {

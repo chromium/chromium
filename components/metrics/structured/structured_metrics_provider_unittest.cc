@@ -23,8 +23,8 @@
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
-#include "components/metrics/structured/structured_mojo_events.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 

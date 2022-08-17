@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action.pb.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace app_list {
 namespace {

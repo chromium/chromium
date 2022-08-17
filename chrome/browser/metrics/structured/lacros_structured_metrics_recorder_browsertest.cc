@@ -14,7 +14,7 @@
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

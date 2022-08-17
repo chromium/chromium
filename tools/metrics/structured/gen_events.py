@@ -13,7 +13,7 @@ import sys
 
 import codegen
 import model
-import templates
+import templates_events as templates
 
 parser = argparse.ArgumentParser(
     description='Generate structured metrics events')

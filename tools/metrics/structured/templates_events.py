@@ -2,14 +2,10 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Templates for generating event builder classes for structured metrics.
-
-TODO(crbug.com/1249222): Rename this file to structured_events once migration is
-complete.
-"""
+"""Templates for generating event builder classes for structured metrics."""
 
 HEADER_FILE_TEMPLATE = """
-// Generated from gen_mojo_events.py. DO NOT EDIT!
+// Generated from gen_events.py. DO NOT EDIT!
 // source: structured.xml
 
 #ifndef {file.guard_path}
@@ -62,7 +58,7 @@ IMPL_FILE_TEMPLATE = """\
 // Generated from gen_events.py. DO NOT EDIT!
 // source: structured.xml
 
-#include "components/metrics/structured/structured_mojo_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
