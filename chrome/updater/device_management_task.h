@@ -7,14 +7,17 @@
 
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
+#include "chrome/updater/device_management/dm_storage.h"
 
 namespace updater {
 
@@ -43,6 +46,17 @@ class DeviceManagementTask
   void OnFetchPolicyRequestComplete(
       DMClient::RequestResult result,
       const std::vector<PolicyValidationResult>& validation_results);
+
+  template <typename Function, typename Callback>
+  void CallDMFunction(Function fn,
+                      Callback member_callback,
+                      base::OnceClosure callback) {
+    fn(DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
+       GetDefaultDMStorage(),
+       base::BindPostTask(
+           main_task_runner_,
+           base::BindOnce(member_callback, this).Then(std::move(callback))));
+  }
 
   SEQUENCE_CHECKER(sequence_checker_);
   const scoped_refptr<Configurator> config_;

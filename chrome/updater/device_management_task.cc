@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/device_management/dm_client.h"
@@ -65,14 +64,9 @@ void DeviceManagementTask::RunRegisterDevice(base::OnceClosure callback) {
 void DeviceManagementTask::RegisterDevice(base::OnceClosure callback) {
   VLOG(1) << __func__;
 
-  DMClient::RegisterDevice(
-      DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
-      GetDefaultDMStorage(),
-      base::BindPostTask(
-          main_task_runner_,
-          base::BindOnce(&DeviceManagementTask::OnRegisterDeviceRequestComplete,
-                         this)
-              .Then(std::move(callback))));
+  CallDMFunction(DMClient::RegisterDevice,
+                 &DeviceManagementTask::OnRegisterDeviceRequestComplete,
+                 std::move(callback));
 }
 
 void DeviceManagementTask::OnRegisterDeviceRequestComplete(
@@ -94,14 +88,9 @@ void DeviceManagementTask::RunFetchPolicy(base::OnceClosure callback) {
 void DeviceManagementTask::FetchPolicy(base::OnceClosure callback) {
   VLOG(1) << __func__;
 
-  DMClient::FetchPolicy(
-      DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
-      GetDefaultDMStorage(),
-      base::BindPostTask(
-          main_task_runner_,
-          base::BindOnce(&DeviceManagementTask::OnFetchPolicyRequestComplete,
-                         this)
-              .Then(std::move(callback))));
+  CallDMFunction(DMClient::FetchPolicy,
+                 &DeviceManagementTask::OnFetchPolicyRequestComplete,
+                 std::move(callback));
 }
 
 void DeviceManagementTask::OnFetchPolicyRequestComplete(
