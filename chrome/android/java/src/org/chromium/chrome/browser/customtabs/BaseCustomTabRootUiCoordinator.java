@@ -169,6 +169,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_BRAND_TRANSPARENCY)
                 && intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
+                && !intentDataProvider.get().isOpenedByChrome()
                 && !intentDataProvider.get().isIncognito()) {
             String packageName = mIntentDataProvider.get().getClientPackageName();
             if (TextUtils.isEmpty(packageName)) {
