@@ -30,15 +30,18 @@ class DecoderBufferProvider {
   virtual bool IsValid() const = 0;
 
   // Fetches the current config. |callback| will be called with this config
-  // value as long as this instance is valid at time of calling.
+  // value as long as this instance is valid at time of calling. |callback|
+  // must be callable from any thread.
   virtual void GetConfigAsync(GetConfigCb callback) const = 0;
 
   // Attempts to read the next available buffer. |callback| will be called with
   // this buffer as long as this instance is valid at time of calling.
+  // |callback| must be callable from any thread.
   virtual void ReadBufferAsync(NewBufferCb callback) = 0;
 
   // Sets the callback to be called when this instance becomes invalid.
   // Following this call, no further calls may be made to this instance.
+  // |callback| must be callable from any thread.
   virtual void SetInvalidationCallback(DeletionCb callback) = 0;
 };
 
