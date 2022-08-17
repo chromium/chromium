@@ -57494,6 +57494,7 @@ from previous Chrome versions.
   <int value="-1113746031" label="AppDeduplicationService:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
+  <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
@@ -58156,6 +58157,7 @@ from previous Chrome versions.
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
   <int value="-710519788" label="VariableCOLRV1:disabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
+  <int value="-708482536" label="Cormorant:disabled"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>

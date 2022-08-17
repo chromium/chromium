@@ -2285,6 +2285,9 @@ extern const char kPasswordEditDialogWithDetailsDescription[];
 extern const char kEnableAndroidGamepadVibrationName[];
 extern const char kEnableAndroidGamepadVibrationDescription[];
 
+extern const char kCormorantName[];
+extern const char kCormorantDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !BUILDFLAG(IS_ANDROID)

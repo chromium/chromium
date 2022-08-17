@@ -4250,6 +4250,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLightweightReactionsAndroidName,
      flag_descriptions::kLightweightReactionsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(content_creation::kLightweightReactions)},
+    {"cormorant", flag_descriptions::kCormorantName,
+     flag_descriptions::kCormorantDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(share::kCormorant)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-automatic-snooze", flag_descriptions::kEnableAutomaticSnoozeName,
      flag_descriptions::kEnableAutomaticSnoozeDescription, kOsAll,

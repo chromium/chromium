@@ -4013,6 +4013,9 @@ const char kEnableAndroidGamepadVibrationName[] = "Gamepad vibration";
 const char kEnableAndroidGamepadVibrationDescription[] =
     "Enables the ability to play vibration effects on supported gamepads.";
 
+const char kCormorantName[] = "Cormorant";
+const char kCormorantDescription[] = "Enables the experimental Cormorant UI.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // BUILDFLAG(IS_ANDROID)
