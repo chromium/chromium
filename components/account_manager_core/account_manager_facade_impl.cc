@@ -461,6 +461,12 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
   return std::move(access_token_fetcher);
 }
 
+void AccountManagerFacadeImpl::ReportAuthError(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  NOTIMPLEMENTED();
+}
+
 void AccountManagerFacadeImpl::UpsertAccountForTesting(
     const Account& account,
     const std::string& token_value) {

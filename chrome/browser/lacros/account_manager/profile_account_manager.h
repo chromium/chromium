@@ -77,6 +77,8 @@ class ProfileAccountManager : public KeyedService,
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const account_manager::AccountKey& account,
       OAuth2AccessTokenConsumer* consumer) override;
+  void ReportAuthError(const account_manager::AccountKey& account,
+                       const GoogleServiceAuthError& error) override;
   void UpsertAccountForTesting(const account_manager::Account& account,
                                const std::string& token_value) override;
   void RemoveAccountForTesting(

@@ -97,6 +97,12 @@ ProfileAccountManager::CreateAccessTokenFetcher(
   return mapper_->CreateAccessTokenFetcher(profile_path_, account, consumer);
 }
 
+void ProfileAccountManager::ReportAuthError(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  NOTIMPLEMENTED();
+}
+
 void ProfileAccountManager::UpsertAccountForTesting(
     const account_manager::Account& account,
     const std::string& token_value) {
