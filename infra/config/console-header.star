@@ -232,6 +232,11 @@ HEADER = headers.header(
                     url = "/p/{}/g/chromium.chromiumos".format(settings.project),
                     alt = "ChromiumOS console",
                 ),
+                headers.link(
+                    text = "flakiness",
+                    url = "/p/{}/g/chromium.flakiness".format(settings.project),
+                    alt = "Chromium Flakiness console",
+                ),
             ],
         ),
         headers.link_group(

@@ -205,6 +205,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:flakiness/reproducer",
+)
+
+build_recipe(
     name = "recipe:findit/chromium/single_revision",
     bootstrappable = POLYMORPHIC,
 )

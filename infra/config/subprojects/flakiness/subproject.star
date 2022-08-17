@@ -3,3 +3,4 @@
 # found in the LICENSE file.
 
 exec("./flakiness.star")
+exec("./reproducer.star")
