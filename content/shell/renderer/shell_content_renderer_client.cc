@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cdm/renderer/external_clear_key_key_system_properties.h"
+#include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/shell/common/main_frame_counter_test_impl.h"
@@ -206,5 +207,12 @@ void ShellContentRendererClient::GetSupportedKeySystems(
   std::move(cb).Run(std::move(key_systems));
 }
 #endif
+
+std::unique_ptr<blink::WebPrescientNetworking>
+ShellContentRendererClient::CreatePrescientNetworking(
+    RenderFrame* render_frame) {
+  return std::make_unique<network_hints::WebPrescientNetworkingImpl>(
+      render_frame);
+}
 
 }  // namespace content

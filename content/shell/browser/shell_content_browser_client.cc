@@ -28,6 +28,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -192,6 +193,14 @@ std::string GetShellReducedUserAgent() {
   return content::GetReducedUserAgent(
       command_line->HasSwitch(switches::kUseMobileUserAgent),
       CONTENT_SHELL_MAJOR_VERSION);
+}
+
+void BindNetworkHintsHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<network_hints::mojom::NetworkHintsHandler> receiver) {
+  DCHECK(frame_host);
+  network_hints::SimpleNetworkHintsHandlerImpl::Create(frame_host,
+                                                       std::move(receiver));
 }
 
 }  // namespace
@@ -473,6 +482,8 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     mojo::BinderMapWithContext<RenderFrameHost*>* map) {
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->ExposeInterfacesToRenderFrame(map);
+  map->Add<network_hints::mojom::NetworkHintsHandler>(
+      base::BindRepeating(&BindNetworkHintsHandler));
 }
 
 void ShellContentBrowserClient::OpenURL(

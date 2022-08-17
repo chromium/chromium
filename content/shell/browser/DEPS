@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/lacros",
   "+components/keyed_service/content",
   "+components/metrics",
+  "+components/network_hints/browser",
   "+components/network_session_configurator/common",
   "+components/prefs",
   "+components/variations",

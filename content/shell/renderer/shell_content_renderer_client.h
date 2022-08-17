@@ -50,6 +50,9 @@ class ShellContentRendererClient : public ContentRendererClient {
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
 #endif
 
+  std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
+      RenderFrame* render_frame) override;
+
  private:
   std::unique_ptr<web_cache::WebCacheImpl> web_cache_impl_;
 };

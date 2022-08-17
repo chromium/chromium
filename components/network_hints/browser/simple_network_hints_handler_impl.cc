@@ -148,7 +148,24 @@ void SimpleNetworkHintsHandlerImpl::PrefetchDNS(
 
 void SimpleNetworkHintsHandlerImpl::Preconnect(const GURL& url,
                                                bool allow_credentials) {
-  // Not implemented.
+  if (!url.is_valid() || !url.has_host() || !url.has_scheme() ||
+      !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host)
+    return;
+
+  net::NetworkIsolationKey network_isolation_key =
+      render_frame_host->GetPendingIsolationInfoForSubresources()
+          .network_isolation_key();
+
+  render_frame_host->GetStoragePartition()
+      ->GetNetworkContext()
+      ->PreconnectSockets(/*num_streams=*/1, url, allow_credentials,
+                          network_isolation_key);
 }
 
 }  // namespace network_hints
