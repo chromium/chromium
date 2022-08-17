@@ -24,9 +24,6 @@ namespace gpu {
 
 namespace {
 
-static const base::FilePath::CharType kGpuCachePath[] =
-    FILE_PATH_LITERAL("GPUCache");
-
 #if !BUILDFLAG(IS_ANDROID)
 size_t GetCustomCacheSizeBytesIfExists(base::StringPiece switch_string) {
   const base::CommandLine& process_command_line =
@@ -130,9 +127,8 @@ class GpuDiskCacheClearHelper {
  public:
   GpuDiskCacheClearHelper(GpuDiskCacheFactory* factory,
                           scoped_refptr<GpuDiskCache> cache,
-                          const base::FilePath& path,
-                          const base::Time& delete_begin,
-                          const base::Time& delete_end,
+                          base::Time delete_begin,
+                          base::Time delete_end,
                           base::OnceClosure callback);
 
   GpuDiskCacheClearHelper(const GpuDiskCacheClearHelper&) = delete;
@@ -152,7 +148,6 @@ class GpuDiskCacheClearHelper {
   raw_ptr<GpuDiskCacheFactory> factory_;
   scoped_refptr<GpuDiskCache> cache_;
   OpType op_type_ = VERIFY_CACHE_SETUP;
-  base::FilePath path_;
   base::Time delete_begin_;
   base::Time delete_end_;
   base::OnceClosure callback_;
@@ -377,13 +372,11 @@ int GpuDiskCacheReadHelper::IterationComplete(int rv) {
 GpuDiskCacheClearHelper::GpuDiskCacheClearHelper(
     GpuDiskCacheFactory* factory,
     scoped_refptr<GpuDiskCache> cache,
-    const base::FilePath& path,
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     base::OnceClosure callback)
     : factory_(factory),
       cache_(std::move(cache)),
-      path_(path),
       delete_begin_(delete_begin),
       delete_end_(delete_end),
       callback_(std::move(callback)) {}
@@ -417,7 +410,7 @@ void GpuDiskCacheClearHelper::DoClearGpuCache(int rv) {
       case TERMINATE:
         std::move(callback_).Run();
         // Calling CacheCleared() destroys |this|.
-        factory_->CacheCleared(path_);
+        factory_->CacheCleared(cache_.get());
         rv = net::ERR_IO_PENDING;  // Break the loop.
         break;
     }
@@ -427,37 +420,90 @@ void GpuDiskCacheClearHelper::DoClearGpuCache(int rv) {
 ////////////////////////////////////////////////////////////////////////////////
 // GpuDiskCacheFactory
 
-GpuDiskCacheFactory::GpuDiskCacheFactory() = default;
+GpuDiskCacheFactory::GpuDiskCacheFactory(
+    const HandleToPathMap& reserved_handles) {
+  for (const auto& [handle, path] : reserved_handles) {
+    CHECK(IsReservedGpuDiskCacheHandle(handle));
+    handle_to_path_map_[handle] = path;
+    path_to_handle_map_[path] = handle;
+  }
+}
 
 GpuDiskCacheFactory::~GpuDiskCacheFactory() = default;
 
-void GpuDiskCacheFactory::SetCacheInfo(int32_t client_id,
-                                       const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_id_to_path_map_[client_id] = path;
-}
-
-void GpuDiskCacheFactory::RemoveCacheInfo(int32_t client_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_id_to_path_map_.erase(client_id);
-}
-
-scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(int32_t client_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ClientIdToPathMap::iterator iter = client_id_to_path_map_.find(client_id);
-  if (iter == client_id_to_path_map_.end())
-    return nullptr;
-  return GpuDiskCacheFactory::GetByPath(iter->second);
-}
-
-scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetByPath(
+GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
+    GpuDiskCacheType type,
     const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto it = path_to_handle_map_.find(path);
+  if (it != path_to_handle_map_.end()) {
+    DCHECK(GetHandleType(it->second) == type);
+    return it->second;
+  }
+
+  // Create a new handle and record it. We don't expect large number of handles
+  // and the system cannot handle it since the map is not culled. As a result,
+  // we are returning an empty for the handle which will result in Get/Create
+  // returning nullptr, effectively stopping cache usage when we run out of
+  // handles.
+  GpuDiskCacheHandle handle;
+  if (next_available_handle_ == std::numeric_limits<int32_t>::max()) {
+    LOG(ERROR) << "GpuDiskCacheFactory ran out of handles for caches, caching "
+                  "will be disabled until a new session.";
+    return handle;
+  }
+
+  int32_t raw_handle = next_available_handle_++;
+  switch (type) {
+    case GpuDiskCacheType::kGlShaders:
+      handle = GpuDiskCacheGlShaderHandle(raw_handle);
+      break;
+    case GpuDiskCacheType::kDawnWebGPU:
+      handle = GpuDiskCacheDawnWebGPUHandle(raw_handle);
+      break;
+  }
+  handle_to_path_map_[handle] = path;
+  path_to_handle_map_[path] = handle;
+
+  return handle;
+}
+
+scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(
+    const GpuDiskCacheHandle& handle) {
+  auto handle_it = handle_to_path_map_.find(handle);
+  if (handle_it != handle_to_path_map_.end()) {
+    auto path_it = gpu_cache_map_.find(handle_it->second);
+    if (path_it != gpu_cache_map_.end()) {
+      return path_it->second;
+    }
+  }
+  return nullptr;
+}
+
+scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
+    const GpuDiskCacheHandle& handle,
+    const BlobLoadedForCacheCallback& blob_loaded_cb) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(Get(handle) == nullptr);
+
+  auto it = handle_to_path_map_.find(handle);
+  if (it == handle_to_path_map_.end()) {
+    return nullptr;
+  }
+  return GetOrCreateByPath(it->second,
+                           base::BindRepeating(blob_loaded_cb, handle));
+}
+
+scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
+    const base::FilePath& path,
+    const GpuDiskCache::BlobLoadedCallback& blob_loaded_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = gpu_cache_map_.find(path);
   if (iter != gpu_cache_map_.end())
     return iter->second;
 
-  auto cache = base::WrapRefCounted(new GpuDiskCache(this, path));
+  auto cache =
+      base::WrapRefCounted(new GpuDiskCache(this, path, blob_loaded_cb));
   cache->Init();
   return cache;
 }
@@ -473,57 +519,57 @@ void GpuDiskCacheFactory::RemoveFromCache(const base::FilePath& key) {
   gpu_cache_map_.erase(key);
 }
 
-void GpuDiskCacheFactory::ClearByPath(const base::FilePath& path,
-                                      const base::Time& delete_begin,
-                                      const base::Time& delete_end,
-                                      base::OnceClosure callback) {
+void GpuDiskCacheFactory::ClearByCache(scoped_refptr<GpuDiskCache> cache,
+                                       base::Time delete_begin,
+                                       base::Time delete_end,
+                                       base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!callback.is_null());
-  if (path.empty()) {
+  if (!cache) {
     std::move(callback).Run();
     return;
   }
 
   auto helper = std::make_unique<GpuDiskCacheClearHelper>(
-      this, GetByPath(path), path, delete_begin, delete_end,
-      std::move(callback));
+      this, cache, delete_begin, delete_end, std::move(callback));
 
-  // We could receive requests to clear the same path with different
+  // We could receive requests to clear the same cache with different
   // begin/end times. So, we keep a list of requests. If we haven't seen this
-  // path before we kick off the clear and add it to the list. If we have see it
-  // already, then we already have a clear running. We add this clear to the
+  // cache before we kick off the clear and add it to the list. If we have see
+  // it already, then we already have a clear running. We add this clear to the
   // list and wait for any previous clears to finish.
-  auto iter = gpu_clear_map_.find(path);
-  if (iter != gpu_clear_map_.end()) {
-    iter->second.push(std::move(helper));
+  auto& queued_requests = gpu_clear_map_[cache.get()];
+  queued_requests.push(std::move(helper));
+
+  // If this is the first clear request, then we need to start the clear
+  // operation on the helper.
+  if (queued_requests.size() == 1) {
+    queued_requests.front()->Clear();
+  }
+}
+
+void GpuDiskCacheFactory::ClearByPath(const base::FilePath& path,
+                                      base::Time delete_begin,
+                                      base::Time delete_end,
+                                      base::OnceClosure callback) {
+  // Don't need to do anything if the path is empty.
+  if (path.empty()) {
+    std::move(callback).Run();
     return;
   }
 
-  // Insert the helper in the map before calling Clear(), since it can lead to a
-  // call back into CacheCleared().
-  GpuDiskCacheClearHelper* helper_ptr = helper.get();
-  gpu_clear_map_.insert(
-      std::pair<base::FilePath, ClearHelperQueue>(path, ClearHelperQueue()));
-  gpu_clear_map_[path].push(std::move(helper));
-  helper_ptr->Clear();
+  // We may end up creating the cache if the path that is specified isn't
+  // already an opened path. In this case, we don't need to set a blob loaded
+  // callback since the cache is being cleared anyways, hence the DoNothing
+  // callback.
+  ClearByCache(GetOrCreateByPath(path), delete_begin, delete_end,
+               std::move(callback));
 }
 
-void GpuDiskCacheFactory::ClearByClientId(int32_t client_id,
-                                          const base::Time& delete_begin,
-                                          const base::Time& delete_end,
-                                          base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto iter = client_id_to_path_map_.find(client_id);
-  if (iter == client_id_to_path_map_.end())
-    return;
-  return ClearByPath(iter->second, delete_begin, delete_end,
-                     std::move(callback));
-}
-
-void GpuDiskCacheFactory::CacheCleared(const base::FilePath& path) {
+void GpuDiskCacheFactory::CacheCleared(GpuDiskCache* cache) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  auto iter = gpu_clear_map_.find(path);
+  auto iter = gpu_clear_map_.find(cache);
   if (iter == gpu_clear_map_.end()) {
     LOG(ERROR) << "Completed clear but missing clear helper.";
     return;
@@ -545,8 +591,11 @@ void GpuDiskCacheFactory::CacheCleared(const base::FilePath& path) {
 // GpuDiskCache
 
 GpuDiskCache::GpuDiskCache(GpuDiskCacheFactory* factory,
-                           const base::FilePath& cache_path)
-    : factory_(factory), cache_path_(cache_path) {
+                           const base::FilePath& cache_path,
+                           const BlobLoadedCallback& blob_loaded_cb)
+    : factory_(factory),
+      cache_path_(cache_path),
+      blob_loaded_cb_(blob_loaded_cb) {
   factory_->AddToCache(cache_path_, this);
 }
 
@@ -561,11 +610,10 @@ void GpuDiskCache::Init() {
   }
   is_initialized_ = true;
 
-  // TODO(dawn:549) Add GPU_CACHE type and replace SHADER_CACHE here.
   disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
-      /*file_operations=*/nullptr, cache_path_.Append(kGpuCachePath),
-      CacheSizeBytes(), disk_cache::ResetHandling::kResetOnError,
+      /*file_operations=*/nullptr, cache_path_, CacheSizeBytes(),
+      disk_cache::ResetHandling::kResetOnError,
       /*net_log=*/nullptr,
       base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
@@ -586,8 +634,8 @@ void GpuDiskCache::Cache(const std::string& key, const std::string& blob) {
   entries_.insert(std::make_pair(raw_ptr, std::move(shim)));
 }
 
-int GpuDiskCache::Clear(const base::Time begin_time,
-                        const base::Time end_time,
+int GpuDiskCache::Clear(base::Time begin_time,
+                        base::Time end_time,
                         net::CompletionOnceCallback completion_callback) {
   int rv;
   if (begin_time.is_null()) {
@@ -618,8 +666,7 @@ void GpuDiskCache::CacheCreatedCallback(disk_cache::BackendResult result) {
     return;
   }
   backend_ = std::move(result.backend);
-  helper_ =
-      std::make_unique<GpuDiskCacheReadHelper>(this, blob_loaded_callback_);
+  helper_ = std::make_unique<GpuDiskCacheReadHelper>(this, blob_loaded_cb_);
   helper_->LoadCache();
 }
 

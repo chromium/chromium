@@ -34,7 +34,6 @@
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
@@ -290,31 +289,7 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
       gpu_client_tracing_id_(
           memory_instrumentation::mojom::kServiceTracingProcessId),
       gpu_memory_buffer_manager_(
-          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
-    DCHECK(GetContentClient());
-    base::FilePath cache_dir =
-        GetContentClient()->browser()->GetShaderDiskCacheDirectory();
-    if (!cache_dir.empty()) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO,
-              gpu_client_id_, cache_dir));
-    }
-
-    base::FilePath gr_cache_dir =
-        GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
-    if (!gr_cache_dir.empty()) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
-              gr_cache_dir));
-    }
-  }
-}
+          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {}
 
 BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -470,22 +445,6 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
   timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
                  base::BindOnce(&DumpGpuStackOnProcessThread));
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-// static
-void BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO(
-    int gpu_client_id,
-    const base::FilePath& cache_dir) {
-  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(gpu_client_id, cache_dir);
-  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(
-      gpu::kDisplayCompositorClientId, cache_dir);
-}
-
-// static
-void BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO(
-    const base::FilePath& cache_dir) {
-  GetGpuDiskCacheFactorySingleton()->SetCacheInfo(gpu::kGrShaderCacheClientId,
-                                                  cache_dir);
 }
 
 }  // namespace content

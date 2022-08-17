@@ -106,7 +106,6 @@ using CookieDeletionFilterPtr = network::mojom::CookieDeletionFilterPtr;
 namespace content {
 namespace {
 
-const int kDefaultClientId = 42;
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
 
@@ -756,16 +755,16 @@ class StoragePartitionShaderClearTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(new TestBrowserContext()) {
     InitGpuDiskCacheFactorySingleton();
-    GetGpuDiskCacheFactorySingleton()->SetCacheInfo(
-        kDefaultClientId,
-        browser_context()->GetDefaultStoragePartition()->GetPath());
-    cache_ = GetGpuDiskCacheFactorySingleton()->Get(kDefaultClientId);
+
+    gpu::GpuDiskCacheType type = gpu::GpuDiskCacheType::kGlShaders;
+    auto handle = GetGpuDiskCacheFactorySingleton()->GetCacheHandle(
+        type, browser_context()->GetDefaultStoragePartition()->GetPath().Append(
+                  gpu::GetGpuDiskCacheSubdir(type)));
+    cache_ =
+        GetGpuDiskCacheFactorySingleton()->Create(handle, base::DoNothing());
   }
 
-  ~StoragePartitionShaderClearTest() override {
-    cache_ = nullptr;
-    GetGpuDiskCacheFactorySingleton()->RemoveCacheInfo(kDefaultClientId);
-  }
+  ~StoragePartitionShaderClearTest() override { cache_ = nullptr; }
 
   void InitCache() {
     net::TestCompletionCallback available_cb;

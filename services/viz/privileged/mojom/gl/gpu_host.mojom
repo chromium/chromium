@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
@@ -61,9 +62,10 @@ interface GpuHost {
   SetChildSurface(gpu.mojom.SurfaceHandle parent,
                   gpu.mojom.SurfaceHandle child);
 
-  StoreShaderToDisk(int32 client_id,
-                    string key,
-                    mojo_base.mojom.ByteString shader);
+  // Tells the GPU host to store the blob on the given cache handle.
+  StoreBlobToDisk(gpu.mojom.GpuDiskCacheHandle cache_handle,
+                  string key,
+                  mojo_base.mojom.ByteString blob);
 
   RecordLogMessage(int32 severity, string header, string message);
 };

@@ -295,16 +295,6 @@ const char kSiteProcessMapKeyName[] = "content_site_process_map";
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
 
-void CacheShaderInfo(int32_t id, base::FilePath path) {
-  if (GetGpuDiskCacheFactorySingleton())
-    GetGpuDiskCacheFactorySingleton()->SetCacheInfo(id, path);
-}
-
-void RemoveShaderInfo(int32_t id) {
-  if (GetGpuDiskCacheFactorySingleton())
-    GetGpuDiskCacheFactorySingleton()->RemoveCacheInfo(id);
-}
-
 // the global list of all renderer processes
 base::IDMap<RenderProcessHost*>& GetAllHosts() {
   static base::NoDestructor<base::IDMap<RenderProcessHost*>> s_all_hosts;
@@ -1521,12 +1511,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   // Initialize |child_process_activity_time_| to a reasonable value.
   mark_child_process_activity_time();
 
-  if (!GetBrowserContext()->IsOffTheRecord() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
-    CacheShaderInfo(GetID(), storage_partition_impl_->GetPath());
-  }
-
   // This instance of PushMessagingManager is only used from clients
   // bound to service workers (i.e. PushProvider), since frame-bound
   // clients will rely on BrowserInterfaceBroker instead. Therefore,
@@ -1544,6 +1528,22 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   gpu_client_.reset(
       new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(), id,
                          tracing_id, GetUIThreadTaskRunner({})));
+
+  // Set cache information after the GpuClient has been initialized. Note that
+  // we also check if the factory is initialized because in tests the factory
+  // may never have been initialized properly.
+  if (!GetBrowserContext()->IsOffTheRecord() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGpuShaderDiskCache)) {
+    if (auto* cache_factory = GetGpuDiskCacheFactorySingleton()) {
+      for (const gpu::GpuDiskCacheType type : gpu::kGpuDiskCacheTypes) {
+        auto handle = cache_factory->GetCacheHandle(
+            type, storage_partition_impl_->GetPath().Append(
+                      gpu::GetGpuDiskCacheSubdir(type)));
+        gpu_client_->SetDiskCacheHandle(handle);
+      }
+    }
+  }
 }
 
 // static
@@ -1620,9 +1620,9 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
 
   UnregisterHost(GetID());
 
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
-    RemoveShaderInfo(GetID());
+  // Remove the cache handles for the client at teardown if relevant.
+  if (GetGpuDiskCacheFactorySingleton()) {
+    gpu_client_->RemoveDiskCacheHandles();
   }
 
   // "Cleanup in progress"

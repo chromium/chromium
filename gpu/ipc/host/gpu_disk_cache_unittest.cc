@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -14,7 +15,6 @@
 namespace gpu {
 namespace {
 
-const int kDefaultClientId = 42;
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
 const char kCacheKey2[] = "key2";
@@ -23,7 +23,7 @@ const char kCacheValue2[] = "cached value2";
 }  // namespace
 
 class GpuDiskCacheTest : public testing::Test {
- public:
+ protected:
   GpuDiskCacheTest() = default;
 
   GpuDiskCacheTest(const GpuDiskCacheTest&) = delete;
@@ -35,15 +35,13 @@ class GpuDiskCacheTest : public testing::Test {
 
   void InitCache() {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    factory_.SetCacheInfo(kDefaultClientId, cache_path());
+    handle_ =
+        factory_.GetCacheHandle(GpuDiskCacheType::kGlShaders, cache_path());
   }
 
   GpuDiskCacheFactory* factory() { return &factory_; }
 
- private:
   void TearDown() override {
-    factory_.RemoveCacheInfo(kDefaultClientId);
-
     // Run all pending tasks before destroying TaskEnvironment. Otherwise,
     // SimpleEntryImpl instances bound to pending tasks are destroyed in an
     // incorrect state (see |state_| DCHECK in ~SimpleEntryImpl).
@@ -53,12 +51,13 @@ class GpuDiskCacheTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   GpuDiskCacheFactory factory_;
+  GpuDiskCacheHandle handle_;
 };
 
 TEST_F(GpuDiskCacheTest, ClearsCache) {
   InitCache();
 
-  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
   ASSERT_TRUE(cache.get() != nullptr);
 
   net::TestCompletionCallback available_cb;
@@ -82,7 +81,7 @@ TEST_F(GpuDiskCacheTest, ClearsCache) {
 
 TEST_F(GpuDiskCacheTest, ClearByPathTriggersCallback) {
   InitCache();
-  factory()->Get(kDefaultClientId)->Cache(kCacheKey, kCacheValue);
+  factory()->Create(handle_)->Cache(kCacheKey, kCacheValue);
   net::TestCompletionCallback test_callback;
   factory()->ClearByPath(
       cache_path(), base::Time(), base::Time::Max(),
@@ -104,7 +103,7 @@ TEST_F(GpuDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   InitCache();
 
   // Create a cache and wait for it to open.
-  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
   ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
@@ -112,14 +111,13 @@ TEST_F(GpuDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   EXPECT_EQ(0, cache->Size());
 
   // Start writing an entry to the cache but delete it before the backend has
-  // finished opening the entry. There is a race here, so this usually (but
-  // not always) crashes if there is a problem.
+  // finished opening the entry. There is a race here, so this usually (but not
+  // always) crashes if there is a problem.
   cache->Cache(kCacheKey, kCacheValue);
   cache = nullptr;
 
-  // Open a new cache (to pass time on the cache thread) and verify all is
-  // well.
-  cache = factory()->Get(kDefaultClientId);
+  // Open a new cache (to pass time on the cache thread) and verify all is well.
+  cache = factory()->Create(handle_);
   ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb2;
   int rv2 = cache->SetAvailableCallback(available_cb2.callback());
@@ -130,7 +128,7 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   InitCache();
 
   // Create a cache and wait for it to open.
-  scoped_refptr<GpuDiskCache> cache = factory()->Get(kDefaultClientId);
+  scoped_refptr<GpuDiskCache> cache = factory()->Create(handle_);
   ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
@@ -148,13 +146,13 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
 
   // Close, re-open, and verify that two entries were loaded.
   cache = nullptr;
-  cache = factory()->Get(kDefaultClientId);
-  ASSERT_TRUE(cache.get() != nullptr);
   int loaded_calls = 0;
-  cache->SetBlobLoadedCallback(base::BindLambdaForTesting(
-      [&loaded_calls](const std::string& key, const std::string& value) {
-        ++loaded_calls;
-      }));
+  cache = factory()->Create(
+      handle_, base::BindLambdaForTesting(
+                   [&loaded_calls](
+                       const GpuDiskCacheHandle& handle, const std::string& key,
+                       const std::string& value) { ++loaded_calls; }));
+  ASSERT_TRUE(cache.get() != nullptr);
   net::TestCompletionCallback available_cb2;
   int rv2 = cache->SetAvailableCallback(available_cb2.callback());
   ASSERT_EQ(net::OK, available_cb2.GetResult(rv2));

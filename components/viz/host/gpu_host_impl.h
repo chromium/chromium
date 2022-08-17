@@ -26,6 +26,7 @@
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_domain_guilt.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -181,6 +182,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                            bool sync,
                            EstablishChannelCallback callback);
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
+  void SetChannelDiskCacheHandle(int client_id,
+                                 const gpu::GpuDiskCacheHandle& handle);
+  void RemoveChannelDiskCacheHandles(int client_id);
   void CloseChannel(int client_id);
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -217,11 +221,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 
   std::string GetShaderPrefixKey();
 
-  void LoadedShader(int32_t client_id,
-                    const std::string& key,
-                    const std::string& data);
-
-  void CreateChannelCache(int32_t client_id);
+  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                  const std::string& key,
+                  const std::string& data);
 
   void OnChannelEstablished(int client_id,
                             bool sync,
@@ -255,9 +257,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void SetChildSurface(gpu::SurfaceHandle parent,
                        gpu::SurfaceHandle child) override;
 #endif
-  void StoreShaderToDisk(int32_t client_id,
-                         const std::string& key,
-                         const std::string& shader) override;
+  void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
+                       const std::string& key,
+                       const std::string& blob) override;
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
@@ -295,8 +297,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   // are guilty, and block automatic execution of 3D content from those domains.
   std::multiset<GURL> urls_with_live_offscreen_contexts_;
 
-  std::map<int32_t, scoped_refptr<gpu::GpuDiskCache>>
-      client_id_to_shader_cache_;
+  std::multimap<int32_t, scoped_refptr<gpu::GpuDiskCache>> client_id_to_caches_;
   std::string shader_prefix_key_;
 
   // These are the channel requests that we have already sent to the GPU

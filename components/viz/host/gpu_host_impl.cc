@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -177,13 +178,13 @@ void GpuHostImpl::OnProcessCrashed() {
   if (activity_flags_.IsFlagSet(
           gpu::ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY)) {
     auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
-    for (auto& [client_id, _] : client_id_to_shader_cache_) {
+    for (auto& [_, cache] : client_id_to_caches_) {
       // This call will temporarily extend the lifetime of the cache (kept
       // alive in the factory), and may drop loads of cached shader binaries if
       // it takes a while to complete. As we are intentionally dropping all
       // binaries, this behavior is fine.
-      gpu_disk_cache_factory->ClearByClientId(
-          client_id, base::Time(), base::Time::Max(), base::DoNothing());
+      gpu_disk_cache_factory->ClearByCache(
+          cache, base::Time(), base::Time::Max(), base::DoNothing());
     }
   }
 }
@@ -248,9 +249,6 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     return;
   }
 
-  bool cache_shaders_on_disk =
-      delegate_->GetGpuDiskCacheFactory()->Get(client_id) != nullptr;
-
   channel_requests_[client_id] = std::move(callback);
   if (sync) {
     mojo::ScopedMessagePipeHandle channel_handle;
@@ -258,26 +256,56 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     gpu::GpuFeatureInfo gpu_feature_info;
     {
       mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-      gpu_service_remote_->EstablishGpuChannel(
-          client_id, client_tracing_id, is_gpu_host, cache_shaders_on_disk,
-          &channel_handle, &gpu_info, &gpu_feature_info);
+      gpu_service_remote_->EstablishGpuChannel(client_id, client_tracing_id,
+                                               is_gpu_host, &channel_handle,
+                                               &gpu_info, &gpu_feature_info);
     }
     OnChannelEstablished(client_id, true, std::move(channel_handle), gpu_info,
                          gpu_feature_info);
   } else {
     gpu_service_remote_->EstablishGpuChannel(
-        client_id, client_tracing_id, is_gpu_host, cache_shaders_on_disk,
+        client_id, client_tracing_id, is_gpu_host,
         base::BindOnce(&GpuHostImpl::OnChannelEstablished,
                        weak_ptr_factory_.GetWeakPtr(), client_id, false));
   }
 
-  if (!params_.disable_gpu_shader_disk_cache)
-    CreateChannelCache(client_id);
+  // The gpu host channel uses the same cache as the compositor client.
+  if (is_gpu_host) {
+    SetChannelDiskCacheHandle(client_id,
+                              gpu::kDisplayCompositorGpuDiskCacheHandle);
+  }
 }
 
 void GpuHostImpl::SetChannelClientPid(int client_id,
                                       base::ProcessId client_pid) {
   gpu_service_remote_->SetChannelClientPid(client_id, client_pid);
+}
+
+void GpuHostImpl::SetChannelDiskCacheHandle(
+    int client_id,
+    const gpu::GpuDiskCacheHandle& handle) {
+  if (!params_.disable_gpu_shader_disk_cache) {
+    return;
+  }
+
+  scoped_refptr<gpu::GpuDiskCache> cache =
+      delegate_->GetGpuDiskCacheFactory()->Get(handle);
+  if (!cache) {
+    // Create the cache if necessary and save a reference.
+    cache = delegate_->GetGpuDiskCacheFactory()->Create(
+        handle, base::BindRepeating(&GpuHostImpl::LoadedBlob,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    if (!cache) {
+      return;
+    }
+  }
+
+  client_id_to_caches_.emplace(client_id, cache);
+  gpu_service_remote_->SetChannelDiskCacheHandle(client_id, handle);
+}
+
+void GpuHostImpl::RemoveChannelDiskCacheHandles(int client_id) {
+  client_id_to_caches_.erase(client_id);
 }
 
 void GpuHostImpl::CloseChannel(int client_id) {
@@ -384,34 +412,28 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
   return shader_prefix_key_;
 }
 
-void GpuHostImpl::LoadedShader(int32_t client_id,
-                               const std::string& key,
-                               const std::string& data) {
+void GpuHostImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                             const std::string& key,
+                             const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string prefix = GetShaderPrefixKey();
-  bool prefix_ok = !key.compare(0, prefix.length(), prefix);
-  UMA_HISTOGRAM_BOOLEAN("GPU.ShaderLoadPrefixOK", prefix_ok);
-  if (prefix_ok) {
-    // Remove the prefix from the key before load.
-    std::string key_no_prefix = key.substr(prefix.length() + 1);
-    gpu_service_remote_->LoadedShader(client_id, key_no_prefix, data);
+  switch (gpu::GetHandleType(handle)) {
+    case gpu::GpuDiskCacheType::kGlShaders: {
+      std::string prefix = GetShaderPrefixKey();
+      bool prefix_ok = !key.compare(0, prefix.length(), prefix);
+      UMA_HISTOGRAM_BOOLEAN("GPU.ShaderLoadPrefixOK", prefix_ok);
+      if (prefix_ok) {
+        // Remove the prefix from the key before load.
+        std::string key_no_prefix = key.substr(prefix.length() + 1);
+        gpu_service_remote_->LoadedBlob(handle, key_no_prefix, data);
+      }
+      break;
+    }
+    case gpu::GpuDiskCacheType::kDawnWebGPU: {
+      gpu_service_remote_->LoadedBlob(handle, key, data);
+      break;
+    }
   }
-}
-
-void GpuHostImpl::CreateChannelCache(int32_t client_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("gpu", "GpuHostImpl::CreateChannelCache");
-
-  scoped_refptr<gpu::GpuDiskCache> cache =
-      delegate_->GetGpuDiskCacheFactory()->Get(client_id);
-  if (!cache)
-    return;
-
-  cache->SetBlobLoadedCallback(base::BindRepeating(
-      &GpuHostImpl::LoadedShader, weak_ptr_factory_.GetWeakPtr(), client_id));
-
-  client_id_to_shader_cache_[client_id] = cache;
 }
 
 void GpuHostImpl::OnChannelEstablished(
@@ -471,8 +493,10 @@ void GpuHostImpl::DidInitialize(
                            gpu_feature_info_for_hardware_gpu, gpu_extra_info);
 
   if (!params_.disable_gpu_shader_disk_cache) {
-    CreateChannelCache(gpu::kDisplayCompositorClientId);
-    CreateChannelCache(gpu::kGrShaderCacheClientId);
+    SetChannelDiskCacheHandle(gpu::kDisplayCompositorClientId,
+                              gpu::kDisplayCompositorGpuDiskCacheHandle);
+    SetChannelDiskCacheHandle(gpu::kGrShaderCacheClientId,
+                              gpu::kGrShaderGpuDiskCacheHandle);
   }
 }
 
@@ -499,7 +523,7 @@ void GpuHostImpl::DidDestroyOffscreenContext(const GURL& url) {
 
 void GpuHostImpl::DidDestroyChannel(int32_t client_id) {
   TRACE_EVENT0("gpu", "GpuHostImpl::DidDestroyChannel");
-  client_id_to_shader_cache_.erase(client_id);
+  client_id_to_caches_.erase(client_id);
 }
 
 void GpuHostImpl::DidDestroyAllChannels() {
@@ -579,16 +603,27 @@ void GpuHostImpl::SetChildSurface(gpu::SurfaceHandle parent,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void GpuHostImpl::StoreShaderToDisk(int32_t client_id,
-                                    const std::string& key,
-                                    const std::string& shader) {
-  TRACE_EVENT0("gpu", "GpuHostImpl::StoreShaderToDisk");
-  auto iter = client_id_to_shader_cache_.find(client_id);
-  // If the cache doesn't exist then this is an off the record profile.
-  if (iter == client_id_to_shader_cache_.end())
+void GpuHostImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
+                                  const std::string& key,
+                                  const std::string& blob) {
+  TRACE_EVENT0("gpu", "GpuHostImpl::StoreBlobToDisk");
+  scoped_refptr<gpu::GpuDiskCache> cache =
+      delegate_->GetGpuDiskCacheFactory()->Get(handle);
+  if (!cache) {
     return;
-  std::string prefix = GetShaderPrefixKey();
-  iter->second->Cache(prefix + ":" + key, shader);
+  }
+
+  switch (GetHandleType(handle)) {
+    case gpu::GpuDiskCacheType::kGlShaders: {
+      std::string prefix = GetShaderPrefixKey();
+      cache->Cache(base::StrCat({prefix, ":", key}), blob);
+      break;
+    }
+    case gpu::GpuDiskCacheType::kDawnWebGPU: {
+      cache->Cache(key, blob);
+      break;
+    }
+  }
 }
 
 void GpuHostImpl::RecordLogMessage(int32_t severity,

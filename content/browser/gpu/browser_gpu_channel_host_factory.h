@@ -74,10 +74,6 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
   void GpuChannelEstablished(EstablishRequest* request);
   void RestartTimeout();
 
-  static void InitializeShaderDiskCacheOnIO(int gpu_client_id,
-                                            const base::FilePath& cache_dir);
-  static void InitializeGrShaderDiskCacheOnIO(const base::FilePath& cache_dir);
-
   const int gpu_client_id_;
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;

@@ -107,10 +107,12 @@ class TestGpuService : public mojom::GpuService {
   void EstablishGpuChannel(int32_t client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
-                           bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override {}
   void SetChannelClientPid(int32_t client_id,
                            base::ProcessId client_pid) override {}
+  void SetChannelDiskCacheHandle(
+      int32_t client_id,
+      const gpu::GpuDiskCacheHandle& handle) override {}
 
   void CloseChannel(int32_t client_id) override {}
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -190,9 +192,9 @@ class TestGpuService : public mojom::GpuService {
   void RequestDXGIInfo(RequestDXGIInfoCallback callback) override {}
 #endif
 
-  void LoadedShader(int32_t client_id,
-                    const std::string& key,
-                    const std::string& data) override {}
+  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                  const std::string& key,
+                  const std::string& data) override {}
 
   void WakeUpGpu() override {}
 

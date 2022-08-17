@@ -30,6 +30,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -140,10 +141,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void EstablishGpuChannel(int32_t client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
-                           bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override;
   void SetChannelClientPid(int32_t client_id,
                            base::ProcessId client_pid) override;
+  void SetChannelDiskCacheHandle(
+      int32_t client_id,
+      const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -202,9 +205,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #if BUILDFLAG(IS_WIN)
   void RequestDXGIInfo(RequestDXGIInfoCallback callback) override;
 #endif
-  void LoadedShader(int32_t client_id,
-                    const std::string& key,
-                    const std::string& data) override;
+  void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
+                  const std::string& key,
+                  const std::string& data) override;
   void WakeUpGpu() override;
   void GpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void DisplayAdded() override;
@@ -244,9 +247,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                       const GURL& active_url) override;
   void GetDawnInfo(GetDawnInfoCallback callback) override;
 
-  void StoreShaderToDisk(int client_id,
-                         const std::string& key,
-                         const std::string& shader) override;
+  void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
+                       const std::string& key,
+                       const std::string& shader) override;
   // Attempts to atomically shut down the process but only if not running in
   // host process. An error message will be logged.
   void MaybeExitOnContextLost() override;

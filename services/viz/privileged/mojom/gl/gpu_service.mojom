@@ -20,6 +20,7 @@ import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
 import "gpu/ipc/common/dx_diag_node.mojom";
+import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/gpu_peak_memory.mojom";
@@ -49,8 +50,7 @@ interface GpuService {
   [Sync, NoInterrupt]
   EstablishGpuChannel(int32 client_id,
                       uint64 client_tracing_id,
-                      bool is_gpu_host,
-                      bool cache_shaders_on_disk)
+                      bool is_gpu_host)
       => (handle<message_pipe>? channel_handle,
           gpu.mojom.GpuInfo gpu_info,
           gpu.mojom.GpuFeatureInfo gpu_feature_info);
@@ -59,6 +59,11 @@ interface GpuService {
   // GpuChannel established by a prior EstablishGpuChannel() call with the given
   // `client_id`.
   SetChannelClientPid(int32 client_id, mojo_base.mojom.ProcessId client_pid);
+
+  // Tells the GPU service an assigned cache handle. Note that for each type of
+  // handle per client only one unique handle is expected.
+  SetChannelDiskCacheHandle(int32 client_id,
+                            gpu.mojom.GpuDiskCacheHandle cache_handle);
 
   // Tells the GPU process to close the channel identified by |client_id|.
   // If no channel can be identified, do nothing.
@@ -157,10 +162,13 @@ interface GpuService {
   [EnableIf=is_win]
   RequestDXGIInfo() => (gfx.mojom.DXGIInfo dxgi_info);
 
-  // Notify GPU that a shader program was loaded from disk. Key is an
-  // SHA-1 hash, and data a binary blob with serialized program info.
-  // Note that this method is used only from a trusted process.
-  LoadedShader(int32 client_id, string key, mojo_base.mojom.ByteString data);
+  // Notify GPU that a cached blob was loaded from disk for the particular
+  // handle. The handle is used to map 1:1 to an actual file path on disk in the
+  // host since multiple clients may be using the same physical disk path. Note
+  // that this method is used only from a trusted process.
+  LoadedBlob(gpu.mojom.GpuDiskCacheHandle cache_handle,
+             string key,
+             mojo_base.mojom.ByteString data);
 
   // Tells GPU to wake up the GPU because we're about to draw.
   WakeUpGpu();

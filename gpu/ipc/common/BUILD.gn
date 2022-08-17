@@ -78,6 +78,8 @@ source_set("ipc_common_sources") {
   sources = [
     "command_buffer_id.h",
     "gpu_client_ids.h",
+    "gpu_disk_cache_type.cc",
+    "gpu_disk_cache_type.h",
     "gpu_memory_buffer_impl.cc",
     "gpu_memory_buffer_impl.h",
     "gpu_memory_buffer_impl_shared_memory.cc",
@@ -313,6 +315,7 @@ mojom("interfaces") {
     "context_result.mojom",
     "device_perf_info.mojom",
     "dx_diag_node.mojom",
+    "gpu_disk_cache_type.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
     "gpu_peak_memory.mojom",
@@ -530,6 +533,34 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "vulkan_ycbcr_info_mojom_traits.h" ]
+    },
+    {
+      types = [
+        # Each specific handle is declared here to ensure that nullable is set.
+        {
+          mojom = "gpu.mojom.GpuDiskCacheGlShaderHandle"
+          cpp = "::gpu::GpuDiskCacheGlShaderHandle"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "gpu.mojom.GpuDiskCacheDawnWebGPUHandle"
+          cpp = "::gpu::GpuDiskCacheDawnWebGPUHandle"
+          nullable_is_same_type = true
+        },
+
+        # General types that are the ones generally exposed in interfaces.
+        {
+          mojom = "gpu.mojom.GpuDiskCacheHandle"
+          cpp = "::gpu::GpuDiskCacheHandle"
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "gpu.mojom.GpuDiskCacheType"
+          cpp = "::gpu::GpuDiskCacheType"
+        },
+      ]
+      traits_sources = [ "gpu_disk_cache_type_mojom_traits.cc" ]
+      traits_headers = [ "gpu_disk_cache_type_mojom_traits.h" ]
     },
   ]
 

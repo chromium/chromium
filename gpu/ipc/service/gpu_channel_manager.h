@@ -34,6 +34,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -114,14 +115,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   GpuChannel* EstablishChannel(const base::UnguessableToken& channel_token,
                                int client_id,
                                uint64_t client_tracing_id,
-                               bool is_gpu_host,
-                               bool cache_shaders_on_disk);
+                               bool is_gpu_host);
 
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
+  void SetChannelDiskCacheHandle(int client_id,
+                                 const gpu::GpuDiskCacheHandle& handle);
 
-  void PopulateShaderCache(int32_t client_id,
-                           const std::string& key,
-                           const std::string& program);
+  void PopulateCache(const gpu::GpuDiskCacheHandle& handle,
+                     const std::string& key,
+                     const std::string& program);
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id,
                               const SyncToken& sync_token);

@@ -7,15 +7,17 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 #include <unordered_map>
 
+#include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -35,10 +37,6 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   GpuDiskCache(const GpuDiskCache&) = delete;
   GpuDiskCache& operator=(const GpuDiskCache&) = delete;
 
-  void SetBlobLoadedCallback(const BlobLoadedCallback& callback) {
-    blob_loaded_callback_ = callback;
-  }
-
   // Store the |blob| into the cache under |key|.
   void Cache(const std::string& key, const std::string& blob);
 
@@ -47,8 +45,8 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   // The return value is a net error code. If this method returns
   // ERR_IO_PENDING, the |completion_callback| will be invoked when the
   // operation completes.
-  int Clear(const base::Time begin_time,
-            const base::Time end_time,
+  int Clear(base::Time begin_time,
+            base::Time end_time,
             net::CompletionOnceCallback completion_callback);
 
   // Sets a callback for when the cache is available. If the cache is
@@ -76,7 +74,9 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   friend class GpuDiskCacheReadHelper;
   friend class GpuDiskCacheFactory;
 
-  GpuDiskCache(GpuDiskCacheFactory* factory, const base::FilePath& cache_path);
+  GpuDiskCache(GpuDiskCacheFactory* factory,
+               const base::FilePath& cache_path,
+               const BlobLoadedCallback& blob_loaded_cb);
   ~GpuDiskCache();
 
   void Init();
@@ -93,7 +93,7 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   bool is_initialized_ = false;
   net::CompletionOnceCallback available_callback_;
   net::CompletionOnceCallback cache_complete_callback_;
-  BlobLoadedCallback blob_loaded_callback_;
+  BlobLoadedCallback blob_loaded_cb_;
 
   std::unique_ptr<disk_cache::Backend> backend_;
 
@@ -106,37 +106,53 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
 // create one per profile directory.
 class GpuDiskCacheFactory {
  public:
-  GpuDiskCacheFactory();
+  using HandleToPathMap = base::flat_map<GpuDiskCacheHandle, base::FilePath>;
+  using BlobLoadedForCacheCallback = base::RepeatingCallback<
+      void(const GpuDiskCacheHandle&, const std::string&, const std::string&)>;
+
+  // Constructor allows passing in reserved handles and their corresponding
+  // paths.
+  explicit GpuDiskCacheFactory(
+      const HandleToPathMap& reserved_handles = HandleToPathMap());
 
   GpuDiskCacheFactory(const GpuDiskCacheFactory&) = delete;
   GpuDiskCacheFactory& operator=(const GpuDiskCacheFactory&) = delete;
 
   ~GpuDiskCacheFactory();
 
+  // Clear the given gpu disk |cache|. This supports unbounded deletes in
+  // either direction by using null Time values for either |begin_time| or
+  // |end_time|. The |callback| will be executed when the clear is complete.
+  void ClearByCache(scoped_refptr<GpuDiskCache> cache,
+                    base::Time begin_time,
+                    base::Time end_time,
+                    base::OnceClosure callback);
+
   // Clear the gpu disk cache for the given |path|. This supports unbounded
   // deletes in either direction by using null Time values for either
   // |begin_time| or |end_time|. The |callback| will be executed when the
   // clear is complete.
   void ClearByPath(const base::FilePath& path,
-                   const base::Time& begin_time,
-                   const base::Time& end_time,
+                   base::Time begin_time,
+                   base::Time end_time,
                    base::OnceClosure callback);
 
-  // Same as ClearByPath, but looks up the cache by |client_id|. The |callback|
-  // will be executed when the clear is complete.
-  void ClearByClientId(int32_t client_id,
-                       const base::Time& begin_time,
-                       const base::Time& end_time,
-                       base::OnceClosure callback);
+  // Looks up a |path| and returns a cache handle for it (registering it if
+  // necessary) for the given |type|.
+  GpuDiskCacheHandle GetCacheHandle(GpuDiskCacheType type,
+                                    const base::FilePath& path);
 
-  // Retrieve the gpu disk cache for the provided |client_id|.
-  scoped_refptr<GpuDiskCache> Get(int32_t client_id);
+  // Retrieve the gpu disk cache with the given |handle| if the handle has an
+  // associated path. Returns nullptr if there is no associated path or the
+  // cache was never explicitly created.
+  scoped_refptr<GpuDiskCache> Get(const GpuDiskCacheHandle& handle);
 
-  // Set the |path| to be used for the disk cache for |client_id|.
-  void SetCacheInfo(int32_t client_id, const base::FilePath& path);
-
-  // Remove the path mapping for |client_id|.
-  void RemoveCacheInfo(int32_t client_id);
+  // Creates an non-existing gpu cache given a handle that was previously
+  // registered via GetCacheHandle. Returns nullptr if there was no associated
+  // path.
+  scoped_refptr<GpuDiskCache> Create(
+      const GpuDiskCacheHandle& handle,
+      const BlobLoadedForCacheCallback& blob_loaded_cb = base::DoNothing());
 
   // Set the provided |cache| into the cache map for the given |path|.
   void AddToCache(const base::FilePath& path, GpuDiskCache* cache);
@@ -147,21 +163,36 @@ class GpuDiskCacheFactory {
  private:
   friend class GpuDiskCacheClearHelper;
 
-  scoped_refptr<GpuDiskCache> GetByPath(const base::FilePath& path);
-  void CacheCleared(const base::FilePath& path);
+  scoped_refptr<GpuDiskCache> GetOrCreateByPath(
+      const base::FilePath& path,
+      const GpuDiskCache::BlobLoadedCallback& blob_loaded_cb =
+          base::DoNothing());
+
+  void CacheCleared(GpuDiskCache* cache);
 
   THREAD_CHECKER(thread_checker_);
 
-  using PathToCacheMap = std::map<base::FilePath, GpuDiskCache*>;
-  PathToCacheMap gpu_cache_map_;
+  // Implementation of bi-directional mapping from path to handle and handle to
+  // path for both way lookup. Entries in these maps are removed when the last
+  // scoped_ptr of the respective cache is destroyed, unless the handle is a
+  // special reserved handle, in which case we do not remove the entry.
+  HandleToPathMap handle_to_path_map_;
+  using PathToHandleMap =
+      base::flat_map<base::FilePath, gpu::GpuDiskCacheHandle>;
+  PathToHandleMap path_to_handle_map_;
 
-  using ClientIdToPathMap = std::map<int32_t, base::FilePath>;
-  ClientIdToPathMap client_id_to_path_map_;
+  using PathToCacheMap = base::flat_map<base::FilePath, GpuDiskCache*>;
+  PathToCacheMap gpu_cache_map_;
 
   using ClearHelperQueue =
       base::queue<std::unique_ptr<GpuDiskCacheClearHelper>>;
-  using PathToClearHelperQueueMap = std::map<base::FilePath, ClearHelperQueue>;
-  PathToClearHelperQueueMap gpu_clear_map_;
+  using CacheToClearHelperQueueMap =
+      base::flat_map<GpuDiskCache*, ClearHelperQueue>;
+  CacheToClearHelperQueueMap gpu_clear_map_;
+
+  // Handles are all int32_t types underneath so we can allocate them all via
+  // this incrementing internal counter.
+  int32_t next_available_handle_ = 0;
 };
 
 }  // namespace gpu

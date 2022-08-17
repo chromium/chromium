@@ -89,6 +89,30 @@ void GpuClient::SetClientPid(base::ProcessId client_pid) {
     gpu_host->SetChannelClientPid(client_id_, client_pid);
 }
 
+void GpuClient::SetDiskCacheHandle(const gpu::GpuDiskCacheHandle& handle) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::SetDiskCacheHandle,
+                                          weak_factory_.GetWeakPtr(), handle));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->SetChannelDiskCacheHandle(client_id_, handle);
+}
+
+void GpuClient::RemoveDiskCacheHandles() {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::RemoveDiskCacheHandles,
+                                          weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->RemoveChannelDiskCacheHandles(client_id_);
+}
+
 void GpuClient::SetConnectionErrorHandler(
     ConnectionErrorHandlerClosure connection_error_handler) {
   connection_error_handler_ = std::move(connection_error_handler);

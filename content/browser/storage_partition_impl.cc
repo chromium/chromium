@@ -2506,11 +2506,16 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         GetGpuDiskCacheFactorySingleton();
     // May be null in tests where it is difficult to plumb through a test
     // storage partition.
-    if (gpu_cache_factory) {
-      gpu_cache_factory->ClearByPath(
-          path, begin, end,
-          base::BindOnce(&ClearedGpuCache, CreateTaskCompletionClosure(
-                                               TracingDataType::kGpuCache)));
+    if (!path.empty() && gpu_cache_factory) {
+      // Clear the path for all the different GPU cache sub-types.
+      base::RepeatingClosure barrier = base::BarrierClosure(
+          gpu::kGpuDiskCacheTypes.size(),
+          CreateTaskCompletionClosure(TracingDataType::kGpuCache));
+      for (gpu::GpuDiskCacheType type : gpu::kGpuDiskCacheTypes) {
+        gpu_cache_factory->ClearByPath(
+            path.Append(gpu::GetGpuDiskCacheSubdir(type)), begin, end,
+            base::BindOnce(&ClearedGpuCache, barrier));
+      }
     }
   }
 

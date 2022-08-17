@@ -15,6 +15,7 @@
 #include "components/viz/host/gpu_client_delegate.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/host/viz_host_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
@@ -46,6 +47,10 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   // Sets the PID of the client that will use this channel once the PID is
   // known.
   void SetClientPid(base::ProcessId client_pid);
+
+  // Sets/removes disk cache handle(s) that can be used by this channel.
+  void SetDiskCacheHandle(const gpu::GpuDiskCacheHandle& handle);
+  void RemoveDiskCacheHandles();
 
   void SetConnectionErrorHandler(
       ConnectionErrorHandlerClosure connection_error_handler);

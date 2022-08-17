@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/shared_image_stub.h"
@@ -139,6 +140,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // Called to remove a listener for a particular message routing ID.
   void RemoveRoute(int32_t route_id);
 
+  void RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle);
   void CacheShader(const std::string& key, const std::string& shader);
 
   uint64_t GetMemoryUsage() const;
@@ -253,6 +255,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   // Map of stream id to scheduler sequence id.
   base::flat_map<int32_t, SequenceId> stream_sequences_;
+
+  // Map of disk cache type to the handle.
+  base::flat_map<gpu::GpuDiskCacheType, gpu::GpuDiskCacheHandle> caches_;
 
   // The lifetime of objects of this class is managed by a GpuChannelManager.
   // The GpuChannelManager destroy all the GpuChannels that they own when they
