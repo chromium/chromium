@@ -80,9 +80,10 @@ uint32_t FindFormsDifferences(const FormData& lhs, const FormData& rhs) {
     if (lhs_field.form_control_type != rhs_field.form_control_type)
       differences_bitmask |= PasswordFormMetricsRecorder::kFormControlTypes;
 
-    if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute)
+    if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute) {
       differences_bitmask |=
           PasswordFormMetricsRecorder::kAutocompleteAttributes;
+    }
 
     if (lhs_field.name != rhs_field.name)
       differences_bitmask |= PasswordFormMetricsRecorder::kFormFieldNames;
@@ -1004,9 +1005,10 @@ std::unique_ptr<PasswordForm> PasswordFormManager::ParseFormAndMakeLogging(
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     logger.LogFormData(Logger::STRING_FORM_PARSING_INPUT, form);
-    if (password_form)
+    if (password_form) {
       logger.LogPasswordForm(Logger::STRING_FORM_PARSING_OUTPUT,
                              *password_form);
+    }
   }
   return password_form;
 }
