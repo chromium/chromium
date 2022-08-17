@@ -207,7 +207,7 @@ void IdleDetector::Update(mojom::blink::IdleStatePtr state) {
 
   state_ = std::move(state);
 
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+  DispatchEvent(*Event::Create(event_type_names::kChange), "IdleDetector::Update");
 }
 
 void IdleDetector::Trace(Visitor* visitor) const {

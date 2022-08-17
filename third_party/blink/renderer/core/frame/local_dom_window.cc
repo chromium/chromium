@@ -202,7 +202,7 @@ void LocalDOMWindow::AcceptLanguagesChanged() {
   if (navigator_)
     navigator_->SetLanguagesDirty();
 
-  DispatchEvent(*Event::Create(event_type_names::kLanguagechange));
+  DispatchEvent(*Event::Create(event_type_names::kLanguagechange), "LocalDOMWindow::AcceptLanguagesChanged");
 }
 
 ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
@@ -734,7 +734,7 @@ void LocalDOMWindow::EnqueuePopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object) {
   // FIXME: https://bugs.webkit.org/show_bug.cgi?id=36202 Popstate event needs
   // to fire asynchronously
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()));
+  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()), "LocalDOMWindow::EnqueuePopstateEvent");
 }
 
 void LocalDOMWindow::StatePopped(
@@ -844,7 +844,7 @@ void LocalDOMWindow::SendOrientationChangeEvent() {
 
   for (LocalFrame* frame : frames) {
     frame->DomWindow()->DispatchEvent(
-        *Event::Create(event_type_names::kOrientationchange));
+        *Event::Create(event_type_names::kOrientationchange), "LocalDOMWindow::SendOrientationChangeEvent");
   }
 }
 
@@ -1059,7 +1059,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
                               ActionAfterPagehide::kReceivedPostMessage);
   }
-  DispatchEvent(*event);
+  DispatchEvent(*event, "LocalDOMWindow::DispatchMessageEventWithOriginCheck");
 }
 
 DOMSelection* LocalDOMWindow::getSelection() {

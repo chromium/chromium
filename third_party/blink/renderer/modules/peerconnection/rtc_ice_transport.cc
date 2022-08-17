@@ -415,10 +415,10 @@ void RTCIceTransport::OnGatheringStateChanged(
   }
   if (new_state == cricket::kIceGatheringComplete) {
     // Generate a null ICE candidate to signal the end of candidates.
-    DispatchEvent(*RTCPeerConnectionIceEvent::Create(nullptr));
+    DispatchEvent(*RTCPeerConnectionIceEvent::Create(nullptr), "RTCIceTransport::OnGatheringStateChanged #1");
   }
   gathering_state_ = new_state;
-  DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange));
+  DispatchEvent(*Event::Create(event_type_names::kGatheringstatechange), "RTCIceTransport::OnGatheringStateChanged #2");
 }
 
 void RTCIceTransport::OnCandidateGathered(
@@ -429,7 +429,7 @@ void RTCIceTransport::OnCandidateGathered(
       RTCPeerConnectionIceEventInit::Create();
   event_init->setCandidate(candidate);
   DispatchEvent(*RTCPeerConnectionIceEvent::Create(
-      event_type_names::kIcecandidate, event_init));
+      event_type_names::kIcecandidate, event_init), "RTCIceTransport::OnCandidateGathered");
 }
 
 void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
@@ -451,7 +451,7 @@ void RTCIceTransport::OnStateChanged(webrtc::IceTransportState new_state) {
   if (peer_connection_) {
     peer_connection_->UpdateIceConnectionState();
   }
-  DispatchEvent(*Event::Create(event_type_names::kStatechange));
+  DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCIceTransport::OnStateChanged");
   if (state_ == webrtc::IceTransportState::kClosed ||
       state_ == webrtc::IceTransportState::kFailed) {
     stop();
@@ -468,7 +468,7 @@ void RTCIceTransport::OnSelectedCandidatePairChanged(
   selected_candidate_pair_ = RTCIceCandidatePair::Create();
   selected_candidate_pair_->setLocal(local);
   selected_candidate_pair_->setRemote(remote);
-  DispatchEvent(*Event::Create(event_type_names::kSelectedcandidatepairchange));
+  DispatchEvent(*Event::Create(event_type_names::kSelectedcandidatepairchange), "RTCIceTransport::OnSelectedCandidatePairChanged");
 }
 
 void RTCIceTransport::Close(CloseReason reason) {

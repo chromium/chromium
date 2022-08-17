@@ -129,7 +129,7 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
     return;
   }
   this->DispatchEvent(*GPUUncapturedErrorEvent::Create(
-      event_type_names::kUncapturederror, init));
+      event_type_names::kUncapturederror, init), "GPUDevice::OnUncapturedError");
 }
 
 void GPUDevice::OnDeviceLostError(const char* message) {

@@ -286,11 +286,11 @@ ExecutionContext* HTMLScriptElement::GetExecutionContext() const {
 }
 
 void HTMLScriptElement::DispatchLoadEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLScriptElement::DispatchLoadEvent");
 }
 
 void HTMLScriptElement::DispatchErrorEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "HTMLScriptElement::DispatchErrorEvent");
 }
 
 void HTMLScriptElement::SetScriptElementForBinding(

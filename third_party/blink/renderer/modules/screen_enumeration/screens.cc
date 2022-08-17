@@ -66,7 +66,7 @@ void Screens::ScreenInfosChanged() {
   // TODO(crbug.com/879300): Add or remove `screens_` members as needed. Fire
   // Screen.change instead of Screens.change for per-screen attribute changes.
   // This should not fire an event if exposed information has not changed.
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+  DispatchEvent(*Event::Create(event_type_names::kChange), "Screens::ScreenInfosChanged");
 }
 
 }  // namespace blink

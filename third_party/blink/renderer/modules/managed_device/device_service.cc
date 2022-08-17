@@ -194,7 +194,7 @@ void DeviceService::OnAttributeReceived(
 }
 
 void DeviceService::OnConfigurationChanged() {
-  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange));
+  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange), "DeviceService::OnConfigurationChanged");
 }
 
 void DeviceService::AddedEventListener(

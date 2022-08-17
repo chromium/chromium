@@ -581,7 +581,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
   external_output_buffer_->Zero();
 
   AudioNode::DispatchEvent(*AudioProcessingEvent::Create(
-      external_input_buffer_, external_output_buffer_, playback_time));
+      external_input_buffer_, external_output_buffer_, playback_time), "ScriptProcessorNode::DispatchEvent");
 
   {
     MutexLocker locker(handler.GetBufferLock());

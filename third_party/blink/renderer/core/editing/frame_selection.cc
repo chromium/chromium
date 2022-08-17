@@ -390,7 +390,7 @@ static DispatchEventResult DispatchSelectStart(
     return DispatchEventResult::kNotCanceled;
 
   return select_start_target->DispatchEvent(
-      *Event::CreateCancelableBubble(event_type_names::kSelectstart));
+      *Event::CreateCancelableBubble(event_type_names::kSelectstart), "DispatchSelectStart");
 }
 
 // The return value of |FrameSelection::modify()| is different based on
@@ -759,7 +759,7 @@ void FrameSelection::SelectAll(SetSelectionBy set_selection_by) {
   if (select_start_target) {
     const Document& expected_document = GetDocument();
     if (select_start_target->DispatchEvent(
-            *Event::CreateCancelableBubble(event_type_names::kSelectstart)) !=
+        *Event::CreateCancelableBubble(event_type_names::kSelectstart), "FrameSelection::SelectAll") !=
         DispatchEventResult::kNotCanceled)
       return;
     // The frame may be detached due to selectstart event.

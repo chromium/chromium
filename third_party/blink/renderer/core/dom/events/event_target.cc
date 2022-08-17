@@ -759,11 +759,12 @@ bool EventTarget::dispatchEventForBindings(Event* event,
          DispatchEventResult::kCanceledByEventHandler;
 }
 
-DispatchEventResult EventTarget::DispatchEvent(Event& event) {
+DispatchEventResult EventTarget::DispatchEvent(Event& event, const char* why) {
   // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("EventTarget::DispatchEvent %lu %s",
+  recordreplay::Assert("EventTarget::DispatchEvent %lu %s %s",
                        recordreplay::PointerId(this),
-                       event.type().GetString().Ascii().c_str());
+                       event.type().GetString().Ascii().c_str(),
+                       why);
 
   event.SetTrusted(true);
   return DispatchEventInternal(event);
@@ -1042,7 +1043,7 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
     return;
   }
   probe::AsyncTask async_task(context, event->async_task_id());
-  DispatchEvent(*event);
+  DispatchEvent(*event, "EventTarget::DispatchEnqueuedEvent");
 }
 
 STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kFalse,

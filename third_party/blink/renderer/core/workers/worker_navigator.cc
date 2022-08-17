@@ -56,7 +56,7 @@ void WorkerNavigator::NotifyUpdate() {
   WorkerOrWorkletGlobalScope* global_scope =
       To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
   global_scope->DispatchEvent(
-      *Event::Create(event_type_names::kLanguagechange));
+      *Event::Create(event_type_names::kLanguagechange), "WorkerNavigator::NotifyUpdate");
 }
 
 }  // namespace blink

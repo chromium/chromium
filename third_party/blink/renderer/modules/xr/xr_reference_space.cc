@@ -215,7 +215,7 @@ void XRReferenceSpace::Trace(Visitor* visitor) const {
 void XRReferenceSpace::OnReset() {
   if (type_ != ReferenceSpaceType::kViewer) {
     DispatchEvent(
-        *XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
+        *XRReferenceSpaceEvent::Create(event_type_names::kReset, this), "XRReferenceSpace::OnReset");
   }
 }
 

@@ -89,7 +89,7 @@ void XRBoundedReferenceSpace::EnsureUpdated() {
     offset_bounds_geometry_.clear();
   }
 
-  DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
+  DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this), "XRBoundedReferenceSpace::EnsureUpdated");
 }
 
 base::Optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative() {

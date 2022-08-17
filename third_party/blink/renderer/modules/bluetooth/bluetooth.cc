@@ -414,7 +414,7 @@ void Bluetooth::AdvertisingEvent(
       GetBluetoothDeviceRepresentingDevice(std::move(advertising_event->device),
                                            GetSupplementable()->DomWindow()),
       std::move(advertising_event));
-  DispatchEvent(*event);
+  DispatchEvent(*event, "Bluetooth::AdvertisingEvent");
 }
 
 void Bluetooth::PageVisibilityChanged() {

@@ -496,7 +496,7 @@ void TextFragmentAnchor::FireBeforeMatchEvent(Element* element) {
   if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           frame_->GetDocument()->GetExecutionContext())) {
     element->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
+        *Event::CreateBubble(event_type_names::kBeforematch), "TextFragmentAnchor::FireBeforeMatchEvent");
   }
   beforematch_state_ = kFiredEvent;
 }

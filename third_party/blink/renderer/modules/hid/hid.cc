@@ -144,14 +144,14 @@ void HID::DeviceAdded(device::mojom::blink::HidDeviceInfoPtr device_info) {
   auto* device = GetOrCreateDevice(std::move(device_info));
 
   DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kConnect, device));
+      event_type_names::kConnect, device), "HID::DeviceAdded");
 }
 
 void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
   auto* device = GetOrCreateDevice(std::move(device_info));
 
   DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kDisconnect, device));
+      event_type_names::kDisconnect, device), "HID::DeviceRemoved");
 }
 
 ScriptPromise HID::getDevices(ScriptState* script_state,

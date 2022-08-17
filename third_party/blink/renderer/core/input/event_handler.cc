@@ -2376,7 +2376,7 @@ bool EventHandler::HandleTextInputEvent(const String& text,
   TextEvent* event = TextEvent::Create(frame_->DomWindow(), text, input_type);
   event->SetUnderlyingEvent(underlying_event);
 
-  target->DispatchEvent(*event);
+  target->DispatchEvent(*event, "EventHandler::HandleTextInputEvent");
   return event->DefaultHandled() || event->defaultPrevented();
 }
 

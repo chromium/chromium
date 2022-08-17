@@ -200,7 +200,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
       *GetExecutionContext(), std::move(message.ports));
   debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
   worker_object_->DispatchEvent(
-      *MessageEvent::Create(ports, std::move(message.message)));
+      *MessageEvent::Create(ports, std::move(message.message)), "DedicatedWorkerMessagingProxy::PostMessageToWorkerObject");
   debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
 }
 
@@ -222,7 +222,7 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   // https://html.spec.whatwg.org/C/#runtime-script-errors-2
   ErrorEvent* event =
       ErrorEvent::Create(error_message, location->Clone(), nullptr);
-  if (worker_object_->DispatchEvent(*event) !=
+  if (worker_object_->DispatchEvent(*event, "DedicatedWorkerMessagingProxy::DispatchErrorEvent") !=
       DispatchEventResult::kNotCanceled)
     return;
 

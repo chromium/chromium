@@ -40,7 +40,7 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
     ExceptionState& exception_state) {
   if (RuntimeEnabledFeatures::TrustedTypeBeforePolicyCreationEventEnabled()) {
     DispatchEventResult result =
-        DispatchEvent(*BeforeCreatePolicyEvent::Create(policy_name));
+        DispatchEvent(*BeforeCreatePolicyEvent::Create(policy_name), "TrustedTypePolicyFactory::createPolicy");
     if (result != DispatchEventResult::kNotCanceled) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,

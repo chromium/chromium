@@ -3800,7 +3800,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
 
   if (previous_original_screen_info != original_screen_info) {
     local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
-        *Event::Create(event_type_names::kChange));
+        *Event::Create(event_type_names::kChange), "WebFrameWidgetImpl::DidUpdateSurfaceAndScreen");
 
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.

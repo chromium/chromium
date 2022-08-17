@@ -4369,7 +4369,7 @@ void Element::DispatchFocusEvent(Element* old_focused_element,
                                  InputDeviceCapabilities* source_capabilities) {
   DispatchEvent(*FocusEvent::Create(
       event_type_names::kFocus, Event::Bubbles::kNo, GetDocument().domWindow(),
-      0, old_focused_element, source_capabilities));
+      0, old_focused_element, source_capabilities), "Element::DispatchFocusEvent");
 }
 
 void Element::DispatchBlurEvent(Element* new_focused_element,
@@ -4377,7 +4377,7 @@ void Element::DispatchBlurEvent(Element* new_focused_element,
                                 InputDeviceCapabilities* source_capabilities) {
   DispatchEvent(*FocusEvent::Create(
       event_type_names::kBlur, Event::Bubbles::kNo, GetDocument().domWindow(),
-      0, new_focused_element, source_capabilities));
+      0, new_focused_element, source_capabilities), "Element::DispatchBlurEvent");
 }
 
 void Element::DispatchFocusInEvent(

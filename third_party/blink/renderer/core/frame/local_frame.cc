@@ -2570,7 +2570,7 @@ void LocalFrame::DidResume() {
   TRACE_EVENT0("blink", "LocalFrame::DidResume");
   DCHECK(IsAttached());
   const base::TimeTicks resume_event_start = base::TimeTicks::Now();
-  GetDocument()->DispatchEvent(*Event::Create(event_type_names::kResume));
+  GetDocument()->DispatchEvent(*Event::Create(event_type_names::kResume), "LocalFrame::DidResume");
   const base::TimeTicks resume_event_end = base::TimeTicks::Now();
   base::UmaHistogramMicrosecondsTimes("DocumentEventTiming.ResumeDuration",
                                       resume_event_end - resume_event_start);
@@ -2888,7 +2888,7 @@ void LocalFrame::OnPortalActivated(
   ThreadDebugger* debugger = MainThreadDebugger::Instance();
   if (debugger)
     debugger->ExternalAsyncTaskStarted(data.sender_stack_trace_id);
-  DomWindow()->DispatchEvent(*event);
+  DomWindow()->DispatchEvent(*event, "LocalFrame::OnPortalActivated");
   if (debugger)
     debugger->ExternalAsyncTaskFinished(data.sender_stack_trace_id);
   event->ExpireAdoptionLifetime();
@@ -3435,7 +3435,7 @@ void LocalFrame::OnScreensChange() {
     // Allow fullscreen requests shortly after user-generated screens changes.
     transient_allow_fullscreen_.Activate();
     DomWindow()->DispatchEvent(
-        *Event::Create(event_type_names::kScreenschange));
+        *Event::Create(event_type_names::kScreenschange), "LocalFrame::OnScreensChange");
   }
 }
 

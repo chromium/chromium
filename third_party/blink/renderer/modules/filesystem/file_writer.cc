@@ -312,7 +312,7 @@ void FileWriter::FireEvent(const AtomicString& type) {
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_id_);
   ++recursion_depth_;
   DispatchEvent(
-      *ProgressEvent::Create(type, true, bytes_written_, bytes_to_write_));
+      *ProgressEvent::Create(type, true, bytes_written_, bytes_to_write_), "FileWriter::FireEvent");
   DCHECK_GT(recursion_depth_, 0);
   --recursion_depth_;
 }

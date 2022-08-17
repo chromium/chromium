@@ -81,7 +81,7 @@ void XRLightProbe::ProcessLightEstimationData(
       (cube_map_ &&
        timestamp > last_reflection_change_ + kReflectionChangeDelta)) {
     last_reflection_change_ = timestamp;
-    DispatchEvent(*blink::Event::Create(event_type_names::kReflectionchange));
+    DispatchEvent(*blink::Event::Create(event_type_names::kReflectionchange), "XRLightProbe::ProcessLightEstimationData");
   }
 }
 

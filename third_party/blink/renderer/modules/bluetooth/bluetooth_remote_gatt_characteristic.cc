@@ -51,7 +51,7 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
   if (!GetGatt()->connected())
     return;
   this->SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
-  DispatchEvent(*Event::Create(event_type_names::kCharacteristicvaluechanged));
+  DispatchEvent(*Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged");
 }
 
 const WTF::AtomicString& BluetoothRemoteGATTCharacteristic::InterfaceName()
@@ -99,7 +99,7 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
         BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
     SetValue(dom_data_view);
     DispatchEvent(
-        *Event::Create(event_type_names::kCharacteristicvaluechanged));
+        *Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::ReadValueCallback");
     resolver->Resolve(dom_data_view);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));

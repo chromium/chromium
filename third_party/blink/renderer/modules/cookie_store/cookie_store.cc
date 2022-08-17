@@ -359,7 +359,7 @@ void CookieStore::OnCookieChange(
     return;
   }
   DispatchEvent(*CookieChangeEvent::Create(
-      event_type_names::kChange, std::move(changed), std::move(deleted)));
+      event_type_names::kChange, std::move(changed), std::move(deleted)), "CookieStore::OnCookieChange");
 }
 
 void CookieStore::AddedEventListener(

@@ -1724,7 +1724,7 @@ void PaymentRequest::DispatchPaymentRequestUpdateEvent(
   update_payment_details_timer_.StartOneShot(base::TimeDelta::FromSeconds(60),
                                              FROM_HERE);
 
-  event_target->DispatchEvent(*event);
+  event_target->DispatchEvent(*event, "PaymentRequest::DispatchPaymentRequestUpdateEvent");
   if (!event->is_waiting_for_update()) {
     // DispatchEvent runs synchronously. The method is_waiting_for_update()
     // returns false if the merchant did not call event.updateWith() within the

@@ -151,7 +151,7 @@ void HTMLSourceElement::CancelPendingErrorEvent() {
 
 void HTMLSourceElement::DispatchPendingEvent() {
   DVLOG(SOURCE_LOG_LEVEL) << "dispatchPendingEvent - " << (void*)this;
-  DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
+  DispatchEvent(*Event::CreateCancelable(event_type_names::kError), "HTMLSourceElement::DispatchPendingEvent");
 }
 
 bool HTMLSourceElement::MediaQueryMatches() const {

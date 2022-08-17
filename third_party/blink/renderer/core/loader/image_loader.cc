@@ -901,7 +901,7 @@ void ImageLoader::DispatchPendingLoadEvent(
 void ImageLoader::DispatchPendingErrorEvent(
     std::unique_ptr<IncrementLoadEventDelayCount> count) {
   if (GetElement()->GetDocument().GetFrame())
-    GetElement()->DispatchEvent(*Event::Create(event_type_names::kError));
+    GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingErrorEvent() is called asynchronously.

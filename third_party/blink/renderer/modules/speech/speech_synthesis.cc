@@ -237,7 +237,7 @@ void SpeechSynthesis::SentenceBoundaryEventOccurred(
 
 void SpeechSynthesis::VoicesDidChange() {
   if (GetSupplementable()->GetFrame())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
+    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged), "SpeechSynthesis::VoicesDidChange");
 }
 
 void SpeechSynthesis::StartSpeakingImmediately() {
@@ -300,7 +300,7 @@ void SpeechSynthesis::FireEvent(const AtomicString& type,
   init->setCharLength(char_length);
   init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
   init->setName(name);
-  utterance->DispatchEvent(*SpeechSynthesisEvent::Create(type, init));
+  utterance->DispatchEvent(*SpeechSynthesisEvent::Create(type, init), "SpeechSynthesis::FireEvent");
 }
 
 void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
@@ -316,7 +316,7 @@ void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
   init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
   init->setError(error);
   utterance->DispatchEvent(
-      *SpeechSynthesisErrorEvent::Create(event_type_names::kError, init));
+      *SpeechSynthesisErrorEvent::Create(event_type_names::kError, init), "SpeechSynthesis::FireErrorEvent");
 }
 
 SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {

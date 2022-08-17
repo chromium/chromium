@@ -94,13 +94,13 @@ bool EditContext::IsVirtualKeyboardPolicyManual() const {
 void EditContext::DispatchCompositionEndEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
       event_type_names::kCompositionend, DomWindow(), text);
-  DispatchEvent(*event);
+  DispatchEvent(*event, "EditContext::DispatchCompositionEndEvent");
 }
 
 bool EditContext::DispatchCompositionStartEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
       event_type_names::kCompositionstart, DomWindow(), text);
-  DispatchEvent(*event);
+  DispatchEvent(*event, "EditContext::DispatchCompositionStartEvent");
   return DomWindow();
 }
 
@@ -112,7 +112,7 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
   TextUpdateEvent* event = MakeGarbageCollected<TextUpdateEvent>(
       text, update_range_start, update_range_end, new_selection_start,
       new_selection_end);
-  DispatchEvent(*event);
+  DispatchEvent(*event, "EditContext::DispatchTextUpdateEvent");
 }
 
 void EditContext::DispatchTextFormatEvent(
@@ -169,7 +169,7 @@ void EditContext::DispatchTextFormatEvent(
         cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
             ime_text_span.text_color),
         underline_thickness, underline_style);
-    DispatchEvent(*event);
+    DispatchEvent(*event, "EditContext::DispatchTextFormatEvent");
   }
 }
 

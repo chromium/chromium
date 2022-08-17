@@ -875,7 +875,7 @@ void TextFinder::FireBeforematchEvent(
           ->GetLayoutShiftTracker()
           .NotifyFindInPageInput();
       beforematch_element->DispatchEvent(
-          *Event::CreateBubble(event_type_names::kBeforematch));
+          *Event::CreateBubble(event_type_names::kBeforematch), "TextFinder::FireBeforematchEvent");
     }
     // TODO(jarhar): Consider what to do based on DOM/style modifications made
     // by the beforematch event here and write tests for it once we decide on a

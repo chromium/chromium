@@ -50,7 +50,7 @@ void SharedWorkerClient::OnScriptLoadFailed(const String& error_message) {
             mojom::blink::ConsoleMessageSource::kWorker,
             mojom::blink::ConsoleMessageLevel::kError, error_message));
   }
-  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
+  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError), "SharedWorkerClient::OnScriptLoadFailed");
   // |this| can be destroyed at this point, for example, when a frame hosting
   // this shared worker is detached in the error handler, and closes mojo's
   // strong bindings bound with |this| in

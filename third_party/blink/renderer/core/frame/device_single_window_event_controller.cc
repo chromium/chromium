@@ -27,7 +27,7 @@ void DeviceSingleWindowEventController::DispatchDeviceEvent(Event* event) {
   if (GetWindow().IsContextPaused() || GetWindow().IsContextDestroyed())
     return;
 
-  GetWindow().DispatchEvent(*event);
+  GetWindow().DispatchEvent(*event, "DeviceSingleWindowEventController::DispatchDeviceEvent");
 
   if (needs_checking_null_events_) {
     if (IsNullEvent(event))

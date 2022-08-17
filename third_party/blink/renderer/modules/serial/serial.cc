@@ -73,12 +73,12 @@ void Serial::ContextDestroyed() {
 
 void Serial::OnPortAdded(mojom::blink::SerialPortInfoPtr port_info) {
   SerialPort* port = GetOrCreatePort(std::move(port_info));
-  port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect));
+  port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect), "Serial::OnPortAdded");
 }
 
 void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
   SerialPort* port = GetOrCreatePort(std::move(port_info));
-  port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
+  port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect), "Serial::OnPortRemoved");
 }
 
 ScriptPromise Serial::getPorts(ScriptState* script_state,

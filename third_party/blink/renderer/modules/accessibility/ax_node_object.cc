@@ -292,7 +292,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
 
   KeyboardEvent* keydown = CreateKeyboardEvent(
       local_dom_window, WebInputEvent::Type::kRawKeyDown, action);
-  GetNode()->DispatchEvent(*keydown);
+  GetNode()->DispatchEvent(*keydown, "AXNodeObject::AlterSliderOrSpinButtonValue #1");
 
   // TODO(crbug.com/1099069): add a brief pause between keydown and keyup?
   // TODO(crbug.com/1099069): fire a "char" event depending on platform?
@@ -303,7 +303,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
 
   KeyboardEvent* keyup = CreateKeyboardEvent(
       local_dom_window, WebInputEvent::Type::kKeyUp, action);
-  GetNode()->DispatchEvent(*keyup);
+  GetNode()->DispatchEvent(*keyup, "AXNodeObject::AlterSliderOrSpinButtonValue #2");
 }
 
 AXObject* AXNodeObject::ActiveDescendant() {

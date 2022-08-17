@@ -283,7 +283,7 @@ class CORE_EXPORT HTMLCanvasElement final
   }
 
   DispatchEventResult HostDispatchEvent(Event* event) override {
-    return DispatchEvent(*event);
+    return DispatchEvent(*event, "HTMLCanvasElement::HostDispatchEvent");
   }
 
   // Gets the settings of this Html Canvas Element. If there is a frame, it will

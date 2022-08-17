@@ -592,7 +592,7 @@ FloatRect SVGUseElement::GetBBox() {
 void SVGUseElement::DispatchPendingEvent() {
   DCHECK(IsStructurallyExternal());
   DCHECK(have_fired_load_event_);
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGUseElement::DispatchPendingEvent");
 }
 
 void SVGUseElement::NotifyFinished(Resource* resource) {
@@ -601,7 +601,7 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
 
   InvalidateShadowTree();
   if (resource->ErrorOccurred() || !document_content_->GetDocument()) {
-    DispatchEvent(*Event::Create(event_type_names::kError));
+    DispatchEvent(*Event::Create(event_type_names::kError), "SVGUseElement::NotifyFinished");
   } else {
     if (have_fired_load_event_)
       return;

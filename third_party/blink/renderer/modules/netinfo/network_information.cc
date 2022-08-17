@@ -206,8 +206,8 @@ void NetworkInformation::ConnectionChange(
   save_data_ = save_data;
 
   if (type_changed)
-    DispatchEvent(*Event::Create(event_type_names::kTypechange));
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+    DispatchEvent(*Event::Create(event_type_names::kTypechange), "NetworkInformation::ConnectionChange #1");
+  DispatchEvent(*Event::Create(event_type_names::kChange), "NetworkInformation::ConnectionChange #2");
 }
 
 const AtomicString& NetworkInformation::InterfaceName() const {

@@ -123,7 +123,7 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
     bool should_enforce_vertical_scroll =
         wheel_target_->GetDocument().IsVerticalScrollEnforced();
     DispatchEventResult dom_event_result =
-        wheel_target_->DispatchEvent(*dom_event);
+        wheel_target_->DispatchEvent(*dom_event, "MouseWheelEventManager::HandleWheelEvent");
     if (dom_event_result != DispatchEventResult::kNotCanceled) {
       // Reset the target if the dom event is cancelled to make sure that new
       // targeting happens for the next wheel event.

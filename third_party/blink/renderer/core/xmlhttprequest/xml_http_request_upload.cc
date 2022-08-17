@@ -55,7 +55,7 @@ void XMLHttpRequestUpload::DispatchProgressEvent(
                               xml_http_request_->async_task_id(), "progress",
                               xml_http_request_->IsAsync());
   DispatchEvent(*ProgressEvent::Create(event_type_names::kProgress, true,
-                                       bytes_sent, total_bytes_to_be_sent));
+                                       bytes_sent, total_bytes_to_be_sent), "XMLHttpRequestUpload::DispatchProgressEvent");
 }
 
 void XMLHttpRequestUpload::DispatchEventAndLoadEnd(const AtomicString& type,
@@ -69,9 +69,9 @@ void XMLHttpRequestUpload::DispatchEventAndLoadEnd(const AtomicString& type,
                               xml_http_request_->async_task_id(), "event",
                               xml_http_request_->IsAsync());
   DispatchEvent(
-      *ProgressEvent::Create(type, length_computable, bytes_sent, total));
+      *ProgressEvent::Create(type, length_computable, bytes_sent, total), "XMLHttpRequestUpload::DispatchEventAndLoadEnd #1");
   DispatchEvent(*ProgressEvent::Create(event_type_names::kLoadend,
-                                       length_computable, bytes_sent, total));
+                                       length_computable, bytes_sent, total), "XMLHttpRequestUpload::DispatchEventAndLoadEnd #2");
 }
 
 void XMLHttpRequestUpload::HandleRequestError(const AtomicString& type) {

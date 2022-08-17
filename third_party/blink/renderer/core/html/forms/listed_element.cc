@@ -467,7 +467,7 @@ bool ListedElement::checkValidity(List* unhandled_invalid_controls) {
   HTMLElement& element = ToHTMLElement();
   Document* original_document = &element.GetDocument();
   DispatchEventResult dispatch_result = element.DispatchEvent(
-      *Event::CreateCancelable(event_type_names::kInvalid));
+      *Event::CreateCancelable(event_type_names::kInvalid), "ListedElement::CheckValidity");
   if (dispatch_result == DispatchEventResult::kNotCanceled &&
       unhandled_invalid_controls && element.isConnected() &&
       original_document == element.GetDocument())

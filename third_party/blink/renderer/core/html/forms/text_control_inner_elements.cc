@@ -101,7 +101,7 @@ void TextControlInnerEditorElement::DefaultEventHandler(Event& event) {
     // that the page can hear about the scroll.
     Element* shadow_ancestor = OwnerShadowHost();
     if (shadow_ancestor)
-      shadow_ancestor->DispatchEvent(event);
+      shadow_ancestor->DispatchEvent(event, "TextControlInnerEditorElement::DefaultEventHandler");
   }
 
   if (!event.DefaultHandled())

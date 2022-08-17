@@ -185,7 +185,7 @@ void NDEFReader::OnReading(const String& serial_number,
   DCHECK(GetNfcProxy()->IsReading(this));
   DispatchEvent(*MakeGarbageCollected<NDEFReadingEvent>(
       event_type_names::kReading, serial_number,
-      MakeGarbageCollected<NDEFMessage>(message)));
+      MakeGarbageCollected<NDEFMessage>(message)), "NDEFReader::OnReading");
 }
 
 void NDEFReader::OnReadingError(const String& message) {
@@ -195,7 +195,7 @@ void NDEFReader::OnReadingError(const String& message) {
 
   // Dispatch the event as the final step in this method as it may cause script
   // to run that destroys the execution context.
-  DispatchEvent(*Event::Create(event_type_names::kReadingerror));
+  DispatchEvent(*Event::Create(event_type_names::kReadingerror), "NDEFReader::OnReadingError");
 }
 
 void NDEFReader::ContextDestroyed() {

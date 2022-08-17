@@ -149,7 +149,7 @@ void MojoInterfaceInterceptor::DispatchInterfaceRequestEvent(
     mojo::ScopedMessagePipeHandle handle) {
   DispatchEvent(*MakeGarbageCollected<MojoInterfaceRequestEvent>(
       MakeGarbageCollected<MojoHandle>(
-          mojo::ScopedHandle::From(std::move(handle)))));
+          mojo::ScopedHandle::From(std::move(handle)))), "MojoInterfaceInterceptor::DispatchInterfaceRequestEvent");
 }
 
 }  // namespace blink

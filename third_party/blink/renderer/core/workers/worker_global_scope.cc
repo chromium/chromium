@@ -527,7 +527,8 @@ void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
         message.user_activation->was_active);
   }
   DispatchEvent(*MessageEvent::Create(ports, std::move(message.message),
-                                      user_activation));
+                                      user_activation),
+                "WorkerGlobalScope::ReceiveMessage");
   if (debugger)
     debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
 }

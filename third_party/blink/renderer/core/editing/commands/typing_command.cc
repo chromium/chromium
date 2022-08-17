@@ -105,7 +105,7 @@ DispatchEventResult DispatchTextInputEvent(LocalFrame* frame,
   TextEvent* event = TextEvent::Create(frame->DomWindow(), text,
                                        kTextEventInputIncrementalInsertion);
   event->SetUnderlyingEvent(nullptr);
-  DispatchEventResult result = target->DispatchEvent(*event);
+  DispatchEventResult result = target->DispatchEvent(*event, "DispatchTextInputEvent");
   if (IsValidDocument(document))
     return result;
   // editing/inserting/insert-text-remove-iframe-on-textInput-event.html

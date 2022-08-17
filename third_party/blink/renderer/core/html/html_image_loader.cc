@@ -51,7 +51,7 @@ void HTMLImageLoader::DispatchLoadEvent() {
     error_occurred = (GetContent()->GetResponse().HttpStatusCode() >= 400);
   }
   GetElement()->DispatchEvent(*Event::Create(
-      error_occurred ? event_type_names::kError : event_type_names::kLoad));
+      error_occurred ? event_type_names::kError : event_type_names::kLoad), "HTMLImageLoader::DispatchLoadEvent");
 }
 
 void HTMLImageLoader::NoImageResourceToLoad() {

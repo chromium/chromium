@@ -134,39 +134,39 @@ void SpeechRecognition::ResultRetrieved(
   // We dispatch an event with (1) + (2) + (3).
   DispatchEvent(*SpeechRecognitionEvent::CreateResult(
       aggregated_results.size() - results.size(),
-      std::move(aggregated_results)));
+      std::move(aggregated_results)), "SpeechRecognition::ResultRetrieved");
 }
 
 void SpeechRecognition::ErrorOccurred(
     mojom::blink::SpeechRecognitionErrorPtr error) {
   if (error->code == mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
-    DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr));
+    DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr), "SpeechRecognition::ErrorOccurred #1");
   } else {
     // TODO(primiano): message?
-    DispatchEvent(*SpeechRecognitionErrorEvent::Create(error->code, String()));
+    DispatchEvent(*SpeechRecognitionErrorEvent::Create(error->code, String()), "SpeechRecognition::ErrorOccurred #2");
   }
 }
 
 void SpeechRecognition::Started() {
-  DispatchEvent(*Event::Create(event_type_names::kStart));
+  DispatchEvent(*Event::Create(event_type_names::kStart), "SpeechRecognition::Started");
 }
 
 void SpeechRecognition::AudioStarted() {
-  DispatchEvent(*Event::Create(event_type_names::kAudiostart));
+  DispatchEvent(*Event::Create(event_type_names::kAudiostart), "SpeechRecognition::AudioStarted");
 }
 
 void SpeechRecognition::SoundStarted() {
-  DispatchEvent(*Event::Create(event_type_names::kSoundstart));
-  DispatchEvent(*Event::Create(event_type_names::kSpeechstart));
+  DispatchEvent(*Event::Create(event_type_names::kSoundstart), "SpeechRecognition::SoundStarted #1");
+  DispatchEvent(*Event::Create(event_type_names::kSpeechstart), "SpeechRecognition::SoundStarted #2");
 }
 
 void SpeechRecognition::SoundEnded() {
-  DispatchEvent(*Event::Create(event_type_names::kSpeechend));
-  DispatchEvent(*Event::Create(event_type_names::kSoundend));
+  DispatchEvent(*Event::Create(event_type_names::kSpeechend), "SpeechRecognition::SoundEnded #1");
+  DispatchEvent(*Event::Create(event_type_names::kSoundend), "SpeechRecognition::SoundEnded #2");
 }
 
 void SpeechRecognition::AudioEnded() {
-  DispatchEvent(*Event::Create(event_type_names::kAudioend));
+  DispatchEvent(*Event::Create(event_type_names::kAudioend), "SpeechRecognition::AudioEnded");
 }
 
 void SpeechRecognition::Ended() {
@@ -174,7 +174,7 @@ void SpeechRecognition::Ended() {
   stopping_ = false;
   session_.reset();
   receiver_.reset();
-  DispatchEvent(*Event::Create(event_type_names::kEnd));
+  DispatchEvent(*Event::Create(event_type_names::kEnd), "SpeechRecognition::Ended");
 }
 
 const AtomicString& SpeechRecognition::InterfaceName() const {

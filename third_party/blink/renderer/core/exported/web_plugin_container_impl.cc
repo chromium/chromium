@@ -522,7 +522,7 @@ void WebPluginContainerImpl::DispatchProgressEvent(const WebString& type,
     event = MakeGarbageCollected<ResourceProgressEvent>(type, length_computable,
                                                         loaded, total, url);
   }
-  element_->DispatchEvent(*event);
+  element_->DispatchEvent(*event, "WebPluginContainerImpl::DispatchProgressEvent");
 }
 
 void WebPluginContainerImpl::EnqueueMessageEvent(

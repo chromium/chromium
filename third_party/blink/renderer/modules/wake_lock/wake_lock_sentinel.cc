@@ -98,7 +98,7 @@ void WakeLockSentinel::DoRelease() {
   // 7. Fire an event named "release" at lock.
   DCHECK(!released_);
   released_ = true;
-  DispatchEvent(*Event::Create(event_type_names::kRelease));
+  DispatchEvent(*Event::Create(event_type_names::kRelease), "WakeLockSentinel::DoRelease");
 }
 
 }  // namespace blink

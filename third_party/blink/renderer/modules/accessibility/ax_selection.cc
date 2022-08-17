@@ -35,7 +35,7 @@ DispatchEventResult DispatchSelectStart(Node* node) {
     return DispatchEventResult::kNotCanceled;
 
   return node->DispatchEvent(
-      *Event::CreateCancelableBubble(event_type_names::kSelectstart));
+      *Event::CreateCancelableBubble(event_type_names::kSelectstart), "DispatchSelectStart");
 }
 
 }  // namespace

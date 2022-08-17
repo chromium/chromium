@@ -70,7 +70,7 @@ void DiscardedSamplesDelegate::Notify() {
 void ProfilerGroup::DispatchSampleBufferFullEvent() {
   for (const auto& profiler : profilers_) {
     profiler->DispatchEvent(
-        *Event::Create(event_type_names::kSamplebufferfull));
+        *Event::Create(event_type_names::kSamplebufferfull), "ProfilerGroup::DispatchSampleBufferFullEvent");
   }
 }
 

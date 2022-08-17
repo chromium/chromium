@@ -120,7 +120,7 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
         event_target->GetDocument().domWindow(), gesture_event);
     if (gesture_dom_event) {
       DispatchEventResult gesture_dom_event_result =
-          event_target->DispatchEvent(*gesture_dom_event);
+          event_target->DispatchEvent(*gesture_dom_event, "GestureManager::HandleGestureEventInFrame");
       if (gesture_dom_event_result != DispatchEventResult::kNotCanceled) {
         DCHECK(gesture_dom_event_result !=
                DispatchEventResult::kCanceledByEventHandler);

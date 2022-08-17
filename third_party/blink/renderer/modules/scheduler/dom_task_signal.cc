@@ -49,7 +49,7 @@ void DOMTaskSignal::SignalPriorityChange(WebSchedulingPriority priority) {
   if (web_scheduling_task_queue_)
     web_scheduling_task_queue_->SetPriority(priority);
   priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
-  DispatchEvent(*Event::Create(event_type_names::kPrioritychange));
+  DispatchEvent(*Event::Create(event_type_names::kPrioritychange), "DOMTaskSignal::SignalPriorityChange");
 }
 
 base::SingleThreadTaskRunner* DOMTaskSignal::GetTaskRunner() {

@@ -320,7 +320,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      dispatch_result = target->DispatchEvent(*event);
+      dispatch_result = target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #1");
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
@@ -332,7 +332,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
 
-      dispatch_result = target->DispatchEvent(*event);
+      dispatch_result = target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #1");
     }
 
     return event_handling_util::ToWebInputEventResult(dispatch_result);
@@ -1085,7 +1085,7 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
                                         : MouseEvent::kRealOrIndistinguishable);
 
   return event_handling_util::ToWebInputEventResult(
-      drag_target->DispatchEvent(*me));
+      drag_target->DispatchEvent(*me, "MouseEventManager::DispatchDragEvent"));
 }
 
 void MouseEventManager::ClearDragDataTransfer() {

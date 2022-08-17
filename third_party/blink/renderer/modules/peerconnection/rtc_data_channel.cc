@@ -517,7 +517,7 @@ void RTCDataChannel::SetStateToOpenWithoutEvent() {
 }
 
 void RTCDataChannel::DispatchOpenEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kOpen));
+  DispatchEvent(*Event::Create(event_type_names::kOpen), "RTCDataChannel::DispatchOpenEvent");
 }
 
 void RTCDataChannel::OnStateChange(
@@ -542,20 +542,20 @@ void RTCDataChannel::OnStateChange(
     case webrtc::DataChannelInterface::kOpen:
       IncrementCounter(DataChannelCounters::kOpened);
       CreateFeatureHandleForScheduler();
-      DispatchEvent(*Event::Create(event_type_names::kOpen));
+      DispatchEvent(*Event::Create(event_type_names::kOpen), "RTCDataChannel::OnStateChange #1");
       break;
     case webrtc::DataChannelInterface::kClosing:
       if (!closed_from_owner_) {
-        DispatchEvent(*Event::Create(event_type_names::kClosing));
+        DispatchEvent(*Event::Create(event_type_names::kClosing), "RTCDataChannel::OnStateChange #2");
       }
       break;
     case webrtc::DataChannelInterface::kClosed:
       feature_handle_for_scheduler_.reset();
       if (!channel()->error().ok()) {
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
-            event_type_names::kError, channel()->error()));
+            event_type_names::kError, channel()->error()), "RTCDataChannel::OnStateChange #3");
       }
-      DispatchEvent(*Event::Create(event_type_names::kClose));
+      DispatchEvent(*Event::Create(event_type_names::kClose), "RTCDataChannel::OnStateChange #4");
       break;
     default:
       break;
@@ -623,7 +623,7 @@ void RTCDataChannel::ScheduledEventTimerFired(TimerBase*) {
 
   HeapVector<Member<Event>>::iterator it = events.begin();
   for (; it != events.end(); ++it)
-    DispatchEvent(*it->Release());
+    DispatchEvent(*it->Release(), "RTCDataChannel::ScheduledEventTimerFired");
 
   events.clear();
 }

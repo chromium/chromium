@@ -480,7 +480,7 @@ TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints() {
           current_touch_action_);
 
       DispatchEventResult dom_dispatch_result =
-          touch_event_target->DispatchEvent(*touch_event);
+          touch_event_target->DispatchEvent(*touch_event, "TouchEventManager::DispatchTouchEventFromAccumulatdTouchPoints");
 
       event_result = event_handling_util::MergeEventResult(
           event_result,

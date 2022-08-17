@@ -242,7 +242,7 @@ const AtomicString& HIDDevice::InterfaceName() const {
 void HIDDevice::OnInputReport(uint8_t report_id,
                               const Vector<uint8_t>& buffer) {
   DispatchEvent(*MakeGarbageCollected<HIDInputReportEvent>(
-      event_type_names::kInputreport, this, report_id, buffer));
+      event_type_names::kInputreport, this, report_id, buffer), "HIDDevice::OnInputReport");
 }
 
 bool HIDDevice::opened() const {

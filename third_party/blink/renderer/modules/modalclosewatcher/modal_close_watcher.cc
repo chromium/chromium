@@ -89,7 +89,7 @@ void ModalCloseWatcher::signalClosed() {
       *Event::CreateCancelable(event_type_names::kBeforeclose);
   {
     base::AutoReset<bool> scoped_committing(&dispatching_beforeclose_, true);
-    DispatchEvent(before_close_event);
+    DispatchEvent(before_close_event, "ModalCloseWatcher::signalClosed");
   }
   if (before_close_event.defaultPrevented()) {
     state_ = State::kModal;
@@ -103,7 +103,7 @@ void ModalCloseWatcher::Close() {
     return;
   WatcherStack::From(*DomWindow()).Remove(this);
   state_ = State::kClosed;
-  DispatchEvent(*Event::Create(event_type_names::kClose));
+  DispatchEvent(*Event::Create(event_type_names::kClose), "ModalCloseWatcher::Close");
 }
 
 void ModalCloseWatcher::destroy() {

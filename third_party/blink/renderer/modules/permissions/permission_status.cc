@@ -91,7 +91,7 @@ void PermissionStatus::OnPermissionStatusChange(MojoPermissionStatus status) {
     return;
 
   status_ = status;
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+  DispatchEvent(*Event::Create(event_type_names::kChange), "PermissionStatus::OnPermissionStatusChange");
 }
 
 void PermissionStatus::Trace(Visitor* visitor) const {

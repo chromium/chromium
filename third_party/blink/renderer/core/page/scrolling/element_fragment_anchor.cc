@@ -67,7 +67,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           frame.GetDocument()->GetExecutionContext())) {
     anchor_node->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
+        *Event::CreateBubble(event_type_names::kBeforematch), "ElementFragmentAnchor::TryCreate");
   }
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);

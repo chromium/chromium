@@ -63,7 +63,7 @@ void AbortSignal::SignalAbort() {
   }
   abort_algorithms_.clear();
   dependent_signals_.clear();
-  DispatchEvent(*Event::Create(event_type_names::kAbort));
+  DispatchEvent(*Event::Create(event_type_names::kAbort), "AbortSignal::SignalAbort");
 }
 
 void AbortSignal::Follow(AbortSignal* parentSignal) {

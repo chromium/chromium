@@ -181,7 +181,7 @@ ExecutionContext* StorageManager::GetExecutionContext() const {
 }
 
 void StorageManager::OnQuotaChange() {
-  DispatchEvent(*Event::Create(event_type_names::kQuotachange));
+  DispatchEvent(*Event::Create(event_type_names::kQuotachange), "StorageManager::OnQuotaChange");
 }
 
 void StorageManager::AddedEventListener(

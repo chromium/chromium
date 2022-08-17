@@ -84,7 +84,7 @@ void DOMWebSocket::EventQueue::Dispatch(Event* event) {
     case kActive:
       DCHECK(events_.IsEmpty());
       DCHECK(target_->GetExecutionContext());
-      target_->DispatchEvent(*event);
+      target_->DispatchEvent(*event, "DOMWebSocket::EventQueue::Dispatch");
       break;
     case kPaused:
     case kUnpausePosted:
@@ -142,7 +142,7 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
       break;
     DCHECK_EQ(state_, kActive);
     DCHECK(target_->GetExecutionContext());
-    target_->DispatchEvent(*events.TakeFirst());
+    target_->DispatchEvent(*events.TakeFirst(), "DOMWebSocket::EventQueue::DispatchQueuedEvents");
     // |this| can be stopped here.
   }
   if (state_ == kPaused || state_ == kUnpausePosted) {

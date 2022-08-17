@@ -359,14 +359,14 @@ void HTMLLinkElement::LinkLoaded() {
     UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchLoadEvent);
   }
   recordreplay::Assert("HTMLLinkElement::LinkLoaded");
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLLinkElement::LinkLoaded");
 }
 
 void HTMLLinkElement::LinkLoadingErrored() {
   if (rel_attribute_.IsLinkPrefetch()) {
     UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchErrorEvent);
   }
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "HTMLLinkElement::LinkLoadingErrored");
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

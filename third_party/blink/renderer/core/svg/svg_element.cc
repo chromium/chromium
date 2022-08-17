@@ -866,7 +866,7 @@ bool SVGElement::SendSVGLoadEventIfPossible() {
     return false;
   if ((IsStructurallyExternal() || IsA<SVGSVGElement>(*this)) &&
       HasLoadListener(this))
-    DispatchEvent(*Event::Create(event_type_names::kLoad));
+    DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGElement::SendSVGLoadEventIfPossible");
   return true;
 }
 

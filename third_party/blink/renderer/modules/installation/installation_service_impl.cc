@@ -56,7 +56,7 @@ void InstallationServiceImpl::Trace(Visitor* visitor) const {
 
 void InstallationServiceImpl::OnInstall() {
   GetSupplementable()->DispatchEvent(
-      *Event::Create(event_type_names::kAppinstalled));
+      *Event::Create(event_type_names::kAppinstalled), "InstallationServiceImpl::OnInstall");
 }
 
 }  // namespace blink

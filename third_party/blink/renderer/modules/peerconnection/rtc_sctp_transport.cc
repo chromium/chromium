@@ -138,14 +138,14 @@ void RTCSctpTransport::OnStateChange(webrtc::SctpTransportInformation info) {
   // lower layer, but we keep the SctpTransport object alive until the
   // lower layer has sent notice that the closing has been completed.
   if (!closed_from_owner_) {
-    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+    DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCSctpTransport::OnStateChange");
   }
 }
 
 void RTCSctpTransport::Close() {
   closed_from_owner_ = true;
   if (current_state_.state() != webrtc::SctpTransportState::kClosed) {
-    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+    DispatchEvent(*Event::Create(event_type_names::kStatechange), "RTCSctpTransport::Close");
   }
 }
 

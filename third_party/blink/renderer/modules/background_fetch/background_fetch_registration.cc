@@ -76,7 +76,7 @@ void BackgroundFetchRegistration::OnProgress(
     return;
 
   DCHECK(context->IsContextThread());
-  DispatchEvent(*Event::Create(event_type_names::kProgress));
+  DispatchEvent(*Event::Create(event_type_names::kProgress), "BackgroundFetchRegistration::OnProgress");
 }
 
 void BackgroundFetchRegistration::OnRecordsUnavailable() {

@@ -181,7 +181,7 @@ void ScreenOrientationController::NotifyOrientationChangedInternal() {
                        ScopedAllowFullscreen allow_fullscreen(
                            ScopedAllowFullscreen::kOrientationChange);
                        orientation->DispatchEvent(
-                           *Event::Create(event_type_names::kChange));
+                           *Event::Create(event_type_names::kChange), "ScreenOrientationController::NotifyOrientationChangedInternal");
                      },
                      WrapPersistent(orientation_.Get())));
 }

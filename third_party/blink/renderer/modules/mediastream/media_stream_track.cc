@@ -763,16 +763,16 @@ void MediaStreamTrack::SourceChangedState() {
   switch (ready_state_) {
     case MediaStreamSource::kReadyStateLive:
       component_->SetMuted(false);
-      DispatchEvent(*Event::Create(event_type_names::kUnmute));
+      DispatchEvent(*Event::Create(event_type_names::kUnmute), "MediaStreamTrack::SourceChangedState #1");
       EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateMuted:
       component_->SetMuted(true);
-      DispatchEvent(*Event::Create(event_type_names::kMute));
+      DispatchEvent(*Event::Create(event_type_names::kMute), "MediaStreamTrack::SourceChangedState #2");
       EnsureFeatureHandleForScheduler();
       break;
     case MediaStreamSource::kReadyStateEnded:
-      DispatchEvent(*Event::Create(event_type_names::kEnded));
+      DispatchEvent(*Event::Create(event_type_names::kEnded), "MediaStreamTrack::SourceChangedState #3");
       PropagateTrackEnded();
       feature_handle_for_scheduler_.reset();
       break;

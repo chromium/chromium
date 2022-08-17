@@ -251,7 +251,7 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
 void CanvasRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   if (canvas() && RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
     Event* event = Event::CreateCancelable(event_type_names::kContextlost);
-    canvas()->DispatchEvent(*event);
+    canvas()->DispatchEvent(*event, "CanvasRenderingContext2D::DispatchContextLostEvent");
     if (event->defaultPrevented()) {
       context_restorable_ = false;
     }
@@ -307,7 +307,7 @@ void CanvasRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   context_lost_mode_ = kNotLostContext;
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
     Event* event(Event::Create(event_type_names::kContextrestored));
-    canvas()->DispatchEvent(*event);
+    canvas()->DispatchEvent(*event, "CanvasRenderingContext2D::DispatchContextRestoredEvent");
   }
 }
 

@@ -102,13 +102,13 @@ void BatteryManager::DidUpdateData() {
   }
 
   if (battery_status_.Charging() != old_status.Charging())
-    DispatchEvent(*Event::Create(event_type_names::kChargingchange));
+    DispatchEvent(*Event::Create(event_type_names::kChargingchange), "BatteryManager::DidUpdateData #1");
   if (battery_status_.charging_time() != old_status.charging_time())
-    DispatchEvent(*Event::Create(event_type_names::kChargingtimechange));
+    DispatchEvent(*Event::Create(event_type_names::kChargingtimechange), "BatteryManager::DidUpdateData #2");
   if (battery_status_.discharging_time() != old_status.discharging_time())
-    DispatchEvent(*Event::Create(event_type_names::kDischargingtimechange));
+    DispatchEvent(*Event::Create(event_type_names::kDischargingtimechange), "BatteryManager::DidUpdateData #3");
   if (battery_status_.Level() != old_status.Level())
-    DispatchEvent(*Event::Create(event_type_names::kLevelchange));
+    DispatchEvent(*Event::Create(event_type_names::kLevelchange), "BatteryManager::DidUpdateData #3");
 }
 
 void BatteryManager::RegisterWithDispatcher() {

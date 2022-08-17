@@ -338,7 +338,7 @@ void DedicatedWorker::OnScriptLoadStartFailed() {
 void DedicatedWorker::DispatchErrorEventForScriptFetchFailure() {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   // TODO(nhiroki): Add a console error message.
-  DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
+  DispatchEvent(*Event::CreateCancelable(event_type_names::kError), "DedicatedWorker::DispatchErrorEventForScriptFetchFailure");
 }
 
 std::unique_ptr<WebContentSettingsClient>

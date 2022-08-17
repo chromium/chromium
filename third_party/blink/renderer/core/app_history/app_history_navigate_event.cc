@@ -58,7 +58,7 @@ class NavigateCompletion final : public ScriptFunction {
 
   ScriptValue Call(ScriptValue value) final {
     DCHECK(window_);
-    AppHistory::appHistory(*window_)->DispatchEvent(*InitEvent(value));
+    AppHistory::appHistory(*window_)->DispatchEvent(*InitEvent(value), "NavigationCompletion::Call");
     window_ = nullptr;
     return ScriptValue();
   }
@@ -82,7 +82,7 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
 
 bool AppHistoryNavigateEvent::Fire(AppHistory* app_history,
                                    bool same_document) {
-  app_history->DispatchEvent(*this);
+  app_history->DispatchEvent(*this, "AppHistoryNavigateEvent::Fire");
   if (!DomWindow())
     return false;
 

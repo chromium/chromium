@@ -107,9 +107,9 @@ void HTMLStyleElement::DispatchPendingEvent(
   if (is_load_event) {
     if (GetDocument().HasListenerType(
             Document::kLoadListenerAtCapturePhaseOrAtStyleElement))
-      DispatchEvent(*Event::Create(event_type_names::kLoad));
+      DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLStyleElement::DispatchPendingEvent #1");
   } else {
-    DispatchEvent(*Event::Create(event_type_names::kError));
+    DispatchEvent(*Event::Create(event_type_names::kError), "HTMLStyleElement::DispatchPendingEvent #2");
   }
   // Checks Document's load event synchronously here for performance.
   // This is safe because dispatchPendingEvent() is called asynchronously.

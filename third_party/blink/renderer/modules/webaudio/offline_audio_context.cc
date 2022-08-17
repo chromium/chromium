@@ -363,7 +363,7 @@ void OfflineAudioContext::FireCompletionEvent() {
 
     // Call the offline rendering completion event listener and resolve the
     // promise too.
-    DispatchEvent(*OfflineAudioCompletionEvent::Create(rendered_buffer));
+    DispatchEvent(*OfflineAudioCompletionEvent::Create(rendered_buffer), "OfflineAudioContext::FireCompletionEvent");
     complete_resolver_->Resolve(rendered_buffer);
   } else {
     // The resolver should be rejected when the execution context is gone.

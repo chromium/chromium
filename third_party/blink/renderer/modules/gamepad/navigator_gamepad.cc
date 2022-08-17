@@ -421,7 +421,7 @@ void NavigatorGamepad::DispatchGamepadEvent(const AtomicString& event_name,
   DCHECK(has_connection_event_listener_);
   DCHECK(gamepad);
   DomWindow()->DispatchEvent(*GamepadEvent::Create(
-      event_name, Event::Bubbles::kNo, Event::Cancelable::kYes, gamepad));
+      event_name, Event::Bubbles::kNo, Event::Cancelable::kYes, gamepad), "NavigatorGamepad::DispatchGamepadEvent");
 }
 
 void NavigatorGamepad::PageVisibilityChanged() {

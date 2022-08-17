@@ -538,7 +538,7 @@ DispatchEventResult DragController::DispatchTextInputEventFor(
       CreateVisibleSelection(
           SelectionInDOMTree::Builder().Collapse(caret_position).Build()));
   return target->DispatchEvent(
-      *TextEvent::CreateForDrop(inner_frame->DomWindow(), text));
+      *TextEvent::CreateForDrop(inner_frame->DomWindow(), text), "DragController::DispatchTextInputEventFor");
 }
 
 bool DragController::ConcludeEditDrag(DragData* drag_data) {

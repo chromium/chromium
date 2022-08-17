@@ -281,7 +281,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     dom_event->SetStopPropagation(!send_key_event);
 
     return event_handling_util::ToWebInputEventResult(
-        node->DispatchEvent(*dom_event));
+        node->DispatchEvent(*dom_event, "KeyboardEventManager::KeyEvent #1"));
   }
 
   WebKeyboardEvent key_down_event = initial_key_event;
@@ -300,7 +300,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   if (!keydown->ctrlKey() && !keydown->altKey() && !keydown->metaKey())
     node->UpdateHadKeyboardEvent(*keydown);
 
-  DispatchEventResult dispatch_result = node->DispatchEvent(*keydown);
+  DispatchEventResult dispatch_result = node->DispatchEvent(*keydown, "KeyboardEventManager::KeyEvent #2");
   if (dispatch_result != DispatchEventResult::kNotCanceled)
     return event_handling_util::ToWebInputEventResult(dispatch_result);
 
@@ -343,7 +343,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   keypress->SetStopPropagation(!send_key_event);
 
   return event_handling_util::ToWebInputEventResult(
-      node->DispatchEvent(*keypress));
+      node->DispatchEvent(*keypress, "KeyboardEventManager::KeyEvent #3"));
 }
 
 void KeyboardEventManager::CapsLockStateMayHaveChanged() {
@@ -549,7 +549,7 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
   }
 
   if (HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog())
-    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
+    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel), "KeyboardEventManager::DefaultEscapeEventHandler");
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {

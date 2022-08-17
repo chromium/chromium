@@ -3589,7 +3589,7 @@ void RTCPeerConnection::CloseInternal() {
 void RTCPeerConnection::MaybeDispatchEvent(Event* event) {
   if (suppress_events_)
     return;
-  DispatchEvent(*event);
+  DispatchEvent(*event, "RTCPeerConnection::MaybeDispatchEvent");
 }
 
 void RTCPeerConnection::ScheduleDispatchEvent(Event* event) {
@@ -3652,7 +3652,7 @@ void RTCPeerConnection::DispatchScheduledEvents() {
   HeapVector<Member<EventWrapper>>::iterator it = events.begin();
   for (; it != events.end(); ++it) {
     if ((*it)->Setup()) {
-      DispatchEvent(*(*it)->event_.Release());
+      DispatchEvent(*(*it)->event_.Release(), "RTCPeerConnection::DispatchScheduledEvents");
     }
   }
 

@@ -162,12 +162,12 @@ Element& SVGScriptElement::CloneWithoutAttributesAndChildren(
 }
 
 void SVGScriptElement::DispatchLoadEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "SVGScriptElement::DispatchLoadEvent");
   have_fired_load_ = true;
 }
 
 void SVGScriptElement::DispatchErrorEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "SVGScriptElement::DispatchErrorEvent");
 }
 
 void SVGScriptElement::SetScriptElementForBinding(

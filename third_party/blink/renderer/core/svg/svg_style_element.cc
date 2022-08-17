@@ -135,7 +135,7 @@ void SVGStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
 }
 
 void SVGStyleElement::DispatchPendingEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "SVGStyleElement::DispatchPendingEvent");
 }
 
 void SVGStyleElement::Trace(Visitor* visitor) const {

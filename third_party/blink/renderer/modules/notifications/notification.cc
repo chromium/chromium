@@ -243,7 +243,7 @@ void Notification::close() {
 }
 
 void Notification::OnShow() {
-  DispatchEvent(*Event::Create(event_type_names::kShow));
+  DispatchEvent(*Event::Create(event_type_names::kShow), "Notification::OnShow");
 }
 
 void Notification::OnClick(OnClickCallback completed_closure) {
@@ -255,7 +255,7 @@ void Notification::OnClick(OnClickCallback completed_closure) {
         mojom::blink::UserActivationNotificationType::kInteraction);
   }
   ScopedWindowFocusAllowedIndicator window_focus_allowed(GetExecutionContext());
-  DispatchEvent(*Event::Create(event_type_names::kClick));
+  DispatchEvent(*Event::Create(event_type_names::kClick), "Notification::OnClick");
 
   std::move(completed_closure).Run();
 }
@@ -265,13 +265,13 @@ void Notification::OnClose(OnCloseCallback completed_closure) {
   // should be Closing if the developer initiated the close.
   if (state_ == State::kShowing || state_ == State::kClosing) {
     state_ = State::kClosed;
-    DispatchEvent(*Event::Create(event_type_names::kClose));
+    DispatchEvent(*Event::Create(event_type_names::kClose), "Notification::OnClose");
   }
   std::move(completed_closure).Run();
 }
 
 void Notification::DispatchErrorEvent() {
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  DispatchEvent(*Event::Create(event_type_names::kError), "Notification::DispatchErrorEvent");
 }
 
 String Notification::title() const {

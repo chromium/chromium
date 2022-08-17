@@ -592,7 +592,7 @@ class Document::NetworkStateObserver final
     AtomicString event_name =
         on_line ? event_type_names::kOnline : event_type_names::kOffline;
     auto* window = To<LocalDOMWindow>(GetExecutionContext());
-    window->DispatchEvent(*Event::Create(event_name));
+    window->DispatchEvent(*Event::Create(event_name), "Document::NetworkStateObserver::OnLineStateChange");
     probe::NetworkStateChanged(window->GetFrame(), on_line);
   }
 
@@ -1463,7 +1463,7 @@ void Document::SetReadyState(DocumentReadyState ready_state) {
   }
 
   ready_state_ = ready_state;
-  DispatchEvent(*Event::Create(event_type_names::kReadystatechange));
+  DispatchEvent(*Event::Create(event_type_names::kReadystatechange), "Document::SetReadyState");
 }
 
 bool Document::IsLoadCompleted() const {
@@ -1812,10 +1812,11 @@ void Document::DidChangeVisibilityState() {
     // tab and update the visibility state.
     return;
   }
-  DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange));
+  DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange), "Document::DidChangeVisibilityState #1");
   // Also send out the deprecated version until it can be removed.
   DispatchEvent(
-      *Event::CreateBubble(event_type_names::kWebkitvisibilitychange));
+      *Event::CreateBubble(event_type_names::kWebkitvisibilitychange),
+      "Document::DidChangeVisibilityState #2");
 
   if (IsPageVisible())
     GetDocumentAnimations().MarkAnimationsCompositorPending();
@@ -4081,7 +4082,7 @@ void Document::DispatchUnloadEvents(
     // other notifications as we're about to be unloaded.
     const base::TimeTicks pagevisibility_hidden_event_start =
         base::TimeTicks::Now();
-    DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange));
+    DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange), "Document::DispatchUnloadEvents #1");
     const base::TimeTicks pagevisibility_hidden_event_end =
         base::TimeTicks::Now();
     DEFINE_STATIC_LOCAL(
@@ -4090,7 +4091,8 @@ void Document::DispatchUnloadEvents(
     pagevisibility_histogram.CountMicroseconds(
         pagevisibility_hidden_event_end - pagevisibility_hidden_event_start);
     DispatchEvent(
-        *Event::CreateBubble(event_type_names::kWebkitvisibilitychange));
+        *Event::CreateBubble(event_type_names::kWebkitvisibilitychange),
+        "Document::DispatchUnloadEvents #2");
   }
   if (!dom_window_)
     return;
@@ -4126,7 +4128,7 @@ void Document::DispatchUnloadEvents(
 void Document::DispatchFreezeEvent() {
   const base::TimeTicks freeze_event_start = base::TimeTicks::Now();
   SetFreezingInProgress(true);
-  DispatchEvent(*Event::Create(event_type_names::kFreeze));
+  DispatchEvent(*Event::Create(event_type_names::kFreeze), "Document::DispatchFreezeEvent");
   SetFreezingInProgress(false);
   const base::TimeTicks freeze_event_end = base::TimeTicks::Now();
   DEFINE_STATIC_LOCAL(CustomCountHistogram, freeze_histogram,
@@ -6918,7 +6920,7 @@ void Document::FinishedParsing() {
   // dispatched in a queued task, see https://crbug.com/425790
   if (document_timing_.DomContentLoadedEventStart().is_null())
     document_timing_.MarkDomContentLoadedEventStart();
-  DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded));
+  DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded), "Document::FinishedParsing");
   if (document_timing_.DomContentLoadedEventEnd().is_null())
     document_timing_.MarkDomContentLoadedEventEnd();
   SetParsingState(kFinishedParsing);
@@ -8509,7 +8511,7 @@ void Document::ActivateForPrerendering() {
   if (DocumentLoader* loader = Loader())
     loader->NotifyPrerenderingDocumentActivated();
 
-  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange), "Document::ActivateForPrerendering");
 
   if (LocalFrame* frame = GetFrame())
     frame->DidActivateForPrerendering();
