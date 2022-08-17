@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -181,8 +182,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void SetUpForAnimation();
 
   // Set up for icons that animate their labels in and then automatically out
-  // after a period of time.
-  void SetUpForInOutAnimation();
+  // after a period of time. The duration of the slide includes the just the
+  // time when the label is fully expanded, it does not include the time to
+  // animate in and out.
+  void SetUpForInOutAnimation(
+      base::TimeDelta duration = base::Milliseconds(1800));
 
   // Animates the view in and disables highlighting for hover and focus. If a
   // |string_id| is provided it also sets/changes the label to that string.
