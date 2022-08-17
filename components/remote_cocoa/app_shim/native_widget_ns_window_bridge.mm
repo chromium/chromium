@@ -707,8 +707,9 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     NSData* restore_ns_data =
         [NSData dataWithBytes:pending_restoration_data_.data()
                        length:pending_restoration_data_.size()];
-    base::scoped_nsobject<NSKeyedUnarchiver> decoder(
-        [[NSKeyedUnarchiver alloc] initForReadingWithData:restore_ns_data]);
+    base::scoped_nsobject<NSKeyedUnarchiver> decoder([[NSKeyedUnarchiver alloc]
+        initForReadingFromData:restore_ns_data
+                         error:nil]);
     [window_ restoreStateWithCoder:decoder];
     pending_restoration_data_.clear();
 
