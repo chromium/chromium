@@ -372,6 +372,11 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
     context->GetBrowserInterfaceBroker().GetInterface(
         observer_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+
+    if (!observer_.is_bound()) {
+      resolver->Reject(
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+    }
   }
 
   mojom::blink::LockManager::WaitMode wait =
