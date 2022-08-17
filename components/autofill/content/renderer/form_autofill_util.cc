@@ -1843,6 +1843,11 @@ bool IsTextAreaElement(const WebFormControlElement& element) {
          element.FormControlTypeForAutofill() == "textarea";
 }
 
+bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
+  return IsTextAreaElement(element) ||
+         IsTextInput(element.DynamicTo<WebInputElement>());
+}
+
 bool IsCheckableElement(const WebInputElement& element) {
   if (element.IsNull())
     return false;

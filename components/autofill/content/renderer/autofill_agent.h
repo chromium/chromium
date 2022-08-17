@@ -257,9 +257,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DoAcceptDataListSuggestion(FieldRendererId field_id,
                                   const std::u16string& suggested_value);
 
-  // Set |node| to display the given |value|.
+  // Set `element` to display the given `value`.
   void DoFillFieldWithValue(const std::u16string& value,
-                            blink::WebInputElement& node,
+                            blink::WebFormControlElement& element,
                             blink::WebAutofillState autofill_state);
 
   // Set |node| to display the given |value| as a preview.  The preview is

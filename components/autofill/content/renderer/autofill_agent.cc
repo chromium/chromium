@@ -319,11 +319,13 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
     return;
   }
 
-  const WebInputElement input = element.DynamicTo<WebInputElement>();
+  const WebFormControlElement form_control_element =
+      element.DynamicTo<WebFormControlElement>();
 
   bool focus_moved_to_new_form = false;
   if (!last_interacted_form_.IsNull() &&
-      (input.IsNull() || last_interacted_form_ != input.Form())) {
+      (form_control_element.IsNull() ||
+       last_interacted_form_ != form_control_element.Form())) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
     GetAutofillDriver().FocusNoLongerOnForm(/*had_interacted_form=*/true);
@@ -345,11 +347,13 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   if (focus_moved_to_new_form)
     return;
 
-  if (input.IsNull() || !input.IsEnabled() || input.IsReadOnly() ||
-      !input.IsTextField())
+  if (form_control_element.IsNull() || !form_control_element.IsEnabled() ||
+      form_control_element.IsReadOnly() ||
+      !form_util::IsTextAreaElementOrTextInput(form_control_element)) {
     return;
+  }
 
-  element_ = input;
+  element_ = form_control_element;
 
   FormData form;
   FormFieldData field;
@@ -626,9 +630,8 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
     return;
   }
 
-  WebInputElement input_element = element_.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull())
-    DoFillFieldWithValue(value, input_element, WebAutofillState::kAutofilled);
+  if (form_util::IsTextAreaElementOrTextInput(element_))
+    DoFillFieldWithValue(value, element_, WebAutofillState::kAutofilled);
 }
 
 void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
@@ -684,14 +687,7 @@ void AutofillAgent::AcceptDataListSuggestion(
 
   WebInputElement input_element = element_.DynamicTo<WebInputElement>();
   if (input_element.IsNull()) {
-    // For reasons not understood yet, this is triggered on elements which are
-    // not input elements.
-
-    // TODO(crbug.com/1048270) Gather debug data.
-    DEBUG_ALIAS_FOR_CSTR(element_name, element_.TagName().Latin1().c_str(), 64);
-    base::debug::DumpWithoutCrashing();
-
-    // Keep this return after removing the TODO(crbug.com/1048270) above.
+    // Early return for non-input fields such as textarea.
     return;
   }
   std::u16string new_value = suggested_value;
@@ -717,7 +713,7 @@ void AutofillAgent::AcceptDataListSuggestion(
 
     new_value = base::JoinString(parts, u",");
   }
-  DoFillFieldWithValue(new_value, input_element, WebAutofillState::kNotFilled);
+  DoFillFieldWithValue(new_value, element_, WebAutofillState::kNotFilled);
 }
 
 void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,
@@ -946,13 +942,19 @@ void AutofillAgent::QueryAutofillSuggestions(
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
-                                         WebInputElement& node,
+                                         blink::WebFormControlElement& element,
                                          WebAutofillState autofill_state) {
-  DCHECK(IsOwnedByFrame(node, render_frame()));
+  DCHECK(IsOwnedByFrame(element, render_frame()));
 
   form_tracker_.set_ignore_control_changes(true);
-  node.SetAutofillValue(blink::WebString::FromUTF16(value), autofill_state);
-  password_autofill_agent_->UpdateStateForTextChange(node);
+
+  element.SetAutofillValue(blink::WebString::FromUTF16(value), autofill_state);
+
+  WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  // `input_element` can be null for textarea elements.
+  if (!input_element.IsNull())
+    password_autofill_agent_->UpdateStateForTextChange(input_element);
+
   form_tracker_.set_ignore_control_changes(false);
 }
 
@@ -1151,10 +1153,11 @@ void AutofillAgent::HandleFocusChangeComplete() {
   // are used, treat the focused node as if it was the last clicked. Also check
   // to ensure focus is on a field where text can be entered.
   if ((focused_node_was_last_clicked_ || is_screen_reader_enabled_) &&
-      !focused_element.IsNull() && focused_element.IsFormControlElement() &&
-      (form_util::IsTextInput(focused_element.DynamicTo<WebInputElement>()) ||
-       focused_element.HasHTMLTagName("textarea"))) {
-    FormControlElementClicked(focused_element.To<WebFormControlElement>());
+      !focused_element.IsNull() && focused_element.IsFormControlElement()) {
+    WebFormControlElement focused_form_control_element =
+        focused_element.To<WebFormControlElement>();
+    if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element))
+      FormControlElementClicked(focused_form_control_element);
   }
 
   focused_node_was_last_clicked_ = false;

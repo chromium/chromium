@@ -173,6 +173,9 @@ bool IsSelectElement(const blink::WebFormControlElement& element);
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
 
+// Returns true if `element` is a textarea element or a text input element.
+bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
+
 // Returns true if |element| is a checkbox or a radio button element.
 bool IsCheckableElement(const blink::WebInputElement& element);
 

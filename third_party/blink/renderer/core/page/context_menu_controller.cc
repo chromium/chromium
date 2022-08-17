@@ -135,8 +135,9 @@ uint32_t EnumToBitmask(enumType outcome) {
 }
 
 absl::optional<uint64_t> GetRendererId(HitTestResult& result) {
-  if (auto* input = DynamicTo<HTMLInputElement>(result.InnerNode()))
-    return input->UniqueRendererFormControlId();
+  if (auto* text_element = DynamicTo<TextControlElement>(result.InnerNode())) {
+    return text_element->UniqueRendererFormControlId();
+  }
   return absl::nullopt;
 }
 
@@ -370,6 +371,8 @@ static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
     if (input->IsTextField())
       return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
     return mojom::blink::ContextMenuDataInputFieldType::kOther;
+  } else if (IsA<HTMLTextAreaElement>(result.InnerNode())) {
+    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
   }
   return mojom::blink::ContextMenuDataInputFieldType::kNone;
 }
