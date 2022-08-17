@@ -16,10 +16,13 @@
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/guest_host.h"
-#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class RenderFrameHost;
+}
 
 namespace guest_view {
 
@@ -196,9 +199,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // <iframe> which is cross process.
   virtual bool CanBeEmbeddedInsideCrossProcessFrames() const;
 
-  // TODO(crbug.com/1261928): Add a |GetGuestMainFrame| method to allow direct
-  // access to the GuestView's main frame, without using the guest inner
-  // WebContents which will soon be removed.
+  content::RenderFrameHost* GetGuestMainFrame() const;
 
  protected:
   explicit GuestViewBase(content::WebContents* owner_web_contents);
