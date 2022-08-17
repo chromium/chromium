@@ -1160,6 +1160,9 @@ bool IsPersistentQuotaIsTemporaryQuota() {
              features::kPersistentQuotaIsTemporaryQuota);
 }
 
+const base::Feature kPrefixedStorageInfo{"PrefixedStorageInfo",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDelayLowPriorityRequestsAccordingToNetworkState{
     "DelayLowPriorityRequestsAccordingToNetworkState",
     base::FEATURE_DISABLED_BY_DEFAULT};

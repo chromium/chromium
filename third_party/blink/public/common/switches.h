@@ -51,6 +51,7 @@ BLINK_COMMON_EXPORT extern const char kMinHeightForGpuRasterTile[];
 BLINK_COMMON_EXPORT extern const char kNetworkQuietTimeout[];
 BLINK_COMMON_EXPORT extern const char kNumRasterThreads[];
 BLINK_COMMON_EXPORT extern const char kPersistentQuotaEnabled[];
+BLINK_COMMON_EXPORT extern const char kPrefixedStorageInfoEnabled[];
 BLINK_COMMON_EXPORT extern const char kSetTimeoutWithout1MsClampPolicy[];
 BLINK_COMMON_EXPORT extern const char
     kSetTimeoutWithout1MsClampPolicy_ForceDisable[];

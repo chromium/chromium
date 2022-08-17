@@ -1719,6 +1719,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPersistentQuotaEnabled,
     storage::kPersistentQuotaEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kPrefixedStorageInfoEnabled,
+    storage::kPrefixedStorageInfoEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

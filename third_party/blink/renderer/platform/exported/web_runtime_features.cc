@@ -699,4 +699,8 @@ void WebRuntimeFeatures::EnableGetDisplayMediaSetAutoSelectAllScreens(
       enable);
 }
 
+void WebRuntimeFeatures::EnablePrefixedStorageInfo(bool enable) {
+  RuntimeEnabledFeatures::SetPrefixedStorageInfoEnabled(enable);
+}
+
 }  // namespace blink

@@ -535,6 +535,12 @@ BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
 BLINK_COMMON_EXPORT bool IsPersistentQuotaIsTemporaryQuota();
 
+// Gates the non-standard legacy quota API `window.webkitStorageInfo`
+// which is disabled starting M106.
+// TODO(crbug.com/695586): Cleanup on or after M108.
+BLINK_COMMON_EXPORT
+extern const base::Feature kPrefixedStorageInfo;
+
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
 // requests in the tight mode. The factors include:

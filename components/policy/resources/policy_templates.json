@@ -32712,6 +32712,38 @@ This policy has no effect if the option to keep existing browsing data is not av
       If this policy is unset or disabled, webkitRequestFileSystem with persistent type will operate with temporary quota.
       ''',
     },
+    {
+      'name': 'PrefixedStorageInfoEnabled',
+      'owners': ['ayui@chromium.org', 'chrome-owp-storage@google.com'],
+      'caption': 'Re-enable the deprecated window.webkitStorageInfo API',
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:106-107', 'chrome_os:106-107', 'android:106-107'],
+      'future_on': ['fuchsia'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'window.webkitStorageInfo will be available.',
+        },
+        {
+          'value': False,
+          'caption': 'window.webkitStorageInfo will be unavailable.',
+        },
+      ],
+      'default': False,
+      'example_value': False,
+      'id': 1004,
+      'tags': [],
+      'desc': '''Starting in M106, the non-standard API window.webkitStorageInfo will be removed.
+      This policy re-enables the API until M107.
+      If this policy is set to Enabled, the window.webkitStorageInfo API will be available.
+      If this policy is set to Disabled or not set, the window.webkitStorageInfo API will be unavailable.
+      ''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -33718,6 +33750,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1003,
+  'highest_id_currently_used': 1004,
   'highest_atomic_group_id_currently_used': 43
 }

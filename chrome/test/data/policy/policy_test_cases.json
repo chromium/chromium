@@ -19291,5 +19291,41 @@
         }
       }
     ]
+  },
+  "PrefixedStorageInfoEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.prefixed_storage_info_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "PrefixedStorageInfoEnabled": false },
+        "prefs": {
+          "policy.prefixed_storage_info_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "PrefixedStorageInfoEnabled": true },
+        "prefs": {
+          "policy.prefixed_storage_info_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

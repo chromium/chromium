@@ -180,5 +180,8 @@ extern const char kEventPathPolicy_ForceEnable[] = "1";
 // Controls whether persistent quota is force enabled.
 const char kPersistentQuotaEnabled[] = "persistent-quota-enabled";
 
+// Controls whether legacy quota API webkitStorageInfo is forced enabled.
+const char kPrefixedStorageInfoEnabled[] = "prefixed-storage-info-enabled";
+
 }  // namespace switches
 }  // namespace blink

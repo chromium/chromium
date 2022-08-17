@@ -18,10 +18,15 @@ const char kWebSQLNonSecureContextEnabled[] =
 // Boolean policy to force enable persistent quota.
 const char kPersistentQuotaEnabled[] = "policy.persistent_quota_enabled";
 
+// Boolean policy to force PrefixedStorageInfo to be enabled.
+const char kPrefixedStorageInfoEnabled[] =
+    "policy.prefixed_storage_info_enabled";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebSQLAccess, false);
   registry->RegisterBooleanPref(kWebSQLNonSecureContextEnabled, false);
   registry->RegisterBooleanPref(kPersistentQuotaEnabled, false);
+  registry->RegisterBooleanPref(kPrefixedStorageInfoEnabled, false);
 }
 
 }  // namespace storage
