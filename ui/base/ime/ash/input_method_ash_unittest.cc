@@ -1009,7 +1009,7 @@ TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
           u"A",
           TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
-  EXPECT_EQ(u"", inserted_text_);
+  EXPECT_EQ(0, inserted_char_);
 
   // Do callback.
   std::move(mock_ime_engine_handler_->last_passed_callback()).Run(true);
@@ -1022,7 +1022,7 @@ TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
   EXPECT_EQ(kFlags, stored_event.flags());
   EXPECT_TRUE(ime_->process_key_event_post_ime_args().handled);
 
-  EXPECT_EQ(u"A", inserted_text_);
+  EXPECT_EQ(L'A', inserted_char_);
 }
 
 TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
@@ -1189,7 +1189,7 @@ TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterCommitText) {
   std::move(mock_ime_engine_handler_->last_passed_callback())
       .Run(/*handled=*/true);
 
-  EXPECT_EQ(u"a", inserted_text_);
+  EXPECT_EQ(L'a', inserted_char_);
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
 }
 
