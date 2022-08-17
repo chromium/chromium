@@ -139,10 +139,10 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
                                                 int error,
                                                 int threshold,
                                                 int error_reset_time) {
-  const base::Value* pref =
-      pref_service->GetDictionary(prefs::kRecurrentSSLInterstitial);
-  const base::Value* list_value =
-      pref->FindListKey(net::ErrorToShortString(error));
+  const base::Value::Dict& pref =
+      pref_service->GetValueDict(prefs::kRecurrentSSLInterstitial);
+  const base::Value::List* list_value =
+      pref.FindList(net::ErrorToShortString(error));
   if (!list_value)
     return false;
 
@@ -152,7 +152,7 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
   // Assume that the values in the list are in increasing order;
   // UpdateRecurrentInterstitialPref() maintains this ordering. Check if there
   // are more than |threshold| values after the cutoff time.
-  base::Value::ConstListView error_list = list_value->GetListDeprecated();
+  const base::Value::List& error_list = *list_value;
   for (size_t i = 0; i < error_list.size(); i++) {
     if (base::Time::FromJsTime(error_list[i].GetDouble()) >= cutoff_time)
       return base::MakeStrictNum(error_list.size() - i) >= threshold;
