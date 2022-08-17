@@ -607,10 +607,8 @@ export class Panel extends PanelInterface {
       if (cell.tagName === 'TD') {
         cell.className = 'highlighted-cell';
         const companionIDs = cell.getAttribute('data-companionIDs');
-        companionIDs.split(' ').map(function(companionID) {
-          const companion = $(companionID);
-          companion.className = 'highlighted-cell';
-        });
+        companionIDs.split(' ').forEach(
+            companionID => $(companionID).className = 'highlighted-cell');
       }
     };
 
@@ -619,10 +617,8 @@ export class Panel extends PanelInterface {
       if (cell.tagName === 'TD') {
         cell.className = 'unhighlighted-cell';
         const companionIDs = cell.getAttribute('data-companionIDs');
-        companionIDs.split(' ').map(function(companionID) {
-          const companion = $(companionID);
-          companion.className = 'unhighlighted-cell';
-        });
+        companionIDs.split(' ').forEach(
+            companionID => $(companionID).className = 'unhighlighted-cell');
       }
     };
 

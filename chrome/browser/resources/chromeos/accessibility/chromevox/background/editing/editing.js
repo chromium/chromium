@@ -707,7 +707,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     if (!this.node_.constructor) {
       return;
     }
-    value.getSpansInstanceOf(this.node_.constructor).forEach(function(span) {
+    value.getSpansInstanceOf(this.node_.constructor).forEach(span => {
       const style = span.role === RoleType.INLINE_TEXT_BOX ? span.parent : span;
       if (!style) {
         return;
@@ -832,7 +832,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     }
 
     if (msgs.length) {
-      msgs.forEach(function(msg) {
+      msgs.forEach(msg => {
         ChromeVox.tts.speak(
             Msgs.getMsg(msg), QueueMode.QUEUE,
             AbstractTts.PERSONALITY_ANNOTATION);
@@ -902,9 +902,9 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     }
 
     if (msgs.length) {
-      msgs.forEach(function(obj) {
+      msgs.forEach(msgObject => {
         ChromeVox.tts.speak(
-            Msgs.getMsg(obj.msg, obj.opt_subs), QueueMode.QUEUE,
+            Msgs.getMsg(msgObject.msg, msgObject.opt_subs), QueueMode.QUEUE,
             AbstractTts.PERSONALITY_ANNOTATION);
       });
     }

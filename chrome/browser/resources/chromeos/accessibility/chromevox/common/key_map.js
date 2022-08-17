@@ -59,9 +59,7 @@ export class KeyMap {
    * @return {Array<KeySequence>} Array of all keys.
    */
   keys() {
-    return this.bindings_.map(function(binding) {
-      return binding.sequence;
-    });
+    return this.bindings_.map(binding => binding.sequence);
   }
 
   /**

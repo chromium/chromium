@@ -437,9 +437,8 @@ export class TtsBackground extends ChromeTtsBase {
 
     switch (event.type) {
       case 'start':
-        this.capturingTtsEventListeners_.forEach(function(listener) {
-          listener.onTtsStart();
-        });
+        this.capturingTtsEventListeners_.forEach(
+            listener => listener.onTtsStart());
         if (utterance.properties['startCallback']) {
           try {
             utterance.properties['startCallback']();
@@ -450,9 +449,8 @@ export class TtsBackground extends ChromeTtsBase {
       case 'end':
         // End callbacks could cause additional speech to queue up.
         this.currentUtterance_ = null;
-        this.capturingTtsEventListeners_.forEach(function(listener) {
-          listener.onTtsEnd();
-        });
+        this.capturingTtsEventListeners_.forEach(
+            listener => listener.onTtsEnd());
         if (utterance.properties['endCallback']) {
           try {
             utterance.properties['endCallback']();
@@ -468,9 +466,8 @@ export class TtsBackground extends ChromeTtsBase {
           this.cancelUtterance_(this.utteranceQueue_[i]);
         }
         this.utteranceQueue_.length = 0;
-        this.capturingTtsEventListeners_.forEach(function(listener) {
-          listener.onTtsInterrupted();
-        });
+        this.capturingTtsEventListeners_.forEach(
+            listener => listener.onTtsInterrupted());
         break;
       case 'error':
         this.onError_(event['errorMessage']);
@@ -579,9 +576,8 @@ export class TtsBackground extends ChromeTtsBase {
     (new PanelCommand(PanelCommandType.CLEAR_SPEECH)).send();
     chrome.tts.stop();
 
-    this.capturingTtsEventListeners_.forEach(function(listener) {
-      listener.onTtsInterrupted();
-    });
+    this.capturingTtsEventListeners_.forEach(
+        listener => listener.onTtsInterrupted());
   }
 
   /** @override */

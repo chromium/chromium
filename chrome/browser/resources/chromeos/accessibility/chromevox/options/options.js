@@ -267,9 +267,7 @@ export class OptionsPage {
         select.innerHTML = '';
         // TODO(plundblad): voiceName can actually be omitted in the TTS engine.
         // We should generate a name in that case.
-        voices.forEach(function(voice) {
-          voice.voiceName = voice.voiceName || '';
-        });
+        voices.forEach(voice => voice.voiceName = voice.voiceName || '');
         voices.sort(function(a, b) {
           // Prefer Google tts voices over all others.
           if (a.extensionId === GOOGLE_TTS_EXTENSION_ID &&
@@ -291,9 +289,8 @@ export class OptionsPage {
           return 0;
         });
         addVoiceOption(Msgs.getMsg('system_voice'), constants.SYSTEM_VOICE);
-        voices.forEach(voice => {
-          addVoiceOption(voice.voiceName, voice.voiceName);
-        });
+        voices.forEach(
+            voice => addVoiceOption(voice.voiceName, voice.voiceName));
       });
     }
 

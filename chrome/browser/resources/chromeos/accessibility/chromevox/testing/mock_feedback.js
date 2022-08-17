@@ -162,17 +162,15 @@ MockFeedback = class {
   expectSpeech() {
     assertFalse(
         this.replaying_, 'expectSpeech: Should not already be replaying.');
-    Array.prototype.forEach.call(arguments, function(text) {
+    Array.prototype.forEach.call(arguments, text => {
       this.pendingActions_.push({
-        perform: function() {
-          return Boolean(
-              MockFeedback.matchAndConsume_(text, {}, this.pendingUtterances_));
-        }.bind(this),
+        perform: () => Boolean(
+            MockFeedback.matchAndConsume_(text, {}, this.pendingUtterances_)),
         toString() {
           return 'Speak \'' + text + '\'';
         },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -236,18 +234,16 @@ MockFeedback = class {
     assertFalse(
         this.replaying_,
         'expectSpeechWithProperties: Should not already be replaying.');
-    Array.prototype.forEach.call(rest, function(text) {
+    Array.prototype.forEach.call(rest, text => {
       this.pendingActions_.push({
-        perform: function() {
-          return Boolean(MockFeedback.matchAndConsume_(
-              text, expectedProps, this.pendingUtterances_));
-        }.bind(this),
+        perform: () => Boolean(MockFeedback.matchAndConsume_(
+            text, expectedProps, this.pendingUtterances_)),
         toString() {
           return 'Speak \'' + text + '\' with props ' +
               JSON.stringify(expectedProps);
         },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -267,9 +263,9 @@ MockFeedback = class {
     assertFalse(
         this.replaying_,
         'expectNextSpeechUtteranceIsNot: Should not already be replaying.');
-    Array.prototype.forEach.call(arguments, function(text) {
+    Array.prototype.forEach.call(arguments, text => {
       this.pendingActions_.push({
-        perform: function() {
+        perform: () => {
           if (this.pendingUtterances_.length === 0) {
             return false;
           }
@@ -278,12 +274,12 @@ MockFeedback = class {
             assertFalse(true, 'Got denied utterance "' + text + '".');
           }
           return true;
-        }.bind(this),
+        },
         toString() {
           return 'Do not speak \'' + text + '\'';
         },
       });
-    }.bind(this));
+    });
     return this;
   }
 
@@ -491,16 +487,16 @@ MockFeedback = class {
       if (list.length > 0) {
         console.log(
             'Pending ' + desc + ':\n  ' +
-            list.map(function(i) {
-                  let ret = '\'' + i.text + '\'';
-                  if ('properties' in i) {
-                    ret += ' properties=' + JSON.stringify(i.properties);
+            list.map(pending => {
+                  let ret = '\'' + pending.text + '\'';
+                  if ('properties' in pending) {
+                    ret += ' properties=' + JSON.stringify(pending.properties);
                   }
-                  if ('startIndex' in i) {
-                    ret += ' startIndex=' + i.startIndex;
+                  if ('startIndex' in pending) {
+                    ret += ' startIndex=' + pending.startIndex;
                   }
-                  if ('endIndex' in i) {
-                    ret += ' endIndex=' + i.endIndex;
+                  if ('endIndex' in pending) {
+                    ret += ' endIndex=' + pending.endIndex;
                   }
                   return ret;
                 })
@@ -550,7 +546,7 @@ MockFeedback = class {
       }
       if (candidate) {
         const consumed = pending.splice(0, i + 1);
-        consumed.forEach(function(item) {
+        consumed.forEach(item => {
           if (item.callback) {
             item.callback();
           }

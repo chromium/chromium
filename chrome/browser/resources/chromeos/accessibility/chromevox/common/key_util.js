@@ -145,9 +145,8 @@ export class KeyUtil {
    */
   static cvoxModKeyCodes() {
     const modKeyCombo = KeySequence.modKeyStr.split(/\+/g);
-    const modKeyCodes = modKeyCombo.map(function(keyString) {
-      return KeyUtil.modStringToKeyCode(keyString);
-    });
+    const modKeyCodes =
+        modKeyCombo.map(keyString => KeyUtil.modStringToKeyCode(keyString));
     return modKeyCodes;
   }
 

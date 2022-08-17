@@ -14,9 +14,8 @@ function checkBrailleOutput(expectedText, expectedSpans, output) {
   // Remove string annotations.  These are tested in the speech output and
   // there's no need to clutter the tests with the corresponding braille
   // annotations.
-  const actualSpans = actualOutput.spans_.filter(function(span) {
-    return (typeof span.value !== 'string');
-  });
+  const actualSpans =
+      actualOutput.spans_.filter(span => (typeof span.value !== 'string'));
   checkOutput_(
       expectedText, expectedSpans, actualOutput.toString(), actualSpans);
 }
@@ -361,7 +360,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
   assertEquals(expectedSpeechValues.length, expectedBrailleValues.length);
 
   let el = root.firstChild.firstChild;
-  expectedSpeechValues.forEach(function(expectedValue) {
+  expectedSpeechValues.forEach(expectedValue => {
     const range = CursorRange.fromNode(el);
     const o = new Output().withoutHints().withSpeechAndBraille(
         range, null, 'navigate');
@@ -379,7 +378,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
   });
 
   el = root.firstChild.firstChild;
-  expectedBrailleValues.forEach(function(expectedValue) {
+  expectedBrailleValues.forEach(expectedValue => {
     const range = CursorRange.fromNode(el);
     const o = new Output().withoutHints().withBraille(range, null, 'navigate');
     if (typeof expectedValue === 'string') {
@@ -1029,15 +1028,11 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
     RoleType.STATIC_TEXT,
     RoleType.WINDOW,
   ];
-  missingState = missingState.filter(function(state) {
-    return notStated.indexOf(state) === -1;
-  });
-  missingRestriction = missingRestriction.filter(function(restriction) {
-    return notRestricted.indexOf(restriction) === -1;
-  });
-  missingDescription = missingDescription.filter(function(desc) {
-    return notDescribed.indexOf(desc) === -1;
-  });
+  missingState = missingState.filter(state => notStated.indexOf(state) === -1);
+  missingRestriction = missingRestriction.filter(
+      restriction => notRestricted.indexOf(restriction) === -1);
+  missingDescription =
+      missingDescription.filter(desc => notDescribed.indexOf(desc) === -1);
 
   assertEquals(
       0, missingState.length,

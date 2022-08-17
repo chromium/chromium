@@ -105,10 +105,10 @@ export class Spannable {
       const otherSpannable = /** @type {!Spannable} */ (other);
       const originalLength = this.length;
       this.string_ += otherSpannable.string_;
-      other.spans_.forEach(function(span) {
-        this.setSpan(
-            span.value, span.start + originalLength, span.end + originalLength);
-      }.bind(this));
+      other.spans_.forEach(
+          span => this.setSpan(
+              span.value, span.start + originalLength,
+              span.end + originalLength));
     } else if (typeof other === 'string') {
       this.string_ += /** @type {string} */ (other);
     }
@@ -187,13 +187,9 @@ export class Spannable {
    * @return {!Array<{start: number, end: number}>}
    */
   getSpanIntervals(value) {
-    return this.spans_
-        .filter(function(s) {
-          return s.value === value;
-        })
-        .map(function(s) {
-          return {start: s.start, end: s.end};
-        });
+    return this.spans_.filter(span => span.value === value).map(span => {
+      return {start: span.start, end: span.end};
+    });
   }
 
   /**
@@ -240,7 +236,7 @@ export class Spannable {
     }
 
     const result = new Spannable(this.string_.substring(start, end));
-    this.spans_.forEach(function(span) {
+    this.spans_.forEach(span => {
       if (span.start <= end && span.end >= start) {
         const newStart = Math.max(0, span.start - start);
         const newEnd = Math.min(end - start, span.end - start);
@@ -312,7 +308,7 @@ export class Spannable {
     const result = {};
     result.string = this.string_;
     result.spans = [];
-    this.spans_.forEach(function(span) {
+    this.spans_.forEach(span => {
       const serializeInfo =
           serializableSpansByConstructor.get(span.value.constructor);
       if (serializeInfo) {
@@ -345,7 +341,7 @@ export class Spannable {
       throw new Error('Invalid spannable json object: no spans array');
     }
     const result = new Spannable(obj.string);
-    result.spans_ = obj.spans.map(function(span) {
+    result.spans_ = obj.spans.map(span => {
       if (typeof span.type !== 'string') {
         throw new Error(
             'Invalid span in spannable json object: type not a string');

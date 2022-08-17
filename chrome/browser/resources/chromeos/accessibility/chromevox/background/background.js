@@ -418,10 +418,9 @@ export class Background extends ChromeVoxState {
           AutomationUtil.getUniqueAncestors(prevRange.start.node, start);
 
       entered
-          .filter(f => {
-            return f.role === RoleType.PLUGIN_OBJECT ||
-                f.role === RoleType.IFRAME;
-          })
+          .filter(
+              ancestor => ancestor.role === RoleType.PLUGIN_OBJECT ||
+                  ancestor.role === RoleType.IFRAME)
           .forEach(container => {
             if (!container.state[StateType.FOCUSED]) {
               container.focus();

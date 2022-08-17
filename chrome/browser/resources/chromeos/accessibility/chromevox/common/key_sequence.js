@@ -312,26 +312,22 @@ export class KeySequence {
     // For each modifier that is held down, remove it from the combo.
     // If the combo string becomes empty, then the user has activated the combo.
     if (this.isKeyModifierActive(keyEvent, 'ctrlKey')) {
-      modifierKeyCombo = modifierKeyCombo.filter(function(modifier) {
-        return modifier !== 'Ctrl';
-      });
+      modifierKeyCombo =
+          modifierKeyCombo.filter(modifier => modifier !== 'Ctrl');
     }
     if (this.isKeyModifierActive(keyEvent, 'altKey')) {
-      modifierKeyCombo = modifierKeyCombo.filter(function(modifier) {
-        return modifier !== 'Alt';
-      });
+      modifierKeyCombo =
+          modifierKeyCombo.filter(modifier => modifier !== 'Alt');
     }
     if (this.isKeyModifierActive(keyEvent, 'shiftKey')) {
-      modifierKeyCombo = modifierKeyCombo.filter(function(modifier) {
-        return modifier !== 'Shift';
-      });
+      modifierKeyCombo =
+          modifierKeyCombo.filter(modifier => modifier !== 'Shift');
     }
     if (this.isKeyModifierActive(keyEvent, 'metaKey') ||
         this.isKeyModifierActive(keyEvent, 'searchKeyHeld')) {
       const metaKeyName = this.getMetaKeyName_();
-      modifierKeyCombo = modifierKeyCombo.filter(function(modifier) {
-        return modifier !== metaKeyName;
-      });
+      modifierKeyCombo =
+          modifierKeyCombo.filter(modifier => modifier !== metaKeyName);
     }
     return (modifierKeyCombo.length === 0);
   }

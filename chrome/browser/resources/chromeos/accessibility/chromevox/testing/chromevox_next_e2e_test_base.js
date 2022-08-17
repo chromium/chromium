@@ -18,13 +18,13 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     this.isCommonClass = opt_isCommonClass || false;
 
     if (this.runtimeDeps.length > 0) {
-      chrome.extension.getViews().forEach(function(w) {
-        this.runtimeDeps.forEach(function(dep) {
-          if (w[dep]) {
-            window[dep] = w[dep];
+      chrome.extension.getViews().forEach(view => {
+        this.runtimeDeps.forEach(dep => {
+          if (view[dep]) {
+            window[dep] = view[dep];
           }
-        }.bind(this));
-      }.bind(this));
+        });
+      });
     }
 
     this.originalOutputContextValues_ = {};

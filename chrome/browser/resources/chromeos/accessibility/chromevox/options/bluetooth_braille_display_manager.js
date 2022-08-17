@@ -236,9 +236,8 @@ export class BluetoothBrailleDisplayManager {
           this.handlePreferredDisplayConnectionStateChanged(display);
         }
       });
-      this.listeners_.forEach(listener => {
-        listener.onDisplayListChanged(displayList);
-      });
+      this.listeners_.forEach(
+          listener => listener.onDisplayListChanged(displayList));
     });
   }
 

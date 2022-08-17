@@ -51,41 +51,34 @@ export class CompositeTts {
    * @override
    */
   isSpeaking() {
-    return this.ttsEngines_.some(function(engine) {
-      return engine.isSpeaking();
-    });
+    return this.ttsEngines_.some(engine => engine.isSpeaking());
   }
 
   /**
    * @override
    */
   stop() {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.stop();
-    });
+    this.ttsEngines_.forEach(engine => engine.stop());
   }
 
   /** @override */
   addCapturingEventListener(listener) {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.addCapturingEventListener(listener);
-    });
+    this.ttsEngines_.forEach(
+        engine => engine.addCapturingEventListener(listener));
   }
 
   /** @override */
   removeCapturingEventListener(listener) {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.removeCapturingEventListener(listener);
-    });
+    this.ttsEngines_.forEach(
+        engine => engine.removeCapturingEventListener(listener));
   }
 
   /**
    * @override
    */
   increaseOrDecreaseProperty(propertyName, increase) {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.increaseOrDecreaseProperty(propertyName, increase);
-    });
+    this.ttsEngines_.forEach(
+        engine => engine.increaseOrDecreaseProperty(propertyName, increase));
   }
 
   /**
@@ -117,16 +110,13 @@ export class CompositeTts {
   /** @override */
   toggleSpeechOnOrOff() {
     let value = false;
-    this.ttsEngines_.forEach(function(engine) {
-      value = value || engine.toggleSpeechOnOrOff();
-    });
+    this.ttsEngines_.forEach(
+        engine => value = value || engine.toggleSpeechOnOrOff());
     return value;
   }
 
   /** @override */
   resetTextToSpeechSettings() {
-    this.ttsEngines_.forEach(function(engine) {
-      engine.resetTextToSpeechSettings();
-    });
+    this.ttsEngines_.forEach(engine => engine.resetTextToSpeechSettings());
   }
 }

@@ -11,10 +11,6 @@ GEN_INCLUDE([
  * Test fixture for editing tests.
  */
 ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
-  constructor() {
-    super();
-  }
-
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

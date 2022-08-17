@@ -23,9 +23,7 @@ BrailleCommandData.DOT_PATTERN_TO_COMMAND = {};
  * @return {number}
  */
 BrailleCommandData.makeDotPattern = function(dots) {
-  return dots.reduce(function(p, c) {
-    return p | (1 << c - 1);
-  }, 0);
+  return dots.reduce((pattern, cell) => pattern | (1 << cell - 1), 0);
 };
 
 /**

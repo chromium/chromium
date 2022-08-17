@@ -46,7 +46,7 @@ BrailleTable.COMMON_DEFS_FILENAME_ = 'cvox-common.cti';
 BrailleTable.getAll = function(callback) {
   const needsDisambiguation = new Map();
   function preprocess(tables) {
-    tables.forEach(function(table) {
+    tables.forEach(table => {
       // Append the common definitions to all table filenames.
       table.fileNames += (',' + BrailleTable.COMMON_DEFS_FILENAME_);
 
@@ -95,10 +95,7 @@ BrailleTable.getAll = function(callback) {
  * @return {BrailleTable.Table} The found table, or null if not found.
  */
 BrailleTable.forId = function(tables, id) {
-  return tables.filter(function(table) {
-    return table.id === id;
-  })[0] ||
-      null;
+  return tables.filter(table => table.id === id)[0] || null;
 };
 
 

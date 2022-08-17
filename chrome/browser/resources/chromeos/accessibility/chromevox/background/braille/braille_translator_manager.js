@@ -79,15 +79,13 @@ export class BrailleTranslatorManager {
       const currentLocale = chrome.i18n.getMessage('@@ui_locale').split(/[_-]/);
       const major = currentLocale[0];
       const minor = currentLocale[1];
-      const firstPass = tables.filter(function(table) {
-        return table.locale.split(/[_-]/)[0] === major;
-      });
+      const firstPass =
+          tables.filter(table => table.locale.split(/[_-]/)[0] === major);
       if (firstPass.length > 0) {
         table = firstPass[0];
         if (minor) {
-          const secondPass = firstPass.filter(function(table) {
-            return table.locale.split(/[_-]/)[1] === minor;
-          });
+          const secondPass = firstPass.filter(
+              table => table.locale.split(/[_-]/)[1] === minor);
           if (secondPass.length > 0) {
             table = secondPass[0];
           }

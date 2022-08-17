@@ -50,9 +50,8 @@ export class FindHandler {
    * @private
    */
   onTextMatch_(evt) {
-    if (!evt.target.markers.some(function(marker) {
-          return marker.flags[chrome.automation.MarkerType.TEXT_MATCH];
-        })) {
+    if (!evt.target.markers.some(
+            marker => marker.flags[chrome.automation.MarkerType.TEXT_MATCH])) {
       return;
     }
 

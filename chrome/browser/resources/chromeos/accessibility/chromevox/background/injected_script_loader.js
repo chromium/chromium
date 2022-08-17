@@ -46,8 +46,6 @@ export class InjectedScriptLoader {
       xhr.send(null);
     };
 
-    files.forEach(function(f) {
-      loadScriptAsCode(f);
-    });
+    files.forEach(file => loadScriptAsCode(file));
   }
 }

@@ -313,9 +313,8 @@ TEST_F(
           contractedOutput: 'uuuuuucuuuuuu',
         },
       ];
-      const TESTDATA_WITH_SELECTION = TESTDATA.filter(function(testCase) {
-        return testCase.input.getSpanInstanceOf(ValueSelectionSpan);
-      });
+      const TESTDATA_WITH_SELECTION = TESTDATA.filter(
+          testCase => testCase.input.getSpanInstanceOf(ValueSelectionSpan));
 
       const expType = ExpandingBrailleTranslator.ExpansionType;
       for (let i = 0, testCase; testCase = TESTDATA[i]; ++i) {

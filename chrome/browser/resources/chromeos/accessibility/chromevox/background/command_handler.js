@@ -98,14 +98,12 @@ export class CommandHandler extends CommandHandlerInterface {
         chrome.automation.getDesktop(function(d) {
           // First, try speaking the on-screen time.
           const allTime = d.findAll({role: RoleType.TIME});
-          allTime.filter(function(t) {
-            return t.root.role === RoleType.DESKTOP;
-          });
+          allTime.filter(time => time.root.role === RoleType.DESKTOP);
 
           let timeString = '';
-          allTime.forEach(function(t) {
-            if (t.name) {
-              timeString = t.name;
+          allTime.forEach(time => {
+            if (time.name) {
+              timeString = time.name;
             }
           });
           if (timeString) {
