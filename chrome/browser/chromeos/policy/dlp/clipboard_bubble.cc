@@ -26,7 +26,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/native_theme/native_theme_aura.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -134,15 +136,15 @@ void OnLearnMoreLinkClicked() {
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(hidehiko): Instantiating BrowserServiceLacros here is an unexpected
-  // use case. Get rid of this by replacing with Navigate() API invocation
-  // directly.
-  auto browser_service = std::make_unique<BrowserServiceLacros>();
-  using OpenUrlParams = crosapi::mojom::OpenUrlParams;
-  auto params = OpenUrlParams::New();
-  params->disposition = OpenUrlParams::WindowOpenDisposition::kNewForegroundTab;
-  browser_service->OpenUrl(GURL(kDlpLearnMoreUrl), std::move(params),
-                           base::DoNothing());
+  // The dlp policy applies to the main profile, so use the main profile for
+  // opening the page.
+  NavigateParams navigate_params(
+      ProfileManager::GetPrimaryUserProfile(), GURL(kDlpLearnMoreUrl),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_FROM_API));
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  Navigate(&navigate_params);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
