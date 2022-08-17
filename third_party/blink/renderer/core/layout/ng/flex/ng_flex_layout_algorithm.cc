@@ -197,24 +197,27 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   for (LayoutBox* oof_child : oof_children) {
     NGBlockNode child(oof_child);
 
-    // This code block just collects UMA stats.
-    if (is_column_) {
-      const ComputedStyle& child_style = oof_child->StyleRef();
-      const ComputedStyle& flexbox_style = Style();
+    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
+    AxisEdge cross_axis_edge =
+        CrossAxisStaticPositionEdge(Style(), child.Style());
 
+    // This code block just collects UMA stats.
+    const auto& style = Style();
+    const auto& child_style = child.Style();
+    const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
+        Style().GetWritingDirection(), child_style.Top(), child_style.Right(),
+        child_style.Bottom(), child_style.Left());
+    if (is_column_) {
       const ItemPosition normalized_alignment =
-          FlexLayoutAlgorithm::AlignmentForChild(flexbox_style, child_style);
+          FlexLayoutAlgorithm::AlignmentForChild(style, child_style);
       const ItemPosition default_justify_self_behavior =
           child.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
       const ItemPosition normalized_justify =
           FlexLayoutAlgorithm::TranslateItemPosition(
-              flexbox_style, child_style,
+              style, child_style,
               child_style.ResolvedJustifySelf(default_justify_self_behavior)
                   .GetPosition());
 
-      const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
-          flexbox_style.GetWritingDirection(), child_style.Top(),
-          child_style.Right(), child_style.Bottom(), child_style.Left());
       const bool are_cross_axis_insets_auto =
           insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
           insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
@@ -224,10 +227,17 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
         UseCounter::Count(Node().GetDocument(), WebFeature::kFlexboxNewAbsPos);
       }
     }
-
-    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
-    AxisEdge cross_axis_edge =
-        CrossAxisStaticPositionEdge(Style(), child.Style());
+    if (main_axis_edge != AxisEdge::kStart) {
+      const bool are_main_axis_insets_auto =
+          is_column_ ? insets_in_flexbox_writing_mode.BlockStart().IsAuto() &&
+                           insets_in_flexbox_writing_mode.BlockEnd().IsAuto()
+                     : insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
+                           insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
+      if (are_main_axis_insets_auto) {
+        UseCounter::Count(Node().GetDocument(),
+                          WebFeature::kFlexboxAbsPosJustifyContent);
+      }
+    }
 
     AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
     AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
