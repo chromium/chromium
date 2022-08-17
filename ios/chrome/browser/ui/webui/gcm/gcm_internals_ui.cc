@@ -70,7 +70,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     PrefService* prefs,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) const {
-  base::Value results =
+  base::Value::Dict results =
       gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
 
   base::Value event_name(gcm_driver::kSetGcmInternalsInfo);

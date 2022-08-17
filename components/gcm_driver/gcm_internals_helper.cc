@@ -110,9 +110,10 @@ base::Value::List DecryptionFailureInfoToList(
 
 }  // namespace
 
-base::Value SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
-                                gcm::GCMProfileService* profile_service,
-                                PrefService* prefs) {
+base::Value::Dict SetGCMInternalsInfo(
+    const gcm::GCMClient::GCMStatistics* stats,
+    gcm::GCMProfileService* profile_service,
+    PrefService* prefs) {
   base::Value::Dict results;
 
   if (stats) {
@@ -188,7 +189,7 @@ base::Value SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
               stats->recorded_activities.decryption_failure_activities));
     }
   }
-  return base::Value(std::move(results));
+  return results;
 }
 
 }  // namespace gcm_driver

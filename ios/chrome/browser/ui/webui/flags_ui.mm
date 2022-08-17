@@ -145,8 +145,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
   results.Set(flags_ui::kShowBetaChannelPromotion, false);
   results.Set(flags_ui::kShowDevChannelPromotion, false);
 
-  web_ui()->ResolveJavascriptCallback(callback_id,
-                                      base::Value(std::move(results)));
+  web_ui()->ResolveJavascriptCallback(callback_id, results);
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
