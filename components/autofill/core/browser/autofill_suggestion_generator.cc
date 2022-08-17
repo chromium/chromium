@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -177,6 +178,21 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     }
   }
 
+  return suggestions;
+}
+
+// static
+std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
+    const std::vector<IBAN*>& ibans) {
+  std::vector<Suggestion> suggestions;
+  for (const IBAN* iban : ibans) {
+    Suggestion& suggestion = suggestions.emplace_back(iban->value());
+    suggestion.frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
+    suggestion.payload = iban->guid();
+    suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
+    if (!iban->nickname().empty())
+      suggestion.label = iban->nickname();
+  }
   return suggestions;
 }
 

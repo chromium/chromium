@@ -27,6 +27,7 @@ class AutofillType;
 class CreditCard;
 struct FormFieldData;
 class FormStructure;
+class IBAN;
 class PersonalDataManager;
 
 using InternalId = base::StrongAlias<class InternalIdTag, int>;
@@ -56,6 +57,10 @@ class AutofillSuggestionGenerator {
       const AutofillType& type,
       const std::string& app_locale,
       bool* should_display_gpay_logo);
+
+  // Generates suggestions for all available IBANs.
+  static std::vector<Suggestion> GetSuggestionsForIBANs(
+      const std::vector<IBAN*>& ibans);
 
   // Converts the vector of promo code offers that is passed in to a vector of
   // suggestions that can be displayed to the user for a promo code field.
