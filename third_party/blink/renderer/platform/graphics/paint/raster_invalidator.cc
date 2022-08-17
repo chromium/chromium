@@ -150,10 +150,7 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
 
 static bool ShouldSkipForRasterInvalidation(
     const PaintChunkIterator& chunk_it) {
-  // Skip the chunk if it contains only one non-drawing display item. We could
-  // also skip chunks containing all non-drawing display items, but single
-  // non-drawing item is more common, e.g. scroll hit test.
-  if (chunk_it->size() == 1 && !chunk_it.DisplayItems().begin()->DrawsContent())
+  if (!chunk_it->DrawsContent())
     return true;
 
   // Foreign layers take care of raster invalidation by themselves.
