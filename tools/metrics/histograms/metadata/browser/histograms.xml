@@ -92,7 +92,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the overall satisfaction score for HaTS, to be analyzed against
     other OS metrics like performance or number of crashes. There is one score
-    per survey type.
+    per survey type. Emitted when a user answers the first question on a HaTS
+    survey.
   </summary>
   <token key="Survey">
     <variant name=".ArcGames"/>
@@ -106,6 +107,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".PersonalizationAvatar"/>
     <variant name=".PersonalizationScreensaver"/>
     <variant name=".PersonalizationWallpaper"/>
+    <variant name=".PhotosExperience"/>
     <variant name=".SmartLock"/>
     <variant name=".Stability"/>
     <variant name=".Unlock"/>

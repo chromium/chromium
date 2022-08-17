@@ -54,6 +54,14 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };
 
+struct MediaAppUserActions {
+  bool clicked_edit_image_in_photos;
+  bool clicked_edit_video_in_photos;
+};
+// Returns a snapshot of the user actions that are tracked whilst any MediaApp
+// instance is running, in order to populate product-specific survey data.
+MediaAppUserActions GetMediaAppUserActionsForHappinessTracking();
+
 }  // namespace ash
 
 #endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_

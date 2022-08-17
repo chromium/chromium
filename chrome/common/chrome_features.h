@@ -389,6 +389,9 @@ extern const base::Feature kHappinessTrackingMediaAppPdf;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSystemCameraApp;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingPhotosExperience;
+
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

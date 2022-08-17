@@ -10,19 +10,29 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/buildflags.h"
+#include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -93,6 +103,15 @@ constexpr FileHandlerConfig kPdfFileHandlers[] = {
     {"application/pdf", kPdfExtension},
 };
 
+// The subset of supported image/video extensions that are watched for photos
+// integration happiness tracking, and whether a file of that type was ever
+// opened in Gallery since the start of this browser process.
+constexpr const char* kWatchedImageExtensions[] = {".png", ".jpg", ".jpeg",
+                                                   ".webp", ".bmp"};
+constexpr const char* kWatchedVideoExtensions[] = {".webm", ".mp4"};
+bool g_did_open_image_in_gallery = false;
+bool g_did_open_video_in_gallery = false;
+
 // Converts a FileHandlerConfig constexpr into the type needed to populate the
 // WebAppInstallInfo's `accept` property.
 std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
@@ -122,6 +141,88 @@ const apps::AppLaunchParams PickFileFromParams(
       params.intent ? params.intent->Clone() : nullptr);
 }
 
+// Watches a Profile's AppServiceProxy's InstanceRegistry and (possibly)
+// triggers a happiness tracking survey (HaTS) when it observes the Photos
+// Android app being closed. Owned by a Profile. Registration starts during
+// AppServiceProxy initialization when the MediaApp is configured, but via an
+// asynchronous task to ensure AppServiceProxy is fully initialized when
+// observers are added.
+class PhotosExperienceSurveyTrigger : public apps::InstanceRegistry::Observer,
+                                      public base::SupportsUserData::Data {
+ public:
+  PhotosExperienceSurveyTrigger(const PhotosExperienceSurveyTrigger&) = delete;
+  PhotosExperienceSurveyTrigger& operator=(
+      const PhotosExperienceSurveyTrigger&) = delete;
+  ~PhotosExperienceSurveyTrigger() override = default;
+
+  static void Register(Profile* profile) {
+    if (profile->GetUserData(&profile_user_data_key))
+      return;
+
+    auto instance =
+        base::WrapUnique(new PhotosExperienceSurveyTrigger(profile));
+    auto instance_ptr = instance->weak_ptr_factory_.GetWeakPtr();
+    profile->SetUserData(&profile_user_data_key, std::move(instance));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&PhotosExperienceSurveyTrigger::RegisterAsync,
+                                  instance_ptr));
+  }
+
+  static const char* google_photos_app_id;  // Can be overridden for testing.
+ private:
+  explicit PhotosExperienceSurveyTrigger(Profile* profile)
+      : profile_(profile) {}
+
+  void RegisterAsync() {
+    // This must be checked here (and not when scheduling the task), because the
+    // value can change in some tests while waiting to be executed.
+    if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+            profile_)) {
+      profile_->SetUserData(&profile_user_data_key, nullptr);
+      return;
+    }
+
+    apps::AppServiceProxyAsh* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    observation_.Observe(&app_service_proxy->InstanceRegistry());
+  }
+
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override {
+    // Trigger when the Photos app is closed, and no trigger has yet occurred.
+    if (update.AppId() != google_photos_app_id || !update.IsDestruction() ||
+        hats_notification_controller_) {
+      return;
+    }
+    if (!ash::HatsNotificationController::ShouldShowSurveyToProfile(
+            profile_, ash::kHatsPhotosExperienceSurvey)) {
+      return;
+    }
+
+    hats_notification_controller_ = new ash::HatsNotificationController(
+        profile_, ash::kHatsPhotosExperienceSurvey,
+        HatsProductSpecificDataForMediaApp());
+  }
+
+  void OnInstanceRegistryWillBeDestroyed(apps::InstanceRegistry*) override {
+    observation_.Reset();
+  }
+
+  // The memory address of this serves as the Profile user data key (which is OK
+  // -- nothing is persisted to disk).
+  static const int profile_user_data_key;
+
+  raw_ptr<Profile> profile_;  // Weak. Owns `this`.
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      observation_{this};
+  scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
+  base::WeakPtrFactory<PhotosExperienceSurveyTrigger> weak_ptr_factory_{this};
+};
+
+const int PhotosExperienceSurveyTrigger::profile_user_data_key = 0;
+const char* PhotosExperienceSurveyTrigger::google_photos_app_id =
+    arc::kGooglePhotosAppId;
+
 }  // namespace
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
@@ -131,7 +232,11 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
           GURL("chrome://media-app/pwa.html"),
           profile,
           ash::OriginTrialsMap(
-              {{ash::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {}
+              {{ash::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
+  // Tie survey registration to SWA registration. That is, the delegate map
+  // owned by SystemWebAppManager, which is created at startup.
+  PhotosExperienceSurveyTrigger::Register(profile);
+}
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebAppInstallInfo> info =
@@ -218,6 +323,24 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   return info;
 }
 
+base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp() {
+  ash::MediaAppUserActions actions =
+      ash::GetMediaAppUserActionsForHappinessTracking();
+  return base::flat_map<std::string, std::string>(
+      {{"did_open_image_in_gallery",
+        base::NumberToString(g_did_open_image_in_gallery)},
+       {"did_open_video_in_gallery",
+        base::NumberToString(g_did_open_video_in_gallery)},
+       {"clicked_edit_image_in_photos",
+        base::NumberToString(actions.clicked_edit_image_in_photos)},
+       {"clicked_edit_video_in_photos",
+        base::NumberToString(actions.clicked_edit_video_in_photos)}});
+}
+
+void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id) {
+  PhotosExperienceSurveyTrigger::google_photos_app_id = app_id;
+}
+
 std::unique_ptr<WebAppInstallInfo> MediaSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForMediaWebApp();
@@ -272,6 +395,17 @@ Browser* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     web_app::WebAppProvider* provider,
     const GURL& url,
     const apps::AppLaunchParams& params) const {
+  if (!params.launch_files.empty()) {
+    const base::FilePath first_file = params.launch_files[0];
+    for (const char* extension : kWatchedImageExtensions) {
+      g_did_open_image_in_gallery =
+          g_did_open_image_in_gallery || first_file.MatchesExtension(extension);
+    }
+    for (const char* extension : kWatchedVideoExtensions) {
+      g_did_open_video_in_gallery =
+          g_did_open_video_in_gallery || first_file.MatchesExtension(extension);
+    }
+  }
   // For zero/single-file launches, or non-PDF launches, launch a single window.
   if (params.launch_files.size() < 2 ||
       !params.launch_files[0].MatchesExtension(kPdfExtension)) {

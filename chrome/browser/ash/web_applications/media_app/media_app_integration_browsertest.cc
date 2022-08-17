@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -136,11 +137,6 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     // Use a fake audio stream. Some tests make noise otherwise, and could fight
     // with parallel tests for access to the audio device.
     command_line->AppendSwitch(switches::kDisableAudioOutput);
-
-    // Enable HaTS testing.
-    command_line->AppendSwitchASCII(
-        ash::switches::kForceHappinessTrackingSystem,
-        features::kHappinessTrackingMediaAppPdf.name);
   }
 
   void SetUpOnMainThread() override {
@@ -161,6 +157,20 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   // Launch the MediApp with the given |file_path| as a launch param, and wait
   // for the application to finish loading.
   content::WebContents* DirectlyLaunchWithFile(const base::FilePath& file_path);
+
+  struct DataArgsHelper {
+    const char* const open_image = "0";
+    const char* const open_video = "0";
+    const char* const edit_image = "0";
+    const char* const edit_video = "0";
+  };
+  void ExpectProductSurveyData(DataArgsHelper expected_data) {
+    auto data = HatsProductSpecificDataForMediaApp();
+    EXPECT_EQ(data["did_open_image_in_gallery"], expected_data.open_image);
+    EXPECT_EQ(data["did_open_video_in_gallery"], expected_data.open_video);
+    EXPECT_EQ(data["clicked_edit_image_in_photos"], expected_data.edit_image);
+    EXPECT_EQ(data["clicked_edit_video_in_photos"], expected_data.edit_video);
+  }
 
  protected:
   ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
@@ -380,6 +390,47 @@ using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
 using MediaAppIntegrationWithFilesAppAllProfilesTest =
     MediaAppIntegrationWithFilesAppTest;
 
+// Scoped observer of notifications that will spin a run loop until a
+// notification is displayed.
+class NotificationWatcher : public NotificationDisplayService::Observer {
+ public:
+  NotificationWatcher(Profile* profile,
+                      ash::NetworkPortalDetectorMixin& network_portal_detector)
+      : profile_(profile) {
+    // Notifications only fire if the device is "online". Simulate that.
+    network_portal_detector.SimulateDefaultNetworkState(
+        ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+
+    NotificationDisplayService::GetForProfile(profile_)->AddObserver(this);
+  }
+  ~NotificationWatcher() override {
+    NotificationDisplayService::GetForProfile(profile_)->RemoveObserver(this);
+  }
+  std::string NextSeenNotificationId() {
+    if (seen_notification_id_.empty())
+      run_loop_.Run();
+    return seen_notification_id_;
+  }
+
+ private:
+  Profile* profile_;
+  base::RunLoop run_loop_;
+  std::string seen_notification_id_;
+
+  void OnNotificationDisplayed(
+      const message_center::Notification& notification,
+      const NotificationCommon::Metadata* const metadata) override {
+    seen_notification_id_ = notification.id();
+    if (run_loop_.IsRunningOnCurrentThread()) {
+      run_loop_.Quit();
+    }
+  }
+
+  void OnNotificationClosed(const std::string& notification_id) override {}
+  void OnNotificationDisplayServiceDestroyed(
+      NotificationDisplayService* service) override {}
+};
+
 class BrowserWindowWaiter : public BrowserListObserver {
  public:
   void WaitForBrowserAdded() {
@@ -569,6 +620,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
+  ExpectProductSurveyData({.open_image = "1"});
 
   // Launch with a different file in a new window.
   app = DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
@@ -577,6 +629,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
+  ExpectProductSurveyData({.open_image = "1"});  // The "1" is a bool.
 }
 
 // Test that the MediaApp successfully loads a file using
@@ -594,6 +647,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   content::WebContents* app = PrepareActiveBrowserForTest();
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
+  ExpectProductSurveyData({.open_image = "1"});
 
   // Launch the App for the second time.
   ash::SystemAppLaunchParams image_params;
@@ -606,6 +660,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
+  ExpectProductSurveyData({.open_image = "1"});
 }
 
 // Test that the Media App launches a single window for images.
@@ -625,6 +680,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
       browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
       u"image.png");
   EXPECT_EQ(u"image.png", watcher.WaitAndGetTitle());
+  ExpectProductSurveyData({.open_image = "1"});
 }
 
 // Test that the Media App launches multiple windows for PDFs.
@@ -648,6 +704,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
       u"img.pdf");
   EXPECT_EQ(u"tall.pdf", watcher1.WaitAndGetTitle());
   EXPECT_EQ(u"img.pdf", watcher2.WaitAndGetTitle());
+  ExpectProductSurveyData({});  // Only images and video are tracked.
 }
 
 // Test that the Media App appears as a handler for files in the App Service.
@@ -1049,6 +1106,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
 
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
+  // Raw files aren't tracked (they are not directly editable by Photos).
+  ExpectProductSurveyData({});
 }
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
@@ -1684,6 +1743,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   EXPECT_FALSE(result);
 }
 
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, OpenVideoFile) {
+  content::WebContents* web_ui = LaunchWithOneTestFile(kFileVideoVP9);
+
+  EXPECT_NE(web_ui, nullptr);
+  ExpectProductSurveyData({.open_video = "1"});
+}
+
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileVideoVP9);
   Browser* app_browser = chrome::FindBrowserWithActiveWindow();
@@ -1709,6 +1775,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
 // Note kForceHappinessTrackingSystem is set in the test fixture to ignore the
 // "dice roll" that would normally only show the prompt by chance.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
+  // Enable HaTS testing for PDF editing.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kForceHappinessTrackingSystem,
+      features::kHappinessTrackingMediaAppPdf.name);
+
   content::WebContents* web_ui = LaunchWithOneTestFile(kFilePdfTall);
 
   constexpr char kMaybeTriggerPdfHats[] = R"(
@@ -1718,41 +1789,60 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
       })();
   )";
 
-  struct NotificationWatcher : public NotificationDisplayService::Observer {
-    base::RunLoop run_loop;
-    std::string seen_notification_id;
-
-    void OnNotificationDisplayed(
-        const message_center::Notification& notification,
-        const NotificationCommon::Metadata* const metadata) override {
-      seen_notification_id = notification.id();
-      if (run_loop.IsRunningOnCurrentThread()) {
-        run_loop.Quit();
-      }
-    }
-
-    void OnNotificationClosed(const std::string& notification_id) override {}
-    void OnNotificationDisplayServiceDestroyed(
-        NotificationDisplayService* service) override {}
-  } notification_watcher;
-
-  auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile());
-  notification_display_service->AddObserver(&notification_watcher);
-
-  // Notifications only fire if the device is "online". Simulate that.
-  network_portal_detector_.SimulateDefaultNetworkState(
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  NotificationWatcher notification_watcher(profile(), network_portal_detector_);
 
   EXPECT_EQ("success",
             ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
+  EXPECT_EQ(notification_watcher.NextSeenNotificationId(), "hats_notification");
+}
 
-  if (notification_watcher.seen_notification_id.empty()) {
-    notification_watcher.run_loop.Run();
-  }
-  notification_display_service->RemoveObserver(&notification_watcher);
+// Tests that the Photos happiness tracking survey triggers when the monitored
+// app is closed, after force-enabling display of the survey.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
+  // Enable HaTS testing for the Photos Experience.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kForceHappinessTrackingSystem,
+      features::kHappinessTrackingPhotosExperience.name);
 
-  EXPECT_EQ(notification_watcher.seen_notification_id, "hats_notification");
+  // Pretend the Gallery is the Android Photos app, so it can be tracked for
+  // survey triggers that fire when the app is closed.
+  std::string media_app_app_id = MediaAppAppId();
+  SetPhotosExperienceSurveyTriggerAppIdForTesting(media_app_app_id.c_str());
+
+  NotificationWatcher notification_watcher(profile(), network_portal_detector_);
+
+  LaunchWithNoFiles();
+  chrome::FindBrowserWithActiveWindow()->window()->Close();
+
+  EXPECT_EQ(notification_watcher.NextSeenNotificationId(), "hats_notification");
+
+  // Avoid leaving a ref to the std::string about to be destroyed.
+  SetPhotosExperienceSurveyTriggerAppIdForTesting("");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, CapturesUserActionsForHats) {
+  ExpectProductSurveyData({});  // Initially nothing.
+
+  using base::RecordAction;
+  using base::UserMetricsAction;
+
+  // Actions aren't tracked when the app isn't running (the corresponding
+  // buttons are impossible to click).
+  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
+  RecordAction(UserMetricsAction("MediaApp.Video.Tool.EditInPhotos"));
+
+  LaunchWithNoFiles();
+  ExpectProductSurveyData({});
+
+  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
+  ExpectProductSurveyData({.edit_image = "1"});
+
+  RecordAction(UserMetricsAction("MediaApp.Video.Tool.EditInPhotos"));
+  ExpectProductSurveyData({.edit_image = "1", .edit_video = "1"});
+
+  // Actions are boolean, and never go back to false.
+  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
+  ExpectProductSurveyData({.edit_image = "1", .edit_video = "1"});
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {

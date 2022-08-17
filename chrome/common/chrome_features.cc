@@ -550,6 +550,9 @@ const base::Feature kHappinessTrackingMediaAppPdf{
 // Enables or disables the Happiness Tracking System for Camera App survey.
 const base::Feature kHappinessTrackingSystemCameraApp{
     "HappinessTrackingCameraApp", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the Happiness Tracking System for Photos Experience survey.
+const base::Feature kHappinessTrackingPhotosExperience{
+    "HappinessTrackingPhotosExperience", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

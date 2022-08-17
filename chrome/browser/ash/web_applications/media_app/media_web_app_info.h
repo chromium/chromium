@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
@@ -33,5 +36,11 @@ class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
 
 // Return a WebAppInstallInfo used to install the app.
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
+
+// Returns a snapshot of the product-specific data that is attached to HaTS for
+// the MediaApp.
+base::flat_map<std::string, std::string> HatsProductSpecificDataForMediaApp();
+
+void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id);
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_WEB_APP_INFO_H_

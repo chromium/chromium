@@ -167,4 +167,14 @@ const HatsConfig kHatsCameraAppSurvey = {
     prefs::kHatsCameraAppSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Chromebook Video/Image Editing/Viewing experience survey -- shown after a
+// user opens and then subsequently closes the Google Photos Android App.
+const HatsConfig kHatsPhotosExperienceSurvey = {
+    ::features::kHappinessTrackingPhotosExperience,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.PhotosExperience",  // histogram_name
+    base::Days(7),                           // new_device_threshold
+    prefs::kHatsPhotosExperienceIsSelected,  // hatsIsSelectedPrefName
+    prefs::kHatsPhotosExperienceCycleEndTs,  // hatsCycleEndTimestampPrefName
+};
+
 }  // namespace ash

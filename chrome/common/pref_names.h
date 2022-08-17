@@ -306,6 +306,8 @@ extern const char kHatsMediaAppPdfCycleEndTs[];
 extern const char kHatsMediaAppPdfIsSelected[];
 extern const char kHatsCameraAppDeviceIsSelected[];
 extern const char kHatsCameraAppSurveyCycleEndTs[];
+extern const char kHatsPhotosExperienceCycleEndTs[];
+extern const char kHatsPhotosExperienceIsSelected[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];
