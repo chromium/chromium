@@ -33,7 +33,6 @@ builders.builder(
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.try",
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-    free_space = builders.free_space.standard,
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.flakiness",
         category = "flakiness",
