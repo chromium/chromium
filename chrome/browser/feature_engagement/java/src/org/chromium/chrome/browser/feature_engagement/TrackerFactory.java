@@ -29,7 +29,9 @@ public final class TrackerFactory {
      */
     public static Tracker getTrackerForProfile(Profile profile) {
         if (sTestTracker != null) return sTestTracker;
-        if (profile == null) return null;
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile is required for retrieving tracker.");
+        }
 
         return TrackerFactoryJni.get().getTrackerForProfile(profile);
     }
