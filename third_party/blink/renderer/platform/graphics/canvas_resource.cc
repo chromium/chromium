@@ -1093,8 +1093,6 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
 }
 
 ExternalCanvasResource::~ExternalCanvasResource() {
-  // Should always be destroyed on thread of origin.
-  DCHECK(!is_cross_thread());
   OnDestroy();
 }
 
