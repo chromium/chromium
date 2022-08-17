@@ -810,6 +810,7 @@ source_set("unit_tests") {
     "field_filler_unittest.cc",
     "field_types_unittest.cc",
     "form_data_importer_unittest.cc",
+    "form_data_importer_utils_unittest.cc",
     "form_parsing/address_field_unittest.cc",
     "form_parsing/birthdate_field_unittest.cc",
     "form_parsing/credit_card_field_unittest.cc",

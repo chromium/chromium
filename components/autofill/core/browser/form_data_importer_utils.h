@@ -20,8 +20,6 @@
 
 namespace autofill {
 
-namespace internal {
-
 // Encapsulates a list of Ts, ordered by the time they were added (newest
 // first). All Ts share the same `origin`. This is useful for tracking
 // relationships between submitted forms on the same origin, within a small
@@ -88,8 +86,6 @@ class TimestampedSameOriginQueue {
   // If the queue is not `empty()`, this represents the origin of all `items_`.
   absl::optional<url::Origin> origin_;
 };
-
-};  // namespace internal
 
 // Returns true if minimum requirements for import of a given `profile` have
 // been met. An address submitted via a form must have at least the fields
@@ -166,7 +162,7 @@ class MultiStepImportMerger {
     // Metadata about how `profile` was constructed.
     ProfileImportMetadata import_metadata;
   };
-  internal::TimestampedSameOriginQueue<MultiStepFormProfileCandidate>
+  TimestampedSameOriginQueue<MultiStepFormProfileCandidate>
       multistep_candidates_;
 };
 
