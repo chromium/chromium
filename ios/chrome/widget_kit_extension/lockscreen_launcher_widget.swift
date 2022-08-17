@@ -25,7 +25,6 @@ import WidgetKit
         }
       }
 
-      // TODO(crbug.com/1347565): Add translations.
       var configuration: Configuration {
         switch self {
         case .search:
@@ -70,11 +69,15 @@ import WidgetKit
 
       var body: some View {
         let configuration = self.configuration
-        // TODO(crbug.com/1347565): Add a11y label.
-        Image(configuration.imageName)
-          .widgetURL(configuration.widgetURL)
-          .accessibility(
-            label: Text(configuration.accessibilityLabel))
+        ZStack {
+          if #available(iOS 16, *) {
+            AccessoryWidgetBackground()
+          }
+          Image(configuration.imageName)
+        }
+        .widgetURL(configuration.widgetURL)
+        .accessibility(
+          label: Text(configuration.accessibilityLabel))
       }
     }
 
