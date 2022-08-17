@@ -5808,6 +5808,26 @@
             ]
         }
     ],
+    "JourneysSuggestionRow": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {},
+                    "enable_features": [
+                        "JourneysOmniboxHistoryClusterProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardAccessoryAddressIPH": [
         {
             "platforms": [
