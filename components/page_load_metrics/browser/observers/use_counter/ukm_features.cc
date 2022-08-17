@@ -248,6 +248,20 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kImageAd,
           WebFeature::kLinkRelPrefetchAsDocumentSameOrigin,
           WebFeature::kLinkRelPrefetchAsDocumentCrossOrigin,
+          WebFeature::kChromeLoadTimesCommitLoadTime,
+          WebFeature::kChromeLoadTimesConnectionInfo,
+          WebFeature::kChromeLoadTimesFinishDocumentLoadTime,
+          WebFeature::kChromeLoadTimesFinishLoadTime,
+          WebFeature::kChromeLoadTimesFirstPaintAfterLoadTime,
+          WebFeature::kChromeLoadTimesFirstPaintTime,
+          WebFeature::kChromeLoadTimesNavigationType,
+          WebFeature::kChromeLoadTimesNpnNegotiatedProtocol,
+          WebFeature::kChromeLoadTimesRequestTime,
+          WebFeature::kChromeLoadTimesStartLoadTime,
+          WebFeature::kChromeLoadTimesUnknown,
+          WebFeature::kChromeLoadTimesWasAlternateProtocolAvailable,
+          WebFeature::kChromeLoadTimesWasFetchedViaSpdy,
+          WebFeature::kChromeLoadTimesWasNpnNegotiated,
       }));
   return *opt_in_features;
 }
