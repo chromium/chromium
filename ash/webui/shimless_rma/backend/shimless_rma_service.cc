@@ -204,34 +204,36 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
   state_proto_.mutable_welcome()->set_choice(
       rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
 
-  if (!HaveAllowedNetworkConnection()) {
-    // Enable WiFi on the device.
-    chromeos::NetworkStateHandler* network_state_handler =
-        chromeos::NetworkHandler::Get()->network_state_handler();
-    if (!network_state_handler->IsTechnologyEnabled(
-            chromeos::NetworkTypePattern::WiFi())) {
-      network_state_handler->SetTechnologyEnabled(
-          chromeos::NetworkTypePattern::WiFi(), /*enabled=*/true,
-          network_handler::ErrorCallback());
-    }
+  // Only when the `ShimlessRMAOsUpdate` flag is enabled should the network
+  // connection and OS update status be checked.
+  if (features::IsShimlessRMAOsUpdateEnabled()) {
+    if (!HaveAllowedNetworkConnection()) {
+      // Enable WiFi on the device.
+      chromeos::NetworkStateHandler* network_state_handler =
+          chromeos::NetworkHandler::Get()->network_state_handler();
+      if (!network_state_handler->IsTechnologyEnabled(
+              chromeos::NetworkTypePattern::WiFi())) {
+        network_state_handler->SetTechnologyEnabled(
+            chromeos::NetworkTypePattern::WiFi(), /*enabled=*/true,
+            network_handler::ErrorCallback());
+      }
 
-    user_has_seen_network_page_ = true;
-    mojo_state_ = mojom::State::kConfigureNetwork;
-    std::move(callback).Run(
-        CreateStateResult(mojom::State::kConfigureNetwork,
-                          /*can_exit=*/true, /*can_go_back=*/true,
-                          rmad::RmadErrorCode::RMAD_ERROR_OK));
-  } else {
-    if (features::IsShimlessRMAOsUpdateEnabled()) {
+      user_has_seen_network_page_ = true;
+      mojo_state_ = mojom::State::kConfigureNetwork;
+      std::move(callback).Run(
+          CreateStateResult(mojom::State::kConfigureNetwork,
+                            /*can_exit=*/true, /*can_go_back=*/true,
+                            rmad::RmadErrorCode::RMAD_ERROR_OK));
+    } else {
       // This callback is invoked once VersionUpdated determines if an OS Update
       // is available.
       check_os_callback_ =
           base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback));
       version_updater_.CheckOsUpdateAvailable();
-    } else {
-      TransitionNextStateGeneric(std::move(callback));
     }
+  } else {
+    TransitionNextStateGeneric(std::move(callback));
   }
 }
 

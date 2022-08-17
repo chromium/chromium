@@ -482,7 +482,9 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, ChooseNetworkPageSkipsOsUpdateIfFlagIsOff) {
+// Make sure the network and OS update pages are skipped when the
+// `ShimlessRMAOsUpdate` feature flag is disabled.
+TEST_F(ShimlessRmaServiceTest, NetworkPageOsUpdatePageSkipped) {
   ResetFeatures();
 
   const std::vector<rmad::GetStateReply> fake_states = {
@@ -501,24 +503,13 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkPageSkipsOsUpdateIfFlagIsOff) {
       }));
   run_loop.RunUntilIdle();
 
-  // No network should prompt select network page
+  // Even without a network connection, the network page will be skipped.
   shimless_rma_provider_->BeginFinalization(
-      base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
-        EXPECT_EQ(state_result_ptr->state, mojom::State::kConfigureNetwork);
-        EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-      }));
-  run_loop.RunUntilIdle();
-  SetupWiFiNetwork(kDefaultWifiGuid);
-
-  // With a WiFi network it should redirect to kSelectComponents because the OS
-  // Update flag is off.
-  shimless_rma_provider_->NetworkSelectionComplete(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kSelectComponents);
         EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-        run_loop.Quit();
       }));
-  run_loop.Run();
+  run_loop.RunUntilIdle();
 }
 
 TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
