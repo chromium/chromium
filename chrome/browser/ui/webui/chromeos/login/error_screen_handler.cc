@@ -22,7 +22,10 @@ ErrorScreenHandler::~ErrorScreenHandler() = default;
 
 void ErrorScreenHandler::Show() {
   base::Value::Dict data;
-  data.Set("hasUserPods", ash::LoginDisplayHost::default_host()->HasUserPods());
+  if (LoginDisplayHost::default_host()) {
+    data.Set("hasUserPods",
+             ash::LoginDisplayHost::default_host()->HasUserPods());
+  }
   ShowInWebUI(std::move(data));
 }
 

@@ -1172,7 +1172,8 @@ void GaiaScreenHandler::SetSAMLPrincipalsAPIUsed(bool is_third_party_idp,
 
 void GaiaScreenHandler::Show() {
   base::Value::Dict data;
-  data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
+  if (LoginDisplayHost::default_host())
+    data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
   ShowInWebUI(std::move(data));
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   hidden_ = false;
