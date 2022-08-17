@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -27,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "url/gurl.h"
 
 using testing::Eq;
@@ -62,6 +64,9 @@ class PromoServiceTest : public testing::Test {
 
   PromoService* service() { return service_.get(); }
   PrefService* prefs() { return profile_.GetPrefs(); }
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return test_url_loader_factory_;
+  }
 
  private:
   // Required to run tests from UI and threads.
@@ -357,4 +362,20 @@ TEST_F(PromoServiceTest, UndoBlocklistPromo) {
   service()->UndoBlocklistPromo("42");
 
   ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
+}
+
+TEST_F(PromoServiceTest, ReturnFakeData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpMiddleSlotPromoDismissal,
+      {{ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}});
+
+  service()->Refresh();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, test_url_loader_factory().NumPending());
+  ASSERT_TRUE(service()->promo_data().has_value());
+  EXPECT_EQ("test" + base::NumberToString(static_cast<int>(
+                         browser_command::mojom::Command::kNoOpCommand)),
+            service()->promo_data()->promo_id);
 }

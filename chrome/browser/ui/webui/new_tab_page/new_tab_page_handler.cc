@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
@@ -67,7 +66,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace {
 
@@ -616,45 +614,6 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
 }
 
 void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
-  std::string command_id;
-  // Replace the promo URL with "command:<id>" if such a command ID is set
-  // via the feature params.
-  // If fake data is being used, we set the command_id to 7, which corresponds
-  // to kNoOpCommand in
-  // ui/webui/resources/js/browser_command/browser_command.mojom
-  if (base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpMiddleSlotPromoDismissal,
-          ntp_features::kNtpMiddleSlotPromoDismissalParam) == "fake") {
-    command_id = base::NumberToString(
-        static_cast<int>(browser_command::mojom::Command::kNoOpCommand));
-  } else {
-    command_id = base::GetFieldTrialParamValueByFeature(
-        features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
-  }
-
-  if (!command_id.empty()) {
-    auto promo = new_tab_page::mojom::Promo::New();
-    std::vector<new_tab_page::mojom::PromoPartPtr> parts;
-    auto image = new_tab_page::mojom::PromoImagePart::New();
-    // Warning symbol used as the test image.
-    image->image_url = GURL(
-        "data:image/"
-        "svg+xml;base64,"
-        "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC"
-        "01IDU4IDU4IiBmaWxsPSIjZmRkNjMzIj48cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6"
-        "bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPjwvc3ZnPg==");
-    image->target = GURL("command:" + command_id);
-    parts.push_back(new_tab_page::mojom::PromoPart::NewImage(std::move(image)));
-    auto link = new_tab_page::mojom::PromoLinkPart::New();
-    link->url = GURL("command:" + command_id);
-    link->text = "Test command: " + command_id;
-    parts.push_back(new_tab_page::mojom::PromoPart::NewLink(std::move(link)));
-    promo->middle_slot_parts = std::move(parts);
-    promo->id = "test" + command_id;
-    std::move(callback).Run(std::move(promo));
-    return;
-  }
-
   promo_callbacks_.push_back(std::move(callback));
   if (promo_service_->promo_data().has_value()) {
     OnPromoDataUpdated();
