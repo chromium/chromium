@@ -17,10 +17,10 @@
 namespace internal {
 
 const char kHistogramLoadingPredictorFirstContentfulPaintPreconnectable[] =
-    "PageLoad.Clients.LoadingPredictor.PaintTiming."
+    "PageLoad.Clients.LoadingPredictor2.PaintTiming."
     "NavigationToFirstContentfulPaint.Preconnectable";
 const char kHistogramLoadingPredictorFirstMeaningfulPaintPreconnectable[] =
-    "PageLoad.Clients.LoadingPredictor.Experimental.PaintTiming."
+    "PageLoad.Clients.LoadingPredictor2.Experimental.PaintTiming."
     "NavigationToFirstMeaningfulPaint.Preconnectable";
 
 }  // namespace internal
@@ -77,6 +77,22 @@ LoadingPredictorPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LoadingPredictorPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in the events after activation.
+  // Works as same as non prerendering case except for metrics correction.
+  return CONTINUE_OBSERVING;
+}
+
+void LoadingPredictorPageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  record_histogram_preconnectable_ =
+      GetDelegate().GetVisibilityTracker().currently_in_foreground() &&
+      predictor_->IsUrlPreconnectable(navigation_handle->GetURL());
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LoadingPredictorPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   record_histogram_preconnectable_ = false;
@@ -94,9 +110,13 @@ void LoadingPredictorPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       frame, GetDelegate().GetNavigationStart() +
                  timing.paint_timing->first_contentful_paint.value());
   if (record_histogram_preconnectable_) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing,
+            timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstContentfulPaintPreconnectable,
-        timing.paint_timing->first_contentful_paint.value());
+        corrected);
   }
 }
 
@@ -104,8 +124,12 @@ void LoadingPredictorPageLoadMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
         const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (record_histogram_preconnectable_) {
+    base::TimeDelta corrected =
+        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+            GetDelegate(), timing,
+            timing.paint_timing->first_meaningful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstMeaningfulPaintPreconnectable,
-        timing.paint_timing->first_meaningful_paint.value());
+        corrected);
   }
 }

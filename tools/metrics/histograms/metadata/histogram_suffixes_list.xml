@@ -6502,8 +6502,28 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PageLoadMetricsClientsLoadingPredictor" separator="."
     ordering="prefix">
+  <obsolete>
+    These suffixes are used to record metrics if LoadingPredictor enabled. As
+    part of crbug.com/1317494, this suffix is replaced by
+    Clients.LoadingPredictor2. The difference are 1.
+    *.Clients.LoadingPredictor2.* include samples from prerendered pages and 2.
+    the value of the UMAs are modified as activation origined for prerendered
+    pages.
+  </obsolete>
   <suffix base="true" name="Clients.LoadingPredictor"
       label="PageLoadMetrics with enabled LoadingPredictor"/>
+  <affected-histogram
+      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+  <affected-histogram
+      name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PageLoadMetricsClientsLoadingPredictor2"
+    separator="." ordering="prefix">
+  <suffix base="true" name="Clients.LoadingPredictor2"
+      label="PageLoadMetrics with enabled LoadingPredictor. If the page is
+             prerendered, the recorded value is modified as activation
+             origined."/>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
@@ -6519,6 +6539,10 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.LoadingPredictor.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.LoadingPredictor.PaintTiming.NavigationToFirstContentfulPaint"/>
+  <affected-histogram
+      name="PageLoad.Clients.LoadingPredictor2.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+  <affected-histogram
+      name="PageLoad.Clients.LoadingPredictor2.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsMedia" separator="."
