@@ -202,7 +202,7 @@ static_library("protobuf_full") {
     "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
 
     # Used for testing protobuf generation.
-    "//components/services/screen_ai:unit_tests",
+    "//components/services/screen_ai:test_support",
   ]
 
   # TODO(crbug.com/1338164): This ends up linking two copies of

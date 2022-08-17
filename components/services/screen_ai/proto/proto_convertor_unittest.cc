@@ -229,23 +229,6 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
   }
 }
 
-void LoadViewHierarchyTextProto(const base::FilePath& file_path,
-                                screenai::ViewHierarchy& proto) {
-  std::string file_content;
-  ASSERT_TRUE(base::ReadFileToString(file_path, &file_content))
-      << "Failed to read expected proto from " << file_path;
-
-  base::FilePath descriptor_path;
-  EXPECT_TRUE(
-      base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &descriptor_path));
-  descriptor_path = descriptor_path.AppendASCII(
-      "gen/components/services/screen_ai/proto/view_hierarchy.descriptor");
-
-  test_proto_loader::TestProtoLoader loader;
-  ASSERT_TRUE(loader.ParseFromText(descriptor_path, file_content, proto))
-      << "Failed to parse expected proto.";
-}
-
 }  // namespace
 
 namespace screen_ai {
@@ -465,8 +448,10 @@ TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
 
   // Load expected Proto.
   screenai::ViewHierarchy expected_view_hierarchy;
-  ASSERT_NO_FATAL_FAILURE(
-      LoadViewHierarchyTextProto(kExpectedProtoPath, expected_view_hierarchy));
+  ASSERT_TRUE(test_proto_loader::TestProtoLoader::LoadTextProto(
+      kExpectedProtoPath,
+      "gen/components/services/screen_ai/proto/view_hierarchy.descriptor",
+      expected_view_hierarchy));
 
   // Compare protos.
   ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,

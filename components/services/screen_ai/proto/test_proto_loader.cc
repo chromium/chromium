@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "google/protobuf/text_format.h"
 
@@ -73,6 +74,30 @@ bool TestProtoLoader::ParseFromText(
   destination.ParseFromString(message->SerializeAsString());
 
   return true;
+}
+
+// static
+bool TestProtoLoader::LoadTextProto(
+    const base::FilePath& proto_file_path,
+    const char* proto_descriptor_relative_file_path,
+    google::protobuf::MessageLite& proto) {
+  std::string file_content;
+  if (!base::ReadFileToString(proto_file_path, &file_content)) {
+    LOG(ERROR) << "Failed to read expected proto from: " << proto_file_path;
+    return false;
+  }
+
+  base::FilePath descriptor_full_path;
+  if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT,
+                              &descriptor_full_path)) {
+    LOG(ERROR) << "Generated test data root not found!";
+    return false;
+  }
+  descriptor_full_path =
+      descriptor_full_path.AppendASCII(proto_descriptor_relative_file_path);
+
+  test_proto_loader::TestProtoLoader loader;
+  return loader.ParseFromText(descriptor_full_path, file_content, proto);
 }
 
 }  // namespace test_proto_loader

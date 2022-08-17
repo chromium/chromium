@@ -36,6 +36,13 @@ class TestProtoLoader {
                      const std::string& proto_text,
                      google::protobuf::MessageLite& destination);
 
+  // Loads a text proto file from |proto_file_path| into |proto|, where the
+  // descriptor of the proto exists in |proto_descriptor_relative_file_path|,
+  // relative to DIR_GEN_TEST_DATA_ROOT.
+  static bool LoadTextProto(const base::FilePath& proto_file_path,
+                            const char* proto_descriptor_relative_file_path,
+                            google::protobuf::MessageLite& proto);
+
  private:
   const google::protobuf::Message* GetPrototype(base::FilePath descriptor_path,
                                                 std::string package,
