@@ -45,19 +45,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      fontName_: {
-        type: String,
-      },
-    };
-  }
-
-  private fontName_: string;
-  private fontSize_: number;
-  private foregroundColor_: SkColor = new SkColor();
-  private backgroundColor_: SkColor = new SkColor();
-
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
@@ -180,14 +167,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateTheme() {
-    this.fontName_ = this.validatedFontName();
-    this.fontSize_ = chrome.readAnything.fontSize;
-    this.foregroundColor_.value = chrome.readAnything.foregroundColor;
-    this.backgroundColor_.value = chrome.readAnything.backgroundColor;
+    const foregroundColor:
+        SkColor = {value: chrome.readAnything.foregroundColor};
+    const backgroundColor:
+        SkColor = {value: chrome.readAnything.backgroundColor};
 
     this.updateStyles({
-      '--foreground-color': skColorToRgba(this.foregroundColor_),
-      '--background-color': skColorToRgba(this.backgroundColor_),
+      '--foreground-color': skColorToRgba(foregroundColor),
+      '--background-color': skColorToRgba(backgroundColor),
+      '--read-anything-font-family': this.validatedFontName(),
+      '--read-anything-font-size': chrome.readAnything.fontSize + 'px',
     });
   }
 }
