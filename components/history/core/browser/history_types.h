@@ -956,11 +956,11 @@ struct ClusterKeywordData {
   // crbug.com/1335975: Remove this method when we remove the histograms.
   std::string GetKeywordTypeLabel() const;
 
-  ClusterKeywordType type;
+  ClusterKeywordType type = ClusterKeywordData::kUnknown;
 
-  // A floating point score describing how important this
-  // keyword is to the containing cluster.
-  float score;
+  // A floating point score describing how important this keyword is to the
+  // containing cluster.
+  float score = 0;
 
   // Entity collections associated with the keyword this is attached to.
   std::vector<std::string> entity_collections;
@@ -994,7 +994,6 @@ struct Cluster {
   std::vector<ClusterVisit> visits;
 
   // A map of keywords to additional data.
-  // TODO(manukh): Persist to db.
   base::flat_map<std::u16string, ClusterKeywordData> keyword_to_data_map;
 
   // Whether the cluster should be shown prominently on UI surfaces.

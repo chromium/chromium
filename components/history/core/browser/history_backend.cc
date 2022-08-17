@@ -1775,7 +1775,7 @@ base::Time HistoryBackend::FindMostRecentClusteredTime() {
   if (!db_)
     return base::Time::Min();
   const auto clusters =
-      GetMostRecentClusters(base::Time::Min(), base::Time::Max(), 1);
+      GetMostRecentClusters(base::Time::Min(), base::Time::Max(), 1, false);
   return clusters.empty() ? base::Time::Min()
                           : clusters[0]
                                 .GetMostRecentVisit()
@@ -1796,26 +1796,30 @@ void HistoryBackend::ReplaceClusters(
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,
-    int max_clusters) {
+    int max_clusters,
+    bool include_keywords) {
   TRACE_EVENT0("browser", "HistoryBackend::GetMostRecentClusters");
   if (!db_)
     return {};
   const auto cluster_ids = db_->GetMostRecentClusterIds(
       inclusive_min_time, exclusive_max_time, max_clusters);
   std::vector<Cluster> clusters;
-  base::ranges::transform(
-      cluster_ids, std::back_inserter(clusters),
-      [&](const auto& cluster_id) { return GetCluster(cluster_id); });
+  base::ranges::transform(cluster_ids, std::back_inserter(clusters),
+                          [&](const auto& cluster_id) {
+                            return GetCluster(cluster_id, include_keywords);
+                          });
   return clusters;
 }
 
-Cluster HistoryBackend::GetCluster(int64_t cluster_id) {
+Cluster HistoryBackend::GetCluster(int64_t cluster_id, bool include_keywords) {
   TRACE_EVENT0("browser", "HistoryBackend::GetCluster");
   if (!db_)
     return {};
 
   Cluster cluster = db_->GetCluster(cluster_id);
   cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id));
+  if (include_keywords)
+    cluster.keyword_to_data_map = db_->GetClusterKeywords(cluster_id);
   return cluster;
 }
 

@@ -3908,17 +3908,50 @@ TEST_F(HistoryBackendTest, GetCluster) {
   // returned.
   ClusterVisit visit_3;
   visit_3.annotated_visit.visit_row.visit_id = 3;
-  backend_->db_->AddClusters(
-      {{0, {visit_1, visit_2, visit_3}, {}, false, u"label"}});
 
-  const auto cluster = backend_->GetCluster(1);
+  ClusterKeywordData keyword_data_1 = {
+      ClusterKeywordData::ClusterKeywordType::kEntityAlias,
+      .4,
+      {"entity1", "entity2"}};
+  ClusterKeywordData keyword_data_2 = {
+      ClusterKeywordData::ClusterKeywordType::kEntityCategory, .6, {}};
+
+  backend_->db_->AddClusters(
+      {{0,
+        {visit_1, visit_2, visit_3},
+        {{u"keyword1", keyword_data_1}, {u"keyword2", keyword_data_2}},
+        false,
+        u"label"}});
+
+  auto cluster = backend_->GetCluster(1, true);
   VerifyCluster(cluster, {1, {2, 1}});
   EXPECT_EQ(cluster.cluster_id, 1);
   EXPECT_EQ(cluster.label, u"label");
   EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
+  EXPECT_EQ(cluster.keyword_to_data_map.size(), 2u);
+  EXPECT_EQ(cluster.keyword_to_data_map[u"keyword1"].type,
+            ClusterKeywordData::ClusterKeywordType::kEntityAlias);
+  EXPECT_EQ(cluster.keyword_to_data_map[u"keyword1"].score, .4f);
+  // Only the 1st keyword entity should be preserved.
+  EXPECT_THAT(cluster.keyword_to_data_map[u"keyword1"].entity_collections,
+              UnorderedElementsAre("entity1"));
+  EXPECT_EQ(cluster.keyword_to_data_map[u"keyword2"].type,
+            ClusterKeywordData::ClusterKeywordType::kEntityCategory);
+  EXPECT_EQ(cluster.keyword_to_data_map[u"keyword2"].score, .6f);
+  EXPECT_TRUE(
+      cluster.keyword_to_data_map[u"keyword2"].entity_collections.empty());
+
+  // Verify keywords are not returned, but other info is, when the
+  // `include_keywords` param is false.
+  cluster = backend_->GetCluster(1, false);
+  VerifyCluster(cluster, {1, {2, 1}});
+  EXPECT_EQ(cluster.cluster_id, 1);
+  EXPECT_EQ(cluster.label, u"label");
+  EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
+  EXPECT_TRUE(cluster.keyword_to_data_map.empty());
 
   // Verify non-existent clusters aren't returned.
-  VerifyCluster(backend_->GetCluster(2), {0});
+  VerifyCluster(backend_->GetCluster(2, true), {0});
 }
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {

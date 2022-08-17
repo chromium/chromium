@@ -483,10 +483,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   std::vector<Cluster> GetMostRecentClusters(base::Time inclusive_min_time,
                                              base::Time exclusive_max_time,
-                                             int max_clusters);
+                                             int max_clusters,
+                                             bool include_keywords = true);
 
-  // Get a `Cluster`.
-  Cluster GetCluster(int64_t cluster_id);
+  // Get a `Cluster`. `keyword_to_data_map` isn't always useful, and it requires
+  // an extra SQL execution. It's only populated If `include_keywords` is true.
+  Cluster GetCluster(int64_t cluster_id, bool include_keywords = true);
 
   // Finds the 1st visit in the redirect chain containing `visit`.
   // Unlike `GetRedirectsToSpecificVisit()`, this only considers actual
