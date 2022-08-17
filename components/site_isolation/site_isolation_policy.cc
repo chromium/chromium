@@ -5,6 +5,7 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +28,88 @@ namespace {
 
 using IsolatedOriginSource =
     content::ChildProcessSecurityPolicy::IsolatedOriginSource;
+
+bool g_disallow_memory_threshold_caching = false;
+
+bool ShouldCacheMemoryThresholdDecision() {
+  return base::FeatureList::IsEnabled(
+      features::kCacheSiteIsolationMemoryThreshold);
+}
+
+struct IsolationDisableDecisions {
+  bool should_disable_strict;
+  bool should_disable_partial;
+};
+
+bool ShouldDisableSiteIsolationDueToMemorySlow(
+    content::SiteIsolationMode site_isolation_mode) {
+  // The memory threshold behavior differs for desktop and Android:
+  // - Android uses a 1900MB default threshold for partial site isolation modes
+  //   and a 3200MB default threshold for strict site isolation. See docs in
+  //   https://crbug.com/849815. The thresholds roughly correspond to 2GB+ and
+  //   4GB+ devices and are lower to account for memory carveouts, which
+  //   reduce the amount of memory seen by AmountOfPhysicalMemoryMB(). Both
+  //   partial and strict site isolation thresholds can be overridden via
+  //   params defined in a kSiteIsolationMemoryThresholds field trial.
+  // - Desktop does not enforce a default memory threshold, but for now we
+  //   still support a threshold defined via a kSiteIsolationMemoryThresholds
+  //   field trial.  The trial typically carries the threshold in a param; if
+  //   it doesn't, use a default that's slightly higher than 1GB (see
+  //   https://crbug.com/844118).
+  int default_memory_threshold_mb;
+#if BUILDFLAG(IS_ANDROID)
+  if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
+    default_memory_threshold_mb = 3200;
+  } else {
+    default_memory_threshold_mb = 1900;
+  }
+#else
+  default_memory_threshold_mb = 1077;
+#endif
+
+  if (base::FeatureList::IsEnabled(features::kSiteIsolationMemoryThresholds)) {
+    std::string param_name;
+    switch (site_isolation_mode) {
+      case content::SiteIsolationMode::kStrictSiteIsolation:
+        param_name = features::kStrictSiteIsolationMemoryThresholdParamName;
+        break;
+      case content::SiteIsolationMode::kPartialSiteIsolation:
+        param_name = features::kPartialSiteIsolationMemoryThresholdParamName;
+        break;
+    }
+    int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
+        features::kSiteIsolationMemoryThresholds, param_name,
+        default_memory_threshold_mb);
+    return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
+      default_memory_threshold_mb) {
+    return true;
+  }
+#endif
+
+  return false;
+}
+
+IsolationDisableDecisions MakeBothDecisions() {
+  IsolationDisableDecisions result{
+      .should_disable_strict = ShouldDisableSiteIsolationDueToMemorySlow(
+          content::SiteIsolationMode::kStrictSiteIsolation),
+      .should_disable_partial = ShouldDisableSiteIsolationDueToMemorySlow(
+          content::SiteIsolationMode::kPartialSiteIsolation)};
+  return result;
+}
+
+bool CachedDisableSiteIsolation(
+    content::SiteIsolationMode site_isolation_mode) {
+  static const IsolationDisableDecisions decisions = MakeBothDecisions();
+  if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
+    return decisions.should_disable_strict;
+  }
+  return decisions.should_disable_partial;
+}
 
 }  // namespace
 
@@ -101,54 +184,12 @@ bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
 // static
 bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold(
     content::SiteIsolationMode site_isolation_mode) {
-  // The memory threshold behavior differs for desktop and Android:
-  // - Android uses a 1900MB default threshold for partial site isolation modes
-  //   and a 3200MB default threshold for strict site isolation. See docs in
-  //   https://crbug.com/849815. The thresholds roughly correspond to 2GB+ and
-  //   4GB+ devices and are lower to account for memory carveouts, which
-  //   reduce the amount of memory seen by AmountOfPhysicalMemoryMB(). Both
-  //   partial and strict site isolation thresholds can be overridden via
-  //   params defined in a kSiteIsolationMemoryThresholds field trial.
-  // - Desktop does not enforce a default memory threshold, but for now we
-  //   still support a threshold defined via a kSiteIsolationMemoryThresholds
-  //   field trial.  The trial typically carries the threshold in a param; if
-  //   it doesn't, use a default that's slightly higher than 1GB (see
-  //   https://crbug.com/844118).
-  int default_memory_threshold_mb;
-#if BUILDFLAG(IS_ANDROID)
-  if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
-    default_memory_threshold_mb = 3200;
-  } else {
-    default_memory_threshold_mb = 1900;
+  static const bool cache_memory_threshold_decision =
+      ShouldCacheMemoryThresholdDecision();
+  if (!g_disallow_memory_threshold_caching && cache_memory_threshold_decision) {
+    return CachedDisableSiteIsolation(site_isolation_mode);
   }
-#else
-  default_memory_threshold_mb = 1077;
-#endif
-
-  if (base::FeatureList::IsEnabled(features::kSiteIsolationMemoryThresholds)) {
-    std::string param_name;
-    switch (site_isolation_mode) {
-      case content::SiteIsolationMode::kStrictSiteIsolation:
-        param_name = features::kStrictSiteIsolationMemoryThresholdParamName;
-        break;
-      case content::SiteIsolationMode::kPartialSiteIsolation:
-        param_name = features::kPartialSiteIsolationMemoryThresholdParamName;
-        break;
-    }
-    int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-        features::kSiteIsolationMemoryThresholds, param_name,
-        default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
-      default_memory_threshold_mb) {
-    return true;
-  }
-#endif
-
-  return false;
+  return ShouldDisableSiteIsolationDueToMemorySlow(site_isolation_mode);
 }
 
 // static
@@ -354,6 +395,12 @@ bool SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() {
   // Always use the PDF compositor on non-mobile platforms.
   return true;
 #endif
+}
+
+// static
+void SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(
+    bool disallow_caching) {
+  g_disallow_memory_threshold_caching = disallow_caching;
 }
 
 }  // namespace site_isolation

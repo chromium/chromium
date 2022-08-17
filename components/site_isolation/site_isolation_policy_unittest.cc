@@ -728,6 +728,11 @@ class PasswordSiteIsolationFieldTrialTest : public BaseSiteIsolationTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(true);
+  }
+
+  void TearDown() override {
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
  protected:
@@ -936,6 +941,11 @@ class StrictOriginIsolationFieldTrialTest : public BaseSiteIsolationTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(true);
+  }
+
+  void TearDown() override {
+    SiteIsolationPolicy::SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
  protected:

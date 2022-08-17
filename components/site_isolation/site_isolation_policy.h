@@ -89,6 +89,12 @@ class SiteIsolationPolicy {
   // process iframes (OOPIF's) to print properly.
   static bool ShouldPdfCompositorBeEnabledForOopifs();
 
+  // When set to true bypasses the caching of the results of
+  // ShouldDisableSiteIsolationDueToMemoryThreshold(). Setting to false reverts
+  // to the default behavior (caching is controlled by a base::Feature).
+  static void SetDisallowMemoryThresholdCachingForTesting(
+      bool disallow_caching);
+
  private:
   // Helpers for implementing PersistIsolatedOrigin().
   static void PersistUserTriggeredIsolatedOrigin(
