@@ -15,17 +15,17 @@ GEN('#include "content/public/test/browser_test.h"');
 var ChromeTimeTicksBrowserTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
-    return 'chrome://dummyurl';
+    return 'chrome://test/test_loader.html?module=chrome_timeticks_test.js';
+  }
+
+  /** @override */
+  get isAsync() {
+    return true;
   }
 
   /** @override */
   get webuiHost() {
     return 'dummyurl';
-  }
-
-  /** @override */
-  get browsePreload() {
-    return 'chrome://test/test_loader.html?module=chrome_timeticks_test.js';
   }
 };
 
