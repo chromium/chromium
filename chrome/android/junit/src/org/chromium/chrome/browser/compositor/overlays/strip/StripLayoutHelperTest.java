@@ -635,8 +635,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.getScroller().setFinalX(1000);
 
         // Act: Tab was restored after undoing a tab closure.
-        boolean restoredTab = true;
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, restoredTab);
+        boolean closureCancelled = true;
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, closureCancelled, false);
 
         // Assert: scroller position is not modified.
         assertEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
@@ -652,11 +652,31 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.getScroller().setFinalX(1000);
 
         // Act: Tab was restored after undoing a tab closure.
-        boolean restoredTab = false;
-        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, restoredTab);
+        boolean closureCancelled = false;
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, closureCancelled, false);
 
         // Assert: scroller position is modified.
         assertNotEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabCreated_BringSelectedTabToVisibleArea_StartupRestoredUnselectedTab() {
+        initializeTest(false, false, 1, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // Set initial scroller position to -500.
+        mStripLayoutHelper.setScrollOffsetForTesting(-500);
+
+        // Act: Tab was restored during startup.
+        boolean selected = false;
+        boolean onStartup = true;
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 11, 11, selected, false, onStartup);
+
+        // Assert: We don't scroll to the created tab. The selected tab is not already visible, so
+        // we scroll to it. Offset = -(1 tab width) = -166.
+        int expectedOffset = -166;
+        assertEquals("We should scroll to the selected tab", expectedOffset,
+                mStripLayoutHelper.getScrollOffset());
     }
 
     @Test
