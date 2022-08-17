@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/nacl/config.gni")
+import("//components/nacl/toolchain.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 assert(enable_ppapi)
@@ -194,15 +195,6 @@ component("shared_impl") {
     "private/ppb_x509_certificate_private_shared.h",
   ]
 
-  if (!is_nacl) {
-    sources += [
-      "ppb_video_decoder_shared.cc",
-      "ppb_video_decoder_shared.h",
-      "private/ppb_x509_util_shared.cc",
-      "private/ppb_x509_util_shared.h",
-    ]
-  }
-
   # This condition is catching the build of nacl64.exe, which is built
   # in the 64-bit toolchain when the overall build is 32-bit.
   # See also //ppapi/thunk
@@ -239,7 +231,14 @@ component("shared_impl") {
     "//media:shared_memory_support",
   ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
+    sources += [
+      "ppb_video_decoder_shared.cc",
+      "ppb_video_decoder_shared.h",
+      "private/ppb_x509_util_shared.cc",
+      "private/ppb_x509_util_shared.h",
+    ]
+
     deps += [
       "//net",
       "//ui/events:events_base",
