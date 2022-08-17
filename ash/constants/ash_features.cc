@@ -1533,6 +1533,10 @@ const base::Feature kSystemJapanesePhysicalTyping{
 const base::Feature kSystemTransliterationPhysicalTyping{
     "SystemTransliterationPhysicalTyping", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the shadows of system tray bubbles.
+const base::Feature kSystemTrayShadow{"SystemTrayShadow",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the ChromeOS system-proxy daemon, only for system services. This
 // means that system services like tlsdate, update engine etc. can opt to be
 // authenticated to a remote HTTP web proxy via system-proxy.
@@ -2461,6 +2465,10 @@ bool IsSimLockPolicyEnabled() {
 
 bool IsSyncSettingsCategorizationEnabled() {
   return base::FeatureList::IsEnabled(kSyncSettingsCategorization);
+}
+
+bool IsSystemTrayShadowEnabled() {
+  return base::FeatureList::IsEnabled(kSystemTrayShadow);
 }
 
 bool IsStylusBatteryStatusEnabled() {

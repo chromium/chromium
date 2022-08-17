@@ -307,7 +307,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     set_color(SK_ColorTRANSPARENT);
   }
 
-  if (params_.has_shadow) {
+  if (params_.has_shadow && features::IsSystemTrayShadowEnabled()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
         this, params_.shadow_type);
     shadow_->SetRoundedCornerRadius(params_.corner_radius);
