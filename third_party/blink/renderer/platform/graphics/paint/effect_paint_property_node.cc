@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 
 namespace blink {

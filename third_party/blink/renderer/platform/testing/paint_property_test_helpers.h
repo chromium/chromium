@@ -184,7 +184,7 @@ inline scoped_refptr<ClipPaintPropertyNode> CreatePixelMovingFilterClipExpander(
     const ClipPaintPropertyNodeOrAlias& parent,
     const EffectPaintPropertyNode& pixel_moving_filter) {
   ClipPaintPropertyNode::State state(&pixel_moving_filter.LocalTransformSpace(),
-                                     pixel_moving_filter);
+                                     &pixel_moving_filter);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
 

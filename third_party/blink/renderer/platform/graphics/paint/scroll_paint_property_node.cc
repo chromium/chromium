@@ -61,7 +61,7 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
     json->SetString("contentsSize", String(state_.contents_size.ToString()));
   if (state_.overflow_clip_node) {
     json->SetString("overflowClipNode",
-                    String::Format("%p", state_.overflow_clip_node));
+                    String::Format("%p", state_.overflow_clip_node.get()));
   }
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(

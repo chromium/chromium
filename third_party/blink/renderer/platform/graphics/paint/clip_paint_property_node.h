@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
@@ -89,9 +90,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     }
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
-          const EffectPaintPropertyNode& pixel_moving_filter)
+          scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter)
         : local_transform_space(std::move(local_transform_space)),
-          pixel_moving_filter(&pixel_moving_filter) {
+          pixel_moving_filter(std::move(pixel_moving_filter)) {
       DCHECK(layout_clip_rect_.IsInfinite());
       paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
     }
@@ -102,8 +103,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     absl::optional<Path> clip_path;
     // If this is not nullptr, this clip node will generate a cc clip node to
     // expand clip rect for a pixel-moving filter.
-    // TODO(wangxianzhu): Use this to simplify visual rect mapping in blink.
-    const EffectPaintPropertyNode* pixel_moving_filter = nullptr;
+    scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter;
 
     void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
                      const FloatRoundedRect& paint_clip_rect_arg) {
@@ -176,7 +176,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   }
 
   const EffectPaintPropertyNode* PixelMovingFilter() const {
-    return state_.pixel_moving_filter;
+    return state_.pixel_moving_filter.get();
   }
 
   const ClipPaintPropertyNode* NearestPixelMovingFilterClip() const {

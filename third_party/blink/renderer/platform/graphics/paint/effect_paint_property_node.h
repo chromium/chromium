@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
-#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -20,6 +19,7 @@
 
 namespace blink {
 
+class ClipPaintPropertyNodeOrAlias;
 class PropertyTreeState;
 
 // Effect nodes are abstraction of isolated groups, along with optional effects
