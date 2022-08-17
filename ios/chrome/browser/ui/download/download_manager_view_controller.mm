@@ -663,13 +663,7 @@ NSString* GetSizeString(long long size_in_bytes) {
           ? @"background_regular"
           : @"background_compact";
 
-  UIImage* image = [UIImage imageNamed:imageName
-                              inBundle:nil
-         compatibleWithTraitCollection:traitCollection];
-  UIEdgeInsets insets = UIEdgeInsetsMake(
-      kTopShadowHeight, kLeftRightShadowHeight, 0, kLeftRightShadowHeight);
-
-  self.background.image = [image resizableImageWithCapInsets:insets];
+  self.background.image = [UIImage imageNamed:imageName];
 }
 
 // Updates and activates constraints which depend on ui size class.

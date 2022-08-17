@@ -33,32 +33,16 @@ UIColor* DominantColorForImage(const gfx::Image& image, CGFloat opacity) {
   return result;
 }
 
-UIImage* StretchableImageFromUIImage(UIImage* image,
-                                     NSInteger left_cap_width,
-                                     NSInteger top_cap_height) {
-  UIEdgeInsets insets = UIEdgeInsetsMake(
-      top_cap_height, left_cap_width, image.size.height - top_cap_height + 1.0,
-      image.size.width - left_cap_width + 1.0);
-  return [image resizableImageWithCapInsets:insets];
-}
-
 UIImage* StretchableImageNamed(NSString* name) {
   UIImage* image = [UIImage imageNamed:name];
   if (!image)
     return nil;
   // Returns a copy of `image` configured to stretch at the center pixel.
-  return StretchableImageFromUIImage(image, floor(image.size.width / 2.0),
-                                     floor(image.size.height / 2.0));
-}
-
-UIImage* StretchableImageNamed(NSString* name,
-                               NSInteger left_cap_width,
-                               NSInteger top_cap_height) {
-  UIImage* image = [UIImage imageNamed:name];
-  if (!image)
-    return nil;
-
-  return StretchableImageFromUIImage(image, left_cap_width, top_cap_height);
+  CGFloat half_width = floor(image.size.width / 2.0);
+  CGFloat half_height = floor(image.size.height / 2.0);
+  UIEdgeInsets insets =
+      UIEdgeInsetsMake(half_height, half_width, half_height, half_width);
+  return [image resizableImageWithCapInsets:insets];
 }
 
 // https://en.wikipedia.org/wiki/List_of_file_signatures

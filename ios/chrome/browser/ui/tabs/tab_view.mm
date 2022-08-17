@@ -41,7 +41,6 @@ const CGFloat kTabCloseTopInset = 1.0;
 const CGFloat kTabCloseLeftInset = 0.0;
 const CGFloat kTabCloseBottomInset = 0.0;
 const CGFloat kTabCloseRightInset = 0.0;
-const CGFloat kTabBackgroundLeftCapInset = 34.0;
 const CGFloat kFaviconLeftInset = 28;
 const CGFloat kFaviconVerticalOffset = 1.0;
 const CGFloat kTabStripLineMargin = 2.5;
@@ -353,15 +352,7 @@ UIImage* DefaultFaviconImage() {
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
   NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
-  CGFloat leftInset = kTabBackgroundLeftCapInset;
-  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
-  // Radar filled: b/137942721.
-  UIImage* resolvedImage = [UIImage imageNamed:imageName
-                                      inBundle:nil
-                 compatibleWithTraitCollection:self.traitCollection];
-  UIImage* backgroundImage =
-      StretchableImageFromUIImage(resolvedImage, leftInset, 0);
-  _backgroundImageView.image = backgroundImage;
+  _backgroundImageView.image = [UIImage imageNamed:imageName];
 
   if (selected) {
     if (_pointerInteraction)
