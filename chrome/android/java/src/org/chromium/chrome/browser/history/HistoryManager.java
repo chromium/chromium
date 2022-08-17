@@ -24,6 +24,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.DateDividedAdapter.DateViewHolder;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -512,9 +515,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     }
 
     private void swapContentView() {
+        boolean toHistoryClusters;
         if (shouldShowIncognitoPlaceholder()) {
             return;
         } else if (isHistoryClustersUIShowing()) {
+            toHistoryClusters = false;
             mHistoryClustersCoordinator.onToggled(false);
             mContentView = mSelectableListLayout;
             mContentManager.startLoadingItems();
@@ -531,6 +536,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         } else {
             assert mHistoryClustersCoordinator
                     != null : "swapContentView() shouldn't be called if HistoryClusters is off";
+            toHistoryClusters = true;
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
             mHistoryClustersCoordinator.onToggled(true);
             if (mJourneysTabToggle != null) {
@@ -538,11 +544,29 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             }
         }
 
-        Transition transition = new AutoTransition();
-        transition.addTarget(SelectableItemView.class);
+        Transition transition = makeContentSwapTransition(toHistoryClusters);
         Scene scene = new Scene(mRootView, mContentView);
         TransitionManager.go(scene, transition);
         mContentView.requestFocus();
+    }
+
+    private Transition makeContentSwapTransition(boolean toHistoryClusters) {
+        Transition transition = new AutoTransition();
+        transition.addTarget(SelectableItemView.class);
+        if (!toHistoryClusters) {
+            HistoryAdapter adapter = mContentManager.getAdapter();
+            RecyclerView recyclerView = mContentManager.getRecyclerView();
+            int lastVisiblePosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                                              .findLastVisibleItemPosition();
+            for (int i = 0; i < adapter.getItemCount() && i <= lastVisiblePosition; i++) {
+                ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(i);
+                if (vh instanceof DateViewHolder) {
+                    transition.addTarget(vh.itemView);
+                }
+            }
+        }
+
+        return transition;
     }
 
     private boolean isHistoryClustersUIShowing() {
