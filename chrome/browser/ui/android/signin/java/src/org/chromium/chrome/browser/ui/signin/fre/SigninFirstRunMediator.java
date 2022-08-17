@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
@@ -354,6 +355,7 @@ public class SigninFirstRunMediator
 
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowCrashUpload);
+        SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {

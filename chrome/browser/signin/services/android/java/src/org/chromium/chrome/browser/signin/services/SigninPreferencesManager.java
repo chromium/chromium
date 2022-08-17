@@ -32,6 +32,15 @@ public class SigninPreferencesManager {
     }
 
     /**
+     * Suppress signin promos in New Tab Page for {@link SignInPromo#SUPPRESSION_PERIOD_MS}. This
+     * will not affect promos that were created before this call.
+     */
+    public void temporarilySuppressNewTabPagePromos() {
+        SigninPreferencesManager.getInstance().setNewTabPageSigninPromoSuppressionPeriodStart(
+                System.currentTimeMillis());
+    }
+
+    /**
      * Clears the accounts state-related shared prefs.
      */
     @VisibleForTesting

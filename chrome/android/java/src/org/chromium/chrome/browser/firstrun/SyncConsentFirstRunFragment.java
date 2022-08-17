@@ -11,8 +11,8 @@ import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -65,7 +65,7 @@ public class SyncConsentFirstRunFragment
             // The user would have to go through the FRE again.
             getPageDelegate().abortFirstRunExperience();
         } else {
-            SignInPromo.temporarilySuppressPromos();
+            SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
             FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(null);
             FirstRunSignInProcessor.setFirstRunFlowSignInSetup(false);
             getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);

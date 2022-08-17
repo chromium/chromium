@@ -80,15 +80,6 @@ public abstract class SignInPromo {
     }
 
     /**
-     * Suppress signin promos in New Tab Page for {@link SignInPromo#SUPPRESSION_PERIOD_MS}. This
-     * will not affect promos that were created before this call.
-     */
-    public static void temporarilySuppressPromos() {
-        SigninPreferencesManager.getInstance().setNewTabPageSigninPromoSuppressionPeriodStart(
-                System.currentTimeMillis());
-    }
-
-    /**
      * @return Whether the {@link SignInPromo} should be created.
      */
     public static boolean shouldCreatePromo() {
