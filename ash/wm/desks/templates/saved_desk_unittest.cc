@@ -4310,4 +4310,31 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
   EXPECT_EQ(kDefaultDeskName, desks_controller->active_desk()->name());
 }
 
+// Tests that if the user somehow exits the overview session that the function
+// call to `MaybeShowReplaceDialog` exits gracefully before calling
+// `saved_desk_util::GetSavedDeskDialogController` which will cause a crash
+// due to a DCHECK for the overview session. Regression test for
+// https://crbug.com/1351521.
+TEST_F(SavedDeskTest, MaybeShowReplaceDialogDoesNotCrashOutsideOverview) {
+  UpdateDisplay("800x600,800x600");
+
+  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  AddEntry(uuid, /*name=*/"template_1", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Get overview grid and added entry.
+  const auto& overview_grid = GetOverviewGridList()[0];
+  SavedDeskItemView* grid_item =
+      GetItemViewsFromDeskLibrary(overview_grid.get())[0];
+
+  // Exit Overview and ensure there is not an overview session
+  ToggleOverview();
+  EXPECT_FALSE(GetOverviewSession());
+
+  // Call `MaybeShowReplaceDialog` to ensure there isn't a crash.
+  grid_item->MaybeShowReplaceDialog(DeskTemplateType::kTemplate, uuid);
+}
+
 }  // namespace ash
