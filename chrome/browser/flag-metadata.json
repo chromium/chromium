@@ -1814,11 +1814,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "enable-cros-ime-assist-autocorrect",
-    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-cros-ime-assist-emoji-enhanced",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
@@ -1849,11 +1844,6 @@
     "expiry_milestone" : 110
   },
   {
-    "name": "enable-cros-ime-system-emoji-picker",
-    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-cros-ime-system-emoji-picker-clipboard",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
@@ -1867,11 +1857,6 @@
     "name": "enable-cros-ime-system-emoji-picker-search-extension",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "enable-cros-language-settings-ime-options-in-settings",
-    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 97
   },
   {
     "name": "enable-cros-language-settings-update-japanese",
