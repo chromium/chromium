@@ -195,12 +195,16 @@ void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
   if (response.IsNull())
     return;
 
+  ExecutionContext* execution_context = OriginalExecutionContext();
+  Document* element_document = OriginalElementDocument();
+  if (!execution_context || !element_document)
+    return;
+
   scoped_refptr<SecurityOrigin> script_origin =
       SecurityOrigin::Create(response.ResponseUrl());
-  const SecurityOrigin* doc_origin =
-      GetElement()->GetExecutionContext()->GetSecurityOrigin();
+  const SecurityOrigin* doc_origin = execution_context->GetSecurityOrigin();
   scoped_refptr<const SecurityOrigin> top_frame_origin =
-      GetElement()->GetDocument().TopFrameOrigin();
+      element_document->TopFrameOrigin();
 
   // The use counter is meant to gather data for prerendering: how often do
   // pages make credentialed requests to third parties from first-party frames,
@@ -228,7 +232,7 @@ void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
   if (GetSchedulingType() == ScriptSchedulingType::kAsync)
     return;
 
-  GetElement()->GetExecutionContext()->CountUse(
+  execution_context->CountUse(
       mojom::blink::WebFeature::
           kUndeferrableThirdPartySubresourceRequestWithCookie);
 }
@@ -276,30 +280,39 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // See https://crbug.com/500701 for more information.
   CheckState();
   DCHECK(GetResource());
-  ScriptElementBase* element = GetElement();
-  if (element) {
-    SubresourceIntegrityHelper::DoReport(*element->GetExecutionContext(),
-                                         GetResource()->IntegrityReportInfo());
 
-    // It is possible to get back a script resource with integrity metadata
-    // for a request with an empty integrity attribute. In that case, the
-    // integrity check should be skipped, as the integrity may not have been
-    // "meant" for this specific request. If the resource is being served from
-    // the preload cache however, we know any associated integrity metadata and
-    // checks were destined for this request, so we cannot skip the integrity
-    // check.
-    if (!options_.GetIntegrityMetadata().IsEmpty() ||
-        GetResource()->IsLinkPreload()) {
-      integrity_failure_ = GetResource()->IntegrityDisposition() !=
-                           ResourceIntegrityDisposition::kPassed;
-    }
+  // If the original execution context/element document is gone, consider this
+  // as network error. Anyway the script wouldn't evaluated / no events are
+  // fired, so this is not observable.
+  ExecutionContext* execution_context = OriginalExecutionContext();
+  Document* element_document = OriginalElementDocument();
+  if (!execution_context || execution_context->IsContextDestroyed() ||
+      !element_document || !element_document->IsActive()) {
+    AdvanceReadyState(kErrorOccurred);
+    return;
+  }
+
+  SubresourceIntegrityHelper::DoReport(*execution_context,
+                                       GetResource()->IntegrityReportInfo());
+
+  // It is possible to get back a script resource with integrity metadata
+  // for a request with an empty integrity attribute. In that case, the
+  // integrity check should be skipped, as the integrity may not have been
+  // "meant" for this specific request. If the resource is being served from
+  // the preload cache however, we know any associated integrity metadata and
+  // checks were destined for this request, so we cannot skip the integrity
+  // check.
+  if (!options_.GetIntegrityMetadata().IsEmpty() ||
+      GetResource()->IsLinkPreload()) {
+    integrity_failure_ = GetResource()->IntegrityDisposition() !=
+                         ResourceIntegrityDisposition::kPassed;
   }
 
   if (intervened_) {
     CrossOriginAttributeValue cross_origin =
-        GetCrossOriginAttributeValue(element->CrossOriginAttributeValue());
-    PossiblyFetchBlockedDocWriteScript(resource, element->GetDocument(),
-                                       options_, cross_origin);
+        GetCrossOriginAttributeValue(GetElement()->CrossOriginAttributeValue());
+    PossiblyFetchBlockedDocWriteScript(resource, *element_document, options_,
+                                       cross_origin);
   }
 
   // <specdef href="https://fetch.spec.whatwg.org/#concept-main-fetch">
@@ -311,7 +324,7 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // nosniff</spec>
   // <spec step="17">then set response and internalResponse to a network
   // error.</spec>
-  auto* fetcher = GetElement()->GetExecutionContext()->Fetcher();
+  auto* fetcher = execution_context->Fetcher();
   const bool mime_type_failure = !AllowedByNosniff::MimeTypeAsScript(
       fetcher->GetUseCounter(), &fetcher->GetConsoleLogger(),
       resource->GetResponse(), AllowedByNosniff::MimeTypeCheck::kLaxForElement);
@@ -339,25 +352,13 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   cache_consumer_ = script_resource->TakeCacheConsumer();
 
   if (cache_consumer_) {
-    ExecutionContext* execution_context = element->GetExecutionContext();
     // Only wait for the cache consume if there is an execution context it can
     // notify us on.
-    if (execution_context) {
-      AdvanceReadyState(kWaitingForCacheConsumer);
-      // TODO(leszeks): Decide whether kNetworking is the right task type here.
-      cache_consumer_->NotifyClientWaiting(
-          this, execution_context->GetTaskRunner(TaskType::kNetworking));
-
-    } else {
-      // Otherwise (probably when our Document isn't active anymore),
-      // we can simply drop the cache consumer and let it be cleaned up by the
-      // GC; no one is waiting on it so it's safe to just drop it without
-      // needing to cancel or dispose it in any way.
-      cache_consumer_ = nullptr;
-    }
-  }
-
-  if (!cache_consumer_) {
+    AdvanceReadyState(kWaitingForCacheConsumer);
+    // TODO(leszeks): Decide whether kNetworking is the right task type here.
+    cache_consumer_->NotifyClientWaiting(
+        this, execution_context->GetTaskRunner(TaskType::kNetworking));
+  } else {
     // Either there was never a cache consume, or it was dropped. Either way, we
     // are ready.
     AdvanceReadyState(kReady);
@@ -451,11 +452,13 @@ ClassicScript* ClassicPendingScript::GetSource() const {
     // behaviour. We should decide whether it is ok for this parameter to be
     // used for behavioural changes (and if yes, update its documentation), or
     // otherwise trigger this behaviour differently.
-    if (source_location_type_ == ScriptSourceLocationType::kInline) {
+    Document* element_document = OriginalElementDocument();
+    if (source_location_type_ == ScriptSourceLocationType::kInline &&
+        element_document && element_document->IsActive()) {
       cache_handler = GetInlineCacheHandler(source_text_for_inline_script_,
-                                            GetElement()->GetDocument());
+                                            *element_document);
       streamer = GetInlineScriptStreamer(source_text_for_inline_script_,
-                                         GetElement()->GetDocument());
+                                         *element_document);
     }
 
     DCHECK(!GetResource());

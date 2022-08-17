@@ -145,6 +145,13 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   virtual void CheckState() const = 0;
 
+  Document* OriginalElementDocument() const {
+    return original_element_document_;
+  }
+  ExecutionContext* OriginalExecutionContext() const {
+    return original_execution_context_;
+  }
+
  private:
   static void ExecuteScriptBlockInternal(
       Script*,
