@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-// #import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js'
+import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 // clang-format on
 
 /** @polymerBehavior */
@@ -130,7 +130,7 @@ const CrRadioButtonBehaviorImpl = {
   // customize the element's ripple
   _createRipple() {
     this._rippleContainer = this.$$('.disc-wrapper');
-    const ripple = Polymer.PaperRippleBehavior._createRipple();
+    const ripple = PaperRippleBehavior._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
@@ -140,13 +140,13 @@ const CrRadioButtonBehaviorImpl = {
 
 
 /** @polymerBehavior */
-/* #export */ const CrRadioButtonBehavior = [
-  Polymer.PaperRippleBehavior,
+export const CrRadioButtonBehavior = [
+  PaperRippleBehavior,
   CrRadioButtonBehaviorImpl,
 ];
 
 /** @interface */
-/* #export */ class CrRadioButtonBehaviorInterface {
+export class CrRadioButtonBehaviorInterface {
   constructor() {
     /** @type {boolean} */
     this.checked;
@@ -158,5 +158,3 @@ const CrRadioButtonBehaviorImpl = {
   /** @return  {!PaperRippleElement} */
   getRipple() {}
 }
-
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

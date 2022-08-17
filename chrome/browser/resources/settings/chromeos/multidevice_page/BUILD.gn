@@ -114,7 +114,7 @@ js_library("multidevice_permissions_setup_dialog") {
 js_library("multidevice_radio_button") {
   deps = [
     "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
   ]
 }
@@ -132,7 +132,7 @@ js_library("multidevice_smartlock_subpage") {
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [ "$externs_path/quick_unlock_private.js" ]

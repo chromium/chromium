@@ -6,7 +6,7 @@
  * @fileoverview This component displays a topic (image) source.
  */
 
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';

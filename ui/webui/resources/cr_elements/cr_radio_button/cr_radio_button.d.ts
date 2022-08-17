@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
-import {CrRadioButtonBehavior} from './cr_radio_button_behavior.m.js';
 
-interface CrCardRadioButtonElement extends LegacyElementMixin,
-                                           CrRadioButtonBehavior, HTMLElement {
+import {CrRadioButtonBehavior} from './cr_radio_button_behavior.js';
+
+interface CrRadioButtonElement extends LegacyElementMixin,
+                                       CrRadioButtonBehavior, HTMLElement {
   $: {
     button: HTMLElement,
   };
 }
 
-export {CrCardRadioButtonElement};
+export {CrRadioButtonElement};
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-card-radio-button': CrCardRadioButtonElement;
+    'cr-radio-button': CrRadioButtonElement;
   }
 }

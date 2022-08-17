@@ -7,7 +7,7 @@
  * 'settings-pointers' is the settings subpage with mouse and touchpad settings.
  */
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../controls/settings_radio_group.js';
 import '../../controls/settings_slider.js';

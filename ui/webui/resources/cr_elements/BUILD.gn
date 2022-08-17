@@ -17,6 +17,7 @@ import("./cr_elements.gni")
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
 if (include_polymer) {
   preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+  preprocess_src_manifest = "preprocessed_src_manifest.json"
 }
 
 if (is_chromeos_ash) {
@@ -28,7 +29,10 @@ if (include_polymer) {
     grd_prefix = "cr_elements"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
     public_deps = [ ":preprocess" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_gen_manifest",
+      "$target_gen_dir/$preprocess_src_manifest",
+    ]
 
     if (is_chromeos_ash) {
       manifest_files += [
@@ -51,6 +55,7 @@ group("preprocess") {
       ":css_wrapper_files",
       ":html_wrapper_files",
       ":preprocess_generated",
+      ":preprocess_src",
     ]
   }
 
@@ -91,13 +96,6 @@ if (is_chromeos_ash) {
       "cr_icons_css.html",
       "cr_lottie/cr_lottie.html",
       "cr_lottie/cr_lottie.js",
-      "cr_radio_button/cr_card_radio_button.html",
-      "cr_radio_button/cr_card_radio_button.js",
-      "cr_radio_button/cr_radio_button_behavior.html",
-      "cr_radio_button/cr_radio_button_behavior.js",
-      "cr_radio_button/cr_radio_button.html",
-      "cr_radio_button/cr_radio_button.js",
-      "cr_radio_button/cr_radio_button_style_css.html",
       "cr_scrollable_behavior.html",
       "cr_scrollable_behavior.js",
       "find_shortcut_behavior.js",
@@ -119,6 +117,13 @@ if (is_chromeos_ash) {
 }
 
 if (include_polymer) {
+  preprocess_if_expr("preprocess_src") {
+    in_folder = "."
+    out_folder = preprocess_folder
+    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+    in_files = [ "cr_radio_button/cr_radio_button_behavior.js" ]
+  }
+
   preprocess_if_expr("preprocess_generated") {
     deps = [ ":custom_elements" ]
     in_folder = target_gen_dir
@@ -134,10 +139,8 @@ if (include_polymer) {
       "cr_icons_css.m.js",
       "cr_input/cr_input.js",
       "cr_lottie/cr_lottie.m.js",
-      "cr_radio_button/cr_card_radio_button.m.js",
-      "cr_radio_button/cr_radio_button_behavior.m.js",
-      "cr_radio_button/cr_radio_button.m.js",
-      "cr_radio_button/cr_radio_button_style_css.m.js",
+      "cr_radio_button/cr_card_radio_button.js",
+      "cr_radio_button/cr_radio_button.js",
       "cr_scrollable_behavior.m.js",
       "cr_toggle/cr_toggle.js",
       "hidden_style_css.m.js",
@@ -165,7 +168,6 @@ if (include_polymer) {
     deps = [
       ":cr_elements_resources",
       "cr_lottie:closure_compile",
-      "cr_radio_button:closure_compile",
       "policy:closure_compile",
 
       # Targets for auto-generated Polymer 3 JS Modules
@@ -280,7 +282,7 @@ if (include_polymer) {
       "cr_icon_button:web_components",
       "cr_input:web_components",
       "cr_lottie:cr_lottie_module",
-      "cr_radio_button:polymer3_elements",
+      "cr_radio_button:web_components",
       "cr_toggle:web_components",
       "policy:polymer3_elements",
     ]

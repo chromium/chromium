@@ -123,7 +123,7 @@ js_library("nearby_contact_visibility") {
     ":nearby_contact_manager",
     ":nearby_share_settings_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button.m",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",

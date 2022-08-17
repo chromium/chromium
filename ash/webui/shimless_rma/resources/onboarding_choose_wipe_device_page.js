@@ -4,8 +4,7 @@
 
 import './base_page.js';
 import './shimless_rma_shared_css.js';
-
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

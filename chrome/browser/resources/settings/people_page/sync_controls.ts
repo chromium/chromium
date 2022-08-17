@@ -4,7 +4,7 @@
 
 import '//resources/js/util.m.js';
 import '//resources/cr_components/localized_link/localized_link.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/shared_style_css.m.js';

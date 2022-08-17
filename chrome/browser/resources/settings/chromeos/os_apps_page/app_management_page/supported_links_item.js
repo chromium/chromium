@@ -5,7 +5,7 @@
 import './supported_links_overlapping_apps_dialog.js';
 import './supported_links_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {AppManagementUserAction, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';

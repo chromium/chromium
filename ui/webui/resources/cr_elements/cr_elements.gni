@@ -94,6 +94,7 @@ if (include_polymer) {
   css_files = [
     "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",
+    "cr_radio_button/cr_radio_button_style.css",
     "mwb_element_shared_style.css",
     "mwb_shared_style.css",
     "mwb_shared_vars.css",

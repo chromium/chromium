@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../cr_radio_button/cr_radio_button.m.js';
+import '../cr_radio_button/cr_radio_button.js';
 import '../shared_vars_css.m.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
 import {EventTracker} from '../../js/event_tracker.m.js';
-import {CrRadioButtonElement} from '../cr_radio_button/cr_radio_button.m.js';
+import {CrRadioButtonElement} from '../cr_radio_button/cr_radio_button.js';
 
 import {getTemplate} from './cr_radio_group.html.js';
 

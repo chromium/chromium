@@ -1,12 +1,15 @@
-<link rel="import" href="../../html/polymer.html">
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
 
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="../shared_vars_css.html">
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=../shared_vars_css.m.js
+ * #import=../shared_vars_css.m.js
+ * #css_wrapper_metadata_end */
 
-<!-- Common radio-button styling for Material Design WebUI. -->
-<dom-module id="cr-radio-button-style">
-  <template>
-    <style>
+
+/* Common radio-button styling for Material Design WebUI. */
       :host {
         --cr-radio-button-checked-color: var(--google-blue-600);
         --cr-radio-button-checked-ripple-color:
@@ -122,6 +125,3 @@
       :host([checked]) paper-ripple {
         color: var(--cr-radio-button-checked-ripple-color);
       }
-    </style>
-  </template>
-</dom-module>
