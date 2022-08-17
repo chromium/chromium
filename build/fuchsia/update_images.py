@@ -164,7 +164,11 @@ def DownloadBootImages(bucket, image_hash, boot_image_names, image_root_dir):
         '{device_type}{type_arch_connector}{arch}.tgz'.format(
             bucket=bucket, image_hash=image_hash, device_type=device_type,
             type_arch_connector=type_arch_connector, arch=arch)
-    DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
+    try:
+      DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
+    except subprocess.CalledProcessError as e:
+      logging.exception('Failed to download image %s from URL: %s',
+                        image_to_download, images_targball_url)
 
 
 def main():
