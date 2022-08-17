@@ -58,6 +58,7 @@ class MODULES_EXPORT MediaStreamTrack
   // For carrying data to the FromTransferredState method.
   struct TransferredValues {
     base::UnguessableToken session_id;
+    base::UnguessableToken transfer_id;
     String kind;
     String id;
     String label;
@@ -125,6 +126,11 @@ class MODULES_EXPORT MediaStreamTrack
   virtual ImageCapture* GetImageCapture() = 0;
   virtual absl::optional<base::UnguessableToken> serializable_session_id()
       const = 0;
+  // This function is called on the track by the serializer once it has been
+  // serialized for transfer to another context.
+  // Prepares the track for a potentially cross-renderer transfer. After this
+  // is called, the track will be in an ended state and no longer usable.
+  virtual void BeingTransferred(const base::UnguessableToken& transfer_id) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Only relevant for focusable streams (FocusableMediaStreamTrack).

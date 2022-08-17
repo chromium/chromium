@@ -554,11 +554,12 @@ class UserMediaClientUnderTest : public UserMediaClient {
 
   void CallGetOpenDevice(
       const base::UnguessableToken& session_id,
+      const base::UnguessableToken& transfer_id,
       TransferredMediaStreamTrack* transferred_media_stream_track) {
     UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
         CreateDefaultConstraints(), CreateDefaultConstraints());
 
-    user_media_request->SetTransferData(session_id,
+    user_media_request->SetTransferData(session_id, transfer_id,
                                         transferred_media_stream_track);
     RequestUserMediaForTest(user_media_request);
   }
@@ -765,6 +766,7 @@ TEST_F(UserMediaClientTest, GetOpenDeviceVideo) {
   V8TestingScope scope;
   MediaStreamTrack::TransferredValues data{
       .session_id = base::UnguessableToken::Create(),
+      .transfer_id = base::UnguessableToken::Create(),
       .kind = "video",
       .id = "transferred_id",
       .label = "label",
@@ -783,7 +785,7 @@ TEST_F(UserMediaClientTest, GetOpenDeviceVideo) {
   stream_devices.video_device.value().set_session_id(data.session_id);
   mock_dispatcher_host_.SetStreamDevices(stream_devices);
 
-  user_media_client_impl_->CallGetOpenDevice(data.session_id,
+  user_media_client_impl_->CallGetOpenDevice(data.session_id, data.transfer_id,
                                              transferred_media_stream_track);
   StartMockedVideoSource();
 
@@ -798,6 +800,7 @@ TEST_F(UserMediaClientTest, GetOpenDeviceAudio) {
   V8TestingScope scope;
   MediaStreamTrack::TransferredValues data{
       .session_id = base::UnguessableToken::Create(),
+      .transfer_id = base::UnguessableToken::Create(),
       .kind = "audio",
       .id = "transferred_id",
       .label = "label",
@@ -816,7 +819,7 @@ TEST_F(UserMediaClientTest, GetOpenDeviceAudio) {
   stream_devices.audio_device.value().set_session_id(data.session_id);
   mock_dispatcher_host_.SetStreamDevices(stream_devices);
 
-  user_media_client_impl_->CallGetOpenDevice(data.session_id,
+  user_media_client_impl_->CallGetOpenDevice(data.session_id, data.transfer_id,
                                              transferred_media_stream_track);
 
   EXPECT_EQ(kRequestSucceeded, request_state());

@@ -155,12 +155,17 @@ class MODULES_EXPORT UserMediaRequest final
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
   void SetTransferData(const base::UnguessableToken& session_id,
+                       const base::UnguessableToken& transfer_id,
                        TransferredMediaStreamTrack* track) {
     transferred_track_session_id_ = session_id;
+    transferred_track_transfer_id_ = transfer_id;
     transferred_track_ = track;
   }
   absl::optional<base::UnguessableToken> GetSessionId() const {
     return transferred_track_session_id_;
+  }
+  absl::optional<base::UnguessableToken> GetTransferId() const {
+    return transferred_track_transfer_id_;
   }
   bool IsTransferredTrackRequest() const {
     return !!transferred_track_session_id_;
@@ -187,6 +192,7 @@ class MODULES_EXPORT UserMediaRequest final
   bool is_resolved_ = false;
 
   absl::optional<base::UnguessableToken> transferred_track_session_id_;
+  absl::optional<base::UnguessableToken> transferred_track_transfer_id_;
   Member<TransferredMediaStreamTrack> transferred_track_;
 };
 

@@ -350,6 +350,17 @@ TransferredMediaStreamTrack::serializable_session_id() const {
   return absl::nullopt;
 }
 
+void TransferredMediaStreamTrack::BeingTransferred(
+    const base::UnguessableToken& transfer_id) {
+  if (track_) {
+    track_->BeingTransferred(transfer_id);
+    stopTrack(GetExecutionContext());
+    return;
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void TransferredMediaStreamTrack::CloseFocusWindowOfOpportunity() {
   if (track_) {

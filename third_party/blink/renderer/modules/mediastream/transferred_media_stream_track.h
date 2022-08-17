@@ -92,6 +92,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   ImageCapture* GetImageCapture() override;
   absl::optional<base::UnguessableToken> serializable_session_id()
       const override;
+  void BeingTransferred(const base::UnguessableToken& transfer_id) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Only relevant for focusable streams (FocusableMediaStreamTrack).

@@ -624,9 +624,13 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
         "MediaStreamTrack could not be serialized.");
     return false;
   }
+  // TODO(crbug.com/1352414): Replace this UnguessableToken with a mojo
+  // interface.
+  auto transfer_id = base::UnguessableToken::Create();
 
   WriteTag(kMediaStreamTrack);
   WriteUnguessableToken(*track->serializable_session_id());
+  WriteUnguessableToken(transfer_id);
   WriteUTF8String(track->kind());
   WriteUTF8String(track->id());
   WriteUTF8String(track->label());
@@ -634,6 +638,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   WriteOneByte(track->muted());
   WriteUint32Enum(SerializeContentHint(track->Component()->ContentHint()));
   WriteUint32Enum(SerializeReadyState(track->Component()->GetReadyState()));
+  track->BeingTransferred(transfer_id);
   return true;
 }
 

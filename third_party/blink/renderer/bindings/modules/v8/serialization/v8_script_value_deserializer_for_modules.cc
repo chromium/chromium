@@ -541,13 +541,14 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
-  base::UnguessableToken session_id;
+  base::UnguessableToken session_id, transfer_id;
   String kind, id, label;
   uint8_t enabled, muted;
   SerializedContentHintType contentHint;
   SerializedReadyState readyState;
 
-  if (!ReadUnguessableToken(&session_id) || !ReadUTF8String(&kind) ||
+  if (!ReadUnguessableToken(&session_id) ||
+      !ReadUnguessableToken(&transfer_id) || !ReadUTF8String(&kind) ||
       (kind != "audio" && kind != "video") || !ReadUTF8String(&id) ||
       !ReadUTF8String(&label) || !ReadOneByte(&enabled) || enabled > 1 ||
       !ReadOneByte(&muted) || muted > 1 || !ReadUint32Enum(&contentHint) ||
@@ -558,6 +559,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   return MediaStreamTrack::FromTransferredState(
       GetScriptState(), MediaStreamTrack::TransferredValues{
                             .session_id = session_id,
+                            .transfer_id = transfer_id,
                             .kind = kind,
                             .id = id,
                             .label = label,

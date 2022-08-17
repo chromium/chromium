@@ -865,6 +865,35 @@ MediaStreamTrackImpl::serializable_session_id() const {
       .serializable_session_id();
 }
 
+void MediaStreamTrackImpl::BeingTransferred(
+    const base::UnguessableToken& transfer_id) {
+  // Creates a clone track to keep a reference in the renderer while
+  // KeepDeviceAliveForTransfer is being called.
+  MediaStreamTrack* cloned_track = clone(GetExecutionContext());
+  WebPlatformMediaStreamSource* platform_source =
+      cloned_track->Component()->Source()->GetPlatformSource();
+  if (platform_source) {
+    platform_source->KeepDeviceAliveForTransfer(
+        serializable_session_id().value(), transfer_id,
+        WTF::Bind(
+            [](MediaStreamTrack* cloned_track,
+               ExecutionContext* execution_context, bool device_found) {
+              if (!device_found) {
+                DLOG(ERROR) << "MediaStreamDevice corresponding to transferred "
+                               "track not found.";
+              }
+              cloned_track->stopTrack(execution_context);
+            },
+            WrapPersistent(cloned_track),
+            WrapWeakPersistent(GetExecutionContext())));
+  } else {
+    cloned_track->stopTrack(GetExecutionContext());
+  }
+
+  stopTrack(GetExecutionContext());
+  return;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamTrackImpl::CloseFocusWindowOfOpportunity() {}
 #endif

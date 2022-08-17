@@ -89,7 +89,8 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
       MakeGarbageCollected<TransferredMediaStreamTrack>(
           ExecutionContext::From(script_state), data);
 
-  request->SetTransferData(data.session_id, transferred_media_stream_track);
+  request->SetTransferData(data.session_id, data.transfer_id,
+                           transferred_media_stream_track);
   request->Start();
   return transferred_media_stream_track;
 }

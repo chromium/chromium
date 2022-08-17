@@ -130,6 +130,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   absl::optional<base::UnguessableToken> serializable_session_id()
       const override;
 
+  void BeingTransferred(const base::UnguessableToken& transfer_id) override;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Only relevant for focusable streams (FocusableMediaStreamTrack).
   // When called on one of these, it signals that Conditional Focus

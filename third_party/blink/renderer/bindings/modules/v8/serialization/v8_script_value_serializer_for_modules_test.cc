@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
+#include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -30,6 +31,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
@@ -37,7 +40,10 @@
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
@@ -46,8 +52,11 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::ElementsAre;
@@ -1221,18 +1230,29 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
-  std::unique_ptr<MockMediaStreamVideoSource> mock_source(
-      base::WrapUnique(new MockMediaStreamVideoSource()));
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(
+      /*initial_view_size=*/gfx::Size(1, 1),
+      MakeGarbageCollected<EmptyChromeClient>());
+  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      &(dummy_page_holder->GetFrame()),
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      std::make_unique<MockVideoCapturerSource>());
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      mock_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
   MediaStreamDevice device;
-  base::UnguessableToken token = base::UnguessableToken::Create();
-  device.set_session_id(token);
+  device.set_session_id(base::UnguessableToken::Create());
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
-      false /* remote */, std::move(mock_source));
+      /*remote=*/false, std::move(mock_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
   component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component,
@@ -1251,12 +1271,58 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
 
   MediaStreamTrack* new_track =
       V8MediaStreamTrack::ToImpl(result.As<v8::Object>());
+  EXPECT_TRUE(blink_track->Ended());
   EXPECT_EQ(new_track->id(), "component_id");
   EXPECT_EQ(new_track->label(), "test_name");
   EXPECT_EQ(new_track->kind(), "video");
   EXPECT_EQ(new_track->enabled(), false);
   EXPECT_EQ(new_track->muted(), true);
   EXPECT_EQ(new_track->ContentHint(), "motion");
+  EXPECT_EQ(new_track->readyState(), "live");
+  platform->RunUntilIdle();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
+  V8TestingScope scope;
+
+  auto mock_source = std::make_unique<MediaStreamAudioSource>(
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*is_local_source=*/true);
+  auto platform_track =
+      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
+
+  MediaStreamDevice device;
+  device.set_session_id(base::UnguessableToken::Create());
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeAudio, "test_name",
+      /*remote=*/false, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
+  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kAudioSpeech);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+
+  MediaStreamTrack* new_track =
+      V8MediaStreamTrack::ToImpl(result.As<v8::Object>());
+  EXPECT_TRUE(blink_track->Ended());
+  EXPECT_EQ(new_track->id(), "component_id");
+  EXPECT_EQ(new_track->label(), "test_name");
+  EXPECT_EQ(new_track->kind(), "audio");
+  EXPECT_EQ(new_track->enabled(), true);
+  EXPECT_EQ(new_track->muted(), true);
+  EXPECT_EQ(new_track->ContentHint(), "speech");
   EXPECT_EQ(new_track->readyState(), "live");
 }
 
@@ -1284,6 +1350,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);
   blink_track->stopTrack(scope.GetExecutionContext());
+  ASSERT_TRUE(blink_track->Ended());
 
   // Transferring a closed MediaStreamTrack should throw an error.
   Transferables transferables;
@@ -1330,6 +1397,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
       "DataCloneError", scope.GetScriptState(), exception_state));
+  EXPECT_FALSE(blink_track->Ended());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1355,6 +1423,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
       "DataCloneError", scope.GetScriptState(), exception_state));
+  EXPECT_FALSE(blink_track->Ended());
 }
 
 #if !BUILDFLAG(IS_ANDROID)  // CropTarget is not exposed on Android.

@@ -77,6 +77,7 @@ enum SerializationTag {
   kWritableStreamTransferTag = 'w',   // index:uint32_t
   kMediaStreamTrack =
       's',             // session_id.high:uint64_t, session_id.low:uint64_t,
+                       // transfer_id.high:uint64_t, transfer_id.low:uint64_t,
                        // kind:WebCoreString, id:WebCoreString,
                        // label:WebCoreString, enabled:byte, muted:byte,
                        // contentHint:Uint32Enum, readyState:Uint32Enum
