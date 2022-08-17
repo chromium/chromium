@@ -83,8 +83,7 @@ class DrawCall {
     return value.toString(16).padStart(2, '0');
   }
 
-  draw(canvas, context, scale, orientationDeg, transformMatrix,
-                                                  buffer_map, threadConfig) {
+  draw(context, buffer_map, threadConfig) {
     let filter = undefined;
     const filters = Filter.enabledInstances();
     // TODO: multiple filters can match the same draw call. For now, let's just
@@ -115,22 +114,19 @@ class DrawCall {
                                                               this.alpha_;
     }
 
-    const newCallPosAndDimension = this.rotateCall(canvas, orientationDeg,
-                                                      scale, transformMatrix);
-
     if (color && alpha) {
       context.fillStyle = color + alpha;
-      context.fillRect(newCallPosAndDimension[0],
-                        newCallPosAndDimension[1],
-                        newCallPosAndDimension[2],
-                        newCallPosAndDimension[3]);
+      context.fillRect(this.pos_.x,
+                       this.pos_.y,
+                       this.size_.width,
+                       this.size_.height);
     }
 
     context.strokeStyle = color;
-    context.strokeRect(newCallPosAndDimension[0],
-                        newCallPosAndDimension[1],
-                        newCallPosAndDimension[2],
-                        newCallPosAndDimension[3]);
+    context.strokeRect(this.pos_.x,
+                       this.pos_.y,
+                       this.size_.width,
+                       this.size_.height);
     var buff_id = this.buffer_id.toString();
     if(buffer_map[buff_id]) {
       var buff_width = buffer_map[buff_id].width;
@@ -140,70 +136,11 @@ class DrawCall {
                         this.uv_pos.y * buff_height,
                         this.uv_size.width * buff_width,
                         this.uv_size.height * buff_height,
-                        newCallPosAndDimension[0],
-                        newCallPosAndDimension[1],
-                        newCallPosAndDimension[2],
-                        newCallPosAndDimension[3]);
+                        this.pos_.x,
+                        this.pos_.y,
+                        this.size_.width,
+                        this.size_.height);
     }
-  }
-
-  // Rotates and flips quads from draw calls
-  rotateCall(canvas, orientationDeg, scale, transformMatrix) {
-    // Swap width and height of quads if 90 or 270 deg rotation occurred
-    const callWidth = (orientationDeg === 90 || orientationDeg === 270) ?
-                        this.size_.height : this.size_.width;
-    const callHeight = (orientationDeg === 90 || orientationDeg === 270) ?
-                        this.size_.width : this.size_.height;
-
-    var translationX = 0;
-    var translationY = 0;
-    // Determine amount of translation depending on orientation.
-    // We want to put the quads back in frame and relocate xy-pos
-    // to top left corner of quads.
-    switch(orientationDeg) {
-      default:
-        break;
-      case 90:
-        // divide canvas width/height by scale
-        // because we want values before scaling
-        translationX = canvas.width/scale - callWidth;
-        break;
-      case 180:
-        translationX = canvas.width/scale - callWidth;
-        translationY = canvas.height/scale - callHeight;
-        break;
-      case 270:
-        translationY = canvas.height/scale - callHeight;
-        break;
-      case FlipEnum.HorizontalFlip.id:
-        translationX = canvas.width/scale - callWidth;
-        break;
-      case FlipEnum.VerticalFlip.id:
-        translationY = canvas.height/scale - callHeight;
-        break;
-    }
-
-    var newPosX;
-    var newPosY;
-    // Use rotation/mirroring matrix to get rotated/flipped coords
-    switch (orientationDeg) {
-      default:
-        newPosX = this.pos_.x * transformMatrix[0][0] +
-                  this.pos_.y * transformMatrix[0][1] + translationX;
-        newPosY = this.pos_.x * transformMatrix[1][0] +
-                  this.pos_.y * transformMatrix[1][1] + translationY;
-        break;
-      case FlipEnum.HorizontalFlip.id:
-        newPosX = -this.pos_.x + translationX;
-        newPosY = this.pos_.y;
-        break;
-      case FlipEnum.VerticalFlip.id:
-        newPosX = this.pos_.x;
-        newPosY = -this.pos_.y + translationY;
-        break;
-    }
-    return [newPosX * scale, newPosY * scale,
-            callWidth * scale, callHeight * scale];
   }
 };
 
