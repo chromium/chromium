@@ -159,6 +159,7 @@ int UnitTestTestSuite::Run() {
 #if defined(USE_AURA)
   std::unique_ptr<aura::Env> aura_env = aura::Env::CreateInstance();
 #endif
+  std::unique_ptr<url::ScopedSchemeRegistryForTests> scheme_registry;
 
   // TestEventListeners repeater event propagation is disabled in death test
   // child process so create and set the clients here for it.
@@ -173,7 +174,7 @@ int UnitTestTestSuite::Run() {
 
     // Since Blink initialization ended up using the SchemeRegistry, reset
     // that it was accessed before testSuite::Initialize registers its schemes.
-    new url::ScopedSchemeRegistryForTests();
+    scheme_registry = std::make_unique<url::ScopedSchemeRegistryForTests>();
 
     ui::ResourceBundle::CleanupSharedInstance();
   }
