@@ -93,36 +93,38 @@ std::string BitmapToString(const SkBitmap& bitmap) {
 }
 
 // Set |action|'s default values to those specified in |dict|.
-void SetDefaultsFromValue(const base::DictionaryValue* dict,
+void SetDefaultsFromValue(const base::Value::Dict& dict,
                           ExtensionAction* action) {
   const int kDefaultTabId = ExtensionAction::kDefaultTabId;
-  std::string str_value;
 
   // For each value, don't set it if it has been modified already.
-  if (dict->GetString(kPopupUrlStorageKey, &str_value) &&
-      !action->HasPopupUrl(kDefaultTabId)) {
-    action->SetPopupUrl(kDefaultTabId, GURL(str_value));
+  const std::string* popup_url = dict.FindString(kPopupUrlStorageKey);
+  if (popup_url && !action->HasPopupUrl(kDefaultTabId)) {
+    action->SetPopupUrl(kDefaultTabId, GURL(*popup_url));
   }
-  if (dict->GetString(kTitleStorageKey, &str_value) &&
-      !action->HasTitle(kDefaultTabId)) {
-    action->SetTitle(kDefaultTabId, str_value);
+  const std::string* title = dict.FindString(kTitleStorageKey);
+  if (title && !action->HasTitle(kDefaultTabId)) {
+    action->SetTitle(kDefaultTabId, *title);
   }
-  if (dict->GetString(kBadgeTextStorageKey, &str_value) &&
-      !action->HasBadgeText(kDefaultTabId)) {
-    action->SetBadgeText(kDefaultTabId, str_value);
+  const std::string* badge_text = dict.FindString(kBadgeTextStorageKey);
+  if (badge_text && !action->HasBadgeText(kDefaultTabId)) {
+    action->SetBadgeText(kDefaultTabId, *badge_text);
   }
-  if (dict->GetString(kBadgeBackgroundColorStorageKey, &str_value) &&
+  const std::string* badge_background_color =
+      dict.FindString(kBadgeBackgroundColorStorageKey);
+  if (badge_background_color &&
       !action->HasBadgeBackgroundColor(kDefaultTabId)) {
-    action->SetBadgeBackgroundColor(kDefaultTabId,
-                                    RawStringToSkColor(str_value));
+    action->SetBadgeBackgroundColor(
+        kDefaultTabId, RawStringToSkColor(*badge_background_color));
   }
-  if (dict->GetString(kBadgeTextColorStorageKey, &str_value) &&
-      !action->HasBadgeTextColor(kDefaultTabId)) {
-    action->SetBadgeTextColor(kDefaultTabId, RawStringToSkColor(str_value));
+  const std::string* badge_text_color =
+      dict.FindString(kBadgeTextColorStorageKey);
+  if (badge_text_color && !action->HasBadgeTextColor(kDefaultTabId)) {
+    action->SetBadgeTextColor(kDefaultTabId,
+                              RawStringToSkColor(*badge_text_color));
   }
 
-  absl::optional<int> appearance_storage =
-      dict->FindIntKey(kAppearanceStorageKey);
+  absl::optional<int> appearance_storage = dict.FindInt(kAppearanceStorageKey);
   if (appearance_storage && !action->HasIsVisible(kDefaultTabId)) {
     switch (*appearance_storage) {
       case INVISIBLE:
@@ -135,17 +137,15 @@ void SetDefaultsFromValue(const base::DictionaryValue* dict,
     }
   }
 
-  const base::DictionaryValue* icon_value = NULL;
-  if (dict->GetDictionary(kIconStorageKey, &icon_value) &&
-      !action->HasIcon(kDefaultTabId)) {
+  const base::Value::Dict* icon_dict = dict.FindDict(kIconStorageKey);
+  if (icon_dict && !action->HasIcon(kDefaultTabId)) {
     gfx::ImageSkia icon;
     SkBitmap bitmap;
-    for (base::DictionaryValue::Iterator iter(*icon_value); !iter.IsAtEnd();
-         iter.Advance()) {
+    for (const auto iter : *icon_dict) {
       int icon_size = 0;
-      if (base::StringToInt(iter.key(), &icon_size) &&
-          iter.value().is_string() &&
-          StringToSkBitmap(iter.value().GetString(), &bitmap)) {
+      if (base::StringToInt(iter.first, &icon_size) &&
+          iter.second.is_string() &&
+          StringToSkBitmap(iter.second.GetString(), &bitmap)) {
         CHECK(!bitmap.isNull());
         float scale =
             static_cast<float>(icon_size) / ExtensionAction::ActionIconSize();
@@ -275,11 +275,10 @@ void ExtensionActionStorageManager::ReadFromStorage(
     return;
   }
 
-  const base::DictionaryValue* dict = NULL;
-  if (!value.get() || !value->GetAsDictionary(&dict))
+  if (!value.get() || !value->is_dict())
     return;
 
-  SetDefaultsFromValue(dict, action);
+  SetDefaultsFromValue(value->GetDict(), action);
 }
 
 StateStore* ExtensionActionStorageManager::GetStateStore() {

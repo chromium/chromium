@@ -38,29 +38,29 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
     const std::map<std::string, ContentPredicateFactory*>& predicate_factories,
     const base::Value& api_condition,
     std::string* error) {
-  const base::DictionaryValue* api_condition_dict = nullptr;
-  if (!api_condition.GetAsDictionary(&api_condition_dict)) {
+  if (!api_condition.is_dict()) {
     *error = kExpectedDictionary;
     return nullptr;
   }
 
+  const base::Value::Dict& api_condition_dict = api_condition.GetDict();
+
   // Verify that we are dealing with a Condition whose type we understand.
-  std::string instance_type;
-  if (!api_condition_dict->GetString(
-          declarative_content_constants::kInstanceType, &instance_type)) {
+  const std::string* instance_type = api_condition_dict.FindString(
+      declarative_content_constants::kInstanceType);
+  if (!instance_type) {
     *error = kConditionWithoutInstanceType;
     return nullptr;
   }
-  if (instance_type != declarative_content_constants::kPageStateMatcherType) {
+  if (*instance_type != declarative_content_constants::kPageStateMatcherType) {
     *error = kExpectedOtherConditionType;
     return nullptr;
   }
 
   std::vector<std::unique_ptr<const ContentPredicate>> predicates;
-  for (base::DictionaryValue::Iterator iter(*api_condition_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& predicate_name = iter.key();
-    const base::Value& predicate_value = iter.value();
+  for (const auto iter : api_condition_dict) {
+    const std::string& predicate_name = iter.first;
+    const base::Value& predicate_value = iter.second;
     if (predicate_name == declarative_content_constants::kInstanceType)
       continue;
 

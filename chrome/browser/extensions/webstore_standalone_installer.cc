@@ -253,14 +253,17 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
       webstore_data->FindIntKey(kRatingCountKey);
 
   // Manifest, number of users, average rating and rating count are required.
-  std::string manifest;
-  if (!webstore_data->GetString(kManifestKey, &manifest) ||
-      !webstore_data->GetString(kUsersKey, &localized_user_count_) ||
-      !average_rating_setting || !rating_count_setting) {
+  const std::string* manifest =
+      webstore_data->GetDict().FindString(kManifestKey);
+  const std::string* localized_user_count =
+      webstore_data->GetDict().FindString(kUsersKey);
+  if (!manifest || !localized_user_count || !average_rating_setting ||
+      !rating_count_setting) {
     CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                     webstore_install::kInvalidWebstoreResponseError);
     return;
   }
+  localized_user_count_ = *localized_user_count;
 
   average_rating_ = *average_rating_setting;
   rating_count_ = *rating_count_setting;
@@ -321,8 +324,8 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
   // Assume ownership of webstore_data.
   webstore_data_ = std::move(webstore_data);
 
-  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(this, id_, manifest,
-                                                            icon_url);
+  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
+      this, id_, *manifest, icon_url);
   // The helper will call us back via OnWebstoreParseSuccess() or
   // OnWebstoreParseFailure().
   helper->Start(profile_->GetDefaultStoragePartition()

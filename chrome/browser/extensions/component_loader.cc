@@ -93,10 +93,11 @@ static bool enable_background_extensions_during_testing = false;
 
 std::string GenerateId(const base::DictionaryValue* manifest,
                        const base::FilePath& path) {
-  std::string raw_key;
   std::string id_input;
-  CHECK(manifest->GetString(manifest_keys::kPublicKey, &raw_key));
-  CHECK(Extension::ParsePEMKeyBytes(raw_key, &id_input));
+  const std::string* raw_key =
+      manifest->GetDict().FindString(manifest_keys::kPublicKey);
+  CHECK(raw_key != nullptr);
+  CHECK(Extension::ParsePEMKeyBytes(*raw_key, &id_input));
   std::string id = crx_file::id_util::GenerateId(id_input);
   return id;
 }

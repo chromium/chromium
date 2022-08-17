@@ -320,18 +320,16 @@ void WebstoreInstaller::Start() {
   }
   InstallVerifier::Get(profile_)->AddProvisional(ids);
 
-  std::string name;
-  if (!approval_->manifest->available_values().GetString(manifest_keys::kName,
-                                                         &name)) {
+  const std::string* name =
+      approval_->manifest->available_values().GetDict().FindString(
+          manifest_keys::kName);
+  if (!name) {
     NOTREACHED();
   }
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
   extensions::InstallObserver::ExtensionInstallParams params(
-      id_,
-      name,
-      approval_->installing_icon,
-      approval_->manifest->is_app(),
+      id_, *name, approval_->installing_icon, approval_->manifest->is_app(),
       approval_->manifest->is_platform_app());
   tracker->OnBeginExtensionInstall(params);
 

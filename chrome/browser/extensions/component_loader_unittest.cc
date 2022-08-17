@@ -140,10 +140,11 @@ TEST_F(ComponentLoaderTest, ParseManifest) {
   EXPECT_EQ(1, manifest->FindIntPath("test.one"));
   EXPECT_EQ(2, manifest->FindIntKey("two"));
 
-  std::string string_value;
   manifest = component_loader_.ParseManifest(manifest_contents_);
-  ASSERT_TRUE(manifest->GetString("background.page", &string_value));
-  EXPECT_EQ("backgroundpage.html", string_value);
+  const std::string* string_value =
+      manifest->GetDict().FindStringByDottedPath("background.page");
+  ASSERT_TRUE(string_value);
+  EXPECT_EQ("backgroundpage.html", *string_value);
 }
 
 // Test that the extension isn't loaded if the extension service isn't ready.

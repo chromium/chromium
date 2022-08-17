@@ -156,7 +156,9 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     if (id == tab_id) {
       const base::DictionaryValue& target_dict =
           base::Value::AsDictionaryValue(target_value);
-      EXPECT_TRUE(target_dict.GetString("id", &debugger_target_id));
+      const std::string* id_str = target_dict.GetDict().FindString("id");
+      EXPECT_TRUE(id_str);
+      debugger_target_id = *id_str;
       break;
     }
   }

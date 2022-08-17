@@ -57,12 +57,14 @@ class ExtensionOverrideTest : public ExtensionApiTest {
 
     std::set<std::string> seen_overrides;
     for (const auto& val : *values) {
-      const base::DictionaryValue* dict = nullptr;
-      std::string entry;
-      if (!val.GetAsDictionary(&dict) || !dict->GetString("entry", &entry) ||
-          seen_overrides.count(entry) != 0)
+      if (!val.is_dict()) {
         return false;
-      seen_overrides.insert(entry);
+      }
+      const base::Value::Dict& dict = val.GetDict();
+      const std::string* entry = dict.FindString("entry");
+      if (!entry || seen_overrides.count(*entry) != 0)
+        return false;
+      seen_overrides.insert(*entry);
     }
 
     return true;

@@ -179,57 +179,57 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   EXPECT_EQ(8u, id_to_meta_info_map.DictSize());
 
   // Verify top level node.
-  const base::Value* value = NULL;
-  EXPECT_TRUE(id_to_meta_info_map.Get(
-      base::NumberToString(model_->other_node()->id()), &value));
-  ASSERT_TRUE(NULL != value);
-  const base::DictionaryValue* dictionary_value = NULL;
-  EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(nullptr != dictionary_value);
-  EXPECT_EQ(0u, dictionary_value->DictSize());
+  {
+    const base::Value* value = nullptr;
+    EXPECT_TRUE(id_to_meta_info_map.Get(
+        base::NumberToString(model_->other_node()->id()), &value));
+    ASSERT_TRUE(nullptr != value);
+    ASSERT_TRUE(value->is_dict());
+    const base::Value::Dict& dict = value->GetDict();
+    EXPECT_EQ(0u, dict.size());
+  }
 
   // Verify bookmark with two meta info key/value pairs.
-  value = NULL;
-  EXPECT_TRUE(
-      id_to_meta_info_map.Get(base::NumberToString(node_->id()), &value));
-  ASSERT_TRUE(NULL != value);
-  dictionary_value = NULL;
-  EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(nullptr != dictionary_value);
-  EXPECT_EQ(2u, dictionary_value->DictSize());
-  std::string string_value;
-  EXPECT_TRUE(dictionary_value->GetString("some_key1", &string_value));
-  EXPECT_EQ("some_value1", string_value);
-  EXPECT_TRUE(dictionary_value->GetString("some_key2", &string_value));
-  EXPECT_EQ("some_value2", string_value);
+  {
+    const base::Value* value = nullptr;
+    EXPECT_TRUE(
+        id_to_meta_info_map.Get(base::NumberToString(node_->id()), &value));
+    ASSERT_TRUE(nullptr != value);
+    ASSERT_TRUE(value->is_dict());
+    const base::Value::Dict& dict = value->GetDict();
+    EXPECT_EQ(2u, dict.size());
+    ASSERT_TRUE(dict.FindString("some_key1"));
+    EXPECT_EQ("some_value1", *(dict.FindString("some_key1")));
+    ASSERT_TRUE(dict.FindString("some_key2"));
+    EXPECT_EQ("some_value2", *(dict.FindString("some_key2")));
+  }
 
   // Verify folder with one meta info key/value pair.
-  value = NULL;
-  EXPECT_TRUE(
-      id_to_meta_info_map.Get(base::NumberToString(folder_->id()), &value));
-  ASSERT_TRUE(NULL != value);
-  dictionary_value = NULL;
-  EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(nullptr != dictionary_value);
-  EXPECT_EQ(1u, dictionary_value->DictSize());
-  EXPECT_TRUE(dictionary_value->GetString("some_key1", &string_value));
-  EXPECT_EQ("some_value1", string_value);
+  {
+    const base::Value* value = nullptr;
+    EXPECT_TRUE(
+        id_to_meta_info_map.Get(base::NumberToString(folder_->id()), &value));
+    ASSERT_TRUE(nullptr != value);
+    ASSERT_TRUE(value->is_dict());
+    const base::Value::Dict& dict = value->GetDict();
+    EXPECT_EQ(1u, dict.size());
+    ASSERT_TRUE(dict.FindString("some_key1"));
+    EXPECT_EQ("some_value1", *(dict.FindString("some_key1")));
+  }
 
   // Verify bookmark in a subfolder with one meta info key/value pairs.
-  value = NULL;
-  EXPECT_TRUE(
-      id_to_meta_info_map.Get(base::NumberToString(node2_->id()), &value));
-  ASSERT_TRUE(NULL != value);
-  dictionary_value = NULL;
-  EXPECT_TRUE(value->GetAsDictionary(&dictionary_value));
-  ASSERT_TRUE(nullptr != dictionary_value);
-  EXPECT_EQ(1u, dictionary_value->DictSize());
-  string_value.clear();
-  EXPECT_FALSE(dictionary_value->GetString("some_key1", &string_value));
-  EXPECT_EQ("", string_value);
-  EXPECT_TRUE(dictionary_value->GetString("some_key2", &string_value));
-  EXPECT_EQ("some_value2", string_value);
-
+  {
+    const base::Value* value = nullptr;
+    EXPECT_TRUE(
+        id_to_meta_info_map.Get(base::NumberToString(node2_->id()), &value));
+    ASSERT_TRUE(nullptr != value);
+    ASSERT_TRUE(value->is_dict());
+    const base::Value::Dict& dict = value->GetDict();
+    EXPECT_EQ(1u, dict.size());
+    ASSERT_FALSE(dict.FindString("some_key1"));
+    ASSERT_TRUE(dict.FindString("some_key2"));
+    EXPECT_EQ("some_value2", *(dict.FindString("some_key2")));
+  }
 }
 
 }  // namespace bookmark_api_helpers

@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
        ++ix, ++it) {
     const base::Value& value = sink_list.GetListDeprecated()[ix];
     EXPECT_TRUE(value.is_dict());
-    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    std::string sink_id;
-    dict.GetString("sinkId", &sink_id);
+    const base::Value::Dict& dict = value.GetDict();
+    const std::string* sink_id = dict.FindString("sinkId");
+    EXPECT_TRUE(sink_id);
 
     std::string expected_id =
         media::AudioDeviceDescription::IsDefaultDevice(it->unique_id)
@@ -170,16 +170,16 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
                   url::Origin::Create(source_url_.DeprecatedGetOriginAsURL()),
                   it->unique_id);
 
-    EXPECT_EQ(expected_id, sink_id);
-    std::string sink_label;
-    dict.GetString("sinkLabel", &sink_label);
-    EXPECT_EQ(it->device_name, sink_label);
+    EXPECT_EQ(expected_id, *sink_id);
+    const std::string* sink_label = dict.FindString("sinkLabel");
+    EXPECT_TRUE(sink_label);
+    EXPECT_EQ(it->device_name, *sink_label);
 
     // TODO(joi): Verify the contents of these once we start actually
     // filling them in.
-    EXPECT_TRUE(dict.FindKey("isDefault"));
-    EXPECT_TRUE(dict.FindKey("isReady"));
-    EXPECT_TRUE(dict.FindKey("sampleRate"));
+    EXPECT_TRUE(dict.Find("isDefault"));
+    EXPECT_TRUE(dict.Find("isReady"));
+    EXPECT_TRUE(dict.Find("sampleRate"));
   }
 }
 #endif  // BUILDFLAG(IS_MAC)

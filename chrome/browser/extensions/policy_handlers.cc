@@ -252,20 +252,19 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     DCHECK(entry.second.is_dict());
 
     // Extracts sub dictionary.
-    const base::DictionaryValue* sub_dict = nullptr;
-    entry.second.GetAsDictionary(&sub_dict);
+    const base::Value::Dict& sub_dict = entry.second.GetDict();
 
-    std::string installation_mode;
-    if (sub_dict->GetString(schema_constants::kInstallationMode,
-                            &installation_mode)) {
-      if (installation_mode == schema_constants::kForceInstalled ||
-          installation_mode == schema_constants::kNormalInstalled) {
+    const std::string* installation_mode =
+        sub_dict.FindString(schema_constants::kInstallationMode);
+    if (installation_mode) {
+      if (*installation_mode == schema_constants::kForceInstalled ||
+          *installation_mode == schema_constants::kNormalInstalled) {
         DCHECK(entry.first != schema_constants::kWildcard);
         // Verifies that 'update_url' is specified for 'force_installed' and
         // 'normal_installed' mode.
-        std::string update_url;
-        if (!sub_dict->GetString(schema_constants::kUpdateUrl, &update_url) ||
-            update_url.empty()) {
+        const std::string* update_url =
+            sub_dict.FindString(schema_constants::kUpdateUrl);
+        if (!update_url || update_url->empty()) {
           if (errors) {
             errors->AddError(policy_name(),
                              entry.first + "." + schema_constants::kUpdateUrl,
@@ -274,7 +273,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           invalid_keys.insert(entry.first);
           continue;
         }
-        if (!GURL(update_url).is_valid()) {
+        if (!GURL(*update_url).is_valid()) {
           // Warns about an invalid update URL.
           if (errors) {
             errors->AddError(policy_name(), IDS_POLICY_INVALID_UPDATE_URL_ERROR,
@@ -291,9 +290,9 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     const int extension_scheme_mask =
         URLPattern::GetValidSchemeMaskForExtensions();
     for (const char* key : host_keys) {
-      const base::Value* unparsed_urls = sub_dict->FindListKey(key);
+      const base::Value::List* unparsed_urls = sub_dict.FindList(key);
       if (unparsed_urls != nullptr) {
-        for (const auto& url_value : unparsed_urls->GetListDeprecated()) {
+        for (const auto& url_value : *unparsed_urls) {
           const std::string& unparsed_url = url_value.GetString();
           URLPattern pattern(extension_scheme_mask);
           URLPattern::ParseResult parse_result = pattern.Parse(unparsed_url);
@@ -331,10 +330,10 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::Value* runtime_blocked_hosts =
-        sub_dict->FindListKey(schema_constants::kPolicyBlockedHosts);
+    const base::Value::List* runtime_blocked_hosts =
+        sub_dict.FindList(schema_constants::kPolicyBlockedHosts);
     if (runtime_blocked_hosts != nullptr &&
-        runtime_blocked_hosts->GetListDeprecated().size() >
+        runtime_blocked_hosts->size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         errors->AddError(
@@ -345,10 +344,10 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::Value* runtime_allowed_hosts =
-        sub_dict->FindListKey(schema_constants::kPolicyAllowedHosts);
+    const base::Value::List* runtime_allowed_hosts =
+        sub_dict.FindList(schema_constants::kPolicyAllowedHosts);
     if (runtime_allowed_hosts != nullptr &&
-        runtime_allowed_hosts->GetListDeprecated().size() >
+        runtime_allowed_hosts->size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
         errors->AddError(

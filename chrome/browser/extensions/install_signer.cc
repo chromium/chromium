@@ -193,16 +193,17 @@ std::unique_ptr<InstallSignature> InstallSignature::FromValue(
     return result;
   }
 
-  std::string salt_base64;
-  std::string signature_base64;
-  if (!value.GetString(kExpireDateKey, &result->expire_date) ||
-      !value.GetString(kSaltKey, &salt_base64) ||
-      !value.GetString(kSignatureKey, &signature_base64) ||
-      !base::Base64Decode(salt_base64, &result->salt) ||
-      !base::Base64Decode(signature_base64, &result->signature)) {
+  const base::Value::Dict& dict = value.GetDict();
+  const std::string* expire_date = dict.FindString(kExpireDateKey);
+  const std::string* salt_base64 = dict.FindString(kSaltKey);
+  const std::string* signature_base64 = dict.FindString(kSignatureKey);
+  if (!expire_date || !salt_base64 || !signature_base64 ||
+      !base::Base64Decode(*salt_base64, &result->salt) ||
+      !base::Base64Decode(*signature_base64, &result->signature)) {
     result.reset();
     return result;
   }
+  result->expire_date = *expire_date;
 
   // Note: earlier versions of the code did not write out a timestamp value
   // so older entries will not necessarily have this.

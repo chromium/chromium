@@ -452,9 +452,10 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       EXPECT_FALSE(v1.get());
       EXPECT_EQ(ManifestLocation::kExternalPrefDownload, location1);
 
-      std::string parsed_install_parameter;
-      pref->GetString("install_parameter", &parsed_install_parameter);
-      EXPECT_EQ(parsed_install_parameter, info.install_parameter);
+      const std::string* parsed_install_parameter =
+          pref->GetDict().FindString("install_parameter");
+      EXPECT_TRUE(parsed_install_parameter);
+      EXPECT_EQ(*parsed_install_parameter, info.install_parameter);
 
       // Remove it so we won't count it again.
       prefs_->RemoveKey(info.extension_id);

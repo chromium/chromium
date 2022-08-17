@@ -485,9 +485,9 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetTitleFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  std::string title;
-  EXTENSION_FUNCTION_VALIDATE(details_->GetString("title", &title));
-  extension_action_->SetTitle(tab_id_, title);
+  const std::string* title = details_->GetDict().FindString("title");
+  EXTENSION_FUNCTION_VALIDATE(title);
+  extension_action_->SetTitle(tab_id_, *title);
   NotifyChange();
   return RespondNow(NoArguments());
 }

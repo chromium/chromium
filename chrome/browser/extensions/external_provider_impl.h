@@ -102,12 +102,12 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   void set_allow_updates(bool allow_updates) { allow_updates_ = allow_updates; }
 
  private:
-  bool HandleMinProfileVersion(const base::DictionaryValue* extension,
+  bool HandleMinProfileVersion(const base::Value::Dict& extension,
                                const std::string& extension_id,
                                std::set<std::string>* unsupported_extensions);
 
   bool HandleDoNotInstallForEnterprise(
-      const base::DictionaryValue* extension,
+      const base::Value::Dict& extension,
       const std::string& extension_id,
       std::set<std::string>* unsupported_extensions);
 
