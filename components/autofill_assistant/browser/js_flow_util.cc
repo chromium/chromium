@@ -66,39 +66,6 @@ ClientStatus ClientStatusWithSourceLocation(
 
 namespace js_flow_util {
 
-bool ContainsOnlyAllowedValues(const base::Value& value,
-                               std::string& out_error_message) {
-  switch (value.type()) {
-    case base::Value::Type::NONE:
-    case base::Value::Type::BOOLEAN:
-    case base::Value::Type::INTEGER:
-    case base::Value::Type::DOUBLE:
-      return true;
-    case base::Value::Type::STRING:
-      out_error_message.assign("Strings are not supported");
-      return false;
-    case base::Value::Type::BINARY:
-      out_error_message.assign("Binary data are not supported");
-      return false;
-    case base::Value::Type::DICT: {
-      for (const auto [key, nested_value] : *value.GetIfDict()) {
-        if (!ContainsOnlyAllowedValues(nested_value, out_error_message)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    case base::Value::Type::LIST: {
-      for (const auto& entry : *value.GetIfList()) {
-        if (!ContainsOnlyAllowedValues(entry, out_error_message)) {
-          return false;
-        }
-      }
-      return true;
-    }
-  }
-}
-
 ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
@@ -128,15 +95,6 @@ ClientStatus ExtractFlowReturnValue(
                           "values are allowed, but got RemoteObject of type ",
                           base::NumberToString(
                               static_cast<int>(remote_object->GetType()))}));
-    return status;
-  }
-
-  std::string error_message;
-  if (!ContainsOnlyAllowedValues(*remote_object->GetValue(), error_message)) {
-    status.set_proto_status(INVALID_ACTION);
-    status.mutable_details()
-        ->mutable_unexpected_error_info()
-        ->set_devtools_error_message(error_message);
     return status;
   }
 
