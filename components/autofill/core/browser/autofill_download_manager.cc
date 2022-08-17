@@ -476,10 +476,9 @@ bool CanThrottleUpload(const FormStructure& form,
   std::string key = base::StringPrintf(
       "%03X",
       static_cast<int>(form.form_signature().value() % kNumUploadBuckets));
-  auto* upload_events =
-      pref_service->GetDictionary(prefs::kAutofillUploadEvents);
-  auto* found = upload_events->FindKeyOfType(key, base::Value::Type::INTEGER);
-  int value = found ? found->GetInt() : 0;
+  const auto& upload_events =
+      pref_service->GetValueDict(prefs::kAutofillUploadEvents);
+  int value = upload_events.FindInt(key).value_or(0);
 
   // Calculate the mask we expect to be set for the form's upload bucket.
   const int bit = static_cast<int>(form.submission_source());

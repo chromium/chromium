@@ -19,19 +19,13 @@ namespace {
 // was found.
 int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
                                             const std::string& account_hash) {
-  auto* dictionary = prefs->GetDictionary(prefs::kAutofillSyncTransportOptIn);
-
-  // If there is no dictionary it means the account didn't opt-in. Use 0 because
-  // it's the same as not having opted-in to anything.
-  if (!dictionary) {
-    return 0;
-  }
+  const auto& dictionary =
+      prefs->GetValueDict(prefs::kAutofillSyncTransportOptIn);
 
   // If there is no entry in the dictionary, it means the account didn't opt-in.
   // Use 0 because it's the same as not having opted-in to anything.
-  auto* found =
-      dictionary->FindKeyOfType(account_hash, base::Value::Type::INTEGER);
-  return found ? found->GetInt() : 0;
+  const auto found = dictionary.FindInt(account_hash);
+  return found.value_or(0);
 }
 
 }  // namespace
