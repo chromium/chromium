@@ -64,6 +64,25 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
   }
 }
 
+int GetFieldTopMargin(LayoutProvider* layout_provider,
+                      const BubbleDialogModelHost::FieldType& field_type,
+                      const BubbleDialogModelHost::FieldType& last_field_type) {
+  DCHECK(layout_provider);
+  // Menu item preceded by non-menu item should have margin
+  if (field_type == BubbleDialogModelHost::FieldType::kMenuItem &&
+      last_field_type == BubbleDialogModelHost::FieldType::kMenuItem) {
+    return 0;
+  }
+  if (field_type == BubbleDialogModelHost::FieldType::kControl &&
+      last_field_type == BubbleDialogModelHost::FieldType::kControl) {
+    // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to views::LayoutProvider
+    // and replace "12" here.
+    return 12;
+  }
+  return layout_provider->GetDistanceMetric(
+      DISTANCE_UNRELATED_CONTROL_VERTICAL);
+}
+
 int GetDialogTopMargins(LayoutProvider* layout_provider,
                         ui::DialogModelField* first_field,
                         base::PassKey<ui::DialogModelHost> pass_key) {
@@ -556,19 +575,12 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
       first_field = field;
       view->SetProperty(kMarginsKey, side_insets);
     } else {
-      int padding_margin = field_type == FieldType::kMenuItem
-                               ? 0
-                               : layout_provider->GetDistanceMetric(
-                                     DISTANCE_UNRELATED_CONTROL_VERTICAL);
-      if (last_field &&
-          GetFieldTypeForField(last_field, GetPassKey()) ==
-              FieldType::kControl &&
-          field_type == FieldType::kControl) {
-        // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
-        // views::LayoutProvider and replace "12" here.
-        padding_margin = 12;
-      }
-      side_insets.set_top(padding_margin);
+      DCHECK(last_field);
+
+      FieldType last_field_type =
+          GetFieldTypeForField(last_field, GetPassKey());
+      side_insets.set_top(
+          GetFieldTopMargin(layout_provider, field_type, last_field_type));
       view->SetProperty(kMarginsKey, side_insets);
     }
     last_field = field;
