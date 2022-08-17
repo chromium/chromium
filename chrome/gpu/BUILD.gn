@@ -16,6 +16,7 @@ static_library("gpu") {
     "//content/public/common",
     "//content/public/gpu",
     "//media:media_buildflags",
+    "//services/tracing/public/cpp",
     "//third_party/widevine/cdm:buildflags",
   ]
 

@@ -13,12 +13,14 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "media/media_buildflags.h"
+#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
@@ -118,6 +120,14 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
       FROM_HERE,
       base::BindOnce(&ThreadProfiler::StartOnChildThread,
                      metrics::CallStackProfileParams::Thread::kCompositor));
+  // Enable stack sampling for tracing.
+  // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
+  // layer while TracingSamplerProfiler is outside of chrome/.
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&tracing::TracingSamplerProfiler::
+                         CreateOnChildThreadWithCustomUnwinders,
+                     base::BindRepeating(&CreateCoreUnwindersFactory)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

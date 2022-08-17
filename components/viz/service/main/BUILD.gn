@@ -33,7 +33,6 @@ source_set("main") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/mojom",
     "//services/service_manager/public/cpp",
-    "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gl/init",

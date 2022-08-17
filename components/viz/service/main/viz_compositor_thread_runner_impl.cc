@@ -30,7 +30,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "ui/gfx/switches.h"
 
 #if defined(USE_OZONE)
@@ -80,11 +79,6 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
 #endif  // !BUILDFLAG(IS_APPLE)
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));
-
-  // Setup tracing sampler profiler as early as possible.
-  thread->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&tracing::TracingSamplerProfiler::CreateOnChildThread));
 
   return thread;
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -15,7 +15,6 @@ include_rules = [
   "+services/metrics/public",
   "+services/network/public/mojom",
   "+services/service_manager/public/cpp",
-  "+services/tracing/public/cpp",
   "+services/viz/privileged/mojom",
 ]
 

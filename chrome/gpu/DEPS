@@ -1,14 +1,16 @@
 include_rules = [
   "+ash/components/arc/mojom",
   "+ash/components/arc/video_accelerator",
+  "+chrome/common/profiler",
   "+chromeos/components/cdm_factory_daemon",
   "+components/arc/mojom",
-  "+components/metrics",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
+  "+components/metrics",
   "+content/public/child",
   "+content/public/gpu",
   "+media/cdm",
   "+media/gpu",
+  "+services/tracing/public/cpp",
   "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
 ]
