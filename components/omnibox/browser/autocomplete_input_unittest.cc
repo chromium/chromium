@@ -94,6 +94,7 @@ TEST(AutocompleteInputTest, InputType) {
     {u"host#", metrics::OmniboxInputType::UNKNOWN},
     {u"host#ref", metrics::OmniboxInputType::UNKNOWN},
     {u"host# ref", metrics::OmniboxInputType::UNKNOWN},
+    {u"host/page.html", metrics::OmniboxInputType::UNKNOWN},
     {u"host/#ref", metrics::OmniboxInputType::URL},
     {u"host/?#ref", metrics::OmniboxInputType::URL},
     {u"host/?#", metrics::OmniboxInputType::URL},
