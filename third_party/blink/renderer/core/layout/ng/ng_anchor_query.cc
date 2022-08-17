@@ -46,7 +46,7 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
     const AtomicString& name) const {
   const auto& it = anchor_references_.find(name);
   if (it != anchor_references_.end()) {
-    const NGLogicalAnchorReference& result = it->value;
+    const NGLogicalAnchorReference& result = *it->value;
     if (!result.is_invalid)
       return &result;
   }
@@ -70,25 +70,27 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
                                const NGPhysicalFragment& fragment,
                                const LogicalRect& rect) {
   DCHECK(fragment.GetLayoutObject());
-  Set(name, NGLogicalAnchorReference{rect, &fragment, fragment.IsPositioned()});
+  Set(name, MakeGarbageCollected<NGLogicalAnchorReference>(
+                fragment, rect, fragment.IsPositioned()));
 }
 
 void NGLogicalAnchorQuery::Set(const AtomicString& name,
-                               const NGLogicalAnchorReference& reference) {
+                               NGLogicalAnchorReference* reference) {
+  DCHECK(reference);
   const auto result = anchor_references_.insert(name, reference);
   if (result.is_new_entry)
     return;
 
-  NGLogicalAnchorReference& existing = result.stored_value->value;
+  NGLogicalAnchorReference& existing = *result.stored_value->value;
   if (existing.fragment->GetLayoutObject() !=
-      reference.fragment->GetLayoutObject()) {
+      reference->fragment->GetLayoutObject()) {
     // If this is the same name on a different |LayoutObject|, ignore it.
     // This logic assumes that callers call this function in the correct order.
     return;
   }
 
   // If this is a fragment from the same |LayoutObject|, unite the rect.
-  existing.rect.Unite(reference.rect);
+  existing.rect.Unite(reference->rect);
 }
 
 void NGPhysicalAnchorQuery::SetFromLogical(
@@ -98,7 +100,7 @@ void NGPhysicalAnchorQuery::SetFromLogical(
     DCHECK_EQ(AnchorReference(it.key), nullptr);
     anchor_references_.Set(
         it.key,
-        MakeGarbageCollected<NGPhysicalAnchorReference>(it.value, converter));
+        MakeGarbageCollected<NGPhysicalAnchorReference>(*it.value, converter));
   }
 }
 
@@ -110,8 +112,8 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   for (const auto& it : physical_query.anchor_references_) {
     LogicalRect rect = converter.ToLogical(it.value->rect);
     rect.offset += additional_offset;
-    Set(it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get(),
-                                         is_positioned});
+    Set(it.key, MakeGarbageCollected<NGLogicalAnchorReference>(
+                    *it.value->fragment, rect, is_positioned));
   }
 }
 
@@ -125,28 +127,31 @@ void NGLogicalAnchorQuery::SetAsStitched(
 
    public:
     LogicalRect StitchedRect() const {
-      LogicalRect stitched_rect = reference.rect;
+      LogicalRect stitched_rect = rect;
       stitched_rect.offset.block_offset += first_container_stitched_offset;
       return stitched_rect;
     }
 
-    NGLogicalAnchorReference StitchedAnchorReference() const {
-      return {StitchedRect(), reference.fragment};
+    NGLogicalAnchorReference* StitchedAnchorReference() const {
+      return MakeGarbageCollected<NGLogicalAnchorReference>(
+          *reference->fragment, StitchedRect(), /* is_invalid */ false);
     }
 
-    void Unite(const LogicalRect& rect, const LogicalOffset& container_offset) {
+    void Unite(const LogicalRect& other_rect,
+               const LogicalOffset& container_offset) {
       // To unite fragments in the physical coordinate system as defined in the
       // spec while keeping the |reference.rect| relative to the first
       // container, make the |container_offset| relative to the first container.
-      const LogicalRect rect_in_first_container =
-          rect + (container_offset - first_container_offset);
-      reference.rect.Unite(rect_in_first_container);
+      const LogicalRect other_rect_in_first_container =
+          other_rect + (container_offset - first_container_offset);
+      rect.Unite(other_rect_in_first_container);
     }
 
-    // The |reference| is relative to the first container, so that it can a)
-    // unite following fragments in the physical coordinate system, and b)
-    // compute the result in the stitched coordinate system.
-    NGLogicalAnchorReference reference;
+    // The |rect| is relative to the first container, so that it can a) unite
+    // following fragments in the physical coordinate system, and b) compute the
+    // result in the stitched coordinate system.
+    NGPhysicalAnchorReference* reference;
+    LogicalRect rect;
     LogicalOffset first_container_offset;
     LayoutUnit first_container_stitched_offset;
   };
@@ -160,9 +165,8 @@ void NGLogicalAnchorQuery::SetAsStitched(
       for (const auto& it : *child_anchor_query) {
         const LogicalRect rect = converter.ToLogical(it.value->rect);
         const auto result = anchors.insert(
-            it.key,
-            NGStitchedAnchorReference{
-                {rect, it.value->fragment}, child.offset, stitched_offset});
+            it.key, NGStitchedAnchorReference{it.value.Get(), rect,
+                                              child.offset, stitched_offset});
         if (!result.is_new_entry)
           result.stored_value->value.Unite(rect, child.offset);
       }
@@ -269,14 +273,6 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
   return absl::nullopt;
 }
 
-void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(fragment);
-}
-
-void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
-  visitor->Trace(anchor_references_);
-}
-
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const AtomicString& anchor_name,
     AnchorValue anchor_value) const {
@@ -293,6 +289,18 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
   return anchor_query_.EvaluateSize(anchor_name, anchor_size_value,
                                     container_converter_.GetWritingMode(),
                                     self_writing_mode_);
+}
+
+void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
+  visitor->Trace(fragment);
+}
+
+void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
+  visitor->Trace(fragment);
+}
+
+void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
+  visitor->Trace(anchor_references_);
 }
 
 }  // namespace blink

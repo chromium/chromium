@@ -68,12 +68,17 @@ class CORE_EXPORT NGPhysicalAnchorQuery {
   NGPhysicalAnchorReferenceMap anchor_references_;
 };
 
-struct CORE_EXPORT NGLogicalAnchorReference {
-  STACK_ALLOCATED();
+struct CORE_EXPORT NGLogicalAnchorReference
+    : public GarbageCollected<NGLogicalAnchorReference> {
+  NGLogicalAnchorReference(const NGPhysicalFragment& fragment,
+                           const LogicalRect& rect,
+                           bool is_invalid)
+      : rect(rect), fragment(&fragment), is_invalid(is_invalid) {}
 
- public:
+  void Trace(Visitor* visitor) const;
+
   LogicalRect rect;
-  const NGPhysicalFragment* fragment;
+  Member<const NGPhysicalFragment> fragment;
   bool is_invalid = false;
 };
 
@@ -116,9 +121,10 @@ class CORE_EXPORT NGLogicalAnchorQuery {
  private:
   friend class NGPhysicalAnchorQuery;
 
-  void Set(const AtomicString& name, const NGLogicalAnchorReference& reference);
+  void Set(const AtomicString& name, NGLogicalAnchorReference* reference);
 
-  HashMap<AtomicString, NGLogicalAnchorReference> anchor_references_;
+  HeapHashMap<AtomicString, Member<NGLogicalAnchorReference>>
+      anchor_references_;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
