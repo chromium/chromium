@@ -104,11 +104,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 // enum XML file.
 const char kEnteredKeywordModeHistogram[] = "Omnibox.EnteredKeywordMode2";
 
-// Histogram name which counts the number of times the user completes a search
-// in keyword mode, enumerated by the type of search engine.
-const char kEnteredKeywordModeByEngineTypeHistogram[] =
-    "Omnibox.EnteredKeywordModeByEngineType";
-
 // Histogram name which counts the number of milliseconds a user takes
 // between focusing and editing the omnibox.
 const char kFocusToEditTimeHistogram[] = "Omnibox.FocusToEditTime";
@@ -120,7 +115,18 @@ const char kFocusToOpenTimeHistogram[] =
 
 // Histogram name which counts the number of times the user completes a search
 // in keyword mode, enumerated by how they enter keyword mode.
-const char kAcceptedKeywordSuggestion[] = "Omnibox.AcceptedKeywordSuggestion";
+const char kAcceptedKeywordSuggestionHistogram[] =
+    "Omnibox.AcceptedKeywordSuggestion";
+
+// Histogram name which counts the number of times the user completes a search
+// in keyword mode, enumerated by the type of search engine.
+const char kKeywordModeUsageByEngineTypeEnteredHistogramName[] =
+    "Omnibox.KeywordModeUsageByEngineType.Entered";
+
+// Histogram name which counts the number of times the user completes a search
+// in keyword mode, enumerated by the type of search engine.
+const char kKeywordModeUsageByEngineTypeAcceptedHistogramName[] =
+    "Omnibox.KeywordModeUsageByEngineType.Accepted";
 
 void EmitEnteredKeywordModeHistogram(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
@@ -130,10 +136,25 @@ void EmitEnteredKeywordModeHistogram(
       static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
 
   if (turl != nullptr) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kEnteredKeywordModeByEngineTypeHistogram,
-        static_cast<int>(turl->GetBuiltinEngineType()),
-        static_cast<int>(BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX));
+    base::UmaHistogramEnumeration(
+        kKeywordModeUsageByEngineTypeEnteredHistogramName,
+        turl->GetBuiltinEngineType(),
+        BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
+  }
+}
+
+void EmitAcceptedKeywordSuggestionHistogram(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* turl) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kAcceptedKeywordSuggestionHistogram, static_cast<int>(entry_method),
+      static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+
+  if (turl != nullptr) {
+    base::UmaHistogramEnumeration(
+        kKeywordModeUsageByEngineTypeAcceptedHistogramName,
+        turl->GetBuiltinEngineType(),
+        BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
   }
 }
 
@@ -958,9 +979,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       }
 
       base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
-      UMA_HISTOGRAM_ENUMERATION(
-          kAcceptedKeywordSuggestion, keyword_mode_entry_method_,
-          static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
+      EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
+                                             template_url);
       client_->GetTemplateURLService()->IncrementUsageCount(template_url);
     } else {
       DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(

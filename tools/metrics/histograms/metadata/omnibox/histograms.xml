@@ -642,24 +642,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.EnteredKeywordModeByEngineType"
-    enum="OmniboxBuiltinEngineType" expires_after="2023-08-15">
-  <owner>yoangela@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    Records number of times users enters keyword mode enumerated by the type of
-    search engine (whether the engine is &quot;built-in&quot;). This is logged
-    whenever Omnibox.EnteredKeywordMode2 is logged. See also
-    Omnibox.AcceptedKeywordModeByEngineType for the total number of times a user
-    completes a search while still in keyword mode.
-
-    Logged each time the user enters keyword mode. If a user enters, then
-    leaves, then re-enters keyword mode during the same session (i.e. without
-    selecting a navigtaion), this is logged twice. If the user doesn't accept
-    the keyword suggestion, this is still logged.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.Escape" enum="OmniboxEscapeAction"
     expires_after="2023-02-12">
   <owner>manukh@chromium.org</owner>
@@ -894,6 +876,33 @@ chromium-metrics-reviews@google.com.
     regardless, in order to be consistent with how user actions and histograms
     are handled.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.KeywordModeUsageByEngineType.{Usage}"
+    enum="OmniboxBuiltinEngineType" expires_after="2023-08-15">
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records number of times users use keyword mode enumerated by the type of
+    search engine (whether the engine is &quot;built-in&quot;).
+  </summary>
+  <token key="Usage">
+    <variant name="Accepted"
+        summary="Logged when a user accepts a keyword suggestion while in
+                 keyword mode. This is also logged every time
+                 Omnibox.AcceptedKeywordSuggestion is logged. Not logged if a
+                 user enters keyword mode but doesn't complete a search. Not
+                 logged if a user enters keyword mode, but selects a URL
+                 suggestion or a search suggestion that is not for the
+                 keyword mode search engine."/>
+    <variant name="Entered"
+        summary="Logged each time the user enters keyword mode. This is
+                 logged whenever Omnibox.EnteredKeywordMode2 is logged. If a
+                 user enters, then leaves, then re-enters keyword mode during
+                 the same session (i.e. without selecting a navigation), this
+                 is logged twice. If the user doesn't accept the keyword
+                 suggestion, this is still logged."/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractedCount"
