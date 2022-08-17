@@ -25,6 +25,7 @@ constexpr char kRuleDiscountPartnerMerchantPatternType[] =
     "rule_discount_partner_merchant_regex";
 constexpr char kCouponDiscountPartnerMerchantPatternType[] =
     "coupon_discount_partner_merchant_regex";
+constexpr char kNoDiscountMerchantPatternType[] = "no_discount_merchant_regex";
 constexpr char kCartPagetURLPatternType[] = "cart_page_url_regex";
 constexpr char kCheckoutPageURLPatternType[] = "checkout_page_url_regex";
 constexpr char kPurchaseButtonTextPatternType[] = "purchase_button_text_regex";
@@ -76,6 +77,8 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
       ConstructGlobalRegex(kRuleDiscountPartnerMerchantPatternType);
   coupon_discount_partner_merchant_pattern_ =
       ConstructGlobalRegex(kCouponDiscountPartnerMerchantPatternType);
+  no_discount_merchant_pattern_ =
+      ConstructGlobalRegex(kNoDiscountMerchantPatternType);
   cart_url_pattern_ = ConstructGlobalRegex(kCartPagetURLPatternType);
   checkout_url_pattern_ = ConstructGlobalRegex(kCheckoutPageURLPatternType);
   purchase_button_pattern_ =
@@ -134,6 +137,10 @@ CommerceHeuristicsData::GetRuleDiscountPartnerMerchantPattern() {
 const re2::RE2*
 CommerceHeuristicsData::GetCouponDiscountPartnerMerchantPattern() {
   return coupon_discount_partner_merchant_pattern_.get();
+}
+
+const re2::RE2* CommerceHeuristicsData::GetNoDiscountMerchantPattern() {
+  return no_discount_merchant_pattern_.get();
 }
 
 const re2::RE2* CommerceHeuristicsData::GetCartPageURLPattern() {

@@ -299,6 +299,8 @@ bool isContextualConsentEnabled();
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.
 base::TimeDelta GetDiscountFetchDelay();
+// Check if a URL belongs to a merchant with no discounts.
+bool IsNoDiscountMerchant(const GURL& url);
 #endif
 }  // namespace commerce
 

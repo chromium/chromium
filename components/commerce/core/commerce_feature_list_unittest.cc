@@ -21,6 +21,7 @@ const char kGlobalHeuristicsJSONData[] = R"###(
       {
         "rule_discount_partner_merchant_regex": "baz",
         "coupon_discount_partner_merchant_regex": "qux",
+        "no_discount_merchant_regex": "corge",
         "discount_fetch_delay": "10h"
       }
   )###";
@@ -28,6 +29,7 @@ const char kRuleFeatureParamPartnerMerchantURL[] = "https://www.foo.com";
 const char kCouponFeatureParamPartnerMerchantURL[] = "https://www.bar.com";
 const char kRuleComponentPartnerMerchantURL[] = "https://www.baz.com";
 const char kCouponComponentPartnerMerchantURL[] = "https://www.qux.com";
+const char kNoDiscountMerchantURL[] = "https://www.corge.com";
 #endif  //! BUILDFLAG(IS_ANDROID)
 }  // namespace
 
@@ -130,5 +132,18 @@ TEST_F(CommerceFeatureListTest, TestGetDiscountFetchDelay_FromComponent) {
       data.PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
 
   ASSERT_EQ(commerce::GetDiscountFetchDelay(), base::Hours(10));
+}
+
+TEST_F(CommerceFeatureListTest, TestNoDiscountMerchant) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+  ASSERT_TRUE(
+      data.PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_TRUE(commerce::IsNoDiscountMerchant(GURL(kNoDiscountMerchantURL)));
+  ASSERT_FALSE(
+      commerce::IsNoDiscountMerchant(GURL(kCouponComponentPartnerMerchantURL)));
+  // Matching host only.
+  ASSERT_FALSE(
+      commerce::IsNoDiscountMerchant(GURL("https://www.qux.com/corge")));
 }
 #endif  //! BUILDFLAG(IS_ANDROID)

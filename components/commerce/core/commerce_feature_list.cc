@@ -271,5 +271,19 @@ base::TimeDelta GetDiscountFetchDelay() {
   }
   return kDiscountFetchDelayParam.Get();
 }
+
+bool IsNoDiscountMerchant(const GURL& url) {
+  const auto host_string = url.host_piece();
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetNoDiscountMerchantPattern();
+  // If pattern from component updater is not available, merchants are
+  // considered to have no discounts by default.
+  if (!pattern_from_component)
+    return true;
+  return RE2::PartialMatch(
+      re2::StringPiece(host_string.data(), host_string.size()),
+      *pattern_from_component);
+}
 #endif
 }  // namespace commerce

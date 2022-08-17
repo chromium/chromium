@@ -58,6 +58,11 @@ class CommerceHeuristicsData {
   // for coupon discount.
   const re2::RE2* GetCouponDiscountPartnerMerchantPattern();
 
+  // Try to get the pattern regex to decide if a merchant is one the merchants
+  // that currently have no discounts. This pattern is determined on the server
+  // side.
+  const re2::RE2* GetNoDiscountMerchantPattern();
+
   // Try to get the pattern regex to decide if a URL is cart page URL.
   const re2::RE2* GetCartPageURLPattern();
 
@@ -116,6 +121,7 @@ class CommerceHeuristicsData {
   std::unique_ptr<re2::RE2> product_skip_pattern_;
   std::unique_ptr<re2::RE2> rule_discount_partner_merchant_pattern_;
   std::unique_ptr<re2::RE2> coupon_discount_partner_merchant_pattern_;
+  std::unique_ptr<re2::RE2> no_discount_merchant_pattern_;
   std::unique_ptr<re2::RE2> cart_url_pattern_;
   std::unique_ptr<re2::RE2> checkout_url_pattern_;
   std::unique_ptr<re2::RE2> purchase_button_pattern_;
