@@ -1991,6 +1991,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-desktop-pwas-app-home-page",
+    "owners": ["liqining.keeling@bytedance.com", "desktop-pwas-team@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-desktop-pwas-borderless",
     "owners": [ "laurila@google.com", "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 115

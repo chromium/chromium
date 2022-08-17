@@ -1,0 +1,35 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module app_home.mojom;
+
+import "url/mojom/url.mojom";
+
+struct AppInfo {
+  // The app id.
+  string id;
+  // The first url to load when app start launching.
+  url.mojom.Url start_url;
+  // The app's name.
+  string name;
+  // The app's icon url showing on `chrome://apps`.
+  url.mojom.Url icon_url;
+};
+
+interface PageHandlerFactory {
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+interface PageHandler {
+  // Get all apps' information that defined in `AppInfo`.
+  GetApps() => (array<AppInfo> app_list);
+};
+
+// The `Page` interface is used for sending mojom action messsage
+// from backend to frontend.
+// TODO(crbug.com/1350406): Currently there's no place needs to
+// send message to frontend page, so we just left an empty interface class
+// here now, but in the feature, we will add needed APIs here.
+interface Page {};

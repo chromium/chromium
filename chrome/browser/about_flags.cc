@@ -9213,6 +9213,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordManagerRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordManagerRedesign)},
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+    {flag_descriptions::kDesktopPWAsAppHomePageFlagId,
+     flag_descriptions::kDesktopPWAsAppHomePageName,
+     flag_descriptions::kDesktopPWAsAppHomePageDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kDesktopPWAsAppHomePage)},
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

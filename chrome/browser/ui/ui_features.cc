@@ -16,6 +16,11 @@ namespace features {
 const base::Feature kAllowWindowDragUsingSystemDragDrop{
     "AllowWindowDragUsingSystemDragDrop", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+const base::Feature kDesktopPWAsAppHomePage{"DesktopPWAsAppHomePage",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 

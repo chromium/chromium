@@ -194,6 +194,11 @@
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
+#include "chrome/browser/ui/webui/app_home/app_home_ui.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -1275,6 +1280,13 @@ void PopulateChromeWebUIFrameBinders(
         map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsAppHomePage)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ::app_home::mojom::PageHandlerFactory, webapps::AppHomeUI>(map);
+  }
+#endif
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(

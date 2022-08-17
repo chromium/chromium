@@ -57138,6 +57138,7 @@ from previous Chrome versions.
       label="UserCloudSigninRestrictionPolicyFetcher:disabled"/>
   <int value="-1329586063"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
+  <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>
   <int value="-1326463296" label="SSLCommittedInterstitials:disabled"/>
@@ -58720,6 +58721,7 @@ from previous Chrome versions.
   <int value="-345324571" label="enable-quirks-client"/>
   <int value="-345181892" label="new-tab-button-position"/>
   <int value="-345156835" label="OmniboxDisableCGIParamMatching:enabled"/>
+  <int value="-344740441" label="DesktopPWAsAppHomePage:disabled"/>
   <int value="-344357771"
       label="WebAuthenticationCrosPlatformAuthenticator:enabled"/>
   <int value="-344343842" label="disable-experimental-app-list"/>
