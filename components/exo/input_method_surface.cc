@@ -86,7 +86,8 @@ void InputMethodSurface::OnSurfaceCommit() {
   }
 }
 
-void InputMethodSurface::SetWidgetBounds(const gfx::Rect& bounds) {
+void InputMethodSurface::SetWidgetBounds(const gfx::Rect& bounds,
+                                         bool adjusted_by_server) {
   if (bounds == widget_->GetWindowBoundsInScreen())
     return;
 
