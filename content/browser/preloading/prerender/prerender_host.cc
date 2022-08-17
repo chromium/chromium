@@ -494,10 +494,6 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kBaseUrlForDataUrl;
   }
 
-  // The previews_state is always set to NO_PREVIEWS in BeginNavigation and the
-  // previews code was removed, so no need to compare it here as it's not used.
-  // TODO(crbug.com/1232909): remove this previews_state.
-
   // TODO(crbug.com/1352891): This if branch should be removed because method
   // parameter change is detected earlier by checking the HTTP request headers
   // changes.
