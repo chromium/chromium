@@ -72844,6 +72844,35 @@
         {}
        ]
       ],
+      "background-color-animation-with-blur.html": [
+       "4f9ab2041473fd6562063ea33d1de0134380d8ad",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-animation-with-blur-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             1
+            ],
+            [
+             10000,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "background-color-animation-with-images.html": [
        "0ea29b8f1cfd65fb4c2a4f9c570443f582403e9e",
        [
@@ -263644,6 +263673,10 @@
        "d980a29ff7fa4f1bfd25be504f9bf6390014f58d",
        []
       ],
+      "background-color-animation-with-blur-ref.html": [
+       "a508b465b7812ccea1b47e8b4d03e661ff2f5e2c",
+       []
+      ],
       "background-color-animation-with-images-ref.html": [
        "ba414f7b349d6a3de8b10eb539de48b408365f2a",
        []
@@ -307804,7 +307837,7 @@
         []
        ],
        "window-name.sub.html": [
-        "0fa874b2cfc2cfe6d1a0a79348857290215a3ef4",
+        "55fb8ebbbc5957cbabf7ce57ba9c6e818cced034",
         []
        ],
        "window-opener.html": [
@@ -325684,7 +325717,7 @@
       []
      ],
      "pending_beacon-helper.js": [
-      "ca34e98f43809fb6863761acee1fedc07f8533df",
+      "e3982898f8f2cdba927d51fedfc9186fd61f85a5",
       []
      ],
      "set_beacon.py": [
@@ -335909,6 +335942,14 @@
      }
     },
     "subresource-loading": {
+     "coep.https.tentative.html.headers": [
+      "4e798cd9f5d3f756df077a43ce9a1a6f9b41fd28",
+      []
+     ],
+     "csp-blocked.https.tentative.html.sub.headers": [
+      "ac826f8c485d107806e841d6ffb463bf5d20c0a8",
+      []
+     ],
      "resources": {
       "check-cookie-and-return-bundle.py": [
        "0d4f14ecb7921edfcb4583b0611d5787a36a1015",
@@ -335922,15 +335963,7 @@
        "f67ac706866e6dcbcce770d3bdd637e4e0af59ce",
        []
       ]
-     },
-     "script-coep.https.tentative.html.headers": [
-      "4e798cd9f5d3f756df077a43ce9a1a6f9b41fd28",
-      []
-     ],
-     "script-csp-blocked.https.tentative.html.sub.headers": [
-      "ac826f8c485d107806e841d6ffb463bf5d20c0a8",
-      []
-     ]
+     }
     }
    },
    "web-locks": {
@@ -382760,7 +382793,7 @@
        ]
       ],
       "grid-container-baseline-001.html": [
-       "73b3c76b599265d1fe20c0fcf1d55fa763a98fb2",
+       "aa6e77871a4f4fb9fb6f0bf8d8ea80dc4e0937cc",
        [
         null,
         {}
@@ -446298,7 +446331,7 @@
        ]
       ],
       "clear-window-name.https.html": [
-       "27601eb7f6db164cde6ac1d0ecda0d69dfab1a75",
+       "698de8a1cafd7911667f5a209ffa887a0ee5aea2",
        [
         null,
         {
@@ -506724,7 +506757,7 @@
      ]
     ],
     "pending_post_beacon-sendwithdata.tentative.window.js": [
-     "1c7c6cab50ba7133418045cf764e22a91beffe4c",
+     "081e1d4d62e3673756db53d4bc5d2d20ef56a57c",
      [
       "pending_beacon/pending_post_beacon-sendwithdata.tentative.window.html",
       {
@@ -549698,197 +549731,197 @@
    },
    "web-bundle": {
     "subresource-loading": {
-     "script-accept-header.https.tentative.html": [
+     "accept-header.https.tentative.html": [
       "68b13e53c662f9c9e56bb9a72f0cd1aa00a46182",
       [
        null,
        {}
       ]
      ],
-     "script-coep.https.tentative.html": [
+     "coep.https.tentative.html": [
       "4029fc6f815eb911745d4c1a471352b6c0952e45",
       [
        null,
        {}
       ]
      ],
-     "script-corp.https.tentative.html": [
+     "corp.https.tentative.html": [
       "ce18544b0bd8eea578f19daf041e9d79a72fe1f7",
       [
        null,
        {}
       ]
      ],
-     "script-credentials.https.tentative.sub.html": [
+     "credentials.https.tentative.sub.html": [
       "37efc37e6d722e38f082ac3e2373f48cee4cc6e6",
       [
        null,
        {}
       ]
      ],
-     "script-csp-allowed.https.tentative.html": [
+     "csp-allowed.https.tentative.html": [
       "55498eaa4e50fdc0255463bb08ef5c3301958cbe",
       [
        null,
        {}
       ]
      ],
-     "script-csp-blocked.https.tentative.html": [
+     "csp-blocked.https.tentative.html": [
       "6700533b58cad6e4c47f71bb7e13002dd4df8a8e",
       [
        null,
        {}
       ]
      ],
-     "script-element-removal.https.tentative.html": [
+     "element-removal.https.tentative.html": [
       "87ab8a9f15d02a986014a429cdfa7f1ee90fb2cc",
       [
        null,
        {}
       ]
      ],
-     "script-invalid-json.https.tentative.html": [
+     "invalid-json.https.tentative.html": [
       "f4f9405e2de7eef2f5133f708ab582c5e1da20de",
       [
        null,
        {}
       ]
      ],
-     "script-nested-bundle.https.tentative.html": [
+     "nested-bundle.https.tentative.html": [
       "2e5b102e68462a86b13a5861b727f4538504f1ef",
       [
        null,
        {}
       ]
      ],
-     "script-network-error.https.tentative.sub.html": [
+     "network-error.https.tentative.sub.html": [
       "3ebab3fa90259a8dfa4675d32eaf6294ec2c1ad6",
       [
        null,
        {}
       ]
      ],
-     "script-not-found.https.tentative.html": [
+     "not-found.https.tentative.html": [
       "efcb6bc9fb1bd55addc8a96acc8c10119b5ee3b3",
       [
        null,
        {}
       ]
      ],
-     "script-path-restriction.https.tentative.html": [
+     "path-restriction.https.tentative.html": [
       "1d7b6f204b3c3c52cbc73fabd3027c9cb5c413a6",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-in-web-bundle-cors.https.tentative.sub.html": [
+     "relative-url-in-web-bundle-cors.https.tentative.sub.html": [
       "32f333b67eb8e0d3cd9b29ee466af0c356e4ab1e",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-in-web-bundle.https.tentative.html": [
+     "relative-url-in-web-bundle.https.tentative.html": [
       "0b7f63c21c701724a8f3423d4bbfde6de81b0e28",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-resources.https.tentative.html": [
+     "relative-url-resources.https.tentative.html": [
       "1b79b157c4f5ad369ad1a3156f852311d02d3db6",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-scopes.https.tentative.html": [
+     "relative-url-scopes.https.tentative.html": [
       "40a49d55d39f395a950a7da4493b1747685fcf0f",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-static-element.https.tentative.html": [
+     "relative-url-static-element.https.tentative.html": [
       "55030e234bf8a3205dbeb90e0fd35c9d816fdac7",
       [
        null,
        {}
       ]
      ],
-     "script-relative-url-with-base.https.tentative.html": [
+     "relative-url-with-base.https.tentative.html": [
       "3c7e1a380c0e2c2f57310173ea42dc8d187f75b4",
       [
        null,
        {}
       ]
      ],
-     "script-request-destination.https.tentative.sub.html": [
+     "request-destination.https.tentative.sub.html": [
       "da12f3d042655d334452f85c1d232046f1b7f409",
       [
        null,
        {}
       ]
      ],
-     "script-resource-timing-attributes-consistent.https.tentative.sub.html": [
+     "resource-timing-attributes-consistent.https.tentative.sub.html": [
       "3231d69ae9ca2cce17cda917f3cd071867f0c8a8",
       [
        null,
        {}
       ]
      ],
-     "script-resource-timing.https.tentative.html": [
+     "resource-timing.https.tentative.html": [
       "a2fe38de0f6206683e45e7b4ab628cfd40ff7634",
       [
        null,
        {}
       ]
      ],
-     "script-reuse-web-bundle-resource.https.tentative.html": [
+     "reuse-web-bundle-resource.https.tentative.html": [
       "81d87bcbf0237fe74594cd8ed7f4b19042719dd4",
       [
        null,
        {}
       ]
      ],
-     "script-service-worker-controlled.https.tentative.html": [
+     "service-worker-controlled.https.tentative.html": [
       "d5c2a06837163d3416a9c4f7fcd083b024b12fba",
       [
        null,
        {}
       ]
      ],
-     "script-static-element-with-base.https.tentative.sub.html": [
+     "static-element-with-base.https.tentative.sub.html": [
       "886d9cb783b3726710cf60bc20e5d41fcfd97ec1",
       [
        null,
        {}
       ]
      ],
-     "script-static-element.https.tentative.sub.html": [
+     "static-element.https.tentative.sub.html": [
       "198c8f8e5cf88b1e799d101a539b2dc41ec6bea0",
       [
        null,
        {}
       ]
      ],
-     "script-subframe-from-web-bundle.https.tentative.html": [
+     "subframe-from-web-bundle.https.tentative.html": [
       "9e08ccdd29c43a3f466dac081514a6842c992ce5",
       [
        null,
        {}
       ]
      ],
-     "script-subresource-load.https.tentative.sub.html": [
+     "subresource-load.https.tentative.sub.html": [
       "10c207020c2e3de5d8aaf053617adaa3d42786f2",
       [
        null,
        {}
       ]
      ],
-     "script-supports-webbundle.https.tentative.html": [
-      "b211a662158403c1c80ba9aebd3d7b06eb425bb0",
+     "supports-webbundle.https.tentative.html": [
+      "9beae287a00f5a2a48c26b9ed95970ecb5db2577",
       [
        null,
        {}
