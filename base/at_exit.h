@@ -37,7 +37,8 @@ namespace base {
 // AtExitManager离开作用域，所有的回调函数将会被调用。
 // AtExitManager类似于Linux下的atexit，注册退出清理函数，不过base库的实现机制是
 // 利用了C++的RAII
-
+// AtExitManager 类似于linux下的atexit，注册退出清理函数，不过base库的实现机制是利用了C++的RAII
+// https://zyfforlinux.blog.csdn.net/article/details/52754141?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-52754141-blog-105949165.pc_relevant_multi_platform_whitelistv3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-52754141-blog-105949165.pc_relevant_multi_platform_whitelistv3&utm_relevant_index=6
 class BASE_EXPORT AtExitManager {
  public:
   typedef void (*AtExitCallbackType)(void*);

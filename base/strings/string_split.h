@@ -36,6 +36,8 @@ enum SplitResult {
   SPLIT_WANT_NONEMPTY,
 };
 
+// 分割字符串进vector。
+
 // Split the given string on ANY of the given separators, returning copies of
 // the result.
 //

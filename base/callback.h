@@ -83,9 +83,10 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
  public:
   using ResultType = R;
   using RunType = R(Args...);
+
   // 多态调用
-  using PolymorphicInvoke = R (*)(internal::BindStateBase*,
-                                  internal::PassingType<Args>...);
+  using PolymorphicInvoke = R(*)(internal::BindStateBase*,
+                                 internal::PassingType<Args>...);
 
   constexpr OnceCallback() = default;
   OnceCallback(std::nullptr_t) = delete;
@@ -106,6 +107,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 
   constexpr OnceCallback(internal::DoNothingCallbackTag)
       : OnceCallback(BindOnce([](Args... args) {})) {}
+
   constexpr OnceCallback& operator=(internal::DoNothingCallbackTag) {
     *this = BindOnce([](Args... args) {});
     return *this;
@@ -163,6 +165,7 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   // Since this method generates a callback that is a replacement for `this`,
   // `this` will be consumed and reset to a null callback to ensure the
   // originally-bound functor can be run at most once.
+  // 该成员函数后面的 "&&" 表示这个Callback被使用时，是右值引用时才能调用这个成员函数.
   template <typename ThenR, typename... ThenArgs>
   OnceCallback<ThenR(Args...)> Then(OnceCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);

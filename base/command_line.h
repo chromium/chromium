@@ -13,6 +13,8 @@
 // There is a singleton read-only CommandLine that represents the command line
 // that the current process was started with.  It must be initialized in main().
 
+// 解析命令行。
+
 #ifndef BASE_COMMAND_LINE_H_
 #define BASE_COMMAND_LINE_H_
 

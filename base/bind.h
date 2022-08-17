@@ -19,6 +19,12 @@
   #include "base/mac/scoped_block.h"
 #endif
 
+// Bind/CallBack 和std::bind&std::function类似，Google提供了使用文档和设计文档，
+// 说明了自己为何没有使用std标准库，而是自己造轮子的原因callback。
+
+// bind_helpers 类似于std::ref，默认的std::bind是将参数拷贝后再绑定，可以使用std::ref
+// 通过传引用的方式绑定，bind_helper提供了更丰富的传参方式，传引用，传值，所有权转移等。
+
 // -----------------------------------------------------------------------------
 // Usage documentation
 // -----------------------------------------------------------------------------

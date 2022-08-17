@@ -309,6 +309,7 @@ struct BASE_EXPORT LaunchOptions {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
+// 运行进程。
 // Launch a process via the command line |cmdline|.
 // See the documentation of LaunchOptions for details on |options|.
 //

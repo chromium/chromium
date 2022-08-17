@@ -80,8 +80,10 @@ short FcntlFlockType(absl::optional<File::LockMode> mode) {
   NOTREACHED();
 }
 
-File::Error CallFcntlFlock(PlatformFile file,
-                           absl::optional<File::LockMode> mode) {
+/**
+ * 调用Linux的文件锁
+ */
+File::Error CallFcntlFlock(PlatformFile file, absl::optional<File::LockMode> mode) {
   struct flock lock;
   lock.l_type = FcntlFlockType(std::move(mode));
   lock.l_whence = SEEK_SET;
@@ -299,13 +301,16 @@ int File::Write(int64_t offset, const char* data, int size) {
 #if defined(OS_ANDROID)
     // In case __USE_FILE_OFFSET64 is not used, we need to call pwrite64()
     // instead of pwrite().
-    static_assert(sizeof(int64_t) == sizeof(off64_t),
-                  "off64_t must be 64 bits");
-    rv = HANDLE_EINTR(pwrite64(file_.get(), data + bytes_written,
-                               size - bytes_written, offset + bytes_written));
+    static_assert(sizeof(int64_t) == sizeof(off64_t), "off64_t must be 64 bits");
+    rv = HANDLE_EINTR(pwrite64(file_.get(),
+                               data + bytes_written,
+                               size - bytes_written,
+                               offset + bytes_written));
 #else
-    rv = HANDLE_EINTR(pwrite(file_.get(), data + bytes_written,
-                             size - bytes_written, offset + bytes_written));
+    rv = HANDLE_EINTR(pwrite(file_.get(),
+                             data + bytes_written,
+                             size - bytes_written,
+                             offset + bytes_written));
 #endif
     if (rv <= 0)
       break;
@@ -395,7 +400,7 @@ bool File::GetInfo(Info* info) {
 }
 
 #if !defined(OS_FUCHSIA)
-File::Error File::Lock(File::LockMode mode) {
+File::Error File::Lock(File::LockMode mode) { // 文件锁：共享锁、互斥锁
   SCOPED_FILE_TRACE("Lock");
   return CallFcntlFlock(file_.get(), mode);
 }

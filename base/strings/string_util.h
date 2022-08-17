@@ -108,6 +108,7 @@ constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<wchar_t>(begin, end);
 }
 
+// 大小写转换。
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
 template <typename CharT,
@@ -202,6 +203,7 @@ BASE_EXPORT bool RemoveChars(StringPiece input,
                              StringPiece remove_chars,
                              std::string* output);
 
+// 替换字符串中的指定子串
 // Replaces characters in |replace_chars| from anywhere in |input| with
 // |replace_with|.  Each character in |replace_chars| will be replaced with
 // the |replace_with| string.  Returns true if any characters were replaced.
@@ -223,6 +225,7 @@ enum TrimPositions {
   TRIM_ALL      = TRIM_LEADING | TRIM_TRAILING,
 };
 
+// 去除首尾或首或尾指定子串。
 // Removes characters in |trim_chars| from the beginning and end of |input|.
 // The 8-bit version only works on 8-bit characters, not UTF-8. Returns true if
 // any characters were removed.
@@ -338,7 +341,7 @@ enum class CompareCase {
   SENSITIVE,
   INSENSITIVE_ASCII,
 };
-
+// 判断字符串是否以某子串起始或结束。
 BASE_EXPORT bool StartsWith(
     StringPiece str,
     StringPiece search_for,

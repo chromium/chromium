@@ -25,6 +25,7 @@ namespace base {
 
 /**
  * @brief 这个类真是把 RAII 机制运用到极致了
+ * AutoReset 给全局变量提供默认值和新值，等AutoReset析构了，就会恢复默认值
  */
 template <typename T>
 class AutoReset {

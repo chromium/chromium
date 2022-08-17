@@ -113,8 +113,8 @@ class BasicStringPiece {
 
   constexpr BasicStringPiece() noexcept : ptr_(nullptr), length_(0) {}
   constexpr BasicStringPiece(const BasicStringPiece& other) noexcept = default;
-  
-  constexpr BasicStringPiece& operator=(const BasicStringPiece& view) 
+
+  constexpr BasicStringPiece& operator=(const BasicStringPiece& view)
       noexcept = default;
 
   constexpr BasicStringPiece(const CharT* s, size_type count)

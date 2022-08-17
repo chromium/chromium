@@ -97,6 +97,10 @@ CheckOpValueStr(const T& v) {
 // without this function pointers are always printed as 1 or 0. (MSVC isn't
 // standards-conforming here and converts function pointers to regular
 // pointers, so this is a no-op for MSVC.)
+// 为函数和函数指针提供重载。 函数指针不会隐式转换为 void* 但会隐式转换为 bool，因此如果
+// 没有这个函数指针总是打印为 1 或 0。（MSVC 在这里不符合标准并将函数指针转换为常规指针，
+// 所以这是 MSVC 的无操作。）
+// 这里的意思是：如果T是一个std::function类型，则返回值是char*
 template <typename T>
 inline typename std::enable_if<
     std::is_function<typename std::remove_pointer<T>::type>::value,
@@ -113,8 +117,7 @@ inline typename std::enable_if<
         std::is_enum<T>::value,
     char*>::type
 CheckOpValueStr(const T& v) {
-  return CheckOpValueStr(
-      static_cast<typename std::underlying_type<T>::type>(v));
+  return CheckOpValueStr(static_cast<typename std::underlying_type<T>::type>(v));
 }
 
 // Captures the result of a CHECK_op and facilitates testing as a boolean.

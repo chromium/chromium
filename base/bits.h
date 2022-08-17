@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // This file defines some bit utilities.
+// bits 提供了对字节对齐大小的计算，还有计算一个数是2的几次方相关的函数。
 
 #ifndef BASE_BITS_H_
 #define BASE_BITS_H_

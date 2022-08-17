@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// base64和base64url 提供了对url场景和一般场景下的base64编码，具体可以参考RFC-4648
+
 #ifndef BASE_BASE64URL_H_
 #define BASE_BASE64URL_H_
 

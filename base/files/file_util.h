@@ -62,6 +62,8 @@ BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 //
 // In POSIX environment and if |path| is a symbolic link, this deletes only
 // the symlink. (even if the symlink points to a non-existent file)
+// 如果path为目录，则 recursive 必须等于 true，不然无法删除文件夹。
+// 如果path为文件，则 recursive 是否为true，都不会删除同目录下的其他文件和目录。
 BASE_EXPORT bool DeleteFile(const FilePath& path);
 
 // Deletes the given path, whether it's a file or a directory.
