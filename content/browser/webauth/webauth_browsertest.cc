@@ -1596,6 +1596,46 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   ASSERT_EQ(kExcludeCredentialsRangeErrorMessage, *result);
 }
 
+// No `kAndroidAccessory` on Windows.
+#if !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
+                       DuplicateTransportStrings) {
+  // By setting the transport to `kAndroidAccessory`, and having explicit
+  // transports in the getInfo of ['hybrid', 'internal'], this test confirms
+  // that 'hybrid' doesn't get included twice. Since `kAndroidAccessory` and
+  // `kHybrid` are different values that both happen to get converted to the
+  // string "hybrid", this requires deduplication.
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->SetTransport(
+      device::FidoTransportProtocol::kAndroidAccessory);
+  device::VirtualCtap2Device::Config config;
+  config.transports_in_get_info = {device::FidoTransportProtocol::kHybrid,
+                                   device::FidoTransportProtocol::kInternal};
+  config.include_transports_in_attestation_certificate = false;
+  virtual_device_factory->SetCtap2Config(config);
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
+
+  CreateParameters parameters;
+  constexpr char kJavascript[] =
+      "navigator.credentials.create({ publicKey: {"
+      "  challenge: new TextEncoder().encode('climb a mountain'),"
+      "  rp: { id: 'www.acme.com', name: 'name' },"
+      "  user: { id: new Uint8Array([0]), name: 'name', displayName: 'dn' },"
+      "  pubKeyCredParams: [{ type: 'public-key', alg: '-7'}],"
+      "}}).then(c => window.domAutomationController.send("
+      "                  'webauth: ' + c.response.getTransports()),"
+      "         e => window.domAutomationController.send("
+      "                  'webauth: ' + e.toString()));";
+  absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+      shell()->web_contents(), kJavascript, "webauth: ");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result, "webauth: hybrid,internal");
+}
+#endif
+
 class WebAuthLocalClientBackForwardCacheBrowserTest
     : public WebAuthLocalClientBrowserTest {
  protected:

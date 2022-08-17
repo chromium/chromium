@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_attestation_response.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 
 namespace blink {
@@ -30,6 +32,7 @@ Vector<String> AuthenticatorAttestationResponse::getTransports() const {
     ret.emplace_back(mojo::ConvertTo<String>(transport));
   }
   std::sort(ret.begin(), ret.end(), WTF::CodeUnitCompareLessThan);
+  ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
   return ret;
 }
 
