@@ -578,6 +578,16 @@ TEST_F(FilePathWatcherTest, MAYBE_RecursiveWatch) {
   ASSERT_TRUE(base::CreateDirectory(subdir));
   ASSERT_TRUE(WaitForEvents());
 
+  // Create "$dir/subdir/subdir2".
+  FilePath subdir2(subdir.AppendASCII("subdir2"));
+  ASSERT_TRUE(base::CreateDirectory(subdir2));
+  ASSERT_TRUE(WaitForEvents());
+
+  // Rename "$dir/subdir/subdir2" to "$dir/subdir/subdir2b".
+  FilePath subdir2b(subdir.AppendASCII("subdir2b"));
+  base::Move(subdir2, subdir2b);
+  ASSERT_TRUE(WaitForEvents());
+
 // Mac and Win don't generate events for Touch.
 // Android TouchFile returns false.
 #if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))

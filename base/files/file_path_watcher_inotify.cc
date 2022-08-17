@@ -673,7 +673,7 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
                                     ? recursive_paths_by_watch_[fired_watch]
                                     : target_;
 
-  auto start_it = recursive_watches_by_path_.lower_bound(changed_dir);
+  auto start_it = recursive_watches_by_path_.upper_bound(changed_dir);
   auto end_it = start_it;
   for (; end_it != recursive_watches_by_path_.end(); ++end_it) {
     const FilePath& cur_path = end_it->first;
