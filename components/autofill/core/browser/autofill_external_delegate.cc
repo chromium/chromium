@@ -213,7 +213,7 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
 void AutofillExternalDelegate::DidSelectSuggestion(
     const std::u16string& value,
     int frontend_id,
-    const Suggestion::BackendId& backend_id) {
+    const std::string& backend_id) {
   ClearPreviewedForm();
 
   // Only preview the data if it is a profile or a virtual card.
@@ -225,7 +225,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
                                                  value);
   } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
     manager_->FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kPreview, backend_id.value(), query_id_,
+        mojom::RendererFormDataAction::kPreview, backend_id, query_id_,
         query_form_, query_field_);
   }
 }
@@ -278,11 +278,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
     // the payload contains the backend id, which is a GUID that identifies the
     // actually chosen credit card.
-    DCHECK(absl::holds_alternative<Suggestion::BackendId>(payload));
+    DCHECK(absl::holds_alternative<std::string>(payload));
     manager_->FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kFill,
-        absl::get<Suggestion::BackendId>(payload).value(), query_id_,
-        query_form_, query_field_);
+        mojom::RendererFormDataAction::kFill, absl::get<std::string>(payload),
+        query_id_, query_form_, query_field_);
   } else if (frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
     DCHECK(absl::holds_alternative<GURL>(payload));
     manager_->OnSeePromoCodeOfferDetailsSelected(absl::get<GURL>(payload),

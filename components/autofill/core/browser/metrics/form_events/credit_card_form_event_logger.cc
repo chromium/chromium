@@ -362,8 +362,7 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
 bool CreditCardFormEventLogger::DoesCardHaveOffer(
     const CreditCard& credit_card) {
   for (auto& suggestion : suggestions_) {
-    if (suggestion.GetPayload<Suggestion::BackendId>().value() ==
-        credit_card.guid()) {
+    if (suggestion.GetPayload<std::string>() == credit_card.guid()) {
       return !suggestion.offer_label.empty();
     }
   }

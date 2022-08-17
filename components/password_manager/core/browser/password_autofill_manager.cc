@@ -393,7 +393,7 @@ void PasswordAutofillManager::OnPopupSuppressed() {}
 void PasswordAutofillManager::DidSelectSuggestion(
     const std::u16string& value,
     int frontend_id,
-    const autofill::Suggestion::BackendId& backend_id) {
+    const std::string& backend_id) {
   ClearPreviewedForm();
   if (frontend_id == autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY ||
       frontend_id == autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY ||
@@ -482,10 +482,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         PasswordDropdownSelectedOption::kWebAuthn,
         password_client_->IsIncognito());
     password_client_->GetWebAuthnCredentialsDelegate()
-        ->SelectWebAuthnCredential(
-            absl::holds_alternative<autofill::Suggestion::BackendId>(payload)
-                ? absl::get<autofill::Suggestion::BackendId>(payload).value()
-                : std::string());
+        ->SelectWebAuthnCredential(absl::holds_alternative<std::string>(payload)
+                                       ? absl::get<std::string>(payload)
+                                       : std::string());
   } else if (frontend_id ==
              autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE) {
     metrics_util::LogPasswordDropdownItemSelected(

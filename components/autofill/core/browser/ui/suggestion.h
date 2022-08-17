@@ -20,8 +20,7 @@ namespace autofill {
 
 struct Suggestion {
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
-  using BackendId = base::StrongAlias<struct BackendIdTag, std::string>;
-  using Payload = absl::variant<BackendId, GURL>;
+  using Payload = absl::variant<std::string, GURL>;
 
   enum MatchMode {
     PREFIX_MATCH,    // for prefix matched suggestions;
@@ -88,7 +87,7 @@ struct Suggestion {
       case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
         return absl::holds_alternative<GURL>(payload);
       default:
-        return absl::holds_alternative<BackendId>(payload);
+        return absl::holds_alternative<std::string>(payload);
     }
   }
 #endif

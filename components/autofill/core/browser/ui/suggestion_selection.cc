@@ -126,7 +126,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       }
 
       suggestions.emplace_back(value);
-      suggestions.back().payload = Suggestion::BackendId(profile->guid());
+      suggestions.back().payload = profile->guid();
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;

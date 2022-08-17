@@ -39,7 +39,7 @@ class AutofillPopupDelegate {
   // the guid of the backend data model.
   virtual void DidSelectSuggestion(const std::u16string& value,
                                    int frontend_id,
-                                   const Suggestion::BackendId& backend_id) = 0;
+                                   const std::string& backend_id) = 0;
 
   // Inform the delegate that a row in the popup has been chosen. |value| is the
   // suggestion's value, and is usually the main text to be shown. |frontend_id|

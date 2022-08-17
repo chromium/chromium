@@ -609,8 +609,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(std::u16string(), -1,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(std::u16string(), -1, std::string());
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
@@ -650,8 +649,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(*autofill_driver_,
               RendererShouldPreviewFieldWithValue(field_id_, promo_code_value));
   external_delegate_->DidSelectSuggestion(
-      promo_code_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY,
-      Suggestion::BackendId());
+      promo_code_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, "");
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
@@ -666,8 +664,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
   const GURL gurl{"https://example.com/"};
-  absl::variant<Suggestion::BackendId, GURL> payload(absl::in_place_type<GURL>,
-                                                     gurl);
+  absl::variant<std::string, GURL> payload(absl::in_place_type<GURL>, gurl);
   EXPECT_CALL(autofill_client_, OpenPromoCodeOfferDetailsURL(gurl));
   external_delegate_->DidAcceptSuggestion(
       u"baz foo", POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS, payload, 0);
@@ -681,13 +678,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   IssueOnQuery(123);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   external_delegate_->DidSelectSuggestion(
-      u"baz foo", POPUP_ITEM_ID_PASSWORD_ENTRY, Suggestion::BackendId());
+      u"baz foo", POPUP_ITEM_ID_PASSWORD_ENTRY, std::string());
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(u"baz foo", 1,
-                                          Suggestion::BackendId());
+  external_delegate_->DidSelectSuggestion(u"baz foo", 1, std::string());
 
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
@@ -695,7 +691,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
                                      field_id_, std::u16string(u"baz foo")));
   external_delegate_->DidSelectSuggestion(
-      u"baz foo", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, Suggestion::BackendId());
+      u"baz foo", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, std::string());
 
   // Ensure selecting a virtual card entry will cause any previews to
   // get cleared.
@@ -704,8 +700,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
               FillOrPreviewVirtualCardInformation(
                   mojom::RendererFormDataAction::kPreview, _, _, _, _));
   external_delegate_->DidSelectSuggestion(
-      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY,
-      Suggestion::BackendId());
+      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string());
 }
 
 // Test that the popup is hidden once we are done editing the autofill field.
@@ -890,9 +885,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
                                               POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
       .Times(1);
   base::HistogramTester histogram_tester;
-  external_delegate_->DidAcceptSuggestion(dummy_string,
-                                          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                                          Suggestion::BackendId(), 0);
+  external_delegate_->DidAcceptSuggestion(
+      dummy_string, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, std::string(), 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
 
@@ -905,7 +899,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
       .Times(1);
   external_delegate_->DidAcceptSuggestion(
       dummy_string, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY,
-      absl::variant<Suggestion::BackendId, GURL>(), 0);
+      absl::variant<std::string, GURL>(), 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
@@ -1003,8 +997,7 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
               FillOrPreviewVirtualCardInformation(
                   mojom::RendererFormDataAction::kPreview, _, _, _, _));
   external_delegate_->DidSelectSuggestion(
-      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY,
-      Suggestion::BackendId());
+      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string());
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding

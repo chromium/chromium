@@ -602,7 +602,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   int MakeFrontendId(const std::string& cc_sid,
                      const std::string& profile_sid) const {
     return browser_autofill_manager_->suggestion_generator()->MakeFrontendId(
-        Suggestion::BackendId(cc_sid), Suggestion::BackendId(profile_sid));
+        cc_sid, profile_sid);
   }
 
   bool WillFillCreditCardNumber(const FormData& form,

@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "form_structure_test_api.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,8 +173,8 @@ int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
   std::string credit_card_guid =
       base::StringPrintf("00000000-0000-0000-0000-%012d", credit_card_id);
 
-  return suggestion_generator()->MakeFrontendId(
-      Suggestion::BackendId(credit_card_guid), Suggestion::BackendId());
+  return suggestion_generator()->MakeFrontendId(credit_card_guid,
+                                                std::string());
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
