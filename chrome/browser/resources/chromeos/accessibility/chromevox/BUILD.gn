@@ -117,6 +117,7 @@ chromevox_es6_modules = [
   "common/braille/braille_key_types.js",
   "common/braille/braille_table.js",
   "common/braille/nav_braille.js",
+  "common/bridge_callback_manager.js",
   "common/bridge_constants.js",
   "common/bridge_helper.js",
   "common/command_store.js",

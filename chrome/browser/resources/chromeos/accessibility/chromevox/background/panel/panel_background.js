@@ -74,10 +74,6 @@ export class PanelBackground {
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
     BridgeHelper.registerHandler(
-        Constants.TARGET, Constants.Action.NODE_MENU_CALLBACK,
-        callbackNodeIndex =>
-            PanelNodeMenuBackground.focusNodeCallback(callbackNodeIndex));
-    BridgeHelper.registerHandler(
         Constants.TARGET,
         Constants.Action.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
         actionId => PanelBackground.instance.performCustomActionOnCurrentNode_(

@@ -7,6 +7,20 @@
  */
 
 /**
+ * Specifies one of the renderer contexts for the ChromeVox extension. Code
+ * specific to each of these contexts is contained in the corresponding
+ * directory, while code used by two or more contexts is found in common/.
+ * @enum {string}
+ */
+export const BridgeContext = {
+  BACKGROUND: 'background',
+  LEARN_MODE: 'learnMode',
+  LOG_PAGE: 'logPage',
+  OPTIONS: 'options',
+  PANEL: 'panel',
+};
+
+/**
  * The class that a message is being sent to.
  * @typedef {string}
  */

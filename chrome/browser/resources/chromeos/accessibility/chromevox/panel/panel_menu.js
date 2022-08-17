@@ -6,6 +6,7 @@
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
 import {BackgroundBridge} from '../common/background_bridge.js';
+import {BridgeCallbackManager} from '../common/bridge_callback_manager.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
@@ -327,10 +328,11 @@ export class PanelNodeMenu extends PanelMenu {
 
   /** @param {!PanelNodeMenuItemData} data */
   addItemFromData(data) {
-    this.addMenuItem(
-        data.title, '', '', '',
-        () => BackgroundBridge.PanelBackground.nodeMenuCallback(
-            data.callbackNodeIndex));
+    this.addMenuItem(data.title, '', '', '', () => {
+      if (data.callbackId) {
+        BridgeCallbackManager.performCallback(data.callbackId);
+      }
+    });
     if (data.isActive) {
       this.activeIndex_ = this.items_.length - 1;
     }

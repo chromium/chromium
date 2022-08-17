@@ -9,6 +9,8 @@
 
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 
+import {BridgeCallbackId} from './bridge_callback_manager.js';
+
 /** @enum {number} */
 export const PanelNodeMenuId = {
   HEADING: 1,
@@ -30,7 +32,7 @@ export let PanelNodeMenuData;
 /**
  * @typedef {{
  *     title: string,
- *     callbackNodeIndex: number,
+ *     callbackId: ?BridgeCallbackId,
  *     isActive: boolean,
  *     menuId: !PanelNodeMenuId
  * }}

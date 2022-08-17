@@ -281,17 +281,6 @@ BackgroundBridge.PanelBackground = {
   },
 
   /**
-   * @param {number} callbackNodeIndex
-   * @return {!Promise}
-   */
-  async nodeMenuCallback(callbackNodeIndex) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.PanelBackground.TARGET,
-        BridgeConstants.PanelBackground.Action.NODE_MENU_CALLBACK,
-        callbackNodeIndex);
-  },
-
-  /**
    * @param {number} actionId
    * @return {!Promise}
    */
