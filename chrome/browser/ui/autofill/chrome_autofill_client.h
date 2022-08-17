@@ -49,6 +49,8 @@ class VirtualCardEnrollmentManager;
 // ChromeAutofillClient is instantiated once per WebContents, and usages of
 // main frame refer to the primary main frame because WebContents only has a
 // primary main frame.
+// TODO(crbug.com/1351388): During prerendering in MPArch, the autofill client
+// should be attached not to the web contents but the outer-most main frame.
 class ChromeAutofillClient
     : public AutofillClient,
       public content::WebContentsUserData<ChromeAutofillClient>,

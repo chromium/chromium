@@ -76,7 +76,8 @@ class AutofillContextMenuManager {
   AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
                              ui::SimpleMenuModel::Delegate* delegate,
                              ui::SimpleMenuModel* menu_model,
-                             Browser* browser);
+                             Browser* browser,
+                             content::RenderFrameHost* render_frame_host);
   ~AutofillContextMenuManager();
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
   AutofillContextMenuManager& operator=(const AutofillContextMenuManager&) =
@@ -92,7 +93,6 @@ class AutofillContextMenuManager {
   bool IsCommandIdEnabled(CommandId command_id) const;
   // TODO(crbug.com/1325811): Add tests for the method.
   void ExecuteCommand(CommandId command_id,
-                      content::RenderFrameHost* render_frame_host,
                       const content::ContextMenuParams& params);
   void ExecuteCommand(CommandId command_id,
                       ContentAutofillDriver* driver,
@@ -139,6 +139,7 @@ class AutofillContextMenuManager {
   raw_ptr<ui::SimpleMenuModel> menu_model_;
   raw_ptr<ui::SimpleMenuModel::Delegate> delegate_;
   raw_ptr<Browser> browser_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
 
   // Stores the count of items added to the context menu from Autofill.
   int count_of_items_added_to_menu_model_ = 0;

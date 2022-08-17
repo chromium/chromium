@@ -723,7 +723,8 @@ RenderViewContextMenu::RenderViewContextMenu(
               GetProfile()->GetOriginalProfile()),
           this,
           &menu_model_,
-          GetBrowser()) {
+          GetBrowser(),
+          GetRenderFrameHost()) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -2575,12 +2576,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
   if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
           autofill::AutofillContextMenuManager::CommandId(id))) {
-    RenderFrameHost* render_frame_host = GetRenderFrameHost();
-    if (render_frame_host) {
-      autofill_context_menu_manager_.ExecuteCommand(
-          autofill::AutofillContextMenuManager::CommandId(id),
-          render_frame_host, params_);
-    }
+    autofill_context_menu_manager_.ExecuteCommand(
+        autofill::AutofillContextMenuManager::CommandId(id), params_);
     return;
   }
 

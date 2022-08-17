@@ -64,7 +64,9 @@ enum class PopupHidingReason {
   kOverlappingWithPasswordGenerationPopup = 17,
   // The Touch To Fill surface is shown instead of autofill suggestions.
   kOverlappingWithTouchToFillSurface = 18,
-  kMaxValue = kOverlappingWithTouchToFillSurface
+  // The context menu is shown instead of the autofill suggestions.
+  kOverlappingWithAutofillContextMenu = 19,
+  kMaxValue = kOverlappingWithAutofillContextMenu
 };
 
 }  // namespace autofill

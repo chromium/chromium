@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -63,11 +64,15 @@ AutofillContextMenuManager::AutofillContextMenuManager(
     PersonalDataManager* personal_data_manager,
     ui::SimpleMenuModel::Delegate* delegate,
     ui::SimpleMenuModel* menu_model,
-    Browser* browser)
+    Browser* browser,
+    content::RenderFrameHost* render_frame_host)
     : personal_data_manager_(personal_data_manager),
       menu_model_(menu_model),
       delegate_(delegate),
-      browser_(browser) {}
+      browser_(browser),
+      render_frame_host_(render_frame_host) {
+  DCHECK(render_frame_host_);
+}
 
 AutofillContextMenuManager::~AutofillContextMenuManager() {
   cached_menu_models_.clear();
@@ -82,6 +87,17 @@ void AutofillContextMenuManager::AppendItems() {
 
   DCHECK(personal_data_manager_);
   DCHECK(menu_model_);
+
+  AutofillClient* autofill_client =
+      autofill::ChromeAutofillClient::FromWebContents(
+          content::WebContents::FromRenderFrameHost(render_frame_host_));
+  // If the autofill popup is shown and the user double clicks from within the
+  // bounds of the initiating field, it is assumed that the context menu would
+  // overlap with the autofill popup. In that case, hide the autofill popup.
+  if (autofill_client) {
+    autofill_client->HideAutofillPopup(
+        PopupHidingReason::kOverlappingWithAutofillContextMenu);
+  }
 
   // Stores all the profile values added to the content menu alongwith the
   // command id of the row.
@@ -113,15 +129,14 @@ bool AutofillContextMenuManager::IsCommandIdEnabled(
 
 void AutofillContextMenuManager::ExecuteCommand(
     CommandId command_id,
-    content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
   ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
+      ContentAutofillDriver::GetForRenderFrameHost(render_frame_host_);
   if (!driver)
     return;
 
   ExecuteCommand(command_id, driver, params,
-                 render_frame_host->GetFrameToken());
+                 render_frame_host_->GetFrameToken());
 }
 
 void AutofillContextMenuManager::ExecuteCommand(

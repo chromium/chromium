@@ -73,7 +73,8 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            personal_data_manager_.get(), nullptr, menu_model_.get(), nullptr);
+            personal_data_manager_.get(), nullptr, menu_model_.get(), nullptr,
+            main_rfh());
 
     autofill_context_menu_manager_->AppendItems();
   }
