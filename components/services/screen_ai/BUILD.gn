@@ -6,18 +6,20 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("screen_ai") {
   sources = [
+    "screen_ai_ax_tree_serializer.cc",
+    "screen_ai_ax_tree_serializer.h",
     "screen_ai_service_impl.cc",
     "screen_ai_service_impl.h",
   ]
 
+  public_deps = [ "//components/services/screen_ai/proto:proto_convertors" ]
+
   deps = [
-    "//base",
-    "//components/services/screen_ai/proto:proto_convertors",
     "//components/services/screen_ai/public/cpp:utilities",
     "//components/services/screen_ai/public/mojom",
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
-    "//ui/accessibility:ax_base",
+    "//ui/accessibility:accessibility",
   ]
 }
 
@@ -43,7 +45,9 @@ if (!is_mac) {
 group("test_support_data") {
   visibility = [ ":test_support" ]
   testonly = true
+
   data = [ "$root_gen_dir/components/services/screen_ai/proto/view_hierarchy.descriptor" ]
+
   deps = [
     "//components/services/screen_ai/proto:view_hierarchy_proto_descriptor",
   ]
@@ -51,6 +55,7 @@ group("test_support_data") {
 
 source_set("test_support") {
   testonly = true
+
   sources = [
     "proto/test_proto_loader.cc",
     "proto/test_proto_loader.h",
@@ -66,13 +71,17 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "proto/proto_convertor_unittest.cc" ]
+
+  sources = [
+    "proto/proto_convertor_unittest.cc",
+    "screen_ai_ax_tree_serializer_unittest.cc",
+  ]
 
   data = [ "//components/test/data/screen_ai/" ]
   deps = [
+    ":screen_ai",
     ":test_support",
     "//components/services/screen_ai/proto",
-    "//components/services/screen_ai/proto:proto_convertors",
     "//testing/gtest",
     "//ui/accessibility:test_support",
   ]

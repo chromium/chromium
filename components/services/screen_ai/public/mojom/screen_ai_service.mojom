@@ -16,7 +16,7 @@ interface ScreenAIAnnotator {
   // Receives a snapshot, schedules image processing, and returns the detected
   // items as an accessibility tree update.
   Annotate(skia.mojom.BitmapN32 image) =>
-    (ax.mojom.AXTreeUpdate updates);
+    (ax.mojom.AXTreeUpdate update);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen

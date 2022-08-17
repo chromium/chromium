@@ -9,8 +9,10 @@
 #include "base/process/process.h"
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
+#include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "sandbox/policy/switches.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace screen_ai {
@@ -97,6 +99,12 @@ void ScreenAIService::Annotate(const SkBitmap& image,
     gfx::Rect image_rect(image.width(), image.height());
     update =
         ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
+    // TODO(nektar): Get the parent tree ID from the calling process (i.e.
+    // browser or renderer).
+    ScreenAIAXTreeSerializer serializer(
+        /* parent_tree_id */ ui::AXTreeID::CreateNewAXTreeID(),
+        std::move(update.nodes));
+    update = serializer.Serialize();
   } else {
     VLOG(1) << "Screen AI library could not process snapshot.";
   }

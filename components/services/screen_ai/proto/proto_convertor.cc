@@ -564,6 +564,8 @@ void AddAttribute(const std::string& name,
 
 namespace screen_ai {
 
+// TODO(nektar): Change return value to `std::vector<ui::AXNodeData>` as other
+// fields in `AXTreeUpdate` are unused.
 ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
     const std::string& serialized_proto,
     const gfx::Rect& image_rect) {
