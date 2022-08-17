@@ -13,8 +13,8 @@ class WebState;
 
 @protocol ARQuickLookTabHelperDelegate
 
-// Called to preview the downloaded USDZ format file |fileURL| points to.
-// |fileURL| cannot be nil.
+// Called to preview the downloaded USDZ format file `fileURL` points to.
+// `fileURL` cannot be nil.
 - (void)presentUSDZFileWithURL:(NSURL*)fileURL
                   canonicalURL:(NSURL*)canonicalURL
                       webState:(web::WebState*)webState

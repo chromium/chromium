@@ -11,12 +11,12 @@ namespace base {
 class FilePath;
 }
 
-// Fills |directory_path| with the FilePath to the temporary downloads
+// Fills `directory_path` with the FilePath to the temporary downloads
 // directory. Returns true if this is successful. This method does not create
 // the directory, it just returns the path.
 bool GetTempDownloadsDirectory(base::FilePath* directory_path);
 
-// Fills |directory_path| with the FilePath to the downloads directory. This
+// Fills `directory_path` with the FilePath to the downloads directory. This
 // method does not create the directory, it just updates the path.
 void GetDownloadsDirectory(base::FilePath* directory_path);
 

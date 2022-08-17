@@ -33,12 +33,12 @@ class VcardTabHelper : public web::DownloadTaskObserver,
 
   id<VcardTabHelperDelegate> delegate() { return delegate_; }
 
-  // |delegate| is not retained by this instance.
+  // `delegate` is not retained by this instance.
   void set_delegate(id<VcardTabHelperDelegate> delegate) {
     delegate_ = delegate;
   }
 
-  // Asynchronously downloads the Vcard file using the given |task|. Asks
+  // Asynchronously downloads the Vcard file using the given `task`. Asks
   // delegate to open the Vcard when the download is complete.
   virtual void Download(std::unique_ptr<web::DownloadTask> task);
 

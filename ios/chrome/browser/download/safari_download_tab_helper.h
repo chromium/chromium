@@ -24,12 +24,12 @@ class SafariDownloadTabHelper
   SafariDownloadTabHelper(const SafariDownloadTabHelper&) = delete;
   SafariDownloadTabHelper& operator=(const SafariDownloadTabHelper&) = delete;
 
-  // Creates TabHelper. |web_state| must not be null.
+  // Creates TabHelper. `web_state` must not be null.
   static void CreateForWebState(web::WebState* web_state);
 
   id<SafariDownloadTabHelperDelegate> delegate() { return delegate_; }
 
-  // |delegate| is not retained by this instance.
+  // `delegate` is not retained by this instance.
   void set_delegate(id<SafariDownloadTabHelperDelegate> delegate) {
     delegate_ = delegate;
   }

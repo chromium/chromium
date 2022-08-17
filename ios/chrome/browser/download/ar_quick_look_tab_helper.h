@@ -58,7 +58,7 @@ class ARQuickLookTabHelper
 
   ~ARQuickLookTabHelper() override;
 
-  // Creates TabHelper. |delegate| is not retained by this instance. |web_state|
+  // Creates TabHelper. `delegate` is not retained by this instance. `web_state`
   // must not be null.
   static void CreateForWebState(web::WebState* web_state);
 
@@ -68,8 +68,8 @@ class ARQuickLookTabHelper
     delegate_ = delegate;
   }
 
-  // Downloads and previews the USDZ file given by |download_task|. Takes
-  // ownership of |download_task|.
+  // Downloads and previews the USDZ file given by `download_task`. Takes
+  // ownership of `download_task`.
   virtual void Download(std::unique_ptr<web::DownloadTask> download_task);
 
  private:

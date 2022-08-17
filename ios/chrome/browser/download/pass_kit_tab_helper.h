@@ -51,7 +51,7 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
 
   ~PassKitTabHelper() override;
 
-  // Asynchronously downloads pkpass file using the given |task|. Asks delegate
+  // Asynchronously downloads pkpass file using the given `task`. Asks delegate
   // to present "Add pkpass" dialog when the download is complete.
   virtual void Download(std::unique_ptr<web::DownloadTask> task);
 

@@ -8,7 +8,7 @@
 // TabHelper which manages vcard files.
 @protocol VcardTabHelperDelegate
 
-// Called to open a Vcard. |data| cannot be nil.
+// Called to open a Vcard. `data` cannot be nil.
 - (void)openVcardFromData:(NSData*)vcardData;
 
 @end

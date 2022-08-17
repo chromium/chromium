@@ -16,7 +16,7 @@ class WebState;
 // Delegate for PassKitTabHelper class.
 @protocol PassKitTabHelperDelegate<NSObject>
 
-// Called to present "Add pkpass" dialog. |pass| can be nil if PassKitTabHelper
+// Called to present "Add pkpass" dialog. `pass` can be nil if PassKitTabHelper
 // failed to download or parse pkpass file.
 - (void)passKitTabHelper:(nonnull PassKitTabHelper*)tabHelper
     presentDialogForPass:(nullable PKPass*)pass
