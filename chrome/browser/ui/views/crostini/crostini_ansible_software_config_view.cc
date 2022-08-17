@@ -86,14 +86,8 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationStarted(
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationProgress(
     const guest_os::GuestId& container_id,
     const std::vector<std::string>& status_lines) {
-  std::u16string status_string;
-  if (!base::UTF8ToUTF16(status_lines.back().c_str(),
-                         status_lines.back().size(), &status_string)) {
-    LOG(ERROR) << "Failed to convert status line into a UTF16 string: "
-               << status_lines.back();
-  } else {
-    progress_label_->SetText(status_string);
-  }
+  progress_label_->SetText(base::ASCIIToUTF16(status_lines.back()));
+  OnStateChanged();
 }
 
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(

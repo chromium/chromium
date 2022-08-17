@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 
+#include <sstream>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
@@ -112,6 +114,7 @@ void AnsibleManagementService::OnInstallLinuxPackageProgress(
     InstallLinuxPackageProgressStatus status,
     int progress_percent,
     const std::string& error_message) {
+  std::stringstream status_line;
   switch (status) {
     case InstallLinuxPackageProgressStatus::SUCCEEDED: {
       GetAnsiblePlaybookToApply(container_id);
@@ -123,10 +126,21 @@ void AnsibleManagementService::OnInstallLinuxPackageProgress(
       return;
     // TODO(okalitova): Report Ansible downloading/installation progress.
     case InstallLinuxPackageProgressStatus::DOWNLOADING:
-      VLOG(1) << "Ansible downloading progress: " << progress_percent << "%";
+      status_line << "Ansible downloading progress: " << progress_percent
+                  << "%";
+      VLOG(1) << status_line.str();
+      for (auto& observer : observers_) {
+        observer.OnAnsibleSoftwareConfigurationProgress(
+            container_id, std::vector<std::string>({status_line.str()}));
+      }
       return;
     case InstallLinuxPackageProgressStatus::INSTALLING:
-      VLOG(1) << "Ansible installing progress: " << progress_percent << "%";
+      status_line << "Ansible installing progress: " << progress_percent << "%";
+      VLOG(1) << status_line.str();
+      for (auto& observer : observers_) {
+        observer.OnAnsibleSoftwareConfigurationProgress(
+            container_id, std::vector<std::string>({status_line.str()}));
+      }
       return;
     default:
       NOTREACHED();
