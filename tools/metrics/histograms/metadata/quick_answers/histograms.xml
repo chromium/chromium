@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ExitPoint" enum="QuickAnswersExitPoint"
-    expires_after="2022-09-01">
+    expires_after="2023-08-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.RequestTextLength.{IntentType}"
-    units="characters" expires_after="2022-09-01">
+    units="characters" expires_after="2023-08-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.V2.Consent.Duration{QuickAnswersV2ConsentResultType}"
-    units="ms" expires_after="2022-09-01">
+    units="ms" expires_after="2023-08-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
-    units="impressions" expires_after="2022-09-01">
+    units="impressions" expires_after="2023-08-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
