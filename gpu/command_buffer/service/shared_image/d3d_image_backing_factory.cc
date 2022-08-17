@@ -554,11 +554,17 @@ bool D3DImageBackingFactory::UseMapOnDefaultTextures() {
 bool D3DImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType gmb_type,
     viz::ResourceFormat format) {
-  return gmb_type == gfx::DXGI_SHARED_HANDLE ||
-         // Only allow single NV12 shared memory GMBs for now. This excludes
-         // dual shared memory GMBs used by software video decoder.
-         (gmb_type == gfx::SHARED_MEMORY_BUFFER &&
-          format == viz::YUV_420_BIPLANAR);
+  if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
+    // If we had gfx::BufferFormat in IsSupported() we could verify it will work
+    // with GetDXGIFormat().
+    return true;
+  } else if (gmb_type == gfx::SHARED_MEMORY_BUFFER) {
+    // YUV_420_BIPLANAR will end up as RED_8 for Y and RG_88 for UV planes.
+    return format == viz::YUV_420_BIPLANAR ||
+           GetSupportedRGBAFormat(format).has_value();
+  }
+
+  return false;
 }
 
 bool D3DImageBackingFactory::IsSupported(uint32_t usage,
