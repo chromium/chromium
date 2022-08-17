@@ -21,6 +21,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/LayoutUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/guided_browsing/parse_xml/AssistantParseSingleTagXmlUtil.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/AssistantQrCodeController.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/AssistantQrCodeDelegate.java",
     "java/src/org/chromium/components/autofill_assistant/guided_browsing/qr_code/camera_scan/AssistantQrCodeCameraCallbacks.java",

@@ -10,7 +10,10 @@ android_library("test_java") {
 
   testonly = true
 
-  sources = [ "javatests/src/org/chromium/chrome/browser/autofill_assistant/guided_browsing/AssistantQrCodeTest.java" ]
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/guided_browsing/AssistantParseSingleTagXmlTest.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/guided_browsing/AssistantQrCodeTest.java",
+  ]
 
   deps = [
     "//base:base_java",
