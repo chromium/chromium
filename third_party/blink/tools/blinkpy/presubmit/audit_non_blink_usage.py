@@ -140,6 +140,10 @@ _CONFIG = [
             # //base/task/bind_post_task.h
             'base::BindPostTask',
 
+            # //base/types/expected.h
+            'base::expected',
+            'base::unexpected',
+
             # //base/bind.h
             'base::IgnoreResult',
 
