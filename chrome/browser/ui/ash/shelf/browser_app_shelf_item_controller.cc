@@ -162,7 +162,10 @@ void BrowserAppShelfItemController::OnBrowserAppAdded(
     return;
   }
 
-  if (!(bitty_icon_.isNull() || medium_icon_.isNull())) {
+  // If we are adding a tab to a browser window for the app, then we still want
+  // the browser window to maintain its own icon.
+  if (instance.type != apps::BrowserAppInstance::Type::kAppTab &&
+      !(bitty_icon_.isNull() || medium_icon_.isNull())) {
     views::NativeWidgetAura::AssignIconToAuraWindow(instance.window,
                                                     bitty_icon_, medium_icon_);
   }
