@@ -412,6 +412,9 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://localhost")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://example.com")));
   EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://192.168.0.1")));
+  // google.com, www.google.com, localhost, maps.google.com, example.com,
+  // youtube.com, 192.168.0.1 should be counted as hosts.
+  EXPECT_EQ(7u, objects.GetHostCount());
 
   // The localStorage storage keys (http://maps.google.com:8080 and
   // http://example.com) should be ignored since they are empty.
@@ -466,6 +469,81 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
   const auto& objects = content_settings->allowed_local_shared_objects();
   EXPECT_EQ(5u, objects.GetObjectCount());
   EXPECT_EQ(5u, objects.GetObjectCountForDomain(GURL("http://google.com")));
+  // google.com and www.google.com
+  EXPECT_EQ(2u, objects.GetHostCount());
+}
+
+TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
+  NavigateAndCommit(GURL("http://google.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  bool blocked_by_policy = false;
+  auto cookie1 = net::CanonicalCookie::Create(
+      GURL("http://google.com"), "k1=v", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  auto cookie2 = net::CanonicalCookie::Create(
+      GURL("https://example.com"), "k2=v", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  auto cookie3 = net::CanonicalCookie::Create(
+      GURL("https://example.com"), "k3=v", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  auto cookie4 = net::CanonicalCookie::Create(
+      GURL("http://example.com"), "k4=v", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  GURL("http://google.com"),
+                                  GURL("http://google.com"),
+                                  {*cookie1},
+                                  blocked_by_policy});
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  GURL("https://example.com"),
+                                  GURL("https://example.com"),
+                                  {*cookie2},
+                                  blocked_by_policy});
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  GURL("http://example.com"),
+                                  GURL("http://example.com"),
+                                  {*cookie3},
+                                  blocked_by_policy});
+  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
+                                 {content::CookieAccessDetails::Type::kRead,
+                                  GURL("http://example.com"),
+                                  GURL("http://example.com"),
+                                  {*cookie4},
+                                  blocked_by_policy});
+  content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
+                                      GURL("https://www.google.com"),
+                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::INDEXED_DB, GURL("https://localhost"), blocked_by_policy);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://maps.google.com:8080"),
+                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(StorageType::LOCAL_STORAGE,
+                                      GURL("http://example.com"),
+                                      blocked_by_policy);
+  content_settings->OnStorageAccessed(
+      StorageType::DATABASE, GURL("http://192.168.0.1"), blocked_by_policy);
+  content_settings->OnSharedWorkerAccessed(
+      GURL("http://youtube.com/worker.js"), "worker",
+      blink::StorageKey::CreateFromStringForTesting("https://youtube.com"),
+      blocked_by_policy);
+
+  const auto& objects = content_settings->allowed_local_shared_objects();
+  EXPECT_EQ(10u, objects.GetObjectCount());
+  EXPECT_EQ(7u, objects.GetHostCount());
+  EXPECT_EQ(3u, objects.GetHostCountForDomain(GURL("http://google.com")));
+  EXPECT_EQ(1u, objects.GetHostCountForDomain(GURL("http://youtube.com")));
+  EXPECT_EQ(3u, objects.GetHostCountForDomain(GURL("http://a.google.com")));
+  EXPECT_EQ(1u, objects.GetHostCountForDomain(GURL("http://a.example.com")));
 }
 
 TEST_F(PageSpecificContentSettingsTest,
