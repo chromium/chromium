@@ -17,11 +17,9 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Отворен е прозорецът за актуализиране на фърмуера на външни устройства. Налице са <ph name="NUM_UPDATES" /> актуализации.</translation>
 <translation id="1145516343487477149">Намерете помощни статии и отговори на често задавани въпроси за Chromebook</translation>
-<translation id="1165039591588034296">Грешка</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средна (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Премахване</translation>
-<translation id="1190378975642195988">Акселерометър в корпуса</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
 <translation id="1196959502276349371">Версия <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Пускане/пауза</translation>
@@ -29,27 +27,21 @@
 <translation id="1204296502688602597">Забавяне на DNS</translation>
 <translation id="1207734034680156868">Предложенията се базират на описанието ви</translation>
 <translation id="123124571410524056">Предполага се наличие на портал</translation>
-<translation id="1236400083787698183">Преди да рестартирате устройството си, извършете Powerwash. Ако то има капак, изчакайте Powerwash да приключи, преди да го затворите. Това може да отнеме до минута.</translation>
 <translation id="1238612778414822719">Забавяне на HTTPS</translation>
-<translation id="1240699967155581440">Изисква се Powerwash (възстановяване на фабричните настройки)</translation>
-<translation id="1264116747675686718">Версията на операционната система се актуализира</translation>
 <translation id="1264369926465113395">Разгледайте новото дигитално списание на Chromebook за създатели</translation>
 <translation id="1270369111467284986">Предполага се наличие на портал за удостоверяване</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1308067967278144752">Включване на защитата срещу записване</translation>
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1310380015393971138">Няма налична <ph name="NETWORK_NAME" /> мрежа</translation>
 <translation id="131421566576084655">Няма данни за датата на последното нулиране на преноса</translation>
 <translation id="1314565355471455267">VPN за Android</translation>
 <translation id="131461803491198646">Собствената мрежа, не роуминг</translation>
-<translation id="132712914231403017">Инсталиране на образа на фърмуера</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Цвят на тапета</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1367951781824006909">Избор на файл</translation>
-<translation id="1380220803921738821">Възникнаха грешки. Опитайте да рестартирате или да възстановите фърмуера с помощта на USB памет.</translation>
 <translation id="1387854245479784695">Това е обобщена стойност за всички ядра</translation>
 <translation id="1394661041439318933">Нивото на батерията на калъфа е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
@@ -63,18 +55,14 @@
 <translation id="1442433966118452622">Източник на изображението</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
 <translation id="1459693405370120464">Времето</translation>
-<translation id="1459784442280469416">Запазване в USB памет</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
-<translation id="147809995039451286">Актуализацията не бе изтеглена</translation>
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1491076385728777984">Фърмуерът на <ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
-<translation id="1512982610995527443">Устройството ще се изключи след 5 секунди</translation>
-<translation id="1522984060396982789">Ремонтът бе успешен. Можете да изключите устройството или да предприемете допълнителни действия.</translation>
 <translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1555130319947370107">синьо</translation>
@@ -84,14 +72,11 @@
 <translation id="1572585716423026576">Задаване като тапет</translation>
 <translation id="1578784163189013834">Избиране на фон за скрийнсейвъра</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1620510694547887537">Камера</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
-<translation id="1631385268983122904">Още не сглобявайте устройството</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
 <translation id="1644574205037202324">История</translation>
-<translation id="1645954272419197032">Моля, потвърдете информацията за устройството</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
@@ -116,7 +101,6 @@
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
-<translation id="1840835860961531162">Изключване на защитата срещу записване</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка за надолу</translation>
@@ -129,7 +113,6 @@
 <translation id="1904932688895783618">Ето някои други полезни ресурси:</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
-<translation id="1932611479324127242">Прекъсване на захранването от батерията</translation>
 <translation id="1947737735496445907">Отпечатано</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1977994649430373166">Снимка на потребителския профил в Google</translation>
@@ -140,24 +123,20 @@
 <translation id="2008685064673031089">Търсене на прости числа</translation>
 <translation id="2011174342667534258">Версия на SDK:</translation>
 <translation id="2016697457005847575">Изпробвайте стъпките за отстраняване на неизправности</translation>
-<translation id="2016848882344942759">– без бял етикет –</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Моля, свържете се с мрежа и презаредете страницата, за да прегледате скрийнсейвъра.</translation>
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2085089206770112532">Намаляване на яркостта на дисплея</translation>
 <translation id="2105810540595158374">Устройството е контролер за игри.</translation>
-<translation id="2115956742084455574">Неправилен код</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2138109643290557664">По течението</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
-<translation id="2154739667870063220">Рестартиране</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2163937499206714165">Включване на тъмния режим</translation>
-<translation id="2177831236093724629">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. За да бъдат идентифицирани всички отговарящи на изискванията компоненти, актуализирайте до най-новата версия на Chrome OS.</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
 <translation id="2182088270354640012">Благодарим за отзивите. Те ще помогнат за подобряването на Chrome OS и ще бъдат прегледани от екипа на операционната система. Поради броя на подадените сигнали няма да получите директен отговор.</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
@@ -171,22 +150,16 @@
 <translation id="2240366984605217732">Превключване на подредбата</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2271469253353559191">График за тъмния режим</translation>
-<translation id="2275586345903859204">Ремонтът приключи</translation>
 <translation id="2276999893457278469">Най-популярно помощно съдържание</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
-<translation id="2294753434210277304">Поставете външно хранилище, като например USB памет или SD карта, с изтегления образ от Помощната програма за възстановяване на Chromebook</translation>
 <translation id="2307344026739914387">Използване на текущата двойка ключове</translation>
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
-<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
-<translation id="2340422556570134524">Защитата срещу записване се включи неочаквано. Изключете я ръчно, преди да опитате отново.</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Напред</translation>
-<translation id="2360257214555822463">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. Ако искате да потвърдите, че са инсталирани, направете го сега.</translation>
 <translation id="2364498172489649528">Премината</translation>
-<translation id="236594517359128026">Преди да продължите, поставете лаптопа си на плоска повърхност</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
 <translation id="2407209115954268704">Състояние на заключване на SIM картата</translation>
@@ -194,10 +167,8 @@
 <translation id="2418150275289244458">Отваряне в настройките</translation>
 <translation id="2421798028054665193">Изображение <ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
-<translation id="2447969267935997922">Инсталирането завърши. Вече можете да премахнете USB паметта или SD картата.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Ток</translation>
-<translation id="2480034874476596812">Ръчно изключване</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
 <translation id="2491955442992294626">Клавишите не се тестват, когато използвате друг прозорец</translation>
 <translation id="2493126929778606526">Автоматично избиране на най-добрите ви снимки</translation>
@@ -219,26 +190,21 @@
 <translation id="2712812801627182647">Ключ за удостоверяване за TLS</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2717139507051041123">Активиране на режима за тъмни цветове</translation>
-<translation id="2727250716596204208">Образът на фърмуера не бе намерен. Поставете външно хранилище, като например USB памет или SD карта, с изтегления образ от Помощната програма за възстановяване на Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
-<translation id="2756652381241102009">Стартиране на диагностиката</translation>
 <translation id="2783010256799387990">УСПЕШНО</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
-<translation id="2827359915699915567">Въведете този URL адрес ръчно, за да получите RSU кода</translation>
 <translation id="2859243502336719778">Критична актуализация</translation>
 <translation id="2860473693272905224">Поставете друга страница върху скенера</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
-<translation id="291142119251986300">Неотговарящи на изискванията компоненти</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3017079585324758401">Фон</translation>
-<translation id="302435934487327038">Инсталирането завърши</translation>
 <translation id="3027578600144895987">Затваряне на камерата</translation>
 <translation id="3031560714565892478">Устройството е видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -247,12 +213,10 @@
 <translation id="3083667275341675831">Диагностика на свързаността</translation>
 <translation id="3084958266922136097">Деактивиране на скрийнсейвъра</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
-<translation id="3096753366938912951">Поставете капака върху равна повърхност</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3124039320086536031">Устройството е свързано.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Да се премахне ли страницата?}=1{Да се премахне ли страница {PAGE_NUMBER}?}other{Да се премахне ли страница {PAGE_NUMBER}?}}</translation>
-<translation id="3137983112374760826">Устройството се обезпечава...</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
@@ -261,7 +225,6 @@
 <translation id="319101249942218879">Изображението на аватара бе променено</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
-<translation id="320091191259649613">Ако проблемът не бъде отстранен след актуализацията, възможно е компонентът да отговаря на изискванията отскоро и още да не е добавен към базата от данни.</translation>
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
@@ -271,17 +234,13 @@
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
-<translation id="3333527094307156612">Използвайте този QR код, за да получите кода за отключване от 8 знака. Можете също да въведете <ph name="LINK_BEGIN" />този URL адрес<ph name="LINK_END" /> ръчно.</translation>
-<translation id="3336855445806447827">Не знам със сигурност</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
-<translation id="3383751554789092165">При необходимост променете информацията за устройството.</translation>
 <translation id="3404249063913988450">Активиране на скрийнсейвъра</translation>
 <translation id="3413935475507503304">За да продължите с актуализацията, кликнете върху „Напред“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Сигурност</translation>
-<translation id="3441653493275994384">Екран</translation>
 <translation id="3456078764689556234">Отпечатана е страница <ph name="PRINTED_PAGES" /> от <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканира се страница <ph name="PAGE_NUM" />. Завършена: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
@@ -289,7 +248,6 @@
 <translation id="3484914941826596830">Докато фърмуерът се актуализира, не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е актуализацията да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="3486220673238053218">дефиниция</translation>
 <translation id="3488065109653206955">Частично активиран</translation>
-<translation id="3492982278147736083">Жироскоп в капака</translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
@@ -306,13 +264,9 @@
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
 <translation id="361575905210396100">Благодарим ви за отзивите</translation>
-<translation id="3616113530831147358">Аудио</translation>
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
-<translation id="3643198267586205643">Актуализиране на операционната система</translation>
-<translation id="3643810137582748570">Пропускане на калибрирането</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
-<translation id="3678765385266369662">Изберете как искате да изключите Write Protect</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
@@ -320,15 +274,12 @@
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
-<translation id="3774059845329307709">Сериен номер</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
 <translation id="3824259034819781947">Прикачване на файлове</translation>
 <translation id="3838338534323494292">Нова парола</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3856304145690230735">Жироскоп в корпуса</translation>
-<translation id="385832974417157471">Преди да изключите устройството си, извършете Powerwash. Ако то има капак, изчакайте Powerwash да приключи, преди да го затворите. Това може да отнеме до минута.</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описанието е задължително</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
@@ -336,12 +287,10 @@
 <translation id="387301095347517405">Броят пълни цикли на зареждане на батерията ви</translation>
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
-<translation id="3924044641767672375">Свързването с Wi-Fi се препоръчва, тъй като ще улесни поправката. Мрежата ви ще бъде запазена.</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3954678691475912818">Типът на устройството е неизвестен.</translation>
-<translation id="3958703339436883942">Подготвя се за рестартиране…</translation>
 <translation id="3966286471246132217">За по-точни резултати затворете всички приложения, докато тестът завърши.</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3969602104473960991">Паролата за Chrome OS е актуализирана</translation>
@@ -359,10 +308,8 @@
 <translation id="4111761024568264522">Сензорен панел с USB</translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
-<translation id="4140251671072434548">Отключване на сървъра за RMA</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
-<translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Уверете се, че скенерът е включен и достъпен чрез мрежата ви или директна връзка</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4170180284036919717">Правене на снимка</translation>
@@ -377,9 +324,7 @@
 <translation id="4244962993387259361">За да извършите тест на паметта, трябва да имате поне 500 МБ свободно място. За да освободите място, отворете „Настройки &gt; Мениджър на хранилището”.</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
-<translation id="4258561075226177474">Устройството води до същия потребител. Да се изтрият ли потребителските данни?</translation>
 <translation id="4271957103967917607">Преглед на цял екран</translation>
-<translation id="4275799948641988986">След ремонта кой ще използва това устройство?</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
@@ -399,7 +344,6 @@
 <translation id="4454245904991689773">Сканиране във</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
-<translation id="4500213108254186382">Акселерометър в капака</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Съответствие на алтернативното име на субекта</translation>
@@ -410,8 +354,6 @@
 <translation id="455835558791489930">Батерия с капацитет от <ph name="CHARGE_VALUE" /> мАч</translation>
 <translation id="4561801978359312462">SIM картата е отключена</translation>
 <translation id="4562494484721939086">Няма покритие</translation>
-<translation id="4568938274596692027">Инсталирането завърши. Устройството се подготвя за рестартиране...</translation>
-<translation id="4576943788798178439">Поддръжка за писалка</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
@@ -427,18 +369,14 @@
 <translation id="469379815867856270">Сила на сигнала</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="473775607612524610">Актуализиране</translation>
-<translation id="4740255236714854844">Поставете основата върху равна повърхност</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
-<translation id="4751272708893364980">Преглед на регистрационните файлове от RMA</translation>
 <translation id="4773299976671772492">Спряно</translation>
-<translation id="4774530504324923332">Ще ви трябва ключ за сигурност с активирано отключване на сървъра за RMA, скенер за QR кодове и второ устройство с връзка с интернет.</translation>
 <translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> снимка</translation>
 <translation id="4793710386569335688">За още помощ отворете <ph name="BEGIN_LINK" />Помощния център<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритъм за компресиране</translation>
 <translation id="4794140124556169553">Провеждането на тест за процесора може да повлияе на производителността на системата ви</translation>
 <translation id="4800589996161293643">Общността на Chromebook</translation>
-<translation id="4804818685124855865">Изключване</translation>
 <translation id="4808449224298348341">Заданието за отпечатване на <ph name="DOCUMENT_TITLE" /> е анулирано</translation>
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моите изображения</translation>
@@ -458,8 +396,6 @@
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерията на лявата слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Включете функцията, за да изберете опции за скрийнсейвъра</translation>
-<translation id="4908030561598728899">Фърмуерът се инсталира...</translation>
-<translation id="4915052247106771211">Това действие ще възстанови фабричните настройки на устройството (Powerwash).</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="491791267030419270">Съвети за писане на отзиви</translation>
@@ -471,16 +407,13 @@
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4999333166442584738">Скриване на отчета</translation>
-<translation id="5008611843832219958">Актуализирайте до най-новата версия на Chrome OS, за да оптимизирате процедурата за ремонт</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен.</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
-<translation id="5044978354634658544">Поставете USB</translation>
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
 <translation id="5051044138948155788">Това е единствената страница. Ще се покаже екранът за стартиране на сканирането.</translation>
-<translation id="506768878203270635">Въведете кода от 8 знака</translation>
 <translation id="5088172560898466307">Име на хоста за сървъра</translation>
 <translation id="5089810972385038852">Щат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -490,8 +423,6 @@
 <translation id="5166918508782100047">Настройки за „Бързи отговори“</translation>
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
-<translation id="5179530508336824319">Активирайте защитата срещу записване, за да продължите към следващия екран. За инструкции отворете страницата за поддръжка на производителя на устройството.</translation>
-<translation id="5181140330217080051">Изтегля се</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
@@ -507,10 +438,8 @@
 <translation id="5275828089655680674">Повторна диагностика</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
-<translation id="5298334025463010990">Деактивирайте защитата срещу записване, за да продължите към следващия екран. За инструкции отворете страницата за поддръжка на производителя на устройството.</translation>
 <translation id="5300814202279832142">Преместване на прозореца в работен кът</translation>
 <translation id="5304899856529773394">EVDO</translation>
-<translation id="5308380583665731573">Свързване</translation>
 <translation id="5315873049536339193">Самоличност</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318334351163689047">Неуспешни заявки през TCP</translation>
@@ -521,13 +450,10 @@
 <translation id="5358174242040570474">Нещо се обърка. Изберете тапет отново или отворете приложението пак.</translation>
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
 <translation id="5376354385557966694">Автоматичен светъл режим</translation>
-<translation id="537872351913703572">Устройството преминава в друг потребител или организация</translation>
 <translation id="5389159777326897627">Тапет и стил</translation>
 <translation id="5389224261615877010">Дъга</translation>
-<translation id="5395600419410242651">Изтриване на всички данни</translation>
 <translation id="5400907029458559844">Устройството установява връзка.</translation>
 <translation id="5401938042319910061">Стартиране на всички процедури</translation>
-<translation id="5406131354638931058">Прекъсването на захранването от батерията е полезно за устройства, които ще се изпращат или съхраняват</translation>
 <translation id="5423849171846380976">Активиран</translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
@@ -538,10 +464,8 @@
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="5499762266711462226">Цветът на клавиатурата е въз основа на тапета</translation>
 <translation id="5502931783115429516">Android не работи</translation>
-<translation id="5507300744274596613">Уверете се, че версията на Chrome OS е актуална</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5548284010950733518">Калибриране на компонентите</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -561,20 +485,16 @@
 <translation id="576835345334454681">Увеличаване на яркостта на дисплея</translation>
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5784136236926853061">Голямо забавяне на HTTP</translation>
-<translation id="578753362485952307">Ако преработвате дънна платка, за да я използвате в друго устройство, отворете <ph name="LINK_BEGIN" />съответния работен процес<ph name="LINK_END" />.</translation>
-<translation id="5790085346892983794">Успех</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5843706793424741864">Фаренхайт</translation>
 <translation id="5849570051105887917">Код на собствения доставчик</translation>
-<translation id="5856532218727053281">Системата ще се рестартира след потвърждаване на състоянието на защитата срещу записване</translation>
 <translation id="5859603669299126575">Албум от художествената галерия</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5866840822086176774">Много силен</translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
-<translation id="5898758006340607522">Бутон за захранване</translation>
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
 <translation id="5916084858004523819">Забранено</translation>
@@ -583,8 +503,6 @@
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
-<translation id="5947494881799873997">Възстановяване</translation>
-<translation id="5951259522948394825">Потвърдете, че всичко е на правилното място, и прегледайте диагностичния отчет</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Тапет по подразбиране</translation>
 <translation id="6017514345406065928">зелено</translation>
@@ -622,7 +540,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
-<translation id="6295178529664209245">Искате ли да продължите ремонта?</translation>
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
 <translation id="631063167932043783">Приложение Explore</translation>
 <translation id="6319207335391420837">Актуализиране на фърмуера на <ph name="DEVICE_NAME" /></translation>
@@ -661,23 +578,19 @@
 <translation id="6575134580692778371">Не е конфигурирано</translation>
 <translation id="6579509898032828423">Използване на тази снимка</translation>
 <translation id="6596816719288285829">IP адрес</translation>
-<translation id="6611280807952151149">Изход от ремонта на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6620487321149975369">Заданията за отпечатване ще се показват в историята, освен ако не ги премахнете ръчно</translation>
 <translation id="6624819909909965616">Не е възможно качването на файл, по-голям от 10 МБ</translation>
 <translation id="6643016212128521049">Изчистване</translation>
-<translation id="6644568396961840069">Файлът не бе запазен. Включете друго външно хранилище или опитайте отново по-късно.</translation>
 <translation id="6647510110698214773">Алгоритъм за шифроване</translation>
 <translation id="6650062777702288430">Превключване на кана/букви и цифри</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
-<translation id="6719240409382354629">Устройството се подготвя за рестартиране...</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6723847290197874913">Фоново осветление на клавиатурата</translation>
 <translation id="672609503628871915">Вижте новите неща</translation>
-<translation id="6746847322826305075">Можете да продължите цялостния ремонт или да извършите Powerwash (възстановяване на фабричните настройки) на устройството, за да нулирате дънната платка.</translation>
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
 <translation id="6749473226660745022">Снимки</translation>
 <translation id="6753452347192452143">Устройството е компютър.</translation>
@@ -687,10 +600,7 @@
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
-<translation id="6822504384524564824">SKU номерът трябва да се промени само ако новите компоненти са различни от заменените. Например замяна на обикновен със сензорен екран или надстройка на памет от 8 на 16 ГБ.</translation>
-<translation id="6840315122969944400">Ремонт на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
-<translation id="6876833053687020046">Номер на DRAM компонента</translation>
 <translation id="6889786074662672253">По време на рестартирането не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е процесът да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="6905724422583748843">Назад към <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
@@ -711,7 +621,6 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> от <ph name="COUNT" /> на име <ph name="NAME" />.</translation>
-<translation id="7126228745139711113">Защитата срещу записване е изключена</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -721,7 +630,6 @@
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7170236477717446850">Снимка на потребителския профил</translation>
 <translation id="7172721935181587524">1 изображение</translation>
-<translation id="7175037578838465313">Конфигуриране на „<ph name="NAME" />“</translation>
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
@@ -729,7 +637,6 @@
 <translation id="725133483556299729">Избиране на имейл адрес</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
-<translation id="7281209642468917121">Изберете 1 или повече компоненти и опитайте отново или пропуснете калибрирането</translation>
 <translation id="7281657306185710294">Лек полъх</translation>
 <translation id="7287310195820267359">Колекции от тапети</translation>
 <translation id="7297226631177386107">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTPS</translation>
@@ -742,7 +649,6 @@
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="73631062356239394">Споделяне на диагностични данни</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
@@ -762,16 +668,12 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
-<translation id="760845693386726841">Компонентът не бе разпознат.</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
-<translation id="7626501172915339021">Отключване на сървъра за RMA</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
-<translation id="7657530360897961171">Грешка в ремонта на <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7665800271478495366">Промяна на аватара</translation>
-<translation id="7682274994254393134">Стартиране на ремонта</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -802,9 +704,7 @@
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
-<translation id="7982789257301363584">Мрежа</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
-<translation id="8018928621986160031">Запазено в(ъв) „<ph name="FILE_LOCATION" />“</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
@@ -815,39 +715,30 @@
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
-<translation id="8109786307828817014">Искате ли да продължите с неуспешно калибриране?</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="819552138404104974">Регистрационни файлове от RMA</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
-<translation id="8217675307824400706">Установяване на връзка</translation>
-<translation id="8221728673725659466">Калибрирането завърши</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="827422111966801947">индиго</translation>
-<translation id="8281886186245836920">Пропускане</translation>
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>
 <translation id="8291967909914612644">Държава на собствения доставчик</translation>
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
 <translation id="8318753676953949627">Няма изображения</translation>
-<translation id="8327249300223641918">Преди да продължите, поставете цялото устройство (основата и капака) на плоска повърхност.</translation>
-<translation id="8330949592403310082">Изберете кои компоненти са заменени</translation>
 <translation id="8336739000755212683">Промяна на изображението за профила на устройството</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
 <translation id="8372477600026034341">Допълнителни хостове</translation>
-<translation id="8378855320830505539">Област</translation>
-<translation id="8382302752385457774">Бял етикет</translation>
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
 <translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
 <translation id="8420955526972171689">Извършвайте тестове и отстранявайте неизправности при проблеми с хардуера</translation>
@@ -858,8 +749,6 @@
 <translation id="844521431886043384">Не е настроен DNS</translation>
 <translation id="8456761643544401578">Автоматичен тъмен режим</translation>
 <translation id="8461329675984532579">Име на собствения доставчик</translation>
-<translation id="8467104829907989997">Компонентите се калибрират…</translation>
-<translation id="8474030592808010086">Изключете устройството от електрическата мрежа, за да прекъснете захранването от батерията</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
 <translation id="8483248364096924578">IP адрес</translation>
@@ -868,22 +757,17 @@
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8503836310948963452">Само още няколко минути…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8529392826145705615">Компонентите може да не работят правилно, освен ако не бъдат калибрирани</translation>
 <translation id="8575298406870537639">Тази опция може да е необходима за свързване с мрежата на оператора ви. За подробности се обърнете към него.</translation>
 <translation id="8576249514688522074">Неинициализирана</translation>
 <translation id="8620617069779373398">Състояние на роуминга</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Споделяне на URL адреса:</translation>
 <translation id="8660881923941176839">фунта</translation>
-<translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
-<translation id="8671972493856476349">Актуализиране до <ph name="VERSION_NUMBER" /> и рестартиране</translation>
 <translation id="8675354002693747642">Предварително споделен ключ</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
-<translation id="8680431479333800907">Устройството остава в същия потребител</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
-<translation id="8717030727630712160">Процедурата за ремонт се възобновява…</translation>
 <translation id="8723108084122415655">Забавянето на допълнителната мрежа е над прага</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
@@ -891,7 +775,6 @@
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум в Google Снимки</translation>
-<translation id="8778600430213950389">Нещо се обърка. Това най-вероятно се дължи на проблем с хардуера. Заменете основната платка и опитайте отново процедурата за ремонт.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Тази мрежа може да има портал за удостоверяване</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
@@ -908,14 +791,11 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
-<translation id="8897267175591692539">Вече можете да сглобите устройството</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
-<translation id="8919792139048574232">Вижте какво е ремонтирано</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8923267550422472772">Ден от месеца за нулиране</translation>
-<translation id="8925613211674558308">Кеширана версия на VPD</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="8930521118335213258">Подобни свойства</translation>
 <translation id="8930622219860340959">Безжична</translation>
@@ -932,7 +812,6 @@
 <translation id="9028832514430399253">Включете превключвателя, за да изберете опциите за скрийнсейвъра</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Голямо забавяне при преобразуването от DNS</translation>
-<translation id="9063121522582193837">Някои компоненти не бяха калибрирани</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Използване на този видеоклип</translation>
@@ -940,24 +819,19 @@
 <translation id="9088306295921699330">Текущо използване</translation>
 <translation id="9092255287806472980">Отзивите ви помагат за подобряването на Chrome OS и ще бъдат прегледани от екипа ни. Поради големия брой сигнали не можем да изпратим отговор.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
-<translation id="90977145661420967">Ще трябва да разглобите устройството</translation>
-<translation id="9098156406873149060">Запазване на потребителските данни</translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканира се страница <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
-<translation id="9118126012493516930">Ремонтът не може да бъде завършен</translation>
 <translation id="9122602430962285795">За повторно свързване отворете „Настройки“</translation>
 <translation id="9126720536733509015">Запазване на няколко страници в един PDF файл</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
-<translation id="9148058034647219655">Изход</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Фоновото осветление на клавиатурата може да се променя автоматично спрямо тапета ви</translation>
 <translation id="9204237731135241582">Не може да бъде установена връзка с шлюза от приложения за Android</translation>
 <translation id="9211490828691860325">Всички работни кътове</translation>
-<translation id="922179502584117429">Текущата версия <ph name="VERSION_NUMBER" /> не е актуална</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>

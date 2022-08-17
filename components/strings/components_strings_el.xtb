@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1432187715652018471">Η σελίδα θέλει να κάνει εγκατάσταση ενός δείκτη χειρισμού υπηρεσιών.</translation>
 <translation id="1432581352905426595">Διαχείριση μηχανών αναζήτησης</translation>
+<translation id="1435940442311036198">Χρήση κλειδιού πρόσβασης σε διαφορετική συσκευή</translation>
 <translation id="1436185428532214179">Μπορεί να ζητά να επεξεργαστεί αρχεία και φακέλους στη συσκευή σας.</translation>
 <translation id="1442386063175183758">Δεξιά δίπλωση παράθυρο</translation>
 <translation id="1442987760062738829">Τρύπημα</translation>
@@ -1409,7 +1410,9 @@
 <translation id="4798078619018708837">Καταχωρίστε την ημερομηνία λήξης και τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" />, προκειμένου να ενημερώσετε τα στοιχεία της κάρτας σας. Μετά την επιβεβαίωση, τα στοιχεία της κάρτας από τον Λογαριασμό Google θα κοινοποιηθούν σε αυτόν τον ιστότοπο.</translation>
 <translation id="4800132727771399293">Ελέγξτε την ημερομηνία λήξης και τον κωδικό σας CVC και δοκιμάστε ξανά</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Χρήση TouchID</translation>
 <translation id="4809079943450490359">Οδηγίες από τον διαχειριστή της συσκευής σας:</translation>
+<translation id="4811450222531576619">Μάθετε σχετικά με την πηγή και το θέμα της</translation>
 <translation id="4812751092864334025">Φορετή τεχνολογία</translation>
 <translation id="4813512666221746211">Σφάλμα δικτύου</translation>
 <translation id="4816492930507672669">Προσαρμογή στη σελίδα</translation>
@@ -1684,6 +1687,7 @@
 <translation id="5509780412636533143">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="5510481203689988000">Αυτή η ρύθμιση ελέγχεται από τις ρυθμίσεις cookie.</translation>
 <translation id="5510766032865166053">Ενδέχεται να έχει μετακινηθεί ή να έχει διαγραφεί.</translation>
+<translation id="5513528801833998679">Χρήση σύνδεσης συσκευής</translation>
 <translation id="5518670652865028077">Τέχνες και ψυχαγωγία</translation>
 <translation id="5519516356611866228">Με τις αλλαγές σας</translation>
 <translation id="5523118979700054094">Όνομα πολιτικής</translation>
@@ -1711,6 +1715,7 @@
 <translation id="5571083550517324815">Δεν είναι δυνατή η παραλαβή από αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="557886905979275351">Ξυραφάκια και ξυριστικές μηχανές</translation>
 <translation id="5580958916614886209">Ελέγξτε τον μήνα λήξης σας και δοκιμάστε ξανά</translation>
+<translation id="558420943003240152">Διαχείριση κωδικών πρόσβασης και κλειδιών πρόσβασης…</translation>
 <translation id="5586446728396275693">Δεν υπάρχουν αποθηκευμένες διευθύνσεις</translation>
 <translation id="5587987780934666589">Χρήστης πλατφόρμας</translation>
 <translation id="5593349413089863479">Η σύνδεση δεν είναι απολύτως ασφαλής.</translation>
@@ -1775,6 +1780,7 @@
 <translation id="5765072501007116331">Για να δείτε τρόπους και απαιτήσεις παράδοσης, επιλέξτε μια διεύθυνση</translation>
 <translation id="57689295674415555">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας;</translation>
 <translation id="5776313857861697733">Προτεραιότητα</translation>
+<translation id="5778389256418062749">Χρήση κλειδιού πρόσβασης σε διαφορετική συσκευή</translation>
 <translation id="5781136890105823427">Το πείραμα ενεργοποιήθηκε</translation>
 <translation id="578305955206182703">Καφεκίτρινο</translation>
 <translation id="57838592816432529">Σίγαση</translation>
@@ -1836,6 +1842,7 @@
 <translation id="5963413905009737549">Ενότητα</translation>
 <translation id="5967592137238574583">Επεξεργασία στοιχείων επικοινωνίας</translation>
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
+<translation id="5968022600320704045">Κανένα αποτέλεσμα αναζήτησης</translation>
 <translation id="5968793460449681917">Σε κάθε επίσκεψη</translation>
 <translation id="5974052231147553524">Έκτο ρολό</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
@@ -2533,6 +2540,7 @@
 <translation id="7880146494886811634">Αποθήκευση διεύθυνσης</translation>
 <translation id="7882421473871500483">Καφέ</translation>
 <translation id="7882995332186050355">Φορτηγά και τρέιλερ φορτίου</translation>
+<translation id="788679692472636252">Διαχείριση κωδικών πρόσβασης και κλειδιών πρόσβασης…</translation>
 <translation id="7887683347370398519">Ελέγξτε τον κωδικό σας CVC και δοκιμάστε ξανά</translation>
 <translation id="7887885240995164102">Είσοδος στη λειτουργία picture-in-picture</translation>
 <translation id="7888575728750733395">Εκτύπωση intent απόδοσης</translation>

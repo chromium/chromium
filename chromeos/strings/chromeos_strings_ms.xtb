@@ -17,11 +17,9 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
 <translation id="1145516343487477149">Cari artikel bantuan dan jawapan kepada soalan lazim Chromebook</translation>
-<translation id="1165039591588034296">Ralat</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
-<translation id="1190378975642195988">Akselerometer Dasar</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
 <translation id="1196959502276349371">Versi <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Mainkan/Jeda</translation>
@@ -29,27 +27,21 @@
 <translation id="1204296502688602597">Kependaman DNS</translation>
 <translation id="1207734034680156868">Cadangan adalah berdasarkan penerangan anda</translation>
 <translation id="123124571410524056">Portal disyaki</translation>
-<translation id="1236400083787698183">Sebelum memulakan semula, Powerwash peranti anda. Jika peranti anda mempunyai penutup, tunggu sehingga Powerwash selesai sebelum mengenakan penutup. Powerwash mungkin mengambil masa hingga seminit untuk selesai.</translation>
 <translation id="1238612778414822719">Kependaman HTTPS</translation>
-<translation id="1240699967155581440">Powerwash (tetapan semula kilang) diperlukan</translation>
-<translation id="1264116747675686718">Mengemas kini versi OS</translation>
 <translation id="1264369926465113395">Lihat majalah digital baharu Chromebook untuk pencipta</translation>
 <translation id="1270369111467284986">Disyaki portal terbolot</translation>
 <translation id="1290331692326790741">Isyarat lemah</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1308067967278144752">Hidupkan Perlindungan Tulis</translation>
 <translation id="1308754910631152188">Mengemas kini (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
 <translation id="1310380015393971138">Tiada rangkaian <ph name="NETWORK_NAME" /> tersedia</translation>
 <translation id="131421566576084655">Tarikh tetapan semula data terakhir tidak tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rangkaian utama, bukan perayauan</translation>
-<translation id="132712914231403017">Memasang imej perisian tegar</translation>
 <translation id="1327977588028644528">Get Laluan</translation>
 <translation id="1328223165223065150">Warna kertas dinding</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Muatkan mengikut kawasan imbasan</translation>
 <translation id="1367951781824006909">Pilih fail</translation>
-<translation id="1380220803921738821">Kami mengalami ralat. Cuba but semula atau pulihkan perisian tegar menggunakan pemacu pena USB.</translation>
 <translation id="1387854245479784695">Ini ialah pengagregatan bagi semua teras</translation>
 <translation id="1394661041439318933">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri sarung.</translation>
 <translation id="1397738625398125236">Get laluan boleh Ping</translation>
@@ -63,18 +55,14 @@
 <translation id="1442433966118452622">Sumber imej</translation>
 <translation id="1451536289672181509">Peranti ialah papan kekunci.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
-<translation id="1459784442280469416">Simpan pada USB</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
-<translation id="147809995039451286">Tidak dapat memuat turun kemaskinian</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
 <translation id="1483493594462132177">Hantar</translation>
 <translation id="1491076385728777984">Mengemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
-<translation id="1512982610995527443">Peranti akan dimatikan dalam masa 5 saat</translation>
-<translation id="1522984060396982789">Pembaikan anda berjaya. Anda boleh mematikan peranti atau mengambil beberapa tindakan tambahan.</translation>
 <translation id="1526389707933164996">Animasi penyelamat skrin</translation>
 <translation id="152892567002884378">Tambah kelantangan</translation>
 <translation id="1555130319947370107">Biru</translation>
@@ -84,14 +72,11 @@
 <translation id="1572585716423026576">Tetapkan sebagai kertas dinding</translation>
 <translation id="1578784163189013834">Pilih latar penyelamat skrin</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1620510694547887537">Kamera</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
-<translation id="1631385268983122904">Jangan masukkan semula bateri lagi</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
 <translation id="1643449475550628585">Tukar imej kertas dinding setiap hari</translation>
 <translation id="1644574205037202324">Sejarah</translation>
-<translation id="1645954272419197032">Sila sahkan maklumat peranti</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
 <translation id="1664796644829245314">Pratonton <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN terbina dalam</translation>
@@ -116,7 +101,6 @@
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
-<translation id="1840835860961531162">Matikan Perlindungan Tulis</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1852934301711881861">Pasang Chrome OS Flex</translation>
 <translation id="1856388568474281774">Anak panah ke bawah</translation>
@@ -129,7 +113,6 @@
 <translation id="1904932688895783618">Yang berikut ialah beberapa sumber lain yang berguna:</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
-<translation id="1932611479324127242">Mematikan bateri dalaman</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
@@ -140,24 +123,20 @@
 <translation id="2008685064673031089">Carian nombor perdana</translation>
 <translation id="2011174342667534258">Versi SDK:</translation>
 <translation id="2016697457005847575">Cuba langkah penyelesaian masalah</translation>
-<translation id="2016848882344942759">--tiada label putih--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Sila sambung kepada rangkaian dan muatkan halaman itu untuk melihat penyelamat skrin.</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2085089206770112532">Kurangkan kecerahan paparan</translation>
 <translation id="2105810540595158374">Peranti ialah pengawal permainan.</translation>
-<translation id="2115956742084455574">Kod salah</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia</translation>
 <translation id="2138109643290557664">Terapung-apung</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
-<translation id="2154739667870063220">But semula</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Cuba lagi</translation>
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
 <translation id="2163937499206714165">Hidupkan mod gelap</translation>
-<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Komponen tidak layak<ph name="LINK_END" /> ditemukan. Untuk memastikan semua komponen yang layak dikenal pasti, kemas kini Chrome OS anda kepada versi terkini.</translation>
 <translation id="2180197493692062006">Kesilapan telah berlaku. Cuba buka semula apl.</translation>
 <translation id="2182088270354640012">Terima kasih atas maklum balas anda. Maklum balas anda bantu meningkatkan Chrome OS dan akan disemak oleh pasukan Chrome OS. Disebabkan jumlah laporan yang diserahkan, anda tidak akan menerima balasan langsung.</translation>
 <translation id="2209788852729124853">Tetapkan Semula Pembilang Trafik</translation>
@@ -171,22 +150,16 @@
 <translation id="2240366984605217732">Penukaran reka letak</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
 <translation id="2271469253353559191">Jadual mod gelap</translation>
-<translation id="2275586345903859204">Pembaikan selesai</translation>
 <translation id="2276999893457278469">Kandungan bantuan paling popular</translation>
 <translation id="2287186687001756809">Tiada imej tersedia. Untuk menambah foto, lawati <ph name="LINK" /></translation>
-<translation id="2294753434210277304">Masukkan storan luaran, seperti pemacu USB atau kad SD card, dengan imej Utiliti Pemulihan Chromebook yang dimuat turun</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci semasa</translation>
 <translation id="2320295602967756579">Dayakan tema cerah</translation>
 <translation id="2323506179655536734">DILANGKAU</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
-<translation id="2340422556570134524">Write Protect telah dihidupkan tanpa diduga. Sila matikan Write Protect secara manual sebelum mencuba lagi.</translation>
 <translation id="2346474577291266260">Cemerlang (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Teruskan</translation>
-<translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponen tidak layak<ph name="LINK_END" /> dikesan. Jika anda memilih untuk mengesahkan komponen ini telah dipasang, sila lakukannya sekarang.</translation>
 <translation id="2364498172489649528">Lulus</translation>
-<translation id="236594517359128026">Sebelum meneruskan, letakkan komputer riba anda di atas permukaan yang rata</translation>
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
@@ -194,10 +167,8 @@
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
-<translation id="2447969267935997922">Pemasangan selesai. Kini anda boleh mengalih keluar pemacu USB atau kad SD anda.</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Semasa</translation>
-<translation id="2480034874476596812">Matikan secara manual</translation>
 <translation id="248546197012830854">Peranti di luar talian. Sambung kepada rangkaian Wi-Fi untuk melihat kandungan bantuan.</translation>
 <translation id="2491955442992294626">Kekunci tidak diuji apabila anda menggunakan tetingkap lain</translation>
 <translation id="2493126929778606526">Foto terbaik anda, dipilih secara automatik</translation>
@@ -219,26 +190,21 @@
 <translation id="2712812801627182647">Kunci pengesahan TLS</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2717139507051041123">Dayakan mod warna gelap</translation>
-<translation id="2727250716596204208">Tidak dapat mencari imej perisian tegar. Masukkan storan luaran seperti pemacu USB atau kad SD, dengan imej Utiliti Pemulihan Chromebook yang dimuat turun.</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
-<translation id="2756652381241102009">Jalankan Diagnostik</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2789486458103222910">Okey</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="28232023175184696">Tidak dapat menyambung kepada Internet. Klik untuk mencuba lagi.</translation>
-<translation id="2827359915699915567">Taip URL ini secara manual untuk mendapatkan kod RSU</translation>
 <translation id="2859243502336719778">Kemaskinian kritikal</translation>
 <translation id="2860473693272905224">Letakkan halaman lain di atas pengimbas</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
-<translation id="291142119251986300">Komponen tidak layak</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
-<translation id="302435934487327038">Pemasangan selesai</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -247,12 +213,10 @@
 <translation id="3083667275341675831">Diagnostik Ketersambungan</translation>
 <translation id="3084958266922136097">Lumpuhkan penyelamat skrin</translation>
 <translation id="3091839911843451378">Gagal - Dihentikan</translation>
-<translation id="3096753366938912951">Letakkan penutup pada permukaan rata</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Peranti disambungkan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alih keluar halaman?}=1{Alih keluar halaman {PAGE_NUMBER}?}other{Alih keluar halaman {PAGE_NUMBER}?}}</translation>
-<translation id="3137983112374760826">Peruntukan peranti...</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
 <translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
@@ -261,7 +225,6 @@
 <translation id="319101249942218879">Imej avatar ditukar</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
-<translation id="320091191259649613">Jika anda masih melihat isu itu selepas kemaskinian, kemungkinan komponen itu baru layak dan belum tersedia di pangkalan data.</translation>
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
@@ -271,17 +234,13 @@
 <translation id="3291996639387199448">Arahan utama</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
-<translation id="3333527094307156612">Gunakan kod QR ini untuk mendapatkan kod buka kunci 8 aksara. Anda juga boleh menaip <ph name="LINK_BEGIN" />URL ini<ph name="LINK_END" /> secara manual.</translation>
-<translation id="3336855445806447827">Tidak pasti</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
-<translation id="3383751554789092165">Tukar maklumat peranti mengikut keperluan.</translation>
 <translation id="3404249063913988450">Dayakan penyelamat skrin</translation>
 <translation id="3413935475507503304">Untuk meneruskan kemaskinian, klik Seterusnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
-<translation id="3441653493275994384">Skrin</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
@@ -289,7 +248,6 @@
 <translation id="3484914941826596830">Semasa perisian tegar sedang dikemas kini, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Kemaskinian ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="3486220673238053218">takrif</translation>
 <translation id="3488065109653206955">Diaktifkan sebahagian</translation>
-<translation id="3492982278147736083">Giroskop Penutup</translation>
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
@@ -306,13 +264,9 @@
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas maklum balas anda</translation>
-<translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
-<translation id="3643198267586205643">Kemas kini OS</translation>
-<translation id="3643810137582748570">Langkau penentukuran</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
-<translation id="3678765385266369662">Pilih cara anda mahu mematikan Perlindungan Tulis</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
@@ -320,15 +274,12 @@
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
 <translation id="3771294271822695279">Fail Video</translation>
-<translation id="3774059845329307709">Nombor siri</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="385051799172605136">Kembali</translation>
-<translation id="3856304145690230735">Giroskop Dasar</translation>
-<translation id="385832974417157471">Sebelum mematikan, Powerwash peranti anda. Jika peranti anda mempunyai penutup, tunggu sehingga Powerwash selesai sebelum mengenakan penutup. Powerwash mungkin mengambil masa hingga seminit untuk selesai.</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3862598938296403232">Perihalan diperlukan</translation>
 <translation id="3865414814144988605">Peleraian</translation>
@@ -336,12 +287,10 @@
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
 <translation id="3885327323343477505">Tukar penyelamat skrin</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
-<translation id="3924044641767672375">Anda disyorkan supaya menyambung kepada Wi-Fi untuk memudahkan lagi proses pembaikan. Rangkaian anda akan disimpan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3954678691475912818">Jenis peranti tidak diketahui.</translation>
-<translation id="3958703339436883942">Bersedia untuk mulakan semula...</translation>
 <translation id="3966286471246132217">Untuk mendapatkan keputusan yang lebih tepat, tutup semua apl sehinggalah ujian selesai.</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3969602104473960991">Kata laluan Chrome OS dikemas kini</translation>
@@ -359,10 +308,8 @@
 <translation id="4111761024568264522">Pad sentuh USB</translation>
 <translation id="4117637339509843559">Mod gelap</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
-<translation id="4140251671072434548">Lakukan Buka Kunci Pelayan RMA</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
-<translation id="4150201353443180367">Paparan</translation>
 <translation id="4155551848414053977">Pastikan pengimbas dihidupkan dan tersedia melalui rangkaian anda atau sambungan langsung</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4170180284036919717">Ambil foto</translation>
@@ -377,9 +324,7 @@
 <translation id="4244962993387259361">Anda memerlukan sekurang-kurangnya 500 MB ruang kosong untuk menjalankan ujian Memori. Untuk mengosongkan ruang, pergi ke Tetapan &gt; Pengurusan storan.</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
-<translation id="4258561075226177474">Peranti akan diterima oleh pengguna yang sama. Padam data pengguna?</translation>
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
-<translation id="4275799948641988986">Selepas dibaiki, siapa yang akan menggunakan peranti itu?</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4289849978083912975">Tayangan slaid</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
@@ -399,7 +344,6 @@
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
-<translation id="4500213108254186382">Akselerometer Penutup</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Padanan nama alternatif subjek</translation>
@@ -410,8 +354,6 @@
 <translation id="455835558791489930">Bateri <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM Dibuka Kunci</translation>
 <translation id="4562494484721939086">Tiada perkhidmatan</translation>
-<translation id="4568938274596692027">Pemasangan selesai. Bersedia untuk mulakan semula...</translation>
-<translation id="4576943788798178439">Sokongan stilus</translation>
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
@@ -427,18 +369,14 @@
 <translation id="469379815867856270">Kekuatan Isyarat</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="473775607612524610">Kemas kini</translation>
-<translation id="4740255236714854844">Letakkan tapak pada permukaan rata</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
-<translation id="4751272708893364980">Lihat log RMA</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
-<translation id="4774530504324923332">Anda akan memerlukan kunci keselamatan didayakan RSU, pengimbas kod QR dan peranti kedua yang mempunyai sambungan Internet</translation>
 <translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Untuk mendapatkan bantuan lanjut, pergi ke <ph name="BEGIN_LINK" />Pusat bantuan<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritma pemampatan</translation>
 <translation id="4794140124556169553">Tindakan menjalankan ujian CPU mungkin menjejaskan prestasi sistem anda</translation>
 <translation id="4800589996161293643">Komuniti Chromebook</translation>
-<translation id="4804818685124855865">Putuskan sambungan</translation>
 <translation id="4808449224298348341">Tugas cetak <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
 <translation id="4809927044794281115">Tema cerah</translation>
 <translation id="4813136279048157860">Imej Saya</translation>
@@ -458,8 +396,6 @@
 <translation id="4891842000192098784">Tekanan</translation>
 <translation id="4897058166682006107">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kiri.</translation>
 <translation id="4905998861748258752">Hidupkan ciri ini untuk membuat pilihan penyelamat skrin</translation>
-<translation id="4908030561598728899">Memasang perisian tegar...</translation>
-<translation id="4915052247106771211">Tindakan ini akan menetapkan semula peranti kepada tetapan kilang (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
 <translation id="491791267030419270">Petua menulis maklum balas</translation>
@@ -471,16 +407,13 @@
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Tembok api</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
-<translation id="5008611843832219958">Kemas kini kepada versi terkini Chrome OS untuk proses pembaikan yang dioptimumkan</translation>
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apabila skrin anda melahu, tunjukkan foto, masa, cuaca dan maklumat media.</translation>
 <translation id="5039804452771397117">Benarkan</translation>
-<translation id="5044978354634658544">Sisipkan USB</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama kumpulan</translation>
 <translation id="5051044138948155788">Ini ialah satu-satunya halaman. Tindakan ini akan membawa anda ke skrin permulaan pengimbasan.</translation>
-<translation id="506768878203270635">Masukkan 8 aksara</translation>
 <translation id="5088172560898466307">Nama hos pelayan</translation>
 <translation id="5089810972385038852">Negeri</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -490,8 +423,6 @@
 <translation id="5166918508782100047">Tetapan jawapan segera</translation>
 <translation id="5168185087976003268">Kesihatan bateri</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
-<translation id="5179530508336824319">Dayakan perlindungan tulis untuk meneruskan langkah ke skrin seterusnya. Pergi ke halaman sokongan pengeluar peranti untuk mendapatkan arahan.</translation>
-<translation id="5181140330217080051">Memuat turun</translation>
 <translation id="5190187232518914472">Kenang kembali memori kegemaran anda. Untuk menambah atau mengedit album, pergi ke <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
 Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation>
@@ -507,10 +438,8 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5275828089655680674">Jalankan Semula Rutin</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versi <ph name="MILESTONE_VERSION" /></translation>
-<translation id="5298334025463010990">Lumpuhkan perlindungan tulis untuk meneruskan ke skrin seterusnya. Pergi ke halaman sokongan pengeluar peranti untuk mendapatkan arahan.</translation>
 <translation id="5300814202279832142">Alihkan tetingkap ke meja</translation>
 <translation id="5304899856529773394">EVDO</translation>
-<translation id="5308380583665731573">Sambung</translation>
 <translation id="5315873049536339193">Identiti</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318334351163689047">Kegagalan permintaan TCP</translation>
@@ -521,13 +450,10 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5358174242040570474">Kesilapan telah berlaku. Cuba pilih kertas dinding sekali lagi atau buka semula apl tersebut.</translation>
 <translation id="5372659122375744710">Rangkaian Wi-Fi tidak selamat</translation>
 <translation id="5376354385557966694">Mod cerah automatik</translation>
-<translation id="537872351913703572">Peranti akan menjadi milik pengguna atau organisasi lain</translation>
 <translation id="5389159777326897627">Hiasan latar &amp; gaya</translation>
 <translation id="5389224261615877010">Pelangi</translation>
-<translation id="5395600419410242651">Padamkan semua data</translation>
 <translation id="5400907029458559844">Peranti sedang menyambung.</translation>
 <translation id="5401938042319910061">Jalankan Semua Rutin</translation>
-<translation id="5406131354638931058">Mematikan bateri dalaman untuk peranti yang dihantar atau disimpan</translation>
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Penambatan Segera</translation>
 <translation id="5431318178759467895">Warna</translation>
@@ -538,10 +464,8 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5499114900554609492">Tidak dapat menyelesaikan pengimbasan</translation>
 <translation id="5499762266711462226">Warna papan kekunci adalah berdasarkan kertas dinding</translation>
 <translation id="5502931783115429516">Android tidak berjalan</translation>
-<translation id="5507300744274596613">Pastikan Chrome OS terkini</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5548284010950733518">Komponen tentukur</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
 <translation id="5583640892426849032">Undur ruang</translation>
@@ -561,20 +485,16 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="576835345334454681">Tingkatkan kecerahan paparan</translation>
 <translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
-<translation id="578753362485952307">Jika anda sedang mengubah suai papan utama untuk digunakan dalam peranti lain, pergi ke <ph name="LINK_BEGIN" />aliran kerja semula<ph name="LINK_END" />.</translation>
-<translation id="5790085346892983794">Berjaya</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kod penyedia tempatan</translation>
-<translation id="5856532218727053281">Sistem akan dimulakan semula selepas mengesahkan status Perlindungan Tulis</translation>
 <translation id="5859603669299126575">Album galeri seni</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
 <translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
-<translation id="5898758006340607522">Butang Kuasa</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903200662178656908">Peranti ialah kombo papan kekunci dan tetikus.</translation>
 <translation id="5916084858004523819">Dilarang</translation>
@@ -583,8 +503,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="594552776027197022">Jana pasangan kunci rawak</translation>
-<translation id="5947494881799873997">Berbalik</translation>
-<translation id="5951259522948394825">Sahkan semuanya berada di tempat yang betul dan lihat laporan diagnostik</translation>
 <translation id="5972388717451707488">Enjin Kemaskinian</translation>
 <translation id="5984145644188835034">Kertas Dinding Lalai</translation>
 <translation id="6017514345406065928">Hijau</translation>
@@ -622,7 +540,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Hidupkan tema gelap</translation>
-<translation id="6295178529664209245">Teruskan pembaikan?</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
 <translation id="6319207335391420837">Kemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
@@ -661,23 +578,19 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
 <translation id="6579509898032828423">Guna foto ini</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
-<translation id="6611280807952151149">Keluar pembaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
 <translation id="6624819909909965616">Tidak dapat memuat naik fail yang lebih besar daripada 10 MB</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
-<translation id="6644568396961840069">Fail tidak dapat disimpan. Cuba palamkan storan luaran yang lain atau cuba lagi nanti.</translation>
 <translation id="6647510110698214773">Algoritma penyulitan</translation>
 <translation id="6650062777702288430">Penukaran kana/abjad angka</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
-<translation id="6719240409382354629">Bersedia untuk mulakan semula...</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6723847290197874913">Lampu latar papan kekunci</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
-<translation id="6746847322826305075">Anda boleh meneruskan pembaikan penuh atau Powerwash (tetapan semula kilang) peranti untuk mengisi semula papan utama.</translation>
 <translation id="6747215703636344499">Dihentikan - Output penuh</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Peranti ialah komputer.</translation>
@@ -687,10 +600,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
-<translation id="6822504384524564824">SKU hanya boleh ditukar jika komponen baharu berbeza daripada komponen yang diganti. Sebagai contoh, skrin sentuh menggantikan bukan skrin sentuh, atau memori ditingkatkan daripada 8GB kepada 16GB.</translation>
-<translation id="6840315122969944400">Pembaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
-<translation id="6876833053687020046">Nombor alat DRAM</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pengimbas terbuka. Tutup penutup dan cuba lagi.</translation>
@@ -711,7 +621,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Pemberian Keizinan Gagal</translation>
 <translation id="7103252855940681301">Peranti <ph name="INDEX" /> daripada <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
-<translation id="7126228745139711113">Write Protect dimatikan</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -721,7 +630,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>
 <translation id="7172721935181587524">1 Imej</translation>
-<translation id="7175037578838465313">Konfigurasikan <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
@@ -729,7 +637,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="725133483556299729">Pilih e-mel</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
-<translation id="7281209642468917121">Pilih 1 atau lebih komponen dan cuba lagi atau langkau penentukuran</translation>
 <translation id="7281657306185710294">Rasai tiupan anginnya</translation>
 <translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
@@ -742,7 +649,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="73631062356239394">Kongsi data diagnostik</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Matikan tema cerah</translation>
 <translation id="741244894080940828">penukaran</translation>
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
@@ -762,16 +668,12 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrin sentuh USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
-<translation id="760845693386726841">Komponen ini tidak dapat dikesan.</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
-<translation id="7626501172915339021">Lakukan Buka Kunci Pelayan RMA (RSU)</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
-<translation id="7657530360897961171">Ralat pembaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Tukar avatar</translation>
-<translation id="7682274994254393134">Pembaikan bermula</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -802,9 +704,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
-<translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
-<translation id="8018928621986160031">Simpan pada "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Dayakan mod warna automatik</translation>
@@ -815,39 +715,30 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
-<translation id="8109786307828817014">Teruskan dengan penentukuran yang gagal?</translation>
 <translation id="811820734797650957">Get laluan boleh Diping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="819552138404104974">Log RMA</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Kelebihan</translation>
-<translation id="8217675307824400706">Berhubung</translation>
-<translation id="8221728673725659466">Penentukuran selesai</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="827422111966801947">Biru Nila</translation>
-<translation id="8281886186245836920">Langkau</translation>
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>
 <translation id="8291967909914612644">Negara pembekal tempatan</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8302368968391049045">Tembok Api HTTPS</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
-<translation id="8327249300223641918">Sebelum meneruskan, letakkan seluruh peranti anda (tapak dan penutup) pada permukaan rata.</translation>
-<translation id="8330949592403310082">Pilih komponen yang telah diganti</translation>
 <translation id="8336739000755212683">Tukar imej akaun peranti</translation>
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
 <translation id="8364946094152050673">Pelayan tiada nama</translation>
 <translation id="8372477600026034341">Hos tambahan</translation>
-<translation id="8378855320830505539">Wilayah</translation>
-<translation id="8382302752385457774">Label putih</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini diurus perusahaan</translation>
 <translation id="8398927464629426868">Kadar pengecasan atau penyahcasan semasa peranti</translation>
 <translation id="8420955526972171689">Jalankan ujian dan penyelesaian masalah bagi isu perkakasan</translation>
@@ -858,8 +749,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="844521431886043384">DNS tidak disediakan</translation>
 <translation id="8456761643544401578">Mod gelap automatik</translation>
 <translation id="8461329675984532579">Nama pembekal tempatan</translation>
-<translation id="8467104829907989997">Menentukurkan komponen...</translation>
-<translation id="8474030592808010086">Cabut palam peranti untuk mematikan bateri dalaman</translation>
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
@@ -868,22 +757,17 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8529392826145705615">Komponen mungkin tidak berfungsi dengan betul melainkan ditentukur</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>
 <translation id="8620617069779373398">Status perayauan</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Kongsi URL:</translation>
 <translation id="8660881923941176839">paun</translation>
-<translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
-<translation id="8671972493856476349">Kemas kini <ph name="VERSION_NUMBER" /> &amp; mulakan semula</translation>
 <translation id="8675354002693747642">Kekunci prakongsi</translation>
 <translation id="8677859815076891398">Tiada album. Buat album dalam <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="8680431479333800907">Peranti akan menjadi milik pengguna yang sama</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan kekunci Anak panah ke kiri atau Anak panah ke kanan untuk mengurus ciri ini.</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="871560550817059752">Gagal - Kehabisan dakwat</translation>
-<translation id="8717030727630712160">Menyambung semula proses pembaikan…</translation>
 <translation id="8723108084122415655">Rangkaian bukan lalai melebihi ambang kependaman</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8726019395068607495">Dihentikan - Pintu terbuka</translation>
@@ -891,7 +775,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8747900814994928677">Sahkan penukaran</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
-<translation id="8778600430213950389">Kesilapan telah berlaku. Ini berkemungkinan besar disebabkan oleh isu perkakasan. Gantikan papan utama dan cuba jalankan proses pembaikan sekali lagi.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Rangkaian ini mungkin mempunyai portal terbolot</translation>
 <translation id="8798099450830957504">Lalai</translation>
@@ -908,14 +791,11 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Peranti ialah tablet.</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
-<translation id="8897267175591692539">Sekarang anda boleh masukkan semula bateri</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>
 <translation id="8910721771319628100">Rangkaian lalai melebihi ambang kependaman</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
-<translation id="8919792139048574232">Lihat apa yang telah dibetulkan</translation>
 <translation id="8919837981463578619">Gagal - Dulang tiada</translation>
 <translation id="8923267550422472772">Hari dalam bulan untuk ditetapkan semula</translation>
-<translation id="8925613211674558308">Vpd Dicache</translation>
 <translation id="8928727111548978589">Gagal - Kehabisan kertas</translation>
 <translation id="8930521118335213258">Setara</translation>
 <translation id="8930622219860340959">Wayarles</translation>
@@ -932,7 +812,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9028832514430399253">Hidupkan togol untuk membuat pilihan penyelamat skrin</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Peleraian DNS mempunyai kependaman tinggi</translation>
-<translation id="9063121522582193837">Tidak dapat menentukur sesetengah komponen</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>
@@ -940,24 +819,19 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9088306295921699330">Penggunaan semasa</translation>
 <translation id="9092255287806472980">Maklum balas anda membantu kami meningkatkan Chrome OS dan akan disemak oleh pasukan kami. Oleh sebab kami menerima jumlah laporan yang banyak, kami tidak akan dapat menghantar balasan.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
-<translation id="90977145661420967">Anda perlu meleraikan peranti tersebut</translation>
-<translation id="9098156406873149060">Simpan data pengguna</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
-<translation id="9118126012493516930">Tidak dapat menyelesaikan pembaikan</translation>
 <translation id="9122602430962285795">Untuk menyambung semula, pergi ke Tetapan</translation>
 <translation id="9126720536733509015">Simpan berbilang halaman menjadi satu PDF</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
-<translation id="9148058034647219655">Keluar</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>
 <translation id="9204237731135241582">Tidak dapat menghubungi get laluan daripada apl Android</translation>
 <translation id="9211490828691860325">Semua meja</translation>
-<translation id="922179502584117429">Versi semasa <ph name="VERSION_NUMBER" /> sudah lapuk</translation>
 <translation id="932327136139879170">Laman Utama</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>

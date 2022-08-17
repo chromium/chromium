@@ -954,6 +954,7 @@
 <translation id="1864400682872660285">冷色調</translation>
 <translation id="1864454756846565995">USB-C 裝置 (後方連接埠)</translation>
 <translation id="1865769994591826607">僅可連線至同一個網站</translation>
+<translation id="186594096341696655">降低取樣率</translation>
 <translation id="186612162884103683">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和音效檔案具有讀取和寫入權限。</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> 已準備好完成安裝程序</translation>
 <translation id="1868553836791672080">Chromium 不支援密碼檢查功能</translation>
@@ -1145,6 +1146,7 @@
 <translation id="2048554637254265991">啟動容器管理員時發生錯誤。請再試一次。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="2050339315714019657">直向</translation>
+<translation id="2051943168842512672">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入 Google 密碼管理工具 (<ph name="USER_EMAIL" />)}other{已將 {NUM_PASSWORDS} 個密碼匯入 Google 密碼管理工具 (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="2052572566310583903">您在其他裝置上安裝的應用程式</translation>
 <translation id="2053105195397337973">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制追蹤功能。</translation>
 <translation id="2053312383184521053">閒置狀態數據</translation>
@@ -1918,6 +1920,7 @@
 <translation id="2742448780373473567">安裝 <ph name="DEVICE_OS" /> 會覆寫裝置上的所有資料。</translation>
 <translation id="274290345632688601">正在還原 Linux 應用程式和檔案</translation>
 <translation id="274318651891194348">正在搜尋鍵盤</translation>
+<translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
 <translation id="2747266560080989517">此檔案含有敏感或危險的內容。請要求擁有者修正。</translation>
@@ -2430,6 +2433,7 @@
 <translation id="3255355328033513170">這樣做會刪除 <ph name="SITE_GROUP_NAME" /> 儲存的所有資料及此群組中的所有網站，其中包含 Cookie。您將會從這些網站 (包括在開啟的分頁) 中登出。</translation>
 <translation id="3257733480216378006">要允許「<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />」嗎？</translation>
 <translation id="3259723213051400722">請再試一次。</translation>
+<translation id="3261090393424563833">提高取樣率</translation>
 <translation id="3261268979727295785">您可在完成設定後，為較年長的子女新增家長監控設定。您可在「探索」應用程式中找到家長監控設定的相關資料。</translation>
 <translation id="3262986719682892278">太大</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
@@ -2939,6 +2943,7 @@
 <translation id="3747077776423672805">如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
 <translation id="3747603683749989726">要開啟「強化安全瀏覽」功能嗎？</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
+<translation id="3750304496241836236">如要將密碼匯入 Google 密碼管理工具，請選取 CSV 檔案</translation>
 <translation id="3750562496035670393">Chrome 已將密碼儲存至此裝置，不過您亦可改為將密碼儲存至 Google 帳戶。然後，當您登入後，您亦可在查看所有儲存在 Google 帳戶中的密碼。</translation>
 <translation id="3752253558646317685">讓子女重覆按壓手指，以便儲存指紋</translation>
 <translation id="3753033997400164841">只需儲存一次，即可在所有裝置上使用</translation>
@@ -4111,6 +4116,7 @@
 <translation id="4871370605780490696">新增書籤</translation>
 <translation id="4871568871368204250">關閉同步處理功能</translation>
 <translation id="4871719318659334896">關閉群組</translation>
+<translation id="4872192066608821120">如要匯入密碼，請選取所需 CSV 檔案</translation>
 <translation id="4873312501243535625">媒體檔案檢查工具</translation>
 <translation id="4876273079589074638">協助我們的軟件工程師調查和修正此當機問題。請盡可能列出所有實際步驟，越詳細越好！</translation>
 <translation id="4876895919560854374">鎖定和解鎖屏幕</translation>
@@ -4667,6 +4673,7 @@
 <translation id="5439680044267106777">略過並設定新的設定檔</translation>
 <translation id="544083962418256601">建立捷徑…</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網絡應用程式</translation>
+<translation id="5441466871879044658">翻譯至此語言</translation>
 <translation id="5442228125690314719">建立磁碟映像時發生錯誤，請再試一次。</translation>
 <translation id="5442550868130618860">開啟自動更新功能</translation>
 <translation id="5445400788035474247">10 倍</translation>
@@ -5453,6 +5460,7 @@
 <translation id="6206199626856438589">您將會從已顯示的網站 (包括已開啟的分頁) 中登出</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
+<translation id="6207806976844244951">儲存至 Google 密碼管理工具 (<ph name="EMAIL" />)</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208382900683142153">信任憑證能夠改善網絡上的私隱，而且系統無法透過信任憑證來識別您的身分。</translation>
 <translation id="6208521041562685716">正在啟用流動數據</translation>
@@ -5692,6 +5700,7 @@
 <translation id="6436610005579237680">如要取得更貼近您需要的回覆，請讓「Google 助理」在您問問題時存取包含畫面上資料的螢幕截圖，包括正在播放歌曲或影片的相關資料。</translation>
 <translation id="6436778875248895551">管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充程式</translation>
 <translation id="6438234780621650381">重設設定</translation>
+<translation id="6438475350605608554">你已在其他分頁中匯入密碼</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6442187272350399447">太棒了</translation>
 <translation id="6442445294758185945">無法下載更新。請稍後再試。</translation>
@@ -5702,6 +5711,7 @@
 <translation id="6446213738085045933">建立桌面捷徑</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">變更私隱權相關設定</translation>
+<translation id="645119363824354176">如要將密碼匯入這部裝置，請選取 CSV 檔案</translation>
 <translation id="6451344358166983408">網站或網頁</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 和另外 1 個分頁}other{<ph name="PAGE_TITLE" /> 和另外 # 個分頁}}</translation>
 <translation id="6451689256222386810">如果您忘記密碼短語，或要變更這項設定，請<ph name="BEGIN_LINK" />重設同步處理功能<ph name="END_LINK" />。</translation>
@@ -5965,6 +5975,7 @@
 <translation id="6691936601825168937">下一頁(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 頁}other{{COUNT} 頁}}</translation>
 <translation id="6694430008315398925">正在設定 Steam</translation>
+<translation id="6697172646384837537">選取密碼匯入位置</translation>
 <translation id="6697492270171225480">找不到網頁時，顯示類似的網頁建議</translation>
 <translation id="6697690052557311665">如要共用項目，請在「檔案」應用程式中的資料夾上按一下右鍵，然後選取 [與 Linux 共用]。</translation>
 <translation id="6698810901424468597">讀取及變更您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 網站上的資料</translation>
@@ -6062,6 +6073,7 @@
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">自動掃瞄功能會自動在畫面上的項目間移動。選取項目，然後按下「選取」即可啟動該項目。</translation>
 <translation id="6795884519221689054">熊貓</translation>
+<translation id="6796509790850723820">算繪</translation>
 <translation id="6797493596609571643">糟糕，發生錯誤。</translation>
 <translation id="6798420440063423019">您輸入錯誤 PIN 的次數過多，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="679845623837196966">顯示閱讀清單</translation>
@@ -6605,6 +6617,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕。</translation>
 <translation id="7340650977506865820">網站正在分享您的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告、診斷和使用情況資料自動傳送給 Google</translation>
+<translation id="734088800888587319">網路指標</translation>
 <translation id="7341834142292923918">需要在此網站上執行</translation>
 <translation id="7343372807593926528">請在傳送意見前說明問題。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
@@ -8450,6 +8463,7 @@
 <translation id="9088917181875854783">請確認以下密碼金鑰是否顯示於「<ph name="DEVICE_NAME" />」上：</translation>
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9090044809052745245">裝置向他人顯示的名稱</translation>
+<translation id="9093470422440389061">Wi-Fi 效能指標</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9094038138851891550">使用者名稱無效</translation>
 <translation id="9094859731829297286">您確定要為 Linux 預留固定大小的磁碟空間嗎？</translation>

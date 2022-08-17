@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1432187715652018471">Страницата иска да инсталира манипулатор на услуги.</translation>
 <translation id="1432581352905426595">Управление на търсещите машини</translation>
+<translation id="1435940442311036198">Използване на код за достъп на друго устройство</translation>
 <translation id="1436185428532214179">Може да поиска разрешение да редактира файлове и папки на устройството ви</translation>
 <translation id="1442386063175183758">Сгъване на десния край навътре</translation>
 <translation id="1442987760062738829">Перфориране</translation>
@@ -1407,7 +1408,9 @@
 <translation id="4798078619018708837">Въведете датата на валидност и кода за проверка за <ph name="CREDIT_CARD" />, за да актуализирате данните за картата си. След като я потвърдите, данните за нея от профила ви в Google ще бъдат споделени с този сайт.</translation>
 <translation id="4800132727771399293">Прегледайте датата на валидност и кода за проверка и оптитайте отново</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4806051791961048632">Използване на Touch ID</translation>
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
+<translation id="4811450222531576619">Научете за съответния източник и тема</translation>
 <translation id="4812751092864334025">Носими технологии</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
@@ -1680,6 +1683,7 @@
 <translation id="5509780412636533143">Управлявани отметки</translation>
 <translation id="5510481203689988000">Тази настройка се контролира от настройките за „бисквитките“.</translation>
 <translation id="5510766032865166053">Възможно е да е преместен или изтрит.</translation>
+<translation id="5513528801833998679">Използване на опцията за вход в устройството</translation>
 <translation id="5518670652865028077">Изкуство и развлечения</translation>
 <translation id="5519516356611866228">С промените ви</translation>
 <translation id="5523118979700054094">Име на правилото</translation>
@@ -1707,6 +1711,7 @@
 <translation id="5571083550517324815">Този адрес за вземане не се поддържа. Изберете друг.</translation>
 <translation id="557886905979275351">Бръсначи и самобръсначки</translation>
 <translation id="5580958916614886209">Проверете месеца на валидност и опитайте отново</translation>
+<translation id="558420943003240152">Управление на паролите и кодовете за достъп…</translation>
 <translation id="5586446728396275693">Няма запазени адреси</translation>
 <translation id="5587987780934666589">Потребител на платформата</translation>
 <translation id="5593349413089863479">Връзката не е напълно защитена</translation>
@@ -1771,6 +1776,7 @@
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
+<translation id="5778389256418062749">Използване на код за достъп на друго устройство</translation>
 <translation id="5781136890105823427">Експериментът е активиран</translation>
 <translation id="578305955206182703">кехлибарено</translation>
 <translation id="57838592816432529">Заглушаване</translation>
@@ -1832,6 +1838,7 @@
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
 <translation id="5967867314010545767">Премахване от историята</translation>
+<translation id="5968022600320704045">Няма резултати от търсенето</translation>
 <translation id="5968793460449681917">При всяко посещение</translation>
 <translation id="5974052231147553524">Шеста ролка</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
@@ -2529,6 +2536,7 @@
 <translation id="7880146494886811634">Запазване на адрес</translation>
 <translation id="7882421473871500483">кафяво</translation>
 <translation id="7882995332186050355">Камиони и ремаркета</translation>
+<translation id="788679692472636252">Управление на паролите и кодовете за достъп…</translation>
 <translation id="7887683347370398519">Прегледайте кода за проверка и опитайте отново</translation>
 <translation id="7887885240995164102">Преминаване в режим „Картина в картината“</translation>
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>

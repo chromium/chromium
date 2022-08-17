@@ -191,7 +191,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1432187715652018471">stranica želi instalirati obrađivača usluge.</translation>
 <translation id="1432581352905426595">Upravljaj pretraživačima</translation>
-<translation id="1435940442311036198">Upotrijebite pristupni ključ na drugom uređaju</translation>
+<translation id="1435940442311036198">Koristi pristupni ključ na drugom uređaju</translation>
 <translation id="1436185428532214179">Može tražiti da uređuje fajlove i foldere na vašem uređaju</translation>
 <translation id="1442386063175183758">Presavijanje s desne strane</translation>
 <translation id="1442987760062738829">Bušenje</translation>
@@ -1410,7 +1410,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4806051791961048632">Koristi Touch ID</translation>
 <translation id="4809079943450490359">Uputstva administratora uređaja:</translation>
-<translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
+<translation id="4811450222531576619">Saznajte o njenom izvoru i temi</translation>
 <translation id="4812751092864334025">Nosivi uređaji</translation>
 <translation id="4813512666221746211">Greška na mreži</translation>
 <translation id="4816492930507672669">Prilagodi stranici</translation>
@@ -1683,7 +1683,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5509780412636533143">Upravljane oznake</translation>
 <translation id="5510481203689988000">Ovom postavkom se upravlja u postavkama kolačića.</translation>
 <translation id="5510766032865166053">Moguće je da je premješten ili izbrisan.</translation>
-<translation id="5513528801833998679">Upotrijebi prijavu na uređaj</translation>
+<translation id="5513528801833998679">Koristi prijavu na uređaj</translation>
 <translation id="5518670652865028077">Umjetnost i zabava</translation>
 <translation id="5519516356611866228">S vašim promjenama</translation>
 <translation id="5523118979700054094">Naziv pravila</translation>
@@ -1711,7 +1711,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5571083550517324815">Nije moguće preuzeti s ove adrese. Odaberite drugu adresu.</translation>
 <translation id="557886905979275351">Brijači i aparati za brijanje</translation>
 <translation id="5580958916614886209">Provjerite mjesec isteka i pokušajte ponovo.</translation>
-<translation id="558420943003240152">Upravljanje zaporkama i pristupnim ključevima...</translation>
+<translation id="558420943003240152">Upravljaj lozinkama i pristupnim ključevima…</translation>
 <translation id="5586446728396275693">Nije pronađena nijedna adresa</translation>
 <translation id="5587987780934666589">Korisnik platforme</translation>
 <translation id="5593349413089863479">Veza nije u potpunosti sigurna</translation>
@@ -1776,7 +1776,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5765072501007116331">Za prikaz načina i uslova isporuke, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije ispunjen?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
-<translation id="5778389256418062749">Upotrijebi pristupni ključ na drugom uređaju</translation>
+<translation id="5778389256418062749">Koristi pristupni ključ na drugom uređaju</translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
 <translation id="578305955206182703">Tamnožuta</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
@@ -1838,6 +1838,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5963413905009737549">Odjeljak</translation>
 <translation id="5967592137238574583">Uredite kontakt informacije</translation>
 <translation id="5967867314010545767">Ukloni iz historije</translation>
+<translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
 <translation id="5968793460449681917">Pri svakoj posjeti</translation>
 <translation id="5974052231147553524">Šesta rolna</translation>
 <translation id="5975083100439434680">Smanji</translation>
@@ -2535,7 +2536,7 @@ Dodatni detalji:
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
 <translation id="7882421473871500483">Smeđa</translation>
 <translation id="7882995332186050355">Teretni kamioni i prikolice</translation>
-<translation id="788679692472636252">Upravljanje zaporkama i pristupnim ključevima...</translation>
+<translation id="788679692472636252">Upravljaj lozinkama i pristupnim ključevima…</translation>
 <translation id="7887683347370398519">Provjerite CVC i pokušajte ponovo</translation>
 <translation id="7887885240995164102">Pokreni način rada slika u slici</translation>
 <translation id="7888575728750733395">Štampanje namjere iscrtavanja</translation>

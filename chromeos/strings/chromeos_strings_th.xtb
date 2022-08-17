@@ -17,11 +17,9 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">หน้าต่างการอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอกเปิดอยู่ <ph name="NUM_UPDATES" /> การอัปเดตที่พร้อมใช้งาน</translation>
 <translation id="1145516343487477149">ดูบทความช่วยเหลือและคําตอบสำหรับคําถามที่พบบ่อยเกี่ยวกับ Chromebook</translation>
-<translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">ปานกลาง (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">นำออก</translation>
-<translation id="1190378975642195988">ตัวตรวจวัดความเร่งในส่วนฐาน</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1196959502276349371">เวอร์ชัน <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">เล่น/หยุดชั่วคราว</translation>
@@ -29,27 +27,21 @@
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="1207734034680156868">คำแนะนำจะอิงตามคำอธิบายของคุณ</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
-<translation id="1236400083787698183">ทำ Powerwash อุปกรณ์ก่อนรีสตาร์ท หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
-<translation id="1240699967155581440">ต้องทำ Powerwash (รีเซ็ตเป็นค่าเริ่มต้น)</translation>
-<translation id="1264116747675686718">กำลังอัปเดตเวอร์ชันระบบปฏิบัติการ</translation>
 <translation id="1264369926465113395">ดูนิตยสารดิจิทัลใหม่ของ Chromebook สำหรับผู้สร้างสรรค์งานศิลปะและการออกแบบ</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1308067967278144752">เปิด Write Protect</translation>
 <translation id="1308754910631152188">กำลังอัปเดต (เสร็จสมบูรณ์ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">ไม่มีเครือข่าย<ph name="NETWORK_NAME" />ที่ใช้งานได้</translation>
 <translation id="131421566576084655">ไม่มีวันที่รีเซ็ตปริมาณการใช้อินเทอร์เน็ตครั้งล่าสุด</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">เครือข่ายในประเทศ ไม่ใช่โรมมิ่ง</translation>
-<translation id="132712914231403017">ติดตั้งอิมเมจของเฟิร์มแวร์</translation>
 <translation id="1327977588028644528">เกตเวย์</translation>
 <translation id="1328223165223065150">สีวอลเปเปอร์</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">พอดีกับพื้นที่สแกน</translation>
 <translation id="1367951781824006909">เลือกไฟล์</translation>
-<translation id="1380220803921738821">เราพบข้อผิดพลาด ลองรีบูตหรือกู้คืนเฟิร์มแวร์โดยใช้แฟลชไดรฟ์ USB</translation>
 <translation id="1387854245479784695">นี่เป็นการรวม Core ทั้งหมด</translation>
 <translation id="1394661041439318933">อุปกรณ์มีระดับแบตเตอรี่ของเคส <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">ปิงเกตเวย์ได้</translation>
@@ -63,18 +55,14 @@
 <translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
 <translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
-<translation id="1459784442280469416">บันทึกไปยัง USB</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
-<translation id="147809995039451286">ดาวน์โหลดอัปเดตไม่ได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
 <translation id="1491076385728777984">กำลังอัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
-<translation id="1512982610995527443">อุปกรณ์จะปิดใน 5 วินาที</translation>
-<translation id="1522984060396982789">ซ่อมเรียบร้อยแล้ว คุณสามารถปิดอุปกรณ์หรือดำเนินการเพิ่มเติมบางอย่าง</translation>
 <translation id="1526389707933164996">ภาพเคลื่อนไหวของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
@@ -84,14 +72,11 @@
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1578784163189013834">เลือกพื้นหลังของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
-<translation id="1631385268983122904">อย่าเพิ่งประกอบอุปกรณ์กลับเข้าด้วยกัน</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
 <translation id="1643449475550628585">เปลี่ยนรูปภาพวอลเปเปอร์ทุกวัน</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
-<translation id="1645954272419197032">โปรดยืนยันข้อมูลอุปกรณ์</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1664796644829245314">ตัวอย่าง <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
@@ -116,7 +101,6 @@
 <translation id="1801418420130173017">ปิดใช้ธีมมืด</translation>
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
-<translation id="1840835860961531162">ปิด Write Protect</translation>
 <translation id="1851218745569890714">การประชุมทางวิดีโอ</translation>
 <translation id="1852934301711881861">ติดตั้ง Chrome OS Flex</translation>
 <translation id="1856388568474281774">ลูกศรลง</translation>
@@ -129,7 +113,6 @@
 <translation id="1904932688895783618">แหล่งข้อมูลอื่นๆ บางส่วนที่เป็นประโยชน์มีดังต่อไปนี้</translation>
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
-<translation id="1932611479324127242">ตัดแรงดันไฟฟ้าของแบตเตอรี่</translation>
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1977994649430373166">รูปโปรไฟล์ Google</translation>
@@ -140,24 +123,20 @@
 <translation id="2008685064673031089">Prime Search</translation>
 <translation id="2011174342667534258">เวอร์ชันของ SDK:</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
-<translation id="2016848882344942759">--ไม่มีไวท์เลเบล--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูโปรแกรมรักษาหน้าจอ</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
-<translation id="2115956742084455574">รหัสไม่ถูกต้อง</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2138109643290557664">ล่องลอยผ่านไป</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
-<translation id="2154739667870063220">รีบูต</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
-<translation id="2177831236093724629">พบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> โปรดอัปเดต Chrome OS เป็นเวอร์ชันล่าสุดเพื่อให้แน่ใจว่ามีการระบุคอมโพเนนต์ที่ตรงตามข้อกำหนดทุกคอมโพเนนต์</translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
 <translation id="2182088270354640012">ขอบคุณสำหรับความคิดเห็น ความคิดเห็นของคุณจะช่วยปรับปรุง Chrome OS และได้รับการตรวจสอบจากทีม Chrome OS คุณจะไม่ได้รับการตอบกลับโดยตรงเนื่องจากมีผู้ส่งรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
@@ -171,22 +150,16 @@
 <translation id="2240366984605217732">สลับเลย์เอาต์</translation>
 <translation id="225692081236532131">สถานะการเปิดใช้งาน</translation>
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
-<translation id="2275586345903859204">ซ่อมเรียบร้อยแล้ว</translation>
 <translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
-<translation id="2294753434210277304">เสียบที่จัดเก็บข้อมูลภายนอก เช่น ไดรฟ์ USB หรือการ์ด SD ซึ่งมีอิมเมจยูทิลิตีการกู้คืน Chromebook ที่ดาวน์โหลดมา</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
-<translation id="2340422556570134524">Write Protect เปิดโดยไม่คาดคิด โปรดปิด Write Protect ด้วยตนเองก่อนลองอีกครั้ง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
-<translation id="2360257214555822463">ตรวจพบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> หากคุณเลือกที่จะยืนยันว่าได้ติดตั้งคอมโพเนนต์เหล่านี้ โปรดดำเนินการดังกล่าวตอนนี้เลย</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
-<translation id="236594517359128026">วางแล็ปท็อปบนพื้นราบก่อนดำเนินการต่อ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2407209115954268704">สถานะการล็อกซิม</translation>
@@ -194,10 +167,8 @@
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2421798028054665193">ภาพที่ <ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
-<translation id="2447969267935997922">ติดตั้งเสร็จสมบูรณ์แล้ว คุณนําไดรฟ์ USB หรือการ์ด SD ออกได้</translation>
 <translation id="2448312741937722512">ประเภท</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
-<translation id="2480034874476596812">ปิดด้วยตัวเอง</translation>
 <translation id="248546197012830854">อุปกรณ์ออฟไลน์อยู่ เชื่อมต่อกับเครือข่าย Wi-Fi เพื่อดูเนื้อหาช่วยเหลือ</translation>
 <translation id="2491955442992294626">แป้นจะไม่ได้รับการทดสอบเมื่อใช้หน้าต่างอื่น</translation>
 <translation id="2493126929778606526">รูปภาพที่ดีที่สุดซึ่งเลือกสรรมาให้คุณโดยอัตโนมัติ</translation>
@@ -219,26 +190,21 @@
 <translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
-<translation id="2727250716596204208">ไม่พบอิมเมจของเฟิร์มแวร์ เสียบที่จัดเก็บข้อมูลภายนอก เช่น ไดรฟ์ USB หรือการ์ด SD ซึ่งมีอิมเมจยูทิลิตีการกู้คืน Chromebook ที่ดาวน์โหลดมา</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
-<translation id="2756652381241102009">เรียกใช้การวินิจฉัย</translation>
 <translation id="2783010256799387990">ผ่าน</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="28232023175184696">เชื่อมต่ออินเทอร์เน็ตไม่ได้ คลิกเพื่อลองอีกครั้ง</translation>
-<translation id="2827359915699915567">พิมพ์ URL นี้ด้วยตัวเองเพื่อรับรหัส RSU</translation>
 <translation id="2859243502336719778">การอัปเดตสำคัญ</translation>
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
-<translation id="291142119251986300">คอมโพเนนต์ไม่ตรงตามข้อกำหนด</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3017079585324758401">พื้นหลัง</translation>
-<translation id="302435934487327038">ติดตั้งเสร็จสมบูรณ์</translation>
 <translation id="3027578600144895987">ปิดกล้อง</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -247,12 +213,10 @@
 <translation id="3083667275341675831">การวินิจฉัยการเชื่อมต่อ</translation>
 <translation id="3084958266922136097">ปิดใช้โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
-<translation id="3096753366938912951">วางฝาบนพื้นราบ</translation>
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
-<translation id="3137983112374760826">กำลังจัดสรรอุปกรณ์...</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
@@ -261,7 +225,6 @@
 <translation id="319101249942218879">เปลี่ยนรูปโปรไฟล์แล้ว</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
-<translation id="320091191259649613">หากคุณยังคงพบปัญหาดังกล่าวหลังการอัปเดต ก็เป็นไปได้ว่าคอมโพเนนต์นั้นเพิ่งมีคุณสมบัติตรงตามข้อกำหนดและยังไม่ได้รับการบันทึกลงในฐานข้อมูล</translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
@@ -271,17 +234,13 @@
 <translation id="3291996639387199448">ทิศทางของคีย์</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
-<translation id="3333527094307156612">ใช้คิวอาร์โค้ดนี้เพื่อรับรหัสปลดล็อกที่เป็นอักขระ 8 ตัว หรือคุณจะพิมพ์<ph name="LINK_BEGIN" />URL นี้<ph name="LINK_END" />ด้วยตัวเองก็ได้เช่นกัน</translation>
-<translation id="3336855445806447827">ไม่แน่ใจ</translation>
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
-<translation id="3383751554789092165">เปลี่ยนข้อมูลอุปกรณ์ตามความจำเป็น</translation>
 <translation id="3404249063913988450">เปิดใช้โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3413935475507503304">คลิก "ถัดไป" เพื่อดำเนินการอัปเดตต่อ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
-<translation id="3441653493275994384">หน้าจอ</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
 <translation id="345898999683440380">กำลังสแกนหน้า <ph name="PAGE_NUM" /> เสร็จแล้ว <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="3459509316159669723">การพิมพ์</translation>
@@ -289,7 +248,6 @@
 <translation id="3484914941826596830">ขณะอัปเดตเฟิร์มแวร์ โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การอัปเดตอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
-<translation id="3492982278147736083">เครื่องวัดการหมุนในส่วนฝา</translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
@@ -306,13 +264,9 @@
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
 <translation id="361575905210396100">ขอขอบคุณสำหรับความคิดเห็นของคุณ</translation>
-<translation id="3616113530831147358">เสียง</translation>
 <translation id="3621202678540785336">อินพุต</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
-<translation id="3643198267586205643">อัปเดตระบบปฏิบัติการ</translation>
-<translation id="3643810137582748570">ข้ามการปรับเทียบ</translation>
 <translation id="3651050199673793219">เลือกหน่วยวัดอุณหภูมิ</translation>
-<translation id="3678765385266369662">เลือกว่าคุณต้องการปิด Write Protect อย่างไร</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">กำลังโหลด ...</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
@@ -320,29 +274,23 @@
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
 <translation id="3771294271822695279">ไฟล์วิดีโอ</translation>
-<translation id="3774059845329307709">หมายเลขซีเรียล</translation>
 <translation id="3784455785234192852">ล็อก</translation>
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
 <translation id="3824259034819781947">แนบไฟล์</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
 <translation id="385051799172605136">กลับ</translation>
-<translation id="3856304145690230735">เครื่องวัดการหมุนในส่วนฐาน</translation>
-<translation id="385832974417157471">ทำ Powerwash อุปกรณ์ก่อนปิด หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3862598938296403232">ต้องป้อนคำอธิบาย</translation>
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
-<translation id="3913541166352922049">ระบบจะปิดใน <ph name="DELAY_DURATION" /> วินาที</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
-<translation id="3924044641767672375">ขอแนะนำให้เชื่อมต่อ Wi-Fi เพื่อให้ขั้นตอนการซ่อมง่ายขึ้น ระบบจะบันทึกเครือข่ายของคุณ</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
 <translation id="3954678691475912818">อุปกรณ์เป็นประเภทที่ไม่รู้จัก</translation>
-<translation id="3958703339436883942">กำลังเตรียมรีสตาร์ท...</translation>
 <translation id="3966286471246132217">ปิดแอปทั้งหมดจนกว่าการทดสอบจะเสร็จสมบูรณ์เพื่อให้ได้ผลลัพธ์ที่ถูกต้องยิ่งขึ้น</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3969602104473960991">อัปเดตรหัสผ่าน Chrome OS แล้ว</translation>
@@ -360,10 +308,8 @@
 <translation id="4111761024568264522">ทัชแพด USB</translation>
 <translation id="4117637339509843559">โหมดมืด</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
-<translation id="4140251671072434548">ดำเนินการปลดล็อกเซิร์ฟเวอร์ RMA</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
-<translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4170180284036919717">ถ่ายรูป</translation>
@@ -378,9 +324,7 @@
 <translation id="4244962993387259361">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ไปที่การตั้งค่า &gt; การจัดการพื้นที่เก็บข้อมูลเพื่อเพิ่มพื้นที่</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
-<translation id="4258561075226177474">อุปกรณ์จะยังอยู่กับผู้ใช้คนเดิม ลบข้อมูลผู้ใช้ไหม</translation>
 <translation id="4271957103967917607">ดูแบบเต็มหน้าจอ</translation>
-<translation id="4275799948641988986">ใครจะเป็นผู้ใช้อุปกรณ์หลังจากซ่อมแล้ว</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4289849978083912975">แสดงภาพสไลด์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -400,7 +344,6 @@
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
-<translation id="4500213108254186382">ตัวตรวจวัดความเร่งในส่วนฝา</translation>
 <translation id="4503223151711056411">ลูกศรซ้าย</translation>
 <translation id="4511264077854731334">พอร์ทัล</translation>
 <translation id="4521826082652183069">การจับคู่ชื่อสำรองของหัวเรื่อง</translation>
@@ -411,8 +354,6 @@
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">ปลดล็อกซิมแล้ว</translation>
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
-<translation id="4568938274596692027">ติดตั้งเสร็จสมบูรณ์แล้ว กำลังเตรียมรีสตาร์ท...</translation>
-<translation id="4576943788798178439">อุปกรณ์รองสไตลัส</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
@@ -428,18 +369,14 @@
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="473775607612524610">อัปเดต</translation>
-<translation id="4740255236714854844">วางฐานบนพื้นราบ</translation>
 <translation id="4744944742468440486">ข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก</translation>
-<translation id="4751272708893364980">ดูบันทึก RMA</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
-<translation id="4774530504324923332">คุณจะต้องมีคีย์ความปลอดภัยที่พร้อมใช้งาน RSU, เครื่องมือสแกนคิวอาร์โค้ด และอุปกรณ์เครื่องที่ 2 ที่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="4791000909649665275">รูปภาพ <ph name="NUMBER" /> รูป</translation>
 <translation id="4793710386569335688">ดูความช่วยเหลือเพิ่มเติมได้ที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
 <translation id="4800589996161293643">ชุมชน Chromebook</translation>
-<translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
 <translation id="4809927044794281115">ธีมสว่าง</translation>
 <translation id="4813136279048157860">รูปภาพของฉัน</translation>
@@ -459,8 +396,6 @@
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
 <translation id="4897058166682006107">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างซ้าย <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4905998861748258752">เปิดฟีเจอร์นี้เพื่อเลือกตัวเลือกโปรแกรมรักษาหน้าจอ</translation>
-<translation id="4908030561598728899">กำลังติดตั้งเฟิร์มแวร์...</translation>
-<translation id="4915052247106771211">ตัวเลือกนี้จะรีเซ็ตอุปกรณ์เป็นการตั้งค่าเริ่มต้น (Powerwash)</translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
 <translation id="491791267030419270">เคล็ดลับในการเขียนความคิดเห็น</translation>
@@ -472,16 +407,13 @@
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="4987769320337599931">ไฟร์วอลล์</translation>
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
-<translation id="5008611843832219958">อัปเดต Chrome OS เป็นเวอร์ชันล่าสุดเพื่อเข้าสู่ขั้นตอนการซ่อมที่เหมาะสมที่สุด</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ระบบจะแสดงรูปภาพ เวลา สภาพอากาศ และข้อมูลสื่อเมื่อไม่มีการใช้งานหน้าจอ</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
-<translation id="5044978354634658544">เสียบ USB</translation>
 <translation id="5049856988445523908">ล็อกซิมแล้ว (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ชื่อกลุ่ม</translation>
 <translation id="5051044138948155788">เหลือเพียงหน้าเดียว ระบบจะนำคุณไปยังหน้าจอเริ่มต้นการสแกน</translation>
-<translation id="506768878203270635">ป้อนอักขระ 8 ตัว</translation>
 <translation id="5088172560898466307">ชื่อโฮสต์ของเซิร์ฟเวอร์</translation>
 <translation id="5089810972385038852">รัฐ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -491,8 +423,6 @@
 <translation id="5166918508782100047">การตั้งค่าคำตอบด่วน</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
-<translation id="5179530508336824319">เปิดใช้ Write Protect เพื่อดำเนินการต่อในหน้าจอถัดไป ดูวิธีการได้ที่หน้าการสนับสนุนของผู้ผลิตอุปกรณ์</translation>
-<translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
@@ -508,10 +438,8 @@
 <translation id="5275828089655680674">เรียกใช้กิจวัตรอีกครั้ง</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
-<translation id="5298334025463010990">ปิดใช้ Write Protect เพื่อดำเนินการต่อในหน้าจอถัดไป ดูวิธีการได้ที่หน้าการสนับสนุนของผู้ผลิตอุปกรณ์</translation>
 <translation id="5300814202279832142">ย้ายหน้าต่างไปที่เดสก์</translation>
 <translation id="5304899856529773394">EVDO</translation>
-<translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318334351163689047">ขอ TCP ไม่สำเร็จ</translation>
@@ -521,15 +449,11 @@
 <translation id="5346687412805619883">เครือข่ายภายใน</translation>
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
-<translation id="5376136733560434719">กำลังเตรียมการปิด...</translation>
 <translation id="5376354385557966694">โหมดสว่างอัตโนมัติ</translation>
-<translation id="537872351913703572">อุปกรณ์จะไปอยู่กับผู้ใช้หรือองค์กรใหม่</translation>
 <translation id="5389159777326897627">วอลเปเปอร์และสไตล์</translation>
 <translation id="5389224261615877010">สีรุ้ง</translation>
-<translation id="5395600419410242651">ลบข้อมูลทั้งหมด</translation>
 <translation id="5400907029458559844">อุปกรณ์กำลังเชื่อมต่อ</translation>
 <translation id="5401938042319910061">เรียกใช้กิจวัตรทั้งหมด</translation>
-<translation id="5406131354638931058">ตัดแรงดันไฟฟ้าของแบตเตอรี่สำหรับอุปกรณ์ที่กำลังจัดส่งหรือจัดเก็บ</translation>
 <translation id="5423849171846380976">เปิดอยู่</translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
@@ -540,10 +464,8 @@
 <translation id="5499114900554609492">สแกนไม่สำเร็จ</translation>
 <translation id="5499762266711462226">สีของแป้นพิมพ์จะขึ้นอยู่กับวอลเปเปอร์</translation>
 <translation id="5502931783115429516">Android ไม่ทำงาน</translation>
-<translation id="5507300744274596613">ตรวจสอบว่า Chrome OS เป็นเวอร์ชันล่าสุด</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5548284010950733518">ปรับเทียบคอมโพเนนต์</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">สแกนอีกครั้ง</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -563,20 +485,16 @@
 <translation id="576835345334454681">เพิ่มความสว่างของหน้าจอ</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784136236926853061">เวลาในการตอบสนองของ HTTP สูง</translation>
-<translation id="578753362485952307">หากคุณปรับปรุงเมนบอร์ดใหม่เพื่อใช้ในอุปกรณ์อื่น ให้ไปที่<ph name="LINK_BEGIN" />ขั้นตอนการปรับปรุงใหม่<ph name="LINK_END" /></translation>
-<translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5843706793424741864">ฟาเรนไฮต์</translation>
 <translation id="5849570051105887917">รหัสผู้ให้บริการหน้าแรก</translation>
-<translation id="5856532218727053281">ระบบจะรีสตาร์ทหลังยืนยันสถานะของ Write Protection แล้ว</translation>
 <translation id="5859603669299126575">อัลบั้มแกลเลอรีศิลปะ</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5866840822086176774">แรงมาก</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
-<translation id="5898758006340607522">ปุ่มเปิด/ปิด</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5903200662178656908">อุปกรณ์คือชุดแป้นพิมพ์และเมาส์</translation>
 <translation id="5916084858004523819">ห้ามใช้</translation>
@@ -585,8 +503,6 @@
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
-<translation id="5947494881799873997">ย้อนกลับ</translation>
-<translation id="5951259522948394825">ตรวจสอบว่าทุกอย่างอยู่ในตำแหน่งที่เหมาะสมและดูรายงานการวินิจฉัย</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
@@ -624,7 +540,6 @@
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">เปิดธีมมืด</translation>
-<translation id="6295178529664209245">ดำเนินการซ่อมต่อใช่ไหม</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
 <translation id="631063167932043783">แอป "สำรวจ"</translation>
 <translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
@@ -663,23 +578,19 @@
 <translation id="6575134580692778371">ไม่ได้กำหนดค่า</translation>
 <translation id="6579509898032828423">ใช้รูปภาพนี้</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
-<translation id="6611280807952151149">ออกจากการซ่อม <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
 <translation id="6624819909909965616">อัปโหลดไฟล์ที่ขนาดใหญ่กว่า 10 MB ไม่ได้</translation>
 <translation id="6643016212128521049">ล้าง</translation>
-<translation id="6644568396961840069">บันทึกไฟล์ไม่ได้ ลองเสียบที่จัดเก็บข้อมูลภายนอกอื่น หรือลองอีกครั้งในภายหลัง</translation>
 <translation id="6647510110698214773">อัลกอริทึมการเข้ารหัส</translation>
 <translation id="6650062777702288430">สลับระหว่างอักขระคานะ/ตัวอักษรและตัวเลขคละกัน</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
-<translation id="6719240409382354629">กำลังเตรียมรีสตาร์ท...</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6723847290197874913">ไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
-<translation id="6746847322826305075">คุณสามารถดำเนินการต่อด้วยการซ่อมทั้งหมดหรือทำ Powerwash อุปกรณ์ (รีเซ็ตเป็นค่าเริ่มต้น) เพื่อนำเมนบอร์ดกลับเข้าคลัง</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6753452347192452143">อุปกรณ์เป็นคอมพิวเตอร์</translation>
@@ -689,10 +600,7 @@
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
-<translation id="6822504384524564824">ควรเปลี่ยน SKU ในกรณีที่คอมโพเนนต์ใหม่แตกต่างจากรายการเดิมที่ถูกแทนที่เท่านั้น ตัวอย่างเช่น ใช้หน้าจอสัมผัสแทนหน้าจอไม่สัมผัส หรืออัปเกรดหน่วยความจำจาก 8 GB เป็น 16 GB</translation>
-<translation id="6840315122969944400">การซ่อม <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>
-<translation id="6876833053687020046">หมายเลขชิ้นส่วน DRAM</translation>
 <translation id="6889786074662672253">ขณะรีสตาร์ท โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การดำเนินการอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="6905724422583748843">กลับไปที่ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
@@ -713,7 +621,6 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ไม่สำเร็จ - การให้สิทธิ์ไม่สำเร็จ</translation>
 <translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
-<translation id="7126228745139711113">ปิด Write Protect แล้ว</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
@@ -723,7 +630,6 @@
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7170236477717446850">รูปโปรไฟล์</translation>
 <translation id="7172721935181587524">1 ภาพ</translation>
-<translation id="7175037578838465313">กำหนดค่า <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
@@ -731,7 +637,6 @@
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
-<translation id="7281209642468917121">เลือกอย่างน้อย 1 คอมโพเนนต์แล้วลองอีกครั้ง หรือข้ามการปรับเทียบ</translation>
 <translation id="7281657306185710294">สัมผัสสายลมเย็น</translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
 <translation id="7297226631177386107">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTPS</translation>
@@ -744,14 +649,12 @@
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="73631062356239394">แชร์ข้อมูลการวินิจฉัย</translation>
 <translation id="7375053625150546623">EAP</translation>
-<translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
 <translation id="741244894080940828">การแปลง</translation>
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
-<translation id="7478405245077383528">ระบบจะรีสตาร์ทใน <ph name="DELAY_DURATION" /> วินาที</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
@@ -765,16 +668,12 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">หน้าจอสัมผัส USB</translation>
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
-<translation id="760845693386726841">ไม่พบคอมโพเนนต์นี้</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
-<translation id="7626501172915339021">ดำเนินการปลดล็อกเซิร์ฟเวอร์ RMA (RSU)</translation>
 <translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7656388927906093505">อุปกรณ์เป็นเมาส์</translation>
-<translation id="7657530360897961171">ข้อผิดพลาดในการซ่อม <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7665800271478495366">เปลี่ยนรูปโปรไฟล์</translation>
-<translation id="7682274994254393134">เริ่มการซ่อม</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -805,9 +704,7 @@
 <translation id="7960831585769876809">อุณหภูมิ</translation>
 <translation id="7977800524392185497">ไปที่การตั้งค่าเพื่อเข้าร่วมเครือข่าย <ph name="NETWORK_NAME" /></translation>
 <translation id="7978412674231730200">กุญแจส่วนตัว</translation>
-<translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7994702968232966508">วิธีการ EAP</translation>
-<translation id="8018928621986160031">บันทึกลงใน "<ph name="FILE_LOCATION" />" แล้ว</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">เปิดใช้โหมดปรับสีอัตโนมัติ</translation>
@@ -818,39 +715,30 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
-<translation id="8109786307828817014">ดำเนินการต่อแม้ว่าจะปรับเทียบไม่สำเร็จใช่ไหม</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="819552138404104974">บันทึก RMA</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
-<translation id="8217675307824400706">เชื่อมต่ออินเทอร์เน็ต</translation>
-<translation id="8221728673725659466">การปรับเทียบเสร็จสมบูรณ์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8246209727385807362">ผู้ให้บริการที่ไม่รู้จัก</translation>
 <translation id="827422111966801947">สีคราม</translation>
-<translation id="8281886186245836920">ข้าม</translation>
 <translation id="8286154143153872371">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าซ้ำเพื่อดูวอลเปเปอร์</translation>
 <translation id="8291967909914612644">ประเทศผู้ให้บริการหน้าแรก</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8302368968391049045">ไฟร์วอลล์ HTTPS</translation>
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
-<translation id="8327249300223641918">วางทั้งอุปกรณ์ (ฐานและฝา) บนพื้นราบก่อนดำเนินการต่อ</translation>
-<translation id="8330949592403310082">เลือกคอมโพเนนต์ที่มีการแทนที่</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
 <translation id="8364946094152050673">เนมเซิร์ฟเวอร์ว่างเปล่า</translation>
 <translation id="8372477600026034341">โฮสต์เพิ่มเติม</translation>
-<translation id="8378855320830505539">ภูมิภาค</translation>
-<translation id="8382302752385457774">ไวท์เลเบล</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
@@ -861,8 +749,6 @@
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>
 <translation id="8456761643544401578">โหมดมืดอัตโนมัติ</translation>
 <translation id="8461329675984532579">ชื่อผู้ให้บริการหน้าแรก</translation>
-<translation id="8467104829907989997">กำลังปรับเทียบคอมโพเนนต์...</translation>
-<translation id="8474030592808010086">ถอดปลั๊กอุปกรณ์เพื่อตัดแรงดันไฟฟ้าของแบตเตอรี่</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
@@ -871,22 +757,17 @@
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8529392826145705615">คอมโพเนนต์อาจทำงานไม่ถูกต้องเว้นแต่จะมีการปรับเทียบ</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655828773034788261">แชร์ URL:</translation>
 <translation id="8660881923941176839">ปอนด์</translation>
-<translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
-<translation id="8671972493856476349">อัปเดตเป็น <ph name="VERSION_NUMBER" /> และรีสตาร์ท</translation>
 <translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
-<translation id="8680431479333800907">อุปกรณ์จะยังอยู่กับผู้ใช้คนเดิม</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
-<translation id="8717030727630712160">กำลังดำเนินการซ่อมต่อ…</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
@@ -894,7 +775,6 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
-<translation id="8778600430213950389">เกิดข้อผิดพลาด ซึ่งน่าจะมาจากปัญหาเกี่ยวกับฮาร์ดแวร์ โปรดเปลี่ยนเมนบอร์ดแล้วลองขั้นตอนการซ่อมอีกครั้ง</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">เครือข่ายนี้อาจมีแคพทีฟพอร์ทัล</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
@@ -911,14 +791,11 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
-<translation id="8897267175591692539">ประกอบอุปกรณ์กลับเข้าด้วยกันได้เลย</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ของ <ph name="GIVEN_NAME" /></translation>
-<translation id="8919792139048574232">ดูสิ่งที่ได้รับการแก้ไข</translation>
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>
 <translation id="8923267550422472772">วันที่จะรีเซ็ตในแต่ละเดือน</translation>
-<translation id="8925613211674558308">VPD ที่แคช</translation>
 <translation id="8928727111548978589">ไม่สำเร็จ - กระดาษหมด</translation>
 <translation id="8930521118335213258">รายการเทียบเท่า</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>
@@ -935,7 +812,6 @@
 <translation id="9028832514430399253">เปิดตัวสลับเพื่อเลือกตัวเลือกของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">การแปลง DNS มีเวลาในการตอบสนองสูง</translation>
-<translation id="9063121522582193837">ปรับเทียบบางคอมโพเนนต์ไม่ได้</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
@@ -943,24 +819,19 @@
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9092255287806472980">ความคิดเห็นของคุณจะช่วยปรับปรุง Chrome OS และได้รับการตรวจสอบจากทีม แต่เราจะตอบกลับไม่ได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
-<translation id="90977145661420967">คุณจะต้องแยกชิ้นส่วนอุปกรณ์</translation>
-<translation id="9098156406873149060">เก็บข้อมูลผู้ใช้ไว้</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
-<translation id="9118126012493516930">ซ่อมไม่สำเร็จ</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift ซ้าย</translation>
-<translation id="9148058034647219655">ออก</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
 <translation id="9173638680043580060">เหลืออีกไม่ถึง 1 นาที</translation>
 <translation id="917720651393141712">ทดสอบ</translation>
 <translation id="9188992814426075118">แป้นพิมพ์สามารถจับคู่กับวอลเปเปอร์ได้โดยอัตโนมัติ</translation>
 <translation id="9204237731135241582">ไม่สามารถติดต่อกับเกตเวย์จากแอป Android</translation>
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
-<translation id="922179502584117429">เวอร์ชันปัจจุบัน <ph name="VERSION_NUMBER" /> ล้าสมัยแล้ว</translation>
 <translation id="932327136139879170">หน้าแรก</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
