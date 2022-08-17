@@ -33,7 +33,4 @@ void NetworkPortalDetectorStub::Enable() {}
 
 void NetworkPortalDetectorStub::StartPortalDetection() {}
 
-void NetworkPortalDetectorStub::SetStrategy(
-    PortalDetectorStrategy::StrategyId id) {}
-
 }  // namespace ash

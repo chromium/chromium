@@ -32,7 +32,6 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -118,9 +117,6 @@ class NetworkPortalDetectorImplTest
 
     set_detector(network_portal_detector_->captive_portal_detector_.get());
 
-    // Prevents flakiness due to message loop delays.
-    set_time_ticks(base::TimeTicks::Now());
-
     if (base::HistogramBase* histogram =
             base::StatisticsRecorder::FindHistogram(
                 "CaptivePortal.OOBE.DetectionResult")) {
@@ -134,7 +130,6 @@ class NetworkPortalDetectorImplTest
     profile_ = nullptr;
     network_handler_test_helper_.reset();
     ConciergeClient::Shutdown();
-    PortalDetectorStrategy::reset_fields_for_testing();
   }
 
   bool CheckPortalState(NetworkPortalDetector::CaptivePortalStatus status,
@@ -154,27 +149,6 @@ class NetworkPortalDetectorImplTest
            guid == default_network_id;
   }
 
-  bool CheckRequestTimeoutAndCompleteAttempt(
-      int expected_same_detection_result_count,
-      int expected_no_response_result_count,
-      int expected_request_timeout_sec,
-      int net_error,
-      int status_code) {
-    EXPECT_EQ(expected_same_detection_result_count,
-              same_detection_result_count());
-    EXPECT_EQ(expected_no_response_result_count, no_response_result_count());
-    EXPECT_EQ(base::Seconds(expected_request_timeout_sec),
-              get_next_attempt_timeout());
-    if (same_detection_result_count() != expected_same_detection_result_count ||
-        no_response_result_count() != expected_no_response_result_count ||
-        get_next_attempt_timeout() !=
-            base::Seconds(expected_request_timeout_sec)) {
-      return false;
-    }
-    CompleteURLFetch(net_error, status_code, nullptr);
-    return true;
-  }
-
   Profile* profile() { return profile_; }
 
   NetworkPortalDetectorImpl* network_portal_detector() {
@@ -189,52 +163,26 @@ class NetworkPortalDetectorImplTest
     network_portal_detector()->StartPortalDetection();
   }
 
-  void enable_error_screen_strategy() {
-    network_portal_detector()->SetStrategy(
-        PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
-  }
-
-  void disable_error_screen_strategy() {
-    network_portal_detector()->SetStrategy(
-        PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
-  }
-
   void StopDetection() { network_portal_detector()->StopDetection(); }
 
   bool attempt_timeout_is_cancelled() {
     return network_portal_detector()->AttemptTimeoutIsCancelledForTesting();
   }
 
-  base::TimeDelta get_next_attempt_timeout() {
-    return network_portal_detector()->strategy_->GetNextAttemptTimeout();
+  void set_attempt_delay(const base::TimeDelta& delay) {
+    network_portal_detector()->set_attempt_delay_for_testing(delay);
   }
 
-  void set_next_attempt_timeout(const base::TimeDelta& timeout) {
-    PortalDetectorStrategy::set_next_attempt_timeout_for_testing(timeout);
+  void set_attempt_timeout(const base::TimeDelta& timeout) {
+    network_portal_detector()->set_attempt_timeout_for_testing(timeout);
   }
 
   const base::TimeDelta& next_attempt_delay() {
     return network_portal_detector()->next_attempt_delay_for_testing();
   }
 
-  int same_detection_result_count() {
-    return network_portal_detector()->same_detection_result_count_for_testing();
-  }
-
   int no_response_result_count() {
     return network_portal_detector()->no_response_result_count_for_testing();
-  }
-
-  void set_no_response_result_count(int count) {
-    network_portal_detector()->set_no_response_result_count_for_testing(count);
-  }
-
-  void set_delay_till_next_attempt(const base::TimeDelta& delta) {
-    PortalDetectorStrategy::set_delay_till_next_attempt_for_testing(delta);
-  }
-
-  void set_time_ticks(const base::TimeTicks& time_ticks) {
-    network_portal_detector()->set_time_ticks_for_testing(time_ticks);
   }
 
   void SetNetworkState(const std::string& service_path,
@@ -436,7 +384,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateReconnect) {
   // Reconnecting to the same network will trigger another portal check with the
   // same results.
   SetDisconnected(kStubWireless1);
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
   SetConnectedWithProxy(kStubWireless1);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
@@ -464,7 +412,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
                        kStubWireless1));
 
   // Setting the state to portal-suspected should trigger chrome detection.
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
   SetNetworkState(kStubWireless1, shill::kStatePortalSuspected);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
@@ -477,7 +425,7 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
 
   // Setting the state back  to online should trigger chrome detection since a
   // proxy is configured.
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
   SetNetworkState(kStubWireless1, shill::kStateOnline);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
@@ -493,19 +441,17 @@ TEST_F(NetworkPortalDetectorImplTest, PortalDetectionTimeout) {
   ASSERT_EQ(State::STATE_IDLE, state());
 
   // For instantaneous timeout.
-  set_next_attempt_timeout(base::Seconds(0));
+  set_attempt_timeout(base::Seconds(0));
 
   ASSERT_EQ(State::STATE_IDLE, state());
-  ASSERT_EQ(0, same_detection_result_count());
   ASSERT_EQ(0, no_response_result_count());
 
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1);
 
-  // First portal detection timeouts, next portal detection is
-  // scheduled.
-  ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  ASSERT_EQ(1, no_response_result_count());
+  // First portal detection times out, next portal detection is scheduled.
+  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(1, no_response_result_count());
 }
 
 TEST_F(NetworkPortalDetectorImplTest, PortalDetectionRetryAfter) {
@@ -529,7 +475,7 @@ TEST_F(NetworkPortalDetectorImplTest, PortalDetectionRetryAfter) {
   ASSERT_EQ(base::Seconds(retry_delay), next_attempt_delay());
 }
 
-TEST_F(NetworkPortalDetectorImplTest, PortalDetectorRetryAfterIsSmall) {
+TEST_F(NetworkPortalDetectorImplTest, PortalDetectionRetryAfterIsSmall) {
   ASSERT_EQ(State::STATE_IDLE, state());
 
   const int retry_delay = 1;
@@ -553,7 +499,7 @@ TEST_F(NetworkPortalDetectorImplTest, FirstAttemptFailed) {
   ASSERT_EQ(State::STATE_IDLE, state());
   ASSERT_EQ(0, no_response_result_count());
 
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
   const int retry_delay = 0;
   std::string retry_response = GetRetryResponse(retry_delay);
 
@@ -581,7 +527,7 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
   ASSERT_EQ(State::STATE_IDLE, state());
   ASSERT_EQ(0, no_response_result_count());
 
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
   const int retry_delay = 0;
   std::string retry_response = GetRetryResponse(retry_delay);
 
@@ -615,7 +561,7 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
 
 TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {
   ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
 
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1);
@@ -635,7 +581,7 @@ TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {
 
 TEST_F(NetworkPortalDetectorImplTest, NoResponseButBehindPortal) {
   ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
 
   // Set a portal-suspected state to trigger Chrome portal detection.
   SetNetworkState(kStubWireless1, shill::kStatePortalSuspected);
@@ -652,99 +598,9 @@ TEST_F(NetworkPortalDetectorImplTest, NoResponseButBehindPortal) {
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 0, kStubWireless1));
 }
 
-TEST_F(NetworkPortalDetectorImplTest,
-       DisableErrorScreenStrategyWhilePendingRequest) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_no_response_result_count(3);
-  enable_error_screen_strategy();
-
-  // Connect with a proxy to trigger Chrome portal detection.
-  SetConnectedWithProxy(kStubWireless1);
-  const int retry_delay = 0;
-  std::string retry_response = GetRetryResponse(retry_delay);
-  CompleteURLFetch(net::OK, 503, retry_response.c_str());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Disabling the strategy should cancel detection.
-  disable_error_screen_strategy();
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN,
-                       kStatusCodeUnset, kStubWireless1));
-}
-
-TEST_F(NetworkPortalDetectorImplTest, ErrorScreenStrategyForOnlineNetwork) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-  enable_error_screen_strategy();
-
-  // Connect with a proxy to trigger Chrome portal detection.
-  SetConnectedWithProxy(kStubWireless1);
-  CompleteURLFetch(net::OK, 204, nullptr);
-  EXPECT_EQ(State::STATE_IDLE, state());
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
-                       kStubWireless1));
-}
-
-TEST_F(NetworkPortalDetectorImplTest, ErrorScreenStrategyForPortalNetwork) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-
-  enable_error_screen_strategy();
-
-  // Connect with a proxy to trigger Chrome portal detection.
-  SetConnectedWithProxy(kStubWireless1);
-  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  // No response result remains in an online state.
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  EXPECT_EQ(1, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
-                       kStatusCodeUnset, kStubWireless1));
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  // No response result remains in an online state.
-  CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);
-  EXPECT_EQ(2, no_response_result_count());
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
-                       kStatusCodeUnset, kStubWireless1));
-
-  // To run CaptivePortalDetector::DetectCaptivePortal().
-  base::RunLoop().RunUntilIdle();
-
-  // OK + 200 response result sets a portal state.
-  CompleteURLFetch(net::OK, 200, nullptr);
-  EXPECT_EQ(0, no_response_result_count());
-  EXPECT_EQ(State::STATE_IDLE, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
-                       kStubWireless1));
-
-  disable_error_screen_strategy();
-
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN,
-                       200, kStubWireless1));
-}
-
 TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
   ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
+  set_attempt_delay(base::TimeDelta());
 
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1);
@@ -762,112 +618,6 @@ TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN,
                        kStatusCodeUnset, kStubWireless1));
-}
-
-TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-
-  // Connect with a proxy to trigger Chrome portal detection.
-  SetConnectedWithProxy(kStubWireless1);
-
-  // First portal detection attempt uses 5sec timeout.
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      0 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Second portal detection attempt uses 10sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      1 /* expected_same_detection_result_count */,
-      1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Third portal detection attempt uses 15sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      2 /* expected_same_detection_result_count */,
-      2 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_IDLE, state());
-
-  // Check that on the error screen 15sec timeout is used.
-  enable_error_screen_strategy();
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      0 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  disable_error_screen_strategy();
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  SetNetworkDeviceEnabled(shill::kTypeWifi, true);
-  SetConnected(kStubWireless1);
-
-  // First portal detection attempt for wifi1 uses 5sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      0 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Second portal detection attempt for wifi1 also uses 5sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      1 /* expected_same_detection_result_count */,
-      1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::OK, 204));
-  EXPECT_EQ(State::STATE_IDLE, state());
-
-  // Check that in error screen strategy detection for wifi1 15sec
-  // timeout is used.
-  enable_error_screen_strategy();
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      0 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::OK, 204));
-  disable_error_screen_strategy();
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-}
-
-TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts2) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-  set_delay_till_next_attempt(base::TimeDelta());
-
-  // Connect with a proxy to trigger Chrome portal detection.
-  SetConnectedWithProxy(kStubWireless1);
-
-  // First portal detection attempt for wifi1 uses 5sec timeout.
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      0 /* expected_same_detection_result_count */,
-      0 /* expected_no_response_result_count */,
-      5 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Second portal detection attempt for wifi1 uses 10sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      1 /* expected_same_detection_result_count */,
-      1 /* expected_no_response_result_count */,
-      10 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
-
-  // Third portal detection attempt for wifi1 uses 15sec timeout.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(CheckRequestTimeoutAndCompleteAttempt(
-      2 /* expected_same_detection_result_count */,
-      2 /* expected_no_response_result_count */,
-      15 /* expected_request_timeout_sec */, net::ERR_CONNECTION_CLOSED, 0));
-
-  // After 3 attempts, detection is completed.
-  EXPECT_EQ(State::STATE_IDLE, state());
 }
 
 }  // namespace ash

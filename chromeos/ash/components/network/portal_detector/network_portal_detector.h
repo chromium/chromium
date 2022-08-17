@@ -5,17 +5,17 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/notreached.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 
 namespace ash {
 
 class NetworkState;
 
 // This is an interface for a chromeos portal detector that allows for
-// observation of captive portal state. It supports retries based on a portal
-// detector strategy.
+// observation of captive portal state.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
  public:
   enum CaptivePortalStatus {
@@ -87,10 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // currently in the idle state, does nothing. Returns true if a new portal
   // detection attempt was started.
   virtual void StartPortalDetection() = 0;
-
-  // Sets current strategy according to |id|. If current detection id
-  // doesn't equal to |id|, detection is restarted.
-  virtual void SetStrategy(PortalDetectorStrategy::StrategyId id) = 0;
 
   // Returns non-localized string representation of |status|.
   static std::string CaptivePortalStatusString(CaptivePortalStatus status);

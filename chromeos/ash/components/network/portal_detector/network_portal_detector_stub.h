@@ -29,7 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   bool IsEnabled() override;
   void Enable() override;
   void StartPortalDetection() override;
-  void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
 };
 
 }  // namespace ash

@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -256,8 +255,7 @@ void ErrorScreen::ShowImpl() {
   view_->Show();
   LOG(WARNING) << "Network error screen message is shown";
   session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
+  network_portal_detector::GetInstance()->StartPortalDetection();
 }
 
 void ErrorScreen::HideImpl() {
@@ -269,8 +267,6 @@ void ErrorScreen::HideImpl() {
     std::move(on_hide_callback_).Run();
     on_hide_callback_ = base::OnceClosure();
   }
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
 void ErrorScreen::OnUserAction(const base::Value::List& args) {

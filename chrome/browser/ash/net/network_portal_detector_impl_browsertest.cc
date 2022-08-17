@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/account_id/account_id.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/prefs/pref_service.h"
@@ -112,8 +111,6 @@ class NetworkPortalDetectorImplBrowserTest
     network_portal_detector::InitializeForTesting(network_portal_detector_);
     network_portal_detector_->enabled_ = true;
     set_detector(network_portal_detector_->captive_portal_detector_.get());
-    PortalDetectorStrategy::set_delay_till_next_attempt_for_testing(
-        base::TimeDelta());
     network_portal_notification_controller_ =
         std::make_unique<NetworkPortalNotificationController>(
             network_portal_detector_);
@@ -128,10 +125,6 @@ class NetworkPortalDetectorImplBrowserTest
     network_portal_detector_->StopDetection();
     network_portal_detector_->StartDetection();
     base::RunLoop().RunUntilIdle();
-  }
-
-  PortalDetectorStrategy* strategy() {
-    return network_portal_detector_->strategy_.get();
   }
 
   void SetIgnoreNoNetworkForTesting() {
@@ -157,15 +150,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
                        PRE_InSessionDetection) {
   RegisterUser(test_account_id_);
   StartupUtils::MarkOobeCompleted();
-  ASSERT_EQ(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN, strategy()->Id());
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
                        InSessionDetection) {
   LoginUser(test_account_id_);
   content::RunAllPendingInMessageLoop();
-
-  ASSERT_EQ(PortalDetectorStrategy::STRATEGY_ID_SESSION, strategy()->Id());
 
   EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
 
@@ -226,8 +216,6 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
       prefs::kCaptivePortalAuthenticationIgnoresProxy, preference_value);
 
-  EXPECT_EQ(PortalDetectorStrategy::STRATEGY_ID_SESSION, strategy()->Id());
-
   // User connects to portalled wifi.
   SetConnected(kWifiServicePath);
   SetPortal(kWifiServicePath);
@@ -250,7 +238,6 @@ IN_PROC_BROWSER_TEST_P(NetworkPortalDetectorImplBrowserTestIgnoreProxy,
                        PRE_TestWithPreference) {
   RegisterUser(test_account_id_);
   StartupUtils::MarkOobeCompleted();
-  EXPECT_EQ(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN, strategy()->Id());
 }
 
 IN_PROC_BROWSER_TEST_P(NetworkPortalDetectorImplBrowserTestIgnoreProxy,

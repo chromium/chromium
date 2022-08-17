@@ -47,11 +47,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   bool IsEnabled() override;
   void Enable() override;
   void StartPortalDetection() override;
-  void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
-
-  PortalDetectorStrategy::StrategyId strategy_id() const {
-    return strategy_id_;
-  }
 
   bool portal_detection_in_progress() const {
     return portal_detection_in_progress_;
@@ -61,7 +56,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   base::ObserverList<Observer>::Unchecked observers_;
   std::unique_ptr<NetworkState> default_network_;
   std::map<std::string, CaptivePortalStatus> portal_status_map_;
-  PortalDetectorStrategy::StrategyId strategy_id_;
 
   // Set when StartPortalDetection() is called - it will be reset when observers
   // are notified using NotifyObserversForTesting().

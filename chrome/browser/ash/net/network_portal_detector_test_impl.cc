@@ -12,8 +12,7 @@
 
 namespace ash {
 
-NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl()
-    : strategy_id_(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN) {}
+NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl() = default;
 
 NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() {
   for (auto& observer : observers_)
@@ -114,11 +113,6 @@ void NetworkPortalDetectorTestImpl::StartPortalDetection() {
     std::move(callback).Run();
 
   return;
-}
-
-void NetworkPortalDetectorTestImpl::SetStrategy(
-    PortalDetectorStrategy::StrategyId id) {
-  strategy_id_ = id;
 }
 
 }  // namespace ash

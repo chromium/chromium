@@ -206,10 +206,6 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
     return network_portal_detector_;
   }
 
-  PortalDetectorStrategy::StrategyId strategy_id() {
-    return network_portal_detector_->strategy_id();
-  }
-
  private:
   NetworkPortalDetectorTestImpl* network_portal_detector_;
 
@@ -232,15 +228,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
   host->GetWizardController()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
-  // Error screen asks portal detector to change detection strategy.
+  // Ensure that error_screen->ShowCaptivePortal() succeeds.
   ErrorScreen* error_screen = oobe->GetErrorScreen();
   ASSERT_TRUE(error_screen);
-
-  ASSERT_EQ(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN, strategy_id());
   network_portal_detector()->NotifyObserversForTesting();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  ASSERT_EQ(PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN, strategy_id());
-
   error_screen->ShowCaptivePortal();
 }
 

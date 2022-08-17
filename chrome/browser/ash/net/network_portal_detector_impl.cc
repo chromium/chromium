@@ -33,28 +33,19 @@ namespace {
 
 using ::captive_portal::CaptivePortalDetector;
 
+// Default delay between portal detection attempts when Chrome portal detection
+// is used (for detecting proxy auth or when Shill portal state is unknown).
+constexpr base::TimeDelta kDefaultAttemptDelay = base::Seconds(1);
+
 // Delay before portal detection caused by changes in proxy settings.
 constexpr int kProxyChangeDelaySec = 1;
+
+// Timeout for attempts.
+constexpr base::TimeDelta kAttemptTimeout = base::Seconds(15);
 
 // Maximum number of reports from captive portal detector about
 // offline state in a row before notification is sent to observers.
 constexpr int kMaxOfflineResultsBeforeReport = 3;
-
-// Delay before portal detection attempt after !ONLINE -> !ONLINE
-// transition.
-constexpr int kShortInitialDelayBetweenAttemptsMs = 600;
-
-// Maximum timeout before portal detection attempts after !ONLINE ->
-// !ONLINE transition.
-constexpr int kShortMaximumDelayBetweenAttemptsMs = 2 * 60 * 1000;
-
-// Delay before portal detection attempt after !ONLINE -> ONLINE
-// transition.
-constexpr int kLongInitialDelayBetweenAttemptsMs = 30 * 1000;
-
-// Maximum timeout before portal detection attempts after !ONLINE ->
-// ONLINE transition.
-constexpr int kLongMaximumDelayBetweenAttemptsMs = 5 * 60 * 1000;
 
 const NetworkState* DefaultNetwork() {
   return NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -73,9 +64,7 @@ void SetNetworkPortalState(const NetworkState* network,
 
 NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
     network::mojom::URLLoaderFactory* loader_factory_for_testing)
-    : strategy_(PortalDetectorStrategy::CreateById(
-          PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN,
-          this)) {
+    : attempt_timeout_(kAttemptTimeout) {
   NET_LOG(EVENT) << "NetworkPortalDetectorImpl::NetworkPortalDetectorImpl()";
   network::mojom::URLLoaderFactory* loader_factory;
   if (loader_factory_for_testing) {
@@ -104,7 +93,7 @@ NetworkPortalDetectorImpl::~NetworkPortalDetectorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   attempt_task_.Cancel();
-  attempt_timeout_.Cancel();
+  attempt_timeout_task_.Cancel();
 
   captive_portal_detector_->Cancel();
   captive_portal_detector_.reset();
@@ -168,16 +157,6 @@ void NetworkPortalDetectorImpl::StartPortalDetection() {
     NET_LOG(ERROR) << "StartPortalDetection called with no default network.";
     return;
   }
-  StartDetection();
-}
-
-void NetworkPortalDetectorImpl::SetStrategy(
-    PortalDetectorStrategy::StrategyId id) {
-  if (id == strategy_->Id())
-    return;
-  strategy_ = PortalDetectorStrategy::CreateById(id, this);
-  if (!is_idle())
-    StopDetection();
   StartDetection();
 }
 
@@ -245,29 +224,14 @@ void NetworkPortalDetectorImpl::OnShuttingDown() {
   network_state_handler_observer_.Reset();
 }
 
-int NetworkPortalDetectorImpl::NoResponseResultCount() {
-  return no_response_result_count_;
-}
-
-base::TimeTicks NetworkPortalDetectorImpl::AttemptStartTime() {
-  return attempt_start_time_;
-}
-
-base::TimeTicks NetworkPortalDetectorImpl::NowTicks() const {
-  if (time_ticks_for_testing_.is_null())
-    return base::TimeTicks::Now();
-  return time_ticks_for_testing_;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkPortalDetectorImpl, private:
 
 void NetworkPortalDetectorImpl::StartDetection() {
   NET_LOG(EVENT) << "StartDetection";
 
-  ResetStrategyAndCounters();
+  ResetCounters();
   default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  detection_start_time_ = NowTicks();
   ScheduleAttempt();
 }
 
@@ -276,11 +240,11 @@ void NetworkPortalDetectorImpl::StopDetection() {
     return;
   NET_LOG(EVENT) << "StopDetection";
   attempt_task_.Cancel();
-  attempt_timeout_.Cancel();
+  attempt_timeout_task_.Cancel();
   captive_portal_detector_->Cancel();
   default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   state_ = STATE_IDLE;
-  ResetStrategyAndCounters();
+  ResetCounters();
 }
 
 void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
@@ -290,10 +254,19 @@ void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
     return;
 
   attempt_task_.Cancel();
-  attempt_timeout_.Cancel();
+  attempt_timeout_task_.Cancel();
   state_ = STATE_PORTAL_CHECK_PENDING;
 
-  next_attempt_delay_ = std::max(delay, strategy_->GetDelayTillNextAttempt());
+  if (attempt_delay_for_testing_) {
+    next_attempt_delay_ = *attempt_delay_for_testing_;
+  } else if (!delay.is_zero()) {
+    next_attempt_delay_ = delay;
+  } else if (no_response_result_count_ == 0) {
+    // No delay for first attempt.
+    next_attempt_delay_ = base::TimeDelta();
+  } else {
+    next_attempt_delay_ = kDefaultAttemptDelay;
+  }
   attempt_task_.Reset(base::BindOnce(&NetworkPortalDetectorImpl::StartAttempt,
                                      weak_factory_.GetWeakPtr()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -304,7 +277,6 @@ void NetworkPortalDetectorImpl::StartAttempt() {
   DCHECK(is_portal_check_pending());
 
   state_ = STATE_CHECKING_FOR_PORTAL;
-  attempt_start_time_ = NowTicks();
 
   NET_LOG(EVENT) << "Starting captive portal detection.";
   captive_portal_detector_->DetectCaptivePortal(
@@ -312,13 +284,12 @@ void NetworkPortalDetectorImpl::StartAttempt() {
       base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptCompleted,
                      weak_factory_.GetWeakPtr()),
       NO_TRAFFIC_ANNOTATION_YET);
-  attempt_timeout_.Reset(
+  attempt_timeout_task_.Reset(
       base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptTimeout,
                      weak_factory_.GetWeakPtr()));
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, attempt_timeout_.callback(),
-      strategy_->GetNextAttemptTimeout());
+      FROM_HERE, attempt_timeout_task_.callback(), attempt_timeout_);
 }
 
 void NetworkPortalDetectorImpl::OnAttemptTimeout() {
@@ -361,7 +332,7 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   }
 
   state_ = STATE_IDLE;
-  attempt_timeout_.Cancel();
+  attempt_timeout_task_.Cancel();
 
   CaptivePortalStatus status = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   switch (result) {
@@ -408,19 +379,9 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   if (last_detection_status_ != status) {
     last_detection_status_ = status;
     same_detection_result_count_ = 1;
-    net::BackoffEntry::Policy policy = strategy_->policy();
-    if (status == CAPTIVE_PORTAL_STATUS_ONLINE) {
-      policy.initial_delay_ms = kLongInitialDelayBetweenAttemptsMs;
-      policy.maximum_backoff_ms = kLongMaximumDelayBetweenAttemptsMs;
-    } else {
-      policy.initial_delay_ms = kShortInitialDelayBetweenAttemptsMs;
-      policy.maximum_backoff_ms = kShortMaximumDelayBetweenAttemptsMs;
-    }
-    strategy_->SetPolicyAndReset(policy);
   } else {
     ++same_detection_result_count_;
   }
-  strategy_->OnDetectionCompleted();
 
   if (result == captive_portal::RESULT_NO_RESPONSE)
     ++no_response_result_count_;
@@ -497,15 +458,14 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
     observer.OnPortalDetectionCompleted(network, status);
 }
 
-bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {
-  return attempt_timeout_.IsCancelled();
-}
-
-void NetworkPortalDetectorImpl::ResetStrategyAndCounters() {
+void NetworkPortalDetectorImpl::ResetCounters() {
   last_detection_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   same_detection_result_count_ = 0;
   no_response_result_count_ = 0;
-  strategy_->Reset();
+}
+
+bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {
+  return attempt_timeout_task_.IsCancelled();
 }
 
 }  // namespace ash

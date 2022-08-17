@@ -17,8 +17,6 @@ source_set("portal_detector") {
   sources = [
     "network_portal_detector.cc",
     "network_portal_detector.h",
-    "network_portal_detector_strategy.cc",
-    "network_portal_detector_strategy.h",
     "network_portal_detector_stub.cc",
     "network_portal_detector_stub.h",
   ]
