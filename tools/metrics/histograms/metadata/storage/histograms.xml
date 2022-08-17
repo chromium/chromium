@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
-    expires_after="2022-03-27">
+    expires_after="2023-03-12">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
@@ -49,26 +49,35 @@ chromium-metrics-reviews@google.com.
     Storage Access API unblocked the request or not. Recorded whenever a
     decision to access storage like getting/setting cookies or opening an
     indexeddb connection is made in CookieSettings.
+
+    Warning: this histogram was expired from 2022-03-27 to 08-12-2022; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="API.StorageAccess.GrantIsImplicit" enum="BooleanAvailable"
-    expires_after="2020-11-27">
+    expires_after="2023-03-12">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
     Records if a generated grant was implicit or explicit at the time it was
     created.
+
+    Warning: this histogram was expired from 2020-11-27 to 08-12-2022; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="API.StorageAccess.RequestStorageAccess"
-    enum="RequestStorageResult" expires_after="2020-11-27">
+    enum="RequestStorageResult" expires_after="2023-03-12">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
     Records requests to use document.requestStorageAccess and reasons the
     request may be approved or rejected.
+
+    Warning: this histogram was expired from 2020-11-27 to 08-12-2022; data may
+    be missing.
   </summary>
 </histogram>
 
