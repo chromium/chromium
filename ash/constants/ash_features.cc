@@ -355,7 +355,7 @@ const base::Feature kClipboardHistoryReorder{"ClipboardHistoryReorder",
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 const base::Feature kConsumerAutoUpdateToggleAllowed{
-    "ConsumerAutoUpdateToggleAllowed", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ConsumerAutoUpdateToggleAllowed", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable the changes of WMP features for CrosNext project.
 const base::Feature kCrosNextWMP{"CrosNextWMP",
