@@ -1757,8 +1757,8 @@ message ExtensionTelemetryReportRequest {
         optional string path = 3;
         // Filters the cookies by their Secure property.
         optional bool secure = 4;
-        // Filters out session vs. persistent cookies.
-        optional string session = 5;
+        // Deprecated.
+        reserved 5;
         // The cookie store to retrieve cookies from. If omitted, the current
         // execution context's cookie store will be used.
         optional string store_id = 6;
@@ -1768,6 +1768,9 @@ message ExtensionTelemetryReportRequest {
 
         // Number of times this set of arguments has been used.
         optional uint32 count = 8;
+
+        // Filters out session vs. persistent cookies.
+        optional bool is_session = 9;
       }
 
       repeated GetAllArgsInfo get_all_args_info = 1;
