@@ -611,8 +611,7 @@ namespace {
         self.shouldScrollIntoFeed = NO;
         // Reassign the sort type in case it changed in another tab.
         self.feedHeaderViewController.followingFeedSortType =
-            (FollowingFeedSortType)self.prefService->GetInteger(
-                prefs::kNTPFollowingFeedSortType);
+            self.followingFeedSortType;
         // Update the header so that it's synced with the currently selected
         // feed, which could have been changed when a new web state was
         // inserted.
@@ -636,6 +635,14 @@ namespace {
 }
 
 #pragma mark - FeedControlDelegate
+
+- (FollowingFeedSortType)followingFeedSortType {
+  // TODO(crbug.com/1352935): Add a DCHECK to make sure the coordinator isn't
+  // stopped when we check this. That would require us to use the NTPHelper to
+  // get this information.
+  return (FollowingFeedSortType)self.prefService->GetInteger(
+      prefs::kNTPFollowingFeedSortType);
+}
 
 - (void)handleFeedSelected:(FeedType)feedType {
   DCHECK([self isFollowingFeedAvailable]);
@@ -669,6 +676,7 @@ namespace {
     return;
   }
 
+  [self.feedMetricsRecorder recordFollowingFeedSortTypeSelected:sortType];
   [self.ntpViewController setContentOffsetToTop];
   self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
@@ -1129,9 +1137,7 @@ namespace {
   }
 
   FeedModelConfiguration* followingFeedConfiguration = [FeedModelConfiguration
-      followingModelConfigurationWithSortType:
-          (FollowingFeedSortType)self.prefService->GetInteger(
-              prefs::kNTPFollowingFeedSortType)];
+      followingModelConfigurationWithSortType:self.followingFeedSortType];
   self.discoverFeedService->CreateFeedModel(followingFeedConfiguration);
 
   UIViewController* followingFeed =
@@ -1247,9 +1253,7 @@ namespace {
         self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
         self.selectedFeed != FeedTypeFollowing;
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
-        initWithFollowingFeedSortType:(FollowingFeedSortType)
-                                          self.prefService->GetInteger(
-                                              prefs::kNTPFollowingFeedSortType)
+        initWithFollowingFeedSortType:self.followingFeedSortType
            followingSegmentDotVisible:followingSegmentDotVisible];
     _feedHeaderViewController.feedControlDelegate = self;
     _feedHeaderViewController.ntpDelegate = self;

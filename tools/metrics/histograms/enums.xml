@@ -41541,6 +41541,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Feedback tapped on page from card"/>
 </enum>
 
+<enum name="FeedSortType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Grouped by publisher"/>
+  <int value="2" label="Sorted by latest"/>
+</enum>
+
 <enum name="FeedSpinnerType">
   <int value="1" label="Initial load"/>
   <int value="2" label="Zero state refresh"/>
@@ -41670,6 +41676,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="57"
       label="Show Follow Recommendation IPH telling users that they are able
              to follow a website."/>
+  <int value="58"
+      label="User opened the article in a new tab in group from the back of
+             card menu."/>
+  <int value="59"
+      label="User selected the 'Group by Publisher' Following feed sort type."/>
+  <int value="60"
+      label="User selected the 'Sort by Latest' Following feed sort type."/>
 </enum>
 
 <enum name="FeedUserCommandType">

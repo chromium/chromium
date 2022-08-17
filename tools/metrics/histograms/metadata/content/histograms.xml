@@ -1521,6 +1521,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
+    expires_after="2023-08-15">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>The sort type that was selected from the feed's sort menu.</summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
+    enum="FeedSortType" expires_after="2023-08-15">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    The currently selected sort type when the user has engaged with the
+    Following feed.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
     enum="WebFeedSubscriptionRequestStatus" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>

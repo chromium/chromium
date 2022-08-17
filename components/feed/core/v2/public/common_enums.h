@@ -160,8 +160,11 @@ enum class FeedUserActionType {
   kFollowRecommendationIPHShown = 57,
   // User opened the article in a new tab in group from the back of card menu.
   kTappedOpenInNewTabInGroup = 58,
-
-  kMaxValue = kTappedOpenInNewTabInGroup,
+  // User selected the "Group by Publisher" Following feed sort type.
+  kFollowingFeedSelectedGroupByPublisher = 59,
+  // User selected the "Sort by Latest" Following feed sort type.
+  kFollowingFeedSelectedSortByLatest = 60,
+  kMaxValue = kFollowingFeedSelectedSortByLatest,
 };
 
 // For testing and debugging only.

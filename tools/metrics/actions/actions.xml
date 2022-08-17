@@ -6395,6 +6395,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.WebFeed.SortType.GroupByPublisher">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user has selected to group by publisher from the feed sort menu.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.WebFeed.SortType.SortByLatest">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user has selected to sort by latest from the feed sort menu.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.WillRefresh">
   <owner>adamta@google.org</owner>
   <owner>sczs@chromium.org</owner>

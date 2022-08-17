@@ -233,6 +233,9 @@ class Time;
                                      lastRefreshTime:
                                          (base::Time)lastRefreshTime;
 
+// Records a user action for the Following feed sort type being selected.
+- (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
+
 #pragma mark - Follow
 
 // Record metrics for when the user request to follow/unfollow a website,

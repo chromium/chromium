@@ -628,6 +628,8 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kFirstFollowSheetTappedGoToFeed:
     case FeedUserActionType::kFirstFollowSheetTappedGotIt:
     case FeedUserActionType::kFollowRecommendationIPHShown:
+    case FeedUserActionType::kFollowingFeedSelectedGroupByPublisher:
+    case FeedUserActionType::kFollowingFeedSelectedSortByLatest:
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
 

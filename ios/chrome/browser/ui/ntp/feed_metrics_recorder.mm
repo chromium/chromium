@@ -79,7 +79,24 @@ enum class UserSettingsOnStart {
   // The Feed is enabled, but there is no recent Feed data, so user settings
   // state is unknown.
   kSignedInNoRecentData = 8,
+  // Highest enumerator. Recommended by Histogram metrics best practices.
   kMaxValue = kSignedInNoRecentData,
+};
+
+// Values for UMA ContentSuggestions.Feed.WebFeed.SortType* histograms.
+// This enum is a copy of FollowingFeedSortType in feed_constants.h, used
+// exclusively for metrics recording. This should always be kept in sync with
+// that enum and FollowingFeedSortType in enums.xml.
+enum class FeedSortType {
+  // The sort type is unspecified. With the Following feed selected, this log
+  // indicates a problem.
+  kUnspecifiedSortType = 0,
+  // The feed is grouped by publisher.
+  kGroupedByPublisher = 1,
+  // The feed is sorted in reverse-chronological order.
+  kSortedByLatest = 2,
+  // Highest enumerator. Recommended by Histogram metrics best practices.
+  kMaxValue = kSortedByLatest,
 };
 
 namespace {
@@ -197,6 +214,17 @@ const char kFollowingFeedSelected[] =
 // TODO(crbug.com/1262536): Remove this when issue is fixed.
 const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";
 
+// User action triggered when a Following feed sort type selected from the sort
+// menu.
+const char kFollowingFeedGroupByPublisher[] =
+    "ContentSuggestions.Feed.WebFeed.SortType.GroupByPublisher";
+const char kFollowingFeedSortByLatest[] =
+    "ContentSuggestions.Feed.WebFeed.SortType.SortByLatest";
+
+// Histogram name for selecting Following feed sort types.
+const char kFollowingFeedSortType[] =
+    "ContentSuggestions.Feed.WebFeed.SortType";
+
 // Histogram name for the feed engagement types.
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
@@ -204,6 +232,11 @@ const char kFollowingFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.WebFeed.EngagementType";
 const char kAllFeedsEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.AllFeeds.EngagementType";
+
+// Histogram name for the selected sort type when engaging with the Following
+// feed.
+const char kFollowingFeedSortTypeWhenEngaged[] =
+    "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged";
 
 // Histogram name for a Discover feed card shown at index.
 const char kDiscoverFeedCardShownAtIndex[] =
@@ -735,6 +768,26 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   base::UmaHistogramEnumeration(kFeedUserSettingsOnStart, settings);
 }
 
+- (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType {
+  switch (sortType) {
+    case FollowingFeedSortTypeByPublisher:
+      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
+                                FeedSortType::kGroupedByPublisher);
+      base::RecordAction(
+          base::UserMetricsAction(kFollowingFeedGroupByPublisher));
+      return;
+    case FollowingFeedSortTypeByLatest:
+      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
+                                FeedSortType::kSortedByLatest);
+      base::RecordAction(base::UserMetricsAction(kFollowingFeedSortByLatest));
+      return;
+    case FollowingFeedSortTypeUnspecified:
+      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
+                                FeedSortType::kUnspecifiedSortType);
+      return;
+  }
+}
+
 #pragma mark - Follow
 
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
@@ -1017,6 +1070,10 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
       !self.engagedReportedFollowing) {
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
+    UMA_HISTOGRAM_ENUMERATION(
+        kFollowingFeedSortTypeWhenEngaged,
+        [self convertFollowingFeedSortTypeForHistogram:
+                  [self.feedControlDelegate followingFeedSortType]]);
     self.engagedReportedFollowing = YES;
 
     // Log follow count when engaging with Following feed.
@@ -1070,6 +1127,21 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
   // TODO(crbug.com/1174088): Add card Index and the max number of suggestions.
   UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
+}
+
+#pragma mark - Converters
+
+// Converts a FollowingFeedSortType NSEnum into a FeedSortType enum.
+- (FeedSortType)convertFollowingFeedSortTypeForHistogram:
+    (FollowingFeedSortType)followingFeedSortType {
+  switch (followingFeedSortType) {
+    case FollowingFeedSortTypeUnspecified:
+      return FeedSortType::kUnspecifiedSortType;
+    case FollowingFeedSortTypeByPublisher:
+      return FeedSortType::kGroupedByPublisher;
+    case FollowingFeedSortTypeByLatest:
+      return FeedSortType::kSortedByLatest;
+  }
 }
 
 @end

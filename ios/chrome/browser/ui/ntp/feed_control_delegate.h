@@ -13,6 +13,9 @@
 // Returns the currently selected feed.
 - (FeedType)selectedFeed;
 
+// Returns the currently selected sort type for the Following feed.
+- (FollowingFeedSortType)followingFeedSortType;
+
 // Handles operations after a new feed has been selected. e.g. Displays the
 // feed, updates states, etc.
 - (void)handleFeedSelected:(FeedType)feedType;
