@@ -1147,7 +1147,7 @@
 <translation id="4114146879518089587">साइटवर पुढे सुरू ठेवा</translation>
 <translation id="4116663294526079822">या साइटवर नेहमी अनुमती द्या</translation>
 <translation id="4116701314593212016">JIS B7</translation>
-<translation id="4117700440116928470">धोरण कक्षा समर्थित नाही.</translation>
+<translation id="4117700440116928470">धोरण कक्षा याला सपोर्ट नाही.</translation>
 <translation id="4121428309786185360">रोजी कालबाह्य होत आहे</translation>
 <translation id="4123572138124678573">ट्रिपल पंच बॉटम</translation>
 <translation id="4127575959421463246">ChromeOS फ्लॅग शोधत आहात का? भेट द्या</translation>
@@ -1708,7 +1708,7 @@
 <translation id="5593349413089863479">कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5598944008576757369">पेमेंट पद्धत निवडा</translation>
-<translation id="560412284261940334">व्यवस्थापन समर्थित नाही</translation>
+<translation id="560412284261940334">व्यवस्थापनाला सपोर्ट नाही</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
 <translation id="5610142619324316209">कनेक्शन तपासणे</translation>
@@ -2131,7 +2131,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">हे पेज वाचणे सोपे करण्यासाठी Chrome ने ते सुलभ केले आहे. Chrome ने मूळ पेज असुरक्षित कनेक्शनवरून पुन्हा मिळवले आहे.</translation>
 <translation id="6890443033788248019">स्थानाला अनुमती द्यायची का?</translation>
-<translation id="6891596781022320156">धोरण स्तर समर्थित नाही.</translation>
+<translation id="6891596781022320156">धोरण पातळी याला सपोर्ट नाही.</translation>
 <translation id="6895143722905299846">व्हर्च्युअल नंबर:</translation>
 <translation id="6895330447102777224">आपल्या कार्डची पुष्टी केली</translation>
 <translation id="6897140037006041989">वापरकर्ता एजंट</translation>

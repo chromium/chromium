@@ -6,7 +6,7 @@
 <translation id="1196338895211115272">खासगी की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="1420684932347524586">अरेरे! यादृच्छिक RSA खासगी की व्युत्पन्न करण्यात अयशस्वी.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
-<translation id="1468038450257740950">WebGL समर्थित नाही.</translation>
+<translation id="1468038450257740950">WebGL ला सपोर्ट नाही.</translation>
 <translation id="1803557475693955505">'पार्श्वभूमी पृष्ठ '<ph name="BACKGROUND_PAGE" />'  लोड करणे शक्य नाही.</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
@@ -33,7 +33,7 @@
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">पॅक करण्यासाठी डिरेक्टरीमध्ये अचूक पाथ शोधू शकत नाही</translation>
 <translation id="5356315618422219272">ॲपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">आकार असलेल्या विंडो समर्थित नाहीत.</translation>
+<translation id="5436430103864390185">आकार असलेल्या विंडोना सपोर्ट नाही.</translation>
 <translation id="5456409301717116725">हे एक्स्टेंशन की फाइल '<ph name="KEY_PATH" />' चा समावेश करतात. तुम्हाला कदाचित ते करणे आवश्यक नाही.</translation>
 <translation id="5486326529110362464">खासगी की साठी इनपुट मूल्य विद्यमान असणे आवश्यक आहे.</translation>
 <translation id="5972529113578162692">या मशीनच्या ॲडमिनिस्ट्रेटरलााठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>

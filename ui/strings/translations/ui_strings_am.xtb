@@ -36,7 +36,7 @@
 <translation id="208586643495776849">እባክዎ እንደገና ይሞክሩ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1ቀ}one{#ቀ}other{#ቀ}}</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
-<translation id="2161656808144014275">ጽሑፍ</translation>
+<translation id="2161656808144014275">ጽሁፍ</translation>
 <translation id="2168039046890040389">ወደላይ አንቀሳቅስ</translation>
 <translation id="2190355936436201913">(ባዶ)</translation>
 <translation id="2192232475740621500">ዝቅተኛ ትፍገትን ተጠቀም</translation>
@@ -78,7 +78,7 @@
 <translation id="3295886253693811851">ከዚህ ላይ ጥሪ ያድርጉ</translation>
 <translation id="3306688585798492231">አብሮገነብ ማሳያ</translation>
 <translation id="335581015389089642">ንግግር</translation>
-<translation id="3389286852084373014">ጽሑፍ ከልክ በላይ ግዙፍ ነው</translation>
+<translation id="3389286852084373014">ጽሁፍ ከልክ በላይ ግዙፍ ነው</translation>
 <translation id="3406306243914553062">የHTML ይዘት</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 ቀን ቀርቷል}one{# ቀኖች ቀርቷል}other{# ቀኖች ቀርተዋል}}</translation>
 <translation id="3600969208114796418">የ<ph name="SAVEAS_EXTENSION_TYPE" /> ፋይል</translation>
@@ -195,7 +195,7 @@
 <translation id="8259556432390118667">የአስራስድስትዮሽ ቀለም እሴት</translation>
 <translation id="8328145009876646418">የግራ ጠርዝ</translation>
 <translation id="8331626408530291785">ወደ ላይ ሸብልል</translation>
-<translation id="8352146631962686268">{YEARS,plural, =1{1 አመት}one{# ዓመቶች}other{# ዓመቶች}}</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 ዓመት}one{# ዓመቶች}other{# ዓመቶች}}</translation>
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8394908167088220973">ሚዲያ አጫውት/ለአፍታ አቁም</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1ዓ}one{#ዓ}other{#ዓ}}</translation>
