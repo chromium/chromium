@@ -40,17 +40,32 @@ class TrendingQueriesFieldTrialTest : public PlatformTest {
   base::MockEntropyProvider low_entropy_provider_;
 };
 
-// Tests control field trial.
-TEST_F(TrendingQueriesFieldTrialTest, TestControl) {
+// Tests default field trial group.
+TEST_F(TrendingQueriesFieldTrialTest, TestDefault) {
   auto feature_list = std::make_unique<base::FeatureList>();
-  weight_by_id_[kTrendingQueriesControlID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
+}
+
+// Tests control field trial.
+TEST_F(TrendingQueriesFieldTrialTest, TestControl) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  weight_by_id_[kTrendingQueriesControlID] = 100;
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
+      weight_by_id_, low_entropy_provider_, feature_list.get());
+
+  // Substitute the existing feature list with the one with field trial
+  // configurations we are testing, and check assertions.
+  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_FALSE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
 }
 
@@ -58,13 +73,14 @@ TEST_F(TrendingQueriesFieldTrialTest, TestControl) {
 TEST_F(TrendingQueriesFieldTrialTest, TestEnabledAllUsers) {
   auto feature_list = std::make_unique<base::FeatureList>();
   weight_by_id_[kTrendingQueriesEnabledAllUsersID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, true));
@@ -80,13 +96,14 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledAllUsers) {
 TEST_F(TrendingQueriesFieldTrialTest, TestEnabledHideShortcuts) {
   auto feature_list = std::make_unique<base::FeatureList>();
   weight_by_id_[kTrendingQueriesEnabledAllUsersHideShortcutsID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
@@ -102,13 +119,14 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledHideShortcuts) {
 TEST_F(TrendingQueriesFieldTrialTest, TestEnabledDisabledFeed) {
   auto feature_list = std::make_unique<base::FeatureList>();
   weight_by_id_[kTrendingQueriesEnabledDisabledFeedID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
   EXPECT_FALSE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, true));
@@ -124,13 +142,14 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledDisabledFeed) {
 TEST_F(TrendingQueriesFieldTrialTest, TestEnabledSignedOut) {
   auto feature_list = std::make_unique<base::FeatureList>();
   weight_by_id_[kTrendingQueriesEnabledSignedOutID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));
@@ -146,13 +165,14 @@ TEST_F(TrendingQueriesFieldTrialTest, TestEnabledSignedOut) {
 TEST_F(TrendingQueriesFieldTrialTest, TestEnabledNeverShowModule) {
   auto feature_list = std::make_unique<base::FeatureList>();
   weight_by_id_[kTrendingQueriesEnabledNeverShowModuleID] = 100;
-  trending_queries_field_trial::testing::CreateTrendingQueriesTrialForTesting(
+  trending_queries_field_trial::CreateTrendingQueriesTrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
   // Substitute the existing feature list with the one with field trial
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrendingQueriesModule.name));
+  ASSERT_TRUE(
+      base::FieldTrialList::IsTrialActive(kTrendingQueriesFieldTrialName));
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTrendingQueriesModule));
   EXPECT_TRUE(base::GetFieldTrialParamByFeatureAsBool(
       kTrendingQueriesModule, kTrendingQueriesHideShortcutsParam, false));

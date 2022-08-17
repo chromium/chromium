@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -1108,7 +1109,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTrendingQueriesModuleDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTrendingQueriesModule,
                                     kTrendingQueriesModuleVariations,
-                                    "TrendingQueriesModule")},
+                                    kTrendingQueriesFieldTrialName)},
     {"autofill-parse-iban-fields",
      flag_descriptions::kAutofillParseIBANFieldsName,
      flag_descriptions::kAutofillParseIBANFieldsDescription, flags_ui::kOsIos,
