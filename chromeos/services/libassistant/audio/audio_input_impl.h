@@ -75,6 +75,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   void RecreateAudioInputStream(bool use_dsp);
 
   bool IsHotwordAvailable() const;
+  bool IsHotwordEnabled() const { return hotword_enabled_; }
 
   // Returns the recording state used in unittests.
   bool IsRecordingForTesting() const;
