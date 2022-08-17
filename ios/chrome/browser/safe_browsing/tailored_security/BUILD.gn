@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tailored_security") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_tailored_security_service.h",
+    "chrome_tailored_security_service.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/tailored_security_service",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin",
+  ]
+}

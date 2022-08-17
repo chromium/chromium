@@ -65,6 +65,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/safe_browsing/tailored_security",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/components/security_interstitials",
