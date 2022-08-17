@@ -774,6 +774,17 @@ const FeatureEntry::FeatureVariation kCloseTabSuggestionsStaleVariations[] = {
      std::size(kCloseTabSuggestionsTimeSiteEngagement), nullptr},
 };
 
+const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveAndRestore[] = {
+    {"critical_persisted_tab_data_save_only", "false"}};
+const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveOnly[] = {
+    {"critical_persisted_tab_data_save_only", "true"}};
+
+const FeatureEntry::FeatureVariation kCriticalPersistedTabDataVariations[] = {
+    {"Save and Restore", kCriticalPersistedTabDataSaveAndRestore,
+     std::size(kCriticalPersistedTabDataSaveAndRestore), nullptr},
+    {"Save Only", kCriticalPersistedTabDataSaveOnly,
+     std::size(kCriticalPersistedTabDataSaveOnly), nullptr}};
+
 const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragSlow[] = {
     {"autoscroll", "1"}};
 const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragQuick[] = {
@@ -6006,7 +6017,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-critical-persisted-tab-data",
      flag_descriptions::kCriticalPersistedTabDataName,
      flag_descriptions::kCriticalPersistedTabDataDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCriticalPersistedTabData)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCriticalPersistedTabData,
+                                    kCriticalPersistedTabDataVariations,
+                                    "CriticalPersistedTabData")},
 
     {"suppress-toolbar-captures",
      flag_descriptions::kSuppressToolbarCapturesName,
