@@ -4,9 +4,12 @@
 
 source_set("promos_manager") {
   sources = [
+    "impression_limit.h",
+    "impression_limit.mm",
     "promos_manager.h",
     "promos_manager.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":features",
