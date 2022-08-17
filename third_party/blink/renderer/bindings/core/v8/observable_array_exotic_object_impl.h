@@ -22,7 +22,7 @@ class CORE_EXPORT ObservableArrayExoticObjectImpl final
  public:
   // Returns the backing list object extracted from the proxy target object
   // of type JS Array.
-  static bindings::ObservableArrayBase* ProxyTargetToObservableArrayBase(
+  static bindings::ObservableArrayBase* ProxyTargetToObservableArrayBaseOrDie(
       v8::Isolate* isolate,
       v8::Local<v8::Array> v8_proxy_target);
 
