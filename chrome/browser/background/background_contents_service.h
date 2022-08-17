@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/background/background_contents.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_host_registry.h"
@@ -31,7 +32,6 @@ class Profile;
 
 namespace base {
 class CommandLine;
-class Value;
 }  // namespace base
 
 namespace content {
@@ -185,7 +185,7 @@ class BackgroundContentsService
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
   void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
-                                            const base::Value* contents);
+                                            const base::Value::Dict& contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
