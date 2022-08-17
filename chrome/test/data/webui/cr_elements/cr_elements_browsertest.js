@@ -49,6 +49,7 @@ TEST_F('CrElementsButtonTest', 'All', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsContainerShadowBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
@@ -60,6 +61,7 @@ var CrElementsContainerShadowBehaviorTest =
 TEST_F('CrElementsContainerShadowBehaviorTest', 'All', function() {
   mocha.run();
 });
+GEN('#endif');
 
 var CrElementsContainerShadowMixinTest = class extends CrElementsBrowserTest {
   /** @override */

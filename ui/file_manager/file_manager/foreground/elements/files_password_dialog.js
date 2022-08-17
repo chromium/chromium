@@ -57,9 +57,11 @@ export class FilesPasswordDialog extends HTMLElement {
 
     /**
      * Password dialog.
-     * @private {!CrDialogElement}
+     * TODO(https://crbug.com/1353205): This type should be CrDialogElement, and
+     * an import of that type from cr_dialog.js should be added to this file.
+     * @private {!HTMLElement}
      */
-    this.dialog_ = /** @type {!CrDialogElement} */
+    this.dialog_ = /** @type {!HTMLElement} */
         (this.shadowRoot.querySelector('#password-dialog'));
     this.dialog_.consumeKeydownEvent = true;
 

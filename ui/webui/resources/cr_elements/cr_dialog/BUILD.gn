@@ -16,7 +16,6 @@ js_type_check("closure_compile_module") {
 
 js_library("cr_dialog") {
   deps = [
-    "..:cr_container_shadow_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]

@@ -166,7 +166,6 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 checked_in_dts_files = [
   "cr_elements/cr_button/cr_button.m.d.ts",
   "cr_elements/cr_checkbox/cr_checkbox.d.ts",
-  "cr_elements/cr_container_shadow_behavior.m.d.ts",
   "cr_elements/cr_dialog/cr_dialog.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.d.ts",
   "cr_elements/cr_input/cr_input.m.d.ts",
@@ -248,6 +247,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/smb_shares/smb_browser_proxy.d.ts",
     "cr_components/chromeos/traffic_counters/traffic_counters.d.ts",
     "cr_components/chromeos/traffic_counters/traffic_counters_adapter.d.ts",
+    "cr_elements/cr_container_shadow_behavior.m.d.ts",
     "js/cr/ui/grid.m.d.ts",
     "js/cr/ui/list.m.d.ts",
     "js/list_property_update_behavior.d.ts",

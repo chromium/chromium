@@ -132,7 +132,6 @@ if (include_polymer) {
       "cr_actionable_row_style.m.js",
       "cr_button/cr_button.m.js",
       "cr_checkbox/cr_checkbox.js",
-      "cr_container_shadow_behavior.m.js",
       "cr_dialog/cr_dialog.js",
       "cr_icon_button/cr_icon_button.js",
       "cr_icons_css.m.js",
@@ -157,7 +156,10 @@ if (include_polymer) {
     ]
 
     if (is_chromeos_ash) {
-      in_files += [ "chromeos/cros_color_overrides.m.js" ]
+      in_files += [
+        "chromeos/cros_color_overrides.m.js",
+        "cr_container_shadow_behavior.m.js",
+      ]
     }
   }
 }
@@ -257,10 +259,11 @@ if (include_polymer) {
   }
 
   js_modulizer("modulize") {
-    input_files = [
-      "cr_container_shadow_behavior.js",
-      "cr_scrollable_behavior.js",
-    ]
+    input_files = [ "cr_scrollable_behavior.js" ]
+
+    if (is_chromeos_ash) {
+      input_files += [ "cr_container_shadow_behavior.js" ]
+    }
   }
 }
 
@@ -296,20 +299,22 @@ if (include_polymer) {
 if (include_polymer) {
   js_type_check("cr_elements_module_resources") {
     is_polymer3 = true
-    deps = [
-      ":cr_container_shadow_behavior.m",
-      ":cr_scrollable_behavior.m",
-    ]
+    deps = [ ":cr_scrollable_behavior.m" ]
 
     if (is_chromeos_ash) {
-      deps += [ ":find_shortcut_behavior" ]
+      deps += [
+        ":cr_container_shadow_behavior.m",
+        ":find_shortcut_behavior",
+      ]
     }
   }
 
-  js_library("cr_container_shadow_behavior.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_container_shadow_behavior.m.js" ]
-    deps = [ "//ui/webui/resources/js:assert.m" ]
-    extra_deps = [ ":modulize" ]
+  if (is_chromeos_ash) {
+    js_library("cr_container_shadow_behavior.m") {
+      sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_container_shadow_behavior.m.js" ]
+      deps = [ "//ui/webui/resources/js:assert.m" ]
+      extra_deps = [ ":modulize" ]
+    }
   }
 
   js_library("cr_scrollable_behavior.m") {

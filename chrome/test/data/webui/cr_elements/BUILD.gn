@@ -22,7 +22,6 @@ ts_library("build_ts") {
     "cr_button_tests.ts",
     "cr_card_radio_button_test.ts",
     "cr_checkbox_test.ts",
-    "cr_container_shadow_behavior_test.ts",
     "cr_container_shadow_mixin_test.ts",
     "cr_dialog_test.ts",
     "cr_drawer_tests.ts",
@@ -61,6 +60,7 @@ ts_library("build_ts") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "cr_container_shadow_behavior_test.ts",
       "cr_searchable_drop_down_tests.ts",
       "find_shortcut_behavior_test.ts",
     ]
