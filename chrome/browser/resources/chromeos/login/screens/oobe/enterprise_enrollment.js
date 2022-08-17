@@ -385,12 +385,14 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
     this.isCancelDisabled = (step === OobeTypes.EnrollmentStep.SIGNIN &&
                              !this.isManualEnrollment_) ||
-        (step === OobeTypes.EnrollmentStep.ERROR && this.isForced_) ||
         step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||
         step === OobeTypes.EnrollmentStep.TPM_CHECKING ||
         step === OobeTypes.EnrollmentStep.LOADING;
+    // TODO(b/238175743) Do not set `ENROLLMENT_CANCEL_ENABLED` if enrollment is
+    // forced. Keep setting `isCancelDisabled` to false if enrollment is forced,
+    // otherwise the manual fallback button does nothing.
     if (this.isCancelDisabled) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
