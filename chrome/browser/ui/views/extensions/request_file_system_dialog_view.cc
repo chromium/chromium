@@ -42,7 +42,12 @@ void RequestFileSystemDialogView::ShowDialog(
       web_contents);
 }
 
-RequestFileSystemDialogView::~RequestFileSystemDialogView() {}
+RequestFileSystemDialogView::~RequestFileSystemDialogView() {
+  // Ensure that `callback_` is invoked when dialog is destroyed by means beyond
+  // its UI elements, e.g., by App closing.
+  if (callback_)
+    std::move(callback_).Run(ui::DIALOG_BUTTON_CANCEL);
+}
 
 gfx::Size RequestFileSystemDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogMaxWidth,
@@ -77,7 +82,7 @@ RequestFileSystemDialogView::RequestFileSystemDialogView(
                                   ui::DIALOG_BUTTON_CANCEL));
   SetModalType(ui::MODAL_TYPE_CHILD);
 
-  DCHECK(!callback_.is_null());
+  DCHECK(callback_);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
 

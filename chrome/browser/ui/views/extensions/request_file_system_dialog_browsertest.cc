@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_types.h"
 
 namespace {
 
@@ -28,15 +29,26 @@ class RequestFileSystemDialogTest : public DialogBrowserTest {
     RequestFileSystemDialogView::ShowDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "RequestFileSystemDialogTest", "TestVolume", true,
-        base::BindOnce(&RequestFileSystemDialogTest::DialogCallback));
+        base::BindOnce(&RequestFileSystemDialogTest::DialogCallback,
+                       base::Unretained(this)));
   }
 
+  bool did_run_callback() const { return did_run_callback_; }
+
  private:
-  static void DialogCallback(ui::DialogButton button) {}
+  void DialogCallback(ui::DialogButton button) {
+    // Assume that in tests, this dialog gets canceled, closed, or dismissed.
+    // As a result, callback is treated as cancel
+    EXPECT_EQ(ui::DIALOG_BUTTON_CANCEL, button);
+    did_run_callback_ = true;
+  }
+
+  bool did_run_callback_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(RequestFileSystemDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
+  ASSERT_TRUE(did_run_callback());
 }
 
 }  // namespace

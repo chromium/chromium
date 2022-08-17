@@ -38,7 +38,6 @@ namespace {
 const char kApiUnavailableError[] = "API unavailable.";
 const char kProfileGoneError[] = "Profile gone.";
 const char kRenderFrameHostGoneError[] = "Render frame host gone.";
-const char kRequestAbortedError[] = "Request aborted.";
 
 // Volume list converter that excludes volumes unsupported by lacros-chrome.
 void ConvertAndFilterMojomToVolumeList(
@@ -162,7 +161,6 @@ class RequestFileSystemExecutor
   const bool want_writable_;
   ChromeFileSystemDelegate::FileSystemCallback success_callback_;
   ChromeFileSystemDelegate::ErrorCallback error_callback_;
-  bool responded_ = false;
 };
 
 RequestFileSystemExecutor::RequestFileSystemExecutor(
@@ -191,10 +189,7 @@ void RequestFileSystemExecutor::Run(chromeos::LacrosService* lacros_service) {
               &RequestFileSystemExecutor::OnCrosapiGetVolumeMountInfo, this));
 }
 
-RequestFileSystemExecutor::~RequestFileSystemExecutor() {
-  if (!responded_)
-    FinishWithError(kRequestAbortedError);
-}
+RequestFileSystemExecutor::~RequestFileSystemExecutor() = default;
 
 void RequestFileSystemExecutor::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile_, profile);
@@ -263,14 +258,12 @@ void RequestFileSystemExecutor::OnConsentReceived(
 
 void RequestFileSystemExecutor::FinishWithError(const std::string& error) {
   std::move(error_callback_).Run(error);
-  responded_ = true;
 }
 
 void RequestFileSystemExecutor::FinishWithResponse(
     const std::string& filesystem_id,
     const std::string& registered_name) {
   std::move(success_callback_).Run(filesystem_id, registered_name);
-  responded_ = true;
 }
 
 }  // namespace
