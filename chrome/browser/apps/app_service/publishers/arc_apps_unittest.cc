@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -379,6 +381,39 @@ TEST_F(ArcAppsPublisherTest,
 
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.example.com/foo")));
+}
+
+// Verifies that when the behavior to open links in the browser by default is
+// enabled, the Play Store app can still be set as preferred by the system.
+TEST_F(ArcAppsPublisherTest,
+       SetSupportedLinksDefaultBrowserBehaviorAllowsPlayStore) {
+  base::test::ScopedFeatureList scoped_features(
+      features::kDefaultLinkCapturingInBrowser);
+
+  constexpr char kTestAuthority[] = "play.google.com";
+
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.push_back(arc::mojom::AppInfo::New("Play Store", arc::kPlayStorePackage,
+                                          arc::kPlayStoreActivity));
+  arc_test()->app_instance()->SendRefreshAppList(apps);
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      arc::kPlayStorePackage,
+      CreateFilterList(arc::kPlayStorePackage, {kTestAuthority}));
+  std::vector<arc::mojom::SupportedLinksPtr> added_links;
+  added_links.emplace_back(
+      absl::in_place, arc::kPlayStorePackage,
+      CreateFilterList(arc::kPlayStorePackage, {kTestAuthority}));
+  intent_helper()->OnSupportedLinksChanged(
+      std::move(added_links), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  FlushMojoCalls();
+
+  ASSERT_EQ(arc::kPlayStoreAppId, preferred_apps().FindPreferredAppForUrl(
+                                      GURL("https://play.google.com/foo")));
 }
 
 TEST_F(ArcAppsPublisherTest,

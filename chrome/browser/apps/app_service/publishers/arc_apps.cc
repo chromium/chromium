@@ -599,6 +599,15 @@ bool IntentHasFilesAndMimeTypes(const apps::mojom::IntentPtr& intent) {
       });
   return all_files_have_mime_type || intent->mime_type.has_value();
 }
+
+// Returns true if the app with the given |app_id| should open supported links
+// inside the browser by default.
+bool AppShouldDefaultHandleLinksInBrowser(const std::string& app_id) {
+  // Play Store provides core system functionality and should handle links
+  // inside the app rather than in the browser.
+  return app_id != arc::kPlayStoreAppId;
+}
+
 }  // namespace
 
 namespace apps {
@@ -1631,10 +1640,11 @@ void ArcApps::OnArcSupportedLinksChanged(
     // When kDefaultLinkCapturingInBrowser is enabled, ignore any requests from
     // ARC to set an app as handling supported links by default. We allow
     // requests if they were initiated by user action, or if the app already
-    // has a non-default setting on the browser side.
+    // has a non-default setting on the Ash side.
     bool should_ignore_update =
         base::FeatureList::GetInstance()->IsEnabled(
             features::kDefaultLinkCapturingInBrowser) &&
+        AppShouldDefaultHandleLinksInBrowser(app_id) &&
         source == arc::mojom::SupportedLinkChangeSource::kArcSystem &&
         !proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
 
