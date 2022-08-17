@@ -173,9 +173,6 @@ TEST_F(KnownUserTest, FindPrefsMatchForAdAccountWithEmail) {
   EXPECT_TRUE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailB, "a")));
   // Finding by e-mail should also work even if the guid doesn't match.
   EXPECT_TRUE(FindPrefs(AccountId::AdFromUserEmailObjGuid(kEmailA, "b")));
-  // Finding by just AD guid  without any e-mail doesn't work (because the
-  // resulting AccountId is not considered valid).
-  EXPECT_FALSE(FindPrefs(AccountId::AdFromObjGuid("a")));
 
   // An unrelated AD AccountId with the same Account Type doesn't find
   // anything.

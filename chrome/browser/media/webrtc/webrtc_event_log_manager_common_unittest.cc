@@ -711,7 +711,8 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
       fake_user_manager_->AddArcKioskAppUser(account_id);
       break;
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      account_id = AccountId::AdFromObjGuid("guid");
+      account_id =
+          AccountId::AdFromUserEmailObjGuid(account_id.GetUserEmail(), "guid");
       fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
           account_id, false, test_case.user_type, testing_profile.get());
       break;

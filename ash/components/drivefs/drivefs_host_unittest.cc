@@ -465,7 +465,6 @@ TEST_F(DriveFsHostTest, UnsupportedAccountTypes) {
   const AccountId unsupported_accounts[] = {
       AccountId::FromGaiaId("ID"),
       AccountId::FromUserEmail("test2@example.com"),
-      AccountId::AdFromObjGuid("ID"),
   };
   for (auto& account : unsupported_accounts) {
     host_delegate_ = std::make_unique<TestingDriveFsHostDelegate>(

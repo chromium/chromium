@@ -80,8 +80,6 @@ class AccountId {
   // AccountId with ACTIVE_DIRECTORY AccountType;
   static AccountId AdFromUserEmailObjGuid(const std::string& email,
                                           const std::string& obj_guid);
-  // AccountId with ACTIVE_DIRECTORY AccountType;
-  static AccountId AdFromObjGuid(const std::string& obj_guid);
 
   // Translation functions between AccountType and std::string. Used for
   // serialization.

@@ -188,13 +188,6 @@ AccountId AccountId::AdFromUserEmailObjGuid(const std::string& email,
 }
 
 // static
-AccountId AccountId::AdFromObjGuid(const std::string& obj_guid) {
-  DCHECK(!obj_guid.empty());
-  return AccountId(obj_guid, std::string() /* email */,
-                   AccountType::ACTIVE_DIRECTORY);
-}
-
-// static
 AccountType AccountId::StringToAccountType(
     const std::string& account_type_string) {
   if (account_type_string == kGoogle)
