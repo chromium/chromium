@@ -7156,7 +7156,7 @@ domain Page
       serial
       shared-autofill
       shared-storage
-      storage-access-api
+      storage-access
       sync-xhr
       trust-token-redemption
       unload

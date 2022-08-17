@@ -350,7 +350,7 @@
     {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
-      permissions_policy_name: "storage-access-api",
+      permissions_policy_name: "storage-access",
       depends_on: ["StorageAccessAPI"],
     },
     {
