@@ -24,6 +24,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -39,7 +40,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
   using FlattenedSets =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  using SetsReadyOnceCallback = base::OnceCallback<void(FlattenedSets)>;
+  using SetsReadyOnceCallback =
+      base::OnceCallback<void(network::mojom::PublicFirstPartySetsPtr)>;
   using PolicyCustomization = FirstPartySetsHandler::PolicyCustomization;
 
   static FirstPartySetsHandlerImpl* GetInstance();
@@ -61,14 +63,17 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Must be called exactly once.
   void Init(const base::FilePath& user_data_dir, const std::string& flag_value);
 
-  // Returns the current First-Party Sets data. Returns the data synchronously
-  // via an optional if it's available, or via an asynchronously-invoked
-  // callback if the data is not ready yet.
+  // Returns the fully-parsed and validated public First-Party Sets data.
+  // Returns the data synchronously via an optional if it's already available,
+  // or via an asynchronously-invoked callback if the data is not ready yet.
   //
-  // `callback` must not be null.
+  // This function makes a clone of the public First-Party Sets.
+  //
+  // If `callback` is null, it will not be invoked, even if the First-Party Sets
+  // data is not ready yet.
   //
   // Must not be called if First-Party Sets is disabled.
-  [[nodiscard]] absl::optional<FlattenedSets> GetSets(
+  [[nodiscard]] absl::optional<network::mojom::PublicFirstPartySetsPtr> GetSets(
       SetsReadyOnceCallback callback);
 
   // FirstPartySetsHandler
@@ -108,7 +113,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
   static PolicyCustomization ComputeEnterpriseCustomizations(
-      const FlattenedSets& sets,
+      const network::mojom::PublicFirstPartySetsPtr& public_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
 
  private:
@@ -125,16 +130,16 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // exactly once.
   void OnReadPersistedSetsFile(const std::string& raw_persisted_sets);
 
-  // Sets the current First-Party Sets data. Must be called exactly once.
-  void SetCompleteSets(FlattenedSets sets);
+  // Sets the public First-Party Sets data. Must be called exactly once.
+  void SetCompleteSets(network::mojom::PublicFirstPartySetsPtr public_sets);
 
   // Invokes any pending queries.
   void InvokePendingQueries();
 
-  // Returns the current list of First-Party Sets.
+  // Returns the list of public First-Party Sets.
   //
   // Must be called after the list has been initialized.
-  FlattenedSets GetSetsSync() const;
+  network::mojom::PublicFirstPartySetsPtr GetSetsSync() const;
 
   // Does the following:
   // 1) computes the diff between the `sets_` and the parsed
@@ -160,7 +165,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   //
   // Optional because it is unset until all of the required inputs have been
   // received.
-  absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // TODO(https://crbug.com/1349781): remove the optional layer. We don't need
+  // something that's both optional and nullable, and mojo struct ptrs are
+  // always nullable.
+  absl::optional<network::mojom::PublicFirstPartySetsPtr> public_sets_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The sets that were persisted during the last run of Chrome. Initially
   // unset (nullopt) until it has been read from disk.

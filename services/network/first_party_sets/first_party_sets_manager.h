@@ -21,6 +21,7 @@
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "services/network/first_party_sets/first_party_sets_context_config.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -62,7 +63,7 @@ class FirstPartySetsManager {
   //
   // Only the first call to SetCompleteSets can have any effect; subsequent
   // invocations are ignored.
-  void SetCompleteSets(FlattenedSets sets);
+  void SetCompleteSets(mojom::PublicFirstPartySetsPtr public_sets);
 
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);

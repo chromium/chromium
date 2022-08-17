@@ -40,6 +40,7 @@
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -460,15 +461,19 @@ class SamePartyEnabledRestrictedCookieManagerTest
                 .BindNewPipeAndPassReceiver(),
             CreateFirstPartySetsAccessDelegateParams(),
             &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets(
-        {{net::SchemefulSite(GURL("https://example.com")),
-          net::FirstPartySetEntry(
-              net::SchemefulSite(GURL("https://example.com")),
-              net::SiteType::kPrimary, absl::nullopt)},
-         {net::SchemefulSite(GURL("https://member1.com")),
-          net::FirstPartySetEntry(
-              net::SchemefulSite(GURL("https://example.com")),
-              net::SiteType::kAssociated, 0)}});
+    network::mojom::PublicFirstPartySetsPtr public_sets =
+        network::mojom::PublicFirstPartySets::New();
+    public_sets->sets = {
+        {net::SchemefulSite(GURL("https://example.com")),
+         net::FirstPartySetEntry(
+             net::SchemefulSite(GURL("https://example.com")),
+             net::SiteType::kPrimary, absl::nullopt)},
+        {net::SchemefulSite(GURL("https://member1.com")),
+         net::FirstPartySetEntry(
+             net::SchemefulSite(GURL("https://example.com")),
+             net::SiteType::kAssociated, 0)},
+    };
+    first_party_sets_manager_.SetCompleteSets(std::move(public_sets));
     first_party_sets_access_delegate_remote_->NotifyReady(
         mojom::FirstPartySetsReadyEvent::New());
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(

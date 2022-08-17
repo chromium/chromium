@@ -17,6 +17,7 @@
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,6 +60,14 @@ mojom::FirstPartySetsReadyEventPtr CreateFirstPartySetsReadyEvent(
   return ready_event;
 }
 
+mojom::PublicFirstPartySetsPtr CreatePublicFirstPartySets(
+    FirstPartySetsAccessDelegate::FlattenedSets sets) {
+  mojom::PublicFirstPartySetsPtr public_sets =
+      mojom::PublicFirstPartySets::New();
+  public_sets->sets = sets;
+  return public_sets;
+}
+
 }  // namespace
 
 // No-op FirstPartySetsAccessDelegate should just pass queries to
@@ -71,7 +80,7 @@ class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
             /*receiver=*/mojo::NullReceiver(),
             /*params=*/nullptr,
             &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets({
+    first_party_sets_manager_.SetCompleteSets(CreatePublicFirstPartySets({
         {kSet1Member1,
          net::FirstPartySetEntry(kSet1Owner, net::SiteType::kAssociated, 0)},
         {kSet1Member2,
@@ -82,7 +91,7 @@ class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
          net::FirstPartySetEntry(kSet2Owner, net::SiteType::kAssociated, 0)},
         {kSet2Owner, net::FirstPartySetEntry(
                          kSet2Owner, net::SiteType::kPrimary, absl::nullopt)},
-    });
+    }));
   }
 
   FirstPartySetsAccessDelegate& delegate() { return delegate_; }
@@ -123,7 +132,7 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test {
         delegate_(delegate_remote_.BindNewPipeAndPassReceiver(),
                   CreateFirstPartySetsAccessDelegateParams(enabled),
                   &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets({
+    first_party_sets_manager_.SetCompleteSets(CreatePublicFirstPartySets({
         {kSet1Member1,
          net::FirstPartySetEntry(kSet1Owner, net::SiteType::kAssociated, 0)},
         {kSet1Member2,
@@ -134,7 +143,7 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test {
          net::FirstPartySetEntry(kSet2Owner, net::SiteType::kAssociated, 0)},
         {kSet2Owner, net::FirstPartySetEntry(
                          kSet2Owner, net::SiteType::kPrimary, absl::nullopt)},
-    });
+    }));
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(

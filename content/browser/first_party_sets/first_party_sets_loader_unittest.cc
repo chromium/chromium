@@ -20,6 +20,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +43,13 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
+MATCHER_P(PublicSetsAre, sets_matcher, "") {
+  const network::mojom::PublicFirstPartySetsPtr& public_sets = arg;
+  const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets =
+      public_sets->sets;
+  return testing::ExplainMatchResult(sets_matcher, sets, result_listener);
+}
+
 void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
@@ -61,13 +69,13 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 
   FirstPartySetsLoader& loader() { return loader_; }
 
-  FirstPartySetsLoader::FlattenedSets WaitAndGetResult() {
-    return future_.Get();
+  network::mojom::PublicFirstPartySetsPtr WaitAndGetResult() {
+    return future_.Take();
   }
 
  private:
   base::test::TaskEnvironment env_;
-  base::test::TestFuture<FirstPartySetsLoader::FlattenedSets> future_;
+  base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future_;
   FirstPartySetsLoader loader_;
 };
 
@@ -75,14 +83,14 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   loader().SetManuallySpecifiedSet("");
   const std::string input = "certainly not valid JSON";
   SetComponentSets(loader(), input);
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
   SetComponentSets(loader(), "");
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
@@ -94,7 +102,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
   loader().SetManuallySpecifiedSet("");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -102,7 +110,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
                   Pair(SerializesTo("https://aaaa.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -117,7 +125,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   loader().SetManuallySpecifiedSet("");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -133,7 +141,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
@@ -152,7 +160,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 
   EXPECT_THAT(WaitAndGetResult(),
               // The second call to SetComponentSets should have had no effect.
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -168,7 +176,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
@@ -180,7 +188,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
@@ -192,7 +200,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
@@ -206,7 +214,7 @@ TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet("");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
@@ -214,7 +222,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
@@ -222,7 +230,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
@@ -230,7 +238,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -240,7 +248,7 @@ TEST_F(FirstPartySetsLoaderTest,
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -250,7 +258,7 @@ TEST_F(FirstPartySetsLoaderTest,
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
@@ -259,7 +267,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
   SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -267,7 +275,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -278,7 +286,7 @@ TEST_F(FirstPartySetsLoaderTest,
   SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -286,7 +294,7 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://member.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
@@ -296,7 +304,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
   SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -308,7 +316,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1))));
+                           net::SiteType::kAssociated, 1)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -317,7 +325,7 @@ TEST_F(FirstPartySetsLoaderTest,
   // Set required input to make sure callback gets called.
   SetComponentSets(loader(), "");
 
-  EXPECT_THAT(WaitAndGetResult(), IsEmpty());
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
@@ -327,7 +335,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
   SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -335,7 +343,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
@@ -347,7 +355,7 @@ https://member1.test)");
   SetComponentSets(loader(), "");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -359,7 +367,7 @@ https://member1.test)");
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1))));
+                           net::SiteType::kAssociated, 1)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -371,7 +379,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
       "https://example.test,https://member1.test,https://member2.test");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -391,7 +399,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -404,7 +412,7 @@ TEST_F(FirstPartySetsLoaderTest,
       "https://example.test,https://member1.test,https://member3.test");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -424,7 +432,7 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -436,7 +444,7 @@ TEST_F(FirstPartySetsLoaderTest,
   loader().SetManuallySpecifiedSet("https://example.test,https://member3.test");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -456,7 +464,7 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://member2.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 1))));
+                           net::SiteType::kAssociated, 1)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -469,7 +477,7 @@ TEST_F(FirstPartySetsLoaderTest,
       "https://example.test,https://member1.test,https://member2.test");
 
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -497,7 +505,7 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://member4.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -512,7 +520,7 @@ TEST_F(FirstPartySetsLoaderTest,
   // disallow singleton sets, we ensure that such cases are caught and
   // removed.
   EXPECT_THAT(WaitAndGetResult(),
-              UnorderedElementsAre(
+              PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
@@ -520,7 +528,7 @@ TEST_F(FirstPartySetsLoaderTest,
                   Pair(SerializesTo("https://member1.test"),
                        net::FirstPartySetEntry(
                            net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0))));
+                           net::SiteType::kAssociated, 0)))));
 }
 
 }  // namespace content

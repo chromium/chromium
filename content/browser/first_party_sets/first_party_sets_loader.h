@@ -12,6 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/first_party_sets.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -24,7 +25,7 @@ namespace content {
 class CONTENT_EXPORT FirstPartySetsLoader {
  public:
   using LoadCompleteOnceCallback =
-      base::OnceCallback<void(FirstPartySetParser::SetsMap)>;
+      base::OnceCallback<void(network::mojom::PublicFirstPartySetsPtr)>;
   using FlattenedSets = FirstPartySetParser::SetsMap;
   using SingleSet = FirstPartySetParser::SingleSet;
 

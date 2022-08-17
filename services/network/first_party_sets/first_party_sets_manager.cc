@@ -24,6 +24,7 @@
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -43,7 +44,7 @@ FirstPartySetsManager::FirstPartySetsManager(bool enabled)
           enabled ? std::make_unique<base::circular_deque<base::OnceClosure>>()
                   : nullptr) {
   if (!enabled)
-    SetCompleteSets({});
+    SetCompleteSets(mojom::PublicFirstPartySets::New());
 }
 
 FirstPartySetsManager::~FirstPartySetsManager() {
@@ -256,11 +257,11 @@ void FirstPartySetsManager::InvokePendingQueries() {
 }
 
 void FirstPartySetsManager::SetCompleteSets(
-    FirstPartySetsManager::FlattenedSets sets) {
+    mojom::PublicFirstPartySetsPtr public_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sets_.has_value())
     return;
-  sets_ = std::move(sets);
+  sets_ = std::move(public_sets->sets);
   InvokePendingQueries();
 }
 

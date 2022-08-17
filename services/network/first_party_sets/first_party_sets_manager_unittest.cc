@@ -15,6 +15,7 @@
 #include "net/cookies/first_party_set_entry.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,10 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 
   void SetCompleteSets(const base::flat_map<net::SchemefulSite,
                                             net::FirstPartySetEntry>& content) {
-    manager_.SetCompleteSets(content);
+    network::mojom::PublicFirstPartySetsPtr public_sets =
+        network::mojom::PublicFirstPartySets::New();
+    public_sets->sets = content;
+    manager_.SetCompleteSets(std::move(public_sets));
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(

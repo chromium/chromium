@@ -21,6 +21,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -197,7 +198,10 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
   if (!HasAllInputs())
     return;
   ApplyManuallySpecifiedSet();
-  std::move(on_load_complete_).Run(std::move(sets_));
+  network::mojom::PublicFirstPartySetsPtr public_sets =
+      network::mojom::PublicFirstPartySets::New();
+  public_sets->sets = std::move(sets_);
+  std::move(on_load_complete_).Run(std::move(public_sets));
 }
 
 bool FirstPartySetsLoader::HasAllInputs() const {

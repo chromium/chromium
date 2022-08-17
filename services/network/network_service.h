@@ -41,6 +41,7 @@
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
@@ -59,7 +60,6 @@
 
 namespace net {
 class FileNetLogObserver;
-class FirstPartySetEntry;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
 class LoggingNetworkChangeObserver;
@@ -215,9 +215,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
-  void SetFirstPartySets(
-      const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets)
-      override;
+  void SetFirstPartySets(mojom::PublicFirstPartySetsPtr sets) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.

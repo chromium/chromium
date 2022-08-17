@@ -608,10 +608,10 @@ network::mojom::NetworkService* GetNetworkService() {
       }
 
       if (FirstPartySetsHandlerImpl::GetInstance()->IsEnabled()) {
-        if (absl::optional<FirstPartySetsHandlerImpl::FlattenedSets> sets =
+        if (absl::optional<network::mojom::PublicFirstPartySetsPtr> sets =
                 FirstPartySetsHandlerImpl::GetInstance()->GetSets(
                     base::BindOnce(
-                        [](FirstPartySetsHandlerImpl::FlattenedSets sets) {
+                        [](network::mojom::PublicFirstPartySetsPtr sets) {
                           GetNetworkService()->SetFirstPartySets(
                               std::move(sets));
                         }));
