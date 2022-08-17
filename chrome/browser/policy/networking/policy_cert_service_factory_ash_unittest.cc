@@ -37,12 +37,12 @@ class PolicyCertServiceFactoryMigrationTest : public testing::Test {
   }
 
   void SetLocalState(std::vector<std::string> values) {
-    auto local_pref_value = std::make_unique<base::ListValue>();
+    base::Value::List local_pref_value;
     for (auto&& value : values) {
-      local_pref_value->Append(base::Value(std::move(value)));
+      local_pref_value.Append(std::move(value));
     }
-    local_state_.Get()->SetUserPref(prefs::kUsedPolicyCertificates,
-                                    std::move(local_pref_value));
+    local_state_.Get()->SetList(prefs::kUsedPolicyCertificates,
+                                std::move(local_pref_value));
   }
 
   bool LocalStateContains(const char* value) {
