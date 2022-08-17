@@ -8,6 +8,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -36,6 +38,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -53,6 +56,27 @@ void RequestAppListSort(Profile* profile, ash::AppListSortOrder order) {
           app_list::AppListSyncableServiceFactory::GetForProfile(profile)
               ->GetModelUpdater());
   model_updater->RequestAppListSort(order);
+}
+
+bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
+  return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
+}
+
+apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
+  DCHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+         command_id < ash::USE_LAUNCH_TYPE_COMMAND_END);
+  switch (command_id) {
+    case ash::USE_LAUNCH_TYPE_REGULAR:
+      return apps::WindowMode::kBrowser;
+    case ash::USE_LAUNCH_TYPE_WINDOW:
+      return apps::WindowMode::kWindow;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      return apps::WindowMode::kTabbedWindow;
+    case ash::USE_LAUNCH_TYPE_PINNED:
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
+    default:
+      return apps::WindowMode::kUnknown;
+  }
 }
 
 void CreateNewWindow(bool incognito, bool post_task) {
@@ -232,9 +256,6 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        launch_new_string_id_ =
-            apps::StringIdForUseLaunchTypeCommand(command_id);
-
         if (app_type_ == apps::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
           proxy_->SetWindowMode(app_id(),
@@ -263,25 +284,6 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-ui::ImageModel AppServiceContextMenu::GetIconForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    const gfx::VectorIcon& icon =
-        GetMenuItemVectorIcon(command_id, launch_new_string_id_);
-    return ui::ImageModel::FromVectorIcon(
-        icon, apps::GetColorIdForMenuItemIcon(), ash::kAppContextMenuIconSize);
-  }
-  return AppContextMenu::GetIconForCommandId(command_id);
-}
-
-std::u16string AppServiceContextMenu::GetLabelForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    return l10n_util::GetStringUTF16(launch_new_string_id_);
-  }
-  return AppContextMenu::GetLabelForCommandId(command_id);
-}
-
 bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
   // StandaloneBrowserExtension handles its own context menus. Forward to that
   // class.
@@ -301,15 +303,17 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
             });
         return user_window_mode != apps::WindowMode::kUnknown &&
                user_window_mode ==
-                   apps::ConvertLaunchTypeCommandToWindowMode(command_id);
+                   ConvertUseLaunchTypeCommandToWindowMode(command_id);
       }
       return AppContextMenu::IsCommandIdChecked(command_id);
 
     case apps::AppType::kChromeApp:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        return controller()->GetExtensionLaunchType(profile(), app_id()) ==
-               apps::ConvertLaunchTypeCommandToExtensionLaunchType(command_id);
+        return static_cast<int>(
+                   controller()->GetExtensionLaunchType(profile(), app_id())) +
+                   ash::USE_LAUNCH_TYPE_COMMAND_START ==
+               command_id;
       } else if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(
                      command_id)) {
         return extension_menu_items_->IsCommandIdChecked(command_id);
@@ -345,21 +349,15 @@ bool AppServiceContextMenu::IsCommandIdEnabled(int command_id) const {
   return AppContextMenu::IsCommandIdEnabled(command_id);
 }
 
-bool AppServiceContextMenu::IsItemForCommandIdDynamic(int command_id) const {
-  return command_id == ash::LAUNCH_NEW ||
-         AppContextMenu::IsItemForCommandIdDynamic(command_id);
-}
-
 void AppServiceContextMenu::OnGetMenuModel(
     GetMenuModelCallback callback,
     apps::mojom::MenuItemsPtr menu_items) {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
-
-  if (apps::PopulateNewItemFromMojoMenuItems(menu_items->items,
-                                             menu_model.get(), submenu_.get(),
-                                             &launch_new_string_id_)) {
+  if (apps::PopulateNewItemFromMojoMenuItems(
+          menu_items->items, menu_model.get(), submenu_.get(),
+          base::BindOnce(&AppServiceContextMenu::GetMenuItemVectorIcon))) {
     index = 1;
   }
 
@@ -434,7 +432,7 @@ void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
     ui::SimpleMenuModel* menu_model) {
   extension_menu_items_ = std::make_unique<extensions::ContextMenuMatcher>(
       profile(), this, menu_model,
-      base::BindRepeating(apps::MenuItemHasLauncherContext));
+      base::BindRepeating(MenuItemHasLauncherContext));
 
   // Assign unique IDs to commands added by the app itself.
   int index = ash::USE_LAUNCH_TYPE_COMMAND_END;
@@ -466,7 +464,7 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       // Web apps and standalone browser hosted apps can only toggle between
       // kWindow and kBrowser.
       apps::WindowMode user_window_mode =
-          apps::ConvertLaunchTypeCommandToWindowMode(command_id);
+          ConvertUseLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::WindowMode::kUnknown) {
         proxy_->SetWindowMode(
             app_id(),

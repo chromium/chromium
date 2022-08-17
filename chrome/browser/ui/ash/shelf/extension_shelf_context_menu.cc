@@ -9,8 +9,8 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
-#include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,15 +18,27 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/paint_vector_icon.h"
+
+namespace {
+
+// A helper used to filter which menu items added by the extension are shown.
+bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
+  return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
+}
+
+}  // namespace
 
 ExtensionShelfContextMenu::ExtensionShelfContextMenu(
     ChromeShelfController* controller,
@@ -43,7 +55,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
 
   extension_items_ = std::make_unique<extensions::ContextMenuMatcher>(
       profile, this, menu_model.get(),
-      base::BindRepeating(apps::MenuItemHasLauncherContext));
+      base::BindRepeating(MenuItemHasLauncherContext));
 
   if (item().type == ash::TYPE_PINNED_APP || item().type == ash::TYPE_APP) {
     CreateOpenNewSubmenu(menu_model.get());
@@ -95,6 +107,46 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
   std::move(callback).Run(std::move(menu_model));
 }
 
+bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
+  switch (command_id) {
+    case ash::USE_LAUNCH_TYPE_PINNED:
+      return GetLaunchType() == extensions::LAUNCH_TYPE_PINNED;
+    case ash::USE_LAUNCH_TYPE_REGULAR:
+      return GetLaunchType() == extensions::LAUNCH_TYPE_REGULAR;
+    case ash::USE_LAUNCH_TYPE_WINDOW:
+      return GetLaunchType() == extensions::LAUNCH_TYPE_WINDOW;
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
+      return GetLaunchType() == extensions::LAUNCH_TYPE_FULLSCREEN;
+    default:
+      if (command_id < ash::COMMAND_ID_COUNT)
+        return ShelfContextMenu::IsCommandIdChecked(command_id);
+      return (extension_items_ &&
+              extension_items_->IsCommandIdChecked(command_id));
+  }
+}
+
+bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
+  switch (command_id) {
+    case ash::UNINSTALL:
+      return controller()->UninstallAllowed(item().id.app_id);
+    case ash::APP_CONTEXT_MENU_NEW_WINDOW:
+      // "Normal" windows are not allowed when incognito is enforced.
+      return IncognitoModePrefs::GetAvailability(
+                 controller()->profile()->GetPrefs()) !=
+             IncognitoModePrefs::Availability::kForced;
+    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
+      // Incognito windows are not allowed when incognito is disabled.
+      return IncognitoModePrefs::GetAvailability(
+                 controller()->profile()->GetPrefs()) !=
+             IncognitoModePrefs::Availability::kDisabled;
+    default:
+      if (command_id < ash::COMMAND_ID_COUNT)
+        return ShelfContextMenu::IsCommandIdEnabled(command_id);
+      return (extension_items_ &&
+              extension_items_->IsCommandIdEnabled(command_id));
+  }
+}
+
 void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
                                                int event_flags) {
   if (ExecuteCommonCommand(command_id, event_flags))
@@ -144,71 +196,6 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
   }
 }
 
-ui::ImageModel ExtensionShelfContextMenu::GetIconForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    const gfx::VectorIcon& icon =
-        GetCommandIdVectorIcon(command_id, GetLaunchTypeStringId());
-    return ui::ImageModel::FromVectorIcon(
-        icon, apps::GetColorIdForMenuItemIcon(), ash::kAppContextMenuIconSize);
-  }
-  return ShelfContextMenu::GetIconForCommandId(command_id);
-}
-
-std::u16string ExtensionShelfContextMenu::GetLabelForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    return l10n_util::GetStringUTF16(GetLaunchTypeStringId());
-  }
-  return ShelfContextMenu::GetLabelForCommandId(command_id);
-}
-
-bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
-  switch (command_id) {
-    case ash::USE_LAUNCH_TYPE_PINNED:
-      return GetLaunchType() == extensions::LAUNCH_TYPE_PINNED;
-    case ash::USE_LAUNCH_TYPE_REGULAR:
-      return GetLaunchType() == extensions::LAUNCH_TYPE_REGULAR;
-    case ash::USE_LAUNCH_TYPE_WINDOW:
-      return GetLaunchType() == extensions::LAUNCH_TYPE_WINDOW;
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-      return GetLaunchType() == extensions::LAUNCH_TYPE_FULLSCREEN;
-    default:
-      if (command_id < ash::COMMAND_ID_COUNT)
-        return ShelfContextMenu::IsCommandIdChecked(command_id);
-      return (extension_items_ &&
-              extension_items_->IsCommandIdChecked(command_id));
-  }
-}
-
-bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
-  switch (command_id) {
-    case ash::UNINSTALL:
-      return controller()->UninstallAllowed(item().id.app_id);
-    case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      // "Normal" windows are not allowed when incognito is enforced.
-      return IncognitoModePrefs::GetAvailability(
-                 controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::Availability::kForced;
-    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      // Incognito windows are not allowed when incognito is disabled.
-      return IncognitoModePrefs::GetAvailability(
-                 controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::Availability::kDisabled;
-    default:
-      if (command_id < ash::COMMAND_ID_COUNT)
-        return ShelfContextMenu::IsCommandIdEnabled(command_id);
-      return (extension_items_ &&
-              extension_items_->IsCommandIdEnabled(command_id));
-  }
-}
-
-bool ExtensionShelfContextMenu::IsItemForCommandIdDynamic(
-    int command_id) const {
-  return command_id == ash::LAUNCH_NEW ||
-         ShelfContextMenu::IsItemForCommandIdDynamic(command_id);
-}
-
 void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
     ui::SimpleMenuModel* menu_model) {
   // Touchable extension context menus use an actionable submenu for
@@ -221,9 +208,11 @@ void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
   open_new_submenu_model_->AddRadioItemWithStringId(
       ash::USE_LAUNCH_TYPE_WINDOW, IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
       kGroupId);
-  menu_model->AddActionableSubMenu(
-      ash::LAUNCH_NEW, l10n_util::GetStringUTF16(GetLaunchTypeStringId()),
-      open_new_submenu_model_.get());
+  menu_model->AddActionableSubmenuWithStringIdAndIcon(
+      ash::LAUNCH_NEW, GetLaunchTypeStringId(), open_new_submenu_model_.get(),
+      ui::ImageModel::FromVectorIcon(
+          GetCommandIdVectorIcon(ash::LAUNCH_NEW, GetLaunchTypeStringId()),
+          ui::kColorAshSystemUIMenuIcon, ash::kAppContextMenuIconSize));
 }
 
 extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {

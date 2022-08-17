@@ -9,10 +9,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_menu_builder.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -27,12 +30,16 @@
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
+#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
@@ -40,11 +47,43 @@
 #include "components/app_constants/constants.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+
+bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
+  return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
+}
+
+apps::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
+  switch (command_id) {
+    case ash::USE_LAUNCH_TYPE_REGULAR:
+      return apps::WindowMode::kBrowser;
+    case ash::USE_LAUNCH_TYPE_WINDOW:
+      return apps::WindowMode::kWindow;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      return apps::WindowMode::kTabbedWindow;
+    default:
+      return apps::WindowMode::kUnknown;
+  }
+}
+
+extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
+    int command_id) {
+  switch (command_id) {
+    case ash::USE_LAUNCH_TYPE_PINNED:
+      return extensions::LAUNCH_TYPE_PINNED;
+    case ash::USE_LAUNCH_TYPE_REGULAR:
+      return extensions::LAUNCH_TYPE_REGULAR;
+    case ash::USE_LAUNCH_TYPE_WINDOW:
+      return extensions::LAUNCH_TYPE_WINDOW;
+    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
+      return extensions::LAUNCH_TYPE_FULLSCREEN;
+    default:
+      return extensions::LAUNCH_TYPE_INVALID;
+  }
+}
 
 std::string GetAppId(const ash::ShelfID& shelf_id) {
   // Remove the ARC shelf group prefix.
@@ -152,7 +191,6 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     case ash::USE_LAUNCH_TYPE_WINDOW:
       [[fallthrough]];
     case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-      launch_new_string_id_ = apps::StringIdForUseLaunchTypeCommand(command_id);
       SetLaunchType(command_id);
       break;
 
@@ -194,25 +232,6 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
   }
 }
 
-ui::ImageModel AppServiceShelfContextMenu::GetIconForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    const gfx::VectorIcon& icon =
-        GetCommandIdVectorIcon(command_id, launch_new_string_id_);
-    return ui::ImageModel::FromVectorIcon(
-        icon, apps::GetColorIdForMenuItemIcon(), ash::kAppContextMenuIconSize);
-  }
-  return ShelfContextMenu::GetIconForCommandId(command_id);
-}
-
-std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
-    int command_id) const {
-  if (command_id == ash::LAUNCH_NEW) {
-    return l10n_util::GetStringUTF16(launch_new_string_id_);
-  }
-  return ShelfContextMenu::GetLabelForCommandId(command_id);
-}
-
 bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
   switch (app_type_) {
     case apps::AppType::kStandaloneBrowserChromeApp:
@@ -229,7 +248,7 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
                        });
         return user_window_mode != apps::WindowMode::kUnknown &&
                user_window_mode ==
-                   apps::ConvertLaunchTypeCommandToWindowMode(command_id);
+                   ConvertLaunchTypeCommandToWindowMode(command_id);
       }
       return ShelfContextMenu::IsCommandIdChecked(command_id);
     }
@@ -237,7 +256,7 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         return GetExtensionLaunchType() ==
-               apps::ConvertLaunchTypeCommandToExtensionLaunchType(command_id);
+               ConvertLaunchTypeCommandToExtensionLaunchType(command_id);
       } else if (command_id < ash::COMMAND_ID_COUNT) {
         return ShelfContextMenu::IsCommandIdChecked(command_id);
       } else {
@@ -269,22 +288,18 @@ bool AppServiceShelfContextMenu::IsCommandIdEnabled(int command_id) const {
   return true;
 }
 
-bool AppServiceShelfContextMenu::IsItemForCommandIdDynamic(
-    int command_id) const {
-  return command_id == ash::LAUNCH_NEW ||
-         ShelfContextMenu::IsItemForCommandIdDynamic(command_id);
-}
-
 void AppServiceShelfContextMenu::OnGetMenuModel(
     GetMenuModelCallback callback,
     apps::mojom::MenuItemsPtr menu_items) {
   auto menu_model = GetBaseMenuModel();
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   size_t index = 0;
-
-  if (apps::PopulateNewItemFromMojoMenuItems(menu_items->items,
-                                             menu_model.get(), submenu_.get(),
-                                             &launch_new_string_id_)) {
+  // Unretained is safe here because PopulateNewItemFromMojoMenuItems should
+  // call GetVectorIcon synchronously.
+  if (apps::PopulateNewItemFromMojoMenuItems(
+          menu_items->items, menu_model.get(), submenu_.get(),
+          base::BindOnce(&AppServiceShelfContextMenu::GetCommandIdVectorIcon,
+                         base::Unretained(this)))) {
     ++index;
   }
 
@@ -363,7 +378,7 @@ void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(
     ui::SimpleMenuModel* menu_model) {
   extension_menu_items_ = std::make_unique<extensions::ContextMenuMatcher>(
       controller()->profile(), this, menu_model,
-      base::BindRepeating(apps::MenuItemHasLauncherContext));
+      base::BindRepeating(MenuItemHasLauncherContext));
 
   int index = 0;
   extension_menu_items_->AppendExtensionItems(
@@ -475,7 +490,7 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
     case apps::AppType::kSystemWeb: {
       // Web apps can only toggle between kWindow, kTabbed and kBrowser.
       apps::WindowMode user_window_mode =
-          apps::ConvertLaunchTypeCommandToWindowMode(command_id);
+          ConvertLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::WindowMode::kUnknown) {
         apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
             ->SetWindowMode(
