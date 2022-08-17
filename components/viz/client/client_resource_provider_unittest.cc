@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -539,7 +540,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   context_provider()->ContextGL()->WaitSyncTokenCHROMIUM(
       list[0].mailbox_holder.sync_token.GetConstData());
   unsigned other_texture =
-      context_provider()->ContextGL()->CreateAndConsumeTextureCHROMIUM(
+      context_provider()->ContextGL()->CreateAndTexStorage2DSharedImageCHROMIUM(
           mailbox.name);
   // Then delete it and make a new SyncToken.
   context_provider()->ContextGL()->DeleteTextures(1, &other_texture);

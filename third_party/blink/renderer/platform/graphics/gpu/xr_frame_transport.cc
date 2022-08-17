@@ -150,7 +150,7 @@ void XRFrameTransport::FrameSubmit(
              device::mojom::blink::XRPresentationTransportMethod::
                  SUBMIT_AS_MAILBOX_HOLDER) {
     // The AcceleratedStaticBitmapImage must be kept alive until the
-    // mailbox is used via createAndConsumeTextureCHROMIUM, the mailbox
+    // mailbox is used via CreateAndTexStorage2DSharedImageCHROMIUM, the mailbox
     // itself does not keep it alive. We must keep a reference to the
     // image until the mailbox was consumed.
     StaticBitmapImage* static_image =

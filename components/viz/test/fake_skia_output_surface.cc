@@ -332,7 +332,7 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
   auto* gl = context_provider()->ContextGL();
   gl->WaitSyncTokenCHROMIUM(
       image_context.mailbox_holder().sync_token.GetConstData());
-  auto texture_id = gl->CreateAndConsumeTextureCHROMIUM(
+  auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       image_context.mailbox_holder().mailbox.name);
   auto gl_format = TextureStorageFormat(
       image_context.resource_format(),
