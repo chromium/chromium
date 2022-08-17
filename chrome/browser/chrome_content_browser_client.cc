@@ -6727,7 +6727,8 @@ bool ChromeContentBrowserClient::OpenExternally(
       !url.SchemeIs(extensions::kExtensionScheme);
   if (should_open_in_lacros) {
     ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
     return true;
   }
 #endif

@@ -96,7 +96,8 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
 void OnToastClicked() {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kDlpLearnMoreUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

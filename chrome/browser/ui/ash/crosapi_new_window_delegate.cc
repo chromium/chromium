@@ -15,13 +15,27 @@
 
 namespace {
 
-crosapi::mojom::OpenUrlFrom ToMojom(ash::NewWindowDelegate::OpenUrlFrom from) {
+crosapi::mojom::OpenUrlFrom OpenUrlFromToMojom(
+    ash::NewWindowDelegate::OpenUrlFrom from) {
   switch (from) {
     case ash::NewWindowDelegate::OpenUrlFrom::kUnspecified:
     case ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction:
       return crosapi::mojom::OpenUrlFrom::kUnspecified;
     case ash::NewWindowDelegate::OpenUrlFrom::kArc:
       return crosapi::mojom::OpenUrlFrom::kArc;
+  }
+}
+
+crosapi::mojom::OpenUrlParams::WindowOpenDisposition DispositionToMojom(
+    ash::NewWindowDelegate::Disposition disposition) {
+  switch (disposition) {
+    case ash::NewWindowDelegate::Disposition::kNewForegroundTab:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kNewForegroundTab;
+    case ash::NewWindowDelegate::Disposition::kNewWindow:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewWindow;
+    case ash::NewWindowDelegate::Disposition::kSwitchToTab:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab;
   }
 }
 
@@ -139,8 +153,11 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
                                       std::move(closure));
 }
 
-void CrosapiNewWindowDelegate::OpenUrl(const GURL& url, OpenUrlFrom from) {
-  crosapi::BrowserManager::Get()->OpenUrl(url, ToMojom(from));
+void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
+                                       OpenUrlFrom from,
+                                       Disposition disposition) {
+  crosapi::BrowserManager::Get()->OpenUrl(url, OpenUrlFromToMojom(from),
+                                          DispositionToMojom(disposition));
 }
 
 void CrosapiNewWindowDelegate::OpenCalculator() {

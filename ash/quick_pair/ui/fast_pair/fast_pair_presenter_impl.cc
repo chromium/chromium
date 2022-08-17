@@ -253,7 +253,8 @@ void FastPairPresenterImpl::OnDiscoveryLearnMoreClicked(
     DiscoveryCallback callback) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kDiscoveryLearnMoreLink),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
   callback.Run(DiscoveryAction::kLearnMore);
 }
 
@@ -382,7 +383,8 @@ void FastPairPresenterImpl::OnAssociateAccountLearnMoreClicked(
     AssociateAccountCallback callback) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kAssociateAccountLearnMoreLink),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
   callback.Run(AssociateAccountAction::kLearnMore);
 }
 

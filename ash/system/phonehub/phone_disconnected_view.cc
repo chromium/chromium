@@ -52,7 +52,8 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               &NewWindowDelegate::OpenUrl,
               base::Unretained(NewWindowDelegate::GetPrimary()),
               GURL(phonehub::kPhoneHubLearnMoreLink),
-              NewWindowDelegate::OpenUrlFrom::kUserInteraction)),
+              NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              NewWindowDelegate::Disposition::kNewForegroundTab)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
       PillButton::Type::kIconlessFloating, /*icon=*/nullptr);

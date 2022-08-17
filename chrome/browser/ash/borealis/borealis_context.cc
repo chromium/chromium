@@ -135,7 +135,8 @@ class BorealisLifetimeObserver
                 [](GURL gurl, Profile* profile) {
                   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
                       gurl,
-                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 
                   NotificationDisplayService::GetForProfile(profile)->Close(
                       NotificationHandler::Type::TRANSIENT,

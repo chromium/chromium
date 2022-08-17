@@ -1322,7 +1322,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {
         Error("Could not get NewWindowDelegate's primary browser"));
   }
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 
   return RespondNow(NoArguments());
 }

@@ -71,12 +71,21 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // If the |from| is kArc, then the new window is annotated a special tag,
   // so that on requesting to opening ARC app from the page, confirmation
   // dialog will be skipped.
+  // |Disposition| corresponds to the subset of |WindowOpenDisposition| that is
+  // supported by crosapi.
   enum class OpenUrlFrom {
     kUnspecified,
     kUserInteraction,
     kArc,
   };
-  virtual void OpenUrl(const GURL& url, OpenUrlFrom from) = 0;
+  enum class Disposition {
+    kNewForegroundTab,
+    kNewWindow,
+    kSwitchToTab,
+  };
+  virtual void OpenUrl(const GURL& url,
+                       OpenUrlFrom from,
+                       Disposition disposition) = 0;
 
   // Invoked when an accelerator (calculator key) is used to open calculator.
   virtual void OpenCalculator() = 0;

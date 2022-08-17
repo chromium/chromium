@@ -32,7 +32,9 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
       NewWindowForDetachingTabCallback closure) override;
-  void OpenUrl(const GURL& url, OpenUrlFrom from) override;
+  void OpenUrl(const GURL& url,
+               OpenUrlFrom from,
+               Disposition disposition) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;

@@ -143,7 +143,8 @@ ChromeShellDelegate::GetGeolocationUrlLoaderFactory() const {
 void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kKeyboardShortcutHelpPageUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {

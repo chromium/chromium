@@ -52,16 +52,15 @@ constexpr char kQuickAnswersSettingsUrl[] =
 void OpenUrl(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-
   NavigateParams navigate_params(
       profile, url,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_FROM_API));
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-
   navigate_params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&navigate_params);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -672,7 +672,8 @@ void AppListClientImpl::OpenURL(Profile* profile,
     } else {
       // Send the url to the current primary browser.
       ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+          ash::NewWindowDelegate::Disposition::kNewForegroundTab);
     }
   } else {
     NavigateParams params(profile, url, transition);

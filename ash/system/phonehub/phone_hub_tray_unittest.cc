@@ -41,7 +41,10 @@ constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
 };
 
 }  // namespace
@@ -316,7 +319,8 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=5"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 
@@ -365,7 +369,8 @@ TEST_F(PhoneHubTrayTest, StartAllPermissionSetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=7"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 }
@@ -394,7 +399,8 @@ TEST_F(PhoneHubTrayTest, StartNotificationAndAppSetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=4"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 }
@@ -421,7 +427,8 @@ TEST_F(PhoneHubTrayTest, StartNotificationAccessOnlySetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=1"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 }
@@ -450,7 +457,8 @@ TEST_F(PhoneHubTrayTest, StartAppsAccessOnlySetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=2"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 }
@@ -497,7 +505,8 @@ TEST_F(PhoneHubTrayTest, StartCameraRollOnlySetUpFlow) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
                            "features?showPhonePermissionSetupDialog&mode=3"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   LeftClickOn(notification_opt_in_set_up_button());
 }
@@ -634,7 +643,8 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   // article in a browser tab.
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("https://support.google.com/chromebook?p=phone_hub"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   // Simulates a click on the "Learn more" button.
   LeftClickOn(disconnected_learn_more_button());
@@ -652,7 +662,8 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
   // article in a browser tab.
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("https://support.google.com/chromebook?p=phone_hub"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
   // Simulate a click on "Learn more" button.
   LeftClickOn(bluetooth_disabled_learn_more_button());
 }

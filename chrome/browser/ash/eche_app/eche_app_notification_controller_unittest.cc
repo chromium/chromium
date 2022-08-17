@@ -39,7 +39,10 @@ class TestableNotificationController : public EcheAppNotificationController {
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
 };
 
 class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {

@@ -47,7 +47,8 @@ void OnNotificationClicked(const std::string id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kDlpLearnMoreUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(hidehiko): Instantiating BrowserServiceLacros here is an unexpected
   // use case. Get rid of this by replacing with Navigate() API invocation

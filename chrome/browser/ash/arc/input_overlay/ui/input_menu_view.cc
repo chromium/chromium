@@ -410,7 +410,8 @@ void InputMenuView::OnButtonSendFeedbackPressed() {
 
   GURL url = GetAssembleUrl(*display_overlay_controller_);
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 gfx::Insets InputMenuView::CalculateInsets(views::View* view,

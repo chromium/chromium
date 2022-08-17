@@ -81,7 +81,8 @@ void UrlHandlerServiceProvider::OpenUrl(
   VLOG(1) << "Opening url now";
 
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      gurl, NewWindowDelegate::OpenUrlFrom::kUnspecified);
+      gurl, NewWindowDelegate::OpenUrlFrom::kUnspecified,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

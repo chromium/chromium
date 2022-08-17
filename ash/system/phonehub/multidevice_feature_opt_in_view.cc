@@ -151,7 +151,8 @@ void MultideviceFeatureOptInView::SetUpButtonPressed() {
   PA_LOG(INFO) << "MultideviceFeatureOptInView SetUpButtonPressed target url:"
                << url;
   NewWindowDelegate::GetInstance()->OpenUrl(
-      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void MultideviceFeatureOptInView::DismissButtonPressed() {

@@ -679,12 +679,11 @@ void BrowserManager::NewTab(bool should_trigger_session_restore) {
                                     base::DoNothing());
 }
 
-void BrowserManager::OpenUrl(const GURL& url,
-                             crosapi::mojom::OpenUrlFrom from) {
-  OpenUrlImpl(
-      url,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab,
-      from, NavigateParams::RESPECT);
+void BrowserManager::OpenUrl(
+    const GURL& url,
+    crosapi::mojom::OpenUrlFrom from,
+    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition) {
+  OpenUrlImpl(url, disposition, from, NavigateParams::RESPECT);
 }
 
 void BrowserManager::SwitchToTab(const GURL& url,

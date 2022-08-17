@@ -67,7 +67,8 @@ void OnCableNotificationClicked(const std::string& notification_id,
 
   if (button_index) {
     NewWindowDelegate::GetInstance()->OpenUrl(
-        GURL(landing_page), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+        GURL(landing_page), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        NewWindowDelegate::Disposition::kNewForegroundTab);
   }
 
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,

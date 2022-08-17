@@ -243,7 +243,8 @@ void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
 
 void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void CameraAppHelperImpl::SetCameraUsageMonitor(

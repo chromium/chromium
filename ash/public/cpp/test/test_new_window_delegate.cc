@@ -22,7 +22,9 @@ void TestNewWindowDelegate::NewWindowForDetachingTab(
     NewWindowForDetachingTabCallback closure) {
   std::move(closure).Run(/*new_window=*/nullptr);
 }
-void TestNewWindowDelegate::OpenUrl(const GURL& url, OpenUrlFrom from) {}
+void TestNewWindowDelegate::OpenUrl(const GURL& url,
+                                    OpenUrlFrom from,
+                                    Disposition disposition) {}
 void TestNewWindowDelegate::OpenCalculator() {}
 void TestNewWindowDelegate::OpenFileManager() {}
 void TestNewWindowDelegate::OpenDownloadsFolder() {}

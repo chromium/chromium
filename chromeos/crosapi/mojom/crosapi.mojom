@@ -1344,7 +1344,7 @@ struct OpenUrlParams {
     // should not use this value.
     [Default] kLegacyAutoDetection = 0,
 
-    // Opens a new tab and navigate to the given URL.
+    // Opens the given URL in a new tab.
     kNewForegroundTab = 1,
 
     // If there's an existing tab showing the given URL, activate it.
@@ -1352,6 +1352,9 @@ struct OpenUrlParams {
     // to the given URL. Otherwise, opens a new tab and navigate it to
     // the given URL.
     kSwitchToTab = 2,
+
+    // Opens the given URL in a new window.
+    [MinVersion=1] kNewWindow = 3,
   };
   WindowOpenDisposition disposition@0;
 

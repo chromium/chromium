@@ -78,7 +78,10 @@ class MockAssistantUiModelObserver : public AssistantUiModelObserver {
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
 
   MOCK_METHOD(void,
               OpenFeedbackPage,
@@ -164,7 +167,8 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
 
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("https://g.co/"),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   EXPECT_CALL(controller_observer_mock, OnUrlOpened)
       .WillOnce(testing::Invoke([](const GURL& url, bool from_server) {
