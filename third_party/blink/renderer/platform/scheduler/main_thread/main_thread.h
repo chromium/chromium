@@ -25,7 +25,8 @@ class PLATFORM_EXPORT MainThread : public Thread {
 
   // Thread implementation.
   ThreadScheduler* Scheduler() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
+      const override;
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver*) override;
   void RemoveTaskTimeObserver(

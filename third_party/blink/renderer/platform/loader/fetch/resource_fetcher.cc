@@ -1300,7 +1300,7 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
   // that task runner is frame-associated.
   return loader_factory_->CreateURLLoader(
       ResourceRequest(request), options, freezable_task_runner_,
-      request.GetKeepalive() ? Thread::Current()->GetTaskRunner()
+      request.GetKeepalive() ? Thread::Current()->GetDeprecatedTaskRunner()
                              : unfreezable_task_runner_,
       WebBackForwardCacheLoaderHelper(back_forward_cache_loader_helper_));
 }

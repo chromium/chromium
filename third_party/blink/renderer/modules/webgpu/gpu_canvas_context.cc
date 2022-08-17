@@ -380,7 +380,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           transferable_resource.mailbox_holder.texture_target,
           /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
-          Thread::Current()->GetTaskRunner(), std::move(release_callback),
+          Thread::Current()->GetDeprecatedTaskRunner(),
+          std::move(release_callback),
           /*supports_display_compositing=*/true,
           transferable_resource.is_overlay_candidate));
 }

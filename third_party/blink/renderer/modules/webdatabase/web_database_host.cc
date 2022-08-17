@@ -30,7 +30,8 @@ void WebDatabaseHost::Init() {
 }
 
 WebDatabaseHost::WebDatabaseHost()
-    : main_thread_task_runner_(Thread::MainThread()->GetTaskRunner()) {}
+    : main_thread_task_runner_(
+          Thread::MainThread()->GetDeprecatedTaskRunner()) {}
 
 mojom::blink::WebDatabaseHost& WebDatabaseHost::GetWebDatabaseHost() {
   if (!shared_remote_) {

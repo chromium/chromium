@@ -132,7 +132,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
     // Use the IO thread for testing purposes. This is stricter than an audio
     // sequenced task runner needs to be.
     audio_task_runner_ = Platform::Current()->GetIOTaskRunner();
-    main_task_runner_ = Thread::MainThread()->GetTaskRunner();
+    main_task_runner_ = Thread::MainThread()->GetDeprecatedTaskRunner();
 
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(main_task_runner_,

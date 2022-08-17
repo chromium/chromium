@@ -23,8 +23,10 @@ class PLATFORM_EXPORT NonMainThread : public Thread {
   static std::unique_ptr<NonMainThread> CreateThread(
       const ThreadCreationParams&);
 
-  // TODO(dtapuska): Add GetTaskRunner here and rename Thread::GetTaskRunner
-  // to Thread::GetTaskRunnerDeprecated.
+  // Default task runner for this non-main thread.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const {
+    return nullptr;
+  }
 };
 
 }  // namespace blink

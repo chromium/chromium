@@ -209,7 +209,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
 
   if (!has_posted_unparking_time_accounting_task_) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        Thread::Current()->GetTaskRunner();
+        Thread::Current()->GetDeprecatedTaskRunner();
     DCHECK(task_runner);
     task_runner->PostDelayedTask(
         FROM_HERE,
@@ -397,7 +397,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,

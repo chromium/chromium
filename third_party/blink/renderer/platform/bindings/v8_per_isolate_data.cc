@@ -104,7 +104,7 @@ V8PerIsolateData::V8PerIsolateData(
 V8PerIsolateData::V8PerIsolateData(
     V8ContextSnapshotMode v8_context_snapshot_mode)
     : v8_context_snapshot_mode_(v8_context_snapshot_mode),
-      isolate_holder_(Thread::Current()->GetTaskRunner(),
+      isolate_holder_(Thread::Current()->GetDeprecatedTaskRunner(),
                       gin::IsolateHolder::kSingleThread,
                       gin::IsolateHolder::kAllowAtomicsWait,
                       gin::IsolateHolder::IsolateType::kBlinkMainThread,

@@ -61,13 +61,13 @@ base::FilePath WebTestsFilePath() {
 }  // namespace
 
 void RunPendingTasks() {
-  Thread::Current()->GetTaskRunner()->PostTask(FROM_HERE,
-                                               WTF::Bind(&ExitRunLoop));
+  Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
+      FROM_HERE, WTF::Bind(&ExitRunLoop));
   EnterRunLoop();
 }
 
 void RunDelayedTasks(base::TimeDelta delay) {
-  Thread::Current()->GetTaskRunner()->PostDelayedTask(
+  Thread::Current()->GetDeprecatedTaskRunner()->PostDelayedTask(
       FROM_HERE, WTF::Bind(&ExitRunLoop), delay);
   EnterRunLoop();
 }

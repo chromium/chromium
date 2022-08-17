@@ -56,7 +56,7 @@ void CreateContextProvider(
 std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProviderOnMainThread(
     const KURL& url) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::MainThread()->GetTaskRunner();
+      Thread::MainThread()->GetDeprecatedTaskRunner();
 
   base::WaitableEvent waitable_event;
   std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;

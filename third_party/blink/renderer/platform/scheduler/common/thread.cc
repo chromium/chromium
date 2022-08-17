@@ -41,8 +41,8 @@ std::unique_ptr<Thread>& GetMainThread() {
   return main_thread;
 }
 
-std::unique_ptr<Thread>& GetCompositorThread() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<Thread>, compositor_thread, ());
+std::unique_ptr<NonMainThread>& GetCompositorThread() {
+  DEFINE_STATIC_LOCAL(std::unique_ptr<NonMainThread>, compositor_thread, ());
   return compositor_thread;
 }
 
@@ -109,7 +109,7 @@ Thread* Thread::MainThread() {
   return GetMainThread().get();
 }
 
-Thread* Thread::CompositorThread() {
+NonMainThread* Thread::CompositorThread() {
   return GetCompositorThread().get();
 }
 

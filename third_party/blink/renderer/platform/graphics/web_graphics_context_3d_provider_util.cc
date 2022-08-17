@@ -46,7 +46,7 @@ CreateContextProviderOnWorkerThread(
   creation_info.gl_info = gl_info;
   creation_info.url = url;
   PostCrossThreadTask(
-      *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&CreateContextProviderOnMainThread,
                           CrossThreadUnretained(&creation_info),
                           CrossThreadUnretained(&waitable_event)));

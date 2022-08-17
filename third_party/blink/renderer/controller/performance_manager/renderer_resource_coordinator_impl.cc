@@ -267,7 +267,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
   // is a singleton that leaks at process shutdown.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated,
             WTF::CrossThreadUnretained(this), std::move(v8_desc),
@@ -284,7 +284,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached,
             WTF::CrossThreadUnretained(this), token));
@@ -298,7 +298,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed,
             WTF::CrossThreadUnretained(this), token));
@@ -312,7 +312,7 @@ void RendererResourceCoordinatorImpl::DispatchFireBackgroundTracingTrigger(
   DCHECK(service_);
   if (!IsMainThread()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
         WTF::CrossThreadBindOnce(&RendererResourceCoordinatorImpl::
                                      DispatchFireBackgroundTracingTrigger,
                                  WTF::CrossThreadUnretained(this),

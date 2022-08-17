@@ -304,7 +304,7 @@ void WebGLWebCodecsVideoFrame::InitializeGpuMemoryBufferPool() {
       base::WaitableEvent waitable_event;
       // TODO(crbug.com/1164152): Lift the main thread restriction.
       if (PostCrossThreadTask(
-              *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+              *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
               CrossThreadBindOnce(
                   &GetMediaTaskRunnerAndGpuFactoriesOnMainThread,
                   CrossThreadUnretained(&media_task_runner_),

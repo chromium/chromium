@@ -30,7 +30,7 @@ BlinkLeakDetector& GetLeakDetector() {
 }
 
 BlinkLeakDetector::BlinkLeakDetector()
-    : delayed_gc_timer_(Thread::Current()->GetTaskRunner(),
+    : delayed_gc_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
                         this,
                         &BlinkLeakDetector::TimerFiredGC) {}
 

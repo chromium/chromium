@@ -26,7 +26,7 @@ void RetrieveGpuFactories(OutputCB result_callback) {
     return;
   }
 
-  Thread::MainThread()->GetTaskRunner()->PostTaskAndReplyWithResult(
+  Thread::MainThread()->GetDeprecatedTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       ConvertToBaseOnceCallback(
           CrossThreadBindOnce(&GetGpuFactoriesOnMainThread)),

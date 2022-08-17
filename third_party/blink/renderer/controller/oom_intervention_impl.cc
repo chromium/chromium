@@ -93,7 +93,7 @@ void OomInterventionImpl::BindReceiver(
 }
 
 OomInterventionImpl::OomInterventionImpl()
-    : delayed_report_timer_(Thread::MainThread()->GetTaskRunner(),
+    : delayed_report_timer_(Thread::MainThread()->GetDeprecatedTaskRunner(),
                             this,
                             &OomInterventionImpl::TimerFiredUMAReport) {
   UpdateStateCrashKey(OomInterventionState::Before);
@@ -207,8 +207,8 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     host_->OnHighMemoryUsage();
     MemoryUsageMonitorInstance().RemoveObserver(this);
     // Send memory pressure notification to trigger GC.
-    Thread::MainThread()->GetTaskRunner()->PostTask(FROM_HERE,
-                                                    base::BindOnce(&TriggerGC));
+    Thread::MainThread()->GetDeprecatedTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&TriggerGC));
     // Notify V8GCForContextDispose that page navigation gc is needed when
     // intervention runs, as it indicates that memory usage is high.
     V8GCForContextDispose::Instance().SetForcePageNavigationGC();

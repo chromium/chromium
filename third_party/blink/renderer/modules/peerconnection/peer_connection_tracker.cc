@@ -636,7 +636,7 @@ PeerConnectionTracker& PeerConnectionTracker::From(LocalDOMWindow& window) {
       Supplement<LocalDOMWindow>::From<PeerConnectionTracker>(window);
   if (!tracker) {
     tracker = MakeGarbageCollected<PeerConnectionTracker>(
-        window, Thread::MainThread()->GetTaskRunner(),
+        window, Thread::MainThread()->GetDeprecatedTaskRunner(),
         base::PassKey<PeerConnectionTracker>());
     ProvideTo(window, tracker);
   }

@@ -50,7 +50,7 @@ class BytesUploaderTest : public ::testing::Test {
                                uint32_t capacity = 100u) {
     bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
         nullptr, mock_bytes_consumer, remote_.BindNewPipeAndPassReceiver(),
-        Thread::Current()->GetTaskRunner(),
+        Thread::Current()->GetDeprecatedTaskRunner(),
         /*client=*/nullptr);
 
     const MojoCreateDataPipeOptions data_pipe_options{
@@ -88,7 +88,7 @@ TEST_F(BytesUploaderTest, Create) {
   BytesUploader* bytes_uploader_ = MakeGarbageCollected<BytesUploader>(
       nullptr, mock_bytes_consumer,
       pending_remote.InitWithNewPipeAndPassReceiver(),
-      Thread::Current()->GetTaskRunner(), /*client=*/nullptr);
+      Thread::Current()->GetDeprecatedTaskRunner(), /*client=*/nullptr);
   ASSERT_TRUE(bytes_uploader_);
 }
 

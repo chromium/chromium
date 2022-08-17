@@ -33,7 +33,7 @@ ParentExecutionContextTaskRunners::ParentExecutionContextTaskRunners(
                     TaskType::kInternalLoading, TaskType::kInternalTest,
                     TaskType::kInternalMedia, TaskType::kInternalInspector}) {
     auto task_runner = context ? context->GetTaskRunner(type)
-                               : Thread::Current()->GetTaskRunner();
+                               : Thread::Current()->GetDeprecatedTaskRunner();
     task_runners_.insert(type, std::move(task_runner));
   }
 }
@@ -51,7 +51,7 @@ void ParentExecutionContextTaskRunners::Trace(Visitor* visitor) const {
 void ParentExecutionContextTaskRunners::ContextDestroyed() {
   base::AutoLock locker(lock_);
   for (auto& entry : task_runners_)
-    entry.value = Thread::Current()->GetTaskRunner();
+    entry.value = Thread::Current()->GetDeprecatedTaskRunner();
 }
 
 }  // namespace blink

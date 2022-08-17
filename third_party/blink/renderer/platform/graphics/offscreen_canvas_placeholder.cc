@@ -144,7 +144,7 @@ void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
 
   filter_quality_ = filter_quality;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   if (task_runner == frame_dispatcher_task_runner_) {
     UpdateDispatcherFilterQuality(frame_dispatcher_, filter_quality);
   } else {

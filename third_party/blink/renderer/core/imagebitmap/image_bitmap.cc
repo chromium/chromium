@@ -945,13 +945,14 @@ ScriptPromise ImageBitmap::CreateAsync(
   ScriptPromise promise = resolver->Promise();
 
   worker_pool::PostTask(
-      FROM_HERE, CrossThreadBindOnce(
-                     &RasterizeImageOnBackgroundThread, std::move(paint_record),
-                     draw_dst_rect, Thread::MainThread()->GetTaskRunner(),
-                     CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
-                                         WrapCrossThreadPersistent(resolver),
-                                         !image->WouldTaintOrigin(),
-                                         std::move(passed_parsed_options))));
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &RasterizeImageOnBackgroundThread, std::move(paint_record),
+          draw_dst_rect, Thread::MainThread()->GetDeprecatedTaskRunner(),
+          CrossThreadBindOnce(&ResolvePromiseOnOriginalThread,
+                              WrapCrossThreadPersistent(resolver),
+                              !image->WouldTaintOrigin(),
+                              std::move(passed_parsed_options))));
   return promise;
 }
 

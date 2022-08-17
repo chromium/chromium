@@ -483,14 +483,14 @@ scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
   }
 
   if (execution_context.IsWindow()) {
-    return Thread::MainThread()->GetTaskRunner();
+    return Thread::MainThread()->GetDeprecatedTaskRunner();
   }
 
   DCHECK(execution_context.IsWorkletGlobalScope());
   WorkletGlobalScope& worklet_global_scope =
       To<WorkletGlobalScope>(execution_context);
   if (worklet_global_scope.IsMainThreadWorkletGlobalScope()) {
-    return Thread::MainThread()->GetTaskRunner();
+    return Thread::MainThread()->GetDeprecatedTaskRunner();
   }
 
   return worklet_global_scope.GetThread()

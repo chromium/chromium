@@ -711,7 +711,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
       sk_image_info, transferable_resource.mailbox_holder.texture_target,
       /* is_origin_top_left = */ opengl_flip_y_extension_,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
-      Thread::Current()->GetTaskRunner(), std::move(release_callback),
+      Thread::Current()->GetDeprecatedTaskRunner(), std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource.is_overlay_candidate);
 }

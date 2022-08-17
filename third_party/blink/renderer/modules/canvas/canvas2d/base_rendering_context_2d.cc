@@ -84,15 +84,15 @@ const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
 
 BaseRenderingContext2D::BaseRenderingContext2D()
     : dispatch_context_lost_event_timer_(
-          Thread::Current()->GetTaskRunner(),
+          Thread::Current()->GetDeprecatedTaskRunner(),
           this,
           &BaseRenderingContext2D::DispatchContextLostEvent),
       dispatch_context_restored_event_timer_(
-          Thread::Current()->GetTaskRunner(),
+          Thread::Current()->GetDeprecatedTaskRunner(),
           this,
           &BaseRenderingContext2D::DispatchContextRestoredEvent),
       try_restore_context_event_timer_(
-          Thread::Current()->GetTaskRunner(),
+          Thread::Current()->GetDeprecatedTaskRunner(),
           this,
           &BaseRenderingContext2D::TryRestoreContextEvent),
       clip_antialiasing_(kNotAntiAliased),

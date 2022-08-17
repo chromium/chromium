@@ -333,7 +333,7 @@ bool ParkableImageImpl::MaybePark() {
       FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&ParkableImageImpl::WriteToDiskInBackground,
                           scoped_refptr<ParkableImageImpl>(this),
-                          Thread::Current()->GetTaskRunner()));
+                          Thread::Current()->GetDeprecatedTaskRunner()));
   return true;
 }
 

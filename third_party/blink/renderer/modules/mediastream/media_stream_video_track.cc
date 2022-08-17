@@ -226,7 +226,7 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
     uint32_t crop_version)
     : io_task_runner_(std::move(io_task_runner)),
       // TODO(crbug.com/1223353, crbug.com/624696): Move to WebFrameScheduler.
-      main_render_task_runner_(Thread::MainThread()->GetTaskRunner()),
+      main_render_task_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
       media_stream_video_track_(media_stream_video_track),
       enabled_(enabled),
       emit_frame_drop_events_(true),
@@ -267,7 +267,7 @@ void MediaStreamVideoTrack::FrameDeliverer::SetNotifyFrameDroppedCallback(
       CrossThreadBindOnce(&FrameDeliverer::SetNotifyFrameDroppedCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
                           CrossThreadBindRepeating(std::move(callback)),
-                          Thread::Current()->GetTaskRunner()));
+                          Thread::Current()->GetDeprecatedTaskRunner()));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::SetNotifyFrameDroppedCallbackOnIO(
@@ -314,7 +314,7 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveCallback(VideoSinkId id) {
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::RemoveCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
-                          Thread::Current()->GetTaskRunner()));
+                          Thread::Current()->GetDeprecatedTaskRunner()));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::RemoveCallbackOnIO(
@@ -345,7 +345,7 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveEncodedCallback(
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::RemoveEncodedCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
-                          Thread::Current()->GetTaskRunner()));
+                          Thread::Current()->GetDeprecatedTaskRunner()));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::RemoveEncodedCallbackOnIO(

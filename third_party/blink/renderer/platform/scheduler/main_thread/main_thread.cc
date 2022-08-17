@@ -20,7 +20,8 @@ blink::ThreadScheduler* MainThread::Scheduler() {
   return scheduler_;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner> MainThread::GetTaskRunner() const {
+scoped_refptr<base::SingleThreadTaskRunner>
+MainThread::GetDeprecatedTaskRunner() const {
   return task_runner_;
 }
 

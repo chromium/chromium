@@ -621,8 +621,9 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
       /* is_origin_top_left = */ false,
       drawing_buffer_->ContextProviderWeakPtr(),
-      base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
-      std::move(release_callback), /*supports_display_compositing=*/true,
+      base::PlatformThread::CurrentRef(),
+      Thread::Current()->GetDeprecatedTaskRunner(), std::move(release_callback),
+      /*supports_display_compositing=*/true,
       // CreateColorBuffer() never sets the SCANOUT usage bit.
       /*is_overlay_candidate=*/false);
 }

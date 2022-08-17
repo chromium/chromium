@@ -31,7 +31,7 @@ ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
       tick_clock_(base::DefaultTickClock::GetInstance()),
       inactivity_threshold_(kInactivityReclamationThreshold),
       last_activity_(tick_clock_->NowTicks()),
-      activity_timer_(Thread::Current()->GetTaskRunner(),
+      activity_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
                       this,
                       &ReclaimableCodec::OnActivityTimerFired) {
   DCHECK(context);

@@ -44,7 +44,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                const SkColorInfo& info)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
-      owning_thread_task_runner_(Thread::Current()->GetTaskRunner()),
+      owning_thread_task_runner_(Thread::Current()->GetDeprecatedTaskRunner()),
       provider_(std::move(provider)),
       info_(info),
       filter_quality_(filter_quality) {}
@@ -778,7 +778,7 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
                                 info.colorInfo()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
-      owning_thread_task_runner_(Thread::Current()->GetTaskRunner()),
+      owning_thread_task_runner_(Thread::Current()->GetDeprecatedTaskRunner()),
       is_origin_top_left_(is_origin_top_left),
       is_overlay_candidate_(shared_image_usage_flags &
                             gpu::SHARED_IMAGE_USAGE_SCANOUT) {

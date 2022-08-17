@@ -121,7 +121,7 @@ bool PretokenizeCSSEnabled() {
   return kEnabled;
 }
 
-Thread* GetPreloadScannerThread() {
+NonMainThread* GetPreloadScannerThread() {
   DCHECK(ThreadedPreloadScannerEnabled());
 
   // The preload scanner relies on parsing CSS, which requires creating garbage

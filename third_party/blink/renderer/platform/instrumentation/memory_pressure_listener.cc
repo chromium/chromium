@@ -121,11 +121,11 @@ void MemoryPressureListenerRegistry::OnPurgeMemory() {
   // Thread-specific data never issues a layout, so we are safe here.
   base::AutoLock lock(threads_lock_);
   for (auto* thread : threads_) {
-    if (!thread->GetTaskRunner())
+    if (!thread->GetDeprecatedTaskRunner())
       continue;
 
     PostCrossThreadTask(
-        *thread->GetTaskRunner(), FROM_HERE,
+        *thread->GetDeprecatedTaskRunner(), FROM_HERE,
         CrossThreadBindOnce(
             MemoryPressureListenerRegistry::ClearThreadSpecificMemory));
   }

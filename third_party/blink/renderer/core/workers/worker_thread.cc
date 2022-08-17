@@ -454,8 +454,8 @@ void WorkerThread::ChildThreadTerminatedOnWorkerThread(WorkerThread* child) {
 }
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy)
-    : WorkerThread(worker_reporting_proxy, Thread::Current()->GetTaskRunner()) {
-}
+    : WorkerThread(worker_reporting_proxy,
+                   Thread::Current()->GetDeprecatedTaskRunner()) {}
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
                            scoped_refptr<base::SingleThreadTaskRunner>

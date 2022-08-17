@@ -56,7 +56,7 @@ MediaStreamSource* CreateMediaStreamSource() {
   DVLOG(1) << "Creating WebAudio media stream source.";
   // TODO(crbug.com/704136) Use executionContext::GetTaskRunner() instead.
   auto audio_source = std::make_unique<WebAudioMediaStreamSource>(
-      Thread::MainThread()->GetTaskRunner());
+      Thread::MainThread()->GetDeprecatedTaskRunner());
   WebAudioMediaStreamSource* audio_source_ptr = audio_source.get();
 
   String source_id = "WebAudio-" + WTF::CreateCanonicalUUIDString();

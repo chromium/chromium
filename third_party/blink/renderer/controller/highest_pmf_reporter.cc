@@ -51,7 +51,7 @@ HighestPmfReporter& HighestPmfReporter::Instance() {
 }
 
 HighestPmfReporter::HighestPmfReporter()
-    : task_runner_(Thread::MainThread()->GetTaskRunner()),
+    : task_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
       clock_(base::DefaultTickClock::GetInstance()) {
   MemoryUsageMonitor::Instance().AddObserver(this);
 }

@@ -70,8 +70,8 @@ void SimTest::TearDown() {
   //
   // Use RunUntilIdle() instead of blink::test::RunPendingTask(), because
   // blink::test::RunPendingTask() posts directly to
-  // Thread::Current()->GetTaskRunner(), which makes it incompatible with a
-  // TestingPlatformSupportWithMockScheduler.
+  // Thread::Current()->GetDeprecatedTaskRunner(), which makes it incompatible
+  // with a TestingPlatformSupportWithMockScheduler.
   base::RunLoop().RunUntilIdle();
 
   // Shut down this stuff before settings change to keep the world

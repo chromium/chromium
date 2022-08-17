@@ -388,7 +388,7 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
           ::features::kCanvasContextLostInBackground)) {
     lose_context_in_background_scheduled_ = true;
     if (dont_use_idle_scheduling_for_testing_) {
-      Thread::Current()->GetTaskRunner()->PostTask(
+      Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
           FROM_HERE, WTF::Bind(&LoseContextInBackgroundForTestingWrapper,
                                weak_ptr_factory_.GetWeakPtr()));
     } else {
@@ -405,7 +405,7 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
     logger_->ReportHibernationEvent(kHibernationScheduled);
     hibernation_scheduled_ = true;
     if (dont_use_idle_scheduling_for_testing_) {
-      Thread::Current()->GetTaskRunner()->PostTask(
+      Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
           FROM_HERE, WTF::Bind(&HibernateWrapperForTesting,
                                weak_ptr_factory_.GetWeakPtr()));
     } else {

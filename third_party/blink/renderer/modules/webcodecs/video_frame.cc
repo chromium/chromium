@@ -120,7 +120,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 
   explicit CachedVideoFramePool(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
-        task_runner_(Thread::Current()->GetTaskRunner()) {}
+        task_runner_(Thread::Current()->GetDeprecatedTaskRunner()) {}
   virtual ~CachedVideoFramePool() = default;
 
   // Disallow copy and assign.
@@ -201,7 +201,7 @@ class CanvasResourceProviderCache
 
   explicit CanvasResourceProviderCache(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
-        task_runner_(Thread::Current()->GetTaskRunner()) {}
+        task_runner_(Thread::Current()->GetDeprecatedTaskRunner()) {}
   virtual ~CanvasResourceProviderCache() = default;
 
   // Disallow copy and assign.

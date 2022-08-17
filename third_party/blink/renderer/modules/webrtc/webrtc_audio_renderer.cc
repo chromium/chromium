@@ -309,7 +309,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
     const base::UnguessableToken& session_id,
     const String& device_id,
     base::RepeatingCallback<void()> on_render_error_callback)
-    : task_runner_(Thread::Current()->GetTaskRunner()),
+    : task_runner_(Thread::Current()->GetDeprecatedTaskRunner()),
       state_(kUninitialized),
       source_internal_frame_(std::make_unique<InternalFrame>(web_frame)),
       session_id_(session_id),

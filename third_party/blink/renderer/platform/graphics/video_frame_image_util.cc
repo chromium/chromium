@@ -178,7 +178,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         // |is_cross_thread|.
         base::PlatformThreadRef(),
         // The task runner is only used for |release_callback|.
-        Thread::Current()->GetTaskRunner(), std::move(release_callback),
+        Thread::Current()->GetDeprecatedTaskRunner(),
+        std::move(release_callback),
         /*supports_display_compositing=*/true,
         // TODO(junov): Figure out how to determine whether frame is an
         // overlay candidate. StorageType info seems insufficient.

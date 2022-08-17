@@ -97,7 +97,7 @@ VTTRegion::VTTRegion()
       viewport_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
       scroll_(kDefaultScroll),
       current_top_(0),
-      scroll_timer_(Thread::Current()->GetTaskRunner(),
+      scroll_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
                     this,
                     &VTTRegion::ScrollTimerFired) {}
 

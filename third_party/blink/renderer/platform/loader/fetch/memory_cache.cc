@@ -53,7 +53,7 @@ MemoryCache* GetMemoryCache() {
   if (!g_memory_cache) {
     g_memory_cache =
         new Persistent<MemoryCache>(MakeGarbageCollected<MemoryCache>(
-            Thread::MainThread()->GetTaskRunner()));
+            Thread::MainThread()->GetDeprecatedTaskRunner()));
   }
   return g_memory_cache->Get();
 }

@@ -84,8 +84,9 @@ void AssociateInputAndOutputForAec(
 }  // namespace
 
 AudioInputIPCFactory& AudioInputIPCFactory::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioInputIPCFactory, instance,
-                                  (Thread::MainThread()->GetTaskRunner()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      AudioInputIPCFactory, instance,
+      (Thread::MainThread()->GetDeprecatedTaskRunner()));
   return instance;
 }
 

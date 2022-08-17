@@ -63,7 +63,7 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
-      main_thread_runner_(Thread::MainThread()->GetTaskRunner()),
+      main_thread_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
       paint_worklet_(paint_worklet) {
   DCHECK(IsMainThread());
 }

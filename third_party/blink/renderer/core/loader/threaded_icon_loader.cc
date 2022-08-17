@@ -152,7 +152,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
                              base::TimeTicks::Now() - start_time_);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
 
   worker_pool::PostTask(
       FROM_HERE,

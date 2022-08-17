@@ -197,13 +197,15 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
     }
     if (!Thread::MainThread()->IsCurrentThread()) {
       accelerated_frame_pool_callback_in_progress_ = true;
-      Thread::MainThread()->GetTaskRunner()->PostTaskAndReplyWithResult(
-          FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce([]() {
-            return Platform::Current()->GetGpuMemoryBufferManager();
-          })),
-          WTF::Bind(
-              &MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool,
-              WrapWeakPersistent(this)));
+      Thread::MainThread()
+          ->GetDeprecatedTaskRunner()
+          ->PostTaskAndReplyWithResult(
+              FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce([]() {
+                return Platform::Current()->GetGpuMemoryBufferManager();
+              })),
+              WTF::Bind(&MediaStreamVideoTrackUnderlyingSink::
+                            CreateAcceleratedFramePool,
+                        WrapWeakPersistent(this)));
       return absl::nullopt;
     }
     auto* gmb_manager = Platform::Current()->GetGpuMemoryBufferManager();

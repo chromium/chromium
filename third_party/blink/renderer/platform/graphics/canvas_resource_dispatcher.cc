@@ -489,7 +489,7 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
     return;
 
   scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
 
   // If the offscreencanvas is in the same tread as the canvas, we will update
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in

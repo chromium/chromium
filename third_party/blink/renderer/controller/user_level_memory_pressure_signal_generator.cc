@@ -104,7 +104,7 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator()
     : memory_threshold_mb_(MemoryThresholdParam()),
       minimum_interval_(MinimumIntervalSeconds()),
       delayed_report_timer_(
-          Thread::MainThread()->GetTaskRunner(),
+          Thread::MainThread()->GetDeprecatedTaskRunner(),
           this,
           &UserLevelMemoryPressureSignalGenerator::OnTimerFired),
       clock_(base::DefaultTickClock::GetInstance()) {

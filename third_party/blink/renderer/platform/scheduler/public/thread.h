@@ -45,6 +45,7 @@ class TaskTimeObserver;
 namespace blink {
 
 class FrameOrWorkerScheduler;
+class NonMainThread;
 class ThreadScheduler;
 class Platform;
 
@@ -102,7 +103,7 @@ class PLATFORM_EXPORT Thread {
 
   // Return an interface to the compositor thread (if initialized). This can be
   // null if the renderer was created with threaded rendering disabled.
-  static Thread* CompositorThread();
+  static NonMainThread* CompositorThread();
 
   Thread();
   Thread(const Thread&) = delete;
@@ -118,7 +119,8 @@ class PLATFORM_EXPORT Thread {
   // Default scheduler task queue does not give scheduler enough freedom to
   // manage task priorities and should not be used.
   // Use ExecutionContext::GetTaskRunner instead (crbug.com/624696).
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const {
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
+      const {
     return nullptr;
   }
 

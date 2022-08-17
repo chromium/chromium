@@ -638,7 +638,7 @@ void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
 void WorkerGlobalScope::RemoveURLFromMemoryCache(const KURL& url) {
   // MemoryCache can be accessed only from the main thread.
   PostCrossThreadTask(
-      *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&RemoveURLFromMemoryCacheInternal, url));
 }
 

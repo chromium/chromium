@@ -35,7 +35,8 @@ void SensorProxyInspectorImpl::Initialize() {
   auto callback = WTF::Bind(&SensorProxyInspectorImpl::OnSensorCreated,
                             WrapWeakPersistent(this));
 
-  Thread::Current()->GetTaskRunner()->PostTask(FROM_HERE, std::move(callback));
+  Thread::Current()->GetDeprecatedTaskRunner()->PostTask(FROM_HERE,
+                                                         std::move(callback));
 }
 
 void SensorProxyInspectorImpl::AddConfiguration(

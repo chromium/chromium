@@ -95,7 +95,7 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
   ongoing_jobs_ = std::move(worklet_job_map);
 
   scoped_refptr<base::SingleThreadTaskRunner> runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   WTF::CrossThreadClosure on_done = CrossThreadBindRepeating(
       [](base::WeakPtr<PaintWorkletPaintDispatcher> dispatcher,
          scoped_refptr<base::SingleThreadTaskRunner> runner) {

@@ -69,7 +69,7 @@ class LongTaskDetectorTest : public testing::Test {
   base::TimeTicks DummyTaskEndTime() { return dummy_task_end_time_; }
 
   void SimulateTask(base::TimeDelta duration) {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE, WTF::Bind(&LongTaskDetectorTest::DummyTaskWithDuration,
                              WTF::Unretained(this), duration));
     platform_->RunUntilIdle();

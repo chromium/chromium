@@ -76,7 +76,7 @@ const AtomicString& FontCache::LegacySystemFontFamily() {
 
 static void InvalidateFontCache() {
   if (!IsMainThread()) {
-    Thread::MainThread()->GetTaskRunner()->PostTask(
+    Thread::MainThread()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE, WTF::Bind(&InvalidateFontCache));
     return;
   }

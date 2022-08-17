@@ -43,7 +43,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(
-            Thread::MainThread()->GetTaskRunner(),
+            Thread::MainThread()->GetDeprecatedTaskRunner(),
             Platform::Current()->GetIOTaskRunner());
     PushableMediaStreamAudioSource* pushable_audio_source_ptr =
         pushable_audio_source.get();

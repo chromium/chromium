@@ -357,7 +357,7 @@ void ImageBitmapFactories::ImageBitmapLoader::ScheduleAsyncImageBitmapDecoding(
     ArrayBufferContents contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   ImageDecoder::AlphaOption alpha_option =
       options_->premultiplyAlpha() != "none"
           ? ImageDecoder::AlphaOption::kAlphaPremultiplied

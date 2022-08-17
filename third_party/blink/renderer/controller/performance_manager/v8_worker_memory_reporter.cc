@@ -143,14 +143,14 @@ void V8WorkerMemoryReporter::GetMemoryUsage(ResultCallback callback,
       &V8WorkerMemoryReporter::StartMeasurement, TaskType::kInternalDefault,
       worker_memory_reporter->GetWeakPtr(), mode);
   if (worker_count == 0) {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE, WTF::Bind(&V8WorkerMemoryReporter::InvokeCallback,
                              std::move(worker_memory_reporter)));
     return;
   }
   worker_memory_reporter->SetWorkerCount(worker_count);
   // Transfer the ownership of the instance to the timeout task.
-  Thread::Current()->GetTaskRunner()->PostDelayedTask(
+  Thread::Current()->GetDeprecatedTaskRunner()->PostDelayedTask(
       FROM_HERE,
       WTF::Bind(&V8WorkerMemoryReporter::OnTimeout,
                 std::move(worker_memory_reporter)),
@@ -187,7 +187,7 @@ void V8WorkerMemoryReporter::NotifyMeasurementSuccess(
     std::unique_ptr<WorkerMemoryUsage> memory_usage) {
   DCHECK(worker_thread->IsCurrentThread());
   PostCrossThreadTask(
-      *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementSuccess,
                           worker_memory_reporter, std::move(memory_usage)));
 }
@@ -198,7 +198,7 @@ void V8WorkerMemoryReporter::NotifyMeasurementFailure(
     base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter) {
   DCHECK(worker_thread->IsCurrentThread());
   PostCrossThreadTask(
-      *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementFailure,
                           worker_memory_reporter));
 }

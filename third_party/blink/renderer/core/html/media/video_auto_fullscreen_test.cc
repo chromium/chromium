@@ -31,14 +31,14 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
   void EnterFullscreen(mojom::blink::FullscreenOptionsPtr options,
                        EnterFullscreenCallback callback) override {
     std::move(callback).Run(true);
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind([](WebViewImpl* web_view) { web_view->DidEnterFullscreen(); },
                   WTF::Unretained(web_view_)));
   }
 
   void ExitFullscreen() override {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind([](WebViewImpl* web_view) { web_view->DidExitFullscreen(); },
                   WTF::Unretained(web_view_)));

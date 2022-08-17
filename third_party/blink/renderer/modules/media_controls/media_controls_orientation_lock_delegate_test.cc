@@ -127,12 +127,12 @@ class MockChromeClientForOrientationLockDelegate final
   void EnterFullscreen(LocalFrame& frame,
                        const FullscreenOptions*,
                        FullscreenRequestType) override {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind(DidEnterFullscreen, WrapPersistent(frame.GetDocument())));
   }
   void ExitFullscreen(LocalFrame& frame) override {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind(DidExitFullscreen, WrapPersistent(frame.GetDocument())));
   }

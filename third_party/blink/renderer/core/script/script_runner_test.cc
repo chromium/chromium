@@ -92,7 +92,7 @@ class ScriptRunnerTest : public testing::Test {
     // Give ScriptRunner a task runner that platform_ will pump in
     // RunUntilIdle()/RunSingleTask().
     script_runner_->SetTaskRunnerForTesting(
-        Thread::Current()->GetTaskRunner().get());
+        Thread::Current()->GetDeprecatedTaskRunner().get());
     RuntimeCallStats::SetRuntimeCallStatsForTesting();
   }
   void TearDown() override {

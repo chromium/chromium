@@ -42,7 +42,7 @@ FrameOrWorkerScheduler* NullExecutionContext::GetScheduler() {
 
 scoped_refptr<base::SingleThreadTaskRunner> NullExecutionContext::GetTaskRunner(
     TaskType) {
-  return Thread::Current()->GetTaskRunner();
+  return Thread::Current()->GetDeprecatedTaskRunner();
 }
 
 const BrowserInterfaceBrokerProxy&

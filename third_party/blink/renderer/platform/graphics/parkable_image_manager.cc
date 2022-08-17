@@ -103,7 +103,7 @@ void ParkableImageManager::Add(ParkableImageImpl* impl) {
   ScheduleDelayedParkingTaskIfNeeded();
 
   if (!has_posted_accounting_task_) {
-    auto task_runner = Thread::Current()->GetTaskRunner();
+    auto task_runner = Thread::Current()->GetDeprecatedTaskRunner();
     DCHECK(task_runner);
     // |base::Unretained(this)| is fine because |this| is a NoDestructor
     // singleton.
@@ -167,7 +167,7 @@ void ParkableImageManager::DestroyParkableImage(
   } else {
     auto* thread = Thread::MainThread();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        thread->GetTaskRunner();
+        thread->GetDeprecatedTaskRunner();
     DCHECK(task_runner);
     task_runner->PostTask(
         FROM_HERE,
@@ -225,7 +225,7 @@ void ParkableImageManager::ScheduleDelayedParkingTaskIfNeeded() {
 
   auto* thread = Thread::MainThread();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      thread->GetTaskRunner();
+      thread->GetDeprecatedTaskRunner();
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableImageManager::MaybeParkImages,

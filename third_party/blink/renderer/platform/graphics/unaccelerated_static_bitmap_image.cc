@@ -98,7 +98,8 @@ void UnacceleratedStaticBitmapImage::Transfer() {
   DETACH_FROM_THREAD(thread_checker_);
 
   original_skia_image_ = paint_image_.GetSwSkImage();
-  original_skia_image_task_runner_ = Thread::Current()->GetTaskRunner();
+  original_skia_image_task_runner_ =
+      Thread::Current()->GetDeprecatedTaskRunner();
 }
 
 scoped_refptr<StaticBitmapImage>

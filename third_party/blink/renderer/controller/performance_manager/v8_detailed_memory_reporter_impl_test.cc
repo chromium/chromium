@@ -175,7 +175,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
   // JS below expects to be run from a task as it adds itself to as a
   // TaskTimeObserver that is cleared when the task is finished. Not doing so
   // violates CanvasPerformanceMonitor consistency.
-  Thread::Current()->GetTaskRunner()->PostTask(
+  Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&main_resource] {
         main_resource.Complete(R"HTML(
       <script>
