@@ -95,14 +95,13 @@ double TestStatsDictionary::GetNumber(const std::string& key) const {
 }
 
 bool TestStatsDictionary::IsString(const std::string& key) const {
-  std::string value;
-  return GetString(key, &value);
+  return stats_->GetDict().FindString(key) != nullptr;
 }
 
 std::string TestStatsDictionary::GetString(const std::string& key) const {
-  std::string value;
-  CHECK(GetString(key, &value));
-  return value;
+  const std::string* value = stats_->GetDict().FindString(key);
+  CHECK(value);
+  return *value;
 }
 
 bool TestStatsDictionary::IsSequenceBoolean(const std::string& key) const {
@@ -157,11 +156,6 @@ bool TestStatsDictionary::GetNumber(
     return true;
   }
   return false;
-}
-
-bool TestStatsDictionary::GetString(
-    const std::string& key, std::string* out) const {
-  return stats_->GetString(key, out);
 }
 
 bool TestStatsDictionary::GetSequenceBoolean(

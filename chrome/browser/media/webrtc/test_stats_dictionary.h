@@ -68,7 +68,6 @@ class TestStatsDictionary {
  private:
   bool GetBoolean(const std::string& key, bool* out) const;
   bool GetNumber(const std::string& key, double* out) const;
-  bool GetString(const std::string& key, std::string* out) const;
   bool GetSequenceBoolean(
       const std::string& key, std::vector<bool>* out) const;
   bool GetSequenceNumber(
