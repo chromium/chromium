@@ -1820,7 +1820,7 @@
   },
   {
     "name": "enable-cros-ime-assist-emoji-enhanced",
-    "owners": [ "myy", "curtismcmullan", "essential-inputs-team@google.com" ],
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
   },
   {
@@ -1832,11 +1832,6 @@
     "name": "enable-cros-ime-assist-multi-word-expanded",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "enable-cros-ime-assist-multi-word-lacros",
-    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 120
   },
   {
     "name": "enable-cros-ime-assist-personal-info",
@@ -1865,12 +1860,12 @@
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-extension",
-    "owners": [ "hdchuong", "curtismcmullan", "myy", "essential-inputs-team@google.com" ],
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-search-extension",
-    "owners": [ "hdchuong", "curtismcmullan", "myy", "essential-inputs-team@google.com" ],
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
   },
   {
@@ -3691,20 +3686,20 @@
     "owners": [ "sidereal@google.com", "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 115
   },
-  {
+  { 
     "name": "handwriting-gesture-editing",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 111
   },
   {
     "name": "handwriting-legacy-recognition",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 111
   },
   {
     "name": "handwriting-legacy-recognition-all-lang",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 111
   },
   {
     "name": "handwriting-library-dlc",
