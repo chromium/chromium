@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/navigation_handle.h"
 
 class GURL;
 
@@ -27,6 +28,8 @@ class HistoryService;
 }  // namespace history
 
 namespace safe_browsing {
+
+typedef unsigned ThreatSeverity;
 
 class BaseBlockingPage;
 
@@ -128,6 +131,12 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   bool PopUnsafeResourceForURL(
       GURL url,
       security_interstitials::UnsafeResource* resource);
+
+  // Goes over the |handle->RedirectChain| and returns the severest threat.
+  // The lowest value is 0, which represents the most severe type.
+  ThreatSeverity GetSeverestThreatForNavigation(
+      content::NavigationHandle* handle,
+      security_interstitials::UnsafeResource& severest_resource);
 
  protected:
   friend class ChromePasswordProtectionService;

@@ -31,6 +31,8 @@ using safe_browsing::SBThreatType;
 
 namespace {
 
+using safe_browsing::ThreatSeverity;
+
 // A AllowlistUrlSet holds the set of URLs that have been allowlisted
 // for a specific WebContents, along with pending entries that are still
 // undecided. Each URL is associated with the first SBThreatType that
@@ -111,6 +113,35 @@ GURL GetAllowlistUrl(const GURL& url,
     return entry->GetURL().GetWithEmptyPath();
   }
   return url.GetWithEmptyPath();
+}
+
+// Returns the corresponding ThreatSeverity to a SBThreatType
+// Keep the same as v4_local_database_manager GetThreatSeverity()
+ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
+  switch (threat_type) {
+    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
+      return 0;
+    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+      return 1;
+    case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      return 2;
+    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      return 3;
+    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      return 4;
+    case safe_browsing::SB_THREAT_TYPE_BILLING:
+      return 15;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return std::numeric_limits<ThreatSeverity>::max();
 }
 
 }  // namespace
@@ -432,6 +463,28 @@ bool BaseUIManager::PopUnsafeResourceForURL(
     }
   }
   return false;
+}
+
+ThreatSeverity BaseUIManager::GetSeverestThreatForNavigation(
+    content::NavigationHandle* handle,
+    security_interstitials::UnsafeResource& severest_resource) {
+  // Default is safe
+  // Smaller numbers are more severe for ThreatSeverity
+  ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
+  if (!handle)
+    return min_severity;
+
+  for (auto&& url : handle->GetRedirectChain()) {
+    security_interstitials::UnsafeResource resource;
+    if (PopUnsafeResourceForURL(url, &resource)) {
+      ThreatSeverity severity = GetThreatSeverity(resource.threat_type);
+      if (severity > min_severity)
+        continue;
+      min_severity = severity;
+      severest_resource = std::move(resource);
+    }
+  }
+  return min_severity;
 }
 
 void BaseUIManager::RemoveAllowlistUrlSet(const GURL& allowlist_url,

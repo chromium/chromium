@@ -45,12 +45,17 @@ content::NavigationThrottle::ThrottleCheckResult
 SafeBrowsingNavigationThrottle::WillFailRequest() {
   DCHECK(manager_);
 
+  // Goes over |RedirectChain| to get the severest threat information
   security_interstitials::UnsafeResource resource;
   content::NavigationHandle* handle = navigation_handle();
+  ThreatSeverity severity =
+      manager_->GetSeverestThreatForNavigation(handle, resource);
 
-  if (manager_->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
-    // Subframes and nested frame trees will show an interstitial directly from
-    // BaseUIManager::DisplayBlockingPage.
+  // Unsafe resource will show a blocking page
+  if (severity != std::numeric_limits<ThreatSeverity>::max() &&
+      resource.threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {
+    // Subframes and nested frame trees will show an interstitial directly
+    // from BaseUIManager::DisplayBlockingPage.
     DCHECK(handle->IsInPrimaryMainFrame() ||
            handle->IsInPrerenderedMainFrame());
     SafeBrowsingBlockingPage* blocking_page =
