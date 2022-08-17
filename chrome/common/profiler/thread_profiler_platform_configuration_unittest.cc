@@ -109,22 +109,17 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessEnableFraction) {
   EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUtility));
+  EXPECT_EQ(1.0,
+            config()->GetChildProcessEnableFraction(
+                metrics::CallStackProfileParams::Process::kNetworkService));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kUnknown));
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0.75, config()->GetChildProcessEnableFraction(
                       metrics::CallStackProfileParams::Process::kRenderer));
-  EXPECT_EQ(0.0,
-            config()->GetChildProcessEnableFraction(
-                metrics::CallStackProfileParams::Process::kNetworkService));
 #else
   EXPECT_EQ(0.2, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kRenderer));
-  EXPECT_EQ(1.0,
-            config()->GetChildProcessEnableFraction(
-                metrics::CallStackProfileParams::Process::kNetworkService));
 #endif
 }
 

@@ -63,16 +63,20 @@ double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
   DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
+  // Profile all supported processes in browser test mode.
+  if (browser_test_mode_enabled()) {
+    return 1.0;
+  }
+
   switch (process) {
     case metrics::CallStackProfileParams::Process::kGpu:
     case metrics::CallStackProfileParams::Process::kNetworkService:
       return 1.0;
 
     case metrics::CallStackProfileParams::Process::kRenderer:
-      // Run the profiler in all renderer processes if the browser test mode is
-      // enabled, otherwise run in 20% of the processes to collect roughly as
-      // many profiles for renderer processes as browser processes.
-      return browser_test_mode_enabled() ? 1.0 : 0.2;
+      // Run the profiler in 20% of the processes to collect roughly as many
+      // profiles for renderer processes as browser processes.
+      return 0.2;
 
     default:
       return 0.0;
@@ -134,28 +138,14 @@ AndroidPlatformConfiguration::GetEnableRates(
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
-
-  // Profile all supported processes in browser test mode.
-  if (browser_test_mode_enabled()) {
-    return 1.0;
+  if (process == metrics::CallStackProfileParams::Process::kRenderer) {
+    // There are empirically, on average, 1.3 renderer processes per browser
+    // process. This samples the renderer process at roughly the same
+    // frequency overall as the browser process.
+    // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
+    return browser_test_mode_enabled() ? 1.0 : 0.75;
   }
-
-  // TODO(https://crbug.com/1326430): Enable for all the default processes.
-  switch (process) {
-    case metrics::CallStackProfileParams::Process::kGpu:
-      return 1.0;
-
-    case metrics::CallStackProfileParams::Process::kRenderer:
-      // There are empirically, on average, 1.3 renderer processes per browser
-      // process. This samples the renderer process at roughly the same
-      // frequency overall as the browser process.
-      // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
-      return 0.75;
-
-    default:
-      return 0.0;
-  }
+  return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 }
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 
