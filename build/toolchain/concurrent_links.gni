@@ -61,8 +61,7 @@ if (concurrent_links == -1) {
   } else if (is_android && !is_component_build && symbol_level == 2) {
     # Full debug symbols require large memory for link.
     _args = [ "--mem_per_link_gb=25" ]
-  } else if (is_android && !is_debug && !using_sanitizer && is_java_debug &&
-             disable_android_lint && symbol_level < 2) {
+  } else if (is_android && !is_debug && !using_sanitizer && symbol_level < 2) {
     if (symbol_level == 1) {
       _args = [ "--mem_per_link_gb=6" ]
     } else {

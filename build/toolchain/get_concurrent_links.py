@@ -58,14 +58,20 @@ def _GetTotalMemoryInBytes():
 
 
 def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
-                               secondary_per_link_gb):
+                               secondary_per_link_gb, override_ram_in_gb):
   explanation = []
   explanation.append(
       'per_link_gb={} reserve_gb={} secondary_per_link_gb={}'.format(
           per_link_gb, reserve_gb, secondary_per_link_gb))
-  mem_total_gb = float(_GetTotalMemoryInBytes()) / 2**30
+  if override_ram_in_gb:
+    mem_total_gb = override_ram_in_gb
+  else:
+    mem_total_gb = float(_GetTotalMemoryInBytes()) / 2**30
   mem_total_gb = max(0, mem_total_gb - reserve_gb)
-  mem_cap = int(max(1, mem_total_gb / per_link_gb))
+
+  # Ensure that there is at least as many links allocated for the secondary as
+  # there is for the primary. The secondary link usually uses fewer gbs.
+  mem_cap = int(max(1, mem_total_gb / (per_link_gb + secondary_per_link_gb)))
 
   try:
     cpu_count = multiprocessing.cpu_count()
@@ -103,12 +109,17 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
   explanation.append('concurrent_links={}  (reason: {})'.format(
       num_links, reason))
 
-  # See if there is RAM leftover for a secondary pool.
-  if secondary_per_link_gb and num_links == mem_cap:
-    mem_remaining = mem_total_gb - mem_cap * per_link_gb
+  # Use remaining RAM for a secondary pool if needed.
+  if secondary_per_link_gb:
+    mem_remaining = mem_total_gb - num_links * per_link_gb
     secondary_size = int(max(0, mem_remaining / secondary_per_link_gb))
-    explanation.append('secondary_size={} (mem_remaining={:.1f}GiB)'.format(
-        secondary_size, mem_remaining))
+    if secondary_size > cpu_count:
+      secondary_size = cpu_count
+      reason = 'cpu_count'
+    else:
+      reason = 'mem_remaining={:.1f}GiB'.format(mem_remaining)
+    explanation.append('secondary_size={} (reason: {})'.format(
+        secondary_size, reason))
   else:
     secondary_size = 0
 
@@ -120,19 +131,25 @@ def main():
   parser.add_argument('--mem_per_link_gb', type=int, default=8)
   parser.add_argument('--reserve_mem_gb', type=int, default=0)
   parser.add_argument('--secondary_mem_per_link', type=int, default=0)
+  parser.add_argument('--override-ram-in-gb-for-testing', type=float, default=0)
   parser.add_argument('--thin-lto')
   options = parser.parse_args()
 
   primary_pool_size, secondary_pool_size, explanation = (
       _GetDefaultConcurrentLinks(options.mem_per_link_gb,
                                  options.reserve_mem_gb, options.thin_lto,
-                                 options.secondary_mem_per_link))
-  sys.stdout.write(
-      gn_helpers.ToGNString({
-          'primary_pool_size': primary_pool_size,
-          'secondary_pool_size': secondary_pool_size,
-          'explanation': explanation,
-      }))
+                                 options.secondary_mem_per_link,
+                                 options.override_ram_in_gb_for_testing))
+  if options.override_ram_in_gb_for_testing:
+    print('primary={} secondary={}'.format(primary_pool_size,
+                                           secondary_pool_size))
+  else:
+    sys.stdout.write(
+        gn_helpers.ToGNString({
+            'primary_pool_size': primary_pool_size,
+            'secondary_pool_size': secondary_pool_size,
+            'explanation': explanation,
+        }))
   return 0
 
 
