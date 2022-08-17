@@ -172,7 +172,6 @@ void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
       // This node was deleted, don't traverse to the subtree.
       return;
     }
-      ABSL_FALLTHROUGH_INTENDED;
     case kTextChange: {
       // Modify the text.
       const ui::AXNode* child_inline_text = node->GetFirstChild();
