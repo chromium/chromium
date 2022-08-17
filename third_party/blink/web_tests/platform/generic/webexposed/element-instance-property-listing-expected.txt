@@ -338,6 +338,7 @@ namespace http://www.w3.org/1999/xhtml
     property title
     property toString
     property toggleAttribute
+    property toggles
     property translate
     property virtualKeyboardPolicy
     property webkitMatchesSelector
@@ -1559,6 +1560,7 @@ namespace http://www.w3.org/2000/svg
     property tagName
     property textContent
     property toggleAttribute
+    property toggles
     property viewportElement
     property webkitMatchesSelector
     property webkitRequestFullScreen

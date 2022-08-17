@@ -9068,44 +9068,47 @@ const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
   return base_style->AddCachedPositionFallbackStyle(std::move(style), index);
 }
 
-ToggleData* Element::GetToggleData() {
-  return HasRareData() ? GetElementRareData()->GetToggleData() : nullptr;
+CSSToggleMap* Element::GetToggleMap() {
+  return HasRareData() ? GetElementRareData()->GetToggleMap() : nullptr;
 }
 
-ToggleData& Element::EnsureToggleData() {
-  return EnsureElementRareData().EnsureToggleData();
+CSSToggleMap& Element::EnsureToggleMap() {
+  return EnsureElementRareData().EnsureToggleMap();
 }
 
 void Element::CreateToggles(const ToggleRootList* toggle_roots) {
   const auto& roots = toggle_roots->Roots();
   DCHECK(!roots.IsEmpty());
 
-  auto& toggles = EnsureToggleData().Toggles();
+  auto& toggles = EnsureToggleMap().Toggles();
   for (const ToggleRoot& root : roots) {
-    // NOTE: The intent of this code is that we leave the table unmodified if
-    // the key is already present, as described in
-    // https://tabatkins.github.io/css-toggle/#toggle-creation and
-    // https://tabatkins.github.io/css-toggle/#toggles .  This is exactly what
-    // HashMap::insert() does.
-    toggles.insert(root.Name(), Toggle(root));
+    // We want to leave the table unmodified if the key is already present, as
+    // described in https://tabatkins.github.io/css-toggle/#toggle-creation
+    // and https://tabatkins.github.io/css-toggle/#toggles .  This is exactly
+    // what HashMap::insert() does.
+    auto insert_result = toggles.insert(root.Name(), nullptr);
+    if (insert_result.is_new_entry) {
+      CSSToggle* toggle = MakeGarbageCollected<CSSToggle>(root);
+      insert_result.stored_value->value = toggle;
+    }
   }
 }
 
-std::pair<Toggle*, Element*> Element::FindToggleInScope(
+std::pair<CSSToggle*, Element*> Element::FindToggleInScope(
     const AtomicString& name) {
   Element* element = this;
   bool allow_narrow_scope = true;
   while (true) {
-    if (ToggleData* toggle_data = element->GetToggleData()) {
-      ToggleMap& toggles = toggle_data->Toggles();
+    if (CSSToggleMap* toggle_map = element->GetToggleMap()) {
+      ToggleMap& toggles = toggle_map->Toggles();
       auto iter = toggles.find(name);
       if (iter != toggles.end()) {
-        Toggle& toggle = iter->value;
+        CSSToggle* toggle = iter->value;
         // TODO(https://github.com/tabatkins/css-toggle/issues/20): Should we
         // allow the current toggle specifier (if any) on the element to
         // override the stored one, like it does for other aspects?
-        if (allow_narrow_scope || toggle.Scope() == ToggleScope::kWide) {
-          return std::make_pair(&toggle, element);
+        if (allow_narrow_scope || toggle->Scope() == ToggleScope::kWide) {
+          return std::make_pair(toggle, element);
         }
       }
     }
@@ -9246,13 +9249,13 @@ static void MakeRestOfToggleGroupZero(Element* toggle_element,
         }
       }
     }
-    if (ToggleData* toggle_data = e->GetToggleData()) {
-      ToggleMap& toggles = toggle_data->Toggles();
+    if (CSSToggleMap* toggle_map = e->GetToggleMap()) {
+      ToggleMap& toggles = toggle_map->Toggles();
       auto iter = toggles.find(name);
       if (iter != toggles.end()) {
-        Toggle& toggle = iter->value;
-        if (toggle.IsGroup()) {
-          toggle.SetValue(State(0u));
+        CSSToggle* toggle = iter->value;
+        if (toggle->IsGroup()) {
+          toggle->SetValue(State(0u));
         }
       }
     }
@@ -9262,7 +9265,7 @@ static void MakeRestOfToggleGroupZero(Element* toggle_element,
 
 // Implement https://tabatkins.github.io/css-toggle/#change-a-toggle
 void Element::ChangeToggle(Element* toggle_element,
-                           Toggle* t,
+                           CSSToggle* t,
                            const ToggleTrigger& action,
                            const ToggleRoot* override_spec) {
   using State = ToggleRoot::State;
@@ -9374,7 +9377,7 @@ void Element::ChangeToggle(Element* toggle_element,
     MakeRestOfToggleGroupZero(toggle_element, t->Name());
 }
 
-void Element::FireToggleChangeEvent(Toggle* toggle) {
+void Element::FireToggleChangeEvent(CSSToggle* toggle) {
   // TODO(https://crbug.com/1250716): Write code to add event classes and fire
   // toggle change events.
 }

@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/1250716): Inherit from EventTarget
+[
+    Exposed=Window,
+    RuntimeEnabled=CSSToggles
+] interface CSSToggle {
+  // TODO(https://crbug.com/1250716): Add the contents of the interface.
+};
+
+dictionary CSSToggleData {
+  (unsigned long or DOMString) value = 0;
+  (unsigned long or sequence<DOMString>) states = 1;
+  boolean group = false;
+  CSSToggleScope scope = "wide";
+  CSSToggleCycle cycle = "cycle";
+};
+
+enum CSSToggleScope {
+  "narrow",
+  "wide",
+};
+
+enum CSSToggleCycle {
+  "cycle",
+  "cycle-on",
+  "sticky",
+};

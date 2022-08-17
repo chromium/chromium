@@ -983,6 +983,12 @@ interface CSSStyleValue
 interface CSSSupportsRule : CSSConditionRule
     attribute @@toStringTag
     method constructor
+interface CSSToggle
+    attribute @@toStringTag
+    method constructor
+interface CSSToggleMap
+    attribute @@toStringTag
+    method constructor
 interface CSSTransformComponent
     attribute @@toStringTag
     getter is2D
@@ -2293,6 +2299,7 @@ interface Element : Node
     getter shadowRoot
     getter slot
     getter tagName
+    getter toggles
     method after
     method animate
     method append

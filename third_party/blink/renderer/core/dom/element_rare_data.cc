@@ -129,14 +129,14 @@ void ElementRareData::RemovePopupData() {
     super_rare_data_->RemovePopupData();
 }
 
-ToggleData& ElementSuperRareData::EnsureToggleData() {
-  if (!toggle_data_)
-    toggle_data_ = std::make_unique<ToggleData>();
-  return *toggle_data_;
+CSSToggleMap& ElementSuperRareData::EnsureToggleMap() {
+  if (!toggle_map_)
+    toggle_map_ = MakeGarbageCollected<CSSToggleMap>();
+  return *toggle_map_;
 }
 
-ToggleData& ElementRareData::EnsureToggleData() {
-  return EnsureSuperRareData().EnsureToggleData();
+CSSToggleMap& ElementRareData::EnsureToggleMap() {
+  return EnsureSuperRareData().EnsureToggleMap();
 }
 
 ElementInternals& ElementSuperRareData::EnsureElementInternals(
@@ -173,6 +173,7 @@ void ElementSuperRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(custom_element_definition_);
   visitor->Trace(last_intrinsic_size_);
   visitor->Trace(popup_data_);
+  visitor->Trace(toggle_map_);
 }
 
 ASSERT_SIZE(ElementRareData, SameSizeAsElementRareData);

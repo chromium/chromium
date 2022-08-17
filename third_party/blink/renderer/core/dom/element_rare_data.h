@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
-#include "third_party/blink/renderer/core/dom/toggle_data.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -165,8 +165,8 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   PopupData& EnsurePopupData();
   void RemovePopupData();
 
-  ToggleData* GetToggleData() const { return toggle_data_.get(); }
-  ToggleData& EnsureToggleData();
+  CSSToggleMap* GetToggleMap() const { return toggle_map_.Get(); }
+  CSSToggleMap& EnsureToggleMap();
 
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
 
@@ -269,7 +269,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   AtomicString is_value_;
   Member<ResizeObserverSize> last_intrinsic_size_;
   Member<PopupData> popup_data_;
-  std::unique_ptr<ToggleData> toggle_data_;
+  Member<CSSToggleMap> toggle_map_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
   HasInvalidationFlags has_invalidation_flags_;
 };
@@ -576,12 +576,12 @@ class ElementRareData final : public NodeRareData {
   PopupData& EnsurePopupData();
   void RemovePopupData();
 
-  ToggleData* GetToggleData() const {
+  CSSToggleMap* GetToggleMap() const {
     if (super_rare_data_)
-      return super_rare_data_->GetToggleData();
+      return super_rare_data_->GetToggleMap();
     return nullptr;
   }
-  ToggleData& EnsureToggleData();
+  CSSToggleMap& EnsureToggleMap();
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     return EnsureSuperRareData().EnsureDisplayLockContext(element);

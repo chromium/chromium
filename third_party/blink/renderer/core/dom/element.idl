@@ -165,6 +165,11 @@ dictionary CheckVisibilityOptions {
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+
+    // CSS Toggles
+    // See https://tabatkins.github.io/css-toggle/#dom and
+    // https://github.com/tabatkins/css-toggle/issues/26
+    [RuntimeEnabled=CSSToggles, SameObject] readonly attribute CSSToggleMap toggles;
 };
 
 Element includes ParentNode;
