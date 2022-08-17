@@ -144,7 +144,10 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   DeleteObject(icon.hbmColor);
   DeleteObject(icon.hbmMask);
 
-  return base::checked_cast<int>(cursor_height - offset - icon.yHotspot + 1);
+  // Apparently it's possible for the calculation here to underflow, and thus
+  // result in a negative value, maybe if the hotspot is below any visible
+  // portion of the cursor.  Not sure if this case should return 0 instead.
+  return static_cast<int>(cursor_height - offset - icon.yHotspot + 1);
 }
 
 }  // namespace
