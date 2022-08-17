@@ -24,7 +24,8 @@
 #include "ui/views/view.h"
 
 using PromptChoice = PasswordChangeRunDisplay::PromptChoice;
-using ::testing::StrictMock;
+using testing::IsEmpty;
+using testing::StrictMock;
 
 namespace {
 
@@ -84,6 +85,12 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
   void TearDown() override {
     widget_.reset();
     views::ViewsTestBase::TearDown();
+  }
+
+  views::View* GetBody() {
+    return view() ? view()->GetViewByID(static_cast<int>(
+                        PasswordChangeRunView::ChildrenViewsIds::kBody))
+                  : nullptr;
   }
 
   views::View* GetButtonContainer() {
@@ -149,6 +156,25 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
 
   EXPECT_CALL(*controller(), OnBasePromptChoiceSelected(0));
   SimulateButtonClick(container->children()[0]);
+}
+
+TEST_F(PasswordChangeRunViewTest, CreateBasePromptWithoutButton) {
+  // Show a prompt with no choices.
+  view()->ShowBasePrompt({});
+
+  views::View* body = GetBody();
+  ASSERT_TRUE(body);
+  EXPECT_THAT(body->children(), IsEmpty());
+
+  // Show a prompt with only empty choices.
+  std::vector<PromptChoice> choices = CreatePromptChoices();
+  for (auto& choice : choices) {
+    choice.text = u"";
+  }
+  view()->ShowBasePrompt(choices);
+  body = GetBody();
+  ASSERT_TRUE(body);
+  EXPECT_THAT(body->children(), IsEmpty());
 }
 
 TEST_F(PasswordChangeRunViewTest, CreateBasePromptWithEmptyText) {

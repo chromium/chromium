@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
@@ -205,6 +206,13 @@ void PasswordChangeRunView::ShowBasePrompt(
   DCHECK(body_);
 
   body_->RemoveAllChildViews();
+  // Do not create the separator if all choices have empty text.
+  if (base::ranges::all_of(choices, [](const PromptChoice& choice) {
+        return choice.text.empty();
+      })) {
+    return;
+  }
+
   body_->AddChildView(std::make_unique<views::Separator>());
 
   CreateBasePromptOptions(choices);
