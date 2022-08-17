@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fieldset_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_repeater.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_frame_set_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
@@ -191,11 +192,14 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutNGFieldset()) {
     CreateAlgorithmAndRun<NGFieldsetLayoutAlgorithm>(params, callback);
-    // If there's a legacy layout box, we can only do block fragmentation if
-    // we would have done block fragmentation with the legacy engine.
-    // Otherwise writing data back into the legacy tree will fail. Look for
-    // the flow thread.
-  } else if (GetFlowThread(box) && style.SpecifiesColumns()) {
+  } else if (box.IsLayoutNGFrameSet()) {
+    CreateAlgorithmAndRun<NGFrameSetLayoutAlgorithm>(params, callback);
+  }
+  // If there's a legacy layout box, we can only do block fragmentation if
+  // we would have done block fragmentation with the legacy engine.
+  // Otherwise writing data back into the legacy tree will fail. Look for
+  // the flow thread.
+  else if (GetFlowThread(box) && style.SpecifiesColumns()) {
     CreateAlgorithmAndRun<NGColumnLayoutAlgorithm>(params, callback);
   } else if (UNLIKELY(!box.Parent() && params.node.IsPaginatedRoot())) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
