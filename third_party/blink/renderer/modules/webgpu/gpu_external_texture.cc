@@ -602,12 +602,16 @@ void GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
 void GPUExternalTexture::OnVideoFrameClosed() {
   DCHECK(task_runner_);
 
+  // Expire the GPUExternalTexture here in the main thread to prevent it from
+  // being used again (because WebGPU runs on the main thread). Expiring the
+  // texture later in ExpireExternalTextureFromVideoFrame() could occur on a
+  // worker thread and cause a race condition.
+  status_ = Status::Expired;
+
   if (task_runner_->BelongsToCurrentThread()) {
     ExpireExternalTextureFromVideoFrame();
+    return;
   }
-
-  // Expire GPUExternalTexture immediately before post task.
-  status_ = Status::Expired;
 
   // If current thread is not the one that creates GPUExternalTexture. Post task
   // to that thread to destroy the GPUExternalTexture.
