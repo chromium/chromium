@@ -178,70 +178,22 @@ bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
 }
 
 template <size_t N>
-bool IsAllowedUrlLegacy(const char* (&allowedDomainAndPaths)[N][2]) {
-  Browser* browser = chrome::FindLastActive();
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    GURL url = browser->tab_strip_model()
-                   ->GetActiveWebContents()
-                   ->GetLastCommittedURL();
-    if (IsTestUrl(url) || IsInternalWebsite(url))
-      return true;
-    for (size_t i = 0; i < N; i++) {
-      auto domain = allowedDomainAndPaths[i][0];
-      auto path_prefix = allowedDomainAndPaths[i][1];
-      if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-template <size_t N>
-bool IsMatchedApp(const char* (&allowedApps)[N]) {
-  // WMHelper is not available in Chrome on Linux.
-  if (!exo::WMHelper::HasInstance())
-    return false;
-
-  auto* wm_helper = exo::WMHelper::GetInstance();
-  auto* window = wm_helper ? wm_helper->GetActiveWindow() : nullptr;
-  if (!window)
-    return false;
-
-  // TODO(crbug/1094113): improve to cover more scenarios such as chat heads.
-  const std::string* arc_package_name =
-      window->GetProperty(ash::kArcPackageNameKey);
-  if (arc_package_name && std::find(allowedApps, allowedApps + N,
-                                    *arc_package_name) != allowedApps + N) {
+bool IsMatchedApp(const char* (&allowedApps)[N], WindowProperties w) {
+  if (!w.arc_package_name.empty() &&
+      std::find(allowedApps, allowedApps + N, w.arc_package_name) !=
+          allowedApps + N) {
     return true;
   }
-  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
-  if (app_id &&
-      std::find(allowedApps, allowedApps + N, *app_id) != allowedApps + N) {
+  if (!w.app_id.empty() &&
+      std::find(allowedApps, allowedApps + N, w.app_id) != allowedApps + N) {
     return true;
   }
   return false;
-}
-
-bool IsAllowedUrlOrAppForPersonalInfoSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForPersonalInfoSuggester) ||
-         IsMatchedApp(kAllowedAppsForPersonalInfoSuggester);
-}
-
-bool IsAllowedUrlOrAppForEmojiSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForEmojiSuggester) ||
-         IsMatchedApp(kAllowedAppsForEmojiSuggester);
-}
-
-bool IsAllowedUrlOrAppForMultiWordSuggestion() {
-  return IsAllowedUrlLegacy(kAllowedDomainAndPathsForMultiWordSuggester) ||
-         IsMatchedApp(kAllowedAppsForMultiWordSuggester);
 }
 
 void ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
+    WindowProperties window_properties,
     const absl::optional<GURL>& current_url) {
   if (!current_url.has_value()) {
     std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{});
@@ -252,19 +204,19 @@ void ReturnEnabledSuggestions(
   bool emoji_suggestions_allowed =
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
                                  *current_url) ||
-      IsMatchedApp(kAllowedAppsForEmojiSuggester);
+      IsMatchedApp(kAllowedAppsForEmojiSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool multi_word_suggestions_allowed =
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
                                  *current_url) ||
-      IsMatchedApp(kAllowedAppsForMultiWordSuggester);
+      IsMatchedApp(kAllowedAppsForMultiWordSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
                                  *current_url) ||
-      IsMatchedApp(kAllowedAppsForPersonalInfoSuggester);
+      IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
 
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
       .emoji_suggestions = emoji_suggestions_allowed,
@@ -276,14 +228,18 @@ void ReturnEnabledSuggestions(
 }  // namespace
 
 AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
-    GetUrlCallback get_url)
-    : get_url_(std::move(get_url)) {}
+    GetUrlCallback get_url,
+    GetFocusedWindowPropertiesCallback get_window_properties)
+    : get_url_(std::move(get_url)),
+      get_window_properties_(std::move(get_window_properties)) {}
 
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
 void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
     FetchEnabledSuggestionsCallback callback) {
-  get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));
+  WindowProperties window_properties = get_window_properties_.Run();
+  get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback),
+                              window_properties));
 }
 
 }  // namespace input_method

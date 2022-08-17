@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
-#include "chrome/browser/ash/input_method/get_browser_url.h"
+#include "chrome/browser/ash/input_method/get_current_window_properties.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -75,9 +75,11 @@ void NativeInputMethodEngine::Initialize(
   std::unique_ptr<AssistiveSuggester> assistive_suggester =
       std::make_unique<AssistiveSuggester>(
           this, profile,
-          suggester_switch_ ? std::move(suggester_switch_)
-                            : std::make_unique<AssistiveSuggesterClientFilter>(
-                                  base::BindRepeating(&GetFocusedTabUrl)),
+          suggester_switch_
+              ? std::move(suggester_switch_)
+              : std::make_unique<AssistiveSuggesterClientFilter>(
+                    base::BindRepeating(&GetFocusedTabUrl),
+                    base::BindRepeating(&GetFocusedWindowProperties)),
           nullptr);
   assistive_suggester_ = assistive_suggester.get();
   std::unique_ptr<AutocorrectManager> autocorrect_manager =

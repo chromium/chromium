@@ -4,12 +4,14 @@
 //
 // This file implements the input method candidate window used on Chrome OS.
 
-#include "chrome/browser/ash/input_method/get_browser_url.h"
+#include "chrome/browser/ash/input_method/get_current_window_properties.h"
 
+#include "ash/public/cpp/window_properties.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/exo/wm_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -59,5 +61,26 @@ void GetFocusedTabUrl(GetFocusedTabUrlCallback callback) {
   GetLacrosChromeUrl(std::move(callback));
 }
 
+WindowProperties GetFocusedWindowProperties() {
+  WindowProperties properties = {.app_id = "", .arc_package_name = ""};
+  if (!exo::WMHelper::HasInstance())
+    return properties;
+
+  auto* wm_helper = exo::WMHelper::GetInstance();
+  auto* window = wm_helper ? wm_helper->GetActiveWindow() : nullptr;
+  if (!window)
+    return properties;
+
+  const std::string* arc_package_name =
+      window->GetProperty(ash::kArcPackageNameKey);
+  if (arc_package_name) {
+    properties.arc_package_name = *arc_package_name;
+  }
+  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  if (app_id) {
+    properties.app_id = *app_id;
+  }
+  return properties;
+}
 }  // namespace input_method
 }  // namespace ash

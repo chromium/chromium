@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
-#include "chrome/browser/ash/input_method/get_browser_url.h"
+#include "chrome/browser/ash/input_method/get_current_window_properties.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
@@ -119,7 +119,8 @@ class AssistiveSuggesterTest : public testing::Test {
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         suggestion_handler_.get(), profile_.get(),
         std::make_unique<AssistiveSuggesterClientFilter>(
-            base::BindRepeating(&GetFocusedTabUrl)));
+            base::BindRepeating(&GetFocusedTabUrl),
+            base::BindRepeating(&GetFocusedWindowProperties)));
 
     histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);

@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
-#include "chrome/browser/ash/input_method/get_browser_url.h"
+#include "chrome/browser/ash/input_method/get_current_window_properties.h"
 
 namespace ash {
 namespace input_method {
@@ -18,7 +18,12 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
   using GetUrlCallback =
       base::RepeatingCallback<void(GetFocusedTabUrlCallback)>;
 
-  explicit AssistiveSuggesterClientFilter(GetUrlCallback get_url);
+  using GetFocusedWindowPropertiesCallback =
+      base::RepeatingCallback<WindowProperties(void)>;
+
+  AssistiveSuggesterClientFilter(
+      GetUrlCallback get_url,
+      GetFocusedWindowPropertiesCallback get_window_properties);
 
   ~AssistiveSuggesterClientFilter() override;
 
@@ -29,7 +34,7 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
  private:
   // Used to fetch the url from the current browser instance.
   GetUrlCallback get_url_;
-
+  GetFocusedWindowPropertiesCallback get_window_properties_;
   base::WeakPtrFactory<AssistiveSuggesterClientFilter> weak_ptr_factory_{this};
 };
 
