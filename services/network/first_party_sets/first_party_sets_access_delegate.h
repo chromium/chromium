@@ -15,7 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/network/first_party_sets/first_party_sets_context_config.h"
+#include "net/cookies/first_party_sets_context_config.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -111,7 +111,7 @@ class FirstPartySetsAccessDelegate
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // First-Party Sets configuration for this network context.
-  FirstPartySetsContextConfig context_config_
+  net::FirstPartySetsContextConfig context_config_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of queries that are waiting for the instance to be initialized.

@@ -16,8 +16,6 @@ source_set("first_party_sets_manager") {
   sources = [
     "first_party_sets_access_delegate.cc",
     "first_party_sets_access_delegate.h",
-    "first_party_sets_context_config.cc",
-    "first_party_sets_context_config.h",
     "first_party_sets_manager.cc",
     "first_party_sets_manager.h",
   ]

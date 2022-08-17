@@ -27,7 +27,7 @@ FirstPartySetsAccessDelegate::FirstPartySetsAccessDelegate(
     mojom::FirstPartySetsAccessDelegateParamsPtr params,
     FirstPartySetsManager* const manager)
     : manager_(manager),
-      context_config_(FirstPartySetsContextConfig(IsEnabled(params))),
+      context_config_(net::FirstPartySetsContextConfig(IsEnabled(params))),
       pending_queries_(
           IsEnabled(params) && receiver.is_valid() && manager_->is_enabled()
               ? std::make_unique<base::circular_deque<base::OnceClosure>>()

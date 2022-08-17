@@ -55,7 +55,7 @@ bool FirstPartySetsManager::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
-    const FirstPartySetsContextConfig& fps_context_config) const {
+    const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const absl::optional<net::FirstPartySetEntry> site_entry =
       FindEntry(site, fps_context_config);
@@ -82,7 +82,7 @@ FirstPartySetsManager::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
-    const FirstPartySetsContextConfig& fps_context_config,
+    const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -103,7 +103,7 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite> top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
-    const FirstPartySetsContextConfig& fps_context_config,
+    const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
     base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -121,7 +121,7 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
-    const FirstPartySetsContextConfig& fps_context_config) const {
+    const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
   DCHECK(fps_context_config.is_enabled());
@@ -149,7 +149,7 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
 
 absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
     const net::SchemefulSite& site,
-    const FirstPartySetsContextConfig& fps_context_config) const {
+    const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
   DCHECK(fps_context_config.is_enabled());
@@ -182,7 +182,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
 absl::optional<FirstPartySetsManager::OwnersResult>
 FirstPartySetsManager::FindOwners(
     const base::flat_set<net::SchemefulSite>& sites,
-    const FirstPartySetsContextConfig& fps_context_config,
+    const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(FirstPartySetsManager::OwnersResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -198,7 +198,7 @@ FirstPartySetsManager::FindOwners(
 
 void FirstPartySetsManager::FindOwnersAndInvoke(
     const base::flat_set<net::SchemefulSite>& sites,
-    const FirstPartySetsContextConfig& fps_context_config,
+    const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(FirstPartySetsManager::OwnersResult)> callback,
     base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -212,7 +212,7 @@ void FirstPartySetsManager::FindOwnersAndInvoke(
 
 FirstPartySetsManager::OwnersResult FirstPartySetsManager::FindOwnersInternal(
     const base::flat_set<net::SchemefulSite>& sites,
-    const FirstPartySetsContextConfig& fps_context_config) const {
+    const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
   DCHECK(fps_context_config.is_enabled());

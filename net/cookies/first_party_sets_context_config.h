@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
-#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#ifndef NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#define NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
 
 #include "base/containers/flat_map.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
+namespace net {
 
 // This struct bundles together the customized settings to First-Party Sets
 // info in the given network context.
-class FirstPartySetsContextConfig {
+class NET_EXPORT FirstPartySetsContextConfig {
  public:
-  using OverrideSets = base::flat_map<net::SchemefulSite,
-                                      absl::optional<net::FirstPartySetEntry>>;
+  using OverrideSets =
+      base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>;
 
   explicit FirstPartySetsContextConfig(bool enabled);
 
@@ -37,6 +37,6 @@ class FirstPartySetsContextConfig {
   OverrideSets customizations_;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
+#endif  // NET_COOKIES_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_

@@ -72,7 +72,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 
   FirstPartySetsManager& manager() { return manager_; }
 
-  FirstPartySetsContextConfig& fps_context_config() {
+  net::FirstPartySetsContextConfig& fps_context_config() {
     return fps_context_config_;
   }
 
@@ -81,14 +81,14 @@ class FirstPartySetsManagerTest : public ::testing::Test {
  protected:
   void SetFirstPartySetsContextConfig(bool enabled,
                                       OverrideSets customizations) {
-    fps_context_config_ = FirstPartySetsContextConfig(enabled);
+    fps_context_config_ = net::FirstPartySetsContextConfig(enabled);
     fps_context_config_.SetCustomizations(std::move(customizations));
   }
 
  private:
   base::test::TaskEnvironment env_;
   FirstPartySetsManager manager_;
-  FirstPartySetsContextConfig fps_context_config_;
+  net::FirstPartySetsContextConfig fps_context_config_;
 };
 
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {

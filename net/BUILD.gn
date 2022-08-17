@@ -438,6 +438,8 @@ component("net") {
     "cookies/first_party_set_entry.h",
     "cookies/first_party_set_metadata.cc",
     "cookies/first_party_set_metadata.h",
+    "cookies/first_party_sets_context_config.cc",
+    "cookies/first_party_sets_context_config.h",
     "cookies/parsed_cookie.cc",
     "cookies/parsed_cookie.h",
     "cookies/same_party_context.cc",
