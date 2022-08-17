@@ -636,6 +636,7 @@ void GpuProcessHost::GetHasGpuProcess(base::OnceCallback<void(bool)> callback) {
 
 // static
 void GpuProcessHost::CallOnIO(
+    const base::Location& location,
     GpuProcessKind kind,
     bool force_create,
     base::OnceCallback<void(GpuProcessHost*)> callback) {
@@ -643,8 +644,8 @@ void GpuProcessHost::CallOnIO(
   DCHECK_NE(kind, GPU_PROCESS_KIND_INFO_COLLECTION);
 #endif
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RunCallbackOnIO, kind, force_create,
-                                std::move(callback)));
+      location, base::BindOnce(&RunCallbackOnIO, kind, force_create,
+                               std::move(callback)));
 }
 
 void GpuProcessHost::BindInterface(

@@ -1830,7 +1830,7 @@ RenderWidgetHostViewAndroid::FilterInputEvent(
     return blink::mojom::InputEventResultState::kNotConsumed;
 
   if (input_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce(&WakeUpGpu));
   }

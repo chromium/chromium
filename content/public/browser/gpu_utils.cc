@@ -152,7 +152,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 }
 
 void KillGpuProcess() {
-  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           false /* force_create */,
                            base::BindOnce(&KillGpuProcessImpl));
 }
 
@@ -163,7 +164,7 @@ gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory() {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 void DumpGpuProfilingData(base::OnceClosure callback) {
   content::GpuProcessHost::CallOnIO(
-      content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce(
           [](base::OnceClosure callback, content::GpuProcessHost* host) {
             host->gpu_service()->WriteClangProfilingProfile(

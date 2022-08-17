@@ -162,7 +162,7 @@ bool HandleDebugURL(const GURL& url,
   }
 
   if (url == blink::kChromeUIGpuCleanURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -172,7 +172,7 @@ bool HandleDebugURL(const GURL& url,
   }
 
   if (url == blink::kChromeUIGpuCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -183,7 +183,7 @@ bool HandleDebugURL(const GURL& url,
 
 #if BUILDFLAG(IS_ANDROID)
   if (url == blink::kChromeUIGpuJavaCrashURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)
@@ -194,7 +194,7 @@ bool HandleDebugURL(const GURL& url,
 #endif
 
   if (url == blink::kChromeUIGpuHangURL) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce([](GpuProcessHost* host) {
                                if (host)

@@ -14,6 +14,7 @@
 
 #include "base/atomicops.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -79,6 +80,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   // called with a null host (e.g. when |force_create| is false, and no
   // GpuProcessHost instance exists).
   CONTENT_EXPORT static void CallOnIO(
+      const base::Location& location,
       GpuProcessKind kind,
       bool force_create,
       base::OnceCallback<void(GpuProcessHost*)> callback);

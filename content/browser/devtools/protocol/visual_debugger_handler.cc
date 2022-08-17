@@ -38,7 +38,7 @@ DispatchResponse VisualDebuggerHandler::FilterStream(
   base::Value dict(std::move(*in_filter));
 
   GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
       /*force_create=*/false,
       base::BindOnce(
           [](base::Value json, GpuProcessHost* host) {
@@ -52,7 +52,7 @@ DispatchResponse VisualDebuggerHandler::FilterStream(
 DispatchResponse VisualDebuggerHandler::StartStream() {
   enabled_ = true;
   GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
       /*force_create=*/false,
       base::BindOnce(
           [](base::RepeatingCallback<void(base::Value)> callback,
@@ -77,7 +77,7 @@ void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
 
 DispatchResponse VisualDebuggerHandler::StopStream() {
   if (enabled_) {
-    GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
+    GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                              /*force_create=*/false,
                              base::BindOnce([](GpuProcessHost* host) {
                                host->gpu_host()->StopVisualDebugStream();

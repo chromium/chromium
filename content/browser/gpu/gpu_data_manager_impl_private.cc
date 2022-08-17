@@ -878,7 +878,7 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
   using VEAProfileCallback = base::OnceCallback<void(
       const media::VideoEncodeAccelerator::SupportedProfiles&)>;
   GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false,
       base::BindOnce(
           [](VEAProfileCallback update_vea_profiles_callback,
              GpuProcessHost* host) {
@@ -948,7 +948,7 @@ gpu::GpuFeatureStatus GpuDataManagerImplPrivate::GetFeatureStatus(
 void GpuDataManagerImplPrivate::RequestVideoMemoryUsageStatsUpdate(
     GpuDataManager::VideoMemoryUsageStatsCallback callback) const {
   GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce(&RequestVideoMemoryUsageStats, std::move(callback)));
 }
 
@@ -1459,7 +1459,7 @@ void GpuDataManagerImplPrivate::HandleGpuSwitch() {
       active_gpu_heuristic_);
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce(
           [](gl::GpuPreference active_gpu, GpuProcessHost* host) {
             if (host)
@@ -1486,7 +1486,8 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
   // Notify observers in the browser process.
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayAdded();
   // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           false /* force_create */,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayAdded();
@@ -1511,7 +1512,8 @@ void GpuDataManagerImplPrivate::OnDisplayRemoved(
   // Notify observers in the browser process.
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
   // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           false /* force_create */,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayRemoved();
@@ -1537,7 +1539,8 @@ void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
   // Notify observers in the browser process.
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
   // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           false /* force_create */,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayMetricsChanged();
