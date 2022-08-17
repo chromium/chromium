@@ -12,10 +12,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pepper_permission_util.h"
@@ -25,8 +25,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "ppapi/host/ppapi_host.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -37,6 +35,12 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/socket_permission.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
+#include "ppapi/host/ppapi_host.h"
+#include "ppapi/shared_impl/ppapi_switches.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -246,11 +250,13 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
 bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
     content::BrowserContext* browser_context,
     const GURL& url) {
+#if BUILDFLAG(ENABLE_PPAPI)
   // Allow access for tests.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePepperTesting)) {
     return true;
   }
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -275,9 +281,13 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
 
 void ChromeContentBrowserClientPluginsPart::DidCreatePpapiPlugin(
     content::BrowserPpapiHost* browser_host) {
+#if BUILDFLAG(ENABLE_PPAPI)
   browser_host->GetPpapiHost()->AddHostFactoryFilter(
       std::unique_ptr<ppapi::host::HostFactory>(
           new ChromeBrowserPepperHostFactory(browser_host)));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 }  // namespace plugins
