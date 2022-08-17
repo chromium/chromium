@@ -4103,6 +4103,18 @@
       "features": [
         "msaa_is_slow_2"
       ]
-    }    
+    },
+    {
+      "id": 400,
+      "description": "Freedreno driver crashes when importing same dma-buf to two different gl textures",
+      "cr_bugs": [1343521],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "cache_texture_in_ozone_backing"
+      ]
+    }
   ]
 }

@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -20,9 +19,35 @@
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
 
 namespace gpu {
+class OzoneImageBacking;
 
 class GLOzoneImageRepresentationShared {
  public:
+  class TextureHolder : public base::RefCounted<TextureHolder> {
+   public:
+    TextureHolder(std::unique_ptr<ui::NativePixmapGLBinding> binding,
+                  gles2::Texture* texture);
+    TextureHolder(std::unique_ptr<ui::NativePixmapGLBinding> binding,
+                  scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
+    void MarkContextLost();
+    bool WasContextLost();
+
+    gles2::Texture* texture() { return texture_; }
+    const scoped_refptr<gles2::TexturePassthrough>& texture_passthrough() {
+      return texture_passthrough_;
+    }
+
+   private:
+    friend class base::RefCounted<TextureHolder>;
+
+    ~TextureHolder();
+
+    bool context_lost_ = false;
+    std::unique_ptr<ui::NativePixmapGLBinding> binding_;
+    raw_ptr<gles2::Texture> texture_ = nullptr;
+    scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  };
+
   static bool BeginAccess(GLenum mode,
                           OzoneImageBacking* ozone_backing,
                           bool& need_end_fence);
@@ -41,6 +66,8 @@ class GLOzoneImageRepresentationShared {
 // GL texture.
 class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
  public:
+  using TextureHolder = GLOzoneImageRepresentationShared::TextureHolder;
+
   // Creates and initializes a GLTextureOzoneImageRepresentation. On
   // failure, returns nullptr.
   static std::unique_ptr<GLTextureOzoneImageRepresentation> Create(
@@ -48,7 +75,8 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferPlane plane);
+      gfx::BufferPlane plane,
+      scoped_refptr<TextureHolder>* cached_texture_holder);
 
   ~GLTextureOzoneImageRepresentation() override;
 
@@ -58,16 +86,15 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
   void EndAccess() override;
 
  private:
-  GLTextureOzoneImageRepresentation(SharedImageManager* manager,
-                                    SharedImageBacking* backing,
-                                    MemoryTypeTracker* tracker,
-                                    gles2::Texture* texture);
+  GLTextureOzoneImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<TextureHolder> texture_holder);
 
-  OzoneImageBacking* ozone_backing() {
-    return static_cast<OzoneImageBacking*>(backing());
-  }
+  OzoneImageBacking* GetOzoneBacking();
 
-  raw_ptr<gles2::Texture> texture_;
+  scoped_refptr<TextureHolder> texture_holder_;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };
@@ -77,6 +104,8 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
 class GLTexturePassthroughOzoneImageRepresentation
     : public GLTexturePassthroughImageRepresentation {
  public:
+  using TextureHolder = GLOzoneImageRepresentationShared::TextureHolder;
+
   // Creates and initializes a
   // GLTexturePassthroughOzoneImageRepresentation. On failure, returns
   // nullptr.
@@ -85,7 +114,8 @@ class GLTexturePassthroughOzoneImageRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferPlane plane);
+      gfx::BufferPlane plane,
+      scoped_refptr<TextureHolder>* cached_texture_holder);
 
   ~GLTexturePassthroughOzoneImageRepresentation() override;
 
@@ -100,13 +130,11 @@ class GLTexturePassthroughOzoneImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
+      scoped_refptr<TextureHolder> texture_holder);
 
-  OzoneImageBacking* ozone_backing() {
-    return static_cast<OzoneImageBacking*>(backing());
-  }
+  OzoneImageBacking* GetOzoneBacking();
 
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  scoped_refptr<TextureHolder> texture_holder_;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };

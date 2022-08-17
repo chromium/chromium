@@ -168,15 +168,25 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
 std::unique_ptr<GLTextureImageRepresentation>
 OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                     MemoryTypeTracker* tracker) {
-  return GLTextureOzoneImageRepresentation::Create(manager, this, tracker,
-                                                   pixmap_, plane_);
+  if (cached_texture_holder_ && cached_texture_holder_->WasContextLost())
+    cached_texture_holder_.reset();
+
+  const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
+  return GLTextureOzoneImageRepresentation::Create(
+      manager, this, tracker, pixmap_, plane_,
+      need_cache ? &cached_texture_holder_ : nullptr);
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
+  if (cached_texture_holder_ && cached_texture_holder_->WasContextLost())
+    cached_texture_holder_.reset();
+
+  const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
   return GLTexturePassthroughOzoneImageRepresentation::Create(
-      manager, this, tracker, pixmap_, plane_);
+      manager, this, tracker, pixmap_, plane_,
+      need_cache ? &cached_texture_holder_ : nullptr);
 }
 
 std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(

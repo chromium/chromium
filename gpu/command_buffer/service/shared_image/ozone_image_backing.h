@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -120,6 +121,9 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>
+      cached_texture_holder_;
+
   // Write fence that is external and does not do Begin/EndAccess (eg. exo)
   gfx::GpuFenceHandle external_write_fence_;
   gfx::GpuFenceHandle write_fence_;
