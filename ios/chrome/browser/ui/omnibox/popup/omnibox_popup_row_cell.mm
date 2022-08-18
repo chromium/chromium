@@ -139,9 +139,11 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
 
-    if (!IsOmniboxActionsVisualTreatment2()) {
-      self.backgroundColor = UIColor.clearColor;
-    }
+    self.backgroundColor =
+        IsOmniboxActionsVisualTreatment2()
+            ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+            : UIColor.clearColor;
+
     [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
