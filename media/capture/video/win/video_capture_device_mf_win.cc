@@ -6,6 +6,7 @@
 
 #include <d3d11_4.h>
 #include <ks.h>
+#include <ksmedia.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -968,6 +969,17 @@ bool VideoCaptureDeviceMFWin::Init() {
   hr = source_.As(&video_control_);
   DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IAMVideoProcAmp", hr);
 
+  ComPtr<IMFGetService> get_service;
+  hr = source_.As(&get_service);
+  DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IMFGetService", hr);
+
+  if (get_service) {
+    hr = get_service->GetService(GUID_NULL, IID_IMFExtendedCameraController,
+                                 &extended_camera_controller_);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraController", hr);
+  }
+
   if (!engine_) {
     hr = CreateCaptureEngine(&engine_);
     if (FAILED(hr)) {
@@ -1389,6 +1401,33 @@ void VideoCaptureDeviceMFWin::GetPhotoState(GetPhotoStateCallback callback) {
         RetrieveControlRangeAndCurrent(camera_control_, CameraControl_Zoom);
   }
 
+  if (extended_camera_controller_) {
+    ComPtr<IMFExtendedCameraControl> extended_camera_control;
+    // KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION is supported in
+    // Windows 10 version 20H2. It was updated in Windows 11 version 22H2 to
+    // support optional shallow focus capability (according to
+    // https://docs.microsoft.com/en-us/windows-hardware/drivers/stream/ksproperty-cameracontrol-extended-backgroundsegmentation)
+    // but that support is not needed here.
+    HRESULT hr = extended_camera_controller_->GetExtendedCameraControl(
+        MF_CAPTURE_ENGINE_MEDIASOURCE,
+        KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
+        &extended_camera_control);
+    DLOG_IF_FAILED_WITH_HRESULT(
+        "Failed to retrieve IMFExtendedCameraControl for background "
+        "segmentation",
+        hr);
+    if (SUCCEEDED(hr) && (extended_camera_control->GetCapabilities() &
+                          KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)) {
+      photo_capabilities->supported_background_blur_modes = {
+          mojom::BackgroundBlurMode::OFF, mojom::BackgroundBlurMode::BLUR};
+      photo_capabilities->background_blur_mode =
+          (extended_camera_control->GetFlags() &
+           KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR)
+              ? mojom::BackgroundBlurMode::BLUR
+              : mojom::BackgroundBlurMode::OFF;
+    }
+  }
+
   std::move(callback).Run(std::move(photo_capabilities));
 }
 
@@ -1559,6 +1598,43 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
       DLOG_IF_FAILED_WITH_HRESULT("Zoom config failed", hr);
       if (FAILED(hr))
         return;
+    }
+  }
+
+  if (extended_camera_controller_) {
+    ComPtr<IMFExtendedCameraControl> extended_camera_control;
+    if (settings->has_background_blur_mode) {
+      HRESULT hr = extended_camera_controller_->GetExtendedCameraControl(
+          MF_CAPTURE_ENGINE_MEDIASOURCE,
+          KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION,
+          &extended_camera_control);
+      DLOG_IF_FAILED_WITH_HRESULT(
+          "Failed to retrieve IMFExtendedCameraControl for background "
+          "segmentation",
+          hr);
+      if (FAILED(hr))
+        return;
+      ULONGLONG flag;
+      switch (settings->background_blur_mode) {
+        case mojom::BackgroundBlurMode::OFF:
+          flag = KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
+          break;
+        case mojom::BackgroundBlurMode::BLUR:
+          flag = KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR;
+          break;
+      }
+      if (extended_camera_control->GetFlags() != flag) {
+        hr = extended_camera_control->SetFlags(flag);
+        DLOG_IF_FAILED_WITH_HRESULT("Failed to set background segmentation",
+                                    hr);
+        if (FAILED(hr))
+          return;
+        hr = extended_camera_control->CommitSettings();
+        DLOG_IF_FAILED_WITH_HRESULT("Failed to commit background segmentation",
+                                    hr);
+        if (FAILED(hr))
+          return;
+      }
     }
   }
 

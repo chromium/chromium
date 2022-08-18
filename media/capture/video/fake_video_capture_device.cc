@@ -665,6 +665,12 @@ void FakePhotoDevice::GetPhotoState(
   photo_state->width->min = 96.0;
   photo_state->width->step = 1.0;
 
+  photo_state->supported_background_blur_modes = {
+      mojom::BackgroundBlurMode::OFF, mojom::BackgroundBlurMode::BLUR};
+  photo_state->background_blur_mode = fake_device_state_->background_blur
+                                          ? mojom::BackgroundBlurMode::BLUR
+                                          : mojom::BackgroundBlurMode::OFF;
+
   std::move(callback).Run(std::move(photo_state));
 }
 
@@ -702,6 +708,17 @@ void FakePhotoDevice::SetPhotoOptions(
   if (settings->has_focus_distance) {
     device_state_write_access->focus_distance = base::clamp(
         settings->focus_distance, kMinFocusDistance, kMaxFocusDistance);
+  }
+
+  if (settings->has_background_blur_mode) {
+    switch (settings->background_blur_mode) {
+      case mojom::BackgroundBlurMode::OFF:
+        device_state_write_access->background_blur = false;
+        break;
+      case mojom::BackgroundBlurMode::BLUR:
+        device_state_write_access->background_blur = true;
+        break;
+    }
   }
 
   std::move(callback).Run(true);

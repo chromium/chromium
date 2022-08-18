@@ -1379,6 +1379,10 @@
       name: "MediaCapture",
       status: {"Android": "stable"},
     },
+    {
+      name: "MediaCaptureBackgroundBlur",
+      status: "experimental",
+    },
     // Set to reflect the MediaCastOverlayButton feature.
     {
       name: "MediaCastOverlayButton",

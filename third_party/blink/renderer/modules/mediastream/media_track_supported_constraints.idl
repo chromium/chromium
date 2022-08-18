@@ -45,4 +45,7 @@ dictionary MediaTrackSupportedConstraints {
     boolean tilt = true;
     boolean zoom = true;
     boolean torch = true;
+
+    // W3C Media Capture Extensions
+    [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
 };

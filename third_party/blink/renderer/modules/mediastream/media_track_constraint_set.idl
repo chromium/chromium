@@ -47,6 +47,8 @@ dictionary MediaTrackConstraintSet {
     (boolean or ConstrainDouble) tilt;
     (boolean or ConstrainDouble) zoom;
     ConstrainBoolean   torch;
+    // W3C Media Capture Extensions
+    [RuntimeEnabled=MediaCaptureBackgroundBlur] ConstrainBoolean backgroundBlur;
     // The "mandatory" and "_optional" members are retained for conformance
     // with https://www.w3.org/TR/2013/WD-mediacapture-streams-20130903/
     object mandatory;

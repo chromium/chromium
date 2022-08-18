@@ -43,6 +43,9 @@ dictionary MediaTrackSettings {
     double            zoom;
     boolean           torch;
 
+    // W3C Media Capture Extensions
+    [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur;
+
     // Screen Capture API
     // https://w3c.github.io/mediacapture-screen-share
     [RuntimeEnabled=GetDisplayMedia] DOMString displaySurface;

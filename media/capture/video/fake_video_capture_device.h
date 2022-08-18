@@ -144,6 +144,7 @@ struct FakeDeviceState {
   double focus_distance;
   mojom::MeteringMode focus_mode;
   VideoCaptureFormat format;
+  bool background_blur = false;
 };
 
 // A dependency needed by FakeVideoCaptureDevice.

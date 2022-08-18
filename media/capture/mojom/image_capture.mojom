@@ -15,6 +15,13 @@ struct Range {
   double step;
 };
 
+[Stable, Extensible]
+enum BackgroundBlurMode {
+  [Default]
+  OFF,
+  BLUR
+};
+
 // https://w3c.github.io/mediacapture-image/#meteringmode-section
 [Stable, Extensible]
 enum MeteringMode { NONE, MANUAL, SINGLE_SHOT, CONTINUOUS };
@@ -28,36 +35,116 @@ enum RedEyeReduction { NEVER, ALWAYS, CONTROLLABLE };
 enum FillLightMode { OFF, AUTO, FLASH };
 
 // Equivalent to idl's MediaTrackCapabilities plus PhotoCapabilities and their
-// associated settings.
+// associated current settings (MediaTrackSettings plus PhotoSettings).
+//
+// A capability can be expressed as an array of unique supported values for
+// requested settings in |PhotoSettings| (e.g. |supported_white_balance_modes|
+// for |PhotoSettings.white_balance_mode|), as a range of supported values for
+// requested settings in |PhotoSettings| (e.g. from |exposure_compensation.min|
+// to |exposure_compensation.max| for |PhotoState.exposure_compensation|) or as
+// a boolean flag indicating whether all (boolean) values are supported for
+// requested settings in |PhotoSettings| (e.g. |supports_torch| for
+// |PhotoState.torch|).
+//
+// The current settings are expressed right after or along the corresponding
+// capabilities (e.g. |current_white_balance_mode| after
+// |supported_white_balance_modes|, |exposure_compensation.current| along
+// |exposure_compensation.min| and |exposure_compensation.max| and |torch|
+// after |supports_torch|).
+//
+// If there are no supported values for a requested setting in |PhotoSettings|
+// (an array of unique supported values is empty, a range of supported values
+// is empty or a boolean flag is false), the corresponding current setting
+// should be ignored and the corresponding |has_bla| flag in |PhotoSettings|
+// should be false.
+//
+// As non-nullable fields are only allowed in version 0 of a struct, non-POD
+// fields with version higher than 0 are nullable. That nullability should not
+// be utilised.
 [Stable]
 struct PhotoState {
   // https://w3c.github.io/mediacapture-image/#mediatrackcapabilities-section
   // and https://w3c.github.io/mediacapture-image/#mediatracksettings-section
+
+  // An array of unique supported values for
+  // |PhotoSettings.white_balance_mode|.
   array<MeteringMode> supported_white_balance_modes;
+  // The current white balance mode.
+  // Only meaningful if |supported_white_balance_modes| is non-empty.
   MeteringMode current_white_balance_mode;
+  // An array of unique supported values for |PhotoSettings.exposure_mode|.
   array<MeteringMode> supported_exposure_modes;
+  // The current exposure_mode.
+  // Only meaningful if |supported_exposure_modes| is non-empty.
   MeteringMode current_exposure_mode;
+  // An array of unique supported values for |PhotoSettings.focus_mode|.
   array<MeteringMode> supported_focus_modes;
+  // The current focus mode.
+  // Only meaningful if |supported_focus_modes| is non-empty.
   MeteringMode current_focus_mode;
+  // An array of current points of interest.
   array<Point2D> points_of_interest;
 
+  // A range of supported values for |PhotoSettings.exposure_compensation| and
+  // the current exposure compensation.
+  // |exposure_compensation.current| is meaningful only if
+  // |exposure_compensation.min| < |exposure_compensation.max|.
   Range exposure_compensation;
+  // A range of supported values for |PhotoSettings.exposure_time| and
+  // the current exposure time.
+  // |exposure_time.current| is meaningful only if
+  // |exposure_time.min| < |exposure_time.max|.
   Range exposure_time;
+  // A range of supported values for |PhotoSettings.color_temperature| and
+  // the current color temporature.
+  // |color_temperature.current| is meaningful only if
+  // |color_temperature.min| < |color_temperature.max|.
   Range color_temperature;
+  // A range of supported values for |PhotoSettings.iso| and
+  // the current exposure compensation.
+  // |iso.current| is meaningful only if |iso.min| < |iso.max|.
   Range iso;
 
+  // A range of supported values for |PhotoSettings.brightness| and the current
+  // brightness.
+  // |brightness.current| is meaningful only if
+  // |brightness.min| < |brightness.max|.
   Range brightness;
+  // A range of supported values for |PhotoSettings.contrast| and the current
+  // contrast.
+  // |contrast.current| is meaningful only if |contrast.min| < |contrast.max|.
   Range contrast;
+  // A range of supported values for |PhotoSettings.saturation| and the current
+  // saturation.
+  // |saturation.current| is meaningful only if
+  // |saturation.min| < |saturation.max|.
   Range saturation;
+  // A range of supported values for |PhotoSettings.sharpness| and
+  // the current sharpness.
+  // |sharpness.current| is meaningful only if
+  // |sharpness.min| < |sharpness.max|.
   Range sharpness;
 
+  // A range of supported values for |PhotoSettings.focus_distance| and
+  // the current focus distance.
+  // |focus_distance.current| is meaningful only if
+  // |focus_distance.min| < |focus_distance.max|.
   Range focus_distance;
 
+  // A range of supported values for |PhotoSettings.pan| and the current pan.
+  // |pan.current| is meaningful only if |pan.min| < |pan.max|.
   Range pan;
+  // A range of supported values for |PhotoSettings.tilt| and the current tilt.
+  // |tilt.current| is meaningful only if |tilt.min| < |tilt.max|.
   Range tilt;
+  // A range of supported values for |PhotoSettings.zoom| and the current zoom.
+  // |zoom.current| is meaningful only if |zoom.min| < |zoom.max|.
   Range zoom;
 
+  // Whether |PhotoSettings.torch| is supported.
   bool supports_torch;
+  // The current torch.
+  // Only meaningful if |supports_torch| is true.
   bool torch;
 
   // https://w3c.github.io/mediacapture-image/##photocapabilities-section and
@@ -66,6 +153,18 @@ struct PhotoState {
   Range height;
   Range width;
   array<FillLightMode> fill_light_mode;
+
+  // W3C Media Capture Extensions
+
+  // An array of unique supported values for
+  // |PhotoSettings.background_blur_mode|.
+  // Should not be null (but is nullable for stable backward compatibility).
+  [MinVersion=1]
+  array<BackgroundBlurMode>? supported_background_blur_modes;
+  // The current background blur mode.
+  // Only meaningful if |supported_background_blur_modes| is non-empty.
+  [MinVersion=1]
+  BackgroundBlurMode background_blur_mode;
 };
 
 // Equivalent to idl Point2D.
@@ -77,7 +176,7 @@ struct Point2D {
   double y;
 };
 
-// Equivalent to idl PhotoSettings + MediaTrackSettings/MediaTrackConstraintSet.
+// Equivalent to idl PhotoSettings + MediaTrackConstraintSet.
 // PODs cannot be nullable, i.e. uint32? bla doesn't work, use |has_bla| flags.
 [Stable]
 struct PhotoSettings {
@@ -131,6 +230,12 @@ struct PhotoSettings {
   double height;
   bool has_red_eye_reduction;
   bool red_eye_reduction;
+
+  // W3C Media Capture Extensions
+  [MinVersion=1]
+  bool has_background_blur_mode;
+  [MinVersion=1]
+  BackgroundBlurMode background_blur_mode;
 };
 
 // This is a mojo move-only equivalent of a Blob, i.e. MIME type and Data.

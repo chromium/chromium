@@ -163,6 +163,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   Microsoft::WRL::ComPtr<IMFMediaSource> source_;
   Microsoft::WRL::ComPtr<IAMCameraControl> camera_control_;
   Microsoft::WRL::ComPtr<IAMVideoProcAmp> video_control_;
+  Microsoft::WRL::ComPtr<IMFExtendedCameraController>
+      extended_camera_controller_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
   std::unique_ptr<CapabilityWin> selected_video_capability_;
   CapabilityList photo_capabilities_;

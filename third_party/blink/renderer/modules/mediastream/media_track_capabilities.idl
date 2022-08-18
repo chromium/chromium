@@ -38,4 +38,6 @@ dictionary MediaTrackCapabilities {
     MediaSettingsRange   tilt;
     MediaSettingsRange   zoom;
     boolean              torch;
+    // W3C Media Capture Extensions
+    [RuntimeEnabled=MediaCaptureBackgroundBlur] sequence<boolean> backgroundBlur;
 };

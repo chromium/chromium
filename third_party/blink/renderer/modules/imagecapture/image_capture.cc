@@ -44,6 +44,7 @@
 
 namespace blink {
 
+using BackgroundBlurMode = media::mojom::blink::BackgroundBlurMode;
 using FillLightMode = media::mojom::blink::FillLightMode;
 using MeteringMode = media::mojom::blink::MeteringMode;
 using RedEyeReduction = media::mojom::blink::RedEyeReduction;
@@ -54,6 +55,10 @@ const char kNoServiceError[] = "ImageCapture service unavailable.";
 
 const char kInvalidStateTrackError[] =
     "The associated Track is in an invalid state";
+
+bool Contains(const Vector<bool>& vector, bool value) {
+  return std::find(vector.begin(), vector.end(), value) != vector.end();
+}
 
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
@@ -83,6 +88,15 @@ FillLightMode ParseFillLightMode(const String& blink_mode) {
     return FillLightMode::FLASH;
   NOTREACHED();
   return FillLightMode::OFF;
+}
+
+bool ToBooleanMode(BackgroundBlurMode mode) {
+  switch (mode) {
+    case BackgroundBlurMode::OFF:
+      return false;
+    case BackgroundBlurMode::BLUR:
+      return true;
+  }
 }
 
 WebString ToString(MeteringMode value) {
@@ -410,6 +424,9 @@ void ImageCapture::GetMediaTrackCapabilities(
 
   if (capabilities_->hasTorch())
     capabilities->setTorch(capabilities_->torch());
+
+  if (capabilities_->hasBackgroundBlur())
+    capabilities->setBackgroundBlur(capabilities_->backgroundBlur());
 }
 
 // TODO(mcasas): make the implementation fully Spec compliant, see the TODOs
@@ -456,6 +473,8 @@ void ImageCapture::SetMediaTrackConstraints(
     UseCounter::Count(context, WebFeature::kImageCaptureZoom);
   if (constraints->hasTorch())
     UseCounter::Count(context, WebFeature::kImageCaptureTorch);
+  // TODO(eero.hakkinen@intel.com): count how many times backgroundBlur is
+  // used.
 
   if (!service_.is_bound()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -484,7 +503,9 @@ void ImageCapture::SetMediaTrackConstraints(
        !(capabilities_->hasTilt() && HasPanTiltZoomPermissionGranted())) ||
       (constraints->hasZoom() &&
        !(capabilities_->hasZoom() && HasPanTiltZoomPermissionGranted())) ||
-      (constraints->hasTorch() && !capabilities_->hasTorch())) {
+      (constraints->hasTorch() && !capabilities_->hasTorch()) ||
+      (constraints->hasBackgroundBlur() &&
+       !capabilities_->hasBackgroundBlur())) {
     // TODO(eero): supply a constraint name.
     resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
         "", "Unsupported constraint(s)"));
@@ -749,6 +770,21 @@ void ImageCapture::SetMediaTrackConstraints(
     settings->torch = torch;
   }
 
+  settings->has_background_blur_mode =
+      constraints->hasBackgroundBlur() &&
+      constraints->backgroundBlur()->IsBoolean();
+  if (settings->has_background_blur_mode) {
+    const auto background_blur = constraints->backgroundBlur()->GetAsBoolean();
+    if (!Contains(capabilities_->backgroundBlur(), background_blur)) {
+      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+          "backgroundBlur", "backgroundBlur setting value not supported"));
+      return;
+    }
+    temp_constraints->setBackgroundBlur(constraints->backgroundBlur());
+    settings->background_blur_mode =
+        background_blur ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
+  }
+
   current_constraints_ = temp_constraints;
 
   service_requests_.insert(resolver);
@@ -885,6 +921,9 @@ void ImageCapture::GetMediaTrackSettings(MediaTrackSettings* settings) const {
 
   if (settings_->hasTorch())
     settings->setTorch(settings_->torch());
+
+  if (settings_->hasBackgroundBlur())
+    settings->setBackgroundBlur(settings_->backgroundBlur());
 }
 
 ImageCapture::ImageCapture(ExecutionContext* context,
@@ -1170,6 +1209,17 @@ void ImageCapture::UpdateMediaTrackCapabilities(
   if (photo_state->supports_torch)
     settings_->setTorch(photo_state->torch);
 
+  if (photo_state->supported_background_blur_modes &&
+      !photo_state->supported_background_blur_modes->IsEmpty()) {
+    Vector<bool> supported_background_blur_modes;
+    for (auto mode : *photo_state->supported_background_blur_modes)
+      supported_background_blur_modes.push_back(ToBooleanMode(mode));
+    capabilities_->setBackgroundBlur(
+        std::move(supported_background_blur_modes));
+    settings_->setBackgroundBlur(
+        ToBooleanMode(photo_state->background_blur_mode));
+  }
+
   std::move(initialized_callback).Run();
 }
 
@@ -1248,6 +1298,8 @@ ImageCapture* ImageCapture::Clone() const {
     clone->capabilities_->setZoom(capabilities_->zoom());
   if (capabilities_->hasTorch())
     clone->capabilities_->setTorch(capabilities_->torch());
+  if (capabilities_->hasBackgroundBlur())
+    clone->capabilities_->setBackgroundBlur(capabilities_->backgroundBlur());
 
   // Copy settings.
   if (settings_->hasWhiteBalanceMode())
@@ -1288,6 +1340,8 @@ ImageCapture* ImageCapture::Clone() const {
     clone->settings_->setZoom(settings_->zoom());
   if (settings_->hasTorch())
     clone->settings_->setTorch(settings_->torch());
+  if (settings_->hasBackgroundBlur())
+    clone->settings_->setBackgroundBlur(settings_->backgroundBlur());
 
   if (!current_constraints_)
     return clone;
@@ -1350,6 +1404,10 @@ ImageCapture* ImageCapture::Clone() const {
     clone->current_constraints_->setZoom(current_constraints_->zoom());
   if (current_constraints_->hasTorch())
     clone->current_constraints_->setTorch(current_constraints_->torch());
+  if (current_constraints_->hasBackgroundBlur()) {
+    clone->current_constraints_->setBackgroundBlur(
+        current_constraints_->backgroundBlur());
+  }
 
   return clone;
 }

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <d3d11_4.h>
+#include <ks.h>
+#include <ksmedia.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -279,9 +282,64 @@ class MockAMVideoProcAmp final : public MockInterface<IAMVideoProcAmp> {
   ~MockAMVideoProcAmp() override = default;
 };
 
-class MockMFMediaSource : public MockInterface<IMFMediaSourceEx> {
+class MockMFExtendedCameraControl final
+    : public MockInterface<IMFExtendedCameraControl> {
+ public:
+  MockMFExtendedCameraControl(ULONG property_id) : property_id_(property_id) {}
+  IFACEMETHODIMP CommitSettings() override { return E_NOTIMPL; }
+  IFACEMETHODIMP_(ULONGLONG) GetCapabilities() override {
+    switch (property_id_) {
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION:
+        return (KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF |
+                KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR);
+      default:
+        return 0;
+    }
+  }
+  IFACEMETHODIMP_(ULONGLONG) GetFlags() override {
+    switch (property_id_) {
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION:
+        return KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
+      default:
+        return 0;
+    }
+  }
+  IFACEMETHODIMP LockPayload(BYTE** payload, ULONG* payload_size) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP SetFlags(ULONGLONG flags) override { return E_NOTIMPL; }
+  IFACEMETHODIMP UnlockPayload() override { return E_NOTIMPL; }
+
+ protected:
+  ~MockMFExtendedCameraControl() override = default;
+
+ private:
+  ULONG property_id_;
+};
+
+class MockMFExtendedCameraController final
+    : public MockInterface<IMFExtendedCameraController> {
+ public:
+  IFACEMETHODIMP GetExtendedCameraControl(
+      DWORD stream_index,
+      ULONG property_id,
+      IMFExtendedCameraControl** control) override {
+    if (stream_index == (DWORD)MF_CAPTURE_ENGINE_MEDIASOURCE) {
+      *control = AddReference(new MockMFExtendedCameraControl(property_id));
+      return S_OK;
+    }
+    return E_NOINTERFACE;
+  }
+
+ protected:
+  ~MockMFExtendedCameraController() override = default;
+};
+
+class MockMFMediaSource final : public MockInterface<IMFMediaSourceEx>,
+                                public IMFGetService {
  public:
   // IUnknown
+  IFACEMETHODIMP_(ULONG) AddRef() override { return MockInterface::AddRef(); }
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(IAMCameraControl)) {
       *object = AddReference(new MockAMCameraControl);
@@ -291,12 +349,17 @@ class MockMFMediaSource : public MockInterface<IMFMediaSourceEx> {
       *object = AddReference(new MockAMVideoProcAmp);
       return S_OK;
     }
+    if (riid == __uuidof(IMFGetService)) {
+      *object = AddReference(static_cast<IMFGetService*>(this));
+      return S_OK;
+    }
     if (riid == __uuidof(IMFMediaSource)) {
       *object = AddReference(static_cast<IMFMediaSource*>(this));
       return S_OK;
     }
     return MockInterface::QueryInterface(riid, object);
   }
+  IFACEMETHODIMP_(ULONG) Release() override { return MockInterface::Release(); }
   // IMFMediaEventGenerator
   IFACEMETHODIMP GetEvent(DWORD dwFlags, IMFMediaEvent** ppEvent) override {
     return E_NOTIMPL;
@@ -340,6 +403,16 @@ class MockMFMediaSource : public MockInterface<IMFMediaSourceEx> {
     return E_NOTIMPL;
   }
   IFACEMETHODIMP SetD3DManager(IUnknown* manager) { return S_OK; }
+  // IMFGetService
+  IFACEMETHODIMP GetService(REFGUID guidService,
+                            REFIID riid,
+                            void** object) override {
+    if (riid == __uuidof(IMFExtendedCameraController)) {
+      *object = AddReference(new MockMFExtendedCameraController);
+      return S_OK;
+    }
+    return MF_E_UNSUPPORTED_SERVICE;
+  }
 
  private:
   ~MockMFMediaSource() override = default;
@@ -1901,6 +1974,18 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
 
   EXPECT_EQ(state->red_eye_reduction, mojom::RedEyeReduction::NEVER);
   EXPECT_EQ(state->fill_light_mode.size(), 0u);
+
+  ASSERT_TRUE(state->supported_background_blur_modes);
+  EXPECT_EQ(state->supported_background_blur_modes->size(), 2u);
+  EXPECT_EQ(std::count(state->supported_background_blur_modes->begin(),
+                       state->supported_background_blur_modes->end(),
+                       mojom::BackgroundBlurMode::OFF),
+            1);
+  EXPECT_EQ(std::count(state->supported_background_blur_modes->begin(),
+                       state->supported_background_blur_modes->end(),
+                       mojom::BackgroundBlurMode::BLUR),
+            1);
+  EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
 }
 
 // Given an |IMFCaptureSource| offering a video stream and a photo stream to
