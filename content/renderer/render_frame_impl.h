@@ -1285,7 +1285,21 @@ class CONTENT_EXPORT RenderFrameImpl
   //
   // If a navigation will commit in the same RenderFrameImpl that owns the
   // request NavigationClient, the request NavigationClient will be reused as
-  // the commit NavigationClient.
+  // the commit NavigationClient. The way this works is:
+  //   1.) RenderFrameHostImpl::BeginNavigation() accepts an always-bound remote
+  //       to the RenderFrameImpl's `navigation_client_impl_`.
+  //   2.) In `NavigationRequest::ctor()`, the request consumes the
+  //       NavigationClient remote, and `NavigationRequest::SetNavigationClient()`
+  //       assigns `NavigationRequest::request_navigation_client_` to it.
+  //   3.) Eventually, `NavigationRequest` picks a `RenderFrameHostImpl` to commit
+  //       to. In `NavigationRequest::CommitNavigation()`, the request needs to
+  //       set its `commit_navigation_client_` to the `NavigationClient`
+  //       implementation in the target RenderFrameImpl. If we detect that the
+  //       navigation will commit to the same frame that
+  //       `NavigationRequest::request_navigation_client_` points to, then the
+  //       browser will reuse the request navigation client as the commit one.
+  //       Otherwise, it requests a *new* client from the renderer, to act as the
+  //       target RenderFrameImpl's `NavigationClient`.
   //
   // ## Navigation Cancellation ##
   // Cancellation is signalled by closing the NavigationClient message pipe.
