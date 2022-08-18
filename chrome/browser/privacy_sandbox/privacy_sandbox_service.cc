@@ -569,12 +569,11 @@ PrivacySandboxService::GetBlockedTopics() const {
   if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get())
     return {fake_blocked_topics_.begin(), fake_blocked_topics_.end()};
 
-  auto* pref_value =
-      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
-  DCHECK(pref_value->is_list());
+  const base::Value::List& pref_value =
+      pref_service_->GetValueList(prefs::kPrivacySandboxBlockedTopics);
 
   std::vector<privacy_sandbox::CanonicalTopic> blocked_topics;
-  for (const auto& entry : pref_value->GetList()) {
+  for (const auto& entry : pref_value) {
     auto blocked_topic = privacy_sandbox::CanonicalTopic::FromValue(
         *entry.GetDict().Find(kBlockedTopicsTopicKey));
     if (blocked_topic)
