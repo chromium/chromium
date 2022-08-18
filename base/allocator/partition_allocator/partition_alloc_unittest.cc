@@ -3054,6 +3054,48 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   allocator.root()->Free(ptr2);
 }
 
+TEST_P(PartitionAllocTest, PurgeDiscardableSmallSlotsWithTruncate) {
+  size_t requested_size = 0.5 * SystemPageSize();
+  char* ptr1 = static_cast<char*>(
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr3 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr4 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr4);
+  SlotSpanMetadata<internal::ThreadSafe>* slot_span =
+      SlotSpanMetadata<internal::ThreadSafe>::FromSlotStart(
+          allocator.root()->ObjectToSlotStart(ptr1));
+  EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
+  {
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(requested_size);
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(requested_size * 2, stats->active_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->resident_bytes);
+  }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
+  EXPECT_EQ(6u, slot_span->num_unprovisioned_slots);
+
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr2);
+}
+
 TEST_P(PartitionAllocTest, ActiveListMaintenance) {
   size_t size = SystemPageSize() - kExtraAllocSize;
   size_t real_size = size + kExtraAllocSize;
