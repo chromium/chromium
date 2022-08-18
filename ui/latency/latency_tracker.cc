@@ -65,7 +65,7 @@ void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
     // microsecond to have passed.
     return;
   }
-  auto* histogram = base::BooleanHistogram::FactoryGet(
+  static auto* histogram = base::BooleanHistogram::FactoryGet(
       "Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2",
       base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddCount(janky ? kJanky : kNonJanky, count);
