@@ -202,10 +202,14 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 # Timeout on Nexus 5
-crbug.com/1353189 [ android android-nexus-5 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas* [ Skip ]
+crbug.com/1353189 [ android android-nexus-5 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas* [ Failure ]
 
 # Timeout on Linux FYI Release (AMD RX 5500 XT)
-crbug.com/1353189 [ linux release amd-0x7340 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGL* [ Skip ]
+crbug.com/1353189 [ linux release amd-0x7340 ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGL* [ Failure ]
+
+# WebGL's accelerated canvas capture is failing on ChromeOS
+crbug.com/1353813 [ chromeos ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/1353813 [ chromeos ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]

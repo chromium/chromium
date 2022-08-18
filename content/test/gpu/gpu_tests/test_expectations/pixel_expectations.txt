@@ -234,15 +234,6 @@ crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerat
 # 5 minute timeout on ChromeOS FYI Release (amd64-generic)
 crbug.com/1167246 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
 
-# Timeout on Nexus 5
-crbug.com/1353189 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Skip ]
-
-# Timeout on Linux FYI Release (AMD RX 5500 XT)
-crbug.com/1353189 [ linux release amd-0x7340 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Skip ]
-
-# Crash on Linux FYI Release (NVIDIA) using SkiaRenderer/Vulkan
-crbug.com/1353189 [ linux skia-renderer-vulkan nvidia-0x2184 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -445,6 +436,15 @@ crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failu
 
 # Pixel_VideoStreamFromWebGLCanvas fails consistently on Linux FYI Release (AMD RX 500 XT)
 crbug.com/1348122 [ linux amd-0x7340 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+
+# Timeout on Nexus 5
+crbug.com/1353189 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
+
+# Timeout on Linux FYI Release (AMD RX 5500 XT)
+crbug.com/1353189 [ linux release amd-0x7340 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
+
+# Crash on Linux FYI Release (NVIDIA) using SkiaRenderer/Vulkan
+crbug.com/1353189 [ linux skia-renderer-vulkan nvidia-0x2184 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

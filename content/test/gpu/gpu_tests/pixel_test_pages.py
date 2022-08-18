@@ -68,7 +68,8 @@ class PixelTestPage():
       other_args: Optional[dict] = None,
       grace_period_end: Optional[datetime.date] = None,
       expected_per_process_crashes: Optional[Dict[str, int]] = None,
-      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None):
+      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None,
+      timeout: int = 300):
     super().__init__()
     self.url = url
     self.name = name
@@ -108,6 +109,8 @@ class PixelTestPage():
     # which matching algorithm Skia Gold should use for the test.
     self.matching_algorithm = (matching_algorithm
                                or algo.ExactMatchingAlgorithm())
+    # Test timeout
+    self.timeout = timeout
 
   # Strings used for the return type since at this point PixelTestPage is
   # technically a forward reference. Python type hinting specifically supports
@@ -1154,27 +1157,35 @@ class PixelTestPages():
                                              pixel_delta_threshold=50,
                                              edge_threshold=30,
                                              ignored_border_thickness=1)
+
+    # Use shorter timeout since the tests are not supposed to be long.
+    timeout = 150
+
     return [
         PixelTestPage('pixel_video_from_canvas_2d.html',
                       base_name + '_VideoStreamFrom2DCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
-                      matching_algorithm=match_algo),
+                      matching_algorithm=match_algo,
+                      timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_2d_alpha.html',
                       base_name + '_VideoStreamFrom2DAlphaCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
-                      matching_algorithm=match_algo),
+                      matching_algorithm=match_algo,
+                      timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
                       base_name + '_VideoStreamFromWebGLAlphaCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
-                      matching_algorithm=match_algo),
+                      matching_algorithm=match_algo,
+                      timeout=timeout),
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name + '_VideoStreamFromWebGLCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
-                      matching_algorithm=match_algo),
+                      matching_algorithm=match_algo,
+                      timeout=timeout),
 
         # Safeguard against repeating crbug.com/1337101
         PixelTestPage(
@@ -1182,7 +1193,8 @@ class PixelTestPages():
             base_name + '_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster',
             test_rect=[0, 0, 200, 200],
             browser_args=['--disable-features=CanvasOopRasterization'],
-            matching_algorithm=match_algo),
+            matching_algorithm=match_algo,
+            timeout=timeout),
 
         # Test OneCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
@@ -1191,7 +1203,8 @@ class PixelTestPages():
                       browser_args=['--enable-features=OneCopyCanvasCapture'],
                       other_args={'one_copy': True},
                       matching_algorithm=match_algo,
-                      grace_period_end=date(2022, 8, 30)),
+                      grace_period_end=date(2022, 8, 30),
+                      timeout=timeout),
         # TwoCopyCanvasCapture
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
                       base_name +
@@ -1203,7 +1216,8 @@ class PixelTestPages():
                           'accelerated_two_copy': True
                       },
                       matching_algorithm=match_algo,
-                      grace_period_end=date(2022, 8, 30)),
+                      grace_period_end=date(2022, 8, 30),
+                      timeout=timeout),
         # Having alpha channel would disable TwoCopy's accelerated path
         PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
                       base_name +
@@ -1215,7 +1229,8 @@ class PixelTestPages():
                           'accelerated_two_copy': False
                       },
                       matching_algorithm=match_algo,
-                      grace_period_end=date(2022, 8, 30)),
+                      grace_period_end=date(2022, 8, 30),
+                      timeout=timeout),
     ]
 
   @staticmethod

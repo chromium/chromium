@@ -109,7 +109,7 @@ class PixelIntegrationTest(
 
     try:
       tab.action_runner.WaitForJavaScriptCondition(
-          'domAutomationController._proceed', timeout=300)
+          'domAutomationController._proceed', timeout=page.timeout)
     except:
       # Only log messages during exceptions here, they'll otherwise be logged
       # below if the test progresses to the first domAutomationController.send.
