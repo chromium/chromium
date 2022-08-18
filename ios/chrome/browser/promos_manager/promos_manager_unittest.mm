@@ -7,6 +7,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -42,4 +43,18 @@ TEST_F(PromosManagerTest, InitWithPrefService) {
             nullptr);
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerImpressions));
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerActivePromos));
+}
+
+// Tests promos_manager::NameForPromo correctly returns the string
+// representation of a given promo.
+TEST_F(PromosManagerTest, ReturnsNameForTestPromo) {
+  EXPECT_EQ(promos_manager::NameForPromo(promos_manager::Promo::Test),
+            "promos_manager::Promo::Test");
+}
+
+// Tests promos_manager::PromoForName correctly returns the
+// promos_manager::Promo given its string name.
+TEST_F(PromosManagerTest, ReturnsTestPromoForName) {
+  EXPECT_EQ(promos_manager::PromoForName("promos_manager::Promo::Test"),
+            promos_manager::Promo::Test);
 }

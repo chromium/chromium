@@ -21,9 +21,10 @@ PromosManager::PromosManager(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
 }
+
 PromosManager::~PromosManager() = default;
 
-#pragma mark - Public methods
+#pragma mark - Public
 
 void PromosManager::Init() {
   if (!IsFullscreenPromosManagerEnabled())

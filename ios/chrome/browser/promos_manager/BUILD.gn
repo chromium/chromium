@@ -35,6 +35,15 @@ source_set("promos_manager_scene_agent") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [ "//base" ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
@@ -52,6 +61,7 @@ source_set("unit_tests") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     ":promos_manager",
     "//base",
     "//components/prefs",
