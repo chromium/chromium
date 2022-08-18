@@ -79,6 +79,9 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
 
+  // Returns whether the popup is visible.
+  bool IsVisible();
+
   // Returns the root view containing |browser_view_|.
   views::View* GetBrowserRootView() const;
 

@@ -105,7 +105,7 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
           ->UpdateExclusiveAccessExitBubbleContent(
               GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
               ExclusiveAccessBubbleHideCallback(),
-              /*force_update=*/false);
+              /*force_update=*/true);
     } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {
       display_->ShowDetails();
     }

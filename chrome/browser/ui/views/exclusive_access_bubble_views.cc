@@ -133,6 +133,15 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   if (bubble_type_ == bubble_type && url_ == url && !force_update)
     return;
 
+  // Show the exit and download notification only if a notification that was
+  // informing about the exit directions was visible, and a download
+  // notification was laid on top.
+  if (IsVisible() &&
+      bubble_type_ != EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED &&
+      bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED) {
+    bubble_type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED_AND_EXIT;
+  }
+
   // Bubble maybe be re-used after timeout.
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
@@ -156,16 +165,7 @@ void ExclusiveAccessBubbleViews::UpdateContent(
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
-#if BUILDFLAG(IS_MAC)
-  // Due to a quirk on the Mac, the popup will not be visible for a short period
-  // of time after it is shown (it's asynchronous) so if we don't check the
-  // value of the animation we'll have a stale version of the bounds when we
-  // show it and it will appear in the wrong place - typically where the window
-  // was located before going to fullscreen.
-  if (popup_->IsVisible() || animation_->GetCurrentValue() > 0.0)
-#else
-  if (popup_->IsVisible())
-#endif
+  if (IsVisible())
     UpdateBounds();
 }
 
@@ -227,6 +227,19 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
   accelerator = base::i18n::ToLower(accelerator);
 #endif
   view_->UpdateContent(GetInstructionText(accelerator));
+}
+
+bool ExclusiveAccessBubbleViews::IsVisible() {
+#if BUILDFLAG(IS_MAC)
+  // Due to a quirk on the Mac, the popup will not be visible for a short period
+  // of time after it is shown (it's asynchronous) so if we don't check the
+  // value of the animation we'll have a stale version of the bounds when we
+  // show it and it will appear in the wrong place - typically where the window
+  // was located before going to fullscreen.
+  return (popup_->IsVisible() || animation_->GetCurrentValue() > 0.0);
+#else
+  return (popup_->IsVisible());
+#endif
 }
 
 views::View* ExclusiveAccessBubbleViews::GetBrowserRootView() const {
