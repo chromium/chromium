@@ -85,6 +85,9 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
         ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
     properties.visible = true;
     properties.candidates = SplitDiacritics(it->second);
+    properties.announce_string =
+        l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_OPEN);
+
     std::string error;
     suggestion_handler_->SetAssistiveWindowProperties(
         focused_context_id_.value(), properties, &error);
@@ -217,8 +220,10 @@ bool LongpressDiacriticsSuggester::AcceptSuggestion(size_t index) {
   suggestion_handler_->AcceptSuggestionCandidate(
       *focused_context_id_, current_suggestions[index],
       /* delete_previous_utf16_len=*/1, &error);
-
-  if (!error.empty()) {
+  if (error.empty()) {
+    suggestion_handler_->Announce(
+        l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_INSERTED));
+  } else {
     LOG(ERROR) << "Failed to accept suggestion. " << error;
     return false;
   }
@@ -240,7 +245,7 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
       ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   properties.visible = false;
   properties.announce_string =
-      l10n_util::GetStringUTF16(IDS_SUGGESTION_DISMISSED);
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_DISMISSED);
 
   suggestion_handler_->SetAssistiveWindowProperties(*focused_context_id_,
                                                     properties, &error);

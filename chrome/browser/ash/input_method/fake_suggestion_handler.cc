@@ -81,6 +81,10 @@ bool FakeSuggestionHandler::SetAssistiveWindowProperties(
     int context_id,
     const AssistiveWindowProperties& assistive_window,
     std::string* error) {
+  if (!assistive_window.announce_string.empty()) {
+    announcements_.push_back(assistive_window.announce_string);
+  }
+
   if (assistive_window.visible) {
     context_id_ = context_id;
     showing_suggestion_ = true;

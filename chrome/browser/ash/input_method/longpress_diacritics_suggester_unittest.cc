@@ -723,6 +723,94 @@ TEST_P(LongpressDiacriticsSuggesterTest,
       IMEPKLongpressDiacriticAction::kDismiss, 1);
 }
 
+TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnShowWindow) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 1u);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"Accent marks menu open. Press left or right to navigate and "
+            u"enter to insert.");
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnDismissWithEsc) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ESCAPE));
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
+            u"Accent marks menu open. Press left or right to navigate and "
+            u"enter to insert.");
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"Accent marks menu dismissed.");
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnDismissByTyping) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(GetParam().code));
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
+            u"Accent marks menu open. Press left or right to navigate and "
+            u"enter to insert.");
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"Accent marks menu dismissed.");
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnAcceptViaDigit) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::DIGIT1));
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
+            u"Accent marks menu open. Press left or right to navigate and "
+            u"enter to insert.");
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"Accent mark inserted.");
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnAcceptViaEnter) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ENTER));
+
+  ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
+            u"Accent marks menu open. Press left or right to navigate and "
+            u"enter to insert.");
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
+            u"Accent mark inserted.");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     LongpressDiacriticsSuggesterTest,

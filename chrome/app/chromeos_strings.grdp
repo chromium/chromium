@@ -6048,6 +6048,15 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_EMOJI_CHOSEN" desc="String announced by screenreader when users selected an emoji in the pop-up.">
     <ph name="EMOJI_NAME">$1<ex>Party popper</ex></ph>. <ph name="EMOJI_INDEX">$2<ex>5</ex></ph> of <ph name="EMOJI_COUNT">$3<ex>5</ex></ph>.
   </message>
+  <message name="IDS_SUGGESTION_DIACRITICS_OPEN" desc="String announced by screenreader when diacritics suggestion pops up.">
+    Accent marks menu open. Press left or right to navigate and enter to insert.
+  </message>
+  <message name="IDS_SUGGESTION_DIACRITICS_INSERTED" desc="String announced by screenreader when diacritics are inserted.">
+    Accent mark inserted.
+  </message>
+  <message name="IDS_SUGGESTION_DIACRITICS_DISMISSED" desc="String announced by screenreader when diacritics are dismissed.">
+    Accent marks menu dismissed.
+  </message>
   <message name="IDS_SUGGESTION_DISMISSED" desc="String announced by screenreader when suggestion pop-up disappears.">
     Suggestion dismissed
   </message>
