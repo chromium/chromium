@@ -98,22 +98,10 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
     // Mounted path.
     std::string mount_path;
     // Type of mount.
-    MountType mount_type;
+    MountType mount_type = MountType::kInvalid;
     // Condition of mount.
-    MountCondition mount_condition;
-
-    MountPoint(const std::string& source,
-               const std::string& mount,
-               const MountType type,
-               MountCondition condition = MOUNT_CONDITION_NONE)
-        : source_path(source),
-          mount_path(mount),
-          mount_type(type),
-          mount_condition(condition) {}
+    MountCondition mount_condition = MOUNT_CONDITION_NONE;
   };
-
-  // TODO Remove once the transition to plain MountPoint is finished.
-  using MountPointInfo = MountPoint;
 
   // Comparator sorting MountPoint objects by mount_path.
   struct SortByMountPath {
