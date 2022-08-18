@@ -2786,8 +2786,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
                              /*for_credit_cards=*/true);
-  TestAutofillTickClock clock;
-  clock.SetNowTicks(base::TimeTicks::Now());
+  TestAutofillTickClock clock(AutofillTickClock::NowTicks());
   base::HistogramTester histogram_tester;
 
   // Set up our form data. In the kMixed case the form will contain the fields
