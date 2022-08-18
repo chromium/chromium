@@ -2,20 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("power_metrics") {
-  sources = [
-    "sampling_event_source.cc",
-    "sampling_event_source.h",
-    "timer_sampling_event_source.cc",
-    "timer_sampling_event_source.h",
-  ]
-
-  if (is_mac) {
-    sources += [
+if (is_mac) {
+  static_library("power_metrics") {
+    sources = [
       "energy_impact_mac.h",
       "energy_impact_mac.mm",
-      "iopm_power_source_sampling_event_source.cc",
-      "iopm_power_source_sampling_event_source.h",
       "m1_sensors_internal_types_mac.h",
       "m1_sensors_mac.h",
       "m1_sensors_mac.mm",
@@ -28,29 +19,24 @@ static_library("power_metrics") {
       "smc_mac.h",
       "smc_mac.mm",
     ]
+
+    deps = [ "//base" ]
   }
 
-  deps = [ "//base" ]
-}
+  source_set("unit_tests") {
+    testonly = true
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "timer_sampling_event_source_unittest.cc" ]
-
-  deps = [
-    ":power_metrics",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-
-  if (is_mac) {
-    sources += [
+    sources = [
       "energy_impact_mac_unittest.mm",
       "resource_coalition_mac_unittest.mm",
     ]
 
     data = [ "test/data/" ]
+
+    deps = [
+      ":power_metrics",
+      "//base",
+      "//testing/gtest",
+    ]
   }
 }

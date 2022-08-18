@@ -11,14 +11,14 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/power_monitor/iopm_power_source_sampling_event_source.h"
+#include "base/power_monitor/timer_sampling_event_source.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
-#include "components/power_metrics/iopm_power_source_sampling_event_source.h"
-#include "components/power_metrics/timer_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
@@ -211,13 +211,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  std::unique_ptr<power_metrics::SamplingEventSource> event_source;
+  std::unique_ptr<base::SamplingEventSource> event_source;
   if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
-    event_source =
-        std::make_unique<power_metrics::IOPMPowerSourceSamplingEventSource>();
+    event_source = std::make_unique<base::IOPMPowerSourceSamplingEventSource>();
   } else {
-    event_source = std::make_unique<power_metrics::TimerSamplingEventSource>(
-        sampling_interval);
+    event_source =
+        std::make_unique<base::TimerSamplingEventSource>(sampling_interval);
   }
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::NS_RUNLOOP);

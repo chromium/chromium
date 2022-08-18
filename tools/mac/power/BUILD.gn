@@ -72,7 +72,6 @@ executable("power_sampler") {
   deps = [
     ":power_sampler_lib",
     "//base",
-    "//components/power_metrics",
   ]
 }
 

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_
-#define COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_
+#ifndef BASE_POWER_MONITOR_SAMPLING_EVENT_SOURCE_H_
+#define BASE_POWER_MONITOR_SAMPLING_EVENT_SOURCE_H_
 
+#include "base/base_export.h"
 #include "base/callback_forward.h"
 
-namespace power_metrics {
+namespace base {
 
 // Invokes a callback when a Sample should be requested from all Samplers.
-class SamplingEventSource {
+class BASE_EXPORT SamplingEventSource {
  public:
-  using SamplingEventCallback = base::RepeatingClosure;
+  using SamplingEventCallback = RepeatingClosure;
 
   virtual ~SamplingEventSource() = 0;
 
@@ -21,6 +22,6 @@ class SamplingEventSource {
   virtual bool Start(SamplingEventCallback callback) = 0;
 };
 
-}  // namespace power_metrics
+}  // namespace base
 
-#endif  // COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_
+#endif  // BASE_POWER_MONITOR_SAMPLING_EVENT_SOURCE_H_

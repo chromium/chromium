@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/power_metrics/iopm_power_source_sampling_event_source.h"
+#include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 
 #include <IOKit/IOMessage.h>
 #include <dispatch/queue.h>
@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 
-namespace power_metrics {
+namespace base {
 
 IOPMPowerSourceSamplingEventSource::IOPMPowerSourceSamplingEventSource() =
     default;
@@ -64,4 +64,4 @@ void IOPMPowerSourceSamplingEventSource::OnNotification(
   self->callback_.Run();
 }
 
-}  // namespace power_metrics
+}  // namespace base

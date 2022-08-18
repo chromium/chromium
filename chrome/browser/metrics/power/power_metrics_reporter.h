@@ -20,8 +20,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
-#include "components/power_metrics/iopm_power_source_sampling_event_source.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 // Reports metrics related to power (battery discharge, cpu time, etc.).
@@ -173,7 +173,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   // (MaybeEmitHighCPUTraceEvent()).
   base::TimeTicks short_interval_begin_time_;
 
-  power_metrics::IOPMPowerSourceSamplingEventSource
+  base::IOPMPowerSourceSamplingEventSource
       iopm_power_source_sampling_event_source_;
 
   // The time ticks from when the last IOPMPowerSource event was received.

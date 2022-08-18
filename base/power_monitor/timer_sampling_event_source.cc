@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/power_metrics/timer_sampling_event_source.h"
+#include "base/power_monitor/timer_sampling_event_source.h"
 
 #include "base/check.h"
 
-namespace power_metrics {
+namespace base {
 
-TimerSamplingEventSource::TimerSamplingEventSource(base::TimeDelta interval)
+TimerSamplingEventSource::TimerSamplingEventSource(TimeDelta interval)
     : interval_(interval) {}
 
 TimerSamplingEventSource::~TimerSamplingEventSource() = default;
@@ -19,4 +19,4 @@ bool TimerSamplingEventSource::Start(SamplingEventCallback callback) {
   return true;
 }
 
-}  // namespace power_metrics
+}  // namespace base

@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
-#define COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#ifndef BASE_POWER_MONITOR_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#define BASE_POWER_MONITOR_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
 
+#include "base/base_export.h"
 #include "base/callback.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
-#include "components/power_metrics/sampling_event_source.h"
+#include "base/power_monitor/sampling_event_source.h"
 
-namespace power_metrics {
+namespace base {
 
 // Generates a sampling event when a state change notification is dispatched by
 // the IOPMPowerSource service.
-class IOPMPowerSourceSamplingEventSource : public SamplingEventSource {
+class BASE_EXPORT IOPMPowerSourceSamplingEventSource
+    : public SamplingEventSource {
  public:
   IOPMPowerSourceSamplingEventSource();
 
@@ -29,12 +31,12 @@ class IOPMPowerSourceSamplingEventSource : public SamplingEventSource {
                              natural_t message_type,
                              void* message_argument);
 
-  base::mac::ScopedIONotificationPortRef notify_port_;
-  base::mac::ScopedIOObject<io_service_t> service_;
-  base::mac::ScopedIOObject<io_object_t> notification_;
+  mac::ScopedIONotificationPortRef notify_port_;
+  mac::ScopedIOObject<io_service_t> service_;
+  mac::ScopedIOObject<io_object_t> notification_;
   SamplingEventCallback callback_;
 };
 
-}  // namespace power_metrics
+}  // namespace base
 
-#endif  // COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
+#endif  // BASE_POWER_MONITOR_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
