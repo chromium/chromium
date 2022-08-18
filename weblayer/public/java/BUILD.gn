@@ -189,6 +189,8 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",
     "org/chromium/browserfragment/interfaces/ITabParams.aidl",
     "org/chromium/browserfragment/interfaces/ITabProxy.aidl",
+    "org/chromium/browserfragment/interfaces/IWebMessageCallback.aidl",
+    "org/chromium/browserfragment/interfaces/IWebMessageReplyProxy.aidl",
   ]
 }
 
@@ -207,6 +209,8 @@ android_library("browserfragment_java") {
     "org/chromium/browserfragment/TabNavigationController.java",
     "org/chromium/browserfragment/TabObserver.java",
     "org/chromium/browserfragment/TabObserverDelegate.java",
+    "org/chromium/browserfragment/WebMessageCallback.java",
+    "org/chromium/browserfragment/WebMessageReplyProxy.java",
   ]
 
   resources_package = "org.chromium.browserfragment"
@@ -234,6 +238,7 @@ android_library("browserfragment_sandbox_java") {
     "org/chromium/weblayer/TabNavigationControllerProxy.java",
     "org/chromium/weblayer/TabParams.java",
     "org/chromium/weblayer/TabProxy.java",
+    "org/chromium/weblayer/WebMessageReplyProxyProxy.java",
   ]
   resources_package = "org.chromium.weblayer"
   deps = [
