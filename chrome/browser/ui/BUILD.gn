@@ -2941,6 +2941,8 @@ static_library("ui") {
       "webui/settings/chromeos/device_section.h",
       "webui/settings/chromeos/device_storage_handler.cc",
       "webui/settings/chromeos/device_storage_handler.h",
+      "webui/settings/chromeos/device_storage_util.cc",
+      "webui/settings/chromeos/device_storage_util.h",
       "webui/settings/chromeos/device_stylus_handler.cc",
       "webui/settings/chromeos/device_stylus_handler.h",
       "webui/settings/chromeos/fast_pair_saved_devices_handler.cc",

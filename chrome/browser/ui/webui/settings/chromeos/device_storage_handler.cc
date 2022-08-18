@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/webui/settings/chromeos/device_storage_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -134,31 +135,6 @@ void StorageHandler::OnJavascriptDisallowed() {
   }
 
   StopObservingEvents();
-}
-
-int64_t StorageHandler::RoundByteSize(int64_t bytes) {
-  if (bytes < 0) {
-    NOTREACHED() << "Negative bytes value";
-    return -1;
-  }
-
-  if (bytes == 0)
-    return 0;
-
-  // Subtract one to the original number of bytes.
-  bytes--;
-  // Set all the lower bits to 1.
-  bytes |= bytes >> 1;
-  bytes |= bytes >> 2;
-  bytes |= bytes >> 4;
-  bytes |= bytes >> 8;
-  bytes |= bytes >> 16;
-  bytes |= bytes >> 32;
-  // Add one. The one bit beyond the highest set bit is set to 1. All the lower
-  // bits are set to 0.
-  bytes++;
-
-  return bytes;
 }
 
 void StorageHandler::HandleUpdateAndroidEnabled(
