@@ -33,6 +33,10 @@ extern const base::Feature kLensSearchImageInScreenshotSharing;
 // Enable the Lens Region Search feature on the PDF viewer.
 extern const base::Feature kEnableRegionSearchOnPdfViewer;
 
+// Enables the modification of the instruction chip UI that is presented when
+// region search is opened.
+extern const base::Feature kLensInstructionChipImprovements;
+
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
@@ -68,6 +72,13 @@ extern const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing;
 // Forces the Chrome Screenshot sharing dialog bubble to stay open after the
 // user clicks the Search Image button.
 extern const base::FeatureParam<bool> kEnablePersistentBubble;
+
+// Enables the use of the selection with image icon when using the instruction
+// chip improvements feature.
+extern const base::FeatureParam<bool> kUseSelectionIconWithImage;
+
+// Enables the use of an alternative string for the instruction chip.
+extern const base::FeatureParam<bool> kUseAltChipString;
 
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();
@@ -120,6 +131,9 @@ extern bool GetSendImagesAsPng();
 // feature is enabled
 extern bool IsLensInScreenshotSharingEnabled();
 
+// Returns whether the instruction chip improvement feature is enabled.
+extern bool IsLensInstructionChipImprovementsEnabled();
+
 // Returns whether to use the Chrome Side Panel for the Lens integration in
 // Chrome Screenshot Sharing feature
 extern bool UseSidePanelForScreenshotSharing();
@@ -128,6 +142,12 @@ extern bool UseSidePanelForScreenshotSharing();
 // user clicks the Search Image button
 extern bool EnablePersistentBubble();
 
+// Returns if we should use the selection with image icon instead of the default
+// when using the instruction chip improvements feature.
+extern bool UseSelectionIconWithImage();
+
+// Returns whether we should use an alternative instruction chip string.
+extern bool UseAltChipString();
 }  // namespace features
 }  // namespace lens
 

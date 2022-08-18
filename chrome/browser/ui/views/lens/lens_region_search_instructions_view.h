@@ -25,10 +25,18 @@ class LensRegionSearchInstructionsView
       const LensRegionSearchInstructionsView&) = delete;
   ~LensRegionSearchInstructionsView() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;
   gfx::Rect GetBubbleBounds() override;
+
+  // Pointers to views after they have been added to the parent via
+  // AddChildView.
+  raw_ptr<views::Label> label_;
+  raw_ptr<views::ImageButton> constructed_close_button_;
 
   // Close button needs to be created on construction in order to not store the
   // close callback.

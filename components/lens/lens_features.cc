@@ -31,6 +31,9 @@ const base::Feature kLensUnifiedSidePanelFooter{
 const base::Feature kEnableRegionSearchOnPdfViewer{
     "LensEnableRegionSearchOnPdfViewer", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kLensInstructionChipImprovements{
+    "LensInstructionChipImprovements", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -76,6 +79,12 @@ const base::FeatureParam<bool> kEnablePersistentBubble{
 // experience in chrome://flags
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", true};
+
+const base::FeatureParam<bool> kUseSelectionIconWithImage{
+    &kLensInstructionChipImprovements, "use-selection-icon-with-image", false};
+
+const base::FeatureParam<bool> kUseAltChipString{
+    &kLensInstructionChipImprovements, "use-alt-chip-string", false};
 
 bool GetEnableUKMLoggingForRegionSearch() {
   return kEnableUKMLoggingForRegionSearch.Get();
@@ -148,6 +157,20 @@ bool GetSendImagesAsPng() {
 bool IsLensInScreenshotSharingEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchImageInScreenshotSharing);
+}
+
+bool IsLensInstructionChipImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         base::FeatureList::IsEnabled(kLensInstructionChipImprovements);
+}
+
+bool UseSelectionIconWithImage() {
+  return IsLensInstructionChipImprovementsEnabled() &&
+         kUseSelectionIconWithImage.Get();
+}
+
+bool UseAltChipString() {
+  return IsLensInstructionChipImprovementsEnabled() && kUseAltChipString.Get();
 }
 
 // Does not check if kLensSearchImageInScreenshotSharing is enabled because this

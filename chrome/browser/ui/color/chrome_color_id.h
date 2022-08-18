@@ -88,6 +88,8 @@
   E_CPONLY(kColorFeaturePromoBubbleDefaultButtonBackground) \
   E_CPONLY(kColorFeaturePromoBubbleDefaultButtonForeground) \
   E_CPONLY(kColorFeaturePromoBubbleForeground) \
+  E_CPONLY(kColorFeatureLensPromoBubbleBackground) \
+  E_CPONLY(kColorFeatureLensPromoBubbleForeground) \
   /* Find bar colors. */ \
   E_CPONLY(kColorFindBarBackground) \
   E_CPONLY(kColorFindBarButtonIcon) \
