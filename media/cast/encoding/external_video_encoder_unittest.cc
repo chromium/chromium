@@ -114,10 +114,19 @@ TEST(ExternalVideoEncoderTest,
 }
 
 TEST(ExternalVideoEncoderTest, RecommendsExternalVp8EncoderForChromecast) {
+#if BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_64_BITS
+  EXPECT_TRUE(ExternalVideoEncoder::IsRecommended(
+      CODEC_VIDEO_VP8, "Eureka Dongle", kValidVeaProfiles));
+  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
+      CODEC_VIDEO_VP8, "Chromecast", kValidVeaProfiles));
+  EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
+      CODEC_VIDEO_VP8, "Chromecast Ultra", kValidVeaProfiles));
+#else
   for (const char* model_name : kFirstPartyModelNames) {
     EXPECT_TRUE(ExternalVideoEncoder::IsRecommended(
         CODEC_VIDEO_VP8, std::string(model_name), kValidVeaProfiles));
   }
+#endif
 }
 
 TEST(ExternalVideoEncoderTest, RecommendsH264HardwareEncoderProperly) {

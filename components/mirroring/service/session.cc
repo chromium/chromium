@@ -849,9 +849,12 @@ void Session::CreateAndSendOffer() {
     const int32_t video_ssrc = base::RandInt(kVideoSsrcMin, kVideoSsrcMax);
     if (state_ == MIRRORING) {
       // First, check if hardware VP8 and H264 are available.
-      if (media::cast::ExternalVideoEncoder::IsRecommended(
+      const bool hardware_vp8_recommended =
+          media::cast::ExternalVideoEncoder::IsRecommended(
               Codec::CODEC_VIDEO_VP8, session_params_.receiver_model_name,
-              supported_profiles_)) {
+              supported_profiles_);
+
+      if (hardware_vp8_recommended) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         config.use_external_encoder = true;
@@ -891,8 +894,8 @@ void Session::CreateAndSendOffer() {
                         mirror_settings_, stream_list);
       }
 
-      // Worst case, default to offering software VP8.
-      if (video_configs.empty()) {
+      // Finally, offer software VP8 if hardware VP8 was not offered.
+      if (!hardware_vp8_recommended) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
