@@ -32,6 +32,8 @@ public class Browser {
     private static final String BROWSER_SANDBOX_ACTION =
             "org.chromium.weblayer.intent.action.BROWSERSANDBOX";
 
+    private static final String DEFAULT_PROFILE_NAME = "DefaultProfile";
+
     private static Browser sInstance;
 
     private IBrowserSandboxService mBrowserSandboxService;
@@ -104,9 +106,20 @@ public class Browser {
      */
     @Nullable
     public BrowserFragment createFragment() {
+        FragmentParams params =
+                (new FragmentParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
+        return createFragment(params);
+    }
+
+    /**
+     * Creates a new BrowserFragment for displaying web content.
+     */
+    @Nullable
+    public BrowserFragment createFragment(FragmentParams params) {
         try {
             BrowserFragment fragment = new BrowserFragment();
-            fragment.initialize(this, mBrowserSandboxService.createFragmentDelegate());
+            fragment.initialize(
+                    this, mBrowserSandboxService.createFragmentDelegate(params.getParcelable()));
             return fragment;
         } catch (RemoteException e) {
             return null;

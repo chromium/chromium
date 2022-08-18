@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.base.Log;
 import org.chromium.browserfragment.Browser;
 import org.chromium.browserfragment.BrowserFragment;
+import org.chromium.browserfragment.FragmentParams;
 import org.chromium.browserfragment.Tab;
 import org.chromium.browserfragment.TabManager;
 import org.chromium.browserfragment.TabObserver;
@@ -143,7 +144,9 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
             }
         }
 
-        BrowserFragment fragment = browser.createFragment();
+        FragmentParams params =
+                (new FragmentParams.Builder()).setProfileName("DefaultProfile").build();
+        BrowserFragment fragment = browser.createFragment(params);
 
         fragmentManager.beginTransaction()
                 .setReorderingAllowed(true)

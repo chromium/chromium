@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.IFragmentParams;
 import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabParams;
@@ -25,8 +26,6 @@ import org.chromium.browserfragment.interfaces.ITabParams;
  * the WebLayer implementation.
  */
 class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
-    private static final String DEFAULT_PROFILE = "DefaultProfile";
-
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private Context mContext;
@@ -40,13 +39,18 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     private IBrowserFragmentDelegateClient mClient;
     private SurfaceControlViewHost mSurfaceControlViewHost;
 
-    BrowserFragmentDelegate(Context context, WebLayer webLayer) {
+    BrowserFragmentDelegate(Context context, WebLayer webLayer, IFragmentParams params) {
         mContext = context;
         mWebLayer = webLayer;
         mTabDelegate = new BrowserFragmentTabDelegate();
 
+        BrowserFragmentCreateParams createParams = (new BrowserFragmentCreateParams.Builder())
+                                                           .setProfileName(params.profileName)
+                                                           .setPersistenceId(params.persistenceId)
+                                                           .setIsIncognito(params.isIncognito)
+                                                           .build();
         mHandler.post(() -> {
-            mFragment = (BrowserFragment) WebLayer.createBrowserFragment(DEFAULT_PROFILE);
+            mFragment = (BrowserFragment) WebLayer.createBrowserFragmentWithParams(createParams);
             mFragment.ignoreViewModel();
         });
     }

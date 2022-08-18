@@ -15,6 +15,7 @@ import android.os.RemoteException;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxService;
+import org.chromium.browserfragment.interfaces.IFragmentParams;
 
 /**
  * Service running the browser process for a BrowserFragment outside of the hosting
@@ -42,10 +43,10 @@ public class BrowserSandboxService extends Service {
         }
 
         @Override
-        public IBrowserFragmentDelegate createFragmentDelegate() {
+        public IBrowserFragmentDelegate createFragmentDelegate(IFragmentParams params) {
             assert mWebLayer != null;
 
-            return new BrowserFragmentDelegate(mContext, mWebLayer);
+            return new BrowserFragmentDelegate(mContext, mWebLayer, params);
         }
 
         @Override

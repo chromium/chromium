@@ -6,12 +6,12 @@ package org.chromium.browserfragment.interfaces;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
+import org.chromium.browserfragment.interfaces.IFragmentParams;
 
 interface IBrowserSandboxService {
     void initializeBrowserProcess(in IBrowserSandboxCallback callback) = 1;
 
-    // TODO(rayankans): Pass fragment creation params (profile name, persistence ID, etc.)
-    IBrowserFragmentDelegate createFragmentDelegate() = 2;
+    IBrowserFragmentDelegate createFragmentDelegate(in IFragmentParams params) = 2;
 
     void setRemoteDebuggingEnabled(in boolean enabled) = 3;
 }
