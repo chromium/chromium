@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/promo.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -39,14 +38,6 @@ NSArray<ImpressionLimit*>* PromosManagerTest::TestImpressionLimits() {
   });
 
   return limits;
-}
-
-Promo* PromosManagerTest::TestPromo() {
-  return [[Promo alloc] init];
-}
-
-Promo* PromosManagerTest::TestPromoWithImpressionLimits() {
-  return [[Promo alloc] initWithImpressionLimits:TestImpressionLimits()];
 }
 
 void PromosManagerTest::CreatePromosManager() {
@@ -89,23 +80,6 @@ TEST_F(PromosManagerTest, ReturnsNameForTestPromo) {
 TEST_F(PromosManagerTest, ReturnsTestPromoForName) {
   EXPECT_EQ(promos_manager::PromoForName("promos_manager::Promo::Test"),
             promos_manager::Promo::Test);
-}
-
-// Tests PromosManagerTest::TestPromo() correctly creates one mock promo.
-TEST_F(PromosManagerTest, CreatesPromo) {
-  Promo* promo = TestPromo();
-
-  EXPECT_NE(promo, nil);
-  EXPECT_EQ((int)promo.impressionLimits.count, 0);
-}
-
-// Tests PromosManagerTest::TestPromoWithImpressionLimits() correctly creates
-// one mock promo with mock impression limits.
-TEST_F(PromosManagerTest, CreatesPromoWithImpressionLimits) {
-  Promo* promoWithImpressionLimits = TestPromoWithImpressionLimits();
-
-  EXPECT_NE(promoWithImpressionLimits, nil);
-  EXPECT_EQ((int)promoWithImpressionLimits.impressionLimits.count, 2);
 }
 
 // Tests PromosManagerTest::TestImpressionLimits() correctly creates two mock

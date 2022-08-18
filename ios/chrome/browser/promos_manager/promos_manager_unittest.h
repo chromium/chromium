@@ -10,7 +10,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/promo.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -18,12 +17,6 @@ class PromosManagerTest : public PlatformTest {
  public:
   PromosManagerTest();
   ~PromosManagerTest() override;
-
-  // Creates a mock promo without impression limits.
-  Promo* TestPromo();
-
-  // Creates a mock promo with impression limits.
-  Promo* TestPromoWithImpressionLimits();
 
   // Creates mock impression limits.
   NSArray<ImpressionLimit*>* TestImpressionLimits();
