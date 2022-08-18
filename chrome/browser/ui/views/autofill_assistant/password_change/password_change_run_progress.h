@@ -9,11 +9,11 @@
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "ui/views/view.h"
 
-class AnimatedIcon;
-class AnimatedProgressBar;
+class PasswordChangeAnimatedIcon;
+class PasswordChangeAnimatedProgressBar;
 
-// Show the UI for a password change run progress via combination of progress
-// bars and icons.
+// A password change run progress indicator that consists of a combination of
+// individual progress bars and icons.
 class PasswordChangeRunProgress : public views::View {
  public:
   METADATA_HEADER(PasswordChangeRunProgress);
@@ -29,8 +29,8 @@ class PasswordChangeRunProgress : public views::View {
     kEndStepBar,
   };
 
-  // `childrendsIDsOffset` can be used by parent views to make sure
-  // `PasswordChangeRunProgress` children views ids do not colapse with
+  // `childrendsIDsOffset` can be used by parent views to make sure that the
+  // `PasswordChangeRunProgress` children view ids do not collide with the
   // parent's.
   explicit PasswordChangeRunProgress(int childrenIDsOffset = 0);
 
@@ -41,7 +41,7 @@ class PasswordChangeRunProgress : public views::View {
   ~PasswordChangeRunProgress() override;
 
   // Sets the current progress. Does nothing if `next_progress_step` is
-  // logically before or equal `current_progress_step`.
+  // logically before or equal to `current_progress_step`.
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep next_progress_step);
 
@@ -58,14 +58,14 @@ class PasswordChangeRunProgress : public views::View {
   void StopAnimation();
 
  private:
-  // Method ran once the last progress bar animation is completed,
-  // Used to trigger the last item animation.
+  // Method run once the last progress bar animation is completed that is used
+  // to trigger the last item animation.
   void OnLastProgressBarAnimationCompleted();
 
-  // A progress step is made out of an icon, a progress bar or both.
+  // A progress step is made out of an icon, a progress bar, or both.
   struct ProgressStepUIElements {
-    raw_ptr<AnimatedProgressBar> progress_bar = nullptr;
-    raw_ptr<AnimatedIcon> icon = nullptr;
+    raw_ptr<PasswordChangeAnimatedProgressBar> progress_bar = nullptr;
+    raw_ptr<PasswordChangeAnimatedIcon> icon = nullptr;
   };
 
   // Maps a progress step to the UI elements that represent it.
