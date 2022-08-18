@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -61,8 +62,11 @@ public class AssistantQrCodeCameraScanDialog extends DialogFragment {
     }
 
     @Override
+    @SuppressWarnings("SourceLockedOrientationActivity")
     public void onResume() {
         super.onResume();
+        // Only portrait mode is supported for the dialog fragment.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mCameraScanCoordinator.resume();
     }
 
@@ -89,5 +93,7 @@ public class AssistantQrCodeCameraScanDialog extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         mCameraScanCoordinator.destroy();
+        // Once the dialog fragment is destroyed, we should listen to screen orientation changes.
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 }

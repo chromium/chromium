@@ -14,8 +14,6 @@ import android.os.Looper;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import org.chromium.ui.display.DisplayAndroid;
-
 /** AssistantQrCodeCameraPreview class controls camera and camera previews. */
 // TODO(b:232057840): Reuse corresponding class from share component
 // (https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/scan_tab/CameraPreview.java).
@@ -156,8 +154,9 @@ public class AssistantQrCodeCameraPreview extends SurfaceView implements Surface
 
     /** Gets the display orientation degree as integer. */
     private int getDisplayOrientation() {
-        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(mContext);
-        return display.getRotationDegrees();
+        // Not listening to display orientation. Since, we only support portrait mode, the
+        // rotation degrees should always be zero.
+        return 0;
     }
 
     /** Returns whether given camera info corresponds to back camera. */
