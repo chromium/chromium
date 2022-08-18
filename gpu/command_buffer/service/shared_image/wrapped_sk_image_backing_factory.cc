@@ -311,7 +311,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
         stride = info.minRowBytes();
       SkPixmap pixmap(info, pixels.data(), stride);
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
-          pixmap, GrRenderable::kNo, GrProtected::kNo);
+          pixmap, GrRenderable::kYes, GrProtected::kNo);
     }
 
     if (!backend_texture_.isValid())
