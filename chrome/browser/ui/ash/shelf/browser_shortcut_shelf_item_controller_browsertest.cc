@@ -75,6 +75,21 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(u"0", items[0].title);
   EXPECT_EQ(u"2", items[1].title);
 
+  // Setting the window title will update the app menu item.
+  browser1->SetWindowUserTitle("foobar");
+  items = GetAppMenuItems(controller, ui::EF_NONE);
+  ASSERT_EQ(2U, items.size());
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"foobar", items[1].title);
+
+  // If the window title is cleared, the active content title will be set again
+  // as the menu item title.
+  browser1->SetWindowUserTitle("");
+  items = GetAppMenuItems(controller, ui::EF_NONE);
+  ASSERT_EQ(2U, items.size());
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"2", items[1].title);
+
   // Shift-click will list all tabs in the applicable browsers.
   items = GetAppMenuItems(controller, ui::EF_SHIFT_DOWN);
   ASSERT_EQ(items.size(), 3U);
