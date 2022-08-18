@@ -154,8 +154,10 @@ def DownloadBootImages(bucket, image_hash, boot_image_names, image_root_dir):
     logging.info('Downloading Fuchsia boot images for %s.%s...' %
                  (device_type, arch))
 
-    # Images use different formats. See fxbug.dev/85552.
-    if bucket == 'fuchsia-sdk' or device_type == "workstation":
+    # Legacy images use different naming conventions. See fxbug.dev/85552.
+    legacy_delimiter_device_types = ['qemu', 'generic']
+    if bucket == 'fuchsia-sdk' or \
+       device_type not in legacy_delimiter_device_types:
       type_arch_connector = '.'
     else:
       type_arch_connector = '-'
