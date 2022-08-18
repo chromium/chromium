@@ -52,10 +52,11 @@ class PasswordChangeRunProgress : public views::View {
   // The completion happens after the last step animation is done.
   void SetAnimationEndedCallback(base::OnceClosure callback);
 
-  // Stops the current step animation. Note that this only stops the icon
-  // animation. Once stopped, an animation cannot be resumed for the current
-  // stage.
-  void StopAnimation();
+  // Pauses the animation of the icon of the current step.
+  void PauseIconAnimation();
+
+  // Resumes the animation of the icon of the current step.
+  void ResumeIconAnimation();
 
  private:
   // Method run once the last progress bar animation is completed that is used

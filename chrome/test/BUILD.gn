@@ -6760,6 +6760,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/apc_scrim_manager_impl_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl_unittest.cc",
+      "../browser/ui/views/autofill_assistant/password_change/password_change_animated_icon_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/password_change_run_progress_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/password_change_run_view_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_ui_helpers_unittest.cc",
@@ -6966,6 +6967,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome:packed_resources_integrity_hash",
+      "//chrome/browser/autofill_assistant/password_change/vector_icons:vector_icons",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",

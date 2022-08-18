@@ -199,6 +199,7 @@ void PasswordChangeRunView::ShowBasePrompt(
 
   SetDescription(description);
   CreateBasePromptOptions(choices);
+  password_change_run_progress_->PauseIconAnimation();
 }
 
 void PasswordChangeRunView::ShowBasePrompt(
@@ -216,6 +217,7 @@ void PasswordChangeRunView::ShowBasePrompt(
   body_->AddChildView(std::make_unique<views::Separator>());
 
   CreateBasePromptOptions(choices);
+  password_change_run_progress_->PauseIconAnimation();
 }
 
 void PasswordChangeRunView::CreateBasePromptOptions(
@@ -248,6 +250,7 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
           .Build());
 
   SetDescription(description);
+  password_change_run_progress_->PauseIconAnimation();
 
   DCHECK(body_);
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
@@ -281,7 +284,7 @@ void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
 }
 
 void PasswordChangeRunView::ShowErrorScreen() {
-  password_change_run_progress_->StopAnimation();
+  password_change_run_progress_->PauseIconAnimation();
   SetTopIcon(
       autofill_assistant::password_change::TopIcon::TOP_ICON_ERROR_OCCURRED);
   SetTitle(l10n_util::GetStringUTF16(
@@ -338,6 +341,7 @@ void PasswordChangeRunView::OnShowCompletionScreen() {
 void PasswordChangeRunView::ClearPrompt() {
   DCHECK(body_);
   body_->RemoveAllChildViews();
+  password_change_run_progress_->ResumeIconAnimation();
 }
 
 void PasswordChangeRunView::OnControllerGone() {

@@ -41,6 +41,9 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   // full cycle.
   void StopPulsingAnimation();
 
+  // Returns whether the icon is currently pulsing.
+  bool IsPulsing() const;
+
  private:
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
