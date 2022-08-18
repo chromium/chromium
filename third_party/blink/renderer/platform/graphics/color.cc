@@ -260,9 +260,7 @@ Color Color::FromSkColor4f(SkColor4f fc) {
 }
 
 SkColor4f Color::toSkColor4f() const {
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
-  return SkColor4f{r, g, b, a};
+  return SkColor4f{param0_, param1_, param2_, alpha_};
 }
 
 bool Color::HasAlpha() const {
@@ -283,7 +281,7 @@ int Color::Alpha() const {
 }
 
 RGBA32 Color::Rgb() const {
-  return color_;
+  return toSkColor4f().toSkColor();
 }
 
 bool Color::ParseHexColor(const LChar* name, unsigned length, Color& color) {

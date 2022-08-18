@@ -152,18 +152,30 @@ class PLATFORM_EXPORT Color {
   static const Color kTransparent;
 
   inline bool operator==(const Color& other) const {
-    return color_ == other.color_;
+    return param0_ == other.param0_ && param1_ == other.param1_ &&
+           param2_ == other.param2_ && alpha_ == other.alpha_;
   }
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
  private:
-  constexpr explicit Color(RGBA32 color) : color_(color) {}
+  constexpr explicit Color(RGBA32 color)
+      : param0_(((color >> 16) & 0xFF) / 255.f),
+        param1_(((color >> 8) & 0xFF) / 255.f),
+        param2_(((color >> 0) & 0xFF) / 255.f),
+        alpha_(((color >> 24) & 0xFF) / 255.f) {}
   static constexpr int ClampInt(int x) {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }
   void GetHueMaxMin(double&, double&, double&) const;
 
-  RGBA32 color_ = 0;
+  // The parameters for the color. These are currently red, green, and blue sRGB
+  // values.
+  float param0_ = 0.f;
+  float param1_ = 0.f;
+  float param2_ = 0.f;
+
+  // The alpha value for the color is guaranteed to be in the interval [0, 1].
+  float alpha_ = 0.f;
 };
 
 PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
