@@ -2,38 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This class responds to requests from renderers for the list of plugins, and
-// also a proxy object for plugin instances.
-
 #ifndef CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 
+#include <map>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/singleton.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/plugin_service.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
 #endif
 
-#include <map>
-#include <vector>
-
-#include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
-#include "base/sequence_checker.h"
-#include "base/synchronization/waitable_event_watcher.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
-#include "content/browser/ppapi_plugin_process_host.h"
-#include "content/common/content_export.h"
-#include "content/public/browser/plugin_service.h"
-#include "ipc/ipc_channel_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-
 #if BUILDFLAG(ENABLE_PPAPI)
+#include "content/browser/ppapi_plugin_process_host.h"
 #include "content/public/common/pepper_plugin_info.h"
 #endif
 
@@ -41,6 +34,8 @@ namespace content {
 class PluginServiceFilter;
 struct PepperPluginInfo;
 
+// This class responds to requests from renderers for the list of plugins, and
+// also a proxy object for plugin instances.
 class CONTENT_EXPORT PluginServiceImpl : public PluginService {
  public:
   // Returns the PluginServiceImpl singleton.
@@ -81,6 +76,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   bool PpapiDevChannelSupported(BrowserContext* browser_context,
                                 const GURL& document_url) override;
 
+#if BUILDFLAG(ENABLE_PPAPI)
   // Returns the plugin process host corresponding to the plugin process that
   // has been started by this service. This will start a process to host the
   // 'plugin_path' if needed. If the process fails to start, the return value
@@ -99,6 +95,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                                 const base::FilePath& profile_data_directory,
                                 const absl::optional<url::Origin>& origin_lock,
                                 PpapiPluginProcessHost::PluginClient* client);
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // Used to monitor plugin stability.
   void RegisterPluginCrash(const base::FilePath& plugin_path);
@@ -119,6 +116,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   PluginServiceImpl();
   ~PluginServiceImpl() override;
 
+#if BUILDFLAG(ENABLE_PPAPI)
   // Returns the plugin process host corresponding to the plugin process that
   // has been started by this service. Returns NULL if no process has been
   // started.
@@ -126,6 +124,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
       const absl::optional<url::Origin>& origin_lock);
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   void RegisterPepperPlugins();
 
