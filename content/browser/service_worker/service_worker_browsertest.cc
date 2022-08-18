@@ -31,6 +31,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -53,6 +54,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -3899,6 +3901,141 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
   // became active again.
   ASSERT_EQ(kExpectedError,
             EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
+}
+
+class ServiceWorkerBrowserTestWithStoragePartitioning
+    : public base::test::WithFeatureOverride,
+      public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerBrowserTestWithStoragePartitioning()
+      : base::test::WithFeatureOverride(
+            net::features::kThirdPartyStoragePartitioning) {}
+  bool ThirdPartyStoragePartitioningEnabled() {
+    return IsParamFeatureEnabled();
+  }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  std::vector<GURL> GetClientURLsForStorageKey(const blink::StorageKey& key) {
+    std::vector<GURL> urls;
+    for (auto it = wrapper()->context()->GetClientContainerHostIterator(
+             key, /*include_reserved_clients=*/false,
+             /*include_back_forward_cached_cleints=*/false);
+         !it->IsAtEnd(); it->Advance()) {
+      urls.push_back(it->GetContainerHost()->url());
+    }
+    return urls;
+  }
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ServiceWorkerBrowserTestWithStoragePartitioning);
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerBrowserTestWithStoragePartitioning,
+                       StorageKeyWithHostPermissions) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
+  GURL child_url(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(a())"));
+  GURL grandchild_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a()"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* root_rfh = web_contents()->GetPrimaryMainFrame();
+
+  // Check root document setup. The StorageKey at the root should be the same
+  // regardless of if `kThirdPartyStoragePartitioning` is enabled.
+  auto root_storage_key = blink::StorageKey(url::Origin::Create(main_url));
+  EXPECT_EQ(root_storage_key, root_rfh->storage_key());
+
+  if (ThirdPartyStoragePartitioningEnabled()) {
+    // With storage partitioning enabled, the three different frames should
+    // each have a different storage key when no host permissions are set.
+    EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),
+                testing::UnorderedElementsAre(main_url));
+    EXPECT_THAT(
+        GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+            url::Origin::Create(child_url),
+            net::SchemefulSite(root_rfh->GetLastCommittedOrigin()), nullptr,
+            blink::mojom::AncestorChainBit::kCrossSite)),
+        testing::UnorderedElementsAre(child_url));
+    EXPECT_THAT(
+        GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+            url::Origin::Create(grandchild_url),
+            net::SchemefulSite(root_rfh->GetLastCommittedOrigin()), nullptr,
+            blink::mojom::AncestorChainBit::kCrossSite)),
+        testing::UnorderedElementsAre(grandchild_url));
+  } else {
+    // With storage partitioning disabled, main frame and grand child should
+    // use the same storage key.
+    EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),
+                testing::UnorderedElementsAre(main_url, grandchild_url));
+    EXPECT_THAT(GetClientURLsForStorageKey(
+                    blink::StorageKey(url::Origin::Create(child_url))),
+                testing::UnorderedElementsAre(child_url));
+  }
+
+  // Give host permissions for b.com (child_rfh) to a.com (root_rfh).
+  {
+    std::vector<network::mojom::CorsOriginPatternPtr> patterns;
+    base::RunLoop run_loop;
+    patterns.push_back(network::mojom::CorsOriginPattern::New(
+        "http", "b.com", 0,
+        network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+        network::mojom::CorsPortMatchMode::kAllowAnyPort,
+        network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
+    CorsOriginPatternSetter::Set(
+        root_rfh->GetBrowserContext(), root_rfh->GetLastCommittedOrigin(),
+        std::move(patterns), {}, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  // Navigate main host to re-calculate StorageKey calculation.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  root_rfh = web_contents()->GetPrimaryMainFrame();
+
+  // root_rfh's storage key should not have changed.
+  EXPECT_EQ(root_storage_key, root_rfh->storage_key());
+
+  if (ThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),
+                testing::UnorderedElementsAre(main_url));
+    // With storage partitioning enabled, the child frame should now have a
+    // top level StorageKey because it is the direct child of the root document
+    // and the root has host permissions to it.
+    EXPECT_THAT(
+        GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+            url::Origin::Create(child_url),
+            net::SchemefulSite(url::Origin::Create(child_url)), nullptr,
+            blink::mojom::AncestorChainBit::kSameSite)),
+        testing::UnorderedElementsAre(child_url));
+    // Similarly the grandchild document should now use the child document's
+    // origin as the top level site.
+    EXPECT_THAT(
+        GetClientURLsForStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+            url::Origin::Create(grandchild_url),
+            net::SchemefulSite(url::Origin::Create(child_url)), nullptr,
+            blink::mojom::AncestorChainBit::kCrossSite)),
+        testing::UnorderedElementsAre(grandchild_url));
+  } else {
+    // With storage partitioning disabled, main frame and grand child should
+    // use the same storage key, and generally storage keys are only dependent
+    // on the origin.
+    EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),
+                testing::UnorderedElementsAre(main_url, grandchild_url));
+    EXPECT_THAT(GetClientURLsForStorageKey(
+                    blink::StorageKey(url::Origin::Create(child_url))),
+                testing::UnorderedElementsAre(child_url));
+  }
 }
 
 }  // namespace content
