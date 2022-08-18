@@ -3358,7 +3358,7 @@ Press an assigned switch or key to remove assignment.
     Hide sensitive content
   </message>
   <message name="IDS_SETTINGS_PEOPLE_ENABLE_SCREENLOCK" desc="The text on the checkbox to enable screenlocker for current user.">
-    Show lock screen when waking from sleep
+    Lock in sleep mode or when cover is closed
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SCREEN_LOCK_ENABLE_TITLE" desc="The title on the toggle to enable screen lock for current user.">
     Screen lock
