@@ -180,6 +180,12 @@ class ExtensionActionViewController
   // The extension popup's host if the popup is visible; null otherwise.
   raw_ptr<extensions::ExtensionViewHost> popup_host_;
 
+  // Whether the toolbar action has opened an active popup. This is unique from
+  // `popup_host_` since `popup_host_` may be non-null even if the popup hasn't
+  // opened yet if we're waiting on other UI to be ready (e.g. the action to
+  // slide out in the toolbar).
+  bool has_opened_popup_ = false;
+
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 

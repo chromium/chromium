@@ -592,6 +592,34 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
             incognito_view->button_controller()->notify_action());
 }
 
+// Tests unloading an extension while the action is being slid out prior to the
+// popup being shown. Regression test for https://crbug.com/1345477.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
+                       UnloadingExtensionWhileAboutToShowPopup) {
+  // Load an extension.
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  // It should be unpinned.
+  ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
+  ToolbarActionViewController* const view_controller =
+      container->GetActionForId(extension->id());
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(view_controller));
+
+  // Execute the action, which results in the extension sliding out while we
+  // get ready to show the popup.
+  view_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kMenuEntry);
+
+  // Unload the extension (before the popup is ready). This results in the
+  // toolbar action being removed. The pending popup will never be shown. This
+  // shouldn't crash.
+  RemoveExtension(ExtensionRemovalMethod::kDisable, extension->id());
+
+  EXPECT_EQ(nullptr, container->GetActionForId(extension->id()));
+}
+
 namespace {
 
 class IncognitoExtensionsToolbarContainerUITest

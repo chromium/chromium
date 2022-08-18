@@ -228,7 +228,10 @@ bool ExtensionActionViewController::IsRequestingSiteAccess(
 
 void ExtensionActionViewController::HidePopup() {
   if (IsShowingPopup()) {
-    popup_host_->Close();
+    // Only call Close() on the popup if it's been shown; otherwise, the popup
+    // will be cleaned up in ShowPopup().
+    if (has_opened_popup_)
+      popup_host_->Close();
     // We need to do these actions synchronously (instead of closing and then
     // performing the rest of the cleanup in OnExtensionHostDestroyed()) because
     // the extension host may close asynchronously, and we need to keep the view
@@ -461,6 +464,12 @@ void ExtensionActionViewController::ShowPopup(
       std::move(callback).Run(nullptr);
     return;
   }
+  // NOTE: Today, ShowPopup() always synchronously creates the platform-specific
+  // popup class, which is what we care most about (since `has_opened_popup_`
+  // is used to determine whether we need to manually close the
+  // ExtensionViewHost). This doesn't necessarily mean that the popup has
+  // completed rendering on the screen.
+  has_opened_popup_ = true;
   platform_delegate_->ShowPopup(std::move(popup_host), show_action,
                                 std::move(callback));
   view_delegate_->OnPopupShown(grant_tab_permissions);
@@ -470,6 +479,7 @@ void ExtensionActionViewController::OnPopupClosed() {
   DCHECK(popup_host_observation_.IsObservingSource(popup_host_.get()));
   popup_host_observation_.Reset();
   popup_host_ = nullptr;
+  has_opened_popup_ = false;
   extensions_container_->SetPopupOwner(nullptr);
   if (extensions_container_->GetPoppedOutAction() == this)
     extensions_container_->UndoPopOut();
