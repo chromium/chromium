@@ -695,7 +695,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1643072738649235303">Signature X9.62 ECDSA avec SHA-1</translation>
 <translation id="1643921258693943800">Pour utiliser le partage à proximité, activez le Bluetooth et le Wi-Fi</translation>
 <translation id="1644574205037202324">Historique</translation>
-<translation id="1644852018355792105">Entrez le mot de passe Bluetooth de l'appareil <ph name="DEVICE" /></translation>
+<translation id="1644852018355792105">Entrez la clé d'accès Bluetooth de l'appareil <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Source inconnue</translation>
 <translation id="1645516838734033527">Pour la sécurité de votre <ph name="DEVICE_TYPE" />, Smart Lock nécessite un verrouillage de l'écran de votre téléphone.</translation>
 <translation id="1646982517418478057">Veuillez entrer un mot de passe pour crypter ce certificat</translation>
@@ -8220,7 +8220,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
 <translation id="9042893549633094279">Sécurité et confidentialité</translation>
-<translation id="904451693890288097">Veuillez entrer le code d'authentification pour « <ph name="DEVICE_NAME" /> » :</translation>
+<translation id="904451693890288097">Veuillez entrer la clé d'accès pour « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="9044646465488564462">Échec de connexion au réseau : <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée dans le nouveau panneau latéral. Essayez-la ici.</translation>
 <translation id="9045430190527754450">Envoie l'adresse Web de la page que vous essayez d'ouvrir à Google</translation>
@@ -8264,7 +8264,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9087949559523851360">Ajouter un profil d'utilisateur restreint</translation>
 <translation id="9088234649737575428">Le plugiciel <ph name="PLUGIN_NAME" /> est bloqué par une politique de l'entreprise</translation>
 <translation id="9088446193279799727">Impossible de configurer Linux. Connectez-vous à Internet et réessayez.</translation>
-<translation id="9088917181875854783">Veuillez confirmer que le code d'authentification suivant est affiché sur « <ph name="DEVICE_NAME" /> » :</translation>
+<translation id="9088917181875854783">Veuillez confirmer que la clé d'accès suivante est affichée sur « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
 <translation id="9090044809052745245">Comment votre appareil paraît pour les autres</translation>
 <translation id="9094033019050270033">Mettre à jour le mot de passe</translation>

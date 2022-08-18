@@ -1487,7 +1487,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497751676088107779">Secuencia de comandos del usuario</translation>
 <translation id="2497965601277442929">No permitir que los usuarios habiliten el modo solo HTTPS</translation>
-<translation id="2498238926436517902">Siempre ocultar automáticamente los archivos</translation>
+<translation id="2498238926436517902">Siempre ocultar automáticamente la barra</translation>
 <translation id="250022556568924228">Si estableces la política, <ph name="PRODUCT_OS_NAME" /> descargará las Condiciones del Servicio y las presentará a los usuarios cada vez que se inicie la sesión local del dispositivo. Los usuarios solo podrán acceder a la sesión cuando acepten las Condiciones del Servicio.
 
       Si no estableces la política, no se mostrarán las Condiciones del Servicio.
