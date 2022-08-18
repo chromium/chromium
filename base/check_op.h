@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/template_util.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
@@ -139,7 +140,8 @@ class CheckOpResult {
   char* message_ = nullptr;
 };
 
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
+    !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // Discard log strings to reduce code bloat.
 #define CHECK_OP(name, op, val1, val2) CHECK((val1)op(val2))
