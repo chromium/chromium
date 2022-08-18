@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_FLOAT_CONTROLLER_LACROS_H_
-#define CHROME_BROWSER_LACROS_FLOAT_CONTROLLER_LACROS_H_
+#ifndef CHROME_BROWSER_UI_LACROS_FLOAT_CONTROLLER_LACROS_H_
+#define CHROME_BROWSER_UI_LACROS_FLOAT_CONTROLLER_LACROS_H_
 
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 
@@ -19,4 +19,4 @@ class FloatControllerLacros : public chromeos::FloatControllerBase {
   void ToggleFloat(aura::Window* window) override;
 };
 
-#endif  // CHROME_BROWSER_LACROS_FLOAT_CONTROLLER_LACROS_H_
+#endif  // CHROME_BROWSER_UI_LACROS_FLOAT_CONTROLLER_LACROS_H_

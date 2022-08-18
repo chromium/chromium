@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 
-#include "chrome/browser/lacros/float_controller_lacros.h"
-#include "chrome/browser/lacros/snap_controller_lacros.h"
+#include "chrome/browser/ui/lacros/float_controller_lacros.h"
 #include "chrome/browser/ui/lacros/immersive_context_lacros.h"
+#include "chrome/browser/ui/lacros/snap_controller_lacros.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
 
