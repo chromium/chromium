@@ -1938,6 +1938,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.ValidIceChars" units="boolean"
+    expires_after="2023-08-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>phancke@microsoft.com</owner>
+  <summary>
+    Measures whether the ice-ufrag/ice-pwd consists of characters allowed by the
+    specification. Currently some characters outside the range are allowed for
+    backward compability with deployed software. Recorded during the first DTLS
+    connection establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.ReceivedAudioTrackDuration" units="ms"
     expires_after="2023-01-29">
   <owner>perkj@chromium.org</owner>
