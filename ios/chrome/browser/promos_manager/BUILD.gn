@@ -38,15 +38,11 @@ source_set("promos_manager_scene_agent") {
 
 source_set("constants") {
   sources = [
+    "constants.cc",
     "constants.h",
-    "constants.mm",
   ]
-  frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    ":promos_manager",
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("features") {

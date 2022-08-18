@@ -7,21 +7,11 @@
 
 #include <string>
 
-#import <Foundation/Foundation.h>
-
-#import "ios/chrome/browser/promos_manager/impression_limit.h"
-
 namespace promos_manager {
 
 enum class Promo {
   Test = 0,  // Test promo used for testing purposes (e.g. unit tests)
 };
-
-// Impression limits that count against all promos.
-NSArray<ImpressionLimit*>* GlobalImpressionLimits();
-
-// Impression limits that count against any given promo.
-NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits();
 
 // Returns string representation of promos_manager::Promo `promo`.
 std::string NameForPromo(Promo promo);
