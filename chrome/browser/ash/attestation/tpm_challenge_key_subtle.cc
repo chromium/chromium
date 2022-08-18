@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"

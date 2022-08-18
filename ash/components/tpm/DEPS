@@ -1,14 +1,14 @@
 noparent = True
 
 include_rules = [
-  "+ash/components/cryptohome",
   "+base",
-  "+crypto",
-  "+chromeos/login/login_state",
+  "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
+  "+chromeos/login/login_state",
   "+components/account_id",
   "+components/policy/proto",
+  "+crypto",
   "+google_apis/gaia",
   "+testing",
   "+third_party/cros_system_api",

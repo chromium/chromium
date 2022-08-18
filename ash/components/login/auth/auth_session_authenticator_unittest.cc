@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/mock_auth_status_consumer.h"
 #include "ash/components/login/auth/mock_safe_mode_delegate.h"
 #include "ash/components/login/auth/public/auth_failure.h"
@@ -22,6 +21,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"

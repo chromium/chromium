@@ -18,8 +18,8 @@ component("tpm") {
   defines = [ "IS_ASH_COMPONENTS_TPM_IMPL" ]
   deps = [
     ":buildflags",
-    "//ash/components/cryptohome",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
@@ -45,12 +45,12 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":tpm",
-    "//ash/components/cryptohome",
     "//base/test:test_support",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",

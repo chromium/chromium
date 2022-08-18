@@ -6,9 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/public/auth_factors_data.h"
 #include "ash/components/login/auth/public/auth_session_status.h"
 #include "ash/components/login/auth/public/user_context.h"
@@ -17,6 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"

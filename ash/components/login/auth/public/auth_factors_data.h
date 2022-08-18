@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 
 namespace ash {
 

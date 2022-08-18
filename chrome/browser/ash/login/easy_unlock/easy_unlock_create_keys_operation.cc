@@ -9,10 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_util.h"
-#include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/public/key.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
@@ -21,6 +17,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "crypto/encryptor.h"
@@ -29,10 +29,11 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using cryptohome::KeyLabel;
-
 namespace ash {
+
 namespace {
+
+using ::cryptohome::KeyLabel;
 
 const int kUserKeyByteSize = 16;
 const int kSessionKeyByteSize = 16;

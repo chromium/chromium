@@ -4,18 +4,18 @@
 
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "ash/components/login/auth/public/key.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/check_op.h"
-
-using cryptohome::KeyDefinition;
-using cryptohome::KeyLabel;
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 
 namespace ash {
 namespace cryptohome_parameter_utils {
+
+using ::cryptohome::KeyDefinition;
+using ::cryptohome::KeyLabel;
 
 KeyDefinition CreateKeyDefFromUserContext(const UserContext& user_context) {
   if (!user_context.GetChallengeResponseKeys().empty()) {

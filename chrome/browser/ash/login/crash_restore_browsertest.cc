@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -30,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"

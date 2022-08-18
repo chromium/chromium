@@ -10,8 +10,8 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 component("attestation") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ATTESTATION_IMPL" ]
   deps = [
-    "//ash/components/cryptohome",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/dbus/common",
@@ -61,8 +61,8 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":test_support",
-    "//ash/components/cryptohome",
     "//base/test:test_support",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",

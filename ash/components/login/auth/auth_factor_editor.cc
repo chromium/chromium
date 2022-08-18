@@ -4,22 +4,22 @@
 
 #include "ash/components/login/auth/auth_factor_editor.h"
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_util.h"
-#include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
 
-using cryptohome::KeyLabel;
-
 namespace ash {
+
+using ::cryptohome::KeyLabel;
 
 AuthFactorEditor::AuthFactorEditor() = default;
 AuthFactorEditor::~AuthFactorEditor() = default;

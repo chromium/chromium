@@ -4,7 +4,6 @@
 
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -16,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -24,9 +24,9 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::TestFuture;
-
 namespace {
+
+using ::base::test::TestFuture;
 
 // Helper class for tests to wait until the store's init procedure is completed.
 class DeviceOAuth2TokenStoreInitWaiter : public TestFuture<bool, bool> {

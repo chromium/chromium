@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/components/arc",
-  "+ash/components/cryptohome",
   "+ash/constants",
   "+ash/public/cpp",
   "+chromeos/ash/components/memory",

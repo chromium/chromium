@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"

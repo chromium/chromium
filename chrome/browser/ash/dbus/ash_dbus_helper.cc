@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_camera_client.h"

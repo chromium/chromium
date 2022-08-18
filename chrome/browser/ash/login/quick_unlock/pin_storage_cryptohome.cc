@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/cryptohome/cryptohome_util.h"
-#include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_pref_names.h"
@@ -20,13 +15,19 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
-using cryptohome::KeyLabel;
-
 namespace ash::quick_unlock {
+
 namespace {
+
+using ::cryptohome::KeyLabel;
 
 template <typename ReplyType>
 void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,

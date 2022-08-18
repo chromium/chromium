@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
-#define ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
 
 #include <stdint.h>
 
@@ -19,7 +19,7 @@
 namespace ash {
 
 // This class is used to get the system salt from cryptohome and cache it.
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) SystemSaltGetter {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) SystemSaltGetter {
  public:
   using GetSystemSaltCallback =
       base::OnceCallback<void(const std::string& system_salt)>;
@@ -83,4 +83,4 @@ namespace chromeos {
 using ::ash::SystemSaltGetter;
 }
 
-#endif  // ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_

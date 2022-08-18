@@ -112,7 +112,7 @@ static_library("arc") {
     ":arc_base",
     ":arc_metrics_constants",
     ":prefs",
-    "//ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome",
   ]
 
   deps = [
@@ -437,7 +437,6 @@ source_set("unit_tests") {
     "//ash/components/arc/enterprise",
     "//ash/components/arc/media_session",
     "//ash/components/arc/video_accelerator:common",
-    "//ash/components/cryptohome",
     "//ash/components/disks:test_support",
     "//ash/components/policy",
     "//ash/constants",
@@ -447,6 +446,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/patchpanel",

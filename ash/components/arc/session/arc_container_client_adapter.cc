@@ -9,11 +9,11 @@
 
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/login_manager/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"

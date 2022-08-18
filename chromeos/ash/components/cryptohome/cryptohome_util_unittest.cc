@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 
 #include <string>
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/challenge_response_key.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +16,7 @@
 
 namespace cryptohome {
 
-using ::chromeos::ChallengeResponseKey;
+using ::ash::ChallengeResponseKey;
 
 constexpr char kKeyLabelStr[] = "key_label";
 

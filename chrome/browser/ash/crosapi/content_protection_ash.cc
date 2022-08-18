@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/display/output_protection_delegate.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {

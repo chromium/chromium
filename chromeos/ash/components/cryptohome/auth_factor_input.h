@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
-#define ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
+#define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
 
 #include <string>
 
-#include "ash/components/cryptohome/auth_factor.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
 
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
  public:
   struct Password {
     std::string hashed_password;
@@ -74,4 +74,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
 }  // namespace cryptohome
 
-#endif  // ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_

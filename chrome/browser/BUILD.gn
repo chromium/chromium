@@ -7410,7 +7410,7 @@ static_library("browser") {
       "//ppapi/proxy:ipc",
     ]
     if (is_chromeos_ash) {
-      deps += [ "//ash/components/cryptohome" ]
+      deps += [ "//chromeos/ash/components/cryptohome" ]
     }
   }
 

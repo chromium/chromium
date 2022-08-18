@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 
-#include "ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using cryptohome::KeyLabel;
 
 namespace user_data_auth {
 
 namespace {
+
+using ::cryptohome::KeyLabel;
 
 constexpr char kKeyLabelStr[] = "key_label";
 

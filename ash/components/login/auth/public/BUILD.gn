@@ -13,9 +13,9 @@ component("authpublic") {
     "//components/password_manager/core/browser:password_hash_data",
   ]
   deps = [
-    "//ash/components/cryptohome",
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//components/account_id",
     "//components/prefs",
@@ -49,7 +49,8 @@ component("authpublic") {
   ]
 }
 
-# Separate target to break cyclic dependency with //ash/components/cryptohome
+# Separate target to break cyclic dependency with
+# //chromeos/ash/components/cryptohome.
 component("challenge_response_key") {
   defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
   deps = [ "//base" ]

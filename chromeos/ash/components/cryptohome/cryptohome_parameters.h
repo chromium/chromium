@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_
-#define ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_
+#define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_
 
 #include <stdint.h>
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/cryptohome/common_types.h"
 #include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 
 class AccountId;
@@ -28,7 +28,7 @@ enum AuthKeyPrivileges {
 };
 
 // Identification of the user calling cryptohome method.
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) Identification {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) Identification {
  public:
   Identification();
 
@@ -53,23 +53,23 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) Identification {
 };
 
 // Creates AccountIdentifier from AccountId.
-COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AccountIdentifier CreateAccountIdentifierFromAccountId(const AccountId& id);
 
 // Creates AccountIdentifier from Identification.
-COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AccountIdentifier CreateAccountIdentifierFromIdentification(
     const Identification& id);
 
 // Look up known user for the given AccountIdentifier and return its AccountId.
-COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AccountId GetAccountIdFromAccountIdentifier(
     const AccountIdentifier& account_identifier);
 
 // Definition of the key (e.g. password) for the cryptohome.
 // It contains authorization data along with extra parameters like permissions
 // associated with this key.
-struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
   enum Type {
     // Password-based key. The password's text or its hashed/transformed
     // representation is stored in |secret|. The |challenge_response_keys| field
@@ -125,8 +125,7 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
                                          int privileges);
   // Creates an instance with the TYPE_CHALLENGE_RESPONSE type.
   static KeyDefinition CreateForChallengeResponse(
-      const std::vector<chromeos::ChallengeResponseKey>&
-          challenge_response_keys,
+      const std::vector<ash::ChallengeResponseKey>& challenge_response_keys,
       const KeyLabel& label,
       int privileges);
 
@@ -143,13 +142,13 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) KeyDefinition {
   Policy policy;
   int revision = 0;
   std::string secret;
-  std::vector<chromeos::ChallengeResponseKey> challenge_response_keys;
+  std::vector<ash::ChallengeResponseKey> challenge_response_keys;
 
   std::vector<ProviderData> provider_data;
 };
 
 // Authorization attempt data for user.
-struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) Authorization {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) Authorization {
   Authorization(const std::string& key, const KeyLabel& label);
   explicit Authorization(const KeyDefinition& key);
   ~Authorization();
@@ -162,4 +161,4 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) Authorization {
 
 }  // namespace cryptohome
 
-#endif  // ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_

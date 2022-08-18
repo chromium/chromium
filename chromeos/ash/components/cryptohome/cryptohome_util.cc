@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/cryptohome/userdataauth_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
@@ -24,7 +24,7 @@ namespace cryptohome {
 
 namespace {
 
-using ::chromeos::ChallengeResponseKey;
+using ::ash::ChallengeResponseKey;
 using ::google::protobuf::RepeatedPtrField;
 
 ChallengeSignatureAlgorithm ChallengeSignatureAlgorithmToProtoEnum(

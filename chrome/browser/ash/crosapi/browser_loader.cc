@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 

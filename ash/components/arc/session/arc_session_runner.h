@@ -13,12 +13,12 @@
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "ash/components/arc/session/arc_upgrade_params.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {

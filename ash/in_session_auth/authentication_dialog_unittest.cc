@@ -6,8 +6,6 @@
 
 #include <cctype>
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/mock_auth_performer.h"
 #include "ash/components/login/auth/public/auth_factors_data.h"
@@ -18,6 +16,8 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,14 +25,17 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
-using ::cryptohome::KeyLabel;
-
 namespace ash {
+
 namespace {
+
+using ::cryptohome::KeyLabel;
+using ::testing::_;
+
 const char kTestAccount[] = "user@test.com";
 const char kExpectedPassword[] = "qwerty";
 base::UnguessableToken kToken = base::UnguessableToken::Create();
-using testing::_;
+
 }  // namespace
 
 class AuthenticationDialogTest : public AshTestBase {

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "ash/components/cryptohome/common_types.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -20,7 +20,7 @@ namespace cryptohome {
 
 namespace {
 
-using ::chromeos::ChallengeResponseKey;
+using ::ash::ChallengeResponseKey;
 
 const std::string GetCryptohomeId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {

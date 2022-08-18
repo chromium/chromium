@@ -1,7 +1,7 @@
 noparent = True
 
 include_rules = [
-  "+ash/components/login/auth",
+  "+ash/components/login/auth/public",
   "+base",
   "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
@@ -24,7 +24,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc|mock.*\.*": [
+  ".*test\.cc": [
     "+testing",
   ],
 }

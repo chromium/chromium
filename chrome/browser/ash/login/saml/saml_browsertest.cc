@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/public/key.h"
 #include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -71,6 +70,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"

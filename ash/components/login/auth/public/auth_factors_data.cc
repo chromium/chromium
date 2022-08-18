@@ -6,9 +6,9 @@
 
 #include <algorithm>
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "base/check_op.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 
 namespace ash {
 

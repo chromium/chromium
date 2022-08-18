@@ -22,7 +22,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

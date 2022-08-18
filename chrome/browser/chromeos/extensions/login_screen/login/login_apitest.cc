@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"

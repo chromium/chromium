@@ -13,8 +13,8 @@ component("hibernate_manager") {
   defines = [ "IS_ASH_LOGIN_HIBERNATE_IMPL" ]
   public_deps = [ "//ash/components/login/auth/public:authpublic" ]
   deps = [
-    "//ash/components/cryptohome:cryptohome",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/hibernate:buildflags",
   ]
   sources = [

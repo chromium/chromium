@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 
 #include <utility>
 
-#include "ash/components/cryptohome/common_types.h"
 #include "base/check_op.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 
 namespace cryptohome {
 

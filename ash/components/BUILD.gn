@@ -23,7 +23,6 @@ test("ash_components_unittests") {
     "//ash/components/arc:unit_tests",
     "//ash/components/arc/mojom:unit_tests",
     "//ash/components/arc/session:unit_tests",
-    "//ash/components/cryptohome:unit_tests",
     "//ash/components/device_activity:unit_tests",
     "//ash/components/disks:unit_tests",
     "//ash/components/drivefs:unit_tests",

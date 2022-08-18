@@ -4,18 +4,18 @@
 
 #include "ash/components/login/auth/public/auth_factors_data.h"
 
-#include "ash/components/cryptohome/common_types.h"
-#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using cryptohome::KeyDefinition;
-using cryptohome::KeyLabel;
 
 namespace ash {
 
 namespace {
+
+using ::cryptohome::KeyDefinition;
+using ::cryptohome::KeyLabel;
 
 KeyDefinition MakeGaiaKeyDef() {
   return KeyDefinition::CreateForPassword(

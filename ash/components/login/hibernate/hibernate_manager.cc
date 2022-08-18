@@ -4,9 +4,9 @@
 
 #include "ash/components/login/hibernate/hibernate_manager.h"
 
-#include "ash/components/cryptohome/userdataauth_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 
 #if BUILDFLAG(ENABLE_HIBERNATE)
 #include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"  // nogncheck

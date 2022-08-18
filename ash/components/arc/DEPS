@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/cryptohome",
   "+ash/components/policy",
   "+ash/constants",
   "+ash/public/cpp",

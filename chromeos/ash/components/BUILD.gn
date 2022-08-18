@@ -14,6 +14,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/attestation:unit_tests",
     "//chromeos/ash/components/audio:unit_tests",
     "//chromeos/ash/components/browser_context_helper:unit_tests",
+    "//chromeos/ash/components/cryptohome:unit_tests",
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/feature_usage:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",

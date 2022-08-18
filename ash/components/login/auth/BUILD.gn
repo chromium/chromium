@@ -15,11 +15,11 @@ component("auth") {
     "//ash/components/login/auth/public:challenge_response_key",
   ]
   deps = [
-    "//ash/components/cryptohome",
     "//ash/components/login/hibernate:hibernate_manager",
     "//ash/constants",
     "//base",
     "//base:i18n",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/cryptohome",
@@ -120,10 +120,10 @@ source_set("unit_tests") {
   deps = [
     ":auth",
     ":test_support",
-    "//ash/components/cryptohome",
     "//ash/components/login/auth",
     "//base",
     "//base:i18n",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/cryptohome",

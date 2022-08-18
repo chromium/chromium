@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
-#define ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
+#define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
 
 #include <string>
 
-#include "ash/components/cryptohome/common_types.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
@@ -31,7 +31,7 @@ enum class AuthFactorType {
 // Reference to a particular AuthFactor.
 // While `label` uniquely identifies factor across all factor types,
 // it is convenient to pass AuthFactorType along.
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorRef {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorRef {
  public:
   AuthFactorRef(AuthFactorType type, KeyLabel label);
 
@@ -64,7 +64,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorRef {
 //     be both read and written by Chrome.
 
 // Common metadata that should be defined for each auth factor.
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorCommonMetadata {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    AuthFactorCommonMetadata {
  public:
   AuthFactorCommonMetadata();
   ~AuthFactorCommonMetadata();
@@ -78,20 +79,20 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactorCommonMetadata {
 
 // Per-factor statuses (read-only properties set by cryptohomed):
 
-struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) PinStatus {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PinStatus {
   bool auth_locked;
 };
 
 // Factor-specific metadata:
 
-struct COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) SmartCardMetadata {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) SmartCardMetadata {
   std::string public_key_spki_der;
 };
 
 // AuthFactor definition.
 // If it is obtainted from `cryptohome` it will contain factor-specific status,
 // otherwise it would only contain identity and metadata.
-class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
  public:
   AuthFactor(AuthFactorRef ref, AuthFactorCommonMetadata metadata);
   AuthFactor(AuthFactorRef ref,
@@ -124,4 +125,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
 
 }  // namespace cryptohome
 
-#endif  // ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_

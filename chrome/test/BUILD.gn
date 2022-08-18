@@ -571,7 +571,6 @@ static_library("test_support") {
       "//ui/chromeos/resources:resources_grit",
     ]
     deps += [
-      "//ash/components/cryptohome",
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps/test_support",
@@ -579,6 +578,7 @@ static_library("test_support") {
       "//chrome/browser/chromeos:print_job_info_proto",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/attestation:test_support",
+      "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/dbus/power",
@@ -4121,7 +4121,6 @@ if (!is_android) {
         "//ash/components/arc:prefs",
         "//ash/components/arc/enterprise",
         "//ash/components/arc/session:arc_base_enums",
-        "//ash/components/cryptohome",
         "//ash/components/disks",
         "//ash/components/disks:test_support",
         "//ash/components/drivefs",
@@ -4192,6 +4191,7 @@ if (!is_android) {
         "//chromeos/ash/components/attestation",
         "//chromeos/ash/components/attestation:test_support",
         "//chromeos/ash/components/audio",
+        "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/dbus/attestation",
         "//chromeos/ash/components/dbus/attestation:attestation_proto",
@@ -7324,7 +7324,6 @@ test("unit_tests") {
       "//ash/assistant/util",
       "//ash/components/arc",
       "//ash/components/arc:arc_test_support",
-      "//ash/components/cryptohome",
       "//ash/components/disks",
       "//ash/components/disks:test_support",
       "//ash/components/login/auth:test_support",
@@ -7398,6 +7397,7 @@ test("unit_tests") {
       "//chrome/services/sharing/public/cpp:unit_tests",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
+      "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/attestation",
       "//chromeos/ash/components/dbus/cicerone",
@@ -9070,7 +9070,6 @@ if (!is_android) {
       deps += [
         "//ash",
         "//ash:test_support",
-        "//ash/components/cryptohome",
         "//ash/constants",
         "//ash/public/cpp",
         "//ash/services/device_sync",
@@ -9079,6 +9078,7 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chromeos/ash/components/browser_context_helper",
+        "//chromeos/ash/components/cryptohome",
       ]
     } else {
       sources += [

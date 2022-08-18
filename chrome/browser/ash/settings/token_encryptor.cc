@@ -9,11 +9,11 @@
 
 #include <vector>
 
-#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "crypto/encryptor.h"
 #include "crypto/nss_util.h"
 #include "crypto/sha2.h"
