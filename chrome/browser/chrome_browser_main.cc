@@ -668,45 +668,41 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
   }
   if (!command_line->HasSwitch(
           embedder_support::kOriginTrialDisabledFeatures)) {
-    const base::Value* override_disabled_feature_list = local_state->GetList(
-        embedder_support::prefs::kOriginTrialDisabledFeatures);
-    if (override_disabled_feature_list) {
-      std::vector<base::StringPiece> disabled_features;
-      for (const auto& item :
-           override_disabled_feature_list->GetListDeprecated()) {
-        if (item.is_string())
-          disabled_features.push_back(item.GetString());
-      }
-      if (!disabled_features.empty()) {
-        const std::string override_disabled_features =
-            base::JoinString(disabled_features, "|");
-        command_line->AppendSwitchASCII(
-            embedder_support::kOriginTrialDisabledFeatures,
-            override_disabled_features);
-        appended_length += override_disabled_features.length();
-      }
+    const base::Value::List& override_disabled_feature_list =
+        local_state->GetValueList(
+            embedder_support::prefs::kOriginTrialDisabledFeatures);
+    std::vector<base::StringPiece> disabled_features;
+    for (const auto& item : override_disabled_feature_list) {
+      if (item.is_string())
+        disabled_features.push_back(item.GetString());
+    }
+    if (!disabled_features.empty()) {
+      const std::string override_disabled_features =
+          base::JoinString(disabled_features, "|");
+      command_line->AppendSwitchASCII(
+          embedder_support::kOriginTrialDisabledFeatures,
+          override_disabled_features);
+      appended_length += override_disabled_features.length();
     }
   }
   if (!command_line->HasSwitch(embedder_support::kOriginTrialDisabledTokens)) {
-    const base::Value* disabled_token_list = local_state->GetList(
+    const base::Value::List& disabled_token_list = local_state->GetValueList(
         embedder_support::prefs::kOriginTrialDisabledTokens);
-    if (disabled_token_list) {
-      std::vector<base::StringPiece> disabled_tokens;
-      for (const auto& item : disabled_token_list->GetListDeprecated()) {
-        if (item.is_string())
-          disabled_tokens.push_back(item.GetString());
-      }
-      if (!disabled_tokens.empty()) {
-        const std::string disabled_token_switch =
-            base::JoinString(disabled_tokens, "|");
-        // Do not append the disabled token list if will exceed a reasonable
-        // length. See above.
-        if (appended_length + disabled_token_switch.length() <=
-            kMaxAppendLength) {
-          command_line->AppendSwitchASCII(
-              embedder_support::kOriginTrialDisabledTokens,
-              disabled_token_switch);
-        }
+    std::vector<base::StringPiece> disabled_tokens;
+    for (const auto& item : disabled_token_list) {
+      if (item.is_string())
+        disabled_tokens.push_back(item.GetString());
+    }
+    if (!disabled_tokens.empty()) {
+      const std::string disabled_token_switch =
+          base::JoinString(disabled_tokens, "|");
+      // Do not append the disabled token list if will exceed a reasonable
+      // length. See above.
+      if (appended_length + disabled_token_switch.length() <=
+          kMaxAppendLength) {
+        command_line->AppendSwitchASCII(
+            embedder_support::kOriginTrialDisabledTokens,
+            disabled_token_switch);
       }
     }
   }
