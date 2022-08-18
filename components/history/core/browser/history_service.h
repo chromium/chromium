@@ -530,8 +530,10 @@ class HistoryService : public KeyedService {
 
   // Clusters ------------------------------------------------------------------
 
-  // Add a `AnnotatedVisitRow`.
-  void AddContextAnnotationsForVisit(
+  // Sets or updates all on-close fields of the `VisitContextAnnotations`
+  // for the visit with the given `visit_id`. The on-visit fields remain
+  // unchanged.
+  void SetOnCloseContextAnnotationsForVisit(
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 

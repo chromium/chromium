@@ -279,22 +279,25 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          true,
                          absl::nullopt,
                          absl::nullopt,
+                         absl::nullopt,
                          absl::nullopt) {}
 
-HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
-                                       base::Time time,
-                                       ContextID context_id,
-                                       int nav_entry_id,
-                                       const GURL& referrer,
-                                       const RedirectList& redirects,
-                                       ui::PageTransition transition,
-                                       bool hidden,
-                                       VisitSource source,
-                                       bool did_replace_entry,
-                                       bool consider_for_ntp_most_visited,
-                                       absl::optional<std::u16string> title,
-                                       absl::optional<Opener> opener,
-                                       absl::optional<int64_t> bookmark_id)
+HistoryAddPageArgs::HistoryAddPageArgs(
+    const GURL& url,
+    base::Time time,
+    ContextID context_id,
+    int nav_entry_id,
+    const GURL& referrer,
+    const RedirectList& redirects,
+    ui::PageTransition transition,
+    bool hidden,
+    VisitSource source,
+    bool did_replace_entry,
+    bool consider_for_ntp_most_visited,
+    absl::optional<std::u16string> title,
+    absl::optional<Opener> opener,
+    absl::optional<int64_t> bookmark_id,
+    absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),
       context_id(context_id),
@@ -308,7 +311,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
       title(title),
       opener(opener),
-      bookmark_id(bookmark_id) {}
+      bookmark_id(bookmark_id),
+      context_annotations(std::move(context_annotations)) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;
@@ -407,15 +411,7 @@ VisitContextAnnotations::~VisitContextAnnotations() = default;
 
 bool VisitContextAnnotations::operator==(
     const VisitContextAnnotations& other) const {
-  return immediate_fields.browser_type == other.immediate_fields.browser_type &&
-         immediate_fields.window_id == other.immediate_fields.window_id &&
-         immediate_fields.tab_id == other.immediate_fields.tab_id &&
-         immediate_fields.task_id == other.immediate_fields.task_id &&
-         immediate_fields.root_task_id == other.immediate_fields.root_task_id &&
-         immediate_fields.parent_task_id ==
-             other.immediate_fields.parent_task_id &&
-         immediate_fields.response_code ==
-             other.immediate_fields.response_code &&
+  return on_visit == other.on_visit &&
          omnibox_url_copied == other.omnibox_url_copied &&
          is_existing_part_of_tab_group == other.is_existing_part_of_tab_group &&
          is_placed_in_tab_group == other.is_placed_in_tab_group &&
@@ -429,6 +425,20 @@ bool VisitContextAnnotations::operator==(
 
 bool VisitContextAnnotations::operator!=(
     const VisitContextAnnotations& other) const {
+  return !(*this == other);
+}
+
+bool VisitContextAnnotations::OnVisitFields::operator==(
+    const VisitContextAnnotations::OnVisitFields& other) const {
+  return browser_type == other.browser_type && window_id == other.window_id &&
+         tab_id == other.tab_id && task_id == other.task_id &&
+         root_task_id == other.root_task_id &&
+         parent_task_id == other.parent_task_id &&
+         response_code == other.response_code;
+}
+
+bool VisitContextAnnotations::OnVisitFields::operator!=(
+    const VisitContextAnnotations::OnVisitFields& other) const {
   return !(*this == other);
 }
 

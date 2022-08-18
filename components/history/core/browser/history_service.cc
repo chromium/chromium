@@ -266,14 +266,14 @@ void HistoryService::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
                               history_backend_, urls));
 }
 
-void HistoryService::AddContextAnnotationsForVisit(
+void HistoryService::SetOnCloseContextAnnotationsForVisit(
     VisitID visit_id,
     const VisitContextAnnotations& visit_context_annotations) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScheduleTask(
       PRIORITY_NORMAL,
-      base::BindOnce(&HistoryBackend::AddContextAnnotationsForVisit,
+      base::BindOnce(&HistoryBackend::SetOnCloseContextAnnotationsForVisit,
                      history_backend_, visit_id, visit_context_annotations));
 }
 

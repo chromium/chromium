@@ -140,7 +140,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
     // And if the persist-only switch is enabled, we also want to persist them.
     if (IsJourneysEnabled() ||
         GetConfig().persist_context_annotations_in_history_db) {
-      history_service_->AddContextAnnotationsForVisit(
+      history_service_->SetOnCloseContextAnnotationsForVisit(
           visit_context_annotations.visit_row.visit_id,
           visit_context_annotations.context_annotations);
     }

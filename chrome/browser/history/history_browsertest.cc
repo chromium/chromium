@@ -6,11 +6,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -23,12 +21,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -43,14 +39,13 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
 
 class HistoryBrowserTest : public InProcessBrowserTest {
  protected:
-  HistoryBrowserTest() : test_server_() {
+  HistoryBrowserTest() {
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
@@ -83,6 +78,10 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(0U, urls.size());
   }
 
+  GURL GetTestFileURL(const char* filename) {
+    return test_server_.GetURL(std::string("/History/") + filename);
+  }
+
   void LoadAndWaitForURL(const GURL& url) {
     std::u16string expected_title(u"OK");
     content::TitleWatcher title_watcher(
@@ -93,8 +92,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
   }
 
   void LoadAndWaitForFile(const char* filename) {
-    GURL url = test_server_.GetURL(std::string("/History/") + filename);
-    LoadAndWaitForURL(url);
+    LoadAndWaitForURL(GetTestFileURL(filename));
   }
 
   bool HistoryContainsURL(const GURL& url) { return QueryURL(url).success; }
@@ -120,6 +118,32 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
 
     return query_url_result;
+  }
+
+  std::vector<history::AnnotatedVisit> GetAllAnnotatedVisits() {
+    std::vector<history::AnnotatedVisit> annotated_visits;
+
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+
+    base::CancelableTaskTracker tracker;
+
+    history::QueryOptions options;
+    options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+
+    base::RunLoop run_loop;
+    history_service->GetAnnotatedVisits(
+        options,
+        base::BindLambdaForTesting(
+            [&](std::vector<history::AnnotatedVisit> visits) {
+              annotated_visits = std::move(visits);
+              run_loop.Quit();
+            }),
+        &tracker);
+    run_loop.Run();
+
+    return annotated_visits;
   }
 
  private:
@@ -810,6 +834,48 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   EXPECT_EQ(url, urls[0]);
   history::QueryURLResult url_result = QueryURL(url);
   EXPECT_EQ(1u, url_result.visits.size());
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, VisitAnnotations) {
+  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
+      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+
+  // Navigate to some arbitrary page.
+  GURL url = GetTestFileURL("landing.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // A visit should have been written to the DB.
+  std::vector<history::AnnotatedVisit> annotated_visits =
+      GetAllAnnotatedVisits();
+  ASSERT_EQ(annotated_visits.size(), 1u);
+  // ...and its on-visit annotation fields should be populated already.
+  history::AnnotatedVisit ongoing_visit = annotated_visits[0];
+  EXPECT_NE(ongoing_visit.context_annotations.on_visit.browser_type,
+            history::VisitContextAnnotations::BrowserType::kUnknown);
+  EXPECT_TRUE(ongoing_visit.context_annotations.on_visit.window_id.is_valid());
+  EXPECT_TRUE(ongoing_visit.context_annotations.on_visit.tab_id.is_valid());
+  EXPECT_NE(ongoing_visit.context_annotations.on_visit.task_id, -1);
+  EXPECT_GT(ongoing_visit.context_annotations.on_visit.response_code, 0);
+
+  // Navigate to a different page to "finish" the visit.
+  GURL url2 = GetTestFileURL("target.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+
+  std::vector<history::AnnotatedVisit> annotated_visits2 =
+      GetAllAnnotatedVisits();
+  ASSERT_EQ(annotated_visits2.size(), 2u);
+  // The most recent visit is returned first, so the second visit from this
+  // query should match the first visit from the previous query.
+  history::AnnotatedVisit finished_visit = annotated_visits2[1];
+  ASSERT_EQ(finished_visit.visit_row.visit_id,
+            ongoing_visit.visit_row.visit_id);
+  // The on-visit fields should be unchanged.
+  EXPECT_EQ(finished_visit.context_annotations.on_visit,
+            ongoing_visit.context_annotations.on_visit);
+  // The on-close fields should also be populated too now.
+  EXPECT_NE(finished_visit.context_annotations.page_end_reason, 0);
+  EXPECT_GT(finished_visit.context_annotations.total_foreground_duration,
+            base::Seconds(0));
 }
 
 // MPArch means Multiple Page Architecture, each WebContents may have additional

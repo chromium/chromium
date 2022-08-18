@@ -886,6 +886,14 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     recent_redirects_.Put(request.url, extended_redirect_chain);
   }
 
+  if (request.context_annotations) {
+    // The `request` contains only the on-visit annotation fields; all other
+    // fields aren't known yet. Leave them empty.
+    VisitContextAnnotations annotations;
+    annotations.on_visit = *request.context_annotations;
+    AddContextAnnotationsForVisit(last_visit_id, annotations);
+  }
+
   // TODO(brettw) bug 1140015: Add an "add page" notification so the history
   // views can keep in sync.
 
@@ -1665,6 +1673,26 @@ void HistoryBackend::AddContextAnnotationsForVisit(
     return;
   db_->AddContextAnnotationsForVisit(visit_id, visit_context_annotations);
   ScheduleCommit();
+}
+
+void HistoryBackend::SetOnCloseContextAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContextAnnotations& visit_context_annotations) {
+  TRACE_EVENT0("browser",
+               "HistoryBackend::SetOnCloseContextAnnotationsForVisit");
+  DCHECK(visit_id);
+  VisitRow visit_row;
+  if (!db_ || !db_->GetRowForVisit(visit_id, &visit_row))
+    return;
+  VisitContextAnnotations existing_annotations;
+  if (db_->GetContextAnnotationsForVisit(visit_id, &existing_annotations)) {
+    // Retain the on-visit fields of the existing annotations.
+    VisitContextAnnotations merged_annotations = visit_context_annotations;
+    merged_annotations.on_visit = existing_annotations.on_visit;
+    db_->UpdateContextAnnotationsForVisit(visit_id, merged_annotations);
+  } else {
+    db_->AddContextAnnotationsForVisit(visit_id, visit_context_annotations);
+  }
 }
 
 std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(

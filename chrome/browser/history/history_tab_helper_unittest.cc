@@ -368,6 +368,30 @@ TEST_F(HistoryTabHelperTest,
   EXPECT_FALSE(args.opener.has_value());
 }
 
+TEST_F(HistoryTabHelperTest,
+       CreateAddPageArgsPopulatesOnVisitContextAnnotations) {
+  NiceMock<content::MockNavigationHandle> navigation_handle(web_contents());
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+
+  std::string raw_response_headers = "HTTP/1.1 234 OK\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  DCHECK(response_headers);
+  navigation_handle.set_response_headers(response_headers);
+
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("https://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // Make sure the `context_annotations` are populated.
+  ASSERT_TRUE(args.context_annotations.has_value());
+  // Most of the actual fields can't be verified here, because the corresponding
+  // data sources don't exist in this unit test (e.g. there's no Browser, no
+  // other TabHelpers, etc). At least check the response code that was set up
+  // above.
+  EXPECT_EQ(args.context_annotations->response_code, 234);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {

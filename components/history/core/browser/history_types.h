@@ -423,55 +423,6 @@ struct Opener {
   GURL url;
 };
 
-// Navigation -----------------------------------------------------------------
-
-// Marshalling structure for AddPage.
-struct HistoryAddPageArgs {
-  // The default constructor is equivalent to:
-  //
-  //   HistoryAddPageArgs(
-  //       GURL(), base::Time(), nullptr, 0, GURL(),
-  //       RedirectList(), ui::PAGE_TRANSITION_LINK,
-  //       false, SOURCE_BROWSED, false, true,
-  //       absl::nullopt, absl::nullopt, absl::nullopt)
-  HistoryAddPageArgs();
-  HistoryAddPageArgs(const GURL& url,
-                     base::Time time,
-                     ContextID context_id,
-                     int nav_entry_id,
-                     const GURL& referrer,
-                     const RedirectList& redirects,
-                     ui::PageTransition transition,
-                     bool hidden,
-                     VisitSource source,
-                     bool did_replace_entry,
-                     bool consider_for_ntp_most_visited,
-                     absl::optional<std::u16string> title = absl::nullopt,
-                     absl::optional<Opener> opener = absl::nullopt,
-                     absl::optional<int64_t> bookmark_id = absl::nullopt);
-  HistoryAddPageArgs(const HistoryAddPageArgs& other);
-  ~HistoryAddPageArgs();
-
-  GURL url;
-  base::Time time;
-  ContextID context_id;
-  int nav_entry_id;
-  GURL referrer;
-  RedirectList redirects;
-  ui::PageTransition transition;
-  bool hidden;
-  VisitSource visit_source;
-  bool did_replace_entry;
-  // Specifies whether a page visit should contribute to the Most Visited tiles
-  // in the New Tab Page. Note that setting this to true (most common case)
-  // doesn't guarantee it's relevant for Most Visited, since other requirements
-  // exist (e.g. certain page transition types).
-  bool consider_for_ntp_most_visited;
-  absl::optional<std::u16string> title;
-  absl::optional<Opener> opener;
-  absl::optional<int64_t> bookmark_id;
-};
-
 // TopSites -------------------------------------------------------------------
 
 typedef std::vector<MostVisitedURL> MostVisitedURLList;
@@ -742,11 +693,19 @@ struct VisitContextAnnotations {
   bool operator==(const VisitContextAnnotations& other) const;
   bool operator!=(const VisitContextAnnotations& other) const;
 
-  // Fields known immediately on page load (when a visit is created):
-  struct ImmediateFields {
+  // Values are persisted; do not reorder or reuse, and only add new values at
+  // the end.
+  enum class BrowserType {
+    kUnknown = 0,
+    kTabbed = 1,
+    kPopup = 2,
+    kCustomTab = 3,
+  };
+
+  // Fields known immediately on page load, when the visit is created:
+  struct OnVisitFields {
     // The type of browser (tabbed, CCT etc) that produced this visit.
-    // TODO(crbug.com/1347012): Make this strongly typed instead of just an int.
-    int browser_type = 0;
+    BrowserType browser_type = BrowserType::kUnknown;
 
     // The IDs of the window and tab in which the visit happened.
     SessionID window_id = SessionID::InvalidValue();
@@ -760,13 +719,16 @@ struct VisitContextAnnotations {
 
     // The HTTP response code of the navigation.
     int response_code = 0;
+
+    bool operator==(const OnVisitFields& other) const;
+    bool operator!=(const OnVisitFields& other) const;
   };
 
-  ImmediateFields immediate_fields;
+  OnVisitFields on_visit;
 
-  // The remaining fields are "delayed": They are computed and written to the DB
-  // later, separately from the visit itself and from the "immediate" fields
-  // above.
+  // The remaining fields are "on-close": They are computed and written to the
+  // DB later, when the visit is "closed" (i.e. the user navigated away or
+  // closed the tab).
 
   // True if the user has cut or copied the omnibox URL to the clipboard for
   // this page load.
@@ -1026,6 +988,58 @@ struct Cluster {
   // Set to true if this cluster was loaded from SQL rather than dynamically
   // generated. Used for UI display only and should not be persisted.
   bool from_persistence = false;
+};
+
+// Navigation -----------------------------------------------------------------
+
+// Marshalling structure for AddPage.
+struct HistoryAddPageArgs {
+  // The default constructor is equivalent to:
+  //
+  //   HistoryAddPageArgs(
+  //       GURL(), base::Time(), nullptr, 0, GURL(),
+  //       RedirectList(), ui::PAGE_TRANSITION_LINK,
+  //       false, SOURCE_BROWSED, false, true,
+  //       absl::nullopt, absl::nullopt, absl::nullopt)
+  HistoryAddPageArgs();
+  HistoryAddPageArgs(const GURL& url,
+                     base::Time time,
+                     ContextID context_id,
+                     int nav_entry_id,
+                     const GURL& referrer,
+                     const RedirectList& redirects,
+                     ui::PageTransition transition,
+                     bool hidden,
+                     VisitSource source,
+                     bool did_replace_entry,
+                     bool consider_for_ntp_most_visited,
+                     absl::optional<std::u16string> title = absl::nullopt,
+                     absl::optional<Opener> opener = absl::nullopt,
+                     absl::optional<int64_t> bookmark_id = absl::nullopt,
+                     absl::optional<VisitContextAnnotations::OnVisitFields>
+                         context_annotations = absl::nullopt);
+  HistoryAddPageArgs(const HistoryAddPageArgs& other);
+  ~HistoryAddPageArgs();
+
+  GURL url;
+  base::Time time;
+  ContextID context_id;
+  int nav_entry_id;
+  GURL referrer;
+  RedirectList redirects;
+  ui::PageTransition transition;
+  bool hidden;
+  VisitSource visit_source;
+  bool did_replace_entry;
+  // Specifies whether a page visit should contribute to the Most Visited tiles
+  // in the New Tab Page. Note that setting this to true (most common case)
+  // doesn't guarantee it's relevant for Most Visited, since other requirements
+  // exist (e.g. certain page transition types).
+  bool consider_for_ntp_most_visited;
+  absl::optional<std::u16string> title;
+  absl::optional<Opener> opener;
+  absl::optional<int64_t> bookmark_id;
+  absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
 };
 
 }  // namespace history

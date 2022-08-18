@@ -79,6 +79,27 @@ std::string SerializeToStringColumn(
   return base::JoinString(related_searches, "\0"s);
 }
 
+VisitContextAnnotations::BrowserType BrowserTypeFromInt(int type) {
+  VisitContextAnnotations::BrowserType converted =
+      static_cast<VisitContextAnnotations::BrowserType>(type);
+  // Verify that `converted` is actually a valid enum value.
+  switch (converted) {
+    case VisitContextAnnotations::BrowserType::kUnknown:
+    case VisitContextAnnotations::BrowserType::kTabbed:
+    case VisitContextAnnotations::BrowserType::kPopup:
+    case VisitContextAnnotations::BrowserType::kCustomTab:
+      return converted;
+  }
+  // If the `type` wasn't actually a valid BrowserType value (e.g. due to DB
+  // corruption), return `kUnknown` to be safe.
+  return VisitContextAnnotations::BrowserType::kUnknown;
+}
+
+int BrowserTypeToInt(VisitContextAnnotations::BrowserType type) {
+  DCHECK_EQ(BrowserTypeFromInt(static_cast<int>(type)), type);
+  return static_cast<int>(type);
+}
+
 // An enum of bitmasks to help represent the boolean flags of
 // `VisitContextAnnotations` in the database. This avoids having to update
 // the schema every time we add/remove/change a bool context annotation. As
@@ -161,13 +182,13 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
   context_annotations.duration_since_last_visit = duration_since_last_visit;
   context_annotations.page_end_reason = page_end_reason;
   context_annotations.total_foreground_duration = total_foreground_duration;
-  context_annotations.immediate_fields.browser_type = browser_type;
-  context_annotations.immediate_fields.window_id = window_id;
-  context_annotations.immediate_fields.tab_id = tab_id;
-  context_annotations.immediate_fields.task_id = task_id;
-  context_annotations.immediate_fields.root_task_id = root_task_id;
-  context_annotations.immediate_fields.parent_task_id = parent_task_id;
-  context_annotations.immediate_fields.response_code = response_code;
+  context_annotations.on_visit.browser_type = BrowserTypeFromInt(browser_type);
+  context_annotations.on_visit.window_id = window_id;
+  context_annotations.on_visit.tab_id = tab_id;
+  context_annotations.on_visit.task_id = task_id;
+  context_annotations.on_visit.root_task_id = root_task_id;
+  context_annotations.on_visit.parent_task_id = parent_task_id;
+  context_annotations.on_visit.response_code = response_code;
   return context_annotations;
 }
 }  // namespace
@@ -295,17 +316,14 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
   statement.BindInt(3, visit_context_annotations.page_end_reason);
   statement.BindInt64(
       4, visit_context_annotations.total_foreground_duration.InMicroseconds());
-  statement.BindInt(5, visit_context_annotations.immediate_fields.browser_type);
-  statement.BindInt(6,
-                    visit_context_annotations.immediate_fields.window_id.id());
-  statement.BindInt(7, visit_context_annotations.immediate_fields.tab_id.id());
-  statement.BindInt64(8, visit_context_annotations.immediate_fields.task_id);
-  statement.BindInt64(9,
-                      visit_context_annotations.immediate_fields.root_task_id);
-  statement.BindInt64(
-      10, visit_context_annotations.immediate_fields.parent_task_id);
-  statement.BindInt(11,
-                    visit_context_annotations.immediate_fields.response_code);
+  statement.BindInt(
+      5, BrowserTypeToInt(visit_context_annotations.on_visit.browser_type));
+  statement.BindInt(6, visit_context_annotations.on_visit.window_id.id());
+  statement.BindInt(7, visit_context_annotations.on_visit.tab_id.id());
+  statement.BindInt64(8, visit_context_annotations.on_visit.task_id);
+  statement.BindInt64(9, visit_context_annotations.on_visit.root_task_id);
+  statement.BindInt64(10, visit_context_annotations.on_visit.parent_task_id);
+  statement.BindInt(11, visit_context_annotations.on_visit.response_code);
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -370,7 +388,7 @@ void VisitAnnotationsDatabase::UpdateContextAnnotationsForVisit(
                                  "tab_id=?, "
                                  "task_id=?, "
                                  "root_task_id=?, "
-                                 "parent_task_id=? "
+                                 "parent_task_id=?, "
                                  "response_code=? "
                                  "WHERE visit_id=?"));
   statement.BindInt64(0, ContextAnnotationsToFlags(visit_context_annotations));
@@ -379,17 +397,14 @@ void VisitAnnotationsDatabase::UpdateContextAnnotationsForVisit(
   statement.BindInt(2, visit_context_annotations.page_end_reason);
   statement.BindInt64(
       3, visit_context_annotations.total_foreground_duration.InMicroseconds());
-  statement.BindInt(4, visit_context_annotations.immediate_fields.browser_type);
-  statement.BindInt(5,
-                    visit_context_annotations.immediate_fields.window_id.id());
-  statement.BindInt(6, visit_context_annotations.immediate_fields.tab_id.id());
-  statement.BindInt64(7, visit_context_annotations.immediate_fields.task_id);
-  statement.BindInt64(8,
-                      visit_context_annotations.immediate_fields.root_task_id);
-  statement.BindInt64(
-      9, visit_context_annotations.immediate_fields.parent_task_id);
-  statement.BindInt64(10,
-                      visit_context_annotations.immediate_fields.response_code);
+  statement.BindInt(
+      4, BrowserTypeToInt(visit_context_annotations.on_visit.browser_type));
+  statement.BindInt(5, visit_context_annotations.on_visit.window_id.id());
+  statement.BindInt(6, visit_context_annotations.on_visit.tab_id.id());
+  statement.BindInt64(7, visit_context_annotations.on_visit.task_id);
+  statement.BindInt64(8, visit_context_annotations.on_visit.root_task_id);
+  statement.BindInt64(9, visit_context_annotations.on_visit.parent_task_id);
+  statement.BindInt64(10, visit_context_annotations.on_visit.response_code);
   statement.BindInt64(11, visit_id);
 
   if (!statement.Run()) {

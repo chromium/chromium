@@ -3655,6 +3655,39 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
                    context_id, navigation_entry_id, url));
 }
 
+TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
+  // Add a page including context annotations.
+  base::Time visit_time = base::Time::Now();
+  GURL url("https://www.google.com/");
+  VisitContextAnnotations::OnVisitFields context_annotations;
+  context_annotations.browser_type =
+      VisitContextAnnotations::BrowserType::kTabbed;
+  context_annotations.window_id = SessionID::FromSerializedValue(2);
+  context_annotations.tab_id = SessionID::FromSerializedValue(3);
+  context_annotations.task_id = 4;
+  context_annotations.root_task_id = 5;
+  context_annotations.parent_task_id = 6;
+  context_annotations.response_code = 200;
+  HistoryAddPageArgs request(
+      url, visit_time, /*context_id=*/nullptr,
+      /*nav_entry_id=*/0, /*referrer=*/GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, /*hidden=*/false, SOURCE_BROWSED,
+      /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
+      /*title=*/absl::nullopt, /*opener=*/absl::nullopt,
+      /*bookmark_id=*/absl::nullopt, context_annotations);
+  backend_->AddPage(request);
+
+  // Read the visit back from the DB and make sure the annotations are there.
+  history::QueryOptions query_options;
+  query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  std::vector<AnnotatedVisit> annotated_visits =
+      backend_->GetAnnotatedVisits(query_options);
+  ASSERT_EQ(annotated_visits.size(), 1u);
+
+  EXPECT_EQ(context_annotations,
+            annotated_visits[0].context_annotations.on_visit);
+}
+
 TEST_F(HistoryBackendTest, AnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   const auto add_url_and_visit = [&](std::string url) {
@@ -3767,13 +3800,14 @@ TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
 
   // Add context annotations with non-default values for all fields.
   VisitContextAnnotations annotations_in;
-  annotations_in.immediate_fields.browser_type = 1;
-  annotations_in.immediate_fields.window_id = SessionID::FromSerializedValue(2);
-  annotations_in.immediate_fields.tab_id = SessionID::FromSerializedValue(3);
-  annotations_in.immediate_fields.task_id = 4;
-  annotations_in.immediate_fields.root_task_id = 5;
-  annotations_in.immediate_fields.parent_task_id = 6;
-  annotations_in.immediate_fields.response_code = 200;
+  annotations_in.on_visit.browser_type =
+      VisitContextAnnotations::BrowserType::kTabbed;
+  annotations_in.on_visit.window_id = SessionID::FromSerializedValue(2);
+  annotations_in.on_visit.tab_id = SessionID::FromSerializedValue(3);
+  annotations_in.on_visit.task_id = 4;
+  annotations_in.on_visit.root_task_id = 5;
+  annotations_in.on_visit.parent_task_id = 6;
+  annotations_in.on_visit.response_code = 200;
   annotations_in.omnibox_url_copied = true;
   annotations_in.is_existing_part_of_tab_group = true;
   annotations_in.is_placed_in_tab_group = true;
@@ -3796,6 +3830,30 @@ TEST_F(HistoryBackendTest, PreservesAllContextAnnotationsFields) {
   VisitContextAnnotations annotations_out =
       annotated_visits[0].context_annotations;
   EXPECT_EQ(annotations_in, annotations_out);
+
+  // Now update the on-close fields.
+  VisitContextAnnotations annotations_update;
+  annotations_update.omnibox_url_copied = false;
+  annotations_update.is_existing_part_of_tab_group = false;
+  annotations_update.is_placed_in_tab_group = false;
+  annotations_update.is_existing_bookmark = false;
+  annotations_update.is_new_bookmark = false;
+  annotations_update.is_ntp_custom_link = false;
+  annotations_update.duration_since_last_visit = base::Seconds(11);
+  annotations_update.page_end_reason = 12;
+  annotations_update.duration_since_last_visit = base::Seconds(13);
+  backend_->SetOnCloseContextAnnotationsForVisit(visit_id, annotations_update);
+
+  // Make sure the update applied: All the on-close fields should've been
+  // updated, but all the on-visit fields should have kept their values.
+  VisitContextAnnotations annotations_expected = annotations_update;
+  annotations_expected.on_visit = annotations_in.on_visit;
+
+  annotated_visits = backend_->GetAnnotatedVisits(query_options);
+  ASSERT_EQ(annotated_visits.size(), 1u);
+
+  annotations_out = annotated_visits[0].context_annotations;
+  EXPECT_EQ(annotations_expected, annotations_out);
 }
 
 TEST_F(HistoryBackendTest, FindMostRecentClusteredTime) {
