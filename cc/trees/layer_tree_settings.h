@@ -212,6 +212,9 @@ class CC_EXPORT LayerTreeSettings {
   // Whether Fluent scrollbar is enabled. Please check https://crbug.com/1292117
   // to find the link to the Fluent Scrollbar spec and related CLs.
   bool enable_fluent_scrollbar = false;
+
+  // This corresponds to the ScrollUpdateOptimizations feature.
+  bool enable_scroll_update_optimizations = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

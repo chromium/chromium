@@ -65,6 +65,8 @@ class CC_EXPORT ScrollbarAnimationController {
   ~ScrollbarAnimationController();
 
   bool ScrollbarsHidden() const;
+  bool visibility_changed() const { return visibility_changed_; }
+  void ClearVisibilityChanged() { visibility_changed_ = false; }
 
   bool Animate(base::TimeTicks now);
 
@@ -162,6 +164,8 @@ class CC_EXPORT ScrollbarAnimationController {
   bool is_mouse_down_;
 
   bool tickmarks_showing_;
+
+  bool visibility_changed_ = false;
 
   std::unique_ptr<SingleScrollbarAnimationControllerThinning>
       vertical_controller_;

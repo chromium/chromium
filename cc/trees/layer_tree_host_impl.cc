@@ -4112,8 +4112,12 @@ void LayerTreeHostImpl::CollectScrollbarUpdatesForCommit(
     CompositorCommitData* commit_data) const {
   commit_data->scrollbars.reserve(scrollbar_animation_controllers_.size());
   for (auto& pair : scrollbar_animation_controllers_) {
-    commit_data->scrollbars.push_back(
-        {pair.first, pair.second->ScrollbarsHidden()});
+    if (pair.second->visibility_changed() ||
+        !settings_.enable_scroll_update_optimizations) {
+      commit_data->scrollbars.push_back(
+          {pair.first, pair.second->ScrollbarsHidden()});
+      pair.second->ClearVisibilityChanged();
+    }
   }
 }
 

@@ -538,6 +538,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_backface_visibility_interop =
       RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 
+  settings.enable_scroll_update_optimizations =
+      RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
+
   return settings;
 }
 

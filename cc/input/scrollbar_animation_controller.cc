@@ -380,16 +380,18 @@ void ScrollbarAnimationController::ApplyOpacityToScrollbars(float opacity) {
     scrollbar->SetOverlayScrollbarLayerOpacityAnimated(effective_opacity);
   }
 
-  bool previouslyVisible = opacity_ > 0.0f;
-  bool currentlyVisible = opacity > 0.0f;
+  bool previously_visible_ = opacity_ > 0.0f;
+  bool currently_visible = opacity > 0.0f;
 
   if (opacity_ != opacity)
     client_->SetNeedsRedrawForScrollbarAnimation();
 
   opacity_ = opacity;
 
-  if (previouslyVisible != currentlyVisible)
+  if (previously_visible_ != currently_visible) {
     client_->DidChangeScrollbarVisibility();
+    visibility_changed_ = true;
+  }
 }
 
 }  // namespace cc

@@ -5785,6 +5785,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
   settings.scrollbar_fade_delay = base::Milliseconds(20);
   settings.scrollbar_fade_duration = base::Milliseconds(20);
+  settings.enable_scroll_update_optimizations = true;
   gfx::Size viewport_size(50, 50);
   gfx::Size content_size(100, 100);
 
@@ -5808,6 +5809,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   // Scrollbars will flash shown but we should have a fade out animation
   // queued. Run it and fade out the scrollbars.
+  ASSERT_FALSE(scrollbar_controller->ScrollbarsHidden());
+  EXPECT_TRUE(scrollbar_controller->visibility_changed());
+  ClearMainThreadDeltasForTesting(host_impl_.get());
+  auto commit_data = host_impl_->ProcessCompositorDeltas();
+  using ScrollbarsInfo = CompositorCommitData::ScrollbarsUpdateInfo;
+  EXPECT_THAT(commit_data->scrollbars, testing::ElementsAre(ScrollbarsInfo{
+                                           scroll->element_id(), false}));
+  EXPECT_FALSE(scrollbar_controller->visibility_changed());
   {
     ASSERT_FALSE(animation_task_.is_null());
     ASSERT_FALSE(animation_task_.IsCancelled());
@@ -5819,6 +5828,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     scrollbar_controller->Animate(fake_now);
 
     ASSERT_TRUE(scrollbar_controller->ScrollbarsHidden());
+    ClearMainThreadDeltasForTesting(host_impl_.get());
+    commit_data = host_impl_->ProcessCompositorDeltas();
+    EXPECT_THAT(commit_data->scrollbars, testing::ElementsAre(ScrollbarsInfo{
+                                             scroll->element_id(), true}));
+    EXPECT_FALSE(scrollbar_controller->visibility_changed());
   }
 
   // Move the mouse over the scrollbar region. This should post a delayed fade
@@ -5836,6 +5850,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     did_request_redraw_ = false;
     did_request_commit_ = false;
     ASSERT_TRUE(scrollbar_controller->ScrollbarsHidden());
+    EXPECT_FALSE(scrollbar_controller->visibility_changed());
+    ClearMainThreadDeltasForTesting(host_impl_.get());
+    commit_data = host_impl_->ProcessCompositorDeltas();
+    EXPECT_TRUE(commit_data->scrollbars.empty());
     std::move(animation_task_).Run();
 
     base::TimeTicks fake_now = base::TimeTicks::Now();
@@ -5844,6 +5862,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     scrollbar_controller->Animate(fake_now);
 
     ASSERT_FALSE(scrollbar_controller->ScrollbarsHidden());
+    EXPECT_TRUE(scrollbar_controller->visibility_changed());
+    ClearMainThreadDeltasForTesting(host_impl_.get());
+    commit_data = host_impl_->ProcessCompositorDeltas();
+    EXPECT_THAT(commit_data->scrollbars, testing::ElementsAre(ScrollbarsInfo{
+                                             scroll->element_id(), false}));
+    EXPECT_FALSE(scrollbar_controller->visibility_changed());
     EXPECT_TRUE(did_request_redraw_);
     EXPECT_TRUE(did_request_commit_);
   }
