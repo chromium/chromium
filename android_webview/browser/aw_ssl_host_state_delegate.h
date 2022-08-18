@@ -54,7 +54,7 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   void AllowCert(const std::string& host,
                  const net::X509Certificate& cert,
                  int error,
-                 content::WebContents* web_contents) override;
+                 content::StoragePartition* storage_partition) override;
 
   void Clear(
       base::RepeatingCallback<bool(const std::string&)> host_filter) override;
@@ -64,7 +64,7 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
       const std::string& host,
       const net::X509Certificate& cert,
       int error,
-      content::WebContents* web_contents) override;
+      content::StoragePartition* storage_partition) override;
 
   // Records that a host has run insecure content.
   void HostRanInsecureContent(const std::string& host,
@@ -78,9 +78,10 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
 
   // HTTPS-First Mode is not implemented in Android Webview.
   void AllowHttpForHost(const std::string& host,
-                        content::WebContents* web_contents) override;
-  bool IsHttpAllowedForHost(const std::string& host,
-                            content::WebContents* web_contents) override;
+                        content::StoragePartition* storage_partition) override;
+  bool IsHttpAllowedForHost(
+      const std::string& host,
+      content::StoragePartition* storage_partition) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
@@ -91,7 +92,7 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   // that there exists an exception. To see if a particular certificate and
   // error combination exception is allowed, use QueryPolicy().
   bool HasAllowException(const std::string& host,
-                         content::WebContents* web_contents) override;
+                         content::StoragePartition* storage_partition) override;
 
  private:
   // Certificate policies for each host.

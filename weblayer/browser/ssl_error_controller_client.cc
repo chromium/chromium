@@ -49,7 +49,8 @@ void SSLErrorControllerClient::GoBack() {
 
 void SSLErrorControllerClient::Proceed() {
   web_contents_->GetBrowserContext()->GetSSLHostStateDelegate()->AllowCert(
-      request_url_.host(), *ssl_info_.cert.get(), cert_error_, web_contents_);
+      request_url_.host(), *ssl_info_.cert.get(), cert_error_,
+      web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
   Reload();
 }
 

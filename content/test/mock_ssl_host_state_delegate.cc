@@ -16,7 +16,7 @@ MockSSLHostStateDelegate::~MockSSLHostStateDelegate() {}
 void MockSSLHostStateDelegate::AllowCert(const std::string& host,
                                          const net::X509Certificate& cert,
                                          int error,
-                                         WebContents* web_contents) {
+                                         StoragePartition* storage_partition) {
   exceptions_.insert(host);
 }
 
@@ -40,7 +40,7 @@ SSLHostStateDelegate::CertJudgment MockSSLHostStateDelegate::QueryPolicy(
     const std::string& host,
     const net::X509Certificate& cert,
     int error,
-    WebContents* web_contents) {
+    StoragePartition* storage_partition) {
   if (exceptions_.find(host) == exceptions_.end())
     return SSLHostStateDelegate::DENIED;
 
@@ -62,13 +62,15 @@ bool MockSSLHostStateDelegate::DidHostRunInsecureContent(
          hosts_ran_insecure_content_.end();
 }
 
-void MockSSLHostStateDelegate::AllowHttpForHost(const std::string& host,
-                                                WebContents* web_contents) {
+void MockSSLHostStateDelegate::AllowHttpForHost(
+    const std::string& host,
+    StoragePartition* storage_partition) {
   allow_http_hosts_.insert(host);
 }
 
-bool MockSSLHostStateDelegate::IsHttpAllowedForHost(const std::string& host,
-                                                    WebContents* web_contents) {
+bool MockSSLHostStateDelegate::IsHttpAllowedForHost(
+    const std::string& host,
+    StoragePartition* storage_partition) {
   return base::Contains(allow_http_hosts_, host);
 }
 
@@ -77,8 +79,9 @@ void MockSSLHostStateDelegate::RevokeUserAllowExceptions(
   exceptions_.erase(exceptions_.find(host));
 }
 
-bool MockSSLHostStateDelegate::HasAllowException(const std::string& host,
-                                                 WebContents* web_contents) {
+bool MockSSLHostStateDelegate::HasAllowException(
+    const std::string& host,
+    StoragePartition* storage_partition) {
   return exceptions_.find(host) != exceptions_.end();
 }
 

@@ -4272,11 +4272,13 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertNavigation) {
       browser(), https_server_expired_.GetURL("/ssl/google.html")));
 
   ProceedThroughInterstitial(tab);
-  EXPECT_TRUE(state->HasAllowException(https_server_host, tab));
+  EXPECT_TRUE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
-  EXPECT_FALSE(state->HasAllowException(https_server_host, tab));
+  EXPECT_FALSE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
 // Verifies that if a bad certificate is seen for a host and the user proceeds
@@ -4309,7 +4311,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 
   ProceedThroughInterstitial(tab);
-  EXPECT_TRUE(state->HasAllowException(https_server_host, tab));
+  EXPECT_TRUE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   GURL image = https_server_.GetURL("/ssl/google_files/logo.gif");
   bool result = false;
@@ -4322,7 +4325,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
           "document.body.appendChild(img);",
       &result));
   EXPECT_TRUE(result);
-  EXPECT_FALSE(state->HasAllowException(https_server_host, tab));
+  EXPECT_FALSE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
 // Verifies that if a bad certificate is seen for a host and the user proceeds
@@ -4344,7 +4348,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_expired_.GetURL("/ssl/google.html")));
   ProceedThroughInterstitial(tab);
-  ASSERT_TRUE(state->HasAllowException(https_server_host, tab));
+  ASSERT_TRUE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   // Load a blob URL.
   content::WebContentsConsoleObserver console_observer(tab);
@@ -4367,7 +4372,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
 
   // Verify that the decision to accept the broken cert has not been revoked
   // (this is a regression test for https://crbug.com/1049625).
-  EXPECT_TRUE(state->HasAllowException(https_server_host, tab));
+  EXPECT_TRUE(state->HasAllowException(
+      https_server_host, tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
 // Tests that the SSLStatus of a navigation entry for an SSL

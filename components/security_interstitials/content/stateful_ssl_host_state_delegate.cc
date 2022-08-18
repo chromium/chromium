@@ -16,13 +16,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -35,15 +31,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/security_interstitials/core/pref_names.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "net/base/hash_value.h"
-#include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -221,12 +212,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
     const std::string& host,
     const net::X509Certificate& cert,
     int error,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     // Decisions for non-default storage partitions are stored in memory only;
@@ -283,16 +269,11 @@ void StatefulSSLHostStateDelegate::Clear(
 }
 
 content::SSLHostStateDelegate::CertJudgment
-StatefulSSLHostStateDelegate::QueryPolicy(const std::string& host,
-                                          const net::X509Certificate& cert,
-                                          int error,
-                                          content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+StatefulSSLHostStateDelegate::QueryPolicy(
+    const std::string& host,
+    const net::X509Certificate& cert,
+    int error,
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     if (allowed_certs_for_non_default_storage_partitions_.find(host) ==
@@ -367,13 +348,7 @@ bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
 
 void StatefulSSLHostStateDelegate::AllowHttpForHost(
     const std::string& host,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
-          /*can_create=*/false);
+    content::StoragePartition* storage_partition) {
   bool is_nondefault_storage =
       !storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition();
@@ -382,11 +357,7 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
 
 bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
     const std::string& host,
-    content::WebContents* web_contents) {
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
-          /*can_create=*/false);
+    content::StoragePartition* storage_partition) {
   bool is_nondefault_storage =
       !storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition();
@@ -408,10 +379,9 @@ void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
 
 bool StatefulSSLHostStateDelegate::HasAllowException(
     const std::string& host,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  return HasCertAllowException(host, web_contents) ||
-         IsHttpAllowedForHost(host, web_contents);
+    content::StoragePartition* storage_partition) {
+  return HasCertAllowException(host, storage_partition) ||
+         IsHttpAllowedForHost(host, storage_partition);
 }
 
 // TODO(jww): This will revoke all of the decisions in the browser context.
@@ -537,11 +507,7 @@ StatefulSSLHostStateDelegate::GetRecurrentInterstitialMode() const {
 
 bool StatefulSSLHostStateDelegate::HasCertAllowException(
     const std::string& host,
-    content::WebContents* web_contents) {
-  content::StoragePartition* storage_partition =
-      browser_context_->GetStoragePartition(
-          web_contents->GetPrimaryMainFrame()->GetSiteInstance(),
-          false /* can_create */);
+    content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
     return base::Contains(allowed_certs_for_non_default_storage_partitions_,

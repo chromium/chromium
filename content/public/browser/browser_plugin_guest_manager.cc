@@ -16,5 +16,4 @@ WebContents* BrowserPluginGuestManager::GetFullPageGuest(
   return nullptr;
 }
 
-}  // content
-
+}  // namespace content

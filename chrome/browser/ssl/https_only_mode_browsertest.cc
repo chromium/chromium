@@ -696,10 +696,12 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, BadHttpsFollowedByGoodHttps) {
   ASSERT_TRUE(
       chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
   ProceedThroughInterstitial(tab);
-  EXPECT_TRUE(state->HasAllowException(http_url.host(), tab));
+  EXPECT_TRUE(state->HasAllowException(
+      http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   EXPECT_TRUE(content::NavigateToURL(tab, good_https_url));
-  EXPECT_FALSE(state->HasAllowException(http_url.host(), tab));
+  EXPECT_FALSE(state->HasAllowException(
+      http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   // Rarely, an open connection with the bad cert might be reused for the next
   // navigation, which is supposed to show an interstitial. Close open
@@ -718,7 +720,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, BadHttpsFollowedByGoodHttps) {
   ASSERT_TRUE(
       chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
   ProceedThroughInterstitial(tab);
-  EXPECT_TRUE(state->HasAllowException(http_url.host(), tab));
+  EXPECT_TRUE(state->HasAllowException(
+      http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 
   // Load "logo.gif" as an image on the page.
   GURL image = https_server()->GetURL("foo.test", "/ssl/google_files/logo.gif");
@@ -733,7 +736,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, BadHttpsFollowedByGoodHttps) {
       &result));
   EXPECT_TRUE(result);
 
-  EXPECT_FALSE(state->HasAllowException(http_url.host(), tab));
+  EXPECT_FALSE(state->HasAllowException(
+      http_url.host(), tab->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
 // Tests that clicking the "Go back" button in the HTTPS-First Mode interstitial
@@ -817,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, AllowlistEntryExpires) {
       contents));
   ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  EXPECT_TRUE(state->IsHttpAllowedForHost(http_url.host(), contents));
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 
   // Simulate the clock advancing by eight days, which is past the expiration
   // point.
@@ -825,7 +830,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, AllowlistEntryExpires) {
 
   // The host should no longer be allowlisted, and the interstitial should
   // trigger again.
-  EXPECT_FALSE(state->IsHttpAllowedForHost(http_url.host(), contents));
+  EXPECT_FALSE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));
@@ -859,7 +865,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, RevisitingBumpsExpiration) {
       contents));
   ProceedThroughInterstitial(contents);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  EXPECT_TRUE(state->IsHttpAllowedForHost(http_url.host(), contents));
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 
   // Simulate the clock advancing by five days.
   clock_ptr->Advance(base::Days(5));

@@ -139,8 +139,9 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-    ASSERT_FALSE(
-        state->HasAllowException(kPrerenderUrl.host(), web_contents()));
+    ASSERT_FALSE(state->HasAllowException(
+        kPrerenderUrl.host(),
+        web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
   // Trigger a prerender. Unlike the initial navigation, this will hit the
@@ -207,8 +208,9 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerenderSW) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-    ASSERT_FALSE(
-        state->HasAllowException(kPrerenderUrl.host(), web_contents()));
+    ASSERT_FALSE(state->HasAllowException(
+        kPrerenderUrl.host(),
+        web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
   // Trigger a prerender. Unlike the initial navigation, this will hit the

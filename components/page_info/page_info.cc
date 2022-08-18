@@ -1037,7 +1037,9 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // re-enabling).
   DCHECK(web_contents_);
   show_ssl_decision_revoke_button_ =
-      delegate->HasAllowException(url.host(), web_contents_.get()) &&
+      delegate->HasAllowException(
+          url.host(),
+          web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) &&
       visible_security_state.malicious_content_status ==
           security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }

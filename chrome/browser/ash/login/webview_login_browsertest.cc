@@ -99,6 +99,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -344,35 +345,22 @@ class WebviewLoginTest : public OobeBaseTest {
         {kSigninWebview, ".src.indexOf('#challengepassword') != -1"}));
   }
 
-  bool WebViewVisited(content::BrowserContext* browser_context,
-                      content::StoragePartition* expected_storage_partition,
-                      bool* out_web_view_found,
-                      content::WebContents* guest_contents) {
-    content::StoragePartition* guest_storage_partition =
-        browser_context->GetStoragePartition(guest_contents->GetSiteInstance());
-    if (guest_storage_partition == expected_storage_partition)
-      *out_web_view_found = true;
-
-    // Returns true if found - this will exit the iteration early.
-    return *out_web_view_found;
-  }
-
   // Returns true if a webview which has a WebContents associated with
   // `storage_partition` currently exists in the login UI's main WebContents.
   bool IsLoginScreenHasWebviewWithStoragePartition(
-      content::StoragePartition* storage_partition) {
+      const content::StoragePartition* storage_partition) {
     bool web_view_found = false;
 
-    content::WebContents* web_contents = GetLoginUI()->GetWebContents();
-    content::BrowserContext* browser_context =
-        web_contents->GetBrowserContext();
-    guest_view::GuestViewManager* guest_view_manager =
-        guest_view::GuestViewManager::FromBrowserContext(browser_context);
-    guest_view_manager->ForEachGuest(
-        web_contents,
-        base::BindRepeating(&WebviewLoginTest::WebViewVisited,
-                            base::Unretained(this), browser_context,
-                            storage_partition, &web_view_found));
+    auto* login_main_frame =
+        GetLoginUI()->GetWebContents()->GetPrimaryMainFrame();
+    login_main_frame->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](content::RenderFrameHost* rfh) {
+          if (rfh->GetStoragePartition() == storage_partition) {
+            web_view_found = true;
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        }));
 
     return web_view_found;
   }

@@ -9,12 +9,11 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "net/cert/x509_certificate.h"
 
 namespace content {
 
-class WebContents;
+class StoragePartition;
 
 // The SSLHostStateDelegate encapulates the host-specific state for SSL errors.
 // For example, SSLHostStateDelegate remembers whether the user has whitelisted
@@ -47,7 +46,7 @@ class SSLHostStateDelegate {
   virtual void AllowCert(const std::string&,
                          const net::X509Certificate& cert,
                          int error,
-                         WebContents* web_contents) = 0;
+                         StoragePartition* storage_partition) = 0;
 
   // Clear allow preferences matched by |host_filter|. If the filter is null,
   // clear all preferences.
@@ -58,7 +57,7 @@ class SSLHostStateDelegate {
   virtual CertJudgment QueryPolicy(const std::string& host,
                                    const net::X509Certificate& cert,
                                    int error,
-                                   WebContents* web_contents) = 0;
+                                   StoragePartition* storage_partition) = 0;
 
   // Records that a host has run insecure content of the given |content_type|.
   virtual void HostRanInsecureContent(const std::string& host,
@@ -74,12 +73,12 @@ class SSLHostStateDelegate {
   // Allowlists site so it can be loaded over HTTP when HTTPS-First Mode is
   // enabled.
   virtual void AllowHttpForHost(const std::string& host,
-                                WebContents* web_contents) = 0;
+                                StoragePartition* storage_partition) = 0;
 
   // Returns whether site is allowed to load over HTTP when HTTPS-First Mode is
   // enabled.
   virtual bool IsHttpAllowedForHost(const std::string& host,
-                                    WebContents* web_contents) = 0;
+                                    StoragePartition* storage_partition) = 0;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
@@ -90,7 +89,7 @@ class SSLHostStateDelegate {
   // are allowed, just that there exists an exception. To see if a particular
   // certificate and error combination exception is allowed, use QueryPolicy().
   virtual bool HasAllowException(const std::string& host,
-                                 WebContents* web_contents) = 0;
+                                 StoragePartition* storage_partition) = 0;
 
  protected:
   virtual ~SSLHostStateDelegate() {}

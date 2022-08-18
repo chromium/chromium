@@ -71,9 +71,12 @@ void OnAllowCertificate(SSLErrorHandler* handler,
       // ContinueRequest() gets posted to a different thread. Calling
       // AllowCert() first ensures deterministic ordering.
       if (record_decision && state_delegate) {
-        state_delegate->AllowCert(
-            handler->request_url().host(), *handler->ssl_info().cert.get(),
-            handler->cert_error(), handler->web_contents());
+        state_delegate->AllowCert(handler->request_url().host(),
+                                  *handler->ssl_info().cert.get(),
+                                  handler->cert_error(),
+                                  handler->web_contents()
+                                      ->GetPrimaryMainFrame()
+                                      ->GetStoragePartition());
       }
       handler->ContinueRequest();
       return;
@@ -343,7 +346,10 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
   } else if (ssl_host_state_delegate_) {
     judgment = ssl_host_state_delegate_->QueryPolicy(
         handler->request_url().host(), *handler->ssl_info().cert.get(),
-        handler->cert_error(), handler->web_contents());
+        handler->cert_error(),
+        // TODO(crbug/1353781): Avoid WebContents for MPArch GuestView. Get
+        // StoragePartition from navi controller's frame tree instead.
+        handler->web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
   } else {
     judgment = SSLHostStateDelegate::DENIED;
   }
@@ -370,7 +376,11 @@ void SSLManager::DidStartResourceResponse(
   // any previous decisions that have occurred.
   if (!ssl_host_state_delegate_ ||
       !ssl_host_state_delegate_->HasAllowException(
-          host, controller_->DeprecatedGetWebContents())) {
+          // TODO(crbug/1353781): Avoid WebContents for MPArch GuestView. Get
+          // StoragePartition from navi controller's frame tree instead.
+          host, controller_->DeprecatedGetWebContents()
+                    ->GetPrimaryMainFrame()
+                    ->GetStoragePartition())) {
     return;
   }
 

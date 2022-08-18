@@ -117,14 +117,17 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
         static_cast<StatefulSSLHostStateDelegate*>(
             profile->GetSSLHostStateDelegate());
     // StatefulSSLHostStateDelegate can be null during tests.
-    if (state && state->IsHttpAllowedForHost(
-                     tentative_resource_request.url.host(), web_contents)) {
+    auto* storage_partition =
+        web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+    if (state &&
+        state->IsHttpAllowedForHost(tentative_resource_request.url.host(),
+                                    storage_partition)) {
       // Renew the allowlist expiration for this host as the user is still
       // actively using it. This means that the allowlist entry will stay valid
       // until the user stops visiting this host for the entire expiration
       // period (one week).
       state->AllowHttpForHost(tentative_resource_request.url.host(),
-                              web_contents);
+                              storage_partition);
 
       std::move(callback).Run({});
       return;

@@ -1088,6 +1088,8 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
   };
   const char kGenericHistogram[] =
       "interstitial.ssl.did_user_revoke_decisions2";
+  auto* storage_partition =
+      web_contents()->GetPrimaryMainFrame()->GetStoragePartition();
   for (const auto& test : kTestCases) {
     base::HistogramTester histograms;
     StatefulSSLHostStateDelegate* ssl_state =
@@ -1102,11 +1104,11 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
       // the profile settings for the site (since the exception is what
       // will make the button visible).
       ssl_state->AllowCert(host, *cert(), net::ERR_CERT_DATE_INVALID,
-                           web_contents());
+                           storage_partition);
       page_info();
       if (test.button_clicked) {
         page_info()->OnRevokeSSLErrorBypassButtonPressed();
-        EXPECT_FALSE(ssl_state->HasAllowException(host, web_contents()));
+        EXPECT_FALSE(ssl_state->HasAllowException(host, storage_partition));
         ClearPageInfo();
         histograms.ExpectTotalCount(kGenericHistogram, 1);
         histograms.ExpectBucketCount(
@@ -1116,7 +1118,7 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
             1);
       } else {  // Case where button is visible but not clicked.
         ClearPageInfo();
-        EXPECT_TRUE(ssl_state->HasAllowException(host, web_contents()));
+        EXPECT_TRUE(ssl_state->HasAllowException(host, storage_partition));
         histograms.ExpectTotalCount(kGenericHistogram, 1);
         histograms.ExpectBucketCount(
             kGenericHistogram,
@@ -1127,7 +1129,7 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
     } else {
       page_info();
       ClearPageInfo();
-      EXPECT_FALSE(ssl_state->HasAllowException(host, web_contents()));
+      EXPECT_FALSE(ssl_state->HasAllowException(host, storage_partition));
       // Button is not visible, so check histogram is empty after opening and
       // closing page info.
       histograms.ExpectTotalCount(kGenericHistogram, 0);
