@@ -38,10 +38,13 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
  private:
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            CopyPromoCode);
-  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
-                           TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsInteractiveUiTest,
+      ReshowOfferNotificationBubble_OfferDeletedBetweenShows);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            ShowGPayPromoCodeBubble);
+  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
+                           TooltipAndAccessibleName);
 
   // AutofillBubbleBase:
   void Hide() override;
