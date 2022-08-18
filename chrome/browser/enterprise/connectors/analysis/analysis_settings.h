@@ -29,7 +29,6 @@ struct CustomMessageData {
 struct TagSettings {
   CustomMessageData custom_message;
   bool requires_justification = false;
-  raw_ptr<const SupportedFiles> supported_files = nullptr;
 };
 
 // Enum representing if an analysis should block further interactions with the

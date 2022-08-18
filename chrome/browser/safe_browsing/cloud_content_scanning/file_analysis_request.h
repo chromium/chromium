@@ -47,7 +47,6 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
                               const ArchiveAnalyzerResults& analyzer_result);
 
   // Helper functions to access the request proto.
-  bool FileSupportedByDlp(const std::string& mime_type) const;
   bool HasMalwareRequest() const;
 
   void CacheResultAndData(BinaryUploadService::Result result, Data data);
@@ -61,7 +60,6 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
 
   // Analysis settings relevant to file analysis requests, copied from the
   // overall analysis settings.
-  bool block_unsupported_types_;
   std::map<std::string, enterprise_connectors::TagSettings> tag_settings_;
 
   // Path to the file on disk.

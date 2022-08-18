@@ -138,9 +138,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
     }
   }
 
-  for (const SupportedTag& supported_tag : analysis_config_->supported_tags)
-    tags_[supported_tag.name].supported_files = supported_tag.supported_files;
-
 #if BUILDFLAG(IS_WIN)
   const char* verification_key = kKeyWindowsVerification;
 #elif BUILDFLAG(IS_MAC)

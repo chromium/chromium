@@ -199,11 +199,6 @@ const std::set<std::string>* ZipMimeTypes() {
   return &set;
 }
 
-const std::set<std::string>* PngMimeTypes() {
-  static std::set<std::string> set = {"image/png"};
-  return &set;
-}
-
 const std::set<std::string>* TextMimeTypes() {
   static std::set<std::string> set = {"text/plain"};
   return &set;
@@ -769,82 +764,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
-}
-
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockUnsupportedFileTypes) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Set up delegate and upload service.
-  EnableUploadsScanningAndReporting();
-  constexpr char kBlockUnsupportedFileTypesPref[] = R"({
-    "service_provider": "google",
-    "enable": [
-      {
-        "url_list": ["*"],
-        "tags": ["dlp"]
-      }
-    ],
-    "block_until_verdict": 1,
-    "block_unsupported_file_types": %s
-  })";
-  safe_browsing::SetAnalysisConnector(
-      browser()->profile()->GetPrefs(), FILE_ATTACHED,
-      base::StringPrintf(kBlockUnsupportedFileTypesPref, bool_setting_value()),
-      machine_scope());
-
-  ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
-
-  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
-  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
-
-  // Create the files with unsupported types.
-  std::string png_file_content = "\x89PNG\x0D\x0A\x1A\x0A";
-  ContentAnalysisDelegate::Data data;
-  CreateFilesForTest({"a.png"}, {png_file_content}, &data);
-  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
-      browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
-
-  // The file should be reported as unscanned.
-  safe_browsing::EventReportValidator validator(client());
-  validator.ExpectUnscannedFileEvent(
-      /*url*/ "about:blank",
-      /*filename*/ "a.png",
-      // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' \
-      // '[:upper:]'
-      "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-      /*reason*/ "DLP_SCAN_UNSUPPORTED_FILE_TYPE",
-      /*mimetype*/ PngMimeTypes(),
-      /*size*/ png_file_content.size(),
-      /*result*/
-      expected_result() ? safe_browsing::EventResultToString(
-                              safe_browsing::EventResult::ALLOWED)
-                        : safe_browsing::EventResultToString(
-                              safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
-
-  bool called = false;
-  base::RunLoop run_loop;
-  SetQuitClosure(run_loop.QuitClosure());
-
-  // Start test.
-  ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
-      base::BindLambdaForTesting(
-          [this, &called](const ContentAnalysisDelegate::Data& data,
-                          const ContentAnalysisDelegate::Result& result) {
-            ASSERT_TRUE(result.text_results.empty());
-            ASSERT_EQ(result.paths_results.size(), 1u);
-            ASSERT_EQ(result.paths_results[0], expected_result());
-
-            called = true;
-          }),
-      safe_browsing::DeepScanAccessPoint::UPLOAD);
-
-  run_loop.Run();
-  EXPECT_TRUE(called);
 }
 
 // Flaky on linux: https://crbug.com/1299762.

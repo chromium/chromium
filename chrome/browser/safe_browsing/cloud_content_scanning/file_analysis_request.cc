@@ -147,7 +147,6 @@ FileAnalysisRequest::FileAnalysisRequest(
     BinaryUploadService::ContentAnalysisCallback callback)
     : Request(std::move(callback), analysis_settings.cloud_or_local_settings),
       has_cached_result_(false),
-      block_unsupported_types_(analysis_settings.block_unsupported_file_types),
       tag_settings_(analysis_settings.tags),
       path_(std::move(path)),
       file_name_(std::move(file_name)),
@@ -192,22 +191,6 @@ void FileAnalysisRequest::OpenFile() {
                      weakptr_factory_.GetWeakPtr(), std::move(file_data)));
 }
 
-bool FileAnalysisRequest::FileSupportedByDlp(
-    const std::string& mime_type) const {
-  for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "dlp" && tag_settings_.count("dlp")) {
-      const auto* supported_files =
-          tag_settings_.at("dlp").supported_files.get();
-      return supported_files->FileExtensionSupported(file_name_) ||
-             supported_files->MimeTypeSupported(mime_type);
-    }
-  }
-
-  // This function's default is true when there is no "dlp" tag so that the
-  // unsupported DLP path isn't used.
-  return true;
-}
-
 bool FileAnalysisRequest::HasMalwareRequest() const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "malware")
@@ -228,21 +211,6 @@ void FileAnalysisRequest::OnGotFileData(
   const std::string& mime_type = cached_data_.mime_type.empty()
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
-  if (!FileSupportedByDlp(mime_type)) {
-    // Abort the request early if settings say to block unsupported types or if
-    // there was no malware request to be done, otherwise proceed with the
-    // malware request only.
-    if (block_unsupported_types_ || !HasMalwareRequest()) {
-      CacheResultAndData(
-          BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
-          std::move(result_and_data.second));
-      RunCallback();
-      return;
-    } else {
-      clear_dlp_scan_request();
-    }
-  }
-
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {

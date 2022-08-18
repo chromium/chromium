@@ -28,11 +28,6 @@ namespace {
 enterprise_connectors::AnalysisSettings settings(bool block_unsupported_types) {
   enterprise_connectors::AnalysisSettings settings;
   settings.block_unsupported_file_types = block_unsupported_types;
-  settings.tags["dlp"].supported_files =
-      enterprise_connectors::GetServiceProviderConfig()
-          ->at("google")
-          .analysis->supported_tags[1]
-          .supported_files;
   return settings;
 }
 
@@ -507,98 +502,6 @@ TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   EXPECT_TRUE(data.contents.empty());
   EXPECT_EQ(test_zip, data.path);
   EXPECT_TRUE(IsZipMimeType(data.mime_type));
-}
-
-TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
-  base::test::TaskEnvironment task_environment;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  std::string normal_contents = "\x89PNG\x0D\x0A\x1A\x0A";
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.png");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
-
-  auto request =
-      MakeRequest(/*block_unsupported_types=*/true, file_path,
-                  file_path.BaseName(), /*delay_opening_file*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  bool called = false;
-  base::RunLoop run_loop;
-  BinaryUploadService::Result result;
-  BinaryUploadService::Request::Data data;
-  request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &called, &result, &data](
-          BinaryUploadService::Result tmp_result,
-          BinaryUploadService::Request::Data tmp_data) {
-        called = true;
-        run_loop.Quit();
-        result = tmp_result;
-        data = std::move(tmp_data);
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(called);
-
-  EXPECT_EQ(result,
-            BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE);
-  EXPECT_TRUE(data.contents.empty());
-  EXPECT_EQ(file_path, data.path);
-  EXPECT_EQ(data.size, normal_contents.size());
-  // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6");
-  EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_EQ("image/png", data.mime_type)
-      << data.mime_type << " is not an expected mimetype";
-}
-
-TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
-  base::test::TaskEnvironment task_environment;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  std::string normal_contents = "\x89PNG\x0D\x0A\x1A\x0A";
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.png");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
-
-  auto request =
-      MakeRequest(/*block_unsupported_types=*/false, file_path,
-                  file_path.BaseName(), /*delay_opening_file*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  bool called = false;
-  base::RunLoop run_loop;
-  BinaryUploadService::Result result;
-  BinaryUploadService::Request::Data data;
-  request->GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, &called, &result, &data](
-          BinaryUploadService::Result tmp_result,
-          BinaryUploadService::Request::Data tmp_data) {
-        called = true;
-        run_loop.Quit();
-        result = tmp_result;
-        data = std::move(tmp_data);
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(called);
-
-  // The dlp request should have been removed since the type is unsupported.
-  for (const std::string& tag : request->content_analysis_request().tags())
-    EXPECT_NE("dlp", tag);
-  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
-  EXPECT_TRUE(data.contents.empty());
-  EXPECT_EQ(file_path, data.path);
-  EXPECT_EQ(data.size, normal_contents.size());
-  // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6");
-  EXPECT_EQ(request->digest(), data.hash);
-  EXPECT_EQ("image/png", data.mime_type)
-      << data.mime_type << " is not an expected mimetype";
 }
 
 }  // namespace safe_browsing
