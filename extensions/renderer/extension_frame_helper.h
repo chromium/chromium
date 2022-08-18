@@ -167,6 +167,7 @@ class ExtensionFrameHelper
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() override;
   void DraggableRegionsChanged() override;
+  void DidClearWindowObject() override;
 
   // IPC handlers.
   void OnExtensionValidateMessagePort(int worker_thread_id, const PortId& id);
