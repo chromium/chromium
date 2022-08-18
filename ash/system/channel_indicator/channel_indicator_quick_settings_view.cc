@@ -174,8 +174,12 @@ ChannelIndicatorQuickSettingsView::ChannelIndicatorQuickSettingsView(
     version_info::Channel channel,
     bool allow_user_feedback) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kUnifiedSystemInfoViewPadding,
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
+  // kCenter align the layout for this view because it is a container for the
+  // buttons.
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_between_child_spacing(kButtonSpacing);
