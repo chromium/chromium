@@ -60,6 +60,7 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
+  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override;
   void ShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -141,19 +142,25 @@ void SigninInterceptFirstRunExperienceDialog::
   dialog_->DoNextStep(Step::kTurnOnSync, Step::kSyncConfirmation);
 }
 
-void SigninInterceptFirstRunExperienceDialog::
-    InterceptTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
-        bool is_managed_account,
-        base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-            callback) {
+bool SigninInterceptFirstRunExperienceDialog::
+    InterceptTurnSyncOnHelperDelegate::
+        ShouldAbortBeforeShowSyncDisabledConfirmation() {
   // Abort the sync flow and proceed to profile customization.
   if (dialog_) {
     dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
   }
 
-  // `SYNC_WITH_DEFAULT_SETTINGS` for the sync disable confirmation means "stay
-  // signed in". See https://crbug.com/1141341.
-  std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  return true;
+}
+
+void SigninInterceptFirstRunExperienceDialog::
+    InterceptTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+        bool is_managed_account,
+        base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+            callback) {
+  // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
+  // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
+  NOTREACHED();
 }
 
 void SigninInterceptFirstRunExperienceDialog::

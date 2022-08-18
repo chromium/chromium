@@ -644,8 +644,9 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
-  // Sync consent is granted even though Sync cannot be enabled.
-  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
+  // Sync consent should not be granted since the user hasn't seen any consent
+  // UI.
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
 
   SimulateProfileCustomizationDoneButtonClicked();
   EXPECT_FALSE(controller()->ShowsModalDialog());

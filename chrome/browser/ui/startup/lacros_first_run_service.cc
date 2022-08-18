@@ -102,16 +102,19 @@ class SilentSyncEnablerDelegate : public TurnSyncOnHelper::Delegate {
         ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
   }
 
+  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
+    return true;
+  }
+
   void ShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override {
-    // `SYNC_WITH_DEFAULT_SETTINGS` for the sync disable confirmation means
-    // "stay signed in". See https://crbug.com/1141341.
-    std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
-        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
+    // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
+    // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
+    NOTREACHED();
   }
 
   void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }

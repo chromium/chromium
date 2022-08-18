@@ -147,6 +147,7 @@ class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
+  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override;
   void ShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -461,11 +462,13 @@ class TurnSyncOnHelperTest : public testing::Test {
         .Times(0);
   }
 
-  void CheckSyncAborted(bool has_primary_account) {
+  void CheckSyncAborted(bool kept_account, int destroyed_delegate_count = 1) {
     EXPECT_FALSE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_EQ(has_primary_account,
-              identity_manager()->HasAccountWithRefreshToken(account_id()));
+    EXPECT_EQ(kept_account,
+              identity_manager()->HasPrimaryAccountWithRefreshToken(
+                  signin::ConsentLevel::kSignin));
+    EXPECT_EQ(delegate_destroyed_, destroyed_delegate_count);
   }
 
   void CheckDelegateCalls() {
@@ -528,12 +531,21 @@ class TurnSyncOnHelperTest : public testing::Test {
       std::move(callback).Run(sync_confirmation_result_);
   }
 
+  bool OnShouldAbortBeforeShowSyncDisabledConfirmation() {
+    EXPECT_FALSE(sync_confirmation_shown_);
+    EXPECT_EQ(sync_disabled_confirmation_, kNotShown);
+    if (abort_before_show_sync_disabled_confirmation_)
+      sync_disabled_confirmation_ = kAbortedBeforeShown;
+    return abort_before_show_sync_disabled_confirmation_;
+  }
+
   void OnShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) {
     EXPECT_EQ(sync_disabled_confirmation_, kNotShown)
-        << "Sync disabled confirmation should be shown only once.";
+        << "Sync disabled confirmation should be shown only once or aborted "
+           "without showing.";
     sync_disabled_confirmation_ =
         is_managed_account ? kShownManaged : kShownNonManaged;
     if (run_delegate_callbacks_)
@@ -601,13 +613,19 @@ class TurnSyncOnHelperTest : public testing::Test {
 
  protected:
   // Type of sync disabled confirmation shown.
-  enum SyncDisabledConfirmation { kNotShown, kShownManaged, kShownNonManaged };
+  enum SyncDisabledConfirmation {
+    kNotShown,
+    kAbortedBeforeShown,
+    kShownManaged,
+    kShownNonManaged
+  };
 
   // Delegate behavior.
   signin::SigninChoice merge_data_choice_ = signin::SIGNIN_CHOICE_CANCEL;
   signin::SigninChoice enterprise_choice_ = signin::SIGNIN_CHOICE_CANCEL;
   LoginUIService::SyncConfirmationUIClosedResult sync_confirmation_result_ =
       LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+  bool abort_before_show_sync_disabled_confirmation_ = false;
   bool run_delegate_callbacks_ = true;
 
   // Expected delegate calls.
@@ -688,6 +706,11 @@ void TestTurnSyncOnHelperDelegate::ShowSyncConfirmation(
   test_fixture_->OnShowSyncConfirmation(std::move(callback));
 }
 
+bool TestTurnSyncOnHelperDelegate::
+    ShouldAbortBeforeShowSyncDisabledConfirmation() {
+  return test_fixture_->OnShouldAbortBeforeShowSyncDisabledConfirmation();
+}
+
 void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -760,7 +783,7 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted(/*has_primary_account=*/false);
+  CheckSyncAborted(/*kept_account=*/false);
   CheckDelegateCalls();
 }
 
@@ -780,7 +803,7 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted(/*has_primary_account=*/false);
+  CheckSyncAborted(/*kept_account=*/false);
   CheckDelegateCalls();
 }
 
@@ -827,6 +850,44 @@ TEST_F(TurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Tests that the sync aborted before displaying the sync disabled message and
+// `SigninAbortedMode::REMOVE_ACCOUNT` is honored.
+TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUI_RemoveAccount) {
+  // Set expectations.
+  expected_sync_disabled_confirmation_ = kAbortedBeforeShown;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  abort_before_show_sync_disabled_confirmation_ = true;
+
+  // Signin flow.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  CheckSyncAborted(/*kept_account=*/false);
+  CheckDelegateCalls();
+}
+
+// Tests that the sync aborted before displaying the sync disabled message and
+// `SigninAbortedMode::KEEP_ACCOUNT` is honored.
+TEST_F(TurnSyncOnHelperTest, SyncDisabledAbortWithoutShowingUI_KeepAccount) {
+  // Set expectations.
+  expected_sync_disabled_confirmation_ = kAbortedBeforeShown;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  abort_before_show_sync_disabled_confirmation_ = true;
+
+  // Signin flow.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 }
 
@@ -887,7 +948,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted(/*has_primary_account=*/false);
+  CheckSyncAborted(/*kept_account=*/false);
   CheckDelegateCalls();
 }
 
@@ -912,7 +973,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   // Check expectations.
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
-  CheckSyncAborted(/*has_primary_account=*/true);
+  CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 }
 
@@ -1096,7 +1157,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
-  CheckSyncAborted(/*has_primary_account=*/true);
+  CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 }
 
@@ -1112,7 +1173,7 @@ TEST_F(TurnSyncOnHelperTest, UndoSync) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted(/*has_primary_account=*/false);
+  CheckSyncAborted(/*kept_account=*/false);
   CheckDelegateCalls();
 }
 

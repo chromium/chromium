@@ -159,22 +159,25 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   ShowSyncConfirmationScreen();
 }
 
+bool ProfilePickerTurnSyncOnDelegate::
+    ShouldAbortBeforeShowSyncDisabledConfirmation() {
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    // The primary profile first run experience is silently skipped if sync is
+    // disabled (there's no point to promo a feature that cannot get enabled).
+    return true;
+  }
+
+  return false;
+}
+
 void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
+  DCHECK(!IsLacrosPrimaryProfileFirstRun(profile_));
   sync_disabled_ = true;
 
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
-    // The primary profile first run experience is silently skipped if sync is
-    // disabled (there's no point to promo a feature that cannot get enabled).
-    // TODO (crbug.com/1141341): SYNC_WITH_DEFAULT_SETTINGS encodes to stay
-    // signed-in. Split the enum for sync disabled / rename the entries to
-    // better match the situation.
-    std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    return;
-  }
   sync_confirmation_callback_ = std::move(callback);
   ShowEnterpriseWelcome(is_managed_account
                             ? EnterpriseProfileWelcomeUI::ScreenType::

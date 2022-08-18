@@ -157,6 +157,11 @@ void SetCurrentTurnSyncOnHelper(Profile* profile, TurnSyncOnHelper* helper) {
 
 }  // namespace
 
+bool TurnSyncOnHelper::Delegate::
+    ShouldAbortBeforeShowSyncDisabledConfirmation() {
+  return false;
+}
+
 // static
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
@@ -544,21 +549,30 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
     delegate_->ShowSyncConfirmation(
         base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
-  } else {
-    // The sync disabled dialog has an explicit "sign-out" label for the
-    // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
-    signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
-    // Use the email-based heuristic if `account_info_` isn't fully initialized.
-    const bool is_managed_account =
-        account_info_.IsValid()
-            ? account_info_.IsManaged()
-            : !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
-                  account_info_.email);
-    delegate_->ShowSyncDisabledConfirmation(
-        is_managed_account,
-        base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
-                       weak_pointer_factory_.GetWeakPtr()));
+    return;
   }
+
+  // Sync is disabled. Check if we need to display the disabled confirmation UI
+  // first.
+  if (delegate_->ShouldAbortBeforeShowSyncDisabledConfirmation()) {
+    FinishSyncSetupAndDelete(
+        LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC);
+    return;
+  }
+
+  // The sync disabled dialog has an explicit "sign-out" label for the
+  // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
+  signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+  // Use the email-based heuristic if `account_info_` isn't fully initialized.
+  const bool is_managed_account =
+      account_info_.IsValid()
+          ? account_info_.IsManaged()
+          : !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+                account_info_.email);
+  delegate_->ShowSyncDisabledConfirmation(
+      is_managed_account,
+      base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 void TurnSyncOnHelper::FinishSyncSetupAndDelete(

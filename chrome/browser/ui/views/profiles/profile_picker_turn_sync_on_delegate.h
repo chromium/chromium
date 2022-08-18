@@ -45,6 +45,7 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
+  bool ShouldAbortBeforeShowSyncDisabledConfirmation() override;
   void ShowSyncDisabledConfirmation(
       bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>

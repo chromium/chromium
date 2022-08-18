@@ -99,6 +99,14 @@ class TurnSyncOnHelper {
         base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
             callback) = 0;
 
+    // Whether the delegate wants to silently abort the turn sync on process
+    // when the sync is disabled for the user before showing the sync disabled
+    // UI.
+    // This can be used in cases when the turn sync on is triggered not by the
+    // user action but a promo process.
+    // Defaults to false.
+    virtual bool ShouldAbortBeforeShowSyncDisabledConfirmation();
+
     // Shows a screen informing that sync is disabled for the user.
     // |is_managed_account| is true if the account (where sync is being set up)
     // is managed (which may influence the UI or strings). |callback| must be
