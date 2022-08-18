@@ -58,20 +58,24 @@
 
 namespace blink {
 
-#if BUILDFLAG(IS_MAC)
-
 namespace {
 
-base::Feature kCanvas2DHibernation{
-    "Canvas2DHibernation", base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCanvas2DHibernation {
+  "Canvas2DHibernation",
+#if BUILDFLAG(IS_MAC)
+      // Canvas hibernation is not always enabled on MacOS X due to a bug that
+      // causes content loss. TODO: Find a better fix for crbug.com/588434
+      base::FeatureState::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 }
 
 // static
 bool Canvas2DLayerBridge::IsHibernationEnabled() {
   return base::FeatureList::IsEnabled(kCanvas2DHibernation);
 }
-
-#endif  // BUILDFLAG(IS_MAC)
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
                                          RasterMode raster_mode,

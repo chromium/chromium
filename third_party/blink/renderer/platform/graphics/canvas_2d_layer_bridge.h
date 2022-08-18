@@ -157,13 +157,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   bool HasRateLimiterForTesting();
 
-#if BUILDFLAG(IS_MAC)
-  // Canvas hibernation is not always enabled on MacOS X due to a bug that
-  // causes content loss. TODO: Find a better fix for crbug.com/588434
   static bool IsHibernationEnabled();
-#else
-  constexpr static bool IsHibernationEnabled() { return true; }
-#endif
 
  private:
   friend class Canvas2DLayerBridgeTest;
