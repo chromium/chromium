@@ -63,6 +63,10 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_MAC)
@@ -830,6 +834,29 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(0, bounds.y());
   EXPECT_FALSE(bounds.IsEmpty());
 }
+
+// Test to ensure crbug.com/1353133 won't reproduce. It casts the frame_view to
+// the ChromeOS's frame_view to have access to the caption_button_container_ so
+// it cannot be run on any other platform.
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       WindowControlsOverlayFrameViewHeight) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+
+  BrowserNonClientFrameViewChromeOS* frame_view_cros =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(helper()->frame_view());
+
+  int frame_view_height = frame_view_cros->GetMinimumSize().height();
+  int caption_container_height =
+      frame_view_cros->caption_button_container_for_testing()->size().height();
+  int client_view_height =
+      frame_view_cros->frame()->client_view()->GetMinimumSize().height();
+
+  EXPECT_EQ(frame_view_height, caption_container_height + client_view_height);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        CSSRectTestLTR) {

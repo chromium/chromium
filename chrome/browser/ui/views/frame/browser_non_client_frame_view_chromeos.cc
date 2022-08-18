@@ -512,7 +512,16 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
         std::max(min_width, min_tabstrip_width + GetTabStripLeftInset() +
                                 GetTabStripRightInset());
   }
-  return gfx::Size(min_width, min_client_view_size.height());
+
+  int min_height = min_client_view_size.height();
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    // Ensure that the minimum height is at least the height of the caption
+    // button container, which contains the WCO toggle and other windowing
+    // controls.
+    min_height = min_height + caption_button_container_->size().height();
+  }
+
+  return gfx::Size(min_width, min_height);
 }
 
 void BrowserNonClientFrameViewChromeOS::OnThemeChanged() {
