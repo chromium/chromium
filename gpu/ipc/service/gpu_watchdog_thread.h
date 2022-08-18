@@ -271,7 +271,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 #endif
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  raw_ptr<FILE> tty_file_ = nullptr;
+  raw_ptr<FILE, DanglingUntriaged> tty_file_ = nullptr;
   int host_tty_ = -1;
   int active_tty_ = -1;
   int last_active_tty_ = -1;
