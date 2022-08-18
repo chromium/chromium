@@ -1656,7 +1656,7 @@
   {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 112
   },
   {
     "name": "enable-autofill-credit-card-upload",
