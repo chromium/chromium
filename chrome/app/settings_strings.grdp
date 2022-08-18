@@ -787,20 +787,20 @@
     To import passwords, select a CSV file
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SYNCING_USERS" desc="Text shown to the signed in user (whose passwords are synced with Google Password Manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords to your Google Password Manager, select a CSV file
+    To import passwords to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>, select a CSV file
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_SIGNEDOUT_USERS" desc="Text shown to the user (whose passwords are store locally on their device) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
-    To import passwords to this device, select a CSV file
+    To import passwords to Google Password Manager on this device, select a CSV file
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE" desc="Text on the dialog for importing passwords that shows how many passwords have been stored on the user device, after the user has chosen the file to import passwords from.">
     {NUM_PASSWORDS, plural,
-     =1 {1 password imported to this device}
-     other {{NUM_PASSWORDS} passwords imported to this device}}
+     =1 {1 password imported to Google Password Manager on this device}
+     other {{NUM_PASSWORDS} passwords imported to Google Password Manager on this device}}
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT" desc="Text on the dialog for importing passwords that shows how many passwords have been saved to Google Password Manager, after the user has chosen the file to import passwords from.">
     {NUM_PASSWORDS, plural,
-     =1 {1 password imported to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)}
-     other {{NUM_PASSWORDS} passwords imported to your Google Password Manager (<ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>)}}
+     =1 {1 password imported to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>}
+     other {{NUM_PASSWORDS} passwords imported to Google Password Manager for <ph name="USER_EMAIL"><ex>elisa.g.becket@gmail.com</ex>$1</ph>}}
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_STORE_PICKER_ACCESSIBLE_NAME" desc="Accessible name of destination dropdown in the passwords import dialog">
     Select where to import your passwords
