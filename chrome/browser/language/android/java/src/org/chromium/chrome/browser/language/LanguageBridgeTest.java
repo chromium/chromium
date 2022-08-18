@@ -18,6 +18,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Tests for {@link LanguageBridge} which gets language lists from native
  */
@@ -40,8 +43,7 @@ public class LanguageBridgeTest {
     @Test
     @SmallTest
     public void testIsTopULPBaseLanguage() {
-        String[] ulpLanguages = {"pt-BR", "en-US"};
-        mFakeLanguageBridge.setULPLanguages(ulpLanguages);
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("pt-BR", "en-US"));
 
         Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("pt"),
                 AppLanguagePromoDialog.TopULPMatchType.YES);
@@ -54,8 +56,7 @@ public class LanguageBridgeTest {
         Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
                 AppLanguagePromoDialog.TopULPMatchType.NO);
 
-        String[] emptyULPLanguages = {};
-        mFakeLanguageBridge.setULPLanguages(emptyULPLanguages);
+        mFakeLanguageBridge.setULPLanguages(new ArrayList<>());
         Assert.assertEquals(LanguageBridge.isTopULPBaseLanguage("en-US"),
                 AppLanguagePromoDialog.TopULPMatchType.EMPTY);
     }

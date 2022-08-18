@@ -560,7 +560,7 @@ public class AppLanguagePromoDialog {
     public static boolean maybeShowPrompt(Activity activity,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             RestartAction restartAction) {
-        if (!shouldShowPrompt()) return false;
+        if (!shouldShowPrompt(NetworkChangeNotifier.isOnline())) return false;
 
         AppLanguagePromoDialog prompt =
                 new AppLanguagePromoDialog(activity, modalDialogManagerSupplier, restartAction);
@@ -569,9 +569,11 @@ public class AppLanguagePromoDialog {
     }
 
     /**
+     * @param isOnline True if the device is currently online.
      * @return Whether the app language prompt should be shown or not.
      */
-    private static boolean shouldShowPrompt() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean shouldShowPrompt(boolean isOnline) {
         // Skip feature and preference checks if forced on for testing.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
             // Don't show if prompt has already been shown.
@@ -590,9 +592,7 @@ public class AppLanguagePromoDialog {
             }
         }
 
-        boolean isOnline = NetworkChangeNotifier.isOnline();
         recordOnlineStatus(isOnline);
-
         // Only show the prompt if online.
         return isOnline;
     }

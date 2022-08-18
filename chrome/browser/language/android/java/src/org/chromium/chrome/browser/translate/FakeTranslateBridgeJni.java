@@ -30,6 +30,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private HashSet<String> mNeverLanguages;
     private HashSet<String> mAlwaysLanguages;
     private TreeMap<String, LanguageItem> mChromeLanguages;
+    private boolean mAppLanguagePromptShown;
 
     public FakeTranslateBridgeJni(Collection<LanguageItem> chromeLanguages,
             Collection<String> userAcceptLanguages, Collection<String> neverLanguages,
@@ -43,6 +44,18 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         mNeverLanguages = new HashSet(neverLanguages);
         mAlwaysLanguages = new HashSet(alwaysLanguages);
         mTargetLanguage = targetLanguage;
+    }
+
+    /**
+     * Create a basic fake translate bridge with English as the default language.
+     */
+    public FakeTranslateBridgeJni() {
+        mChromeLanguages = new TreeMap<String, LanguageItem>();
+        mUserAcceptLanguages = new ArrayList(Arrays.asList("en"));
+        mDefaultUserAcceptLanguages = new LinkedHashSet(Arrays.asList("en"));
+        mNeverLanguages = new HashSet(Arrays.asList("en"));
+        mAlwaysLanguages = new HashSet();
+        mTargetLanguage = "en";
     }
 
     @Override
@@ -127,6 +140,24 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         return mNeverLanguages.contains(language);
     }
 
+    @Override
+    public boolean getAppLanguagePromptShown() {
+        return mAppLanguagePromptShown;
+    }
+
+    @Override
+    public void setAppLanguagePromptShown() {
+        mAppLanguagePromptShown = true;
+    }
+
+    /**
+     * Allow the App Language Prompt shown status to be set for testing.
+     * @param shown Boolean value to set App Language Prompt shown status to.
+     */
+    public void setAppLanguagePromptShown(boolean shown) {
+        mAppLanguagePromptShown = shown;
+    }
+
     /**
      * Following methods are not implemented yet since they are not needed by current tests.
      */
@@ -178,16 +209,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
 
     @Override
     public void setExplicitLanguageAskPromptShown(boolean shown) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean getAppLanguagePromptShown() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setAppLanguagePromptShown() {
         throw new UnsupportedOperationException();
     }
 
