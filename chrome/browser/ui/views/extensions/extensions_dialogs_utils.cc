@@ -46,6 +46,7 @@ views::View* GetDialogAnchorView(
 }  // namespace
 
 ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser) {
+  CHECK(browser);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   return GetExtensionsToolbarContainer(browser_view);
@@ -53,6 +54,7 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser) {
 
 ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
     gfx::NativeWindow parent) {
+  CHECK(parent);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForNativeWindow(parent);
   return GetExtensionsToolbarContainer(browser_view);
@@ -88,7 +90,8 @@ std::u16string GetCurrentHost(content::WebContents* web_contents) {
 void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
-  ExtensionsToolbarContainer* container = GetExtensionsToolbarContainer(parent);
+  ExtensionsToolbarContainer* const container =
+      parent ? GetExtensionsToolbarContainer(parent) : nullptr;
   if (container && container->GetVisible()) {
     ShowDialog(container, {extension_id}, std::move(dialog_model));
   } else {
