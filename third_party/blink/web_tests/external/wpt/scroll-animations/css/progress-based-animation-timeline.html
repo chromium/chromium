@@ -39,14 +39,14 @@
   <div id=element></div>
 </main>
 <script>
-  // Force layout of scrollers.
-  scroller1.offsetTop;
-
-  scroller1.scrollTop = 20;
-
-  promise_test(async (t) => {
-    await waitForNextFrame();
-    assert_equals(getComputedStyle(element).top, '120px');
-  }, 'progress based animation timeline works');
-
+  window.onload = async () => {
+    promise_test(async (t) => {
+      await waitForNextFrame();
+      const anim = document.getAnimations()[0];
+      await anim.ready;
+      scroller1.scrollTop = 20;
+      await waitForNextFrame();
+      assert_equals(getComputedStyle(element).top, '120px');
+    }, 'progress based animation timeline works');
+  };
 </script>
