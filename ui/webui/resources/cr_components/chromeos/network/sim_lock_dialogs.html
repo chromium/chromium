@@ -133,7 +133,7 @@
     <cr-dialog id="unlockPinDialog"
         on-cancel="onCancel_"
         close-text="[[i18n('close')]]">
-      <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
+      <div slot="title" aria-live="polite">[[i18n('networkSimLockedTitle')]]</div>
       <div slot="body">
         <template is="dom-if" if="[[isSimPinLockRestricted_]]">
           <div id="adminSubtitle">
@@ -145,7 +145,7 @@
             on-enter="sendUnlockPin_"
             disabled="[[inProgress_]]">
         </network-password-input>
-        <div class="pinEntrySubtext" aria-live="assertive">
+        <div class="pinEntrySubtext" aria-live="polite">
           [[getPinEntrySubtext_(error_, deviceState)]]
         </div>
       </div>
@@ -165,7 +165,7 @@
     <cr-dialog id="unlockPukDialog"
         on-cancel="onCancel_"
         close-text="[[i18n('close')]]">
-      <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
+      <div slot="title" aria-live="polite">[[i18n('networkSimLockedTitle')]]</div>
       <div slot="body">
         <div id="puk-subtitle">
           [[getNetworkSimPukDialogString_(isSimPinLockRestricted_)]]
@@ -175,7 +175,7 @@
             <iron-icon id="puk-warning-icon" icon="cellular-setup:warning">
             </iron-icon>
           </template>
-          <div aria-live="assertive">
+          <div aria-live="polite">
             [[getPukWarningMessage_(error_, deviceState,
                 isSimPinLockRestricted_)]]
           </div>
