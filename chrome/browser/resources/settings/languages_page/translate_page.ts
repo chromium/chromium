@@ -83,6 +83,8 @@ export class SettingsTranslatePageElement extends
     this.languageHelper.setTranslateTargetLanguage(
         this.shadowRoot!.querySelector<HTMLSelectElement>('#targetLanguage')!
             .value);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.CHANGE_TRANSLATE_TARGET);
   }
 
   /**

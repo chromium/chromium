@@ -5,7 +5,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
@@ -69,6 +69,19 @@ suite('TranslatePageMetricsBrowser', function() {
       languageHelper = translatePage.languageHelper;
       return languageHelper.whenReady();
     });
+  });
+
+  test('records when translate target is changed', async () => {
+    const targetLanguageSelector = translatePage.shadowRoot!.querySelector
+        <HTMLSelectElement>('#targetLanguage');
+    assertTrue(!!targetLanguageSelector);
+
+    targetLanguageSelector.value = 'sw';
+    targetLanguageSelector.dispatchEvent(new CustomEvent('change'));
+
+    assertEquals(
+      LanguageSettingsActionType.CHANGE_TRANSLATE_TARGET,
+      await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
   });
 
   test('records when disabling translate.enable toggle', async () => {
