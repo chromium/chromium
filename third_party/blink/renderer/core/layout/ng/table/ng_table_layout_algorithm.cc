@@ -1099,6 +1099,10 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
                                                /* is_forced_break */ false);
         broke_inside = true;
+
+        if (child == grouped_children.footer)
+          pending_repeated_footer_block_size.reset();
+
         break;
       }
       early_break_in_child = EnterEarlyBreakInChild(child, *early_break_);
