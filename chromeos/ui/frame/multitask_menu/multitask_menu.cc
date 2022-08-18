@@ -87,10 +87,10 @@ void MultitaskMenu::ShowBubble() {
 }
 
 void MultitaskMenu::HideBubble() {
-  DCHECK(bubble_widget_);
   // This calls into OnWidgetDestroying() so `bubble_widget_` should have been
   // reset to nullptr.
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
 }
+
 }  // namespace chromeos

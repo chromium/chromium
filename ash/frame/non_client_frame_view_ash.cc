@@ -144,13 +144,6 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     }
   }
 
-  NonClientFrameViewAsh* GetFrameView() {
-    views::Widget* widget =
-        views::Widget::GetWidgetForNativeWindow(window_state_->window());
-    return static_cast<NonClientFrameViewAsh*>(
-        widget->non_client_view()->frame_view());
-  }
-
   views::Widget* widget_;
   WindowState* window_state_;
   std::unique_ptr<ImmersiveFullscreenController>

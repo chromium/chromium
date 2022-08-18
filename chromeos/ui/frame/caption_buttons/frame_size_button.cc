@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/wm/features.h"
@@ -19,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -226,7 +228,9 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
                                 HTMAXBUTTON),
       delegate_(delegate),
       set_buttons_to_snap_mode_delay_ms_(kSetButtonsToSnapModeDelayMs),
-      in_snap_mode_(false) {}
+      in_snap_mode_(false) {
+  display_observer_.emplace(this);
+}
 
 FrameSizeButton::~FrameSizeButton() = default;
 
@@ -336,7 +340,7 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   if (!chromeos::wm::features::IsFloatWindowEnabled())
     return;
 
-  if (GetState() == views::Button::STATE_HOVERED) {
+  if (GetState() == views::Button::STATE_HOVERED && GetWidget()->IsActive()) {
     base::OnceClosure cancel_animation = base::BindOnce(
         &FrameSizeButton::DestroyPieAnimation, base::Unretained(this));
     base::OnceClosure show_multitask_menu = base::BindOnce(
@@ -355,6 +359,15 @@ void FrameSizeButton::PaintButtonContents(gfx::Canvas* canvas) {
     pie_animation_->Paint(canvas);
 
   views::FrameCaptionButton::PaintButtonContents(canvas);
+}
+
+void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state == display::TabletState::kEnteringTabletMode) {
+    pie_animation_.reset();
+    set_buttons_to_snap_mode_timer_.Stop();
+    if (multitask_menu_)
+      multitask_menu_->HideBubble();
+  }
 }
 
 const raw_ptr<MultitaskMenu> FrameSizeButton::GetMultitaskMenuForTesting() {
