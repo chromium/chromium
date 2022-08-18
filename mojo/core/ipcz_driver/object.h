@@ -18,6 +18,8 @@
 
 namespace mojo::core::ipcz_driver {
 
+class Transport;
+
 // Common base class for objects managed by Mojo's ipcz driver.
 class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
  public:
@@ -84,6 +86,23 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
 
   // Closes this object.
   virtual void Close();
+
+  // Indicates whether this object can be serialized at all.
+  virtual bool IsSerializable() const;
+
+  // Computes the number of bytes and platform handles required to serialize
+  // this object for transmission through `transmitter`. Returns false if the
+  // object cannot be serialized or transmitted as such.
+  virtual bool GetSerializedDimensions(Transport& transmitter,
+                                       size_t& num_bytes,
+                                       size_t& num_handles);
+
+  // Attempts to serialize this object into `data` and `handles` which are
+  // already sufficiently sized according to GetSerializedDimensions(). Returns
+  // false if serialization fails.
+  virtual bool Serialize(Transport& transmitter,
+                         base::span<uint8_t> data,
+                         base::span<PlatformHandle> handles);
 
  protected:
   virtual ~ObjectBase();

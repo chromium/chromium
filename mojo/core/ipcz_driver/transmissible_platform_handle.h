@@ -36,6 +36,17 @@ class MOJO_SYSTEM_IMPL_EXPORT TransmissiblePlatformHandle
 
   // Object:
   void Close() override;
+  bool IsSerializable() const override;
+  bool GetSerializedDimensions(Transport& transmitter,
+                               size_t& num_bytes,
+                               size_t& num_handles) override;
+  bool Serialize(Transport& transmitter,
+                 base::span<uint8_t> data,
+                 base::span<PlatformHandle> handles) override;
+
+  static scoped_refptr<TransmissiblePlatformHandle> Deserialize(
+      base::span<const uint8_t> data,
+      base::span<PlatformHandle> handles);
 
  private:
   ~TransmissiblePlatformHandle() override;

@@ -28,7 +28,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
  public:
   // Tracks what type of remote process is on the other end of this transport.
   // This is used for handle brokering decisions on Windows.
-  enum Destination {
+  enum Destination : uint32_t {
     kToNonBroker,
     kToBroker,
   };
@@ -61,8 +61,35 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   bool Transmit(base::span<const uint8_t> data,
                 base::span<const IpczDriverHandle> handles);
 
+  // Attempts to serialize `object` for eventual transmission over this
+  // Transport. This essentially implements the mojo-ipcz driver's Serialize()
+  // API and behaves according to its specification. Upon success, `object` may
+  // be invalidated.
+  IpczResult SerializeObject(ObjectBase& object,
+                             void* data,
+                             size_t* num_bytes,
+                             IpczDriverHandle* handles,
+                             size_t* num_handles);
+
+  // Deserializes a new driver object from `bytes` and `handles` received over
+  // this Transport.
+  IpczResult DeserializeObject(base::span<const uint8_t> bytes,
+                               base::span<const IpczDriverHandle> handles,
+                               scoped_refptr<ObjectBase>& object);
+
   // Object:
   void Close() override;
+  bool IsSerializable() const override;
+  bool GetSerializedDimensions(Transport& transmitter,
+                               size_t& num_bytes,
+                               size_t& num_handles) override;
+  bool Serialize(Transport& transmitter,
+                 base::span<uint8_t> data,
+                 base::span<PlatformHandle> handles) override;
+
+  static scoped_refptr<Transport> Deserialize(
+      base::span<const uint8_t> data,
+      base::span<PlatformHandle> handles);
 
   // Channel::Delegate:
   bool IsIpczTransport() const override;
@@ -84,6 +111,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   };
 
   ~Transport() override;
+
+  bool CanTransmitHandles() const;
 
   const Destination destination_;
   const base::Process remote_process_;

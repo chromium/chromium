@@ -15,6 +15,22 @@ ObjectBase::~ObjectBase() = default;
 
 void ObjectBase::Close() {}
 
+bool ObjectBase::IsSerializable() const {
+  return false;
+}
+
+bool ObjectBase::GetSerializedDimensions(Transport& transmitter,
+                                         size_t& num_bytes,
+                                         size_t& num_handles) {
+  return false;
+}
+
+bool ObjectBase::Serialize(Transport& transmitter,
+                           base::span<uint8_t> data,
+                           base::span<PlatformHandle> handles) {
+  return false;
+}
+
 // static
 IpczHandle ObjectBase::Box(scoped_refptr<ObjectBase> object) {
   IpczDriverHandle handle = ReleaseAsHandle(std::move(object));

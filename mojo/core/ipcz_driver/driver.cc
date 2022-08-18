@@ -4,6 +4,12 @@
 
 #include "mojo/core/ipcz_driver/driver.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <tuple>
+
+#include "base/containers/span.h"
+#include "base/containers/stack_container.h"
 #include "base/rand_util.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
