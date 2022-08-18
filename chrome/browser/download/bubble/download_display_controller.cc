@@ -210,16 +210,16 @@ void DownloadDisplayController::UpdateToolbarButtonState(
   }
   int in_progress_count = InProgressDownloadCount(all_models);
   bool has_deep_scanning_download = HasDeepScanningDownload(all_models);
+  base::Time last_complete_time =
+      GetLastCompleteTime(bubble_controller_->GetOfflineItems());
 
   if (in_progress_count > 0) {
-    ShowToolbarButton();
     icon_info_.icon_state = DownloadIconState::kProgress;
     icon_info_.is_active = true;
   } else {
     icon_info_.icon_state = DownloadIconState::kComplete;
-    if (HasRecentCompleteDownload(
-            kToolbarIconActiveTimeInterval,
-            GetLastCompleteTime(bubble_controller_->GetOfflineItems()))) {
+    if (HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
+                                  last_complete_time)) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
     } else if (!browser_->window()->IsFullscreen() &&
@@ -236,6 +236,11 @@ void DownloadDisplayController::UpdateToolbarButtonState(
     icon_info_.icon_state = DownloadIconState::kDeepScanning;
   }
 
+  if (icon_info_.icon_state != DownloadIconState::kComplete ||
+      HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,
+                                last_complete_time)) {
+    ShowToolbarButton();
+  }
   display_->UpdateDownloadIcon();
 }
 
@@ -275,26 +280,16 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  base::Time last_complete_time =
-      GetLastCompleteTime(bubble_controller_->GetOfflineItems());
-  if (!HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,
-                                 last_complete_time)) {
-    return;
+
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
+      bubble_controller_->GetAllItemsToDisplay();
+  UpdateToolbarButtonState(all_models);
+  if (display_->IsShowing()) {
+    ScheduleToolbarDisappearance(
+        kToolbarIconVisibilityTimeInterval -
+        (base::Time::Now() -
+         GetLastCompleteTime(bubble_controller_->GetOfflineItems())));
   }
-  if (bubble_controller_->GetAllItemsToDisplay().empty()) {
-    return;
-  }
-  // If the last download complete time is less than
-  // `kToolbarIconVisibilityTimeInterval` ago, show the button
-  // immediately.
-  ShowToolbarButton();
-  icon_info_.icon_state = DownloadIconState::kComplete;
-  // The initial state should be inactive, because there is no active
-  // download.
-  icon_info_.is_active = false;
-  display_->UpdateDownloadIcon();
-  ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval -
-                               (base::Time::Now() - last_complete_time));
 }
 
 bool DownloadDisplayController::HasRecentCompleteDownload(

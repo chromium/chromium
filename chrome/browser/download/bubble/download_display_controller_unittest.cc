@@ -54,6 +54,13 @@ class FakeDownloadDisplay : public DownloadDisplay {
     controller_ = controller;
   }
 
+  void ResetState() {
+    shown_ = false;
+    detail_shown_ = false;
+    icon_state_ = DownloadIconState::kComplete;
+    is_active_ = false;
+  }
+
   void Show() override { shown_ = true; }
 
   void Hide() override {
@@ -692,6 +699,19 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
+}
+
+TEST_F(DownloadDisplayControllerTest, InitialState_InProgressDownload) {
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+
+  // Simulate a new window opened.
+  display().ResetState();
+  DownloadDisplayController controller(&display(), browser(),
+                                       &bubble_controller());
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest,
