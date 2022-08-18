@@ -237,12 +237,12 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
     settings.set_content_settings(
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     settings.set_block_third_party_cookies(true);
-    base::HistogramTester histogram_tester;
+    base::HistogramTester histogram_tester_2;
     EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
                                         QueryReason::kCookies),
               CONTENT_SETTING_BLOCK);
-    histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
-    histogram_tester.ExpectBucketCount(
+    histogram_tester_2.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+    histogram_tester_2.ExpectBucketCount(
         kAllowedRequestsHistogram,
         static_cast<int>(net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
         1);

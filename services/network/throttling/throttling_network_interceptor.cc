@@ -18,7 +18,7 @@ namespace network {
 
 namespace {
 
-constexpr int64_t kPacketSize = 1500;
+constexpr int kPacketSize = 1500;
 
 base::TimeDelta CalculateTickLength(double throughput) {
   return throughput ? base::Seconds(kPacketSize / throughput)
@@ -288,8 +288,6 @@ void ThrottlingNetworkInterceptor::SetSuspendWhenOffline(bool suspend) {
 }
 
 int ThrottlingNetworkInterceptor::GetReadBufLen(int buf_len) const {
-  constexpr int kPacketSize = 1500;
-
   // Do not reduce read buffer length if download throttling is disabled because
   // it will slow down the download.
   if (!conditions_->download_throughput()) {

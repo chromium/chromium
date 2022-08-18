@@ -163,13 +163,13 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
   if (is_enabled()) {
     // Check if `normalized_site` can be found in the customizations first.
     // If not, fall back to look up in `sets_`.
-    if (const auto it =
+    if (const auto customizations_it =
             fps_context_config.customizations().find(normalized_site);
-        it != fps_context_config.customizations().end()) {
-      entry = it->second;
-    } else if (const auto it = sets_->find(normalized_site);
-               it != sets_->end()) {
-      entry = it->second;
+        customizations_it != fps_context_config.customizations().end()) {
+      entry = customizations_it->second;
+    } else if (const auto sets_it = sets_->find(normalized_site);
+               sets_it != sets_->end()) {
+      entry = sets_it->second;
     }
   }
 

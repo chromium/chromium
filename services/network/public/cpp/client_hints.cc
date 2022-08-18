@@ -141,7 +141,6 @@ const ClientHintToDelegatedThirdPartiesHeader
 ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
                                              MetaCHType type) {
   const DecodeMap& decode_map = GetDecodeMap();
-  ClientHintToDelegatedThirdPartiesHeader result;
 
   switch (type) {
     case MetaCHType::HttpEquivAcceptCH: {

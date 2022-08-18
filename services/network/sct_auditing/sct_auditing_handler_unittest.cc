@@ -960,11 +960,13 @@ TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
 // and log a histogram for this case.
 TEST_F(SCTAuditingHandlerTest, LogNotFound) {
   // Set up an empty CT log list.
-  std::vector<mojom::CTLogInfoPtr> log_list;
-  base::RunLoop run_loop;
-  network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
-                                    run_loop.QuitClosure());
-  run_loop.Run();
+  {
+    std::vector<mojom::CTLogInfoPtr> log_list;
+    base::RunLoop run_loop;
+    network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
+                                      run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;

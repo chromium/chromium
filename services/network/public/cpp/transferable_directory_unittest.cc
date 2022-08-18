@@ -135,7 +135,6 @@ TEST_F(TransferableDirectoryTestWithHandle, MojoTraitsWithHandle) {
 #else
 
 TEST_F(TransferableDirectoryTest, OpenAndMountNotSupportedForPlatform) {
-  const base::FilePath kDirPath(FILE_PATH_LITERAL("/some/directory"));
   TransferableDirectory dir;
   dir = kDirPath;
   EXPECT_EQ(dir.path(), kDirPath);

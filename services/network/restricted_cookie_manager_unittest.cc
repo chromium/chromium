@@ -2248,17 +2248,19 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
           net::CookiePartitionKey::FromScript()),
       kCookieURL, kSiteForCookies, kTopFrameOrigin));
 
-  auto options = mojom::CookieManagerGetOptions::New();
-  options->name = "";
-  options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
 
-  net::CookieList cookies = sync_service_->GetAllForUrl(
-      kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options),
-      /*partitioned_cookies_runtime_feature_enabled=*/true);
-  ASSERT_EQ(1u, cookies.size());
-  EXPECT_TRUE(cookies[0].IsPartitioned());
-  EXPECT_EQ(cookies[0].PartitionKey().value(), kNoncedPartitionKey);
-  EXPECT_EQ("__Host-foo", cookies[0].Name());
+    net::CookieList cookies = sync_service_->GetAllForUrl(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options),
+        /*partitioned_cookies_runtime_feature_enabled=*/true);
+    ASSERT_EQ(1u, cookies.size());
+    EXPECT_TRUE(cookies[0].IsPartitioned());
+    EXPECT_EQ(cookies[0].PartitionKey().value(), kNoncedPartitionKey);
+    EXPECT_EQ("__Host-foo", cookies[0].Name());
+  }
 
   {  // Test that an unnonced partition cannot see the cookies or observe
      // changes to them.
