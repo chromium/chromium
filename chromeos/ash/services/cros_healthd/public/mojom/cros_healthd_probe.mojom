@@ -756,12 +756,7 @@ struct SupportedCapabilities {
 };
 
 // System probe result. DEPRECATED.
-union DEPRECATE_SystemResult {
-  // Valid DEPRECATE_SystemInfo.
-  DEPRECATE_SystemInfo system_info;
-  // The error that occurred attempting to retrieve DEPRECATE_SystemInfo.
-  ProbeError error;
-};
+union DEPRECATE_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
@@ -770,41 +765,6 @@ union SystemResult {
   SystemInfo system_info;
   // The error that occurred attempting to retrieve SystemInfo.
   ProbeError error;
-};
-
-// System Information. DEPRECATED.
-// TODO(b/190459636): Delete struct elements.
-//
-// NextMinVersion: 1, NextIndex: 12
-struct DEPRECATE_SystemInfo {
-  // The date the device was first activated.
-  // Format: YYYY-WW.
-  string? first_power_date@0;
-  // The date the device was manufactured (finalized in factory).
-  // Format: YYYY-MM-DD.
-  string? manufacture_date@1;
-  // The product SKU number.
-  string? product_sku_number@2;
-  // The product serial number.
-  string? product_serial_number@3;
-  // The product model name.
-  string? product_model_name@4;
-  // Contents of CrosConfig in /branding/marketing-name.
-  string marketing_name@5;
-  // The BIOS version.
-  string? bios_version@6;
-  // The product name of the motherboard.
-  string? board_name@7;
-  // The version of the motherboard.
-  string? board_version@8;
-  // The chassis type of the device. The values reported by chassis type are
-  // mapped in
-  // www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.0.0.pdf.
-  NullableUint64? chassis_type@9;
-  // The product name (model) of the system.
-  string? product_name@10;
-  // The OS version of the system.
-  OsVersion os_version@11;
 };
 
 // System Information.
