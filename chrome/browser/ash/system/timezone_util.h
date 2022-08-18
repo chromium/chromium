@@ -8,13 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
-
-namespace base {
-class ListValue;
-}
 
 namespace user_manager {
 class User;
@@ -33,7 +30,7 @@ absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
 std::u16string GetCurrentTimezoneName();
 
 // Creates a list of pairs of each timezone's ID and name.
-std::unique_ptr<base::ListValue> GetTimezoneList();
+base::Value::List GetTimezoneList();
 
 // Returns true if device is managed and has SystemTimezonePolicy set.
 bool HasSystemTimezonePolicy();

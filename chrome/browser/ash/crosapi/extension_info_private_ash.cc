@@ -390,7 +390,8 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertySupportedTimezones) {
-    return ash::system::GetTimezoneList();
+    return base::Value::ToUniquePtrValue(
+        base::Value(ash::system::GetTimezoneList()));
   }
 
   const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());

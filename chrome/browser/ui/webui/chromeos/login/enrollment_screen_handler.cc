@@ -146,20 +146,17 @@ constexpr struct {
      IDS_AD_ENCRYPTION_LEGACY_SUBTITLE,
      authpolicy::KerberosEncryptionTypes::ENC_TYPES_LEGACY}};
 
-base::ListValue GetEncryptionTypesList() {
+base::Value::List GetEncryptionTypesList() {
   const authpolicy::KerberosEncryptionTypes default_types =
       authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG;
-  base::ListValue encryption_list;
+  base::Value::List encryption_list;
   for (const auto& enc_types : kEncryptionTypes) {
-    base::DictionaryValue enc_option;
-    enc_option.SetKey(
-        "title", base::Value(l10n_util::GetStringUTF16(enc_types.title_id)));
-    enc_option.SetKey(
-        "subtitle",
-        base::Value(l10n_util::GetStringUTF16(enc_types.subtitle_id)));
-    enc_option.SetKey("value", base::Value(enc_types.id));
-    enc_option.SetKey("selected",
-                      base::Value(default_types == enc_types.encryption_types));
+    base::Value::Dict enc_option;
+    enc_option.Set("title", l10n_util::GetStringUTF16(enc_types.title_id));
+    enc_option.Set("subtitle",
+                   l10n_util::GetStringUTF16(enc_types.subtitle_id));
+    enc_option.Set("value", enc_types.id);
+    enc_option.Set("selected", default_types == enc_types.encryption_types);
     encryption_list.Append(std::move(enc_option));
   }
   return encryption_list;
@@ -773,11 +770,11 @@ void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
            false /* show_unlock_password */);
     return;
   }
-  base::DictionaryValue custom;
-  custom.SetKey(
+  base::Value::Dict custom;
+  custom.Set(
       "name",
       base::Value(l10n_util::GetStringUTF8(IDS_AD_CONFIG_SELECTION_CUSTOM)));
-  options->Append(std::move(custom));
+  options->GetList().Append(std::move(custom));
   active_directory_join_type_ =
       ActiveDirectoryDomainJoinType::USING_CONFIGURATION;
   CallJS("login.OAuthEnrollmentScreen.setAdJoinConfiguration",

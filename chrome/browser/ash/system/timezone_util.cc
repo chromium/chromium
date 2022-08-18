@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
@@ -218,14 +217,14 @@ std::u16string GetCurrentTimezoneName() {
 }
 
 // Creates a list of pairs of each timezone's ID and name.
-std::unique_ptr<base::ListValue> GetTimezoneList() {
+base::Value::List GetTimezoneList() {
   const auto& timezones = TimezoneSettings::GetInstance()->GetTimezoneList();
-  auto timezone_list = std::make_unique<base::ListValue>();
+  base::Value::List timezone_list;
   for (const auto& timezone : timezones) {
     base::Value::List option;
     option.Append(TimezoneSettings::GetTimezoneID(*timezone));
     option.Append(GetTimezoneName(*timezone));
-    timezone_list->GetList().Append(std::move(option));
+    timezone_list.Append(std::move(option));
   }
   return timezone_list;
 }

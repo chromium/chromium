@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -138,7 +139,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `value`: The ISO country code.
   // `title`: The display name of the country in the current locale.
   // `selected`: Whether the country is currently selected.
-  static base::Value GetCountryList();
+  static base::Value::List GetCountryList();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

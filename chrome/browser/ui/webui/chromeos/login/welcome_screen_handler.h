@@ -110,7 +110,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void UpdateA11yState();
 
   // Returns available timezones.
-  static base::ListValue GetTimezoneList();
+  static base::Value::List GetTimezoneList();
 
   CoreOobeView* core_oobe_view_ = nullptr;
   ash::WelcomeScreen* screen_ = nullptr;
