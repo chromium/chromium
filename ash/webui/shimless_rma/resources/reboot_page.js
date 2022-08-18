@@ -13,7 +13,7 @@ import {RmadErrorCode} from './shimless_rma_types.js';
 
 // The displayed value for how many seconds you wait before the reboot or shut
 // down.
-const DELAY_DURATION = '2';
+const DELAY_DURATION = '3';
 
 /**
  * @fileoverview
