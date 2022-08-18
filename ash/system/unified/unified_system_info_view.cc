@@ -671,7 +671,9 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   // settings is put up.
   auto channel = Shell::Get()->shell_delegate()->GetChannel();
   if (features::IsReleaseTrackUiEnabled() &&
-      channel_indicator_utils::IsDisplayableChannel(channel)) {
+      channel_indicator_utils::IsDisplayableChannel(channel) &&
+      Shell::Get()->session_controller()->GetSessionState() ==
+          session_manager::SessionState::ACTIVE) {
     channel_view_ =
         AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
             channel, Shell::Get()
