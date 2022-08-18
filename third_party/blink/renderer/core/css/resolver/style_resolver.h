@@ -50,7 +50,6 @@ class Element;
 class Interpolation;
 class MatchResult;
 class PropertyHandle;
-class RuleSet;
 class StyleCascade;
 class StyleRecalcContext;
 class StyleRuleUsageTracker;
@@ -235,7 +234,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                     PseudoId,
                                     const AtomicString& document_transition_tag,
                                     unsigned rules_to_include);
-  void MatchRuleSet(ElementRuleCollector&, RuleSet*);
+  void MatchRuleSets(ElementRuleCollector&, const MatchRequest&);
   void MatchUARules(const Element&, ElementRuleCollector&);
   void MatchUserRules(ElementRuleCollector&);
   void MatchPresentationalHints(StyleResolverState&, ElementRuleCollector&);

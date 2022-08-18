@@ -725,19 +725,24 @@ void StyleResolver::MatchUARules(const Element& element,
                                  ElementRuleCollector& collector) {
   collector.SetMatchingUARules(true);
 
-  auto func = [this, &collector](RuleSet* rules) {
-    MatchRuleSet(collector, rules);
+  MatchRequest match_request;
+  auto func = [&match_request](RuleSet* rules) {
+    match_request.AddRuleset(rules, /*style_sheet=*/nullptr);
   };
   ForEachUARulesForElement(element, &collector, func);
+
+  if (!match_request.IsEmpty()) {
+    MatchRuleSets(collector, match_request);
+  }
 
   collector.FinishAddingUARules();
   collector.SetMatchingUARules(false);
 }
 
-void StyleResolver::MatchRuleSet(ElementRuleCollector& collector,
-                                 RuleSet* rules) {
+void StyleResolver::MatchRuleSets(ElementRuleCollector& collector,
+                                  const MatchRequest& match_request) {
   collector.ClearMatchedRules();
-  collector.CollectMatchingRules(MatchRequest(rules));
+  collector.CollectMatchingRules(match_request);
   collector.SortAndTransferMatchedRules();
 }
 
