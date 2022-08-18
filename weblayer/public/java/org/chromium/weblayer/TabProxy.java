@@ -6,7 +6,9 @@ package org.chromium.weblayer;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 
+import org.chromium.browserfragment.interfaces.IStringCallback;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
@@ -54,6 +56,19 @@ class TabProxy extends ITabProxy.Stub {
         mHandler.post(() -> {
             getTab().dispatchBeforeUnloadAndClose();
             invalidate();
+        });
+    }
+
+    @Override
+    public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
+        mHandler.post(() -> {
+            // TODO(rayankans): Verify the tab's origin is 1P.
+            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
+                try {
+                    callback.onResult(result);
+                } catch (RemoteException e) {
+                }
+            });
         });
     }
 }

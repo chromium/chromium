@@ -7,7 +7,11 @@ package org.chromium.browserfragment;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
+import org.chromium.browserfragment.interfaces.IStringCallback;
 import org.chromium.browserfragment.interfaces.ITabParams;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
@@ -52,6 +56,24 @@ public class Tab {
             mTabProxy.close();
         } catch (RemoteException e) {
         }
+    }
+
+    public ListenableFuture<String> executeScript(
+            @NonNull String script, boolean useSeparateIsolate) {
+        return CallbackToFutureAdapter.getFuture(completer -> {
+            try {
+                mTabProxy.executeScript(script, useSeparateIsolate, new IStringCallback.Stub() {
+                    @Override
+                    public void onResult(String result) {
+                        completer.set(result);
+                    }
+                });
+            } catch (RemoteException e) {
+                completer.setException(e);
+            }
+
+            return "Tab.executeScript Future";
+        });
     }
 
     /**

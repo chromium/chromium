@@ -4,9 +4,10 @@
 
 package org.chromium.browserfragment.interfaces;
 
-import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
+import org.chromium.browserfragment.interfaces.IStringCallback;
 
 oneway interface ITabProxy {
   void setActive() = 1;
   void close() = 2;
+  void executeScript(in String script, in boolean useSeparateIsolate, in IStringCallback callback) = 3;
 }

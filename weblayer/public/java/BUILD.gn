@@ -182,6 +182,7 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
+    "org/chromium/browserfragment/interfaces/IStringCallback.aidl",
     "org/chromium/browserfragment/interfaces/ITabCallback.aidl",
     "org/chromium/browserfragment/interfaces/ITabNavigationControllerProxy.aidl",
     "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",
