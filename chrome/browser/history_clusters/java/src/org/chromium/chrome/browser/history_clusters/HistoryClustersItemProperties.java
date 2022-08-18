@@ -52,11 +52,13 @@ class HistoryClustersItemProperties {
     static final WritableIntPropertyKey PROGRESS_BUTTON_STATE = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<List<String>> RELATED_SEARCHES =
             new WritableObjectPropertyKey<>();
+    static final WritableIntPropertyKey START_ICON_VISIBILITY = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<CharSequence> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<CharSequence> URL = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
             CLUSTER_VISIT, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER, END_BUTTON_DRAWABLE,
-            ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE, RELATED_SEARCHES, TITLE, URL, VISIBILITY};
+            ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE, RELATED_SEARCHES, START_ICON_VISIBILITY,
+            TITLE, URL, VISIBILITY};
 }

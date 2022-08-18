@@ -387,6 +387,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     existingModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
                     existingModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                             ClusterViewAccessibilityState.CLICKABLE);
+                    existingModel.set(
+                            HistoryClustersItemProperties.START_ICON_VISIBILITY, View.VISIBLE);
                 }
                 existingModel.set(HistoryClustersItemProperties.LABEL,
                         mResources.getQuantityString(R.plurals.history_clusters_n_matches,
@@ -412,6 +414,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, isQueryLess);
             clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                     ClusterViewAccessibilityState.COLLAPSIBLE);
+            clusterModel.set(HistoryClustersItemProperties.START_ICON_VISIBILITY, View.GONE);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);
 

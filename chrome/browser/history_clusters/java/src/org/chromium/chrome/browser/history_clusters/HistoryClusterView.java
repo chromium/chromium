@@ -106,6 +106,10 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mDividerView.setVisibility(visible ? VISIBLE : GONE);
     }
 
+    void setIconDrawableVisibility(int visibility) {
+        mStartIconView.setVisibility(visibility);
+    }
+
     public void setEndButtonClickListener(OnClickListener clickListener) {
         mEndButtonView.setOnClickListener(clickListener);
     }

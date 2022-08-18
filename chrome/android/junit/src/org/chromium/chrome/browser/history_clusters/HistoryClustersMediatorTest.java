@@ -26,6 +26,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -762,6 +763,33 @@ public class HistoryClustersMediatorTest {
         assertEquals(ItemType.CLUSTER, mModelList.get(0).type);
         PropertyModel clusterModel = mModelList.get(0).model;
         clusterModel.get(HistoryClustersItemProperties.CLICK_HANDLER).onClick(null);
+    }
+
+    @Test
+    public void testClusterStartIconVisibility() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("");
+
+        mMediator.setQueryState(QueryState.forQueryless());
+        mMediator.startQuery("");
+        fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
+
+        assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size() + 3);
+        ListItem item = mModelList.get(3);
+        PropertyModel clusterModel = item.model;
+        assertEquals(View.VISIBLE,
+                clusterModel.get(HistoryClustersItemProperties.START_ICON_VISIBILITY));
+
+        promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.onSearchTextChanged("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        item = mModelList.get(0);
+        assertEquals(ItemType.CLUSTER, item.type);
+        assertEquals(
+                View.GONE, item.model.get(HistoryClustersItemProperties.START_ICON_VISIBILITY));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {
