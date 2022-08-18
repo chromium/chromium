@@ -1267,7 +1267,9 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
   endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
   endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint2.metadata.ech_config_list = ech_config_list2;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+  host_resolver_.rules()->AddRule(
+      "host", MockHostResolverBase::RuleResolver::RuleResult(
+                  std::vector{endpoint1, endpoint2}));
 
   for (bool feature_enabled : {true, false}) {
     SCOPED_TRACE(feature_enabled);
@@ -1340,7 +1342,9 @@ TEST_F(SSLConnectJobTest, ECHStaleConfig) {
   endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
   endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint2.metadata.ech_config_list = ech_config_list2;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+  host_resolver_.rules()->AddRule(
+      "host", MockHostResolverBase::RuleResolver::RuleResult(
+                  std::vector{endpoint1, endpoint2}));
 
   // The first connection attempt will be to `endpoint1`, which will fail.
   StaticSocketDataProvider data1;
@@ -1400,7 +1404,9 @@ TEST_F(SSLConnectJobTest, ECHRollback) {
   endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
   endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint2.metadata.ech_config_list = ech_config_list2;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+  host_resolver_.rules()->AddRule(
+      "host", MockHostResolverBase::RuleResolver::RuleResult(
+                  std::vector{endpoint1, endpoint2}));
 
   // The first connection attempt will be to `endpoint1`, which will fail.
   StaticSocketDataProvider data1;
@@ -1457,7 +1463,9 @@ TEST_F(SSLConnectJobTest, ECHTooManyRetries) {
   endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
   endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint.metadata.ech_config_list = ech_config_list1;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint});
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
 
   // The first connection attempt will succeed.
   StaticSocketDataProvider data1;
@@ -1506,7 +1514,9 @@ TEST_F(SSLConnectJobTest, ECHWrongRetryError) {
   endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
   endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint.metadata.ech_config_list = ech_config_list1;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint});
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
 
   // The first connection attempt will succeed.
   StaticSocketDataProvider data1;
@@ -1551,7 +1561,9 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
   endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint2.metadata.ech_config_list = ech_config_list2;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+  host_resolver_.rules()->AddRule(
+      "host", MockHostResolverBase::RuleResolver::RuleResult(
+                  std::vector{endpoint1, endpoint2}));
 
   // The first connection attempt will be to `endpoint1`, which will fail.
   StaticSocketDataProvider data1;
@@ -1627,7 +1639,9 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
   endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
   endpoint2.metadata.ech_config_list = ech_config_list2;
-  host_resolver_.rules()->AddRule("host", std::vector{endpoint1, endpoint2});
+  host_resolver_.rules()->AddRule(
+      "host", MockHostResolverBase::RuleResolver::RuleResult(
+                  std::vector{endpoint1, endpoint2}));
 
   // The first connection attempt will be to `endpoint1`, which will fail.
   StaticSocketDataProvider data1;

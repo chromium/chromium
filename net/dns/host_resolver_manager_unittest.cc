@@ -194,7 +194,8 @@ class MockHostResolverProc : public HostResolverProc {
     std::vector<std::string> dns_aliases;
     if (canonical_name != "")
       dns_aliases = {canonical_name};
-    int rv = ParseAddressList(ip_list, dns_aliases, &result);
+    int rv = ParseAddressList(ip_list, &result.endpoints());
+    result.SetDnsAliases(dns_aliases);
     DCHECK_EQ(OK, rv);
     AddRule(hostname, family, result, flags);
   }
@@ -207,7 +208,8 @@ class MockHostResolverProc : public HostResolverProc {
     std::vector<std::string> dns_aliases;
     if (canonical_name != "")
       dns_aliases = {canonical_name};
-    int rv = ParseAddressList(ip_list, dns_aliases, &result);
+    int rv = ParseAddressList(ip_list, &result.endpoints());
+    result.SetDnsAliases(dns_aliases);
     DCHECK_EQ(OK, rv);
     AddRule(hostname, ADDRESS_FAMILY_UNSPECIFIED, result, flags);
     AddRule(hostname, ADDRESS_FAMILY_IPV4, result, flags);
@@ -234,7 +236,7 @@ class MockHostResolverProc : public HostResolverProc {
     --num_slots_available_;
     --num_requests_waiting_;
     if (rules_.empty()) {
-      int rv = ParseAddressList("127.0.0.1", {} /* dns_aliases */, addrlist);
+      int rv = ParseAddressList("127.0.0.1", &addrlist->endpoints());
       DCHECK_EQ(OK, rv);
       return OK;
     }

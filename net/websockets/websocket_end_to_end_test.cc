@@ -698,7 +698,9 @@ TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
   HostResolverEndpointResult result;
   result.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), port)};
   result.metadata.supported_protocol_alpns = {"http/1.1"};
-  host_resolver->rules()->AddRule(std::move(resolve_key), std::vector{result});
+  host_resolver->rules()->AddRule(
+      std::move(resolve_key),
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{result}));
   context_builder_->set_host_resolver(std::move(host_resolver));
 
   EXPECT_TRUE(ConnectAndWait(wss_url));
@@ -749,7 +751,9 @@ TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
       IPEndPoint(IPAddress::IPv4Localhost(), wss_url.IntPort())};
   result.metadata.supported_protocol_alpns = {"http/1.1"};
   result.metadata.ech_config_list = ech_config_list;
-  host_resolver->rules()->AddRule(std::move(resolve_key), std::vector{result});
+  host_resolver->rules()->AddRule(
+      std::move(resolve_key),
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{result}));
   context_builder_->set_host_resolver(std::move(host_resolver));
 
   EXPECT_FALSE(ConnectAndWait(wss_url));

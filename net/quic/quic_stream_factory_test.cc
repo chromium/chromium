@@ -112,7 +112,7 @@ const char kServer4Url[] = "https://images.example.org/";
 const int kDefaultRTTMilliSecs = 300;
 const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 const size_t kWaitTimeForNewNetworkSecs = 10;
-const IPAddress kCachedIPAddress = IPAddress(192, 168, 0, 2);
+const char kCachedIPAddress[] = "192.168.0.2";
 const char kNonCachedIPAddress[] = "192.168.0.1";
 const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
 
@@ -13329,9 +13329,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceAndHostResolutionSync) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_synchronous_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13426,9 +13424,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncStaleMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13462,8 +13458,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceHostResolveAsyncStaleMatch) {
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
-  EXPECT_EQ(session->peer_address().host().ToString(),
-            kCachedIPAddress.ToString());
+  EXPECT_EQ(session->peer_address().host().ToString(), kCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
@@ -13481,9 +13476,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13528,8 +13521,7 @@ TEST_P(QuicStreamFactoryTest,
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
 
-  EXPECT_EQ(session->peer_address().host().ToString(),
-            kCachedIPAddress.ToString());
+  EXPECT_EQ(session->peer_address().host().ToString(), kCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
@@ -13547,9 +13539,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13590,8 +13580,7 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
-  EXPECT_EQ(session->peer_address().host().ToString(),
-            kCachedIPAddress.ToString());
+  EXPECT_EQ(session->peer_address().host().ToString(), kCachedIPAddress);
 
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
@@ -13609,9 +13598,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13686,9 +13673,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleAsyncResolveAsyncNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13771,9 +13756,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncStaleAsyncNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13903,9 +13886,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleSyncHostResolveError) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -13964,9 +13945,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14008,9 +13987,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatch) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14073,9 +14050,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14126,9 +14101,7 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceResolveAsyncErrorStaleAsync) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14185,9 +14158,7 @@ TEST_P(QuicStreamFactoryTest,
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14293,9 +14264,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedAfterHandshake) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14368,9 +14337,7 @@ TEST_P(QuicStreamFactoryTest, StaleNetworkFailedBeforeHandshake) {
 
   // Set up an address in stale resolver cache.
   host_resolver_->set_ondemand_mode(true);
-  host_resolver_->rules()->AddRule(
-      scheme_host_port_.host(),
-      AddressList::CreateFromIPAddress(kCachedIPAddress, 0));
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
   host_resolver_->LoadIntoCache(scheme_host_port_, NetworkIsolationKey(),
                                 /*optional_parameters=*/absl::nullopt);
 
@@ -14886,8 +14853,11 @@ void QuicStreamFactoryTestBase::TestRequireDnsHttpsAlpn(
     bool expect_success) {
   quic_params_->supported_versions = {version_};
   host_resolver_ = std::make_unique<MockCachingHostResolver>();
-  host_resolver_->rules()->AddRule(scheme_host_port_.host(),
-                                   std::move(endpoints));
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      MockHostResolverBase::RuleResolver::RuleResult(
+          std::move(endpoints),
+          /*aliases=*/std::set<std::string>{scheme_host_port_.host()}));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();

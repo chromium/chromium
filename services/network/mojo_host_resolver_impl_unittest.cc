@@ -110,12 +110,13 @@ class MojoHostResolverImplTest : public testing::Test {
   const net::IPAddress kChromiumOrgAddress{8, 8, 8, 8};
 
   void SetUp() override {
-    net::AddressList example_com_addresses;
-    example_com_addresses.push_back(net::IPEndPoint(kExampleComAddress, 0));
-    example_com_addresses.push_back(net::IPEndPoint(kExampleComAddressIpv6, 0));
-    mock_host_resolver_.rules()->AddRule("example.com",
-                                         std::move(example_com_addresses));
-
+    std::vector<net::HostResolverEndpointResult> example_com_endpoints(1);
+    example_com_endpoints[0].ip_endpoints = {
+        net::IPEndPoint(kExampleComAddress, 0),
+        net::IPEndPoint(kExampleComAddressIpv6, 0)};
+    mock_host_resolver_.rules()->AddRule(
+        "example.com", net::MockHostResolverBase::RuleResolver::RuleResult(
+                           std::move(example_com_endpoints)));
     mock_host_resolver_.rules()->AddRule("chromium.org",
                                          kChromiumOrgAddress.ToString());
     mock_host_resolver_.rules()->AddRule("failure.fail",
