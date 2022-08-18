@@ -162,14 +162,19 @@ GREYElementInteraction* RequestDesktopButton() {
     return self->_visitCounter == visitCountBeforePrerender + 1;
   });
   GREYAssertTrue(prerendered, @"Prerender did not happen");
-
   // Make sure the omnibox is autocompleted.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(pageString),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"OmniboxTextFieldIOS")),
-                                          nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([ChromeEarlGrey isExperimentalOmniboxEnabled]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                            pageURL.GetContent())]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(pageString),
+                                            grey_ancestor(grey_kindOfClassName(
+                                                @"OmniboxTextFieldIOS")),
+                                            nil)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 
   // Open the suggestion. The suggestion needs to be the first suggestion to
   // have the prerenderer activated.

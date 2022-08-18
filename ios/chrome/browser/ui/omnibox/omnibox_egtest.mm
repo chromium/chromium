@@ -712,8 +712,15 @@ id<GREYMatcher> SearchCopiedTextButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText(@"this is a test")];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+  if ([ChromeEarlGrey isExperimentalOmniboxEnabled]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_longPress()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_tap()];
+  }
 
   // Pressing should allow select and selectAll.
   // Wait for UIMenuController to appear or timeout after 2 seconds.

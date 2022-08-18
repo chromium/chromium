@@ -1130,6 +1130,10 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
 }
 
++ (BOOL)isExperimentalOmniboxEnabled {
+  return base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation);
+}
+
 + (BOOL)isUseLensToSearchForImageEnabled {
   return base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
          ios::provider::IsLensSupported();
