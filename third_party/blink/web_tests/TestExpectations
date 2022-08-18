@@ -114,8 +114,6 @@ crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offse
 crbug.com/1254944 svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
 
 # Fails flakily or times out
-crbug.com/1255285 virtual/threaded/transitions/transition-currentcolor.html [ Failure Pass ]
-crbug.com/1255285 virtual/threaded/transitions/transition-ends-before-animation-frame.html [ Timeout ]
 crbug.com/1269536 [ Mac11 ] svg/animations/dynamic-modify-transform-without-baseval.html [ Failure Pass Timeout ]
 crbug.com/1269536 [ Mac12 ] svg/animations/dynamic-modify-transform-without-baseval.html [ Failure Pass Timeout ]
 
