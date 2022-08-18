@@ -20,14 +20,12 @@ import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
-
-(function() {
 
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
 
@@ -166,108 +164,111 @@ function getGFileIconName(fileName) {
  * 'print-job-entry' is contains a single print job entry and is used as a list
  * item.
  */
-Polymer({
-  is: 'print-job-entry',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PrintJobEntryElementBase = mixinBehaviors(
+    [
+      FocusRowBehavior,
+      I18nBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    FocusRowBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+class PrintJobEntryElement extends PrintJobEntryElementBase {
+  static get is() {
+    return 'print-job-entry';
+  }
 
-  /**
-   * @private {
-   *  ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
-   * }
-   */
-  mojoInterfaceProvider_: null,
+  static get properties() {
+    return {
+      /** @type {!ash.printing.printingManager.mojom.PrintJobInfo} */
+      jobEntry: {
+        type: Object,
+      },
 
-  properties: {
-    /** @type {!ash.printing.printingManager.mojom.PrintJobInfo} */
-    jobEntry: {
-      type: Object,
-    },
+      /** @private */
+      jobTitle_: {
+        type: String,
+        computed: 'decodeString16_(jobEntry.title)',
+      },
 
-    /** @private */
-    jobTitle_: {
-      type: String,
-      computed: 'decodeString16_(jobEntry.title)',
-    },
+      /** @private */
+      printerName_: {
+        type: String,
+        computed: 'decodeString16_(jobEntry.printerName)',
+      },
 
-    /** @private */
-    printerName_: {
-      type: String,
-      computed: 'decodeString16_(jobEntry.printerName)',
-    },
+      /** @private */
+      creationTime_: {
+        type: String,
+        computed: 'computeDate_(jobEntry.creationTime)',
+      },
 
-    /** @private */
-    creationTime_: {
-      type: String,
-      computed: 'computeDate_(jobEntry.creationTime)',
-    },
+      /** @private */
+      completionStatus_: {
+        type: String,
+        computed: 'computeCompletionStatus_(jobEntry.completedInfo)',
+      },
 
-    /** @private */
-    completionStatus_: {
-      type: String,
-      computed: 'computeCompletionStatus_(jobEntry.completedInfo)',
-    },
+      /**
+       * Empty if there is no ongoing error.
+       * @private
+       */
+      ongoingErrorStatus_: {
+        type: String,
+        computed: 'getOngoingErrorStatus_(jobEntry.printerErrorCode)',
+      },
 
-    /**
-     * Empty if there is no ongoing error.
-     * @private
-     */
-    ongoingErrorStatus_: {
-      type: String,
-      computed: 'getOngoingErrorStatus_(jobEntry.printerErrorCode)',
-    },
+      /**
+       * A representation in fraction form of pages printed versus total number
+       * of pages to be printed. E.g. 5/7 (5 pages printed / 7 total pages to
+       * print).
+       * @private
+       */
+      readableProgress_: {
+        type: String,
+        computed: 'computeReadableProgress_(jobEntry.activePrintJobInfo)',
+      },
 
-    /**
-     * A representation in fraction form of pages printed versus total number
-     * of pages to be printed. E.g. 5/7 (5 pages printed / 7 total pages to
-     * print).
-     * @private
-     */
-    readableProgress_: {
-      type: String,
-      computed: 'computeReadableProgress_(jobEntry.activePrintJobInfo)',
-    },
+      /** @private */
+      jobEntryAriaLabel_: {
+        type: String,
+        computed: 'getJobEntryAriaLabel_(jobEntry, jobTitle_, printerName_, ' +
+            'creationTime_, completionStatus_, ' +
+            'jobEntry.activePrintJobinfo.printedPages, jobEntry.numberOfPages)',
+      },
 
-    /** @private */
-    jobEntryAriaLabel_: {
-      type: String,
-      computed: 'getJobEntryAriaLabel_(jobEntry, jobTitle_, printerName_, ' +
-          'creationTime_, completionStatus_, ' +
-          'jobEntry.activePrintJobinfo.printedPages, jobEntry.numberOfPages)',
-    },
+      /**
+       * This is only updated by media queries from window width changes.
+       * @private
+       */
+      showFullOngoingStatus_: Boolean,
 
-    /**
-     * This is only updated by media queries from window width changes.
-     * @private
-     */
-    showFullOngoingStatus_: Boolean,
+      /** @private {string} */
+      fileIcon_: {
+        type: String,
+        computed: 'computeFileIcon_(jobTitle_)',
+      },
 
-    /** @private {string} */
-    fileIcon_: {
-      type: String,
-      computed: 'computeFileIcon_(jobTitle_)',
-    },
+      /** @private {string} */
+      fileIconClass_: {
+        type: String,
+        computed: 'computeFileIconClass_(fileIcon_)',
+      },
 
-    /** @private {string} */
-    fileIconClass_: {
-      type: String,
-      computed: 'computeFileIconClass_(fileIcon_)',
-    },
-  },
+    };
+  }
 
-  observers: [
-    'printJobEntryDataChanged_(jobTitle_, printerName_, creationTime_, ' +
-        'completionStatus_)',
-  ],
-
-  listeners: {
-    'click': 'onClick_',
-  },
+  static get observers() {
+    return [
+      'printJobEntryDataChanged_(jobTitle_, printerName_, creationTime_, ' +
+          'completionStatus_)',
+    ];
+  }
 
   /**
    * Check if any elements with the class "overflow-ellipsis" needs to
@@ -284,7 +285,7 @@ Polymer({
             e.removeAttribute('title');
           }
         });
-  },
+  }
 
   /** @private */
   onClick_() {
@@ -292,22 +293,28 @@ Polymer({
     // this will trigger the iron-list focus behavior and highlight the entire
     // entry.
     if (this.isCompletedPrintJob_()) {
-      this.$$('#completionStatus').focus();
+      this.shadowRoot.querySelector('#completionStatus').focus();
       return;
     }
     // Focus on the cancel button when clicking on the entry.
-    this.$$('#cancelPrintJobButton').focus();
-  },
+    this.shadowRoot.querySelector('#cancelPrintJobButton').focus();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     IronA11yAnnouncer.requestAvailability();
-  },
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.mojoInterfaceProvider_ = getMetadataProvider();
-  },
+
+    this.addEventListener('click', () => this.onClick_());
+  }
 
   /**
    * @return {string}
@@ -320,7 +327,7 @@ Polymer({
 
     return this.convertStatusToString_(
         this.jobEntry.completedInfo.completionStatus);
-  },
+  }
 
   /**
    * @return {string}
@@ -335,7 +342,7 @@ Polymer({
         'printedPagesFraction',
         this.jobEntry.activePrintJobInfo.printedPages.toString(),
         this.jobEntry.numberOfPages.toString());
-  },
+  }
 
   /** @private */
   onCancelPrintJobClicked_() {
@@ -343,7 +350,7 @@ Polymer({
         .then(
             (/** @param {{attemptedCancel: boolean}} response */ (response) =>
                  this.onPrintJobCanceled_(response.attemptedCancel)));
-  },
+  }
 
   /**
    * @param {boolean} attemptedCancel
@@ -352,11 +359,16 @@ Polymer({
   onPrintJobCanceled_(attemptedCancel) {
     // TODO(crbug/1093527): Handle error case in which attempted cancellation
     // failed. Need to discuss with UX on error states.
-    this.fire(
-        'iron-announce',
-        {text: loadTimeData.getStringF('cancelledPrintJob', this.jobTitle_)});
-    this.fire('remove-print-job', this.jobEntry.id);
-  },
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail:
+          {text: loadTimeData.getStringF('cancelledPrintJob', this.jobTitle_)},
+    }));
+    this.dispatchEvent(new CustomEvent(
+        'remove-print-job',
+        {bubbles: true, composed: true, detail: this.jobEntry.id}));
+  }
 
   /**
    * Converts utf16 to a readable string.
@@ -366,7 +378,7 @@ Polymer({
    */
   decodeString16_(arr) {
     return arr.data.map(ch => String.fromCodePoint(ch)).join('');
-  },
+  }
 
   /**
    * Converts mojo time to JS time. Returns "Today" if |mojoTime| is at the
@@ -387,7 +399,7 @@ Polymer({
     return jsDate.toLocaleDateString(
         /*locales=*/ undefined,
         {month: 'short', day: 'numeric', year: 'numeric'});
-  },
+  }
 
   /**
    * Returns the corresponding completion status from |mojoCompletionStatus|.
@@ -409,7 +421,7 @@ Polymer({
         assertNotReached();
         return loadTimeData.getString('unknownPrinterError');
     }
-  },
+  }
 
   /**
    * @return {boolean} Returns true if the job entry is a completed print job.
@@ -418,7 +430,7 @@ Polymer({
    */
   isCompletedPrintJob_() {
     return !!this.jobEntry.completedInfo && !this.jobEntry.activePrintJobInfo;
-  },
+  }
 
   /**
    * @return {string}
@@ -454,7 +466,7 @@ Polymer({
         this.creationTime_,
         this.jobEntry.activePrintJobInfo.printedPages.toString(),
         this.jobEntry.numberOfPages.toString());
-  },
+  }
 
   /**
    * Returns the percentage, out of 100, of the pages printed versus total
@@ -469,7 +481,7 @@ Polymer({
     assert(totalPages > 0);
     assert(printedPages <= totalPages);
     return (printedPages * 100) / totalPages;
-  },
+  }
 
   /**
    * The full icon name provided by the containing iron-iconset-svg
@@ -493,7 +505,7 @@ Polymer({
     }
 
     return GENERIC_FILE_EXTENSION_ICON;
-  },
+  }
 
   /**
    * Uses file-icon SVG id to determine correct class to apply for file icon.
@@ -503,7 +515,7 @@ Polymer({
   computeFileIconClass_() {
     const iconClass = ICON_CLASS_MAP.get(this.fileIcon_);
     return `flex-center ${iconClass}`;
-  },
+  }
 
   /**
    * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
@@ -543,7 +555,7 @@ Polymer({
         assertNotReached();
         return loadTimeData.getString('unknownPrinterError');
     }
-  },
+  }
 
   /**
    * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
@@ -588,6 +600,11 @@ Polymer({
         assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');
     }
-  },
-});
-})();
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(PrintJobEntryElement.is, PrintJobEntryElement);

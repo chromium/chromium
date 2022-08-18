@@ -12,8 +12,8 @@ import './print_management_shared_css.js';
 import './printing_manager.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
 
@@ -22,42 +22,58 @@ import {getMetadataProvider} from './mojo_interface_provider.js';
  * 'print-job-clear-history-dialog' is a confirmation dialog for clearing the
  * print job history
  */
-Polymer({
-  is: 'print-job-clear-history-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PrintJobClearHistoryDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  properties: {
-    /** @private */
-    shouldDisableClearButton_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+/** @polymer */
+class PrintJobClearHistoryDialogElement extends
+    PrintJobClearHistoryDialogElementBase {
+  static get is() {
+    return 'print-job-clear-history-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get properties() {
+    return {
+      /** @private */
+      shouldDisableClearButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.mojoInterfaceProvider_ = getMetadataProvider();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.clearDialog.showModal();
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.clearDialog.close();
-  },
+  }
 
   /** @private */
   onClearButtonClick_() {
     this.shouldDisableClearButton_ = true;
     this.mojoInterfaceProvider_.deleteAllPrintJobs().then(
         this.onClearedHistory_.bind(this));
-  },
+  }
 
   /**
    * @param {!{success: boolean}} clearedHistoryResult
@@ -65,11 +81,19 @@ Polymer({
    */
   onClearedHistory_(clearedHistoryResult) {
     if (clearedHistoryResult.success) {
-      this.fire('all-history-cleared');
+      this.dispatchEvent(new CustomEvent(
+          'all-history-cleared', {bubbles: true, composed: true}));
     }
     // Failed case results in a no op and closes the dialog.
     // |clearedHistoryResult| is temporarily set to false until the policy
     // to control print job history deletions is implemented.
     this.$.clearDialog.close();
-  },
-});
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(
+    PrintJobClearHistoryDialogElement.is, PrintJobClearHistoryDialogElement);

@@ -20,9 +20,9 @@ import './print_management_shared_css.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
 
@@ -58,129 +58,142 @@ function comparePrintJobsChronologically(first, second) {
  * @fileoverview
  * 'print-management' is used as the main app to display print jobs.
  */
-Polymer({
-  is: 'print-management',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PrintManagementElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class PrintManagementElement extends PrintManagementElementBase {
+  static get is() {
+    return 'print-management';
+  }
 
-  /**
-   * @private {
-   *  ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface}
-   */
-  mojoInterfaceProvider_: null,
+  static get properties() {
+    return {
+      /**
+       * @type {!PrintJobInfoArr}
+       * @private
+       */
+      printJobs_: {
+        type: Array,
+        value: () => [],
+      },
 
-  /**
-   * Receiver responsible for observing print job updates notification events.
-   * @private {?ash.printing.printingManager.mojom.PrintJobsObserverReceiver}
-   */
-  printJobsObserverReceiver_: null,
+      /** @private */
+      printJobHistoryExpirationPeriod_: {
+        type: String,
+        value: '',
+      },
 
-  properties: {
-    /**
-     * @type {!PrintJobInfoArr}
-     * @private
-     */
-    printJobs_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @private */
+      activeHistoryInfoIcon_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    printJobHistoryExpirationPeriod_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      isPolicyControlled_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    activeHistoryInfoIcon_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * @type {!PrintJobInfoArr}
+       * @private
+       */
+      ongoingPrintJobs_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private */
-    isPolicyControlled_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
+       */
+      lastFocused_: Object,
 
-    /**
-     * @type {!PrintJobInfoArr}
-     * @private
-     */
-    ongoingPrintJobs_: {
-      type: Array,
-      value: () => [],
-    },
+      /**
+       * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
+       */
+      listBlurred_: Boolean,
 
-    /**
-     * Used by FocusRowBehavior to track the last focused element on a row.
-     * @private
-     */
-    lastFocused_: Object,
+      /** @private */
+      showClearAllButton_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * Used by FocusRowBehavior to track if the list has been blurred.
-     * @private
-     */
-    listBlurred_: Boolean,
+      /** @private */
+      showClearAllDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showClearAllButton_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      deletePrintJobHistoryAllowedByPolicy_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    showClearAllDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      shouldDisableClearAllButton_: {
+        type: Boolean,
+        computed: 'computeShouldDisableClearAllButton_(printJobs_,' +
+            'deletePrintJobHistoryAllowedByPolicy_)',
+      },
 
-    /** @private */
-    deletePrintJobHistoryAllowedByPolicy_: {
-      type: Boolean,
-      value: true,
-    },
+      /**
+       * Receiver responsible for observing print job updates notification
+       * events.
+       * @private {
+       *   ?ash.printing.printingManager.mojom.PrintJobsObserverReceiver
+       * }
+       */
+      printJobsObserverReceiver_: {type: Object},
+    };
+  }
 
-    /** @private */
-    shouldDisableClearAllButton_: {
-      type: Boolean,
-      computed: 'computeShouldDisableClearAllButton_(printJobs_,' +
-          'deletePrintJobHistoryAllowedByPolicy_)',
-    },
-  },
-
-  listeners: {
-    'all-history-cleared': 'getPrintJobs_',
-    'remove-print-job': 'removePrintJob_',
-  },
-
-  observers: ['onClearAllButtonUpdated_(shouldDisableClearAllButton_)'],
+  static get observers() {
+    return ['onClearAllButtonUpdated_(shouldDisableClearAllButton_)'];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.mojoInterfaceProvider_ = getMetadataProvider();
 
     window.CrPolicyStrings = {
       controlledSettingPolicy:
           loadTimeData.getString('clearAllPrintJobPolicyIndicatorToolTip'),
     };
-  },
+
+    window.addEventListener('all-history-cleared', () => this.getPrintJobs_());
+    window.addEventListener('remove-print-job', (e) => this.removePrintJob_(e));
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.getPrintJobHistoryExpirationPeriod_();
     this.startObservingPrintJobs_();
     this.fetchDeletePrintJobHistoryPolicy_();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.printJobsObserverReceiver_.$.close();
-  },
+  }
 
   /** @private */
   startObservingPrintJobs_() {
@@ -196,7 +209,7 @@ Polymer({
         .then(() => {
           this.getPrintJobs_();
         });
-  },
+  }
 
   /** @private */
   fetchDeletePrintJobHistoryPolicy_() {
@@ -204,7 +217,7 @@ Polymer({
         /*@type {!{isAllowedByPolicy: boolean}}*/ (param) => {
           this.onGetDeletePrintHistoryPolicy_(param);
         });
-  },
+  }
 
   /**
    * @param {!{isAllowedByPolicy: boolean}} responseParam
@@ -214,14 +227,14 @@ Polymer({
     this.showClearAllButton_ = true;
     this.deletePrintJobHistoryAllowedByPolicy_ =
         responseParam.isAllowedByPolicy;
-  },
+  }
 
   /**
    * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
    */
   onAllPrintJobsDeleted() {
     this.getPrintJobs_();
-  },
+  }
 
   /**
    * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
@@ -249,7 +262,7 @@ Polymer({
       // list with the recently stored print job.
       this.getPrintJobs_();
     }
-  },
+  }
 
   /**
    * @param {!{printJobs: !PrintJobInfoArr}} jobs
@@ -273,13 +286,13 @@ Polymer({
     this.ongoingPrintJobs_ =
         ongoingList.sort(comparePrintJobsChronologically);
     this.printJobs_ = historyList.sort(comparePrintJobsReverseChronologically);
-  },
+  }
 
   /** @private */
   getPrintJobs_() {
     this.mojoInterfaceProvider_.getPrintJobs()
       .then(this.onPrintJobsReceived_.bind(this));
-  },
+  }
 
   /**
    * @param {!{
@@ -316,16 +329,16 @@ Polymer({
             expirationPeriod,
         );
     }
-  },
+  }
 
   /** @private */
   getPrintJobHistoryExpirationPeriod_() {
     this.mojoInterfaceProvider_.getPrintJobHistoryExpirationPeriod()
       .then(this.onPrintJobHistoryExpirationPeriodReceived_.bind(this));
-  },
+  }
 
   /**
-   * @param {!CustomEvent<string>} e
+   * @param {!Event} e
    * @private
    */
   removePrintJob_(e) {
@@ -333,17 +346,17 @@ Polymer({
     if (idx !== -1) {
       this.splice('ongoingPrintJobs_', idx, 1);
     }
-  },
+  }
 
   /** @private */
   onClearHistoryClicked_() {
     this.showClearAllDialog_ = true;
-  },
+  }
 
   /** @private */
   onClearHistoryDialogClosed_() {
     this.showClearAllDialog_ = false;
-  },
+  }
 
   /**
    * @param {string} expectedId
@@ -354,7 +367,7 @@ Polymer({
     return this.ongoingPrintJobs_.findIndex(
         arr_job => arr_job.id === expectedId,
     );
-  },
+  }
 
   /**
    * @return {boolean}
@@ -363,7 +376,7 @@ Polymer({
   computeShouldDisableClearAllButton_() {
     return !this.deletePrintJobHistoryAllowedByPolicy_ ||
         !this.printJobs_.length;
-  },
+  }
 
   /** @private */
   onClearAllButtonUpdated_() {
@@ -371,5 +384,11 @@ Polymer({
         'delete-enabled', !this.shouldDisableClearAllButton_);
     this.$.deleteIcon.classList.toggle(
         'delete-disabled', this.shouldDisableClearAllButton_);
-  },
-});
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(PrintManagementElement.is, PrintManagementElement);
