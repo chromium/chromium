@@ -12,13 +12,14 @@
 #include "base/check.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -37,9 +38,6 @@
 namespace extensions {
 
 namespace file_system = api::file_system;
-
-using file_system_api::ConsentProvider;
-using file_system_api::ConsentProviderDelegate;
 
 namespace {
 
@@ -164,14 +162,13 @@ void DispatchVolumeListChangeEventAsh(
   if (!registry)  // Possible on shutdown.
     return;
 
-  ConsentProviderDelegate consent_provider_delegate(
-      Profile::FromBrowserContext(browser_context));
-  ConsentProvider consent_provider(&consent_provider_delegate);
+  std::unique_ptr<ConsentProvider> consent_provider =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context);
 
   file_system::VolumeListChangedEvent event_args;
   FillVolumeList(browser_context, &event_args.volumes);
   for (const auto& extension : registry->enabled_extensions()) {
-    if (!consent_provider.IsGrantable(*extension.get()))
+    if (!consent_provider->IsGrantable(*extension.get()))
       continue;
 
     event_router->DispatchEventToExtension(
@@ -194,15 +191,12 @@ ChromeFileSystemDelegateAsh::~ChromeFileSystemDelegateAsh() = default;
 void ChromeFileSystemDelegateAsh::RequestFileSystem(
     content::BrowserContext* browser_context,
     scoped_refptr<ExtensionFunction> requester,
+    ConsentProvider* consent_provider,
     const Extension& extension,
     std::string volume_id,
     bool writable,
     FileSystemCallback success_callback,
     ErrorCallback error_callback) {
-  ConsentProviderDelegate consent_provider_delegate(
-      Profile::FromBrowserContext(browser_context));
-  ConsentProvider consent_provider(&consent_provider_delegate);
-
   using file_manager::Volume;
   using file_manager::VolumeManager;
   VolumeManager* const volume_manager = VolumeManager::Get(browser_context);
@@ -215,7 +209,7 @@ void ChromeFileSystemDelegateAsh::RequestFileSystem(
     return;
   }
 
-  if (!consent_provider.IsGrantable(extension)) {
+  if (!consent_provider->IsGrantable(extension)) {
     std::move(error_callback)
         .Run(file_system_api::kNotSupportedOnNonKioskSessionError);
     return;
@@ -251,9 +245,9 @@ void ChromeFileSystemDelegateAsh::RequestFileSystem(
                      std::move(success_callback), std::move(error_callback),
                      extension.origin(), volume, writable);
 
-  consent_provider.RequestConsent(requester->render_frame_host(), extension,
-                                  volume->volume_id(), volume->volume_label(),
-                                  writable, std::move(callback));
+  consent_provider->RequestConsent(requester->render_frame_host(), extension,
+                                   volume->volume_id(), volume->volume_label(),
+                                   writable, std::move(callback));
 }
 
 void ChromeFileSystemDelegateAsh::GetVolumeList(

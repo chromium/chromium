@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/feedback_private/chrome_feedback_private_delegate.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
+#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/api/messaging/chrome_messaging_delegate.h"
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
@@ -315,6 +316,18 @@ ChromeExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper) const {
   return new ChromeWebViewPermissionHelperDelegate(web_view_permission_helper);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<ConsentProvider>
+ChromeExtensionsAPIClient::CreateConsentProvider(
+    content::BrowserContext* browser_context) const {
+  auto consent_provider_delegate =
+      std::make_unique<file_system_api::ConsentProviderDelegate>(
+          Profile::FromBrowserContext(browser_context));
+  return std::make_unique<file_system_api::ConsentProviderImpl>(
+      std::move(consent_provider_delegate));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 scoped_refptr<ContentRulesRegistry>
 ChromeExtensionsAPIClient::CreateContentRulesRegistry(

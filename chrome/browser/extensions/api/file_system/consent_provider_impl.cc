@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
+#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -12,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/extensions/request_file_system_dialog_view.h"
 #include "content/public/browser/render_frame_host.h"
@@ -59,21 +59,18 @@ content::WebContents* GetWebContentsForAppId(Profile* profile,
 // Converts the clicked button to a consent result and passes it via the
 // |callback|.
 void DialogResultToConsent(
-    file_system_api::ConsentProvider::ConsentCallback callback,
+    file_system_api::ConsentProviderImpl::ConsentCallback callback,
     ui::DialogButton button) {
   switch (button) {
     case ui::DIALOG_BUTTON_NONE:
-      std::move(callback).Run(
-          file_system_api::ConsentProvider::CONSENT_IMPOSSIBLE);
+      std::move(callback).Run(ConsentProvider::CONSENT_IMPOSSIBLE);
       break;
     case ui::DIALOG_BUTTON_OK:
-      std::move(callback).Run(
-          file_system_api::ConsentProvider::CONSENT_GRANTED);
+      std::move(callback).Run(ConsentProvider::CONSENT_GRANTED);
       break;
     // The following is wired to both Cancel and Close callbacks.
     case ui::DIALOG_BUTTON_CANCEL:
-      std::move(callback).Run(
-          file_system_api::ConsentProvider::CONSENT_REJECTED);
+      std::move(callback).Run(ConsentProvider::CONSENT_REJECTED);
       break;
   }
 }
@@ -82,21 +79,27 @@ void DialogResultToConsent(
 
 namespace file_system_api {
 
-/******** ConsentProvider ********/
+/******** ConsentProviderImpl::DelegateInterface ********/
 
-ConsentProvider::ConsentProvider(DelegateInterface* delegate)
-    : delegate_(delegate) {
+ConsentProviderImpl::DelegateInterface::DelegateInterface() = default;
+ConsentProviderImpl::DelegateInterface::~DelegateInterface() = default;
+
+/******** ConsentProviderImpl ********/
+
+ConsentProviderImpl::ConsentProviderImpl(
+    std::unique_ptr<DelegateInterface> delegate)
+    : delegate_(std::move(delegate)) {
   DCHECK(delegate_);
 }
 
-ConsentProvider::~ConsentProvider() = default;
+ConsentProviderImpl::~ConsentProviderImpl() = default;
 
-void ConsentProvider::RequestConsent(content::RenderFrameHost* host,
-                                     const Extension& extension,
-                                     const std::string& volume_id,
-                                     const std::string& volume_label,
-                                     bool writable,
-                                     ConsentCallback callback) {
+void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
+                                         const Extension& extension,
+                                         const std::string& volume_id,
+                                         const std::string& volume_label,
+                                         bool writable,
+                                         ConsentCallback callback) {
   DCHECK(IsGrantable(extension));
 
   // If an allowlisted component, then no need to ask or inform the user.
@@ -130,7 +133,9 @@ void ConsentProvider::RequestConsent(content::RenderFrameHost* host,
   NOTREACHED() << "Cannot request consent for non-grantable extensions.";
 }
 
-bool ConsentProvider::IsGrantable(const Extension& extension) {
+bool ConsentProviderImpl::IsGrantable(const Extension& extension) {
+  // Only kiosk apps in kiosk sessions can use file system API.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   const bool is_allowlisted_component =
       delegate_->IsAllowlistedComponent(extension);
 
@@ -146,6 +151,7 @@ bool ConsentProvider::IsGrantable(const Extension& extension) {
 ConsentProviderDelegate::ConsentProviderDelegate(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
+  profile_observation_.Observe(profile_);
 }
 
 ConsentProviderDelegate::~ConsentProviderDelegate() = default;
@@ -156,6 +162,12 @@ void ConsentProviderDelegate::SetAutoDialogButtonForTest(
   g_auto_dialog_button_for_test = button;
 }
 
+void ConsentProviderDelegate::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile_, profile);
+  profile_observation_.Reset();
+  profile_ = nullptr;
+}
+
 void ConsentProviderDelegate::ShowDialog(
     content::RenderFrameHost* host,
     const extensions::ExtensionId& extension_id,
@@ -163,8 +175,15 @@ void ConsentProviderDelegate::ShowDialog(
     const std::string& volume_id,
     const std::string& volume_label,
     bool writable,
-    file_system_api::ConsentProvider::ShowDialogCallback callback) {
+    file_system_api::ConsentProviderImpl::ShowDialogCallback callback) {
   DCHECK(host);
+  // Reject if |profile_| is gone.
+  if (!profile_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), ui::DIALOG_BUTTON_NONE));
+    return;
+  }
+
   content::WebContents* web_contents = nullptr;
 
   // Find an app window to host the dialog.
@@ -191,7 +210,7 @@ void ConsentProviderDelegate::ShowDialog(
   if (g_auto_dialog_button_for_test != ui::DIALOG_BUTTON_NONE) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
-                                  g_auto_dialog_button_for_test /* result */));
+                                  /*result=*/g_auto_dialog_button_for_test));
     return;
   }
 
@@ -207,6 +226,10 @@ void ConsentProviderDelegate::ShowNotification(
     const std::string& volume_id,
     const std::string& volume_label,
     bool writable) {
+  // Skip if |profile_| is gone.
+  if (!profile_)
+    return;
+
   ShowNotificationForAutoGrantedRequestFileSystem(profile_, extension_id,
                                                   extension_name, volume_id,
                                                   volume_label, writable);

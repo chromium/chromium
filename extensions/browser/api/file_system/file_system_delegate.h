@@ -26,6 +26,7 @@ class WebContents;
 
 namespace extensions {
 
+class ConsentProvider;
 class Extension;
 class SavedFilesServiceInterface;
 
@@ -75,14 +76,11 @@ class FileSystemDelegate {
   virtual int GetDescriptionIdForAcceptType(const std::string& accept_type) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Checks whether the extension can be granted access.
-  virtual bool IsGrantable(content::BrowserContext* browser_context,
-                           const Extension& extension) = 0;
-
   // Grants or denies an extension's request for access to the named file
   // system. May prompt the user for consent.
   virtual void RequestFileSystem(content::BrowserContext* browser_context,
                                  scoped_refptr<ExtensionFunction> requester,
+                                 ConsentProvider* consent_provider,
                                  const Extension& extension,
                                  std::string volume_id,
                                  bool writable,

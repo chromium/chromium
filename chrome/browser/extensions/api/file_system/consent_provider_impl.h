@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
-#define CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_IMPL_H_
 
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/ui_base_types.h"
 
-class Profile;
-
 namespace content {
 class RenderFrameHost;
-}  // content
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -28,18 +31,19 @@ namespace file_system_api {
 // provided by a delegate: ConsentProviderDelegate. For testing, it is
 // TestingConsentProviderDelegate.
 // This class may post callbacks given to it, but does not asynchronously call
-// itself. It is generally safe to use a temporary ConsentProvider.
+// itself. It is generally safe to use a temporary ConsentProviderImpl.
 // TODO(crbug.com/1351493): Make this easier to use, perhaps by replacing member
 // functions with static methods.
-class ConsentProvider {
+class ConsentProviderImpl : public ConsentProvider {
  public:
-  enum Consent { CONSENT_GRANTED, CONSENT_REJECTED, CONSENT_IMPOSSIBLE };
-  using ConsentCallback = base::OnceCallback<void(Consent)>;
   using ShowDialogCallback = base::OnceCallback<void(ui::DialogButton)>;
 
   // Interface for delegating user interaction for granting permissions.
   class DelegateInterface {
    public:
+    DelegateInterface();
+    virtual ~DelegateInterface();
+
     // Shows a dialog for granting permissions.
     virtual void ShowDialog(content::RenderFrameHost* host,
                             const extensions::ExtensionId& extension_id,
@@ -63,40 +67,40 @@ class ConsentProvider {
     virtual bool IsAllowlistedComponent(const Extension& extension) = 0;
   };
 
-  explicit ConsentProvider(DelegateInterface* delegate);
+  explicit ConsentProviderImpl(std::unique_ptr<DelegateInterface> delegate);
 
-  ConsentProvider(const ConsentProvider&) = delete;
-  ConsentProvider& operator=(const ConsentProvider&) = delete;
+  ConsentProviderImpl(const ConsentProviderImpl&) = delete;
+  ConsentProviderImpl& operator=(const ConsentProviderImpl&) = delete;
 
-  ~ConsentProvider();
+  ~ConsentProviderImpl() override;
 
-  // Requests consent for granting |writable| permissions to a volume with
-  // |volume_id| and |volume_label| by |extension|, which is assumed to be
-  // grantable (i.e., passes IsGrantable()).
+  // ConsentProvider:
   void RequestConsent(content::RenderFrameHost* host,
                       const Extension& extension,
                       const std::string& volume_id,
                       const std::string& volume_label,
                       bool writable,
-                      ConsentCallback callback);
-
-  // Checks whether the |extension| can be granted access.
-  bool IsGrantable(const Extension& extension);
+                      ConsentCallback callback) override;
+  bool IsGrantable(const Extension& extension) override;
 
  private:
-  DelegateInterface* const delegate_;
+  std::unique_ptr<DelegateInterface> delegate_;
 };
 
 // Handles interaction with user as well as environment checks (allowlists,
-// context of running extensions) for ConsentProvider.
-class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
+// context of running extensions) for ConsentProviderImpl. The class is used
+// during async calls (in particular, crosapi for Lacros), and the |profile_|
+// provided may disappear. To handle this, the class observes |profile_|
+// destruction, and properly disables calls that need |profile_|.
+class ConsentProviderDelegate : public ConsentProviderImpl::DelegateInterface,
+                                public ProfileObserver {
  public:
   explicit ConsentProviderDelegate(Profile* profile);
 
   ConsentProviderDelegate(const ConsentProviderDelegate&) = delete;
   ConsentProviderDelegate& operator=(const ConsentProviderDelegate&) = delete;
 
-  ~ConsentProviderDelegate();
+  ~ConsentProviderDelegate() override;
 
  private:
   friend ScopedSkipRequestFileSystemDialog;
@@ -105,15 +109,17 @@ class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
   // then disabled.
   static void SetAutoDialogButtonForTest(ui::DialogButton button);
 
-  // ConsentProvider::DelegateInterface overrides:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // ConsentProviderImpl::DelegateInterface overrides:
   void ShowDialog(content::RenderFrameHost* host,
                   const extensions::ExtensionId& extension_id,
                   const std::string& extension_name,
                   const std::string& volume_id,
                   const std::string& volume_label,
                   bool writable,
-                  ConsentProvider::ShowDialogCallback callback) override;
-
+                  ConsentProviderImpl::ShowDialogCallback callback) override;
   void ShowNotification(const extensions::ExtensionId& extension_id,
                         const std::string& extension_name,
                         const std::string& volume_id,
@@ -122,10 +128,12 @@ class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
   bool IsAutoLaunched(const Extension& extension) override;
   bool IsAllowlistedComponent(const Extension& extension) override;
 
-  Profile* const profile_;
+  // |profile_| can be a raw pointer since its destruction is observed.
+  base::raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace file_system_api
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_IMPL_H_

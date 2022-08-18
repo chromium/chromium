@@ -20,6 +20,7 @@ class BrowserContext;
 
 namespace extensions {
 
+class ConsentProvider;
 class Extension;
 
 namespace file_system_api {
@@ -46,6 +47,7 @@ class ChromeFileSystemDelegateLacros : public ChromeFileSystemDelegate {
   // ChromeFileSystemDelegate:
   void RequestFileSystem(content::BrowserContext* browser_context,
                          scoped_refptr<ExtensionFunction> requester,
+                         ConsentProvider* consent_provider,
                          const Extension& extension,
                          std::string volume_id,
                          bool writable,

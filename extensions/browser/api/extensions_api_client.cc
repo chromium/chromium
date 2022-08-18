@@ -96,6 +96,13 @@ WebViewPermissionHelperDelegate* ExtensionsAPIClient::
   return new WebViewPermissionHelperDelegate(web_view_permission_helper);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<ConsentProvider> ExtensionsAPIClient::CreateConsentProvider(
+    content::BrowserContext* browser_context) const {
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 scoped_refptr<ContentRulesRegistry>
 ExtensionsAPIClient::CreateContentRulesRegistry(
     content::BrowserContext* browser_context,

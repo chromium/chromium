@@ -11,6 +11,8 @@
 
 namespace extensions {
 
+class ConsentProvider;
+
 class ShellFileSystemDelegate : public FileSystemDelegate {
  public:
   ShellFileSystemDelegate();
@@ -39,10 +41,9 @@ class ShellFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
 #if BUILDFLAG(IS_CHROMEOS)
-  bool IsGrantable(content::BrowserContext* browser_context,
-                   const Extension& extension) override;
   void RequestFileSystem(content::BrowserContext* browser_context,
                          scoped_refptr<ExtensionFunction> requester,
+                         ConsentProvider* consent_provider,
                          const Extension& extension,
                          std::string volume_id,
                          bool writable,

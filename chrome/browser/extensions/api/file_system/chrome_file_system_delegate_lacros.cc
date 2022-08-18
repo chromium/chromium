@@ -11,15 +11,13 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/granted_file_entry.h"
@@ -30,13 +28,10 @@ namespace extensions {
 namespace file_system = api::file_system;
 
 using extensions::app_file_handler_util::CreateFileEntryWithPermissions;
-using file_system_api::ConsentProvider;
-using file_system_api::ConsentProviderDelegate;
 
 namespace {
 
 const char kApiUnavailableError[] = "API unavailable.";
-const char kProfileGoneError[] = "Profile gone.";
 const char kRenderFrameHostGoneError[] = "Render frame host gone.";
 
 // Volume list converter that excludes volumes unsupported by lacros-chrome.
@@ -70,10 +65,8 @@ void DispatchVolumeListChangeEventLacros(
   if (!registry)  // Possible on shutdown.
     return;
 
-  // TODO(crbug.com/1351493): Simplify usage for IsGrantable().
-  ConsentProviderDelegate consent_provider_delegate(
-      Profile::FromBrowserContext(browser_context));
-  ConsentProvider consent_provider(&consent_provider_delegate);
+  std::unique_ptr<ConsentProvider> consent_provider =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context);
 
   file_system::VolumeListChangedEvent event_args;
   // Note: Events are still fired even if:
@@ -85,7 +78,7 @@ void DispatchVolumeListChangeEventLacros(
   // to polling via getVolumeList().
   ConvertAndFilterMojomToVolumeList(volume_list, &event_args.volumes);
   for (const auto& extension : registry->enabled_extensions()) {
-    if (!consent_provider.IsGrantable(*extension))
+    if (!consent_provider->IsGrantable(*extension))
       continue;
 
     event_router->DispatchEventToExtension(
@@ -99,194 +92,81 @@ void DispatchVolumeListChangeEventLacros(
 
 }  // namespace file_system_api
 
+/******** ChromeFileSystemDelegateLacros ********/
+
 namespace {
 
-/******** RequestFileSystemExecutor ********/
-
-// Executor for chrome.requestFileSystem(), with async steps:
-// 1. Crosapi call to get volume info.
-// 2. (Potentially) request consent via dialog.
-// Sources of complexity:
-// * Lifetime: Instances are ref counted, and are kept alive via callback
-//   binding.
-// * Profile: (2) requires |profile_|, which may disappear while awaiting (1)!
-//   This is handled by observing |profile_|: If it is destroyed then abort
-//   before (2); else proceeds with (2) and unobserve ASAP.
-// * Fulfillment: To ensure the request is fulfilled, one of |success_callback|
-//   or |error_callback| gets called eventually (via FinishWith*()).
-class RequestFileSystemExecutor
-    : public base::RefCountedThreadSafe<RequestFileSystemExecutor>,
-      public ProfileObserver {
- public:
-  RequestFileSystemExecutor(
-      Profile* profile,
-      scoped_refptr<ExtensionFunction> requester,
-      const std::string& volume_id,
-      bool writable,
-      ChromeFileSystemDelegate::FileSystemCallback success_callback,
-      ChromeFileSystemDelegate::ErrorCallback error_callback);
-  RequestFileSystemExecutor(const RequestFileSystemExecutor&) = delete;
-  RequestFileSystemExecutor& operator=(const RequestFileSystemExecutor&) =
-      delete;
-
-  // Entry point for executor flow.
-  void Run(chromeos::LacrosService* lacros_service);
-
- private:
-  friend class base::RefCountedThreadSafe<RequestFileSystemExecutor>;
-  ~RequestFileSystemExecutor() override;
-
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
-
-  // Callback for (1), on receiving volume info from crosapi.
-  void OnCrosapiGetVolumeMountInfo(crosapi::mojom::VolumePtr crosapi_volume);
-
-  // Callback for (2), on consent granting or denial.
-  void OnConsentReceived(base::FilePath mount_path,
-                         ConsentProvider::Consent result);
-
-  // Consumes |error_callback_| to pass |error| on error.
-  void FinishWithError(const std::string& error);
-
-  // Consumes |success_callback_| to pass results on success.
-  void FinishWithResponse(const std::string& filesystem_id,
-                          const std::string& registered_name);
-
-  // |profile_| can be a raw pointer since its destruction is observed.
-  base::raw_ptr<Profile> profile_;
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-  scoped_refptr<ExtensionFunction> requester_;
-  const std::string volume_id_;
-  const bool want_writable_;
-  ChromeFileSystemDelegate::FileSystemCallback success_callback_;
-  ChromeFileSystemDelegate::ErrorCallback error_callback_;
-};
-
-RequestFileSystemExecutor::RequestFileSystemExecutor(
-    Profile* profile,
+void OnConsentReceived(
     scoped_refptr<ExtensionFunction> requester,
-    const std::string& volume_id,
     bool want_writable,
     ChromeFileSystemDelegate::FileSystemCallback success_callback,
-    ChromeFileSystemDelegate::ErrorCallback error_callback)
-    : profile_(profile),
-      requester_(requester),
-      volume_id_(volume_id),
-      want_writable_(want_writable),
-      success_callback_(std::move(success_callback)),
-      error_callback_(std::move(error_callback)) {
-  profile_observation_.Observe(profile_);
-}
-
-void RequestFileSystemExecutor::Run(chromeos::LacrosService* lacros_service) {
-  // All code path from here must lead to either |success_callback_| or
-  // |error_callback_| getting called.
-  lacros_service->GetRemote<crosapi::mojom::VolumeManager>()
-      ->GetVolumeMountInfo(
-          volume_id_,
-          base::BindOnce(
-              &RequestFileSystemExecutor::OnCrosapiGetVolumeMountInfo, this));
-}
-
-RequestFileSystemExecutor::~RequestFileSystemExecutor() = default;
-
-void RequestFileSystemExecutor::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_EQ(profile_, profile);
-  profile_observation_.Reset();
-  profile_ = nullptr;
-}
-
-void RequestFileSystemExecutor::OnCrosapiGetVolumeMountInfo(
-    crosapi::mojom::VolumePtr crosapi_volume) {
-  // Profile can be gone before this callback executes, while awaiting crosapi.
-  if (!profile_) {
-    FinishWithError(kProfileGoneError);
-    return;
-  }
-  if (!crosapi_volume || !crosapi_volume->is_available_to_lacros) {
-    FinishWithError(file_system_api::kVolumeNotFoundError);
-    return;
-  }
-  if (want_writable_ && !crosapi_volume->writable) {
-    FinishWithError(file_system_api::kSecurityError);
-    return;
-  }
-
-  // TODO(crbug.com/1351493): Simplify usage for RequestConsent().
-  ConsentProviderDelegate consent_provider_delegate(profile_);
-  ConsentProvider consent_provider(&consent_provider_delegate);
-
-  ConsentProvider::ConsentCallback callback =
-      base::BindOnce(&RequestFileSystemExecutor::OnConsentReceived, this,
-                     crosapi_volume->mount_path);
-
-  consent_provider.RequestConsent(
-      requester_->render_frame_host(), *requester_->extension(),
-      crosapi_volume->volume_id, crosapi_volume->volume_label, want_writable_,
-      std::move(callback));
-
-  // Done with |profile_|, so stop observing.
-  profile_observation_.Reset();
-  profile_ = nullptr;
-}
-
-void RequestFileSystemExecutor::OnConsentReceived(
+    ChromeFileSystemDelegate::ErrorCallback error_callback,
     base::FilePath mount_path,
     ConsentProvider::Consent result) {
   // Render frame host can be gone before this callback executes.
-  if (!requester_->render_frame_host()) {
-    FinishWithError(kRenderFrameHostGoneError);
+  if (!requester->render_frame_host()) {
+    std::move(error_callback).Run(kRenderFrameHostGoneError);
     return;
   }
 
   const char* consent_err_msg = file_system_api::ConsentResultToError(result);
   if (consent_err_msg) {
-    FinishWithError(consent_err_msg);
+    std::move(error_callback).Run(consent_err_msg);
     return;
   }
 
-  const auto process_id = requester_->source_process_id();
+  const auto process_id = requester->source_process_id();
   extensions::GrantedFileEntry granted_file_entry =
       CreateFileEntryWithPermissions(process_id, mount_path,
-                                     /*can_write=*/want_writable_,
-                                     /*can_create=*/want_writable_,
-                                     /*can_delete=*/want_writable_);
-  FinishWithResponse(granted_file_entry.filesystem_id,
-                     granted_file_entry.registered_name);
+                                     /*can_write=*/want_writable,
+                                     /*can_create=*/want_writable,
+                                     /*can_delete=*/want_writable);
+  std::move(success_callback)
+      .Run(granted_file_entry.filesystem_id,
+           granted_file_entry.registered_name);
 }
 
-void RequestFileSystemExecutor::FinishWithError(const std::string& error) {
-  std::move(error_callback_).Run(error);
-}
+void OnCrosapiGetVolumeMountInfo(
+    scoped_refptr<ExtensionFunction> requester,
+    ConsentProvider* consent_provider,
+    bool want_writable,
+    ChromeFileSystemDelegate::FileSystemCallback success_callback,
+    ChromeFileSystemDelegate::ErrorCallback error_callback,
+    crosapi::mojom::VolumePtr crosapi_volume) {
+  if (!crosapi_volume || !crosapi_volume->is_available_to_lacros) {
+    std::move(error_callback).Run(file_system_api::kVolumeNotFoundError);
+    return;
+  }
+  if (want_writable && !crosapi_volume->writable) {
+    std::move(error_callback).Run(file_system_api::kSecurityError);
+    return;
+  }
 
-void RequestFileSystemExecutor::FinishWithResponse(
-    const std::string& filesystem_id,
-    const std::string& registered_name) {
-  std::move(success_callback_).Run(filesystem_id, registered_name);
+  ConsentProvider::ConsentCallback callback = base::BindOnce(
+      &OnConsentReceived, requester, want_writable, std::move(success_callback),
+      std::move(error_callback), crosapi_volume->mount_path);
+
+  consent_provider->RequestConsent(
+      requester->render_frame_host(), *requester->extension(),
+      crosapi_volume->volume_id, crosapi_volume->volume_label, want_writable,
+      std::move(callback));
 }
 
 }  // namespace
-
-/******** ChromeFileSystemDelegateLacros ********/
 
 ChromeFileSystemDelegateLacros::ChromeFileSystemDelegateLacros() = default;
 
 ChromeFileSystemDelegateLacros::~ChromeFileSystemDelegateLacros() = default;
 
 void ChromeFileSystemDelegateLacros::RequestFileSystem(
-    content::BrowserContext* browser_context,
+    content::BrowserContext* /*browser_context*/,
     scoped_refptr<ExtensionFunction> requester,
+    ConsentProvider* consent_provider,
     const Extension& extension,
     std::string volume_id,
     bool writable,
     FileSystemCallback success_callback,
     ErrorCallback error_callback) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  // TODO(crbug.com/1351493): Simplify usage for IsGrantable().
-  ConsentProviderDelegate consent_provider_delegate(profile);
-  ConsentProvider consent_provider(&consent_provider_delegate);
-
   if (writable &&
       !app_file_handler_util::HasFileSystemWritePermission(&extension)) {
     std::move(error_callback)
@@ -294,7 +174,7 @@ void ChromeFileSystemDelegateLacros::RequestFileSystem(
     return;
   }
 
-  if (!consent_provider.IsGrantable(extension)) {
+  if (!consent_provider->IsGrantable(extension)) {
     std::move(error_callback)
         .Run(file_system_api::kNotSupportedOnNonKioskSessionError);
     return;
@@ -307,13 +187,15 @@ void ChromeFileSystemDelegateLacros::RequestFileSystem(
     return;
   }
 
-  // The executor object is kept alive by its presence in callbacks, and
-  // deleted when callbacks are invoked or cleared.
-  scoped_refptr<RequestFileSystemExecutor> executor =
-      new RequestFileSystemExecutor(profile, requester, volume_id, writable,
+  // |consent_provider| lives at least as long as |requester|. One way to do
+  // this is through composition: |requester| is ref counted, keeping
+  // |consent_provider| alive after the crosapi call below.
+  lacros_service->GetRemote<crosapi::mojom::VolumeManager>()
+      ->GetVolumeMountInfo(
+          volume_id, base::BindOnce(&OnCrosapiGetVolumeMountInfo, requester,
+                                    consent_provider, writable,
                                     std::move(success_callback),
-                                    std::move(error_callback));
-  executor->Run(lacros_service);
+                                    std::move(error_callback)));
 }
 
 void ChromeFileSystemDelegateLacros::GetVolumeList(

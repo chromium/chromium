@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
@@ -1058,17 +1059,21 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
   // Additionally it is enabled for allowlisted component extensions and apps.
-  if (!delegate->IsGrantable(browser_context(), *extension())) {
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->RequestFileSystem(
-      browser_context(), this, *extension(), params->options.volume_id,
+      browser_context(), this, consent_provider_.get(), *extension(),
+      params->options.volume_id,
       params->options.writable.get() && *params->options.writable.get(),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnGotFileSystem,
                      this),
@@ -1097,12 +1102,15 @@ FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() = default;
 FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
   // Additionally it is enabled for allowlisted component extensions and apps.
-  if (!delegate->IsGrantable(browser_context(), *extension())) {
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 

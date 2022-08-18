@@ -17,7 +17,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
@@ -69,10 +69,10 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                                        base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
 #if BUILDFLAG(IS_CHROMEOS)
-  bool IsGrantable(content::BrowserContext* browser_context,
-                   const Extension& extension) override;
+  // |consent_provider| must at least live as long as |requester|.
   void RequestFileSystem(content::BrowserContext* browser_context,
                          scoped_refptr<ExtensionFunction> requester,
+                         ConsentProvider* consent_provider,
                          const Extension& extension,
                          std::string volume_id,
                          bool writable,

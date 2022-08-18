@@ -44,8 +44,6 @@ namespace extensions {
 namespace file_system = api::file_system;
 
 #if BUILDFLAG(IS_CHROMEOS)
-using file_system_api::ConsentProvider;
-using file_system_api::ConsentProviderDelegate;
 
 namespace file_system_api {
 
@@ -166,19 +164,10 @@ int ChromeFileSystemDelegate::GetDescriptionIdForAcceptType(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool ChromeFileSystemDelegate::IsGrantable(
-    content::BrowserContext* browser_context,
-    const Extension& extension) {
-  // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for allowlisted component extensions and apps.
-  ConsentProviderDelegate consent_provider_delegate(
-      Profile::FromBrowserContext(browser_context));
-  return ConsentProvider(&consent_provider_delegate).IsGrantable(extension);
-}
-
 void ChromeFileSystemDelegate::RequestFileSystem(
     content::BrowserContext* browser_context,
     scoped_refptr<ExtensionFunction> requester,
+    ConsentProvider* consent_provider,
     const Extension& extension,
     std::string volume_id,
     bool writable,

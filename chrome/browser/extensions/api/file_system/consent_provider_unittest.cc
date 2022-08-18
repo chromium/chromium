@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/file_system/consent_provider.h"
+#include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -22,7 +24,7 @@
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::file_system_api::ConsentProvider;
+using extensions::file_system_api::ConsentProviderImpl;
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -45,10 +47,10 @@ struct TestDelegateState {
   int show_notification_counter = 0;
 };
 
-// Test implementation of ConsentProvider::DelegateInterface that exposes
+// Test implementation of ConsentProviderImpl::DelegateInterface that exposes
 // states to a TestDelegateState instance.
 class TestingConsentProviderDelegate
-    : public ConsentProvider::DelegateInterface {
+    : public ConsentProviderImpl::DelegateInterface {
  public:
   explicit TestingConsentProviderDelegate(TestDelegateState* state)
       : state_(state) {}
@@ -58,22 +60,22 @@ class TestingConsentProviderDelegate
   TestingConsentProviderDelegate& operator=(
       const TestingConsentProviderDelegate&) = delete;
 
-  ~TestingConsentProviderDelegate() = default;
+  ~TestingConsentProviderDelegate() override = default;
 
  private:
-  // ConsentProvider::DelegateInterface:
+  // ConsentProviderImpl::DelegateInterface:
   void ShowDialog(content::RenderFrameHost* host,
                   const extensions::ExtensionId& extension_id,
                   const std::string& extension_name,
                   const std::string& volume_id,
                   const std::string& volume_label,
                   bool writable,
-                  ConsentProvider::ShowDialogCallback callback) override {
+                  ConsentProviderImpl::ShowDialogCallback callback) override {
     ++state_->show_dialog_counter;
     std::move(callback).Run(state_->dialog_button);
   }
 
-  // ConsentProvider::DelegateInterface:
+  // ConsentProviderImpl::DelegateInterface:
   void ShowNotification(const extensions::ExtensionId& extension_id,
                         const std::string& extension_name,
                         const std::string& volume_id,
@@ -82,12 +84,12 @@ class TestingConsentProviderDelegate
     ++state_->show_notification_counter;
   }
 
-  // ConsentProvider::DelegateInterface:
+  // ConsentProviderImpl::DelegateInterface:
   bool IsAutoLaunched(const extensions::Extension& extension) override {
     return state_->is_auto_launched;
   }
 
-  // ConsentProvider::DelegateInterface:
+  // ConsentProviderImpl::DelegateInterface:
   bool IsAllowlistedComponent(const extensions::Extension& extension) override {
     return state_->allowlisted_component_id.compare(extension.id()) == 0;
   }
@@ -97,8 +99,8 @@ class TestingConsentProviderDelegate
 };
 
 // Rewrites result of a consent request from |result| to |log|.
-void OnConsentReceived(ConsentProvider::Consent* log,
-                       const ConsentProvider::Consent result) {
+void OnConsentReceived(ConsentProviderImpl::Consent* log,
+                       const ConsentProviderImpl::Consent result) {
   *log = result;
 }
 
@@ -140,8 +142,8 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
             .SetLocation(ManifestLocation::kComponent)
             .Build());
     TestDelegateState state;
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_FALSE(provider.IsGrantable(*component_extension));
   }
 
@@ -154,11 +156,11 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
             .Build());
     TestDelegateState state;
     state.allowlisted_component_id = allowlisted_component_extension->id();
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*allowlisted_component_extension));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(nullptr, *allowlisted_component_extension.get(),
                             "Volume ID 1", "Volume Label 1",
                             true /* writable */,
@@ -176,8 +178,8 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
     scoped_refptr<const Extension> non_component_extension(
         ExtensionBuilder("Test").Build());
     TestDelegateState state;
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_FALSE(provider.IsGrantable(*non_component_extension));
   }
 }
@@ -198,11 +200,11 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
 
     TestDelegateState state;
     state.is_auto_launched = true;
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*auto_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(
         nullptr, *auto_launch_kiosk_app.get(), "Volume ID 2", "Volume Label 2",
         true /* writable */, base::BindOnce(&OnConsentReceived, &result));
@@ -227,11 +229,11 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
   {
     TestDelegateState state;
     state.dialog_button = ui::DIALOG_BUTTON_OK;
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
                             "Volume ID 3", "Volume Label 3",
                             true /* writable */,
@@ -248,11 +250,11 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
   {
     TestDelegateState state;
     state.dialog_button = ui::DIALOG_BUTTON_CANCEL;
-    TestingConsentProviderDelegate delegate(&state);
-    ConsentProvider provider(&delegate);
+    ConsentProviderImpl provider(
+        std::make_unique<TestingConsentProviderDelegate>(&state));
     EXPECT_TRUE(provider.IsGrantable(*manual_launch_kiosk_app));
 
-    ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
+    ConsentProviderImpl::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
     provider.RequestConsent(nullptr, *manual_launch_kiosk_app.get(),
                             "Volume ID 4", "Volume Label 4",
                             true /* writable */,

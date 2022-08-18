@@ -18,6 +18,10 @@
 #include "extensions/common/api/file_system.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/browser/api/file_system/consent_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace extensions {
 class ExtensionPrefs;
 
@@ -267,6 +271,8 @@ class FileSystemRequestFileSystemFunction : public ExtensionFunction {
   // access.
   void OnGotFileSystem(const std::string& id, const std::string& path);
   void OnError(const std::string& error);
+
+  std::unique_ptr<ConsentProvider> consent_provider_;
 };
 
 // Requests a list of available volumes.
@@ -285,6 +291,8 @@ class FileSystemGetVolumeListFunction : public ExtensionFunction {
  private:
   void OnGotVolumeList(const std::vector<api::file_system::Volume>& volumes);
   void OnError(const std::string& error);
+
+  std::unique_ptr<ConsentProvider> consent_provider_;
 };
 #else   // BUILDFLAG(IS_CHROMEOS)
 // Stub for non Chrome OS operating systems.
