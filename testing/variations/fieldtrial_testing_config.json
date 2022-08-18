@@ -7975,6 +7975,10 @@
             "experiments": [
                 {
                     "name": "DrDc",
+                    "params": {
+                        "BlockListByDevice": "amber|chopin|secret|a03|SO-51B",
+                        "BlockListByModel": "21081111RG|21061110AG|M2101K7BG|SM-A035F|SO-51B"
+                    },
                     "enable_features": [
                         "EnableDrDc",
                         "EnableDrDcVulkan"
