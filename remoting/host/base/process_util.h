@@ -10,7 +10,9 @@
 
 namespace remoting {
 
-// Gets the image path of |pid|.
+// Gets the image path of |pid|. Note that on Linux, the process image's
+// original path will still be returned even if the binary has been deleted from
+// the storage.
 base::FilePath GetProcessImagePath(base::ProcessId pid);
 
 }  // namespace remoting

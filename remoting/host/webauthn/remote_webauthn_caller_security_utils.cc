@@ -79,6 +79,10 @@ bool IsLaunchedByTrustedProcess() {
 #elif BUILDFLAG(IS_LINUX)
   base::ProcessId parent_pid =
       base::GetParentProcessId(base::GetCurrentProcessHandle());
+  // Note that on Linux the process image may no longer exist in its original
+  // path. This will happen when Chrome has been updated but hasn't been
+  // relaunched. The path can still be trusted since it's not spoofable even if
+  // it's no longer pointing to the current Chrome binary.
   base::FilePath parent_image_path = GetProcessImagePath(parent_pid);
   return kAllowedCallerPrograms.contains(parent_image_path.value());
 #elif BUILDFLAG(IS_WIN)
