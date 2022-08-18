@@ -4,49 +4,54 @@
 // META: script=/html/cross-origin-embedder-policy/credentialless/resources/common.js
 // META: script=./resources/common.js
 
-const same_origin = get_host_info().HTTPS_ORIGIN;
-const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
-const local_storage_key = "coep_credentialless_iframe_local_storage";
-const local_storage_same_origin = "same_origin";
-const local_storage_cross_origin = "cross_origin";
+// Make |iframe| to store |key|=|value| into LocalStorage.
+const store = async (iframe, key, value) => {
+  const response_queue = token();
+  send(iframe, `
+    localStorage.setItem("${key}", "${value}");
+    send("${response_queue}", "stored");
+  `);
+  assert_equals(await receive(response_queue), "stored");
+};
 
-promise_test_parallel(async test => {
-  // Add an item in the localStorage on same_origin.
-  localStorage.setItem(local_storage_key, local_storage_same_origin);
+// Make |iframe| to load |key| in LocalStorage. Check it matches the
+// |expected_value|.
+const load = async (iframe, key, expected_value) => {
+  const response_queue = token();
+  send(iframe, `
+    const value = localStorage.getItem("${key}");
+    send("${response_queue}", value || "not found");
+  `);
+  assert_equals(await receive(response_queue), expected_value);
+};
 
-  // Add an item in the localStorage on cross_origin.
-  {
-    const w_token = token();
-    const w_url = cross_origin + executor_path + `&uuid=${w_token}`;
-    const w = window.open(w_url);
-    const reply_token = token();
-    send(w_token, `
-      localStorage.setItem("${local_storage_key}",
-                           "${local_storage_cross_origin}");
-      send("${reply_token}", "done");
-    `);
-    assert_equals(await receive(reply_token), "done");
-    w.close();
-  }
+promise_test(async test => {
+  const origin = get_host_info().HTTPS_REMOTE_ORIGIN;
+  const key_1 = token();
+  const key_2 = token();
 
-  promise_test_parallel(async test => {
-    let iframe = newAnonymousIframe(same_origin);
-    let reply_token = token();
-    send(iframe, `
-      let value = localStorage.getItem("${local_storage_key}");
-      send("${reply_token}", value);
-    `)
-    assert_equals(await receive(reply_token), "")
-  }, "same_origin anonymous iframe can't access the localStorage");
+  // 4 actors: 2 anonymous iframe and 2 normal iframe.
+  const iframe_anonymous_1 = newAnonymousIframe(origin);
+  const iframe_anonymous_2 = newAnonymousIframe(origin);
+  const iframe_normal_1 = newIframe(origin);
+  const iframe_normal_2 = newIframe(origin);
 
-  promise_test_parallel(async test => {
-    let iframe = newAnonymousIframe(cross_origin);
-    let reply_token = token();
-    send(iframe, `
-      let value = localStorage.getItem("${local_storage_key}");
-      send("${reply_token}", value);
-    `)
-    assert_equals(await receive(reply_token), "")
-  }, "cross_origin anonymous iframe can't access the localStorage");
+  // 1. Store a value in one anonymous iframe and one normal iframe.
+  await Promise.all([
+    store(iframe_anonymous_1, key_1, "value_1"),
+    store(iframe_normal_1, key_2, "value_2"),
+  ]);
 
-}, "Setup")
+  // 2. Check what each of them can retrieve.
+  await Promise.all([
+    load(iframe_anonymous_1, key_1, "value_1"),
+    load(iframe_anonymous_2, key_1, "value_1"),
+    load(iframe_anonymous_1, key_2, "not found"),
+    load(iframe_anonymous_2, key_2, "not found"),
+
+    load(iframe_normal_1, key_1, "not found"),
+    load(iframe_normal_2, key_1, "not found"),
+    load(iframe_normal_1, key_2, "value_2"),
+    load(iframe_normal_2, key_2, "value_2"),
+  ]);
+}, "Local storage is correctly partitioned with regards to anonymous iframe");
