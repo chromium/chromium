@@ -554,6 +554,8 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       break;
     case PAGE_INFO_COOKIES_SETTINGS_OPENED:
       // TODO(crbug.com/1346305) Add recording action.
+    case PAGE_INFO_ALL_SITES_OPENED:
+      // TODO(crbug.com/1346305) Add recording action.
       break;
   }
 }
@@ -684,6 +686,15 @@ void PageInfo::OpenCookiesSettingsView() {
 #else
   RecordPageInfoAction(PAGE_INFO_COOKIES_SETTINGS_OPENED);
   delegate_->ShowCookiesSettings();
+#endif
+}
+
+void PageInfo::OpenAllSitesView() {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  RecordPageInfoAction(PAGE_INFO_ALL_SITES_OPENED);
+  delegate_->ShowAllSitesSettings();
 #endif
 }
 

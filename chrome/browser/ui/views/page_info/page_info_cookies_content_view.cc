@@ -218,5 +218,6 @@ void PageInfoCookiesContentView::InitFPSButton() {
 }
 
 void PageInfoCookiesContentView::FPSSettingsButtonClicked(ui::Event const&) {
-  // TODO(crbug.com/1346305): Add linking to "All Sites" settings page.
+  // TODO(crbug.com/1346305): Add passing current FPS owner to filter by it.
+  presenter_->OpenAllSitesView();
 }

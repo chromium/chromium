@@ -153,7 +153,8 @@ class PageInfo {
     PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED = 32,
     PAGE_INFO_COOKIES_PAGE_OPENED = 33,
     PAGE_INFO_COOKIES_SETTINGS_OPENED = 34,
-    kMaxValue = PAGE_INFO_COOKIES_SETTINGS_OPENED
+    PAGE_INFO_ALL_SITES_OPENED = 35,
+    kMaxValue = PAGE_INFO_ALL_SITES_OPENED
   };
 
   struct ChooserUIInfo {
@@ -240,6 +241,9 @@ class PageInfo {
 
   // Handles opening the link to show cookies settings and records the event.
   void OpenCookiesSettingsView();
+
+  // Handles opening the link to show all sites settings and records the event.
+  void OpenAllSitesView();
 
   // Handles opening the cookies dialog and records the event.
   void OpenCookiesDialog();
