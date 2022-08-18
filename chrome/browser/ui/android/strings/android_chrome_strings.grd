@@ -4580,6 +4580,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_TRANSLATE_MENU_BUTTON_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text after a successful navigation prompting user to translate current page.">
         Translate this page to any language from the More options button
       </message>
+      <message name="IDS_IPH_TRANSLATE_MESSAGE_DISMISSED_TEXT" desc="The in-product-help message after the prompt for the user to translate the current page has disappeared, in order to show the user how to bring the translate prompt back.">
+        Translate pages here
+      </message>
+      <message name="IDS_IPH_TRANSLATE_MESSAGE_DISMISSED_ACCESSIBILITY_TEXT" desc="The in-product-help message spoken by screen readers after the prompt for the user to translate the current page has disappeared, in order to show the user how to bring the translate prompt back.">
+        Translate pages from the More Options button
+      </message>
       <message name="IDS_IPH_SHARED_HIGHLIGHTING_BUILDER" desc="The in-product-help message to notify the user that the share action can preemptively share a link-to-text.">
         New: share a link that scrolls to this text
       </message>
