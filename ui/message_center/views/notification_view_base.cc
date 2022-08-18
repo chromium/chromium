@@ -318,6 +318,12 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
 
 NotificationViewBase::~NotificationViewBase() {
   RemovePreTargetHandler(click_activator_.get());
+
+  // `inline_reply_` might still be accessed by
+  // `AshNotificationView::ActionButtonPressed()` after dtor, so we explicitly
+  // reset that pointer here to avoid using invalid pointer.
+  actions_row()->RemoveChildViewT(inline_reply_);
+  inline_reply_ = nullptr;
 }
 
 void NotificationViewBase::Layout() {
@@ -343,7 +349,9 @@ void NotificationViewBase::Layout() {
     path.addRoundRect(gfx::RectToSkRect(bounds), kCornerRadius, kCornerRadius);
 
     action_buttons_row_->SetClipPath(path);
-    inline_reply_->SetClipPath(path);
+
+    if (inline_reply_)
+      inline_reply_->SetClipPath(path);
   }
 }
 
@@ -756,7 +764,8 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
   }
 
   // Hide inline reply field if it doesn't exist anymore.
-  if (inline_reply_->GetVisible() && !HasInlineReply(notification)) {
+  if (inline_reply_ && inline_reply_->GetVisible() &&
+      !HasInlineReply(notification)) {
     action_buttons_row_->SetVisible(true);
     inline_reply_->SetVisible(false);
   }
@@ -814,7 +823,7 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
                                                const ui::Event& event) {
   const absl::optional<std::u16string>& placeholder =
       action_button_to_placeholder_map_[action_buttons_[index]];
-  if (placeholder) {
+  if (placeholder && inline_reply_) {
     inline_reply_->SetTextfieldIndex(static_cast<int>(index));
     inline_reply_->SetPlaceholderText(placeholder);
     inline_reply_->AnimateBackground(event);
@@ -834,6 +843,8 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
 
 bool NotificationViewBase::HasInlineReply(
     const Notification& notification) const {
+  if (!inline_reply_)
+    return false;
   auto buttons = notification.buttons();
   const size_t index = inline_reply_->GetTextfieldIndex();
   return index < buttons.size() && buttons[index].placeholder.has_value();
@@ -855,7 +866,8 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
                            !action_buttons_row_->children().empty());
   if (!expanded) {
     action_buttons_row_->SetVisible(true);
-    inline_reply_->SetVisible(false);
+    if (inline_reply_)
+      inline_reply_->SetVisible(false);
   }
 
   for (size_t i = kMaxLinesForMessageLabel; i < item_views_.size(); ++i) {

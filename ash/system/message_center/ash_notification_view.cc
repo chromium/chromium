@@ -694,7 +694,10 @@ void AshNotificationView::AnimateSingleToGroup(
 void AshNotificationView::ToggleExpand() {
   SetManuallyExpandedOrCollapsed(true);
 
-  if (inline_reply()->GetVisible()) {
+  // Here we need to check if `inline_reply()` is still valid since user
+  // can click the expand button when the view is being destructed, which
+  // invalidate `inline_reply()`.
+  if (inline_reply() && inline_reply()->GetVisible()) {
     // If inline reply is visible, fade it out then set expanded.
     message_center_utils::FadeOutView(
         inline_reply(),
@@ -1258,8 +1261,10 @@ void AshNotificationView::ActionButtonPressed(size_t index,
   NotificationViewBase::ActionButtonPressed(index, event);
 
   // If inline reply is visible, fade out actions button and then fade in inline
-  // reply.
-  if (inline_reply()->GetVisible()) {
+  // reply. Here we need to check if `inline_reply()` is still valid since user
+  // can click an action button when the view is being destructed, which
+  // invalidate `inline_reply()`.
+  if (inline_reply() && inline_reply()->GetVisible()) {
     message_center_utils::InitLayerForAnimations(action_buttons_row());
     message_center_utils::FadeOutView(
         action_buttons_row(),
