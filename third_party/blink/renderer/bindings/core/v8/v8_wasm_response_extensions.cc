@@ -80,14 +80,14 @@ class WasmCodeCachingCallback {
       : response_url_(response_url),
         response_time_(response_time),
         cache_storage_cache_name_(cache_storage_cache_name),
-        main_thread_task_runner_(std::move(task_runner)),
+        execution_context_task_runner_(std::move(task_runner)),
         execution_context_(execution_context) {}
 
   WasmCodeCachingCallback(const WasmCodeCachingCallback&) = delete;
   WasmCodeCachingCallback operator=(const WasmCodeCachingCallback&) = delete;
 
   void OnMoreFunctionsCanBeSerialized(v8::CompiledWasmModule compiled_module) {
-    // Called off the main thread.
+    // Called from V8 background thread.
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
                          "url", response_url_.Utf8());
@@ -143,8 +143,8 @@ class WasmCodeCachingCallback {
     if (serialized_data.size() < serialized_module.size)
       return;
 
-    DCHECK(main_thread_task_runner_.get());
-    main_thread_task_runner_->PostTask(
+    DCHECK(execution_context_task_runner_.get());
+    execution_context_task_runner_->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
                        &SendCachedData, response_url_, response_time_,
                        cache_storage_cache_name_, execution_context_,
@@ -160,7 +160,7 @@ class WasmCodeCachingCallback {
   const base::Time response_time_;
   const String cache_storage_cache_name_;
   scoped_refptr<CachedMetadata> cached_module_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> execution_context_task_runner_;
   CrossThreadWeakPersistent<ExecutionContext> execution_context_;
 };
 
@@ -483,14 +483,16 @@ scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
   }
 
   if (execution_context.IsWindow()) {
-    return Thread::MainThread()->GetDeprecatedTaskRunner();
+    return DynamicTo<LocalDOMWindow>(execution_context)
+        ->GetTaskRunner(TaskType::kInternalNavigationAssociated);
   }
 
   DCHECK(execution_context.IsWorkletGlobalScope());
   WorkletGlobalScope& worklet_global_scope =
       To<WorkletGlobalScope>(execution_context);
   if (worklet_global_scope.IsMainThreadWorkletGlobalScope()) {
-    return Thread::MainThread()->GetDeprecatedTaskRunner();
+    return worklet_global_scope.GetFrame()->GetTaskRunner(
+        TaskType::kInternalNavigationAssociated);
   }
 
   return worklet_global_scope.GetThread()
