@@ -59,6 +59,15 @@ SessionRestorePageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SessionRestorePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in performance on session restore. Prerendering
+  // doesn't occur in such a case.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SessionRestorePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // Session restores use transition reload, so we only observe loads with a
