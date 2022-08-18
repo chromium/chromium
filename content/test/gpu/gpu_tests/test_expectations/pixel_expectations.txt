@@ -231,8 +231,9 @@ crbug.com/1201009 [ linux ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated
 crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Skip ]
 crbug.com/1201009 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Skip ]
 
-# 5 minute timeout on ChromeOS FYI Release (amd64-generic)
-crbug.com/1167246 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
+# 5 minute timeout on ChromeOS FYI Release (both amd64-generic and kevin)
+crbug.com/1353952 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLContextRestored [ Skip ]
+crbug.com/1353952 [ chromeos chromeos-board-kevin ] Pixel_WebGLContextRestored [ Skip ]
 
 ###################
 # Failures/Flakes #
