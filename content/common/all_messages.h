@@ -11,10 +11,10 @@
 #include "ppapi/buildflags/buildflags.h"
 
 #include "content/common/content_message_generator.h"
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #undef PPAPI_PROXY_PPAPI_MESSAGES_H_
 #include "ppapi/proxy/ppapi_messages.h"  // nogncheck
 #ifndef PPAPI_PROXY_PPAPI_MESSAGES_H_
 #error "Failed to include ppapi/proxy/ppapi_messages.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 #endif

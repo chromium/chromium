@@ -242,7 +242,7 @@
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-microtask-queue.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/renderer/pepper/pepper_browser_connection.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -1831,7 +1831,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
           std::make_unique<RenderAccessibilityManager>(this)),
       weak_wrapper_resource_load_info_notifier_(
           std::make_unique<blink::WeakWrapperResourceLoadInfoNotifier>(this)),
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
       focused_pepper_plugin_(nullptr),
 #endif
       navigation_client_impl_(nullptr),
@@ -1906,7 +1906,7 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
                routing_id_);
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   new PepperBrowserConnection(this);
 #endif
 
@@ -1962,7 +1962,7 @@ blink::WebFrameWidget* RenderFrameImpl::GetLocalRootWebFrameWidget() {
   return frame_->LocalRoot()->FrameWidget();
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 void RenderFrameImpl::PepperPluginCreated(RendererPpapiHost* host) {
   for (auto& observer : observers_)
     observer.DidCreatePepperPlugin(host);
@@ -2001,7 +2001,7 @@ void RenderFrameImpl::PepperSelectionChanged(
   SyncSelectionIfRequired(blink::SyncCondition::kNotForced);
 }
 
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 void RenderFrameImpl::ScriptedPrint() {
   bool user_initiated = GetLocalRootWebFrameWidget()->HandlingInputEvent();
@@ -2258,7 +2258,7 @@ void RenderFrameImpl::DidMeaningfulLayout(
 }
 
 void RenderFrameImpl::DidCommitAndDrawCompositorFrame() {
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // Notify all instances that we painted.  The same caveats apply as for
   // ViewFlushedPaint regarding instances closing themselves, so we take
   // similar precautions.
@@ -2329,7 +2329,7 @@ void RenderFrameImpl::ShowVirtualKeyboard() {
 blink::WebPlugin* RenderFrameImpl::CreatePlugin(
     const WebPluginInfo& info,
     const blink::WebPluginParams& params) {
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   absl::optional<url::Origin> origin_lock;
   if (GetContentClient()->renderer()->IsOriginIsolatedPepperPlugin(info.path)) {
     origin_lock = url::Origin::Create(GURL(params.url));
@@ -2347,7 +2347,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LOG(WARNING) << "Pepper module/plugin creation failed.";
 #endif
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
   return nullptr;
 }
 
@@ -2378,17 +2378,6 @@ RenderFrameImpl::GetRemoteAssociatedInterfaces() {
   }
   return remote_associated_interfaces_.get();
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-
-void RenderFrameImpl::PluginDidStartLoading() {
-  DidStartLoading();
-}
-
-void RenderFrameImpl::PluginDidStopLoading() {
-  DidStopLoading();
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameImpl::SetSelectedText(const std::u16string& selection_text,
                                       size_t offset,
@@ -3196,7 +3185,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
     return plugin;
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   WebPluginInfo info;
   std::string mime_type;
   bool found = false;
@@ -3210,7 +3199,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
   return CreatePlugin(info, params_to_use);
 #else
   return nullptr;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
@@ -4478,10 +4467,10 @@ void RenderFrameImpl::WasHidden() {
   for (auto& observer : observers_)
     observer.WasHidden();
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   for (auto* plugin : active_pepper_instances_)
     plugin->PageVisibilityChanged(false);
-#endif  // ENABLE_PLUGINS
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 void RenderFrameImpl::WasShown() {
@@ -4489,10 +4478,10 @@ void RenderFrameImpl::WasShown() {
   for (auto& observer : observers_)
     observer.WasShown();
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   for (auto* plugin : active_pepper_instances_)
     plugin->PageVisibilityChanged(true);
-#endif  // ENABLE_PLUGINS
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 bool RenderFrameImpl::IsMainFrame() {
@@ -5499,7 +5488,7 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
   std::u16string text;
   size_t offset;
   gfx::Range range;
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   if (focused_pepper_plugin_) {
     focused_pepper_plugin_->GetSurroundingText(&text, &range);
     offset = 0;  // Pepper API does not support offset reporting.
@@ -6001,7 +5990,7 @@ bool RenderFrameImpl::IsAccessibilityEnabled() const {
       ui::AXMode::kWebContents);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 
 mojom::PepperHost* RenderFrameImpl::GetPepperHost() {
   if (!pepper_host_remote_.is_bound())
@@ -6038,7 +6027,7 @@ void RenderFrameImpl::PepperFocusChanged(PepperPluginInstanceImpl* instance,
   GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
 }
 
-#endif  // ENABLE_PLUGINS
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 blink::WebComputedAXTree* RenderFrameImpl::GetOrCreateWebComputedAXTree() {
   if (!computed_ax_tree_)
@@ -6072,7 +6061,7 @@ RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
 }
 
 bool RenderFrameImpl::GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) {
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   if (focused_pepper_plugin_) {
     rect = focused_pepper_plugin_->GetCaretBounds();
     return true;

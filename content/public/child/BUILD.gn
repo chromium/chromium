@@ -13,7 +13,7 @@ group("child") {
     if (!is_android) {
       public_deps += [ "//content/gpu" ]
     }
-    if (enable_plugins) {
+    if (enable_ppapi) {
       public_deps += [ "//content/ppapi_plugin" ]
     }
   }

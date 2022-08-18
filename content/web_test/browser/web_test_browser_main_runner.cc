@@ -29,7 +29,6 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/test/ppapi_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/gpu_browsertest_helpers.h"
@@ -47,6 +46,10 @@
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "content/public/test/ppapi_test_utils.h"
+#endif
 
 namespace content {
 
@@ -129,9 +132,8 @@ void WebTestBrowserMainRunner::Initialize() {
   // interference. This GPU process is launched 120 seconds after chrome starts.
   command_line.AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  bool ppapi_ok = ppapi::RegisterBlinkTestPlugin(&command_line);
-  CHECK(ppapi_ok);
+#if BUILDFLAG(ENABLE_PPAPI)
+  CHECK(ppapi::RegisterBlinkTestPlugin(&command_line));
 #endif
 
   command_line.AppendSwitch(cc::switches::kEnableGpuBenchmarking);

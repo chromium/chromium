@@ -147,7 +147,7 @@ class CreateNewWindowParams;
 class WebContentsAndroid;
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 class PepperPlaybackObserver;
 #endif
 
@@ -794,7 +794,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;
   PrerenderHostRegistry* GetPrerenderHostRegistry() override;
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   void OnPepperInstanceCreated(RenderFrameHostImpl* source,
                                int32_t pp_instance) override;
   void OnPepperInstanceDeleted(RenderFrameHostImpl* source,
@@ -810,7 +810,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                           int plugin_child_id,
                           const base::FilePath& path,
                           bool is_hung) override;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
@@ -2165,10 +2165,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Manages media players, CDMs, and power save blockers for media.
   std::unique_ptr<MediaWebContentsObserver> media_web_contents_observer_;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // Observes pepper playback changes, and notifies MediaSession.
   std::unique_ptr<PepperPlaybackObserver> pepper_playback_observer_;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
 

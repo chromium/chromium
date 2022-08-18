@@ -11,6 +11,7 @@
 #include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/webplugininfo.h"
 
 namespace content {
 

@@ -25,7 +25,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/test/ppapi/ppapi_test.h"
 #endif
 
@@ -203,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   // ChromeAcceptHeaderTest.ObjectAndFavicon.
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-
+#if BUILDFLAG(ENABLE_PPAPI)
 // Checks Accept header for ResourceType::kPluginResource.
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, PluginAcceptHeader) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTP);
@@ -235,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, PluginAcceptHeader) {
   // Since the server uses local variables.
   ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());
 }
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 }  //  namespace
 }  //  namespace content

@@ -687,7 +687,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
     ipc_send_watcher_for_testing_ = std::move(watcher);
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   PepperRendererConnection* pepper_renderer_connection() {
     return pepper_renderer_connection_.get();
   }
@@ -1140,7 +1140,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<PushMessagingManager> push_messaging_manager_;
 
   std::unique_ptr<EmbeddedFrameSinkProviderImpl> embedded_frame_sink_provider_;
+#if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginRegistryImpl> plugin_registry_;
+#endif
 
   mojo::Remote<mojom::ChildProcess> child_process_;
   // This will be bound to |io_thread_host_impl_|.
@@ -1185,7 +1187,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<tracing::SystemTracingService> system_tracing_service_;
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   scoped_refptr<PepperRendererConnection> pepper_renderer_connection_;
 #endif
 

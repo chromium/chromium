@@ -154,7 +154,7 @@
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/common/pepper_plugin.mojom.h"
 #endif
 
@@ -273,10 +273,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public blink::mojom::LocalFrameHost,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
       public mojom::PepperHost,
       public mojom::PepperHungDetectorHost,
-#endif  //  BUILDFLAG(ENABLE_PLUGINS)
+#endif  //  BUILDFLAG(ENABLE_PPAPI)
       public network::mojom::CookieAccessObserver {
  public:
   using JavaScriptDialogCallback =
@@ -2399,7 +2399,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<network::mojom::MdnsResponder> receiver);
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   void PepperInstanceClosed(int32_t instance_id);
   void PepperSetVolume(int32_t instance_id, double volume);
 #endif
@@ -2847,7 +2847,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // mojom::PepperHost overrides:
   void InstanceCreated(
       int32_t instance_id,
@@ -2886,7 +2886,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // mojom::PepperHungDetectorHost overrides:
   void PluginHung(bool is_hung) override;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.
@@ -3905,7 +3905,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::AssociatedReceiver<mojom::DomAutomationControllerHost>
       dom_automation_controller_receiver_{this};
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   mojo::AssociatedReceiver<mojom::PepperHost> pepper_host_receiver_{this};
   std::map<int32_t, std::unique_ptr<PepperPluginInstanceHost>>
       pepper_instance_map_;

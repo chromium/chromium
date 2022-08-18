@@ -202,13 +202,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual blink::AssociatedInterfaceProvider*
   GetRemoteAssociatedInterfaces() = 0;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Used by plugins that load data in this RenderFrame to update the loading
-  // notifications.
-  virtual void PluginDidStartLoading() = 0;
-  virtual void PluginDidStopLoading() = 0;
-#endif
-
   // Notifies the browser of text selection changes made.
   virtual void SetSelectedText(const std::u16string& selection_text,
                                size_t offset,

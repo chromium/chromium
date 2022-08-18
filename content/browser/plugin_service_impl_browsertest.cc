@@ -15,6 +15,7 @@
 #include "content/browser/ppapi_plugin_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

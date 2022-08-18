@@ -114,7 +114,7 @@
 #include "url/origin.h"
 #include "v8/include/v8-forward.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/common/pepper_plugin.mojom.h"
 #endif
 
@@ -311,7 +311,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // gone, and clean up code that depends on it.
   bool in_frame_tree() { return in_frame_tree_; }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   mojom::PepperHost* GetPepperHost();
 
   // Notification that a PPAPI plugin has been created.
@@ -327,7 +327,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // Informs the render view that a PPAPI plugin has changed selection.
   void PepperSelectionChanged(PepperPluginInstanceImpl* instance);
 
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // IPC::Sender
   bool Send(IPC::Message* msg) override;
@@ -361,10 +361,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::ScopedMessagePipeHandle interface_pipe) override;
   blink::AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry() override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
-#if BUILDFLAG(ENABLE_PLUGINS)
-  void PluginDidStartLoading() override;
-  void PluginDidStopLoading() override;
-#endif
   void SetSelectedText(const std::u16string& selection_text,
                        size_t offset,
                        const gfx::Range& range) override;
@@ -706,7 +702,7 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Plugin-related functions --------------------------------------------------
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   PepperPluginInstanceImpl* focused_pepper_plugin() {
     return focused_pepper_plugin_;
   }
@@ -726,7 +722,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void PepperFocusChanged(PepperPluginInstanceImpl* instance, bool focused);
 
   void OnSetPepperVolume(int32_t pp_instance, double volume);
-#endif  // ENABLE_PLUGINS
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   const blink::RendererPreferences& GetRendererPreferences() const;
 
@@ -1232,7 +1228,7 @@ class CONTENT_EXPORT RenderFrameImpl
       weak_wrapper_resource_load_info_notifier_;
 
   // Plugins -------------------------------------------------------------------
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   typedef std::set<PepperPluginInstanceImpl*> PepperPluginSet;
   PepperPluginSet active_pepper_instances_;
 
