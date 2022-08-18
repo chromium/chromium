@@ -80,9 +80,13 @@ public class TabListManager {
         tabLists[1] = new TabGroupImpl(nativeWindow, true);
         ThreadPool.execute(() -> {
             tabLists[0].init(nativeWindow);
-            tabLists[0].addObserver(tabInfoObserver);
-            mLoaded = true;
-            ThreadPool.post(() -> callback.onResult(null));
+            ThreadPool.post(() -> {
+                tabLists[0].addObserver(tabInfoObserver);
+                mLoaded = true;
+                if (callback != null) {
+                    callback.onResult(null);
+                }
+            });
         });
 
 

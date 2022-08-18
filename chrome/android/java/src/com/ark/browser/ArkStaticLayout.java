@@ -85,9 +85,6 @@ public class ArkStaticLayout extends Layout {
     private final Handler mHandler;
     private boolean mUnstalling;
 
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
-
     private TabContentManager mTabContentManager;
 
     private final CompositorAnimationHandler mAnimationHandler;
@@ -107,13 +104,11 @@ public class ArkStaticLayout extends Layout {
      * @param viewHost            The {@link LayoutManagerHost} view for this layout
      * @param requestSupplier Frame request supplier for Compositor MCP.
      * @param tabContentManager {@link TabContentManager} instance.
-     * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
      */
     public ArkStaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
                            LayoutManagerHost viewHost,
                            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
-                           TabContentManager tabContentManager,
-                           BrowserControlsStateProvider browserControlsStateProvider) {
+                           TabContentManager tabContentManager) {
         super(context, updateHost, renderHost);
         mContext = context;
         // Only handle tab lifecycle on tablets.
@@ -145,17 +140,7 @@ public class ArkStaticLayout extends Layout {
         float dpToPx = res.getDisplayMetrics().density;
         mPxToDp = 1.0f / dpToPx;
 
-        mBrowserControlsStateProvider = browserControlsStateProvider;
-        mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
-        mBrowserControlsStateProviderObserver = new BrowserControlsStateProvider.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                mModel.set(
-                        LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
-            }
-        };
-        mBrowserControlsStateProvider.addObserver(mBrowserControlsStateProviderObserver);
+        mModel.set(LayoutTab.CONTENT_OFFSET, 0);
 
         mSceneLayer = new StaticTabSceneLayer();
         mSceneLayer.setTabContentManager(mTabContentManager);

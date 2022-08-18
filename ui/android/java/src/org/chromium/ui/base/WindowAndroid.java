@@ -595,7 +595,10 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     }
 
     public void addSelectionHandlesObserver(SelectionHandlesObserver observer) {
-        assert !mSelectionHandlesObservers.hasObserver(observer);
+        if (mSelectionHandlesObservers.hasObserver(observer)) {
+            return;
+        }
+
         mSelectionHandlesObservers.addObserver(observer);
         observer.onSelectionHandlesStateChanged(mSelectionHandlesActive);
     }

@@ -122,6 +122,7 @@ public class PageCacheManager {
         Tab tab = TabBuilder.createLiveTab(false)
                 .setIncognito(tabInfo.getTabInfo().isIncognito())
                 .setLaunchType(type)
+                .setWindow(nativeWindow)
                 .build();
         putPage(tab);
 
@@ -144,6 +145,7 @@ public class PageCacheManager {
 
         Tab tab = TabBuilder.createLiveTab(false)
                 .setIncognito(pageInfo.isIncognito())
+                .setWindow(nativeWindow)
                 .build();
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
         params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
@@ -168,6 +170,7 @@ public class PageCacheManager {
         long start = System.currentTimeMillis();
         Tab tab = TabBuilder.createFromFrozenState()
                 .setTabState(state)
+                .setWindow(nativeWindow)
                 .build();
 //        tab = Tab.createFrozenTabFromState(pageInfo, nativeWindow, state);
 //        tab.initialize(null, true, true);

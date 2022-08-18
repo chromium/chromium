@@ -345,7 +345,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
         // Build Layouts
         mStaticLayout = new ArkStaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                tabContentManager, mBrowserControlsStateProvider);
+                tabContentManager);
 
 //        setNextLayout(null, true);
 

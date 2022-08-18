@@ -36,6 +36,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.BrowserActivity;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -557,10 +559,16 @@ public abstract class ChromeActivity
 
                 TextView tvRefresh = findViewById(R.id.tv_refresh);
                 tvRefresh.setOnClickListener(v -> {
-                    Tab tab = getActivityTab();
-                    if (tab != null) {
-                        tab.reload();
-                    }
+//                    Tab tab = getActivityTab();
+//                    if (tab != null) {
+//                        tab.reload();
+//                    }
+
+
+                    Intent intent = new Intent(ChromeActivity.this, BrowserActivity.class);
+                    startActivity(intent);
+
+
                 });
 
 

@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 
 import org.chromium.base.ObserverList;
@@ -686,7 +687,13 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     private Tab getCurrentTab() {
         if (mLayoutManager == null) return null;
-        Tab currentTab = TabListManager.getInstance().getCurrentPage().getNativePage();
+
+        IPage currentPage = TabListManager.getInstance().getCurrentPage();
+        if (currentPage == null) {
+            return null;
+        }
+
+        Tab currentTab = currentPage.getNativePage();
 
         // If the tab model selector doesn't know of a current tab, use the last visible one.
         if (currentTab == null) currentTab = mTabVisible;
@@ -1251,8 +1258,9 @@ public class ArkCompositorViewHolder extends FrameLayout
     public void initCompositor(WindowAndroid window, Callback callback) {
         mWindowAndroid = window;
         this.mCallback = callback;
-        ChromeActivity activity = (ChromeActivity) window.getActivity().get();
+        Context activity = window.getActivity().get();
         mTabContentManager = new TabContentManager(activity);
+        mTabContentManager.initWithNative();
 
         mCompositorView.initNativeCompositor(
                 SysUtils.isLowEndDevice(), window, mTabContentManager);
