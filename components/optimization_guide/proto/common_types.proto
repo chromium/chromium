@@ -113,3 +113,27 @@ message StringValue {
   // The string value.
   optional string value = 1;
 }
+
+// Information about the request origin, common to all Cacao requests.
+message OriginInfo {
+  // The platform for the user's Chrome.
+  optional Platform platform = 1;
+}
+
+// The platform for the user's Chrome on which the request was made.
+enum Platform {
+  // Unknown is used when the user's platform cannot be resolved.
+  PLATFORM_UNKNOWN = 0;
+  // Android based platforms.
+  PLATFORM_ANDROID = 1;
+  // ChromeOS platforms including all architectures.
+  PLATFORM_CHROMEOS = 2;
+  // IOS based platforms.
+  PLATFORM_IOS = 3;
+  // Linux platforms including all architectures.
+  PLATFORM_LINUX = 4;
+  // Mac based platforms.
+  PLATFORM_MAC = 5;
+  // Windows based platforms.
+  PLATFORM_WINDOWS = 6;
+}

@@ -66,6 +66,8 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
 
   pending_models_request_->set_request_context(request_context);
   pending_models_request_->set_locale(locale);
+  *pending_models_request_->mutable_origin_info() =
+      optimization_guide::GetClientOriginInfo();
 
   for (const auto& model_request_info : models_request_info)
     *pending_models_request_->add_requested_models() = model_request_info;

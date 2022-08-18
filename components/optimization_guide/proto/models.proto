@@ -161,6 +161,8 @@ message GetModelsRequest {
   // included when it adds no distinguishing information to the language tag
   // (e.g. both "en-US" and "fr" are correct here).
   optional string locale = 5;
+  // Information about the request origin.
+  optional OriginInfo origin_info = 6;
 }
 
 // Response to the GetModels request.

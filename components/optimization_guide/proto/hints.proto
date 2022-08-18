@@ -82,6 +82,9 @@ message GetHintsRequest {
   // included when it adds no distinguishing information to the language tag
   // (e.g. both "en-US" and "fr" are correct here).
   optional string locale = 7;
+
+  // Information about the request origin.
+  optional OriginInfo origin_info = 9;
 }
 
 // Response to the GetHints request.

@@ -233,6 +233,9 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   get_hints_request.set_locale(locale);
 
+  *get_hints_request.mutable_origin_info() =
+      optimization_guide::GetClientOriginInfo();
+
   for (const auto& url : valid_urls)
     get_hints_request.add_urls()->set_url(url.spec());
 

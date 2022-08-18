@@ -67,6 +67,9 @@ absl::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
 std::string GetStringForOptimizationGuideDecision(
     OptimizationGuideDecision decision);
 
+// Returns client's origin info, including platform and milestone.
+proto::OriginInfo GetClientOriginInfo();
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_
