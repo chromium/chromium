@@ -3666,7 +3666,7 @@
     "owners": [ "sidereal@google.com", "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 115
   },
-  { 
+  {
     "name": "handwriting-gesture-editing",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 111
@@ -5580,6 +5580,11 @@
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 96
+  },
+  {
+    "name": "revoke-notifications-permission-if-disabled-on-app-level",
+    "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS" ],
+    "expiry_milestone": 110
   },
   {
     "name": "rounded-display",

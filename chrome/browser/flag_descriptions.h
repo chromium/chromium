@@ -2164,6 +2164,10 @@ extern const char kRequestDesktopSiteExceptionsDescription[];
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
+extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
+extern const char
+    kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
+
 extern const char kSafeModeForCachedFlagsName[];
 extern const char kSafeModeForCachedFlagsDescription[];
 

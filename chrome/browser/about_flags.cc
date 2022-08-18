@@ -226,6 +226,7 @@
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
+#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
@@ -5416,6 +5417,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kRequestDesktopSiteForTablets,
                                     kRequestDesktopSiteForTabletsVariations,
                                     "RequestDesktopSiteForTablets")},
+    {"revoke-notifications-permission-if-disabled-on-app-level",
+     flag_descriptions::kRevokeNotificationsPermissionIfDisabledOnAppLevelName,
+     flag_descriptions::
+         kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kRevokeNotificationsPermissionIfDisabledOnAppLevel)},
     {"app-menu-mobile-site-option",
      flag_descriptions::kAppMenuMobileSiteOptionName,
      flag_descriptions::kAppMenuMobileSiteOptionDescription, kOsAndroid,

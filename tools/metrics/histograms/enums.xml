@@ -60383,6 +60383,8 @@ from previous Chrome versions.
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>
   <int value="698273842" label="SyncSendTabToSelf:enabled"/>
   <int value="698809951" label="WebRtcHWVP8Encoding:enabled"/>
+  <int value="698842796"
+      label="RevokeNotificationsPermissionIfDisabledOnAppLevel:disabled"/>
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
   <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
@@ -62034,6 +62036,8 @@ from previous Chrome versions.
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>
   <int value="1762320532" label="AutofillKeyboardAccessory:enabled"/>
+  <int value="1762346365"
+      label="RevokeNotificationsPermissionIfDisabledOnAppLevel:enabled"/>
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
   <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>
