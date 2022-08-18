@@ -5,7 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/foreground_duration_ukm_observer.h"
 
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,6 +40,13 @@ ForegroundDurationUKMObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ForegroundDurationUKMObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ForegroundDurationUKMObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   RecordUkmIfInForeground(base::TimeTicks::Now());
@@ -52,6 +59,7 @@ ForegroundDurationUKMObserver::OnHidden(
   RecordUkmIfInForeground(base::TimeTicks::Now());
   return CONTINUE_OBSERVING;
 }
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ForegroundDurationUKMObserver::OnShown() {
   if (!currently_in_foreground_) {
@@ -78,6 +86,12 @@ void ForegroundDurationUKMObserver::RecordUkmIfInForeground(
     base::TimeTicks end_time) {
   if (!currently_in_foreground_)
     return;
+
+  if (GetDelegate().GetPrerenderingState() ==
+      page_load_metrics::PrerenderingState::kInPrerendering) {
+    return;
+  }
+
   base::TimeDelta foreground_duration = end_time - last_time_shown_;
   ukm::builders::PageForegroundSession ukm_builder(
       GetDelegate().GetPageUkmSourceId());
@@ -107,4 +121,11 @@ void ForegroundDurationUKMObserver::RecordInputTimingMetrics(
            last_page_input_timing_->total_adjusted_input_delay)
               .InMilliseconds());
   last_page_input_timing_ = GetDelegate().GetPageInputTiming().Clone();
+}
+
+void ForegroundDurationUKMObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  last_time_shown_ = base::TimeTicks::Now();
+  currently_in_foreground_ = true;
 }

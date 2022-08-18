@@ -31,6 +31,8 @@ class ForegroundDurationUKMObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
@@ -38,6 +40,8 @@ class ForegroundDurationUKMObserver
   ObservePolicy OnShown() override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   bool currently_in_foreground_ = false;
