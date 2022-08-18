@@ -58,7 +58,7 @@
     grid-gap: var(--emoji-spacing);
     grid-template-columns: repeat(18,1fr);
     left: var(--emoji-group-tabs-left);
-    overflow-x: hidden;
+    overflow-x: scroll;
     padding-bottom: 10px;
     padding-top: 10px; /* Search field also has some padding below which adds to this. */
     scroll-behavior: smooth;
@@ -81,6 +81,10 @@
   :host([v2-enabled]) emoji-group[category='emoji'] {
     --emoji-size: var(--v2-emoji-size);
     --emoji-spacing: var(--v2-emoji-spacing);
+  }
+
+  :host([v2-enabled]) #tabs {
+    overflow-x: hidden;
   }
 
   #tabs::-webkit-scrollbar {
