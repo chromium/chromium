@@ -68,9 +68,19 @@ void WaylandTouch::Up(void* data,
   auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
+  // TODO(https://crbug.com/1353873): Gnome/Wayland, KDE and Weston compositors
+  // have a bug where wl_touch.up does not come accompanied by a respective
+  // wl_touch.frame event. On these particular set ups, dispatch the event
+  // immediately.
+  auto event_dispatch_policy =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      wl::EventDispatchPolicy::kOnFrame;
+#else
+      wl::EventDispatchPolicy::kImmediate;
+#endif
+
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
-  touch->delegate_->OnTouchReleaseEvent(timestamp, id,
-                                        wl::EventDispatchPolicy::kOnFrame);
+  touch->delegate_->OnTouchReleaseEvent(timestamp, id, event_dispatch_policy);
 }
 
 void WaylandTouch::Motion(void* data,
