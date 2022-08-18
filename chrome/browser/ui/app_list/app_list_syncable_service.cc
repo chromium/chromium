@@ -1801,8 +1801,15 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
 
   // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
   // folder.
-  if (!ash::features::IsLauncherAppSortEnabled() || new_item->is_folder() ||
-      new_item->is_page_break()) {
+  // Calculating the crostini folder's position with the sort order serves as a
+  // quick fix for https://crbug.com/1353237. Right now, folders except for the
+  // crostini folder still use the first available position as the initial
+  // position due to the concern over the possible regression in OEM folders.
+  bool use_first_available_position =
+      (new_item->is_folder() || new_item->is_page_break()) &&
+      new_item->id() != ash::kCrostiniFolderId;
+  if (!ash::features::IsLauncherAppSortEnabled() ||
+      use_first_available_position) {
     new_item->SetChromePosition(model_updater_->GetFirstAvailablePosition());
     return;
   }
