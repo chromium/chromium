@@ -232,7 +232,7 @@ void ChunkedDataPipeUploadDataStream::OnDataPipeGetterClosed() {
   // If the size hasn't been received yet, treat this as receiving an error.
   // Otherwise, this will only be a problem if/when InitInternal() tries to
   // start reading again, so do nothing.
-  if (!size_)
+  if (status_ == net::OK && !size_)
     OnSizeReceived(net::ERR_FAILED, 0);
 }
 

@@ -1079,6 +1079,19 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, CacheReadAppendDataDuringRead) {
   EXPECT_EOF(chunked_upload_stream_, 13);
 }
 
+TEST_F(ChunkedDataPipeUploadDataStreamTest, ErrorAndDetach) {
+  chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
+  chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
+      base::MakeRefCounted<network::ResourceRequestBody>(),
+      chunked_data_pipe_getter_->GetDataPipeGetterRemote());
+  get_size_callback_ = chunked_data_pipe_getter_->WaitForGetSize();
+  std::move(get_size_callback_).Run(net::ERR_FAILED, 0);
+
+  base::RunLoop().RunUntilIdle();
+  chunked_data_pipe_getter_->ClosePipe();
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace
 
 }  // namespace network
