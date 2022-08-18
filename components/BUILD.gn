@@ -917,6 +917,7 @@ if (!is_ios) {
         "//components/browser_ui/client_certificate/android",
         "//components/browser_ui/client_certificate/android:java",
         "//components/download/internal/common:internal_java",
+        "//components/version_info",
         "//content/public/test/android:android_test_message_pump_support_java",
         "//content/shell:content_shell_app",
         "//content/test:android_test_message_pump_support",

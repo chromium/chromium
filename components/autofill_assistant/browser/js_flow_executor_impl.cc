@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -151,6 +152,9 @@ std::string CreateWrappedJsFlow(const std::string& js_flow) {
        // The line offset constant. Since compile time string
        // concatenation is not straightforward we add it here.
        "const LINE_OFFSET = ", base::NumberToString(kJsLineOffset), ";",
+       // The Chrome version number, e.g. "104.0.490.1".
+       "const CHROME_VERSION_NUMBER = '", version_info::GetVersionNumber(),
+       "';",
        // New line so the js flow starts from the first column.
        // Added to kJsLineOffset.
        "\n",
