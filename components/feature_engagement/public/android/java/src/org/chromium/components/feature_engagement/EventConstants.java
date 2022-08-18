@@ -295,6 +295,10 @@ public final class EventConstants {
     public static final String SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP =
             "shopping_list_save_flow_folder_tap";
 
+    /** An app menu (tab-level) desktop site setting update event. */
+    public static final String APP_MENU_DESKTOP_SITE_FOR_TAB_CLICKED =
+            "app_menu_desktop_site_for_tab_clicked";
+
     /**
      * Do not instantiate.
      */

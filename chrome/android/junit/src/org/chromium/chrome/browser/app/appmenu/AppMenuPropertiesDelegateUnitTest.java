@@ -96,6 +96,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -234,6 +235,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         setBookmarkItemRowEnabled(false);
         setReadingListItemRowEnabled(false);
         setShoppingListItemRowEnabled(false);
+        setDesktopSiteExceptionsEnabled(false);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -264,6 +266,11 @@ public class AppMenuPropertiesDelegateUnitTest {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
         when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
                 .thenReturn(true);
+    }
+
+    private void setDesktopSiteExceptionsEnabled(boolean enabled) {
+        mTestValues.addFeatureFlagOverride(
+                ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enabled);
     }
 
     @After
@@ -350,6 +357,28 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
                 R.id.divider_line_id, R.id.request_desktop_site_row_menu_id, R.id.divider_line_id,
                 R.id.preferences_id, R.id.help_id};
+        assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_Phone_Ntp_RequestDesktopSiteExceptionsEnabled() {
+        setUpMocksForPageMenu();
+        setDesktopSiteExceptionsEnabled(true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        when(mTab.isNativePage()).thenReturn(true);
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowTranslateMenuItem(any(Tab.class));
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
+                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
+                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.help_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
