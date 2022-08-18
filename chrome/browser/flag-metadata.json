@@ -1836,7 +1836,7 @@
   {
     "name": "enable-cros-ime-assist-personal-info",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-ime-mozc-proto",
@@ -1876,7 +1876,7 @@
   {
     "name": "enable-cros-on-device-grammar-check",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 111
   },
   {
     "name": "enable-cros-privacy-hub",
@@ -1906,16 +1906,6 @@
   {
     "name": "enable-cros-virtual-keyboard-bordered-key",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "enable-cros-virtual-keyboard-multipaste",
-    "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "enable-cros-virtual-keyboard-multipaste-suggestion",
-    "owners": [ "jiwan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 100
   },
   {
