@@ -444,16 +444,14 @@ std::unique_ptr<RTCPeerConnectionHandler>
 PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
     RTCPeerConnectionHandlerClient* client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool force_encoded_audio_insertable_streams,
-    bool force_encoded_video_insertable_streams) {
+    bool encoded_insertable_streams) {
   // Save histogram data so we can see how much PeerConnection is used.
   // The histogram counts the number of calls to the JS API
   // RTCPeerConnection.
   UpdateWebRTCMethodCount(RTCAPIName::kRTCPeerConnection);
 
-  return std::make_unique<RTCPeerConnectionHandler>(
-      client, this, task_runner, force_encoded_audio_insertable_streams,
-      force_encoded_video_insertable_streams);
+  return std::make_unique<RTCPeerConnectionHandler>(client, this, task_runner,
+                                                    encoded_insertable_streams);
 }
 
 const rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&

@@ -191,20 +191,17 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams)
+      bool encoded_insertable_streams)
       : main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
         webrtc_transceiver_(state.webrtc_transceiver()),
         state_(std::move(state)) {
     sender_ = std::make_unique<blink::RTCRtpSenderImpl>(
         native_peer_connection, track_map, state_.MoveSenderState(),
-        force_encoded_audio_insertable_streams,
-        force_encoded_video_insertable_streams);
+        encoded_insertable_streams);
     receiver_ = std::make_unique<blink::RTCRtpReceiverImpl>(
         native_peer_connection, state_.MoveReceiverState(),
-        force_encoded_audio_insertable_streams,
-        force_encoded_video_insertable_streams);
+        encoded_insertable_streams);
   }
 
   const RtpTransceiverState& state() const {
@@ -342,14 +339,12 @@ RTCRtpTransceiverImpl::RTCRtpTransceiverImpl(
     scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpTransceiverState transceiver_state,
-    bool force_encoded_audio_insertable_streams,
-    bool force_encoded_video_insertable_streams)
+    bool encoded_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpTransceiverInternal>(
           std::move(native_peer_connection),
           std::move(track_map),
           std::move(transceiver_state),
-          force_encoded_audio_insertable_streams,
-          force_encoded_video_insertable_streams)) {}
+          encoded_insertable_streams)) {}
 
 RTCRtpTransceiverImpl::RTCRtpTransceiverImpl(const RTCRtpTransceiverImpl& other)
     : internal_(other.internal_) {}

@@ -155,8 +155,7 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams);
+      bool encoded_insertable_streams);
   RTCRtpTransceiverImpl(const RTCRtpTransceiverImpl& other);
   ~RTCRtpTransceiverImpl() override;
 

@@ -95,8 +95,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     sender_state.Initialize();
     return std::make_unique<RTCRtpSenderImpl>(
         peer_connection_.get(), track_map_, std::move(sender_state),
-        /*force_encoded_audio_insertable_streams=*/false,
-        /*force_encoded_video_insertable_streams=*/false);
+        /*encoded_insertable_streams=*/false);
   }
 
   // Calls replaceTrack(), which is asynchronous, returning a callback that when

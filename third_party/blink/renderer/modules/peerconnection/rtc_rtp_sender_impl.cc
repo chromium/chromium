@@ -189,8 +189,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpSenderState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams)
+      bool encoded_insertable_streams)
       : native_peer_connection_(std::move(native_peer_connection)),
         track_map_(std::move(track_map)),
         main_task_runner_(state.main_task_runner()),
@@ -199,14 +198,14 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
         state_(std::move(state)) {
     DCHECK(track_map_);
     DCHECK(state_.is_initialized());
-    if (force_encoded_audio_insertable_streams &&
+    if (encoded_insertable_streams &&
         webrtc_sender_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
       encoded_audio_transformer_ =
           std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
       webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
           encoded_audio_transformer_->Delegate());
     }
-    if (force_encoded_video_insertable_streams &&
+    if (encoded_insertable_streams &&
         webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
       encoded_video_transformer_ =
           std::make_unique<RTCEncodedVideoStreamTransformer>(main_task_runner_);
@@ -457,14 +456,12 @@ RTCRtpSenderImpl::RTCRtpSenderImpl(
     scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpSenderState state,
-    bool force_encoded_audio_insertable_streams,
-    bool force_encoded_video_insertable_streams)
+    bool encoded_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpSenderInternal>(
           std::move(native_peer_connection),
           std::move(track_map),
           std::move(state),
-          force_encoded_audio_insertable_streams,
-          force_encoded_video_insertable_streams)) {}
+          encoded_insertable_streams)) {}
 
 RTCRtpSenderImpl::RTCRtpSenderImpl(const RTCRtpSenderImpl& other)
     : internal_(other.internal_) {}

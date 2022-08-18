@@ -26,8 +26,7 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
         dependency_factory_->CreateRTCPeerConnectionHandler(
             &mock_client_,
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-            /*force_encoded_audio_insertable_streams=*/false,
-            /*force_encoded_video_insertable_streams=*/false);
+            /*encoded_insertable_streams=*/false);
     DummyExceptionStateForTesting exception_state;
     webrtc::PeerConnectionInterface::RTCConfiguration config;
     config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;

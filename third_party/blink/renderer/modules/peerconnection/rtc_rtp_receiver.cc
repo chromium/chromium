@@ -46,26 +46,22 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
                                std::unique_ptr<RTCRtpReceiverPlatform> receiver,
                                MediaStreamTrack* track,
                                MediaStreamVector streams,
-                               bool force_encoded_audio_insertable_streams,
-                               bool force_encoded_video_insertable_streams)
+                               bool encoded_insertable_streams)
     : ExecutionContextLifecycleObserver(pc->GetExecutionContext()),
       pc_(pc),
       receiver_(std::move(receiver)),
       track_(track),
       streams_(std::move(streams)),
-      force_encoded_audio_insertable_streams_(
-          force_encoded_audio_insertable_streams),
-      force_encoded_video_insertable_streams_(
-          force_encoded_video_insertable_streams) {
+      encoded_insertable_streams_(encoded_insertable_streams) {
   DCHECK(pc_);
   DCHECK(receiver_);
   DCHECK(track_);
-  if (force_encoded_audio_insertable_streams_ && kind() == MediaKind::kAudio) {
+  if (encoded_insertable_streams_ && kind() == MediaKind::kAudio) {
     encoded_audio_transformer_ =
         receiver_->GetEncodedAudioStreamTransformer()->GetBroker();
     RegisterEncodedAudioStreamCallback();
   }
-  if (force_encoded_video_insertable_streams_ && kind() == MediaKind::kVideo)
+  if (encoded_insertable_streams_ && kind() == MediaKind::kVideo)
     RegisterEncodedVideoStreamCallback();
 }
 
@@ -141,7 +137,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!force_encoded_audio_insertable_streams_) {
+  if (!encoded_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encoded audio streams not requested at PC initialization");
@@ -161,7 +157,7 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!force_encoded_video_insertable_streams_) {
+  if (!encoded_insertable_streams_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encoded video streams not requested at PC initialization");
@@ -386,7 +382,7 @@ void RTCRtpReceiver::SetAudioUnderlyingSink(
 void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_audio_streams_);
-  DCHECK(force_encoded_audio_insertable_streams_);
+  DCHECK(encoded_insertable_streams_);
 
   encoded_audio_streams_ = RTCInsertableStreams::Create();
 
@@ -482,7 +478,7 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
   DCHECK(!encoded_video_streams_);
   DCHECK(!video_from_depacketizer_underlying_source_);
   DCHECK(!video_to_decoder_underlying_sink_);
-  DCHECK(force_encoded_video_insertable_streams_);
+  DCHECK(encoded_insertable_streams_);
 
   encoded_video_streams_ = RTCInsertableStreams::Create();
 

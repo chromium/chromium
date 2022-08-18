@@ -787,11 +787,8 @@ void PeerConnectionTracker::RegisterPeerConnection(
   auto info = blink::mojom::blink::PeerConnectionInfo::New();
 
   info->lid = GetNextLocalID();
-  bool usesInsertableStreams =
-      pc_handler->force_encoded_audio_insertable_streams() &&
-      pc_handler->force_encoded_video_insertable_streams();
   info->rtc_configuration =
-      SerializeConfiguration(config, usesInsertableStreams);
+      SerializeConfiguration(config, pc_handler->encoded_insertable_streams());
 
   info->constraints = SerializePeerConnectionMediaConstraints(config);
   if (frame)
@@ -882,12 +879,9 @@ void PeerConnectionTracker::TrackSetConfiguration(
   if (id == -1)
     return;
 
-  bool usesInsertableStreams =
-      pc_handler->force_encoded_audio_insertable_streams() &&
-      pc_handler->force_encoded_video_insertable_streams();
   SendPeerConnectionUpdate(
       id, "setConfiguration",
-      SerializeConfiguration(config, usesInsertableStreams));
+      SerializeConfiguration(config, pc_handler->encoded_insertable_streams()));
 }
 
 void PeerConnectionTracker::TrackAddIceCandidate(

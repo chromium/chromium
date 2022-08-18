@@ -281,14 +281,12 @@ class RTCPeerConnectionHandlerUnderTest : public RTCPeerConnectionHandler {
   RTCPeerConnectionHandlerUnderTest(
       RTCPeerConnectionHandlerClient* client,
       blink::PeerConnectionDependencyFactory* dependency_factory,
-      bool force_encoded_audio_insertable_streams = false,
-      bool force_encoded_video_insertable_streams = false)
+      bool encoded_insertable_streams = false)
       : RTCPeerConnectionHandler(
             client,
             dependency_factory,
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-            force_encoded_audio_insertable_streams,
-            force_encoded_video_insertable_streams) {}
+            encoded_insertable_streams) {}
 
   blink::MockPeerConnectionImpl* native_peer_connection() {
     return static_cast<blink::MockPeerConnectionImpl*>(
@@ -1311,17 +1309,12 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateDataChannel) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
-  for (bool force_encoded_audio_insertable_streams : {true, false}) {
-    for (bool force_encoded_video_insertable_streams : {true, false}) {
-      auto handler = std::make_unique<RTCPeerConnectionHandlerUnderTest>(
-          mock_client_.get(), mock_dependency_factory_.Get(),
-          force_encoded_audio_insertable_streams,
-          force_encoded_video_insertable_streams);
-      EXPECT_EQ(handler->force_encoded_audio_insertable_streams(),
-                force_encoded_audio_insertable_streams);
-      EXPECT_EQ(handler->force_encoded_video_insertable_streams(),
-                force_encoded_video_insertable_streams);
-    }
+  for (bool encoded_insertable_streams : {true, false}) {
+    auto handler = std::make_unique<RTCPeerConnectionHandlerUnderTest>(
+        mock_client_.get(), mock_dependency_factory_.Get(),
+        encoded_insertable_streams);
+    EXPECT_EQ(handler->encoded_insertable_streams(),
+              encoded_insertable_streams);
   }
 }
 

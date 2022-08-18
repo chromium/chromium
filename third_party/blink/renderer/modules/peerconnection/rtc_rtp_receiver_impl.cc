@@ -139,8 +139,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   RTCRtpReceiverInternal(
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       RtpReceiverState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams)
+      bool encoded_insertable_streams)
       : native_peer_connection_(std::move(native_peer_connection)),
         main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
@@ -148,14 +147,14 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         state_(std::move(state)) {
     DCHECK(native_peer_connection_);
     DCHECK(state_.is_initialized());
-    if (force_encoded_audio_insertable_streams &&
+    if (encoded_insertable_streams &&
         webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
       encoded_audio_transformer_ =
           std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
       webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
           encoded_audio_transformer_->Delegate());
     }
-    if (force_encoded_video_insertable_streams &&
+    if (encoded_insertable_streams &&
         webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
       encoded_video_transformer_ =
           std::make_unique<RTCEncodedVideoStreamTransformer>(main_task_runner_);
@@ -272,13 +271,11 @@ uintptr_t RTCRtpReceiverImpl::getId(
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(
     scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     RtpReceiverState state,
-    bool force_encoded_audio_insertable_streams,
-    bool force_encoded_video_insertable_streams)
+    bool encoded_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpReceiverInternal>(
           std::move(native_peer_connection),
           std::move(state),
-          force_encoded_audio_insertable_streams,
-          force_encoded_video_insertable_streams)) {}
+          encoded_insertable_streams)) {}
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other)
     : internal_(other.internal_) {}

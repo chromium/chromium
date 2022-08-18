@@ -157,8 +157,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       RTCPeerConnectionHandlerClient* client,
       blink::PeerConnectionDependencyFactory* dependency_factory,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams);
+      bool encoded_insertable_streams);
 
   RTCPeerConnectionHandler(const RTCPeerConnectionHandler&) = delete;
   RTCPeerConnectionHandler& operator=(const RTCPeerConnectionHandler&) = delete;
@@ -269,13 +268,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Virtual for testing purposes.
   virtual scoped_refptr<base::SingleThreadTaskRunner> signaling_thread() const;
 
-  bool force_encoded_audio_insertable_streams() {
-    return force_encoded_audio_insertable_streams_;
-  }
-
-  bool force_encoded_video_insertable_streams() {
-    return force_encoded_video_insertable_streams_;
-  }
+  bool encoded_insertable_streams() { return encoded_insertable_streams_; }
 
  protected:
   // Constructor to be used for constructing mocks only.
@@ -501,8 +494,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // used when constructing the PeerConnection carry over when
   // SetConfiguration is called.
   webrtc::PeerConnectionInterface::RTCConfiguration configuration_;
-  bool force_encoded_audio_insertable_streams_ = false;
-  bool force_encoded_video_insertable_streams_ = false;
+  bool encoded_insertable_streams_ = false;
 
   // Resources for Adaptation.
   // The Thermal Resource is lazily instantiated on platforms where thermal

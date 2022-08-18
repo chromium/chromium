@@ -57,8 +57,7 @@ class RTCRtpSender final : public ScriptWrappable {
                String kind,
                MediaStreamTrack*,
                MediaStreamVector streams,
-               bool force_encoded_audio_insertable_streams,
-               bool force_encoded_video_insertable_streams);
+               bool encoded_insertable_streams);
 
   MediaStreamTrack* track();
   RTCDtlsTransport* transport();
@@ -116,14 +115,16 @@ class RTCRtpSender final : public ScriptWrappable {
   Member<RTCRtpSendParameters> last_returned_parameters_;
   Member<RTCRtpTransceiver> transceiver_;
 
-  // Insertable Streams audio support
-  bool force_encoded_audio_insertable_streams_;
+  // Insertable Streams flag, |True| if the sender has been configured to
+  // use Encoded Insertable Streams.
+  bool encoded_insertable_streams_;
+
+  // Insertable Streams audio support.
   Member<RTCEncodedAudioUnderlyingSource> audio_from_encoder_underlying_source_;
   Member<RTCEncodedAudioUnderlyingSink> audio_to_packetizer_underlying_sink_;
   Member<RTCInsertableStreams> encoded_audio_streams_;
 
-  // Insertable Streams video support
-  bool force_encoded_video_insertable_streams_;
+  // Insertable Streams video support.
   Member<RTCEncodedVideoUnderlyingSource> video_from_encoder_underlying_source_;
   Member<RTCEncodedVideoUnderlyingSink> video_to_packetizer_underlying_sink_;
   Member<RTCInsertableStreams> encoded_video_streams_;

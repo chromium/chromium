@@ -617,7 +617,6 @@ RTCPeerConnection* RTCPeerConnection::Create(
 
   RTCPeerConnection* peer_connection = MakeGarbageCollected<RTCPeerConnection>(
       context, std::move(configuration), rtc_configuration->hasSdpSemantics(),
-      rtc_configuration->encodedInsertableStreams(),
       rtc_configuration->encodedInsertableStreams(), media_constraints,
       exception_state);
   if (exception_state.HadException())
@@ -654,8 +653,7 @@ RTCPeerConnection::RTCPeerConnection(
     ExecutionContext* context,
     webrtc::PeerConnectionInterface::RTCConfiguration configuration,
     bool sdp_semantics_specified,
-    bool force_encoded_audio_insertable_streams,
-    bool force_encoded_video_insertable_streams,
+    bool encoded_insertable_streams,
     GoogMediaConstraints* media_constraints,
     ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(context),
@@ -674,10 +672,7 @@ RTCPeerConnection::RTCPeerConnection(
       suppress_events_(true),
       sdp_semantics_(configuration.sdp_semantics),
       sdp_semantics_specified_(sdp_semantics_specified),
-      force_encoded_audio_insertable_streams_(
-          force_encoded_audio_insertable_streams),
-      force_encoded_video_insertable_streams_(
-          force_encoded_video_insertable_streams) {
+      encoded_insertable_streams_(encoded_insertable_streams) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
   InstanceCounters::IncrementCounter(
@@ -700,8 +695,7 @@ RTCPeerConnection::RTCPeerConnection(
   } else {
     peer_handler_ = dependency_factory.CreateRTCPeerConnectionHandler(
         this, window->GetTaskRunner(TaskType::kInternalMedia),
-        force_encoded_audio_insertable_streams_,
-        force_encoded_video_insertable_streams_);
+        encoded_insertable_streams_);
   }
 
   if (!peer_handler_) {
@@ -2279,8 +2273,7 @@ RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
     // Create new sender (with empty stream set).
     sender = MakeGarbageCollected<RTCRtpSender>(
         this, std::move(rtp_sender_platform), kind, track, MediaStreamVector(),
-        force_encoded_audio_insertable_streams(),
-        force_encoded_video_insertable_streams());
+        encoded_insertable_streams_);
     rtp_senders_.push_back(sender);
   } else {
     // Update existing sender (not touching the stream set).
@@ -2314,8 +2307,7 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
     // Create new receiver.
     receiver = MakeGarbageCollected<RTCRtpReceiver>(
         this, std::move(platform_receiver), track, MediaStreamVector(),
-        force_encoded_audio_insertable_streams(),
-        force_encoded_video_insertable_streams());
+        encoded_insertable_streams_);
     // Receiving tracks should be muted by default. SetReadyState() propagates
     // the related state changes to ensure it is muted on all layers. It also
     // fires events - which is not desired - but because they fire synchronously
@@ -2624,8 +2616,7 @@ void RTCPeerConnection::DidModifyReceiversPlanB(
     DCHECK(FindReceiver(*platform_receiver) == rtp_receivers_.end());
     RTCRtpReceiver* rtp_receiver = MakeGarbageCollected<RTCRtpReceiver>(
         this, std::move(platform_receiver), track, streams,
-        force_encoded_audio_insertable_streams(),
-        force_encoded_video_insertable_streams());
+        encoded_insertable_streams_);
     rtp_receivers_.push_back(rtp_receiver);
     track_events.push_back(rtp_receiver);
   }

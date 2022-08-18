@@ -123,8 +123,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpSenderState state,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams);
+      bool encoded_insertable_streams);
   RTCRtpSenderImpl(const RTCRtpSenderImpl& other);
   ~RTCRtpSenderImpl() override;
   RTCRtpSenderImpl& operator=(const RTCRtpSenderImpl& other);

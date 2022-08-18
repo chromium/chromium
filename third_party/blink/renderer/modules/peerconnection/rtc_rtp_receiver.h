@@ -48,8 +48,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
                  std::unique_ptr<RTCRtpReceiverPlatform>,
                  MediaStreamTrack*,
                  MediaStreamVector,
-                 bool force_encoded_audio_insertable_streams,
-                 bool force_encoded_video_insertable_streams);
+                 bool encoded_insertable_streams);
 
   static RTCRtpCapabilities* getCapabilities(ScriptState* state,
                                              const String& kind);
@@ -120,8 +119,11 @@ class RTCRtpReceiver final : public ScriptWrappable,
   // means default value must be used.
   absl::optional<double> playout_delay_hint_;
 
-  // Insertable Streams support for audio
-  bool force_encoded_audio_insertable_streams_;
+  // Insertable Streams flag, |True| if the receiver has been configured to
+  // use Encoded Insertable Streams.
+  bool encoded_insertable_streams_;
+
+  // Insertable Streams support for audio.
   base::Lock audio_underlying_source_lock_;
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSource>
       audio_from_depacketizer_underlying_source_
@@ -133,8 +135,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;
 
-  // Insertable Streams support for video
-  bool force_encoded_video_insertable_streams_;
+  // Insertable Streams support for video.
   Member<RTCEncodedVideoUnderlyingSource>
       video_from_depacketizer_underlying_source_;
   Member<RTCEncodedVideoUnderlyingSink> video_to_decoder_underlying_sink_;
