@@ -22,6 +22,31 @@ class FormSignature;
 class FastCheckoutCapabilitiesFetcherImpl
     : public FastCheckoutCapabilitiesFetcher {
  public:
+  // Possible different cache states that `FastCheckoutCapabilitiesFetcherImpl`
+  // can encounter when `IsTriggerFormSupported` is called.
+  //
+  // Do not remove or renumber entries in this enum. It needs to be kept in
+  // sync with `FastCheckoutCacheStateForIsTriggerFormSupported` in `enums.xml`.
+  enum class CacheStateForIsTriggerFormSupported {
+    // Availability is currently being fetched for this entry, but the request
+    // has not completed yet.
+    kFetchOngoing = 0,
+
+    // There is a valid cache entry for this origin and the form signature that
+    // is being checked is not supported.
+    kEntryAvailableAndFormNotSupported = 1,
+
+    // There is a valid cache entry for this origin and the form signature that
+    // is being checked is supported.
+    kEntryAvailableAndFormSupported = 2,
+
+    // No availability was fetched for this origin within the lifetime of the
+    // cache.
+    kNeverFetched = 3,
+
+    kMaxValue = kNeverFetched
+  };
+
   explicit FastCheckoutCapabilitiesFetcherImpl(
       std::unique_ptr<autofill_assistant::AutofillAssistant>
           autofill_assistant);
