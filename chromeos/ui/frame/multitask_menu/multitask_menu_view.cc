@@ -51,7 +51,6 @@ MultitaskMenuView::MultitaskMenuView(
       on_any_button_pressed_(std::move(on_any_button_pressed)) {
   DCHECK(window);
   DCHECK(on_any_button_pressed_);
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   SetUseDefaultFillLayout(true);
 
   half_button_ =
