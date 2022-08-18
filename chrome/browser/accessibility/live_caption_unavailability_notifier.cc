@@ -105,13 +105,9 @@ bool LiveCaptionUnavailabilityNotifier::
 }
 
 bool LiveCaptionUnavailabilityNotifier::ErrorSilencedForOrigin() {
-  const base::Value* silenced_sites_pref = profile_prefs_->GetList(
+  const base::Value::List& silenced_sites_list = profile_prefs_->GetValueList(
       prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
 
-  if (!silenced_sites_pref)
-    return false;
-
-  const auto& silenced_sites_list = silenced_sites_pref->GetList();
   const auto it = std::find_if(
       silenced_sites_list.begin(), silenced_sites_list.end(),
       [&](const base::Value& value) {
