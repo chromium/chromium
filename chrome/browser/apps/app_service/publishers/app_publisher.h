@@ -124,6 +124,9 @@ class AppPublisher {
                          bool clear_site_data,
                          bool report_abuse);
 
+  void PauseApp(const std::string& app_id);
+  void UnpauseApp(const std::string& app_id);
+
   virtual void StopApp(const std::string& app_id);
 
   virtual void ExecuteContextMenuCommand(const std::string& app_id,

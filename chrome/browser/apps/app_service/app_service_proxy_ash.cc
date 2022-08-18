@@ -206,7 +206,8 @@ void AppServiceProxyAsh::OnApps(std::vector<apps::mojom::AppPtr> deltas,
 
 void AppServiceProxyAsh::PauseApps(
     const std::map<std::string, PauseData>& pause_data) {
-  if (!app_service_.is_connected()) {
+  if (!app_service_.is_connected() &&
+      !base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
     return;
   }
 
@@ -225,8 +226,15 @@ void AppServiceProxyAsh::PauseApps(
 
     // The app pause dialog can't be loaded for unit tests.
     if (!data.second.should_show_pause_dialog || is_using_testing_profile_) {
-      app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type),
-                             data.first);
+      if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+        auto* publisher = GetPublisher(app_type);
+        if (publisher) {
+          publisher->PauseApp(data.first);
+        }
+      } else {
+        app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type),
+                               data.first);
+      }
       continue;
     }
 
@@ -242,7 +250,8 @@ void AppServiceProxyAsh::PauseApps(
 }
 
 void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
-  if (!app_service_.is_connected()) {
+  if (!app_service_.is_connected() &&
+      !base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
     return;
   }
 
@@ -253,7 +262,14 @@ void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
     }
 
     pending_pause_requests_.MaybeRemoveApp(app_id);
-    app_service_->UnpauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
+    if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+      auto* publisher = GetPublisher(app_type);
+      if (publisher) {
+        publisher->UnpauseApp(app_id);
+      }
+    } else {
+      app_service_->UnpauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
+    }
   }
 }
 
