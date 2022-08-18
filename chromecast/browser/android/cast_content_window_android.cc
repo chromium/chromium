@@ -98,8 +98,6 @@ void CastContentWindowAndroid::SetActivityContext(
 
 void CastContentWindowAndroid::SetHostContext(base::Value host_context) {}
 
-void CastContentWindowAndroid::RequestMoveOut() {}
-
 void CastContentWindowAndroid::OnVisibilityChange(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

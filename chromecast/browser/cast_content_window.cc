@@ -54,9 +54,7 @@ void CastContentWindow::Show() {
   RequestVisibility(VisibilityPriority::STICKY_ACTIVITY);
 }
 
-void CastContentWindow::Hide() {
-  RequestMoveOut();
-}
+void CastContentWindow::Hide() {}
 
 void CastContentWindow::NotifyVisibilityChange(VisibilityType visibility_type) {
   for (auto& observer : observers_) {

@@ -164,8 +164,6 @@ void CastContentWindowAura::SetActivityContext(base::Value activity_context) {}
 
 void CastContentWindowAura::SetHostContext(base::Value host_context) {}
 
-void CastContentWindowAura::RequestMoveOut() {}
-
 void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
   if (visible) {

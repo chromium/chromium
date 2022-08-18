@@ -71,10 +71,6 @@ class CastContentWindow : public mojom::CastContentWindow,
   // TODO(seantopping): Make this private to the window manager.
   virtual void NotifyVisibilityChange(VisibilityType visibility_type);
 
-  // Cast activity or application calls it to request for moving out of the
-  // screen.
-  virtual void RequestMoveOut() = 0;
-
   // Registers this as a delegate to BackGestureRouter.
   virtual void RegisterBackGestureRouter(
       ::chromecast::BackGestureRouter* gesture_router) {}
