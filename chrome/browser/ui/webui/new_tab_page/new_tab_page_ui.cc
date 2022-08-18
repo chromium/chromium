@@ -21,7 +21,7 @@
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
-#include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
+#include "chrome/browser/new_tab_page/modules/recipes/recipes_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -677,10 +677,9 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<task_module::mojom::TaskModuleHandler>
-        pending_receiver) {
-  task_module_handler_ = std::make_unique<TaskModuleHandler>(
-      std::move(pending_receiver), profile_);
+    mojo::PendingReceiver<recipes::mojom::RecipesHandler> pending_receiver) {
+  recipes_handler_ =
+      std::make_unique<RecipesHandler>(std::move(pending_receiver), profile_);
 }
 
 void NewTabPageUI::BindInterface(

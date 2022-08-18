@@ -4,9 +4,9 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {RecipeModuleElement, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {RecipesModuleElementV2, RecipesHandlerProxy, recipeTasksV2Descriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
+import {RecipesHandlerRemote} from 'chrome://new-tab-page/recipes.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -18,15 +18,14 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
   setup(() => {
     document.body.innerHTML = '';
 
-    handler =
-        installMock(TaskModuleHandlerRemote, TaskModuleHandlerProxy.setHandler);
+    handler = installMock(RecipesHandlerRemote, RecipesHandlerProxy.setHandler);
   });
 
   test('module appears on render with recipes', async () => {
     // Arrange.
     const task = {
       title: 'First Recipes',
-      taskItems: [
+      recipes: [
         {
           name: 'apricot',
           imageUrl: {url: 'https://apricot.com/img.png'},
@@ -51,15 +50,14 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
 
     // Act.
     const moduleElement =
-        await recipeTasksV2Descriptor.initialize(0) as RecipeModuleElement;
+        await recipeTasksV2Descriptor.initialize(0) as RecipesModuleElementV2;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
     moduleElement.$.recipesRepeat.render();
 
     // Assert.
-    const recipes =
-        Array.from(moduleElement.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.recipe-item'));
+    const recipes = Array.from(
+        moduleElement.shadowRoot!.querySelectorAll<HTMLElement>('.recipe'));
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
     assertEquals(3, recipes.length);
     assertEquals(

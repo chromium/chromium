@@ -50,7 +50,7 @@ copy("copy_mojom") {
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js__generator",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js__generator",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_js__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js__generator",
   ]
@@ -59,7 +59,7 @@ copy("copy_mojom") {
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module/task_module.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox/realbox.mojom-webui.js",
   ]
@@ -98,7 +98,7 @@ grit("resources") {
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js",
+    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_js",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js",
     "//chrome/common/search:mojo_bindings_js",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_SERVICE_H_
-#define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_SERVICE_H_
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_RECIPES_RECIPES_SERVICE_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_RECIPES_RECIPES_SERVICE_H_
 
 #include <list>
 #include <memory>
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
+#include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -24,27 +24,27 @@ class SimpleURLLoader;
 }  // namespace network
 
 // Downloads tasks for current user from GWS.
-class TaskModuleService : public KeyedService {
+class RecipesService : public KeyedService {
  public:
-  TaskModuleService(
+  RecipesService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
       const std::string& application_locale);
-  TaskModuleService(const TaskModuleService&) = delete;
-  ~TaskModuleService() override;
+  RecipesService(const RecipesService&) = delete;
+  ~RecipesService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // KeyedService:
   void Shutdown() override;
 
-  using TaskModuleCallback =
-      base::OnceCallback<void(task_module::mojom::TaskPtr task)>;
+  using RecipesCallback =
+      base::OnceCallback<void(recipes::mojom::TaskPtr task)>;
   // Downloads and parses tasks and calls |callback| when done.
-  // On success |callback| is called with a populated |TaskModuleData| object
+  // On success |callback| is called with a populated |RecipesData| object
   // of the first task which has not been dismissed. On failure, it is called
   // with nullptr.
-  void GetPrimaryTask(TaskModuleCallback callback);
+  void GetPrimaryTask(RecipesCallback callback);
   // Dismisses the task with the given name and remembers that setting.
   void DismissTask(const std::string& task_name);
   // Restores the task with the given name and remembers that setting.
@@ -52,9 +52,9 @@ class TaskModuleService : public KeyedService {
 
  private:
   void OnDataLoaded(network::SimpleURLLoader* loader,
-                    TaskModuleCallback callback,
+                    RecipesCallback callback,
                     std::unique_ptr<std::string> response);
-  void OnJsonParsed(TaskModuleCallback callback,
+  void OnJsonParsed(RecipesCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
 
   // Returns whether a task with the given name has been dismissed.
@@ -65,7 +65,7 @@ class TaskModuleService : public KeyedService {
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_;
   std::string application_locale_;
 
-  base::WeakPtrFactory<TaskModuleService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RecipesService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_SERVICE_H_
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_RECIPES_RECIPES_SERVICE_H_

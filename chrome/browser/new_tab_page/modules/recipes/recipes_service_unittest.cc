@@ -13,7 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/modules/task_module/task_module_service.h"
+#include "chrome/browser/new_tab_page/modules/recipes/recipes_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -28,16 +28,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class TaskModuleServiceTest : public testing::Test {
+class RecipesServiceTest : public testing::Test {
  public:
-  TaskModuleServiceTest()
+  RecipesServiceTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     testing::Test::SetUp();
 
-    service_ = std::make_unique<TaskModuleService>(
+    service_ = std::make_unique<RecipesService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         &profile_, "en-US");
@@ -58,11 +58,11 @@ class TaskModuleServiceTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TaskModuleService> service_;
+  std::unique_ptr<RecipesService> service_;
 };
 
 // Verifies correct parsing of well-formed JSON.
-TEST_F(TaskModuleServiceTest, GoodRecipeResponse) {
+TEST_F(RecipesServiceTest, GoodRecipeResponse) {
   auto fiveMonthsAgoTimestamp =
       (base::Time::Now() - base::Days(165) - base::Time::UnixEpoch())
           .InSeconds();
@@ -137,31 +137,30 @@ TEST_F(TaskModuleServiceTest, GoodRecipeResponse) {
                          base::NumberToString(nowTimestamp).c_str(),
                          base::NumberToString(inTwoDaysTimestamp).c_str()));
 
-  task_module::mojom::TaskPtr result;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  recipes::mojom::TaskPtr result;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result](task_module::mojom::TaskPtr arg) {
-        result = std::move(arg);
-      }));
+      .WillOnce(testing::Invoke(
+          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
 
   service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(result);
   EXPECT_EQ("hello world", result->title);
-  EXPECT_EQ(4ul, result->task_items.size());
+  EXPECT_EQ(4ul, result->recipes.size());
   EXPECT_EQ(2ul, result->related_searches.size());
-  EXPECT_EQ("foo", result->task_items[0]->name);
-  EXPECT_EQ("https://foo.com/", result->task_items[0]->image_url.spec());
-  EXPECT_EQ("Viewed previously", result->task_items[0]->info);
-  EXPECT_EQ("foox", result->task_items[0]->site_name);
-  EXPECT_EQ("https://google.com/foo", result->task_items[0]->target_url.spec());
-  EXPECT_EQ("bar", result->task_items[1]->name);
-  EXPECT_EQ("https://bar.com/", result->task_items[1]->image_url.spec());
-  EXPECT_EQ("Viewed in the past week", result->task_items[1]->info);
-  EXPECT_EQ("barx", result->task_items[1]->site_name);
-  EXPECT_EQ("https://google.com/bar", result->task_items[1]->target_url.spec());
+  EXPECT_EQ("foo", result->recipes[0]->name);
+  EXPECT_EQ("https://foo.com/", result->recipes[0]->image_url.spec());
+  EXPECT_EQ("Viewed previously", result->recipes[0]->info);
+  EXPECT_EQ("foox", result->recipes[0]->site_name);
+  EXPECT_EQ("https://google.com/foo", result->recipes[0]->target_url.spec());
+  EXPECT_EQ("bar", result->recipes[1]->name);
+  EXPECT_EQ("https://bar.com/", result->recipes[1]->image_url.spec());
+  EXPECT_EQ("Viewed in the past week", result->recipes[1]->info);
+  EXPECT_EQ("barx", result->recipes[1]->site_name);
+  EXPECT_EQ("https://google.com/bar", result->recipes[1]->target_url.spec());
   EXPECT_EQ("baz", result->related_searches[0]->text);
   EXPECT_EQ("https://google.com/baz",
             result->related_searches[0]->target_url.spec());
@@ -171,12 +170,12 @@ TEST_F(TaskModuleServiceTest, GoodRecipeResponse) {
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
                    base::PersistentHash("recipe_tasks")));
-  EXPECT_EQ("Viewed today", result->task_items[2]->info);
-  EXPECT_EQ("Viewed today", result->task_items[3]->info);
+  EXPECT_EQ("Viewed today", result->recipes[2]->info);
+  EXPECT_EQ("Viewed today", result->recipes[3]->info);
 }
 
 // Verifies service can handle multiple in flight requests.
-TEST_F(TaskModuleServiceTest, MultiRequest) {
+TEST_F(RecipesServiceTest, MultiRequest) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -208,20 +207,20 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
   }
 })");
 
-  task_module::mojom::TaskPtr result1;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback1;
+  recipes::mojom::TaskPtr result1;
+  base::MockCallback<RecipesService::RecipesCallback> callback1;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result1](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result1](recipes::mojom::TaskPtr arg) {
         result1 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback1.Get());
 
-  task_module::mojom::TaskPtr result2;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback2;
+  recipes::mojom::TaskPtr result2;
+  base::MockCallback<RecipesService::RecipesCallback> callback2;
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result2](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result2](recipes::mojom::TaskPtr arg) {
         result2 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback2.Get());
@@ -236,18 +235,17 @@ TEST_F(TaskModuleServiceTest, MultiRequest) {
 }
 
 // Verifies error if JSON is malformed.
-TEST_F(TaskModuleServiceTest, BadRecipeResponse) {
+TEST_F(RecipesServiceTest, BadRecipeResponse) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       ")]}'{\"update\":{\"promotions\":{}}}");
 
-  task_module::mojom::TaskPtr result;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  recipes::mojom::TaskPtr result;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result](task_module::mojom::TaskPtr arg) {
-        result = std::move(arg);
-      }));
+      .WillOnce(testing::Invoke(
+          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
 
   service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -259,7 +257,7 @@ TEST_F(TaskModuleServiceTest, BadRecipeResponse) {
 }
 
 // Verifies error if no products.
-TEST_F(TaskModuleServiceTest, NoTaskItems) {
+TEST_F(RecipesServiceTest, NoRecipes) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -281,13 +279,12 @@ TEST_F(TaskModuleServiceTest, NoTaskItems) {
   }
 })");
 
-  task_module::mojom::TaskPtr result;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  recipes::mojom::TaskPtr result;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result](task_module::mojom::TaskPtr arg) {
-        result = std::move(arg);
-      }));
+      .WillOnce(testing::Invoke(
+          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
 
   service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -299,19 +296,18 @@ TEST_F(TaskModuleServiceTest, NoTaskItems) {
 }
 
 // Verifies error if download fails.
-TEST_F(TaskModuleServiceTest, ErrorResponse) {
+TEST_F(RecipesServiceTest, ErrorResponse) {
   test_url_loader_factory_.AddResponse(
       GURL("https://www.google.com/async/newtab_recipe_tasks?hl=en-US"),
       network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
 
-  task_module::mojom::TaskPtr result;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  recipes::mojom::TaskPtr result;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result](task_module::mojom::TaskPtr arg) {
-        result = std::move(arg);
-      }));
+      .WillOnce(testing::Invoke(
+          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
 
   service_->GetPrimaryTask(callback.Get());
   base::RunLoop().RunUntilIdle();
@@ -324,7 +320,7 @@ TEST_F(TaskModuleServiceTest, ErrorResponse) {
 
 // Verifies recipe tasks can be dismissed and restored and that the service
 // remembers not to return dismissed tasks.
-TEST_F(TaskModuleServiceTest, DismissTasks) {
+TEST_F(RecipesServiceTest, DismissTasks) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -377,11 +373,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
   }
 })");
 
-  task_module::mojom::TaskPtr result1;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback1;
+  recipes::mojom::TaskPtr result1;
+  base::MockCallback<RecipesService::RecipesCallback> callback1;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result1](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result1](recipes::mojom::TaskPtr arg) {
         result1 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback1.Get());
@@ -391,11 +387,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
 
   service_->DismissTask("task 1 name");
 
-  task_module::mojom::TaskPtr result2;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback2;
+  recipes::mojom::TaskPtr result2;
+  base::MockCallback<RecipesService::RecipesCallback> callback2;
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result2](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result2](recipes::mojom::TaskPtr arg) {
         result2 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback2.Get());
@@ -405,11 +401,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
 
   service_->DismissTask("task 2 name");
 
-  task_module::mojom::TaskPtr result3;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback3;
+  recipes::mojom::TaskPtr result3;
+  base::MockCallback<RecipesService::RecipesCallback> callback3;
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result3](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result3](recipes::mojom::TaskPtr arg) {
         result3 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback3.Get());
@@ -418,11 +414,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
 
   service_->RestoreTask("task 2 name");
 
-  task_module::mojom::TaskPtr result4;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback4;
+  recipes::mojom::TaskPtr result4;
+  base::MockCallback<RecipesService::RecipesCallback> callback4;
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result4](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result4](recipes::mojom::TaskPtr arg) {
         result4 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback4.Get());
@@ -432,11 +428,11 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
 
   service_->RestoreTask("task 1 name");
 
-  task_module::mojom::TaskPtr result5;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback5;
+  recipes::mojom::TaskPtr result5;
+  base::MockCallback<RecipesService::RecipesCallback> callback5;
   EXPECT_CALL(callback5, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result5](task_module::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&result5](recipes::mojom::TaskPtr arg) {
         result5 = std::move(arg);
       }));
   service_->GetPrimaryTask(callback5.Get());
@@ -450,14 +446,14 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
 }
 
 // Verifies caching param is added if requested.
-TEST_F(TaskModuleServiceTest, CachingParam) {
+TEST_F(RecipesServiceTest, CachingParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{ntp_features::kNtpRecipeTasksModule,
         {{ntp_features::kNtpRecipeTasksModuleCacheMaxAgeSParam, "123"}}}},
       {});
 
-  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
+  service_->GetPrimaryTask(RecipesService::RecipesCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -467,8 +463,8 @@ TEST_F(TaskModuleServiceTest, CachingParam) {
 }
 
 // Verifies no caching param is added if not requested.
-TEST_F(TaskModuleServiceTest, NoCachingParam) {
-  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
+TEST_F(RecipesServiceTest, NoCachingParam) {
+  service_->GetPrimaryTask(RecipesService::RecipesCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -478,14 +474,14 @@ TEST_F(TaskModuleServiceTest, NoCachingParam) {
 }
 
 // Verifies experiment group param is added if requested.
-TEST_F(TaskModuleServiceTest, ExperimentGroupParam) {
+TEST_F(RecipesServiceTest, ExperimentGroupParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{ntp_features::kNtpRecipeTasksModule,
         {{ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "foo"}}}},
       {});
 
-  service_->GetPrimaryTask(TaskModuleService::TaskModuleCallback());
+  service_->GetPrimaryTask(RecipesService::RecipesCallback());
   base::RunLoop().RunUntilIdle();
 
   GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
@@ -495,7 +491,7 @@ TEST_F(TaskModuleServiceTest, ExperimentGroupParam) {
 }
 
 // Verifies that no data request is logged if load comes from cache.
-TEST_F(TaskModuleServiceTest, NoLogIfCached) {
+TEST_F(RecipesServiceTest, NoLogIfCached) {
   network::URLLoaderCompletionStatus status;
   status.exists_in_cache = true;
   test_url_loader_factory_.AddResponse(
@@ -532,11 +528,11 @@ TEST_F(TaskModuleServiceTest, NoLogIfCached) {
       status);
 
   bool received_response = false;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&received_response](task_module::mojom::TaskPtr arg) {
+      .WillOnce(
+          testing::Invoke([&received_response](recipes::mojom::TaskPtr arg) {
             received_response = static_cast<bool>(arg);
           }));
   service_->GetPrimaryTask(callback.Get());
@@ -548,9 +544,9 @@ TEST_F(TaskModuleServiceTest, NoLogIfCached) {
                    base::PersistentHash("recipe_tasks")));
 }
 
-class TaskModuleServiceModulesRedesignedTest : public TaskModuleServiceTest {
+class RecipesServiceModulesRedesignedTest : public RecipesServiceTest {
  public:
-  TaskModuleServiceModulesRedesignedTest() {
+  RecipesServiceModulesRedesignedTest() {
     features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
   }
 
@@ -559,7 +555,7 @@ class TaskModuleServiceModulesRedesignedTest : public TaskModuleServiceTest {
 };
 
 // Verifies that dismiss is ignored.
-TEST_F(TaskModuleServiceModulesRedesignedTest, IgnoresDismiss) {
+TEST_F(RecipesServiceModulesRedesignedTest, IgnoresDismiss) {
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -592,13 +588,12 @@ TEST_F(TaskModuleServiceModulesRedesignedTest, IgnoresDismiss) {
 })");
 
   bool passed_data = false;
-  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&passed_data](task_module::mojom::TaskPtr arg) {
-            passed_data = (arg.get() != nullptr);
-          }));
+      .WillOnce(testing::Invoke([&passed_data](recipes::mojom::TaskPtr arg) {
+        passed_data = (arg.get() != nullptr);
+      }));
 
   service_->DismissTask("task name");
   service_->GetPrimaryTask(callback.Get());

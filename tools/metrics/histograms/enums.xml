@@ -96215,7 +96215,7 @@ Full version information for the fingerprint enum values:
   <int value="50422598" label="dial_get_device_description"/>
   <int value="50464499" label="extension_install_signer"/>
   <int value="50755044" label="popular_sites_fetch"/>
-  <int value="50808258" label="task_module_service"/>
+  <int value="50808258" label="recipes_service"/>
   <int value="50816767" label="lib_address_input"/>
   <int value="50859288" label="cloud_print_proxy"/>
   <int value="50910588" label="litepages_robots_rules"/>

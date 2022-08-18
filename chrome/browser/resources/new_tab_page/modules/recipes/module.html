@@ -16,12 +16,12 @@
     width: 100%;
   }
 
-  #taskItems {
+  #recipes {
     display: flex;
     flex-direction: row;
   }
 
-  .task-item {
+  .recipe {
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -31,11 +31,11 @@
     width: 165px;
   }
 
-  :host-context(.focus-outline-visible) .task-item:focus {
+  :host-context(.focus-outline-visible) .recipe:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  .task-item:not([hidden]) + .task-item {
+  .recipe:not([hidden]) + .recipe {
     margin-inline-start: 16px;
   }
 
@@ -61,7 +61,7 @@
     padding: 10px;
   }
 
-  .task-item img {
+  .recipe img {
     border-radius: 4px;
     height: 136px;
     margin-bottom: 8px;
@@ -187,11 +187,11 @@
   [[title_]]
 </ntp-module-header>
 <div id="moduleContent">
-  <div id="taskItems">
-    <template is="dom-repeat" id="taskItemsRepeat" items="[[task.taskItems]]"
+  <div id="recipes">
+    <template is="dom-repeat" id="recipesRepeat" items="[[task.recipes]]"
         on-dom-change="onDomChange_">
-      <a class="task-item" href="[[item.targetUrl.url]]"
-          on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
+      <a class="recipe" href="[[item.targetUrl.url]]"
+          on-click="onRecipeClick_" on-auxclick="onRecipeClick_">
         <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
             draggable="false">
         </img>

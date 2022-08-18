@@ -4,9 +4,9 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {DismissModuleEvent, recipeTasksDescriptor, TaskModuleElement, TaskModuleHandlerProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, RecipesModuleElement, RecipesHandlerProxy, recipeTasksDescriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
+import {RecipesHandlerRemote} from 'chrome://new-tab-page/recipes.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -14,14 +14,13 @@ import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
-suite('NewTabPageModulesTaskModuleTest', () => {
+suite('NewTabPageModulesRecipesTest', () => {
   let handler: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
 
-    handler =
-        installMock(TaskModuleHandlerRemote, TaskModuleHandlerProxy.setHandler);
+    handler = installMock(RecipesHandlerRemote, RecipesHandlerProxy.setHandler);
   });
 
   test('creates no module if no task', async () => {
@@ -30,7 +29,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Act.
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
 
     // Assert.
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
@@ -41,7 +40,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     // Arrange.
     const task = {
       title: 'Hello world',
-      taskItems: [
+      recipes: [
         {
           name: 'foo',
           imageUrl: {url: 'https://foo.com/img.png'},
@@ -72,16 +71,16 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Act.
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
-    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.recipesRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
 
     // Assert.
     const recipes =
         moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
-            '.task-item');
+            '.recipe');
     const pills =
         moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.pill');
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
@@ -125,12 +124,12 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({
       task: {
         title: 'Hello world',
-        taskItems: repeat(20, () => ({
-                                name: 'foo',
-                                imageUrl: {url: 'https://foo.com/img.png'},
-                                siteName: 'Foo Site',
-                                targetUrl: {url: 'https://foo.com'},
-                              })),
+        recipes: repeat(20, () => ({
+                              name: 'foo',
+                              imageUrl: {url: 'https://foo.com/img.png'},
+                              siteName: 'Foo Site',
+                              targetUrl: {url: 'https://foo.com'},
+                            })),
         relatedSearches: repeat(20, () => ({
                                       text: 'baz',
                                       targetUrl: {url: 'https://baz.com'},
@@ -138,14 +137,14 @@ suite('NewTabPageModulesTaskModuleTest', () => {
       },
     }));
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
-    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.recipesRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
     const getElements = () => Array.from(
         moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
-            '.task-item, .pill'));
+            '.recipe, .pill'));
     assertEquals(40, getElements().length);
     const hiddenCount = () =>
         getElements().filter(el => el.style.visibility === 'hidden').length;
@@ -167,7 +166,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     const task = {
       title: 'Continue searching for Hello world',
       name: 'Hello world',
-      taskItems: [
+      recipes: [
         {
           name: 'foo',
           imageUrl: {url: 'https://foo.com/img.png'},
@@ -196,7 +195,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Arrange.
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
     await flushTasks();
@@ -226,12 +225,12 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     // Arrange.
     const task = {
       title: '',
-      taskItems: [],
+      recipes: [],
       relatedSearches: [],
     };
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
 
@@ -254,7 +253,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
           const task = {
             title: 'Hello world',
-            taskItems: [
+            recipes: [
               {
                 name: 'foo',
                 imageUrl: {url: 'https://foo.com/img.png'},
@@ -275,10 +274,10 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
           // Act.
           const moduleElement =
-              await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+              await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
           assertTrue(!!moduleElement);
           document.body.append(moduleElement);
-          moduleElement.$.taskItemsRepeat.render();
+          moduleElement.$.recipesRepeat.render();
           moduleElement.$.relatedSearchesRepeat.render();
 
           const headerElement =
@@ -337,9 +336,9 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
     // Act.
     const moduleElement =
-        await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+        await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
     document.body.append(moduleElement);
-    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.recipesRepeat.render();
     moduleElement.$.relatedSearchesRepeat.render();
 
     // Assert.
@@ -386,9 +385,9 @@ suite('NewTabPageModulesTaskModuleTest', () => {
 
         // Act.
         const moduleElement =
-            await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
+            await recipeTasksDescriptor.initialize(0) as RecipesModuleElement;
         document.body.append(moduleElement);
-        moduleElement.$.taskItemsRepeat.render();
+        moduleElement.$.recipesRepeat.render();
         moduleElement.$.relatedSearchesRepeat.render();
 
         // Assert.

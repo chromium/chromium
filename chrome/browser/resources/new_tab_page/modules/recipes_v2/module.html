@@ -10,7 +10,7 @@
     display: flex;
   }
 
-  .recipe-item {
+  .recipe {
     display: flex;
     flex-direction: column;
   }
@@ -28,7 +28,7 @@
 <div id="moduleContent">
   <div id="recipes">
     <template is="dom-repeat" id="recipesRepeat" items="[[recipes]]">
-      <a class="recipe-item">
+      <a class="recipe">
         <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
             draggable="false">
         </img>

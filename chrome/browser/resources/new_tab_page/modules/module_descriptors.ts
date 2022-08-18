@@ -20,8 +20,8 @@ import {feedDescriptor, feedV2Descriptor} from './feed/module.js';
 import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
+import {recipeTasksDescriptor} from './recipes/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
-import {recipeTasksDescriptor} from './task_module/module.js';
 
 export const descriptors: ModuleDescriptor[] = [];
 

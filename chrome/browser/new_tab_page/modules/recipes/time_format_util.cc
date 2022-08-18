@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/new_tab_page/modules/task_module/time_format_util.h"
+#include "chrome/browser/new_tab_page/modules/recipes/time_format_util.h"
 
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"

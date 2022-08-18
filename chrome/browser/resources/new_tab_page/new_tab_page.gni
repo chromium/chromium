@@ -56,7 +56,7 @@ mojo_js_files = [
   "new_tab_page.mojom-webui.js",
   "photos.mojom-webui.js",
   "realbox.mojom-webui.js",
-  "task_module.mojom-webui.js",
+  "recipes.mojom-webui.js",
 ]
 
 if (!is_official_build) {

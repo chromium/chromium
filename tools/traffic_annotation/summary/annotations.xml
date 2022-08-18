@@ -249,7 +249,7 @@ Refer to README.md for content description and update process.
  <item id="sync_file_system" added_in_milestone="62" content_hash_code="031bce6a" os_list="linux,windows,chromeos" file_path="chrome/browser/sync_file_system/drive_backend/sync_engine.cc" />
  <item id="sync_http_bridge" added_in_milestone="62" content_hash_code="01f587fa" os_list="linux,windows,chromeos,android" file_path="components/sync/engine/net/http_bridge.cc" />
  <item id="sync_stop_reporter" added_in_milestone="62" content_hash_code="036444c2" os_list="linux,windows,chromeos,android" file_path="components/sync/driver/sync_stopped_reporter.cc" />
- <item id="task_module_service" added_in_milestone="88" content_hash_code="05274f11" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/task_module/task_module_service.cc" />
+ <item id="recipes_service" added_in_milestone="88" content_hash_code="0477ff55" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/recipes/recipes_service.cc" />
  <item id="test" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="test_partial" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="tethering_handler_socket" added_in_milestone="65" content_hash_code="000f0cb8" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/tethering_handler.cc" />

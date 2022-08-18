@@ -142,7 +142,7 @@
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
-#include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
+#include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -929,8 +929,8 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if (IsRecipeTasksModuleEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        task_module::mojom::TaskModuleHandler, NewTabPageUI>(map);
+    RegisterWebUIControllerInterfaceBinder<recipes::mojom::RecipesHandler,
+                                           NewTabPageUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {

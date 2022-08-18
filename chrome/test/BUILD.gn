@@ -6929,9 +6929,9 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc",
       "../browser/new_tab_page/modules/photos/photos_service_unittest.cc",
+      "../browser/new_tab_page/modules/recipes/recipes_service_unittest.cc",
+      "../browser/new_tab_page/modules/recipes/time_format_util_unittest.cc",
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
-      "../browser/new_tab_page/modules/task_module/task_module_service_unittest.cc",
-      "../browser/new_tab_page/modules/task_module/time_format_util_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",
     ]
 
