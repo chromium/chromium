@@ -194,7 +194,8 @@ void RequiredFieldsFallbackHandler::OnGetRequiredFieldValue(
     const ClientStatus& element_status,
     const std::string& value) {
   required_fields_[required_fields_index].status =
-      value.empty() ? RequiredField::EMPTY : RequiredField::NOT_EMPTY;
+      value.empty() ? RequiredField::FieldValueStatus::kEmpty
+                    : RequiredField::FieldValueStatus::kNotEmpty;
 }
 
 void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(

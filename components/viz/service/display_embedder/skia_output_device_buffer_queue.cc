@@ -316,7 +316,7 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
     // sensible upper bound).
     if (!solid_color_cache_.empty() &&
         solid_color_cache_.size() > solid_color_images_.size()) {
-      auto it = solid_color_cache_.begin();
+      it = solid_color_cache_.begin();
       solid_color = std::move(it->second);
       solid_color_cache_.erase(it);
     } else {

@@ -261,9 +261,9 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
           return;
         }
         DCHECK(!signal_fd.is_valid());
-        int fd = reinterpret_cast<int*>(CMSG_DATA(hdr))[0];
-        DCHECK_GE(fd, 0);  // The kernel should never send a negative fd.
-        signal_fd.reset(fd);
+        int kernel_fd = reinterpret_cast<int*>(CMSG_DATA(hdr))[0];
+        DCHECK_GE(kernel_fd, 0);  // The kernel should never send a negative fd.
+        signal_fd.reset(kernel_fd);
       } else if (hdr->cmsg_type == SCM_CREDENTIALS) {
         DCHECK_EQ(-1, crashing_pid);
         const struct ucred *cred =

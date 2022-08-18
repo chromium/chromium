@@ -2103,8 +2103,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   ResetAfterAggregate();
 
-  for (auto& surface_id : previous_contained_surfaces_) {
-    surface = manager_->GetSurfaceForId(surface_id);
+  for (auto& contained_surface_id : previous_contained_surfaces_) {
+    surface = manager_->GetSurfaceForId(contained_surface_id);
     if (surface) {
       surface->allocation_group()->TakeAggregatedLatencyInfoUpTo(
           surface, &frame.latency_info);

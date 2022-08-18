@@ -314,9 +314,6 @@ TEST(InvalidatorRegistrarWithMemoryTest,
 }
 
 TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
-  constexpr char kTopicsToHandler[] =
-      "invalidation.per_sender_topics_to_handler";
-
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
 

@@ -90,9 +90,9 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
         // Erase all visits in the cluster from the maps since we no longer
         // want to consider anything in the cluster as a referrer.
         auto finalized_cluster = clusters[*cluster_idx];
-        for (const auto& visit : finalized_cluster.visits) {
+        for (const auto& finalized_visit : finalized_cluster.visits) {
           visit_id_to_cluster_map.erase(
-              visit.annotated_visit.visit_row.visit_id);
+              finalized_visit.annotated_visit.visit_row.visit_id);
           url_to_cluster_map.erase(visit_url.possibly_invalid_spec());
         }
 

@@ -151,22 +151,22 @@ std::set<HashedDomain> GetTopicObservationDomains(
 
   // If `topic` was padded, it may not exist in `topic_hosts_map`. In this
   // case, return an empty set.
-  auto it = topic_hosts_map.find(topic);
-  if (it == topic_hosts_map.end())
+  auto topic_it = topic_hosts_map.find(topic);
+  if (topic_it == topic_hosts_map.end())
     return std::set<HashedDomain>();
 
-  const std::set<HashedHost>& hosts = it->second;
+  const std::set<HashedHost>& hosts = topic_it->second;
 
   for (const HashedHost& host : hosts) {
     // `host` came from the history database, and it may not exist in the
     // `host_context_domains_map` which came from the usage contexts
     // database, due to e.g. per-context data deletion, database errors, etc.
     // In this case, continue checking other hosts.
-    auto it = host_context_domains_map.find(host);
-    if (it == host_context_domains_map.end())
+    auto host_it = host_context_domains_map.find(host);
+    if (host_it == host_context_domains_map.end())
       continue;
 
-    const std::vector<HashedDomain>& context_domains = it->second;
+    const std::vector<HashedDomain>& context_domains = host_it->second;
 
     for (const HashedDomain& context_domain : context_domains) {
       topic_observation_domains.insert(context_domain);

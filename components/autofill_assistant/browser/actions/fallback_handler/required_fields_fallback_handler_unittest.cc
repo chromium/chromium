@@ -37,7 +37,7 @@ RequiredField CreateRequiredField(int key,
   RequiredField required_field;
   required_field.proto.mutable_value_expression()->add_chunk()->set_key(key);
   required_field.selector = Selector(selector);
-  required_field.status = RequiredField::EMPTY;
+  required_field.status = RequiredField::FieldValueStatus::kEmpty;
   return required_field;
 }
 
@@ -46,7 +46,7 @@ RequiredField CreateRequiredField(const ValueExpression& value_expression,
   RequiredField required_field;
   *required_field.proto.mutable_value_expression() = value_expression;
   required_field.selector = Selector(selector);
-  required_field.status = RequiredField::EMPTY;
+  required_field.status = RequiredField::FieldValueStatus::kEmpty;
   return required_field;
 }
 

@@ -846,26 +846,27 @@ bool CreateTabsAndWindows(
       case kCommandAddTabExtraData: {
         SessionID tab_id = SessionID::InvalidValue();
         std::string key;
-        std::string data;
-        if (!RestoreAddExtraDataCommand(*command, &tab_id, &key, &data)) {
+        std::string extra_data;
+        if (!RestoreAddExtraDataCommand(*command, &tab_id, &key, &extra_data)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return true;
         }
 
-        GetTab(tab_id, tabs)->extra_data[key] = std::move(data);
+        GetTab(tab_id, tabs)->extra_data[key] = std::move(extra_data);
         break;
       }
 
       case kCommandAddWindowExtraData: {
         SessionID window_id = SessionID::InvalidValue();
         std::string key;
-        std::string data;
-        if (!RestoreAddExtraDataCommand(*command, &window_id, &key, &data)) {
+        std::string extra_data;
+        if (!RestoreAddExtraDataCommand(*command, &window_id, &key,
+                                        &extra_data)) {
           DVLOG(1) << "Failed reading command " << command->id();
           return true;
         }
 
-        GetWindow(window_id, windows)->extra_data[key] = std::move(data);
+        GetWindow(window_id, windows)->extra_data[key] = std::move(extra_data);
         break;
       }
 

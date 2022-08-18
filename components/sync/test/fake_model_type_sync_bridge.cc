@@ -219,9 +219,9 @@ absl::optional<ModelError> FakeModelTypeSyncBridge::MergeSyncData(
   }
 
   // Commit any local entities that aren't being overwritten by the server.
-  for (const auto& [storage_key, entity_data] : db_->all_data()) {
+  for (const auto& [storage_key, local_entity_data] : db_->all_data()) {
     if (remote_storage_keys.find(storage_key) == remote_storage_keys.end()) {
-      change_processor()->Put(storage_key, CopyEntityData(*entity_data),
+      change_processor()->Put(storage_key, CopyEntityData(*local_entity_data),
                               metadata_change_list.get());
     }
   }
