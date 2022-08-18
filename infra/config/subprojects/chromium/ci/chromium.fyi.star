@@ -1759,6 +1759,7 @@ fyi_coverage_builder(
     cores = 24,
     os = os.MAC_ANY,
     coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     use_clang_coverage = True,
 )
 
