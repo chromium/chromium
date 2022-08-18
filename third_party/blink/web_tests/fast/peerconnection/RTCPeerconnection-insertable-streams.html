@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTCPeerConnection Insertable Streams</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+// Tests for the legacy variant of https://github.com/w3c/webrtc-encoded-transform
+// See https://github.com/w3c/webrtc-encoded-transform/pull/111
+// for the specification
+promise_test(async t => {
+  const pc = new RTCPeerConnection({encodedInsertableStreams: true});
+  t.add_cleanup(() => pc.close());
+  const configuration = pc.getConfiguration();
+  assert_true(configuration.encodedInsertableStreams);
+}, 'getConfiguration returns the encodedInsertableStreams parameter');
+
+promise_test(async t => {
+  const pc = new RTCPeerConnection({encodedInsertableStreams: false});
+  t.add_cleanup(() => pc.close());
+  assert_throws_dom('InvalidModificationError', () => {
+    pc.setConfiguration({encodedInsertableStreams: true});
+  })
+}, 'setConfiguration rejects attempts to modify the encodedInsertableStreams parameter with an InvalidModificationError');
+    </script>
+  </body>
+</html>

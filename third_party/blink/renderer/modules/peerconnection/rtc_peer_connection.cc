@@ -1397,6 +1397,8 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
     result->setRtcAudioJitterBufferMinDelayMs(
         static_cast<int32_t>(audio_jitter_buffer_min_delay_ms));
   }
+  result->setEncodedInsertableStreams(
+      peer_handler_->encoded_insertable_streams());
 
   return result;
 }
@@ -1419,6 +1421,14 @@ void RTCPeerConnection::setConfiguration(
   if (media_error_state.HadException()) {
     media_error_state.RaiseException(exception_state);
     return;
+  }
+
+  if (peer_handler_->encoded_insertable_streams() !=
+      rtc_configuration->encodedInsertableStreams()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Attempted to modify the PeerConnection's "
+        "configuration in an unsupported way.");
   }
 
   webrtc::RTCErrorType error = peer_handler_->SetConfiguration(configuration);
