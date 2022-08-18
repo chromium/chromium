@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/power_monitor/battery_level_provider.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -23,6 +23,10 @@
 #include "base/power_monitor/iopm_power_source_sampling_event_source.h"
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+#include "base/power_monitor/battery_level_provider.h"
+#endif
 
 // Reports metrics related to power (battery discharge, cpu time, etc.).
 //

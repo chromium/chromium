@@ -6,8 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
-
 namespace base {
 
 BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
@@ -38,5 +36,3 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
 }
 
 }  // namespace base
-
-#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)

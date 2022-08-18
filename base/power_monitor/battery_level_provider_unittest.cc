@@ -4,8 +4,6 @@
 
 #include "base/power_monitor/battery_level_provider.h"
 
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -91,5 +89,3 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
 }
 
 }  // namespace base
-
-#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)

@@ -15,7 +15,10 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+#if !BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+#error battery_level_provider.h can only be included on platforms with a \
+       working implementation.
+#endif
 
 namespace base {
 
@@ -97,7 +100,5 @@ class BASE_EXPORT BatteryLevelProvider {
 };
 
 }  // namespace base
-
-#endif  // BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 
 #endif  // BASE_POWER_MONITOR_BATTERY_LEVEL_PROVIDER_H_

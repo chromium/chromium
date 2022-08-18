@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/power_monitor/battery_level_provider.h"
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
@@ -16,6 +16,10 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
+#endif
+
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+#include "base/power_monitor/battery_level_provider.h"
 #endif
 
 // Report aggregated process metrics to histograms with |suffixes|.
