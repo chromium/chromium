@@ -84,6 +84,7 @@ class VersionButton : public views::LabelButton {
             }),
             channel_indicator_utils::GetFullReleaseTrackString(channel)),
         channel_(channel) {
+    SetFlipCanvasOnPaintForRTLUI(true);
     std::copy(corners, corners + kNumVersionButtonCornerRadii, corners_);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         kVersionButtonMarginVertical, kVersionButtonMarginHorizontal)));
