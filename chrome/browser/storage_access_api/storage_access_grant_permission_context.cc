@@ -50,6 +50,16 @@ bool StorageAccessGrantPermissionContext::IsRestrictedToSecureOrigins() const {
   return false;
 }
 
+void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    bool user_gesture,
+    permissions::BrowserPermissionCallback callback) {
+  DecidePermission(id, requesting_origin, embedding_origin, user_gesture,
+                   std::move(callback));
+}
+
 void StorageAccessGrantPermissionContext::DecidePermission(
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
