@@ -679,30 +679,11 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_TRUE(cookie->IsPartitioned());
   EXPECT_EQ(partition_key, cookie->PartitionKey());
 
-  // Invalid Partitioned attribute: SameParty cookie.
+  // No Partitioned attribute but with a nonce.
   status = CookieInclusionStatus();
-  cookie = CanonicalCookie::Create(
-      url, "A=2; Partitioned; Path=/; Secure; SameParty", creation_time,
-      server_time, partition_key, &status);
-  EXPECT_FALSE(cookie.get());
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
-
-  // Invalid Partitioned attribute: SameParty cookie but with a nonce.
   auto partition_key_with_nonce =
       absl::make_optional(CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
-  status = CookieInclusionStatus();
-  cookie = CanonicalCookie::Create(
-      url, "A=2; Partitioned; Path=/; Secure; SameParty", creation_time,
-      server_time, partition_key_with_nonce, &status);
-  EXPECT_TRUE(cookie.get());
-  EXPECT_TRUE(status.IsInclude());
-  EXPECT_TRUE(cookie->IsPartitioned());
-  EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
-
-  // No Partitioned attribute but with a nonce.
-  status = CookieInclusionStatus();
   cookie =
       CanonicalCookie::Create(url, "__Host-A=2; Path=/; Secure", creation_time,
                               server_time, partition_key_with_nonce, &status);
@@ -3007,17 +2988,6 @@ TEST(CanonicalCookieTest, IsCanonical) {
                       GURL("https://toplevelsite.com")))
                   ->IsCanonical());
 
-  // Partitioned attribute invalid, SameParty attribute also included.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), /*secure=*/true,
-                   /*httponly=*/false, CookieSameSite::UNSPECIFIED,
-                   COOKIE_PRIORITY_LOW,
-                   /*same_party=*/true,
-                   CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com")))
-                   ->IsCanonical());
-
   // Hidden cookie prefixes.
   EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
                    "", "__Secure-a=b", "x.y", "/", base::Time(), base::Time(),
@@ -3844,18 +3814,6 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
           GURL("https://toplevelsite.com"))),
       &status));
   EXPECT_TRUE(status.IsInclude());
-  // Invalid: SameParty attribute present.
-  status = CookieInclusionStatus();
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
-      GURL("https://www.foo.com"), "A", "B", std::string(), "/", two_hours_ago,
-      one_hour_from_now, one_hour_ago, /*secure=*/true, /*http_only=*/false,
-      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
-      /*same_party=*/true,
-      absl::optional<CookiePartitionKey>(CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com"))),
-      &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
 
   status = CookieInclusionStatus();
 

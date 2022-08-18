@@ -517,15 +517,13 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns true iff the cookie is a partitioned cookie with a nonce or that
   // does not violate the semantics of the Partitioned attribute:
-  // - Must have the Secure attribute
-  // - Must not have the SameParty attribute
+  // - Must have the Secure attribute OR the cookie partition contains a nonce.
   static bool IsCookiePartitionedValid(const GURL& url,
                                        const ParsedCookie& parsed_cookie,
                                        bool partition_has_nonce);
   static bool IsCookiePartitionedValid(const GURL& url,
                                        bool secure,
                                        bool is_partitioned,
-                                       bool is_same_party,
                                        bool partition_has_nonce);
 
   // Keep defaults here in sync with
