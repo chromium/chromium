@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -37,8 +38,8 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
     // Use the IO thread for testing purposes, instead of an audio task runner.
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(
-            Thread::MainThread()->GetDeprecatedTaskRunner(),
-            Platform::Current()->GetIOTaskRunner());
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            platform_->GetIOTaskRunner());
     pushable_audio_source_ = pushable_audio_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",

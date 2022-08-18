@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -175,9 +176,10 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
   // JS below expects to be run from a task as it adds itself to as a
   // TaskTimeObserver that is cleared when the task is finished. Not doing so
   // violates CanvasPerformanceMonitor consistency.
-  Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&main_resource] {
-        main_resource.Complete(R"HTML(
+  Window()
+      .GetTaskRunner(TaskType::kNetworking)
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&main_resource] {
+                   main_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
           let canvas = document.getElementById('test');
@@ -191,7 +193,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
       <body>
         <canvas id="test" width="10" height="10"></canvas>
       </body>)HTML");
-      }));
+                 }));
 
   test::RunPendingTasks();
 

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -317,7 +318,7 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      Thread::Current()->GetDeprecatedTaskRunner());
+      scheduler::GetSingleThreadTaskRunnerForTesting());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker immediately after start.
@@ -337,7 +338,7 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      Thread::Current()->GetDeprecatedTaskRunner());
+      scheduler::GetSingleThreadTaskRunnerForTesting());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   // Terminate the worker while waiting for the debugger.
@@ -360,7 +361,7 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
       /*cache_storage_remote=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
-      Thread::Current()->GetDeprecatedTaskRunner());
+      scheduler::GetSingleThreadTaskRunnerForTesting());
   testing::Mock::VerifyAndClearExpectations(mock_client_.get());
 
   mock_client_->WaitUntilFailedToLoadClassicScript();

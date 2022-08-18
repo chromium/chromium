@@ -10,6 +10,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -43,8 +44,8 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   MediaStreamTrack* CreateTrack(ExecutionContext* execution_context) {
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(
-            Thread::MainThread()->GetDeprecatedTaskRunner(),
-            Platform::Current()->GetIOTaskRunner());
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            platform_->GetIOTaskRunner());
     PushableMediaStreamAudioSource* pushable_audio_source_ptr =
         pushable_audio_source.get();
     MediaStreamSource* media_stream_source =

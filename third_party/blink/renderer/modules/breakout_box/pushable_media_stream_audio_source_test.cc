@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -131,8 +132,8 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
   PushableMediaStreamAudioSourceTest() {
     // Use the IO thread for testing purposes. This is stricter than an audio
     // sequenced task runner needs to be.
-    audio_task_runner_ = Platform::Current()->GetIOTaskRunner();
-    main_task_runner_ = Thread::MainThread()->GetDeprecatedTaskRunner();
+    audio_task_runner_ = platform_->GetIOTaskRunner();
+    main_task_runner_ = scheduler::GetSingleThreadTaskRunnerForTesting();
 
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(main_task_runner_,
