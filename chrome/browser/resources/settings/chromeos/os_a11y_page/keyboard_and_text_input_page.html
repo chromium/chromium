@@ -33,13 +33,6 @@
 </style>
 
 <settings-toggle-button
-    pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
-    label="$i18n{stickyKeysLabel}"
-    sub-label="$i18n{stickyKeysDescription}"
-    deep-link-focus-id$="[[Setting.kStickyKeys]]">
-</settings-toggle-button>
-<settings-toggle-button
-    class="hr"
     icon="os-settings:on-screen-keyboard"
     pref="{{prefs.settings.a11y.virtual_keyboard}}"
     label="$i18n{onScreenKeyboardLabel}"
@@ -79,6 +72,35 @@
     </template>
   </div>
 </template>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <settings-toggle-button
+      id="enableSwitchAccess"
+      class="hr"
+      icon="os-settings:switch-access"
+      pref="{{prefs.settings.a11y.switch_access.enabled}}"
+      label="$i18n{switchAccessLabel}"
+      sub-label="$i18n{switchAccessLabelSubtext}"
+      deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
+  </settings-toggle-button>
+  <iron-collapse
+      opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
+    <div class="sub-item">
+      <cr-link-row id="switchAccessSubpageButton"
+          class="settings-box"
+          label="$i18n{switchAccessOptionsLabel}"
+          on-click="onSwitchAccessSettingsTap_"
+          role-description="$i18n{subpageArrowRoleDescription}" embedded>
+      </cr-link-row>
+    </div>
+  </iron-collapse>
+</template>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
+    label="$i18n{stickyKeysLabel}"
+    sub-label="$i18n{stickyKeysDescription}"
+    deep-link-focus-id$="[[Setting.kStickyKeys]]">
+</settings-toggle-button>
 <settings-toggle-button
     class="hr"
     pref="{{prefs.settings.a11y.focus_highlight}}"
@@ -101,26 +123,6 @@
     sub-label="$i18n{caretBrowsingSubtitle}">
 </settings-toggle-button>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
-  <settings-toggle-button
-      id="enableSwitchAccess"
-      class="hr"
-      icon="os-settings:switch-access"
-      pref="{{prefs.settings.a11y.switch_access.enabled}}"
-      label="$i18n{switchAccessLabel}"
-      sub-label="$i18n{switchAccessLabelSubtext}"
-      deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
-  </settings-toggle-button>
-  <iron-collapse
-      opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
-    <div class="sub-item">
-      <cr-link-row id="switchAccessSubpageButton"
-          class="settings-box"
-          label="$i18n{switchAccessOptionsLabel}"
-          on-click="onSwitchAccessSettingsTap_"
-          role-description="$i18n{subpageArrowRoleDescription}" embedded>
-      </cr-link-row>
-    </div>
-  </iron-collapse>
   <cr-link-row id="keyboardSubpageButton" class="hr"
       label="$i18n{keyboardSettingsTitle}" on-click="onKeyboardTap_"
       sub-label="$i18n{keyboardSettingsDescription}"
