@@ -19,7 +19,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_file.h"
 #include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -124,7 +123,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_test_helper.h"
