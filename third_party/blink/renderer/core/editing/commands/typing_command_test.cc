@@ -37,7 +37,7 @@ TEST_F(TypingCommandTest, DeleteInsignificantText) {
   ASSERT_FALSE(editing_state.IsAborted());
 
   EXPECT_EQ(
-      u8"<div contenteditable>"
+      "<div contenteditable>"
       "|\u00A0<a>abc</a>"
       "</div>",
       GetSelectionTextFromBody());
