@@ -978,6 +978,7 @@
       'android-marshmallow-x86-fyi-rel-reviver': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google_coverage',
       'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_webview_google',
+      'android-marshmallow-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-opus-arm-rel': 'android_release_trybot',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
@@ -1757,6 +1758,12 @@
 
     'android_release_trybot_x86_fastbuild_webview_google_coverage': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
+      'strip_debug_info', 'webview_google', 'use_java_coverage',
+      'partial_code_coverage_instrumentation',
+    ],
+
+    'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'x86', 'android_fastbuild',
       'strip_debug_info', 'webview_google', 'use_java_coverage',
       'partial_code_coverage_instrumentation',
     ],
