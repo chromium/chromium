@@ -83,32 +83,44 @@ class NoBarrierAtomicInt64 {
 
 int64_t NoBarrierAtomicInt64::operator++() {
   AutoLock l(lock_);
-  return i_++;
+  const int64_t old_i = i_;
+  i_ = old_i + 1;
+  return old_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator++(int) {
   AutoLock l(lock_);
-  return ++i_;
+  const int64_t new_i = i_ + 1;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator--() {
   AutoLock l(lock_);
-  return i_--;
+  const int64_t old_i = i_;
+  i_ = old_i - 1;
+  return old_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator--(int) {
   AutoLock l(lock_);
-  return --i_;
+  const int64_t new_i = i_ - 1;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator+=(int64_t other) {
   AutoLock l(lock_);
-  return (i_ += other);
+  const int64_t new_i = i_ + other;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator-=(int64_t other) {
   AutoLock l(lock_);
-  return (i_ -= other);
+  const int64_t new_i = i_ - other;
+  i_ = new_i;
+  return new_i;
 }
 
 int64_t NoBarrierAtomicInt64::operator*() const {
