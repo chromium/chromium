@@ -66,7 +66,7 @@ void GlobalMediaKeysListenerWin::OnWndProc(HWND hwnd,
   // SingletonHwndHotKeyObservers should only send us hot key messages.
   DCHECK_EQ(WM_HOTKEY, static_cast<int>(message));
 
-  int win_key_code = HIWORD(lparam);
+  WORD win_key_code = HIWORD(lparam);
   KeyboardCode key_code = KeyboardCodeForWindowsKeyCode(win_key_code);
 
   // We should only receive hot key events for keys that we're observing.

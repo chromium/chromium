@@ -138,12 +138,12 @@ void SortVectorWithStringKey(const std::string& locale,
   if (U_FAILURE(error))
     collator.reset();
   StringComparator<Element> c(collator.get());
+  const auto begin = elements->begin() + static_cast<ptrdiff_t>(begin_index);
+  const auto end = elements->begin() + static_cast<ptrdiff_t>(end_index);
   if (needs_stable_sort) {
-    stable_sort(elements->begin() + begin_index,
-                elements->begin() + end_index,
-                c);
+    stable_sort(begin, end, c);
   } else {
-    sort(elements->begin() + begin_index, elements->begin() + end_index, c);
+    sort(begin, end, c);
   }
 }
 

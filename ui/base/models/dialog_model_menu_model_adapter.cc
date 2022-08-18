@@ -55,7 +55,7 @@ MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
 int DialogModelMenuModelAdapter::GetCommandIdAt(size_t index) const {
   // TODO(pbos): Figure out what this should be. Combobox seems to offset by
   // 1000. Dunno why.
-  return index + 1234;
+  return static_cast<int>(index + 1234);
 }
 
 std::u16string DialogModelMenuModelAdapter::GetLabelAt(size_t index) const {

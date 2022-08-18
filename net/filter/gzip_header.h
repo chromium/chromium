@@ -15,6 +15,7 @@
 #ifndef NET_FILTER_GZIP_HEADER_H_
 #define NET_FILTER_GZIP_HEADER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "net/base/net_export.h"
@@ -46,9 +47,8 @@ class NET_EXPORT GZipHeader {
   // gzip header, return INVALID_HEADER. When we've seen a complete
   // gzip header, return COMPLETE_HEADER and set the pointer pointed
   // to by header_end to the first byte beyond the gzip header.
-  Status ReadMore(const char* inbuf,
-                  int inbuf_len,
-                  const char** header_end);
+  Status ReadMore(const char* inbuf, size_t inbuf_len, const char** header_end);
+
  private:
   enum {                       // flags (see RFC)
     FLAG_FTEXT        = 0x01,  // bit 0 set: file probably ascii text

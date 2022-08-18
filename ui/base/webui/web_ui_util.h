@@ -38,7 +38,7 @@ std::string GetPngDataUrl(const unsigned char* data, size_t size);
 // (in that order), starting at |start_index|.
 COMPONENT_EXPORT(UI_BASE)
 WindowOpenDisposition GetDispositionFromClick(const base::Value::List& args,
-                                              int start_index);
+                                              size_t start_index);
 
 // Parse a formatted scale factor string into float and sets to |scale_factor|.
 COMPONENT_EXPORT(UI_BASE)

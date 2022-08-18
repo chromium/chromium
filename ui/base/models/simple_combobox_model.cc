@@ -56,7 +56,7 @@ bool SimpleComboboxModel::IsItemSeparatorAt(size_t index) const {
 }
 
 absl::optional<size_t> SimpleComboboxModel::GetDefaultIndex() const {
-  return 0;
+  return size_t{0};
 }
 
 }  // namespace ui

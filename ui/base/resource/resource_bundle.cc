@@ -637,7 +637,7 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
                 auto* event =
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
                 auto* data = event->set_resource_bundle();
-                data->set_resource_id(resource_id);
+                data->set_resource_id(static_cast<uint32_t>(resource_id));
               });
 
   if (delegate_) {

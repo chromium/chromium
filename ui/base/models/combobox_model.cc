@@ -37,7 +37,7 @@ bool ComboboxModel::IsItemSeparatorAt(size_t index) const {
 }
 
 absl::optional<size_t> ComboboxModel::GetDefaultIndex() const {
-  return 0;
+  return size_t{0};
 }
 
 bool ComboboxModel::IsItemEnabledAt(size_t index) const {

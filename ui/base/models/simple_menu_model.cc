@@ -296,7 +296,8 @@ void SimpleMenuModel::InsertSubMenuWithStringIdAt(size_t index,
 }
 
 void SimpleMenuModel::RemoveItemAt(size_t index) {
-  items_.erase(items_.begin() + ValidateItemIndex(index));
+  items_.erase(items_.begin() +
+               static_cast<ptrdiff_t>(ValidateItemIndex(index)));
   MenuItemsChanged();
 }
 
@@ -558,7 +559,8 @@ void SimpleMenuModel::AppendItem(Item item) {
 
 void SimpleMenuModel::InsertItemAtIndex(Item item, size_t index) {
   ValidateItem(item);
-  items_.insert(items_.begin() + index, std::move(item));
+  items_.insert(items_.begin() + static_cast<ptrdiff_t>(index),
+                std::move(item));
   MenuItemsChanged();
 }
 

@@ -51,7 +51,7 @@ DWORD GetExtendedTooltipStyles() {
 }
 
 void HWNDSetRTLLayout(HWND hwnd) {
-  DWORD ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
+  LONG ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
 
   // We don't have to do anything if the style is already set for the HWND.
   if (!(ex_style & WS_EX_LAYOUTRTL)) {

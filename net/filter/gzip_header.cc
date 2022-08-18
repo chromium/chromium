@@ -27,9 +27,9 @@ void GZipHeader::Reset() {
   extra_length_ = 0;
 }
 
-GZipHeader::Status GZipHeader::ReadMore(const char* inbuf, int inbuf_len,
+GZipHeader::Status GZipHeader::ReadMore(const char* inbuf,
+                                        size_t inbuf_len,
                                         const char** header_end) {
-  DCHECK_GE(inbuf_len, 0);
   const uint8_t* pos = reinterpret_cast<const uint8_t*>(inbuf);
   const uint8_t* const end = pos + inbuf_len;
 

@@ -418,7 +418,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
   base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> locked_mem(hdata);
 
   FILEGROUPDESCRIPTORW* descriptor = locked_mem.get();
-  descriptor->cItems = num_files;
+  descriptor->cItems = base::checked_cast<UINT>(num_files);
 
   STGMEDIUM storage = {
       .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
@@ -427,7 +427,7 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
 
   for (size_t i = 0; i < num_files; i++) {
     // Fill in each FILEDESCRIPTORW with file name.
-    descriptor->fgd[i].dwFlags |= FD_UNICODE;
+    descriptor->fgd[i].dwFlags |= static_cast<DWORD>(FD_UNICODE);
     std::wstring file_name = filenames_and_contents[i].first.value();
     wcsncpy_s(descriptor->fgd[i].cFileName, MAX_PATH, file_name.c_str(),
               std::min(file_name.size(), static_cast<size_t>(MAX_PATH - 1u)));
@@ -437,14 +437,15 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
         base::make_span(reinterpret_cast<const uint8_t*>(
                             filenames_and_contents[i].second.data()),
                         filenames_and_contents[i].second.length());
-    SetVirtualFileContentAtIndexForTesting(data_buffer, tymed, i);
+    SetVirtualFileContentAtIndexForTesting(data_buffer, tymed,  // IN-TEST
+                                           static_cast<LONG>(i));
   }
 }
 
 void OSExchangeDataProviderWin::SetVirtualFileContentAtIndexForTesting(
     base::span<const uint8_t> data_buffer,
     DWORD tymed,
-    size_t index) {
+    LONG index) {
   STGMEDIUM storage_for_contents = kNullStorageMedium;
 
   if (tymed == TYMED_ISTORAGE) {
@@ -467,8 +468,9 @@ void OSExchangeDataProviderWin::SetVirtualFileContentAtIndexForTesting(
 
     Microsoft::WRL::ComPtr<IStream> source_stream;
     if (SUCCEEDED(hr)) {
-      source_stream =
-          ::SHCreateMemStream(data_buffer.data(), data_buffer.size_bytes());
+      source_stream = ::SHCreateMemStream(
+          data_buffer.data(),
+          base::checked_cast<UINT>(data_buffer.size_bytes()));
     }
 
     if (source_stream) {
@@ -484,8 +486,8 @@ void OSExchangeDataProviderWin::SetVirtualFileContentAtIndexForTesting(
       storage_for_contents.tymed = TYMED_ISTORAGE;
 
   } else if (tymed == TYMED_ISTREAM) {
-    storage_for_contents.pstm =
-        ::SHCreateMemStream(data_buffer.data(), data_buffer.size_bytes());
+    storage_for_contents.pstm = ::SHCreateMemStream(
+        data_buffer.data(), base::checked_cast<UINT>(data_buffer.size_bytes()));
     if (storage_for_contents.pstm) {
       // A properly implemented IDataObject::GetData moves the stream pointer
       // to end.
@@ -635,7 +637,7 @@ bool OSExchangeDataProviderWin::GetPickledData(
     if (medium.tymed & TYMED_HGLOBAL) {
       base::win::ScopedHGlobal<char*> c_data(medium.hGlobal);
       DCHECK_GT(c_data.Size(), 0u);
-      *data = base::Pickle(c_data.get(), static_cast<int>(c_data.Size()));
+      *data = base::Pickle(c_data.get(), c_data.Size());
       success = true;
     }
     ReleaseStgMedium(&medium);
@@ -1095,7 +1097,7 @@ ULONG DataObjectImpl::Release() {
 // anonymous namespace functions
 namespace {
 STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
-  HANDLE handle = GlobalAlloc(GPTR, static_cast<int>(bytes));
+  HANDLE handle = GlobalAlloc(GPTR, bytes);
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
     memcpy(scoped.get(), data, bytes);

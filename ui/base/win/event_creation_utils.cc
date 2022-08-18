@@ -36,7 +36,7 @@ bool SendMouseEvent(const gfx::Point& point, int flags) {
       1.0, std::ceil(screen_x * (kNormalizedScreenSize / screen_width))));
   input.mi.dy = static_cast<LONG>(std::max(
       1.0, std::ceil(screen_y * (kNormalizedScreenSize / screen_height))));
-  input.mi.dwFlags = flags;
+  input.mi.dwFlags = static_cast<DWORD>(flags);
   return ::SendInput(1, &input, sizeof(input)) == 1;
 }
 

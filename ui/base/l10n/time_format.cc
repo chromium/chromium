@@ -139,11 +139,12 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
     formatter->Format(Formatter::UNIT_YEAR, year, &time_string);
   }
 
-  const int capacity = time_string.length() + 1;
+  const int32_t capacity = time_string.length() + 1;
   DCHECK_GT(capacity, 1);
   std::u16string result;
   UErrorCode error = U_ZERO_ERROR;
-  time_string.extract(base::WriteInto(&result, capacity), capacity, error);
+  time_string.extract(base::WriteInto(&result, static_cast<size_t>(capacity)),
+                      capacity, error);
   DCHECK(U_SUCCESS(error));
   return result;
 }
