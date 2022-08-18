@@ -423,8 +423,9 @@ suite('KerberosAddAccountTests', function() {
 
   // Opens the Advanced Config dialog, sets |config| as Kerberos configuration
   // and clicks 'Save'. Returns a promise with the validation result.
-  function setConfig(config) {
+  async function setConfig(config) {
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -438,8 +439,9 @@ suite('KerberosAddAccountTests', function() {
 
   // Opens the Advanced Config dialog, asserts that |config| is set as
   // Kerberos configuration and clicks 'Cancel'.
-  function assertConfig(config) {
+  async function assertConfig(config) {
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -449,7 +451,7 @@ suite('KerberosAddAccountTests', function() {
   }
 
   // Verifies expected states if no account is preset.
-  test('StatesWithoutPresetAccount', function() {
+  test('StatesWithoutPresetAccount', async () => {
     assertTrue(title.startsWith('Add'));
     assertEquals('Add', actionButton.innerText);
     assertFalse(username.disabled);
@@ -460,7 +462,7 @@ suite('KerberosAddAccountTests', function() {
   });
 
   // Verifies expected states if an account is preset.
-  test('StatesWithPresetAccount', function() {
+  test('StatesWithPresetAccount', async () => {
     createDialog(TEST_KERBEROS_ACCOUNTS[0]);
     assertTrue(title.startsWith('Refresh'));
     assertEquals('Refresh', actionButton.innerText);
@@ -611,6 +613,7 @@ suite('KerberosAddAccountTests', function() {
     assertTrue(!dialog.shadowRoot.querySelector('#advancedConfigDialog'));
     assertFalse(addDialog.hidden);
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
 
     const advancedConfigDialog =
@@ -634,6 +637,7 @@ suite('KerberosAddAccountTests', function() {
 
   test('AdvancedConfigurationSaveKeepsConfig', async () => {
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -650,8 +654,9 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(modifiedConfig);
   });
 
-  test('AdvancedConfigurationCancelResetsConfig', function() {
+  test('AdvancedConfigurationCancelResetsConfig', async () => {
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -667,10 +672,11 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(prevConfig);
   });
 
-  test('AdvancedConfigurationDisabledByPolicy', function() {
+  test('AdvancedConfigurationDisabledByPolicy', async () => {
     assertTrue(TEST_KERBEROS_ACCOUNTS[2].isManaged);
     createDialog(TEST_KERBEROS_ACCOUNTS[2]);
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -682,6 +688,7 @@ suite('KerberosAddAccountTests', function() {
 
   test('AdvancedConfigurationValidationError', async () => {
     advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
         dialog.shadowRoot.querySelector('#advancedConfigDialog');
@@ -714,7 +721,7 @@ suite('KerberosAddAccountTests', function() {
     assertEquals(0, textArea.selectionStart);
     assertNotEquals(0, textArea.selectionEnd);
 
-    // Is the config dialog is still open?
+    // Is the config dialog still open?
     assertTrue(advancedConfigDialog.open);
     assertTrue(addDialog.hidden);
 
@@ -722,6 +729,38 @@ suite('KerberosAddAccountTests', function() {
     advancedConfigDialog.querySelector('.cancel-button').click();
     flush();
     assertConfig(loadTimeData.getString('defaultKerberosConfig'));
+  });
+
+  test('ValidateConfigurationOnAdvancedClick', async () => {
+    // Cause a validation error.
+    browserProxy.validateConfigResult = {
+      error: KerberosErrorType.kBadConfig,
+      errorInfo: {code: KerberosConfigErrorCode.kKeyNotSupported, lineIndex: 0},
+    };
+
+    // Validating happens on "Advanced" click.
+    advancedConfigButton.click();
+    await browserProxy.whenCalled('validateConfig');
+
+    // Wait for dialog to process the 'validateConfig' result (sets error
+    // message etc.).
+    await flushTasks();
+
+    const advancedConfigDialog =
+        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+    assertTrue(!!advancedConfigDialog);
+
+    // Is some error text set?
+    const configError =
+        advancedConfigDialog.querySelector('#config-error-message');
+    assertTrue(!!configError);
+    assertNotEquals(0, configError.innerText.length);
+
+    // Is something selected?
+    const configElement = advancedConfigDialog.querySelector('#config');
+    const textArea = configElement.$.input;
+    assertEquals(0, textArea.selectionStart);
+    assertNotEquals(0, textArea.selectionEnd);
   });
 
   test('DomainAutocompleteEnabled', function() {

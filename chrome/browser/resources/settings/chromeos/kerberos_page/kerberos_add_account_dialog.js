@@ -297,6 +297,17 @@ class KerberosAddAccountDialogElement extends
 
   /** @private */
   onAdvancedConfigClick_() {
+    this.browserProxy_.validateConfig(this.config_).then(result => {
+      // Success case.
+      if (result.error === KerberosErrorType.kNone) {
+        this.configErrorText_ = '';
+        return;
+      }
+
+      // Triggers the UI to update error messages.
+      this.updateConfigErrorMessage_(result);
+    });
+
     // Keep a copy of the config in case the user cancels.
     this.editableConfig_ = this.config_;
     this.showAdvancedConfig_ = true;
