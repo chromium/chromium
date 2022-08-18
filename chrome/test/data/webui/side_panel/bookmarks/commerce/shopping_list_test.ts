@@ -7,7 +7,7 @@ import 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
 
 import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
-import {ShoppingListElement} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
+import {LOCAL_STORAGE_EXPAND_STATUS_KEY, ShoppingListElement} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
 import {BookmarkProductInfo} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
@@ -43,7 +43,7 @@ suite('SidePanelShoppingListTest', () => {
     },
   ];
 
-  function getProductElements(): HTMLElement[] {
+  function getProductElements(shoppingList: HTMLElement): HTMLElement[] {
     return Array.from(
         shoppingList.shadowRoot!.querySelectorAll('.product-item'));
   }
@@ -92,8 +92,12 @@ suite('SidePanelShoppingListTest', () => {
     await flushTasks();
   });
 
+  teardown(() => {
+    window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = undefined;
+  });
+
   test('RenderShoppingList', async () => {
-    const productElements = getProductElements();
+    const productElements = getProductElements(shoppingList);
     assertEquals(2, products.length);
 
     for (let i = 0; i < products.length; i++) {
@@ -102,7 +106,7 @@ suite('SidePanelShoppingListTest', () => {
   });
 
   test('OpensAndClosesShoppingList', async () => {
-    const productElements = getProductElements();
+    const productElements = getProductElements(shoppingList);
     const arrowIcon =
         shoppingList.shadowRoot!.querySelector<HTMLElement>('#arrowIcon')!;
     assertTrue(arrowIcon.hasAttribute('open'));
@@ -116,10 +120,13 @@ suite('SidePanelShoppingListTest', () => {
     for (let i = 0; i < productElements.length; i++) {
       assertFalse(isVisible(productElements[i]!));
     }
+    assertEquals(
+        false,
+        JSON.parse(window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY]));
   });
 
   test('OpensProductItem', async () => {
-    getProductElements()[0]!.click();
+    getProductElements(shoppingList)[0]!.click();
     const [id, parentFolderDepth, , source] =
         await bookmarksApi.whenCalled('openBookmark');
     assertEquals(products[0]!.bookmarkId.toString(), id);
@@ -128,7 +135,8 @@ suite('SidePanelShoppingListTest', () => {
   });
 
   test('OpensProductItemContextMenu', async () => {
-    getProductElements()[0]!.dispatchEvent(new MouseEvent('contextmenu'));
+    getProductElements(shoppingList)[0]!.dispatchEvent(
+        new MouseEvent('contextmenu'));
     const [id, , , source] = await bookmarksApi.whenCalled('showContextMenu');
     assertEquals(products[0]!.bookmarkId.toString(), id);
     assertEquals(ActionSource.kPriceTracking, source);
@@ -136,7 +144,7 @@ suite('SidePanelShoppingListTest', () => {
 
   test('OpensProductItemWithAuxClick', async () => {
     // Middle mouse button click.
-    getProductElements()[0]!.dispatchEvent(
+    getProductElements(shoppingList)[0]!.dispatchEvent(
         new MouseEvent('auxclick', {button: 1}));
     const [id, parentFolderDepth, , source] =
         await bookmarksApi.whenCalled('openBookmark');
@@ -147,8 +155,26 @@ suite('SidePanelShoppingListTest', () => {
     bookmarksApi.resetResolver('openBookmark');
 
     // Non-middle mouse aux clicks.
-    getProductElements()[0]!.dispatchEvent(
+    getProductElements(shoppingList)[0]!.dispatchEvent(
         new MouseEvent('auxclick', {button: 2}));
     assertEquals(0, bookmarksApi.getCallCount('openBookmark'));
+  });
+
+  test('InitializesShoppingListExpandStatus', async () => {
+    window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = false;
+
+    const shoppingListClosed = document.createElement('shopping-list');
+    shoppingListClosed.productInfos = products;
+    document.body.appendChild(shoppingListClosed);
+    await flushTasks();
+
+    const productElements = getProductElements(shoppingListClosed);
+    assertEquals(2, products.length);
+    for (let i = 0; i < products.length; i++) {
+      assertFalse(isVisible(productElements[i]!));
+    }
+    assertFalse(
+        shoppingListClosed.shadowRoot!.getElementById(
+                                          'arrowIcon')!.hasAttribute('open'));
   });
 });

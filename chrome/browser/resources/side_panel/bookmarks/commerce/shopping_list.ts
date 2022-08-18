@@ -17,6 +17,8 @@ import {BookmarksApiProxy, BookmarksApiProxyImpl} from '../bookmarks_api_proxy.j
 import {getTemplate} from './shopping_list.html.js';
 import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
+export const LOCAL_STORAGE_EXPAND_STATUS_KEY = 'shoppingListExpanded';
+
 export class ShoppingListElement extends PolymerElement {
   static get is() {
     return 'shopping-list';
@@ -42,6 +44,17 @@ export class ShoppingListElement extends PolymerElement {
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
 
+  override connectedCallback() {
+    super.connectedCallback();
+    try {
+      this.open_ =
+          JSON.parse(window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY]);
+    } catch (e) {
+      this.open_ = true;
+      window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = this.open_;
+    }
+  }
+
   private getFaviconUrl_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
@@ -51,6 +64,7 @@ export class ShoppingListElement extends PolymerElement {
     event.stopPropagation();
 
     this.open_ = !this.open_;
+    window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = this.open_;
   }
 
   private onProductAuxClick_(
