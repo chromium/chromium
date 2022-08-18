@@ -127,6 +127,7 @@ em {
 }
 
 #cookie-controls-tooltip-icon {
+  --cr-tooltip-icon-fill-color: currentColor;
   margin-inline-end: 24px; /* var(--cr-controlled-by-spacing) */
 }
 
