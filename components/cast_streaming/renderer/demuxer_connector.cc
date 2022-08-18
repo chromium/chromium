@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 
-#include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
+#include "components/cast_streaming/renderer/frame_injecting_demuxer.h"
 
 namespace cast_streaming {
 
@@ -14,13 +14,13 @@ DemuxerConnector::~DemuxerConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DemuxerConnector::SetDemuxer(CastStreamingDemuxer* demuxer) {
+void DemuxerConnector::SetDemuxer(FrameInjectingDemuxer* demuxer) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(demuxer);
 
   if (demuxer_) {
-    // We do not support more than one active CastStreamingDemuxer in the same
+    // We do not support more than one active FrameInjectingDemuxer in the same
     // RenderFrame. Return early here.
     demuxer->OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
                                   mojom::VideoStreamInitializationInfoPtr());

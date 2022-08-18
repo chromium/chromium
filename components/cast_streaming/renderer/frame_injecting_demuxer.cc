@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
+#include "components/cast_streaming/renderer/frame_injecting_demuxer.h"
 
 #include <utility>
 #include <vector>
@@ -31,15 +31,15 @@ namespace {
 // |TMojoRemoteType| is the interface used for requesting data buffers.
 // Currently expected to be either AudioBufferRequester or VideoBufferRequester.
 template <typename TMojoRemoteType>
-class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
-                                   public media::DemuxerStream {
+class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
+                                    public media::DemuxerStream {
  public:
   // See DemuxerStreamTraits for further details on these types.
   using Traits = DemuxerStreamTraits<TMojoRemoteType>;
   using StreamInfoType = typename Traits::StreamInfoType;
   using ConfigType = typename Traits::ConfigType;
 
-  CastStreamingDemuxerStream(
+  FrameInjectingDemuxerStream(
       mojo::PendingRemote<TMojoRemoteType> pending_remote,
       StreamInfoType stream_initialization_info)
       : remote_(std::move(pending_remote)), weak_factory_(this) {
@@ -47,7 +47,7 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
     // further buffer will be requested. kAborted will be returned to the media
     // pipeline for every subsequent DemuxerStream::Read() attempt.
     remote_.set_disconnect_handler(
-        base::BindOnce(&CastStreamingDemuxerStream::OnMojoDisconnect,
+        base::BindOnce(&FrameInjectingDemuxerStream::OnMojoDisconnect,
                        weak_factory_.GetWeakPtr()));
 
     // Set the new config, but then un-set |pending_config_change_| as the
@@ -57,7 +57,7 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
     pending_config_change_ = false;
   }
 
-  ~CastStreamingDemuxerStream() override {
+  ~FrameInjectingDemuxerStream() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
@@ -122,7 +122,7 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
     DCHECK(remote_);
 
     remote_->GetBuffer(
-        base::BindOnce(&CastStreamingDemuxerStream::OnGetBufferDone,
+        base::BindOnce(&FrameInjectingDemuxerStream::OnGetBufferDone,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -154,7 +154,7 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
     decoder_config_ = std::move(data_stream_info->decoder_config);
     if (!buffer_reader_) {
       buffer_reader_ = std::make_unique<DecoderBufferReader>(
-          base::BindRepeating(&CastStreamingDemuxerStream::OnBufferReady,
+          base::BindRepeating(&FrameInjectingDemuxerStream::OnBufferReady,
                               weak_factory_.GetWeakPtr()),
           std::move(data_stream_info->data_pipe));
     } else {
@@ -228,9 +228,9 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
 
   void EnableBitstreamConverter() final {
     is_bitstream_enable_in_progress_ = true;
-    remote_->EnableBitstreamConverter(
-        base::BindOnce(&CastStreamingDemuxerStream::OnBitstreamConverterEnabled,
-                       weak_factory_.GetWeakPtr()));
+    remote_->EnableBitstreamConverter(base::BindOnce(
+        &FrameInjectingDemuxerStream::OnBitstreamConverterEnabled,
+        weak_factory_.GetWeakPtr()));
   }
 
   media::StreamLiveness liveness() const final {
@@ -261,18 +261,18 @@ class CastStreamingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<CastStreamingDemuxerStream> weak_factory_;
+  base::WeakPtrFactory<FrameInjectingDemuxerStream> weak_factory_;
 };
 
 }  // namespace
 
-class CastStreamingAudioDemuxerStream final
-    : public CastStreamingDemuxerStream<mojom::AudioBufferRequester> {
+class FrameInjectingAudioDemuxerStream final
+    : public FrameInjectingDemuxerStream<mojom::AudioBufferRequester> {
  public:
-  using CastStreamingDemuxerStream<
-      mojom::AudioBufferRequester>::CastStreamingDemuxerStream;
+  using FrameInjectingDemuxerStream<
+      mojom::AudioBufferRequester>::FrameInjectingDemuxerStream;
 
-  ~CastStreamingAudioDemuxerStream() override = default;
+  ~FrameInjectingAudioDemuxerStream() override = default;
 
  private:
   // DemuxerStream remainder of implementation.
@@ -284,13 +284,13 @@ class CastStreamingAudioDemuxerStream final
   Type type() const final { return Type::AUDIO; }
 };
 
-class CastStreamingVideoDemuxerStream final
-    : public CastStreamingDemuxerStream<mojom::VideoBufferRequester> {
+class FrameInjectingVideoDemuxerStream final
+    : public FrameInjectingDemuxerStream<mojom::VideoBufferRequester> {
  public:
-  using CastStreamingDemuxerStream<
-      mojom::VideoBufferRequester>::CastStreamingDemuxerStream;
+  using FrameInjectingDemuxerStream<
+      mojom::VideoBufferRequester>::FrameInjectingDemuxerStream;
 
-  ~CastStreamingVideoDemuxerStream() override = default;
+  ~FrameInjectingVideoDemuxerStream() override = default;
 
  private:
   // DemuxerStream remainder of implementation.
@@ -302,7 +302,7 @@ class CastStreamingVideoDemuxerStream final
   Type type() const final { return Type::VIDEO; }
 };
 
-CastStreamingDemuxer::CastStreamingDemuxer(
+FrameInjectingDemuxer::FrameInjectingDemuxer(
     DemuxerConnector* demuxer_connector,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : media_task_runner_(std::move(media_task_runner)),
@@ -313,7 +313,7 @@ CastStreamingDemuxer::CastStreamingDemuxer(
   DCHECK(demuxer_connector_);
 }
 
-CastStreamingDemuxer::~CastStreamingDemuxer() {
+FrameInjectingDemuxer::~FrameInjectingDemuxer() {
   DVLOG(1) << __func__;
 
   if (was_initialization_successful_) {
@@ -323,7 +323,7 @@ CastStreamingDemuxer::~CastStreamingDemuxer() {
   }
 }
 
-void CastStreamingDemuxer::OnStreamsInitialized(
+void FrameInjectingDemuxer::OnStreamsInitialized(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
@@ -331,12 +331,12 @@ void CastStreamingDemuxer::OnStreamsInitialized(
 
   media_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CastStreamingDemuxer::OnStreamsInitializedOnMediaThread,
+      base::BindOnce(&FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread,
                      weak_factory_.GetWeakPtr(), std::move(audio_stream_info),
                      std::move(video_stream_info)));
 }
 
-void CastStreamingDemuxer::OnStreamsInitializedOnMediaThread(
+void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
@@ -349,12 +349,12 @@ void CastStreamingDemuxer::OnStreamsInitializedOnMediaThread(
   }
 
   if (audio_stream_info) {
-    audio_stream_ = std::make_unique<CastStreamingAudioDemuxerStream>(
+    audio_stream_ = std::make_unique<FrameInjectingAudioDemuxerStream>(
         std::move(audio_stream_info->buffer_requester),
         std::move(audio_stream_info->stream_initialization_info));
   }
   if (video_stream_info) {
-    video_stream_ = std::make_unique<CastStreamingVideoDemuxerStream>(
+    video_stream_ = std::make_unique<FrameInjectingVideoDemuxerStream>(
         std::move(video_stream_info->buffer_requester),
         std::move(video_stream_info->stream_initialization_info));
   }
@@ -363,7 +363,7 @@ void CastStreamingDemuxer::OnStreamsInitializedOnMediaThread(
   std::move(initialized_cb_).Run(media::PIPELINE_OK);
 }
 
-std::vector<media::DemuxerStream*> CastStreamingDemuxer::GetAllStreams() {
+std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
@@ -375,12 +375,13 @@ std::vector<media::DemuxerStream*> CastStreamingDemuxer::GetAllStreams() {
   return streams;
 }
 
-std::string CastStreamingDemuxer::GetDisplayName() const {
-  return "CastStreamingDemuxer";
+std::string FrameInjectingDemuxer::GetDisplayName() const {
+  return "FrameInjectingDemuxer";
 }
 
-void CastStreamingDemuxer::Initialize(media::DemuxerHost* host,
-                                      media::PipelineStatusCallback status_cb) {
+void FrameInjectingDemuxer::Initialize(
+    media::DemuxerHost* host,
+    media::PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   host_ = host;
@@ -395,7 +396,7 @@ void CastStreamingDemuxer::Initialize(media::DemuxerHost* host,
                                 base::Unretained(this)));
 }
 
-void CastStreamingDemuxer::AbortPendingReads() {
+void FrameInjectingDemuxer::AbortPendingReads() {
   DVLOG(2) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
@@ -406,18 +407,18 @@ void CastStreamingDemuxer::AbortPendingReads() {
 }
 
 // Not supported.
-void CastStreamingDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
+void FrameInjectingDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
 
 // Not supported.
-void CastStreamingDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
+void FrameInjectingDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
 
 // Not supported.
-void CastStreamingDemuxer::Seek(base::TimeDelta time,
-                                media::PipelineStatusCallback status_cb) {
+void FrameInjectingDemuxer::Seek(base::TimeDelta time,
+                                 media::PipelineStatusCallback status_cb) {
   std::move(status_cb).Run(media::PIPELINE_OK);
 }
 
-void CastStreamingDemuxer::Stop() {
+void FrameInjectingDemuxer::Stop() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
@@ -427,28 +428,28 @@ void CastStreamingDemuxer::Stop() {
     video_stream_.reset();
 }
 
-base::TimeDelta CastStreamingDemuxer::GetStartTime() const {
+base::TimeDelta FrameInjectingDemuxer::GetStartTime() const {
   return base::TimeDelta();
 }
 
 // Not supported.
-base::Time CastStreamingDemuxer::GetTimelineOffset() const {
+base::Time FrameInjectingDemuxer::GetTimelineOffset() const {
   return base::Time();
 }
 
 // Not supported.
-int64_t CastStreamingDemuxer::GetMemoryUsage() const {
+int64_t FrameInjectingDemuxer::GetMemoryUsage() const {
   return 0;
 }
 
 absl::optional<media::container_names::MediaContainerName>
-CastStreamingDemuxer::GetContainerForMetrics() const {
+FrameInjectingDemuxer::GetContainerForMetrics() const {
   // Cast Streaming frames have no container.
   return absl::nullopt;
 }
 
 // Not supported.
-void CastStreamingDemuxer::OnEnabledAudioTracksChanged(
+void FrameInjectingDemuxer::OnEnabledAudioTracksChanged(
     const std::vector<media::MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
@@ -458,7 +459,7 @@ void CastStreamingDemuxer::OnEnabledAudioTracksChanged(
 }
 
 // Not supported.
-void CastStreamingDemuxer::OnSelectedVideoTrackChanged(
+void FrameInjectingDemuxer::OnSelectedVideoTrackChanged(
     const std::vector<media::MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {

@@ -13,15 +13,15 @@
 
 namespace cast_streaming {
 
-class CastStreamingDemuxer;
+class FrameInjectingDemuxer;
 
 // Handles initiating the streaming session between the browser-process sender
 // and renderer-process receiver of the Cast Streaming Session. Specifically,
 // this class manages the DemuxerConnector's lifetime in the renderer
 // process. The lifetime of this object should match that of |render_frame| with
-// which it is associated, and is guaranteed to outlive the CastStreamingDemuxer
-// that uses it, as the RenderFrame destruction will have triggered its
-// destruction first.
+// which it is associated, and is guaranteed to outlive the
+// FrameInjectingDemuxer that uses it, as the RenderFrame destruction will have
+// triggered its destruction first.
 class DemuxerConnector final : public mojom::DemuxerConnector {
  public:
   DemuxerConnector();
@@ -32,7 +32,7 @@ class DemuxerConnector final : public mojom::DemuxerConnector {
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> connector);
 
-  void SetDemuxer(CastStreamingDemuxer* demuxer);
+  void SetDemuxer(FrameInjectingDemuxer* demuxer);
   void OnDemuxerDestroyed();
 
   // Returns true if a Mojo connection is active.
@@ -53,7 +53,7 @@ class DemuxerConnector final : public mojom::DemuxerConnector {
       this};
 
   EnableReceiverCallback enable_receiver_callback_;
-  CastStreamingDemuxer* demuxer_ = nullptr;
+  FrameInjectingDemuxer* demuxer_ = nullptr;
   bool is_demuxer_initialized_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
