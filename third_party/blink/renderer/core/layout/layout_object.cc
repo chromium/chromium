@@ -1188,11 +1188,18 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     if (layout_box->ContainingBlock()->IsLayoutGridIncludingNG())
       return false;
 
-    // In LayoutNG, if box has any OOF descendants, they are propagated to
-    // parent. Therefore, we must mark parent chain for layout.
     if (const NGLayoutResult* layout_result =
             layout_box->GetCachedLayoutResult()) {
-      if (layout_result->PhysicalFragment().HasOutOfFlowPositionedDescendants())
+      const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+
+      // In LayoutNG, if box has any OOF descendants, they are propagated to
+      // parent. Therefore, we must mark parent chain for layout.
+      if (fragment.HasOutOfFlowPositionedDescendants())
+        return false;
+
+      // Anchor queries should be propagated across the layout boundaries, even
+      // when `contain: strict` is explicitly set.
+      if (fragment.HasAnchorQuery())
         return false;
     }
 
