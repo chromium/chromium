@@ -1777,6 +1777,7 @@ fyi_coverage_builder(
     goma_backend = None,
     reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    export_coverage_to_zoss = True,
 )
 
 fyi_ios_builder(
