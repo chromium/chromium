@@ -15,7 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"

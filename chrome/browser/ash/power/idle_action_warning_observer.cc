@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/power/idle_action_warning_dialog_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_service.h"
 

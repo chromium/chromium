@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 
 namespace {
 

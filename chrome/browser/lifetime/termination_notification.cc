@@ -16,9 +16,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/login/session/session_termination_manager.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/power/power_policy_controller.h"
 #endif
 

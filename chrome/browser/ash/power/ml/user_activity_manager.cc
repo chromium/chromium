@@ -25,8 +25,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/constants/devicetype.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/aura/client/aura_constants.h"
 

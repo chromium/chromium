@@ -23,8 +23,8 @@ component("userspace_swap") {
   deps = [
     ":mojom",
     "//base",
+    "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/memory",
-    "//chromeos/dbus",
     "//chromeos/dbus/constants",
     "//components/memory_pressure",
     "//crypto",

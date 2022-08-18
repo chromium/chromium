@@ -18,12 +18,12 @@ static_library("backend") {
   deps = [
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
+    "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/update_engine:proto",
     "//chromeos/ash/components/network",
-    "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/mojom:mojom",

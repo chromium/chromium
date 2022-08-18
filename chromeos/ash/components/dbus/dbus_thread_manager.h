@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DBUS_THREAD_MANAGER_H_
-#define CHROMEOS_DBUS_DBUS_THREAD_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DBUS_THREAD_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_DBUS_THREAD_MANAGER_H_
 
 #include "base/component_export.h"
 #include "chromeos/dbus/init/dbus_thread_manager_base.h"
@@ -11,7 +11,7 @@
 namespace chromeos {
 
 // Ash implementation of DBusThreadManagerBase.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
+class COMPONENT_EXPORT(ASH_DBUS) DBusThreadManager
     : public DBusThreadManagerBase {
  public:
   // Sets the global instance. Must be called before any calls to Get().
@@ -43,4 +43,4 @@ namespace ash {
 using ::chromeos::DBusThreadManager;
 }
 
-#endif  // CHROMEOS_DBUS_DBUS_THREAD_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DBUS_THREAD_MANAGER_H_

@@ -52,9 +52,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/cxx17_backports.h"
 #include "base/files/important_file_writer.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
 

@@ -98,10 +98,10 @@ source_set("api") {
 
     deps += [
       "//chromeos",
+      "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/upstart",
-      "//chromeos/dbus",
       "//chromeos/login/login_state",
       "//chromeos/services/media_perception/public/mojom",
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",

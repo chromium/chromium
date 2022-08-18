@@ -17,8 +17,8 @@ source_set("diagnostics") {
   ]
 
   deps = [
+    "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/debug_daemon",
-    "//chromeos/dbus",
     "//extensions/common",
     "//extensions/common/api",
   ]
