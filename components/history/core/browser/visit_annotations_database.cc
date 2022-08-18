@@ -483,6 +483,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
 }
 
 void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
+  DCHECK_GT(visit_id, 0);
   sql::Statement statement;
 
   statement.Assign(GetDB().GetCachedStatement(
@@ -551,7 +552,7 @@ void VisitAnnotationsDatabase::AddClusters(
       continue;
     }
     const int64_t cluster_id = GetDB().GetLastInsertRowId();
-    DCHECK(cluster_id);
+    DCHECK_GT(cluster_id, 0);
 
     // Insert each visit into 'clusters_and_visits'.
     base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
