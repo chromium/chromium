@@ -6,20 +6,25 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/promos_manager/constants.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @implementation Promo
 
-- (instancetype)init {
-  return [self initWithImpressionLimits:nil];
+- (instancetype)initWithIdentifier:(promos_manager::Promo)identifier {
+  return [self initWithIdentifier:identifier andImpressionLimits:nil];
 }
 
-- (instancetype)initWithImpressionLimits:
-    (NSArray<ImpressionLimit*>*)impressionLimits {
-  if (self = [super init])
+- (instancetype)initWithIdentifier:(promos_manager::Promo)identifier
+               andImpressionLimits:
+                   (NSArray<ImpressionLimit*>*)impressionLimits {
+  if (self = [super init]) {
+    _identifier = identifier;
     _impressionLimits = impressionLimits;
+  }
 
   return self;
 }

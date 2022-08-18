@@ -14,6 +14,7 @@ source_set("promos_manager") {
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":constants",
     ":features",
     "//base",
     "//components/prefs",
