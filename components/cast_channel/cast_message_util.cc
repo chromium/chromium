@@ -631,7 +631,7 @@ LaunchSessionResponse GetLaunchSessionResponse(
     return LaunchSessionResponse();
 
   response.result = LaunchSessionResponse::Result::kOk;
-  response.receiver_status = base::Value(receiver_status->Clone());
+  response.receiver_status = receiver_status->Clone();
   return response;
 }
 

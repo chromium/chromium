@@ -13,6 +13,7 @@
 
 using base::test::IsJson;
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 
 namespace media_router {
 
@@ -20,7 +21,7 @@ namespace {
 
 static constexpr char kReceiverIdToken[] = "token";
 
-absl::optional<base::Value> ReceiverStatus() {
+base::Value::Dict ReceiverStatus() {
   std::string receiver_status_str = R"({
       "applications": [{
         "appId": "ABCDEFGH",
@@ -34,13 +35,13 @@ absl::optional<base::Value> ReceiverStatus() {
         "transportId":"transportId"
       }]
   })";
-  return base::JSONReader::Read(receiver_status_str);
+  return ParseJsonDict(receiver_status_str);
 }
 
 // appId: native app ID
 // universalAppId: web receiver app ID, which is appId in ReceiverStatus without
 // universalAppId or appType
-absl::optional<base::Value> ReceiverStatusWithUniversalAppId() {
+base::Value::Dict ReceiverStatusWithUniversalAppId() {
   std::string receiver_status_str = R"({
       "applications": [{
         "appId": "AD9AF8E0",
@@ -56,13 +57,13 @@ absl::optional<base::Value> ReceiverStatusWithUniversalAppId() {
         "appType": "ANDROID_TV"
       }]
   })";
-  return base::JSONReader::Read(receiver_status_str);
+  return ParseJsonDict(receiver_status_str);
 }
 
 void ExpectNoCastSession(const MediaSinkInternal& sink,
                          const std::string& receiver_status_str,
                          const std::string& reason) {
-  auto session = CastSession::From(sink, ParseJson(receiver_status_str));
+  auto session = CastSession::From(sink, ParseJsonDict(receiver_status_str));
   EXPECT_FALSE(session) << "Shouldn't have created session because of "
                         << reason;
 }
@@ -233,7 +234,7 @@ TEST(CastInternalMessageUtilTest, CastSessionFromReceiverStatusNoStatusText) {
         "transportId":"transportId"
       }]
   })";
-  auto session = CastSession::From(sink, ParseJson(receiver_status_str));
+  auto session = CastSession::From(sink, ParseJsonDict(receiver_status_str));
   ASSERT_TRUE(session);
   EXPECT_EQ("sessionId", session->session_id());
   EXPECT_EQ("ABCDEFGH", session->app_id());
@@ -369,9 +370,7 @@ TEST(CastInternalMessageUtilTest, CreateReceiverActionStopMessage) {
 TEST(CastInternalMessageUtilTest, CreateNewSessionMessage) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  absl::optional<base::Value> receiver_status = ReceiverStatus();
-  ASSERT_TRUE(receiver_status);
-  auto session = CastSession::From(sink, receiver_status.value());
+  auto session = CastSession::From(sink, ReceiverStatus());
   ASSERT_TRUE(session);
 
   auto message =
@@ -409,10 +408,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessage) {
 TEST(CastInternalMessageUtilTest, CreateNewSessionMessageWithUniversalAppId) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  absl::optional<base::Value> receiver_status =
-      ReceiverStatusWithUniversalAppId();
-  ASSERT_TRUE(receiver_status);
-  auto session = CastSession::From(sink, receiver_status.value());
+  auto session = CastSession::From(sink, ReceiverStatusWithUniversalAppId());
   ASSERT_TRUE(session);
 
   auto message =
@@ -452,9 +448,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessageWithUniversalAppId) {
 TEST(CastInternalMessageUtilTest, CreateUpdateSessionMessage) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  absl::optional<base::Value> receiver_status = ReceiverStatus();
-  ASSERT_TRUE(receiver_status);
-  auto session = CastSession::From(sink, receiver_status.value());
+  auto session = CastSession::From(sink, ReceiverStatus());
   ASSERT_TRUE(session);
 
   auto message =

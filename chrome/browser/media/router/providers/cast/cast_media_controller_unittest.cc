@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
@@ -134,7 +135,7 @@ mojom::MediaStatusPtr CreateSampleMediaStatus() {
 std::unique_ptr<CastSession> CreateSampleSession() {
   MediaSinkInternal sink{CreateCastSink("sinkId123", "name"),
                          CastSinkExtraData{}};
-  absl::optional<Value> receiver_status = base::JSONReader::Read(R"({
+  base::Value::Dict receiver_status = base::test::ParseJsonDict(R"({
     "applications": [{
       "appId": "ABCD1234",
       "displayName": "My App",
@@ -149,7 +150,7 @@ std::unique_ptr<CastSession> CreateSampleSession() {
       "stepInterval": 0.1
     }
   })");
-  return CastSession::From(sink, receiver_status.value());
+  return CastSession::From(sink, receiver_status);
 }
 
 }  // namespace

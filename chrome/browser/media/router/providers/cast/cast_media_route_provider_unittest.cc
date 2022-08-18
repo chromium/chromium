@@ -42,8 +42,8 @@ static constexpr char kOrigin[] = "https://www.youtube.com";
 static constexpr int kFrameTreeNodeId = 1;
 static constexpr base::TimeDelta kRouteTimeout = base::Seconds(30);
 
-base::Value MakeReceiverStatus() {
-  return base::test::ParseJson(R"({
+base::Value::Dict MakeReceiverStatus() {
+  return base::test::ParseJsonDict(R"({
         "applications": [{
           "appId": "ABCDEFGH",
           "displayName": "theDisplayName",

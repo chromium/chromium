@@ -315,7 +315,7 @@ struct LaunchSessionResponse {
 
   Result result = Result::kUnknown;
   // Populated if |result| is |kOk|.
-  absl::optional<base::Value> receiver_status;
+  absl::optional<base::Value::Dict> receiver_status;
   // Populated if |result| is |kError|.
   std::string error_msg;
 };

@@ -436,13 +436,6 @@ std::unique_ptr<CastSession> CastSession::From(
   return session;
 }
 
-// static
-std::unique_ptr<CastSession> CastSession::From(
-    const MediaSinkInternal& sink,
-    const base::Value& receiver_status) {
-  return From(sink, receiver_status.GetDict());
-}
-
 CastSession::CastSession() = default;
 CastSession::~CastSession() = default;
 

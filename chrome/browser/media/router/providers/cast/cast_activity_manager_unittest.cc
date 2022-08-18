@@ -45,6 +45,7 @@
 
 using base::test::IsJson;
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using testing::_;
 using testing::AnyNumber;
 using testing::ByRef;
@@ -88,15 +89,15 @@ std::string MakeSourceId(const std::string& app_id = kAppId1,
       {"cast:", app_id, "?clientId=", client_id, "&appParams=", app_params});
 }
 
-base::Value MakeReceiverStatus(const std::string& app_id,
-                               bool update_display_name = false) {
-  return ParseJson(R"({
+base::Value::Dict MakeReceiverStatus(const std::string& app_id,
+                                     bool update_display_name = false) {
+  return ParseJsonDict(R"({
         "applications": [{
           "appId": ")" +
-                   app_id +
-                   R"(",
+                       app_id +
+                       R"(",
           "displayName": "theDisplayName)" +
-                   std::string(update_display_name ? "1" : "2") + R"(",
+                       std::string(update_display_name ? "1" : "2") + R"(",
           "namespaces": [
             {"name": "urn:x-cast:com.google.cast.media"},
             {"name": "urn:x-cast:com.google.foo"},

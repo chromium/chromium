@@ -152,11 +152,6 @@ class CastSession {
       const MediaSinkInternal& sink,
       const base::Value::Dict& receiver_status);
 
-  // Non-type-safe deprecated version of above method, only used in tests.
-  // TODO(mmenke): Remove this.
-  static std::unique_ptr<CastSession> From(const MediaSinkInternal& sink,
-                                           const base::Value& receiver_status);
-
   CastSession();
   ~CastSession();
 

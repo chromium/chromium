@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using testing::NiceMock;
 
 namespace media_router {
@@ -73,7 +73,8 @@ void CastActivityTestBase::SetUp() {
 
   CastActivity::SetClientFactoryForTest(this);
 
-  std::unique_ptr<CastSession> session = CastSession::From(sink_, ParseJson(R"({
+  std::unique_ptr<CastSession> session =
+      CastSession::From(sink_, ParseJsonDict(R"({
         "applications": [{
           "appId": "theAppId",
           "displayName": "App display name",
