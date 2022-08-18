@@ -114,32 +114,49 @@ SecurityStatePageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SecurityStatePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Continue observing but keep silence until the page is activated to be the
+  // primary page.
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SecurityStatePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  // Only navigations committed to the main frame are monitored.
-  DCHECK(navigation_handle->IsInMainFrame());
+  // Only navigations committed to outermost frames are monitored.
+  DCHECK(navigation_handle->IsInPrimaryMainFrame() ||
+         navigation_handle->IsInPrerenderedMainFrame());
 
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  DCHECK(web_contents);
-  Observe(web_contents);
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    // Postpone initialization to activation.
+    return CONTINUE_OBSERVING;
+  }
 
-  // Gather initial security level after all server redirects have been
-  // resolved.
-  security_state_tab_helper_ =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  initial_security_level_ = security_state_tab_helper_->GetSecurityLevel();
-  current_security_level_ = initial_security_level_;
-
-  base::UmaHistogramEnumeration(kSecurityLevelOnCommit, initial_security_level_,
-                                security_state::SECURITY_LEVEL_COUNT);
-
+  RecordSecurityLevelHistogram(navigation_handle);
   return CONTINUE_OBSERVING;
+}
+
+void SecurityStatePageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  // Records current security level as the initial commit time security level.
+  // As we don't permit any navigation and cross-origin sub-frames while
+  // prerendering, this would not divert from the original security level.
+  RecordSecurityLevelHistogram(navigation_handle);
 }
 
 void SecurityStatePageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!GetDelegate().DidCommit())
     return;
+
+  // Don't record UKMs while prerendering. Also, we dispose data if the
+  // prerendered page is not used.
+  if (GetDelegate().GetPrerenderingState() ==
+      page_load_metrics::PrerenderingState::kInPrerendering) {
+    return;
+  }
 
   security_state::SafetyTipStatus safety_tip_status =
       security_state_tab_helper_->GetVisibleSecurityState()
@@ -212,7 +229,30 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
 }
 
 void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {
+  DCHECK_NE(GetDelegate().GetPrerenderingState(),
+            page_load_metrics::PrerenderingState::kInPrerendering);
   if (!security_state_tab_helper_)
     return;
+
   current_security_level_ = security_state_tab_helper_->GetSecurityLevel();
+}
+
+void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
+    content::NavigationHandle* navigation_handle) {
+  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  DCHECK(web_contents);
+  Observe(web_contents);
+
+  // Gather initial security level after all server redirects have been
+  // resolved.
+  security_state_tab_helper_ =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+
+  DCHECK_EQ(initial_security_level_, security_state::NONE);
+  DCHECK_EQ(current_security_level_, security_state::NONE);
+  initial_security_level_ = security_state_tab_helper_->GetSecurityLevel();
+  current_security_level_ = initial_security_level_;
+
+  base::UmaHistogramEnumeration(kSecurityLevelOnCommit, initial_security_level_,
+                                security_state::SECURITY_LEVEL_COUNT);
 }

@@ -646,10 +646,8 @@ IN_PROC_BROWSER_TEST_F(
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
 
-  // Prerendering doesn't invoke OnCommit method of PageLoadMetricsObserver
-  // even after activating the prerendered page. So,
-  // Security.SecurityLevel.OnCommit metric's count should not be changed.
-  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
+  // Prerendering records it on DidActivatePrerenderedPage.
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 2);
 }
 
 class SecurityStatePageLoadMetricsFencedFrameBrowserTest
