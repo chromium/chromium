@@ -159,6 +159,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kSiteABar;
     case InstallableSite::kSiteWco:
       return Site::kSiteWco;
+    case InstallableSite::kSiteIsolatedApp:
+      return Site::kSiteIsolatedApp;
   }
 }
 

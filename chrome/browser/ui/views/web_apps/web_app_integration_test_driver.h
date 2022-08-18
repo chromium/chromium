@@ -51,7 +51,14 @@ enum class Site {
   kSiteIsolatedApp,
 };
 
-enum class InstallableSite { kSiteA, kSiteAFoo, kSiteABar, kSiteB, kSiteWco };
+enum class InstallableSite {
+  kSiteA,
+  kSiteAFoo,
+  kSiteABar,
+  kSiteB,
+  kSiteWco,
+  kSiteIsolatedApp
+};
 
 enum class Scope { kSiteARoot };
 

@@ -15,7 +15,7 @@ using WebAppIntegrationBrowserTestMacWinLinux = WebAppIntegrationBrowserTest;
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
     WindowModeSettingsIsNotAvailableForIsolatedAppsOnAppSettingsPage) {
-  helper_.InstallCreateShortcutWindowed(Site::kSiteIsolatedApp);
+  helper_.InstallMenuOption(InstallableSite::kSiteIsolatedApp);
   helper_.OpenAppSettingsFromChromeApps(Site::kSiteIsolatedApp);
   helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteIsolatedApp);
   helper_.CheckWindowModeIsNotVisibleInAppSettings(Site::kSiteIsolatedApp);
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckDeletePlatformShortcut) {
   helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kSiteA);
   helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
   helper_.DeletePlatformShortcut(Site::kSiteA);
   helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
@@ -67,14 +67,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckSiteHandlesFile) {
-  helper_.InstallCreateShortcutWindowed(Site::kSiteB);
+  helper_.InstallMenuOption(InstallableSite::kSiteB);
   helper_.CheckSiteHandlesFile(Site::kSiteB, "qux");
   helper_.CheckSiteHandlesFile(Site::kSiteB, "quux");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckSiteNotHandlesFile) {
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kSiteA);
   helper_.CheckSiteNotHandlesFile(Site::kSiteA, "qux");
   helper_.CheckSiteNotHandlesFile(Site::kSiteA, "quux");
 }
