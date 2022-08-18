@@ -19,6 +19,7 @@
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/gtk/input_method_context_impl_gtk.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 #include "ui/linux/linux_ui_delegate.h"
 
@@ -112,6 +113,12 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
   gtk_window_present_with_time(
       window,
       static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));
+}
+
+std::unique_ptr<ui::LinuxInputMethodContext>
+GtkUiPlatformX11::CreateInputMethodContext(
+    ui::LinuxInputMethodContextDelegate* delegate) const {
+  return std::make_unique<InputMethodContextImplGtk>(delegate);
 }
 
 }  // namespace gtk

@@ -43,4 +43,10 @@ void GtkUiPlatformStub::ShowGtkWindow(GtkWindow* window) {
   gtk_window_present(window);
 }
 
+std::unique_ptr<ui::LinuxInputMethodContext>
+GtkUiPlatformStub::CreateInputMethodContext(
+    ui::LinuxInputMethodContextDelegate* delegate) const {
+  return nullptr;
+}
+
 }  // namespace gtk
