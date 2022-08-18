@@ -3897,6 +3897,11 @@ Connect your device to power.
 Here are some things you can try to get started.
       </message>
 
+      <!-- For ScreenCaptureTrayItemView -->
+      <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
+        Your system administrator is monitoring your screens
+      </message>
+
       <!-- For CameraMicTrayItemView -->
       <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA" desc="Tooltip message shown at the systray camera indicator when a VM is using the camera">
         An application is using your camera

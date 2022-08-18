@@ -21,6 +21,7 @@ specific_include_rules = {
   ],
   "chrome_shell_delegate\.cc": [
     "+cc/input/touch_action.h",
+    "+content/public/browser/chromeos/multi_capture_service.h",
   ],
   "chrome_shelf_controller_unittest\.cc": [
     "+components/viz/test/test_gpu_service_holder.h",

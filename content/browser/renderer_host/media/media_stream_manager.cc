@@ -92,6 +92,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
+#include "content/public/browser/chromeos/multi_capture_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
@@ -808,6 +809,10 @@ class MediaStreamManager::DeviceRequest {
       state_[static_cast<int>(stream_type)] = new_state;
     }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NotifyMultiCaptureStateChanged(new_state);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     MediaObserver* media_observer =
         GetContentClient()->browser()->GetMediaObserver();
     if (!media_observer)
@@ -919,6 +924,8 @@ class MediaStreamManager::DeviceRequest {
            blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   }
 
+  void SetLabel(const std::string& label) { label_ = label; }
+
   // The render process id that requested this stream to be generated and that
   // will receive a handle to the MediaStream. This may be different from
   // MediaStreamRequest::render_process_id which in the tab capture case
@@ -991,6 +998,43 @@ class MediaStreamManager::DeviceRequest {
   PermissionController::SubscriptionId video_subscription_id;
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
+    if (!IsGetDisplayMediaSet())
+      return;
+    switch (new_state) {
+      case MediaRequestState::MEDIA_REQUEST_STATE_OPENING:
+        GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](const std::string& label, const url::Origin& origin) {
+                  content::GetMultiCaptureService().NotifyMultiCaptureStarted(
+                      label, origin);
+                },
+                label_, salt_and_origin.origin));
+        break;
+      case MediaRequestState::MEDIA_REQUEST_STATE_CLOSING:
+      case MediaRequestState::MEDIA_REQUEST_STATE_ERROR:
+        GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](const std::string& label) {
+                  content::GetMultiCaptureService().NotifyMultiCaptureStopped(
+                      label);
+                },
+                label_));
+        break;
+      case MediaRequestState::MEDIA_REQUEST_STATE_NOT_REQUESTED:
+      case MediaRequestState::MEDIA_REQUEST_STATE_REQUESTED:
+      case MediaRequestState::MEDIA_REQUEST_STATE_PENDING_APPROVAL:
+      case MediaRequestState::MEDIA_REQUEST_STATE_DONE:
+        // Nothing to do as usage indicators only need to shown while the
+        // capture is active.
+        break;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Mark true if the MediaStreamDevice of |MediaStreamType| type should be
   // stopped but can't at the moment because of ongoing transfers.
   std::vector<bool> should_stop_in_future_;
@@ -1007,6 +1051,7 @@ class MediaStreamManager::DeviceRequest {
   MediaStreamType video_type_;
   int target_process_id_;
   int target_frame_id_;
+  std::string label_;
 };
 
 // static
@@ -1861,6 +1906,7 @@ std::string MediaStreamManager::AddRequest(
   SendLogMessage(
       base::StringPrintf("AddRequest([requester_id=%d]) => (label=%s)",
                          request->requester_id, unique_label.c_str()));
+  request->SetLabel(unique_label);
   requests_.push_back(std::make_pair(unique_label, std::move(request)));
 
   return unique_label;

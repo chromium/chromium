@@ -223,6 +223,7 @@ class WindowCycleController;
 class WindowPositioner;
 class WindowTreeHostManager;
 class ArcInputMethodBoundsTracker;
+class MultiCaptureServiceClient;
 
 enum class LoginStatus;
 
@@ -559,6 +560,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   quick_pair::Mediator* quick_pair_mediator() {
     return quick_pair_mediator_.get();
+  }
+  MultiCaptureServiceClient* multi_capture_service_client() {
+    return multi_capture_service_client_.get();
   }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
@@ -1016,6 +1020,8 @@ class ASH_EXPORT Shell : public SessionObserver,
       login_unlock_throughput_recorder_;
 
   std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
+
+  std::unique_ptr<MultiCaptureServiceClient> multi_capture_service_client_;
 
   std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;
 

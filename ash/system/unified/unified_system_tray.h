@@ -41,6 +41,7 @@ class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
+class ScreenCaptureTrayItemView;
 class SnoopingProtectionView;
 class TimeTrayItemView;
 class TrayItemView;
@@ -303,6 +304,7 @@ class ASH_EXPORT UnifiedSystemTray
   CameraMicTrayItemView* const mic_view_;
   TimeTrayItemView* const time_view_;
   PrivacyIndicatorsTrayItemView* const privacy_indicators_view_;
+  ScreenCaptureTrayItemView* const screen_capture_view_;
 
   NetworkTrayView* network_tray_view_ = nullptr;
   ChannelIndicatorView* channel_indicator_view_ = nullptr;

@@ -37,6 +37,7 @@ include_rules = [
   "+services/device/public",
   "+services/data_decoder/public",
   "+services/media_session/public",
+  "+services/video_capture/public/mojom",
   "+services/network/public",
   "+services/network/test",
   "+services/preferences/public",

@@ -83,6 +83,7 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/multi_capture/multi_capture_service_client.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
@@ -211,6 +212,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "dbus/bus.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
+#include "services/video_capture/public/mojom/multi_capture_service.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/layout_manager.h"
@@ -978,6 +980,8 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
+  multi_capture_service_client_.reset();
+
   UsbguardClient::Shutdown();
 
   // Must be shut down after detachable_base_handler_.
@@ -1310,6 +1314,13 @@ void Shell::Init(
     ambient_controller_ =
         std::make_unique<AmbientController>(std::move(fingerprint));
   }
+
+  mojo::PendingRemote<video_capture::mojom::MultiCaptureService>
+      multi_capture_service;
+  shell_delegate_->BindMultiCaptureService(
+      multi_capture_service.InitWithNewPipeAndPassReceiver());
+  multi_capture_service_client_ = std::make_unique<MultiCaptureServiceClient>(
+      std::move(multi_capture_service));
 
   // |tablet_mode_controller_| |mru_window_tracker_|, and
   // |assistant_controller_| are put before |app_list_controller_| as they are

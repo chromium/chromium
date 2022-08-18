@@ -18,6 +18,7 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/video_capture/public/mojom/multi_capture_service.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -106,6 +107,12 @@ class ASH_EXPORT ShellDelegate {
   // Binds a MultiDeviceSetup receiver for the primary profile.
   virtual void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver) = 0;
+
+  // Binds a MultiCaptureService receiver to start observing
+  // MultiCaptureStarted() and MultiCaptureStopped() events.
+  virtual void BindMultiCaptureService(
+      mojo::PendingReceiver<video_capture::mojom::MultiCaptureService>
           receiver) = 0;
 
   // Returns an interface to the Media Session service, or null if not

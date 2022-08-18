@@ -43,6 +43,7 @@
 #include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
+#include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -196,12 +197,12 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)),
       privacy_indicators_view_(features::IsPrivacyIndicatorsEnabled()
                                    ? new PrivacyIndicatorsTrayItemView(shelf)
-                                   : nullptr) {
+                                   : nullptr),
+      screen_capture_view_(new ScreenCaptureTrayItemView(shelf)) {
   if (media::ShouldEnableAutoFraming()) {
     autozoom_toast_controller_ = std::make_unique<AutozoomToastController>(
         this, std::make_unique<AutozoomToastController::Delegate>());
   }
-
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -215,6 +216,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     tray_items_.push_back(tray_item);
     AddObservedTrayItem(tray_item);
   }
+
+  AddTrayItemToContainer(screen_capture_view_);
 
   tray_items_.push_back(
       notification_icons_controller_->notification_counter_view());
