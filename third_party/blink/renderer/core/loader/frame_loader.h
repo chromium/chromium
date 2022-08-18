@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
+#include "third_party/blink/renderer/core/loader/old_document_info_for_commit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -67,7 +68,6 @@ class ProgressTracker;
 class ResourceRequest;
 class TracedValue;
 struct FrameLoadRequest;
-struct UnloadEventTimingInfo;
 struct WebNavigationInfo;
 struct WebNavigationParams;
 
@@ -257,25 +257,6 @@ class CORE_EXPORT FrameLoader final {
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
 
-  // Contains information related to the previous document in the frame, to be
-  // given to the next document that is going to commit in this FrameLoader.
-  // Note that the "previous document" might not necessarily use the same
-  // FrameLoader as this one, e.g. in case of local RenderFrame swap.
-  struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
-    explicit OldDocumentInfoForCommit(
-        scoped_refptr<SecurityOrigin> new_document_origin);
-    void Trace(Visitor* visitor) const;
-    // The unload timing info of the previous document in the frame. The new
-    // document can access this information if it is a same-origin, to be
-    // exposed through the Navigation Timing API.
-    UnloadEventTimingInfo unload_timing_info;
-    // The HistoryItem of the previous document in the frame. Some of the state
-    // from the old document's HistoryItem will be copied to the new document
-    // e.g. history.state will be copied on same-URL navigations. See also
-    // https://github.com/whatwg/html/issues/6213.
-    Member<HistoryItem> history_item;
-  };
-
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
 
@@ -367,33 +348,6 @@ class CORE_EXPORT FrameLoader final {
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.
   HashSet<String> tls_version_warning_origins_;
-
-  // Owns the OldDocumentInfoForCommit and exposes it through `info_`
-  // so that both the unloading old document and the committing new document
-  // can access and modify the value, without explicitly passing it between
-  // them on unload/commit time.
-  class ScopedOldDocumentInfoForCommitCapturer {
-    STACK_ALLOCATED();
-
-   public:
-    explicit ScopedOldDocumentInfoForCommitCapturer(
-        OldDocumentInfoForCommit* info)
-        : info_(info), previous_capturer_(current_capturer_) {
-      current_capturer_ = this;
-    }
-
-    ~ScopedOldDocumentInfoForCommitCapturer();
-
-    // The last OldDocumentInfoForCommit set for `info_` that is still in scope.
-    static OldDocumentInfoForCommit* CurrentInfo() {
-      return current_capturer_ ? current_capturer_->info_ : nullptr;
-    }
-
-   private:
-    OldDocumentInfoForCommit* info_;
-    ScopedOldDocumentInfoForCommitCapturer* previous_capturer_;
-    static ScopedOldDocumentInfoForCommitCapturer* current_capturer_;
-  };
 };
 
 }  // namespace blink

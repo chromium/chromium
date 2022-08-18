@@ -95,6 +95,8 @@ blink_core_sources_loader = [
   "navigation_policy.h",
   "no_state_prefetch_client.cc",
   "no_state_prefetch_client.h",
+  "old_document_info_for_commit.cc",
+  "old_document_info_for_commit.h",
   "ping_loader.cc",
   "ping_loader.h",
   "prefetched_signed_exchange_manager.cc",
