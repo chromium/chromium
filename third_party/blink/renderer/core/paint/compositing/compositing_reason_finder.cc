@@ -190,11 +190,15 @@ static CompositingReasons CompositingReasonsForViewportScrollEffect(
   // This ensures that the scroll_translation_for_fixed will be initialized in
   // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
   // turn ensures that a TransformNode is created (for fixed elements) in cc.
-  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled())
-    reasons |= CompositingReason::kFixedToViewport;
+  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled()) {
+    reasons |=
+        CompositingReason::kFixedPosition | CompositingReason::kFixedToViewport;
+  }
 
-  if (layout_object.StyleRef().IsFixedToBottom())
-    reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  if (layout_object.StyleRef().IsFixedToBottom()) {
+    reasons |= CompositingReason::kFixedPosition |
+               CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  }
 
   return reasons;
 }

@@ -554,9 +554,12 @@ bool GeometryMapper::MightOverlapForCompositing(
       state1.Transform().ScrollTranslationForFixed();
   const auto* fixed_scroll_translation2 =
       state2.Transform().ScrollTranslationForFixed();
-  if (fixed_scroll_translation1 == scroll_translation2) {
+  if (fixed_scroll_translation1 == scroll_translation2 &&
+      &state1.Clip() == scroll_translation2->ScrollNode()->OverflowClipNode()) {
     ExpandFixedVisualRectInScroller(*fixed_scroll_translation1, new_rect1);
-  } else if (scroll_translation1 == fixed_scroll_translation2) {
+  } else if (scroll_translation1 == fixed_scroll_translation2 &&
+             &state2.Clip() ==
+                 scroll_translation1->ScrollNode()->OverflowClipNode()) {
     ExpandFixedVisualRectInScroller(*fixed_scroll_translation2, new_rect2);
   } else {
     const auto& transform_lca =

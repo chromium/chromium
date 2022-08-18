@@ -109,7 +109,7 @@ TEST_P(CompositingReasonFinderTest, FixedElementShouldHaveCompositingReason) {
 
   ScopedFixedElementsDontOverscrollForTest fixed_elements_dont_overscroll(true);
   EXPECT_REASONS(
-      CompositingReason::kFixedToViewport,
+      CompositingReason::kFixedPosition | CompositingReason::kFixedToViewport,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
 }
 
