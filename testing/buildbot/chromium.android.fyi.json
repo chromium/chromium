@@ -164,7 +164,8 @@
       {
         "args": [
           "--log-wptreport",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
+          "--use-upstream-wpt"
         ],
         "experiment_percentage": 100,
         "isolate_name": "chrome_public_wpt",
@@ -14302,7 +14303,8 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
-          "--log-wptreport"
+          "--log-wptreport",
+          "--use-upstream-wpt"
         ],
         "experiment_percentage": 100,
         "isolate_name": "system_webview_wpt",

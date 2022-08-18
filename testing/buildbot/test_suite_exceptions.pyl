@@ -1434,6 +1434,15 @@
       },
     },
   },
+  'chrome_public_wpt': {
+    'modifications': {
+      'android-chrome-pie-x86-wpt-fyi-rel': {
+        'args': [
+          '--use-upstream-wpt',
+        ],
+      },
+    },
+  },
   'chrome_sizes': {
     'modifications': {
       'lacros-amd64-generic-chrome': {
@@ -3253,6 +3262,7 @@
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
           '--log-wptreport',
+          '--use-upstream-wpt',
         ],
       },
     },

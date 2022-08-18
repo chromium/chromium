@@ -52,9 +52,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.wptreport = None
         self._include_filename = None
         self.layout_test_results_subdir = 'layout-test-results'
+
+    @property
+    def wpt_binary(self):
         default_wpt_binary = os.path.join(
             common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
-        self.wpt_binary = os.environ.get("WPT_BINARY", default_wpt_binary)
+        return os.environ.get("WPT_BINARY", default_wpt_binary)
 
     @property
     def wpt_root_dir(self):
