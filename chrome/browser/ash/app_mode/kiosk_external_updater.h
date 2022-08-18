@@ -60,7 +60,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
   void OnMountEvent(
       disks::DiskMountManager::MountEvent event,
       MountError error_code,
-      const disks::DiskMountManager::MountPointInfo& mount_info) override;
+      const disks::DiskMountManager::MountPoint& mount_info) override;
 
   // KioskExternalUpdateValidatorDelegate overrides:
   void OnExternalUpdateUnpackSuccess(const std::string& app_id,
