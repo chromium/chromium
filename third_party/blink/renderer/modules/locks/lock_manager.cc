@@ -354,7 +354,8 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
                               mojom::blink::LockMode mode) {
   ExecutionContext* context = resolver->GetExecutionContext();
 
-  if (!resolver->GetScriptState()->ContextIsValid()) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
 
