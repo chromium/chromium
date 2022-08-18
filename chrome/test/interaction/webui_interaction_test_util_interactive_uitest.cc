@@ -363,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
 
 // This test checks that we can attach to a WebUI that is not embedded in a tab.
 IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
-                       CompareScreenshot_SecondaryWebUI) {
+                       // TODO(crbug.com/1354017): Re-enable this test
+                       DISABLED_CompareScreenshot_SecondaryWebUI) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
