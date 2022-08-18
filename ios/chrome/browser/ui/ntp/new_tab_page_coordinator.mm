@@ -997,7 +997,7 @@ namespace {
 }
 
 - (BOOL)isContentHeaderSticky {
-  return [self isFollowingFeedAvailable];
+  return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible];
 }
 
 #pragma mark - PrefObserverDelegate
