@@ -467,6 +467,9 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<int>
     kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
 
+NET_EXPORT extern const base::FeatureParam<bool>
+    kOptimizeNetworkBuffersInputStreamCheckAvailable;
+
 // Enable the Storage Access API. https://crbug.com/989663.
 NET_EXPORT extern const base::Feature kStorageAccessAPI;
 

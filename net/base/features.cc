@@ -326,6 +326,9 @@ const base::FeatureParam<int>
         &kOptimizeNetworkBuffers, "filter_source_stream_buffer_size",
         32 * 1024};
 
+const base::FeatureParam<bool> kOptimizeNetworkBuffersInputStreamCheckAvailable{
+    &kOptimizeNetworkBuffers, "input_stream_check_available", true};
+
 const base::Feature kStorageAccessAPI{"StorageAccessAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr int kStorageAccessAPIDefaultImplicitGrantLimit = 5;
