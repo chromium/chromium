@@ -145,7 +145,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // be reused.
   static std::unique_ptr<SimpleURLLoader> Create(
       std::unique_ptr<ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      base::Location created_from = base::Location::Current());
 
   // The TickClock to use to configure a timer that tracks if |timeout_duration|
   // has been reached or not. This can be removed once https://crbug.com/905412
