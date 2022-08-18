@@ -27,12 +27,15 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -57,7 +60,7 @@ constexpr base::TimeDelta kNetworkTimeout = base::Seconds(30);
 constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
 
 signin::ScopeSet GetAuthScopes() {
-  return {"https://www.googleapis.com/auth/googlenow"};
+  return {GaiaConstants::kFeedOAuth2Scope};
 }
 
 GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
@@ -214,11 +217,13 @@ class FeedNetworkImpl::NetworkFetch {
 
  private:
   void StartAccessTokenFetch() {
+    DVLOG(1) << "Feed access token fetch started.";
     token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
         "feed", identity_manager_, GetAuthScopes(),
         base::BindOnce(&NetworkFetch::AccessTokenFetchFinished, GetWeakPtr(),
                        base::TimeTicks::Now()),
-        signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+        signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+        GetConsentLevelNeededForPersonalizedFeed());
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NetworkFetch::AccessTokenTimeout, GetWeakPtr()),
@@ -239,6 +244,7 @@ class FeedNetworkImpl::NetworkFetch {
   void AccessTokenTimeout() {
     if (access_token_fetch_complete_)
       return;
+    DVLOG(1) << "Feed access token fetch timed out.";
     access_token_fetch_complete_ = true;
     std::move(done_callback_)
         .Run(MakeFailureResponse(net::ERR_TIMED_OUT,
@@ -251,6 +257,7 @@ class FeedNetworkImpl::NetworkFetch {
     DCHECK(!account_info_.IsEmpty());
     if (access_token_fetch_complete_)
       return;
+    DVLOG(1) << "Feed access token fetch complete.";
     access_token_fetch_complete_ = true;
     UMA_HISTOGRAM_ENUMERATION(
         "ContentSuggestions.Feed.Network.TokenFetchStatus", error.state(),
@@ -264,6 +271,7 @@ class FeedNetworkImpl::NetworkFetch {
 
     // Abort if the signed-in user doesn't match.
     if (delegate_->GetAccountInfo() != account_info_) {
+      DVLOG(1) << "Feed fetch failed due to account mismatch.";
       std::move(done_callback_)
           .Run(
               MakeFailureResponse(net::ERR_INVALID_ARGUMENT,
@@ -275,6 +283,7 @@ class FeedNetworkImpl::NetworkFetch {
   }
 
   void StartLoader() {
+    DVLOG(1) << "Feed fetch started.";
     loader_only_start_ticks_ = base::TimeTicks::Now();
     simple_loader_ = MakeLoader();
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

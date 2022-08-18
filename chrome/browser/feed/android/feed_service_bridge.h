@@ -24,6 +24,7 @@ class FeedServiceBridge {
   static bool IsEnabled();
   static void PrefetchImage(const GURL& url);
   static uint64_t GetReliabilityLoggingId();
+  static bool IsSignedIn();
 };
 
 class JavaUnreadContentObserver : public UnreadContentObserver {

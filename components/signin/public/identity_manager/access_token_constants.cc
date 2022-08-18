@@ -64,6 +64,11 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required to fetch the ManagedAccounsSigninRestriction policy.
       GaiaConstants::kSecureConnectOAuth2Scope,
 
+      // Required for requesting Discover feed with personalization without
+      // sync consent. Sync consent isn't required for personalization but can
+      // improve suggestions.
+      GaiaConstants::kFeedOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,

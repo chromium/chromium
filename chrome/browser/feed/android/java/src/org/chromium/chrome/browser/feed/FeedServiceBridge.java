@@ -170,6 +170,14 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().reportOtherUserAction(streamKind, userAction);
     }
 
+    /**
+     * @return True if the user is signed in for feed purposes (i.e. if a personalized feed can be
+     *         requested).
+     */
+    public static boolean isSignedIn() {
+        return FeedServiceBridgeJni.get().isSignedIn();
+    }
+
     /** Observes whether or not the Feed stream contains unread content */
     public static class UnreadContentObserver {
         private long mNativePtr;
@@ -214,6 +222,7 @@ public final class FeedServiceBridge {
         void setContentOrderForWebFeed(@ContentOrder int contentOrder);
 
         long addUnreadContentObserver(Object object, boolean isWebFeed);
+        boolean isSignedIn();
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
         void destroy(long nativePtr);
     }

@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
@@ -25,9 +26,12 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_response_headers.h"
@@ -45,8 +49,14 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/sync/base/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace feed {
 namespace {
+
+constexpr char kEmail[] = "example@gmail.com";
 
 MATCHER_P(EqualsProto,
           message,
@@ -99,6 +109,26 @@ feedwire::UploadActionsResponse GetTestActionResponse() {
   return response;
 }
 
+void SetConsentLevelNeededForFeedPersonalization(
+    base::test::ScopedFeatureList& feature_list,
+    signin::ConsentLevel consent_level) {
+  std::vector<base::Feature> enable_features, disable_features;
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      enable_features.push_back(kPersonalizeFeedNonSyncUsers);
+#if BUILDFLAG(IS_ANDROID)
+      enable_features.push_back(syncer::kSyncAndroidPromosWithTitle);
+      enable_features.push_back(syncer::kSyncAndroidPromosWithAlternativeTitle);
+#endif  // BUILDFLAG(IS_ANDROID)
+      break;
+    case signin::ConsentLevel::kSync:
+      disable_features.push_back(kPersonalizeFeedNonSyncUsers);
+      break;
+  }
+  feature_list.InitWithFeatures(std::move(enable_features),
+                                std::move(disable_features));
+}
+
 class TestDelegate : public FeedNetworkImpl::Delegate {
  public:
   explicit TestDelegate(signin::IdentityTestEnvironment* identity_test_env)
@@ -108,7 +138,7 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
   AccountInfo GetAccountInfo() override {
     return AccountInfo{
         identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kSync)};
+            GetConsentLevelNeededForPersonalizedFeed())};
   }
   bool IsOffline() override { return is_offline_; }
 
@@ -118,11 +148,7 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
 
 class FeedNetworkTest : public testing::Test {
  public:
-  FeedNetworkTest() {
-    identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com",
-                                                   signin::ConsentLevel::kSync);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-  }
+  FeedNetworkTest() = default;
   FeedNetworkTest(FeedNetworkTest&) = delete;
   FeedNetworkTest& operator=(const FeedNetworkTest&) = delete;
   ~FeedNetworkTest() override = default;
@@ -136,6 +162,12 @@ class FeedNetworkTest : public testing::Test {
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
         shared_url_loader_factory_, &profile_prefs_);
+    SignIn(signin::ConsentLevel::kSync);
+  }
+
+  void SignIn(signin::ConsentLevel consent_level) {
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail, consent_level);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
   FeedNetwork* feed_network() { return feed_network_.get(); }
@@ -301,6 +333,102 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
   EXPECT_TRUE(
       resource_request.headers.GetHeader("Authorization", &authorization));
   EXPECT_EQ(authorization, "Bearer access_token");
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
+}
+
+// These tests need ClearPrimaryAccount() which isn't supported by ChromeOS.
+// RevokeSyncConsent() sometimes clears the account rather than just changing
+// the consent level so we may as well sign out and sign back in ourselves.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSignin) {
+  // Request should be signed in if account consent level is kSignin and consent
+  // level needed for personalization is kSignin.
+  identity_env()->ClearPrimaryAccount();
+  SignIn(signin::ConsentLevel::kSignin);
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSignin);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en",
+      resource_request.url);
+  EXPECT_EQ("GET", resource_request.method);
+  EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
+
+  // Verify that it's a signed-in request.
+  std::string authorization;
+  EXPECT_TRUE(
+      resource_request.headers.GetHeader("Authorization", &authorization));
+  EXPECT_EQ(authorization, "Bearer access_token");
+
+  histogram().ExpectBucketCount(
+      "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
+}
+
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin_NeedSync) {
+  // Request should be "signed out" if account consent level is kSignin but
+  // consent level needed for personalization is kSync.
+  identity_env()->ClearPrimaryAccount();
+  SignIn(signin::ConsentLevel::kSignin);
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSync);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), AccountInfo{},
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest("", net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en&key=dummy_api_key",
+      resource_request.url);
+  EXPECT_EQ(AccountInfo{},
+            receiver.RunAndGetResult().response_info.account_info);
+  EXPECT_FALSE(resource_request.headers.HasHeader("Authorization"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync_NeedSignin) {
+  // Request should be signed in if account consent level is kSync and consent
+  // level needed for personalization is kSignin.
+  base::test::ScopedFeatureList feature_list;
+  SetConsentLevelNeededForFeedPersonalization(feature_list,
+                                              signin::ConsentLevel::kSignin);
+
+  CallbackReceiver<QueryRequestResult> receiver;
+
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), account_info(),
+                                   receiver.Bind());
+  network::ResourceRequest resource_request =
+      RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/retry/TrellisClankService/"
+      "FeedQuery?reqpld=CAHCPgQSAggB&fmt=bin&hl=en",
+      resource_request.url);
+  EXPECT_EQ("GET", resource_request.method);
+  EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
+
+  // Verify that it's a signed-in request.
+  std::string authorization;
+  EXPECT_TRUE(
+      resource_request.headers.GetHeader("Authorization", &authorization));
+  EXPECT_EQ(authorization, "Bearer access_token");
+
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
 }

@@ -9,6 +9,7 @@
 #include "components/feed/core/proto/v2/wire/stream_structure.pb.h"
 #include "components/feed/core/v2/feed_network_impl.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -116,8 +117,8 @@ std::string NtpFeedContentFetcher::NetworkDelegate::GetLanguageTag() {
 }
 
 AccountInfo NtpFeedContentFetcher::NetworkDelegate::GetAccountInfo() {
-  return AccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+  return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
+      GetConsentLevelNeededForPersonalizedFeed()));
 }
 
 bool NtpFeedContentFetcher::NetworkDelegate::IsOffline() {

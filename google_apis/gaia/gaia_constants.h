@@ -60,6 +60,7 @@ extern const char kSupportContentOAuth2Scope[];
 extern const char kPhotosModuleOAuth2Scope[];
 extern const char kPhotosModuleImageOAuth2Scope[];
 extern const char kSecureConnectOAuth2Scope[];
+extern const char kFeedOAuth2Scope[];
 
 // Used with uber auth tokens when needed.
 extern const char kGaiaSid[];

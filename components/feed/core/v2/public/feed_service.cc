@@ -29,6 +29,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -78,7 +79,8 @@ class FeedService::HistoryObserverImpl
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override {
     if (internal::ShouldClearFeed(
-            identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync),
+            identity_manager_->HasPrimaryAccount(
+                GetConsentLevelNeededForPersonalizedFeed()),
             deletion_info))
       feed_stream_->OnAllHistoryDeleted();
   }
@@ -106,8 +108,8 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
   }
 
   AccountInfo GetAccountInfo() override {
-    return AccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+    return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
+        GetConsentLevelNeededForPersonalizedFeed()));
   }
 
   bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
@@ -154,8 +156,8 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     service_delegate_->PrefetchImage(url);
   }
   AccountInfo GetAccountInfo() override {
-    return AccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+    return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
+        GetConsentLevelNeededForPersonalizedFeed()));
   }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);
@@ -180,8 +182,11 @@ class FeedService::IdentityManagerObserverImpl
     : public signin::IdentityManager::Observer {
  public:
   IdentityManagerObserverImpl(signin::IdentityManager* identity_manager,
-                              FeedStream* stream)
-      : identity_manager_(identity_manager), feed_stream_(stream) {}
+                              FeedStream* stream,
+                              FeedService::Delegate* service_delegate)
+      : identity_manager_(identity_manager),
+        feed_stream_(stream),
+        service_delegate_(service_delegate) {}
   IdentityManagerObserverImpl(const IdentityManagerObserverImpl&) = delete;
   IdentityManagerObserverImpl& operator=(const IdentityManagerObserverImpl&) =
       delete;
@@ -190,7 +195,7 @@ class FeedService::IdentityManagerObserverImpl
   }
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    switch (event.GetEventTypeFor(GetConsentLevelNeededForPersonalizedFeed())) {
       case signin::PrimaryAccountChangeEvent::Type::kSet:
         feed_stream_->OnSignedIn();
         return;
@@ -202,9 +207,12 @@ class FeedService::IdentityManagerObserverImpl
     }
   }
 
+  signin::IdentityManager& identity_manager() { return *identity_manager_; }
+
  private:
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<FeedStream> feed_stream_;
+  raw_ptr<FeedService::Delegate> service_delegate_;
 };
 
 FeedService::FeedService(std::unique_ptr<FeedStream> stream)
@@ -252,7 +260,7 @@ FeedService::FeedService(
   stream_delegate_->Initialize(static_cast<FeedStream*>(stream_.get()));
 
   identity_manager_observer_ = std::make_unique<IdentityManagerObserverImpl>(
-      identity_manager, stream_.get());
+      identity_manager, stream_.get(), delegate_.get());
   identity_manager->AddObserver(identity_manager_observer_.get());
 
   delegate_->RegisterExperiments(prefs::GetExperiments(*profile_prefs));
@@ -305,6 +313,11 @@ uint64_t FeedService::GetReliabilityLoggingId(const std::string& metrics_id,
   }
   return base::FastHash(base::StrCat(
       {metrics_id, std::string(reinterpret_cast<char*>(&salt), sizeof(salt))}));
+}
+
+bool FeedService::IsSignedIn() {
+  return identity_manager_observer_->identity_manager().HasPrimaryAccount(
+      GetConsentLevelNeededForPersonalizedFeed());
 }
 
 #if BUILDFLAG(IS_ANDROID)
