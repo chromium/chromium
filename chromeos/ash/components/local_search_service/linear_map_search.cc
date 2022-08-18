@@ -51,8 +51,8 @@ bool IsItemRelevant(const TokenizedString& query,
 
   for (const auto& tag : search_tags) {
     FuzzyTokenizedStringMatch match;
-    const double relevance = match.Relevance(
-        query, *(tag.second), true /* use_weighted_ratio */, 0.1);
+    const double relevance =
+        match.Relevance(query, *(tag.second), true /* use_weighted_ratio */);
     if (relevance >= relevance_threshold) {
       *relevance_score = relevance;
       Position position;

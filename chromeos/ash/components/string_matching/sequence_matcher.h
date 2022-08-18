@@ -11,6 +11,13 @@
 
 namespace ash::string_matching {
 
+namespace {
+
+constexpr double kNumMatchingBlocksPenalty = 0.1;
+constexpr bool kUseEditDistance = false;
+
+}  // namespace
+
 // Performs the calculation of similarity level between 2 strings. This class's
 // functionality is inspired by python's difflib.SequenceMatcher library.
 // (https://docs.python.org/2/library/difflib.html#difflib.SequenceMatcher)
@@ -39,10 +46,11 @@ class SequenceMatcher {
   // matching blocks. Value equal to 0 means no penalty. Values greater than 0
   // means heavier penalty will be applied to larger number of blocks. This is
   // only appled if `use_edit_distance` is false.
-  SequenceMatcher(const std::u16string& first_string,
-                  const std::u16string& second_string,
-                  double num_matching_blocks_penalty,
-                  bool use_edit_distance = false);
+  SequenceMatcher(
+      const std::u16string& first_string,
+      const std::u16string& second_string,
+      double num_matching_blocks_penalty = kNumMatchingBlocksPenalty,
+      bool use_edit_distance = kUseEditDistance);
 
   SequenceMatcher(const SequenceMatcher&) = delete;
   SequenceMatcher& operator=(const SequenceMatcher&) = delete;
@@ -85,7 +93,7 @@ class SequenceMatcher {
  private:
   std::u16string first_string_;
   std::u16string second_string_;
-  double num_matching_blocks_penalty_ = 0.0;
+  double num_matching_blocks_penalty_;
   double edit_distance_ratio_ = -1.0;
   double block_matching_ratio_ = -1.0;
   std::vector<Match> matching_blocks_;
