@@ -198,9 +198,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
 // Android multi-process tests are not executing the new process. This is flaky.
 #define MAYBE_PassHandleBetweenCousins DISABLED_PassHandleBetweenCousins
 #else
-// TODO(crbug.com/1287637): This test flakes frequently on various platforms,
-// with failure return-codes from RunTestClientAndGetExitCode().
-#define MAYBE_PassHandleBetweenCousins DISABLED_PassHandleBetweenCousins
+#define MAYBE_PassHandleBetweenCousins PassHandleBetweenCousins
 #endif
 TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
   const std::string message = "hello";
