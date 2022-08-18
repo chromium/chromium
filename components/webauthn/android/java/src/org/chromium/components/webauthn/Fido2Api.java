@@ -101,6 +101,26 @@ public final class Fido2Api {
     // Parcel.
     private static final int OBJECT_MAGIC = 20293;
 
+    // VAL_PARCELABLE is the tag value for a Parcelable, as used by `Parcel.writeValue`.
+    private static final int VAL_PARCELABLE = 4;
+
+    // parcelUsesLengthPrefixes will be true if `Parcel.writeValue` uses length
+    // prefixes. This was added in Android 13 and there's one case where an
+    // array is sent directly as a Parcel, rather than as a SafeParcel. We
+    // sadly need to care about this because the Parcel class supplied by the
+    // system doesn't provide any way of reading arrays that isn't coupled to
+    // ClassLoader-based assumptions.
+    private static final boolean sParcelUsesLengthPrefixes = doesParcelUseLengthPrefix();
+
+    private static boolean doesParcelUseLengthPrefix() {
+        // See comment for `sParcelUsesLengthPrefixes`.
+        Parcel parcel = Parcel.obtain();
+        parcel.writeValue(new ArrayList());
+        final boolean ret = parcel.dataPosition() == 12;
+        parcel.recycle();
+        return ret;
+    }
+
     /**
      * Serialize a browser's makeCredential request to a {@link Parcel}.
      *
@@ -1030,8 +1050,11 @@ public final class Fido2Api {
             // by the class name of that element. The class names will be
             // "com.google.android.gms.fido.fido2.api.common.DiscoverableCredentialInfo" but that
             // isn't checked here to avoid depending on the name of the class.
-            if (parcel.readInt() != 4 /* VAL_PARCELABLE */) {
+            if (parcel.readInt() != VAL_PARCELABLE) {
                 throw new IllegalArgumentException();
+            }
+            if (sParcelUsesLengthPrefixes) {
+                parcel.readInt(); // discard length prefix.
             }
             parcel.readString(); // ignore class name
             Pair<Integer, Integer> header = readHeader(parcel);

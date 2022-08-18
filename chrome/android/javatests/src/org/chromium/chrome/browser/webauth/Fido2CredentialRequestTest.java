@@ -8,7 +8,11 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.ConditionVariable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.SystemClock;
+import android.util.Base64;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -86,6 +90,8 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 public class Fido2CredentialRequestTest {
+    private static final String TAG = "Fido2CredentialRequestTest";
+
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -1331,5 +1337,82 @@ public class Fido2CredentialRequestTest {
                 Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR), mCallback.getStatus());
         Assert.assertNull(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    private static class TestParcelable implements Parcelable {
+        static final String CLASS_NAME =
+                "org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest$TestParcelable";
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(42);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void parcelWriteValue_knownFormat() {
+        // This test confirms that the format of Parcel.writeValue is as
+        // expected. Sadly, Fido2Api needs to be sensitive to this because,
+        // in one place, the interactions with the FIDO module are not just
+        // passing SafeParcelable objects around, but rather an array of
+        // them. This pulls in higher-level aspect of the Parcel class that
+        // can change from release to release. We can't just use the Parcel
+        // class because it's tightly coupled with assumptions about using
+        // ClassLoaders for deserialisation.
+
+        byte encodings[][] = new byte[2][];
+        for (int i = 0; i < encodings.length; i++) {
+            Parcel parcel = Parcel.obtain();
+            parcel.writeInt(16 /* VAL_PARCELABLEARRRAY */);
+            if (i > 0) {
+                // include length prefix
+                final int l = TestParcelable.CLASS_NAME.length();
+                parcel.writeInt(4 /* array length */ + 4 /* string length */
+                        + 2 * (l + (l % 2)) /* two bytes per char, 4-byte aligned */
+                        + 4 /* parcelable contents */);
+            }
+            parcel.writeInt(1); // array length
+            parcel.writeString(TestParcelable.CLASS_NAME);
+            parcel.writeInt(42); // Parcelable contents.
+
+            encodings[i] = parcel.marshall();
+            parcel.recycle();
+        }
+
+        Parcel parcel = Parcel.obtain();
+        parcel.writeValue(new Parcelable[] {new TestParcelable()});
+        byte[] data = parcel.marshall();
+
+        boolean ok = false;
+        for (final byte[] encoding : encodings) {
+            if (Arrays.equals(encoding, data)) {
+                ok = true;
+                break;
+            }
+        }
+
+        parcel.recycle();
+        if (ok) {
+            return;
+        }
+
+        Log.e(TAG, "Encoding was: " + Base64.encodeToString(data, Base64.NO_WRAP));
+        for (final byte[] encoding : encodings) {
+            Log.e(TAG, "    expected: " + Base64.encodeToString(encoding, Base64.NO_WRAP));
+        }
+
+        // If you're here because this test has broken. Firstly, I'm sorry.
+        // Find agl@ and demand he fix it. The logcat output from the failing
+        // test will be very helpful. If I'm unavailable then look in Android's
+        // Parcel.java to figure out what changed in writeValue(), update
+        // Fido2Api.java around the use of VAL_PARCELABLE and update this test
+        // to have a 3rd acceptable encoding that matches the changes.
+        Assert.fail("No matching encoding found");
     }
 }
