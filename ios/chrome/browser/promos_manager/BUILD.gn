@@ -62,8 +62,10 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":constants",
+    ":features",
     ":promos_manager",
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser:pref_names",

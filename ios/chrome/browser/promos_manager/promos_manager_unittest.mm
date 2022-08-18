@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/promos_manager/promos_manager_unittest.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -15,12 +17,15 @@
 #error "This file requires ARC support."
 #endif
 
-PromosManagerTest::PromosManagerTest() {}
+PromosManagerTest::PromosManagerTest() {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+}
 PromosManagerTest::~PromosManagerTest() {}
 
 void PromosManagerTest::CreatePromosManager() {
   CreatePrefs();
   promos_manager_ = std::make_unique<PromosManager>(local_state_.get());
+  promos_manager_->Init();
 }
 
 // Create pref registry for tests.
