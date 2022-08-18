@@ -376,6 +376,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     existingModel.set(
                             HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
                     existingModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+                    existingModel.set(HistoryClustersItemProperties.DIVIDER_HEIGHT_RES,
+                            R.dimen.divider_height);
                     existingModel.set(HistoryClustersItemProperties.TITLE,
                             getQuotedLabelFromRawLabel(rawLabel, result.getClusters()));
                     ListItem clusterItem = new ListItem(ItemType.CLUSTER, existingModel);
@@ -411,7 +413,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             Drawable journeysDrawable =
                     AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
-            clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, isQueryLess);
+            clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, false);
             clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                     ClusterViewAccessibilityState.COLLAPSIBLE);
             clusterModel.set(HistoryClustersItemProperties.START_ICON_VISIBILITY, View.GONE);
@@ -451,6 +453,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 .with(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE)
                                 .with(HistoryClustersItemProperties.END_BUTTON_CLICK_HANDLER,
                                         (v) -> deleteVisits(Arrays.asList(visit)))
+                                .with(HistoryClustersItemProperties.DIVIDER_VISIBLE, false)
                                 .build();
                 if (mLargeIconBridge != null) {
                     mLargeIconBridge.getLargeIconForUrl(visit.getNormalizedUrl(), mMinFaviconSize,
@@ -473,6 +476,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             if (relatedSearchesItem != null) {
                 visitsAndRelatedSearches.add(relatedSearchesItem);
             }
+
+            PropertyModel lastModelInList =
+                    visitsAndRelatedSearches.get(visitsAndRelatedSearches.size() - 1).model;
+            lastModelInList.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+            lastModelInList.set(
+                    HistoryClustersItemProperties.DIVIDER_HEIGHT_RES, R.dimen.thick_divider_height);
 
             mModelList.addAll(visitsAndRelatedSearches);
             clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
@@ -572,11 +581,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         PropertyModel clusterModel = clusterItem.model;
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                 (v) -> showCluster(clusterItem, itemsToHide));
+        clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+        clusterModel.set(
+                HistoryClustersItemProperties.DIVIDER_HEIGHT_RES, R.dimen.thick_divider_height);
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_less_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
         clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                 ClusterViewAccessibilityState.EXPANDABLE);
+        itemsToHide.get(itemsToHide.size() - 1)
+                .model.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, false);
 
         mModelList.removeRange(indexOfFirstVisit, itemsToHide.size());
         for (ListItem listItem : itemsToHide) {
@@ -593,11 +607,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         PropertyModel clusterModel = clusterItem.model;
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                 (v) -> hideCluster(clusterItem, itemsToShow));
+        clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, false);
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
         clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                 ClusterViewAccessibilityState.COLLAPSIBLE);
+        PropertyModel lastModelInList = itemsToShow.get(itemsToShow.size() - 1).model;
+        lastModelInList.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+        clusterModel.set(
+                HistoryClustersItemProperties.DIVIDER_HEIGHT_RES, R.dimen.thick_divider_height);
         int insertionIndex = mModelList.indexOf(clusterItem) + 1;
         mModelList.addAll(itemsToShow, insertionIndex);
     }

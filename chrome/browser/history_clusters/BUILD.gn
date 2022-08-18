@@ -26,6 +26,7 @@ android_resources("java_resources") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/DividerView.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryCluster.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClusterView.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",

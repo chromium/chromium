@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -790,6 +791,51 @@ public class HistoryClustersMediatorTest {
         assertEquals(ItemType.CLUSTER, item.type);
         assertEquals(
                 View.GONE, item.model.get(HistoryClustersItemProperties.START_ICON_VISIBILITY));
+    }
+
+    @Test
+    public void testDividers() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.startQuery("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        assertEquals(ItemType.CLUSTER, mModelList.get(0).type);
+        assertEquals(ItemType.VISIT, mModelList.get(1).type);
+        assertEquals(ItemType.VISIT, mModelList.get(2).type);
+        assertEquals(ItemType.RELATED_SEARCHES, mModelList.get(3).type);
+
+        PropertyModel clusterModel = mModelList.get(0).model;
+        assertFalse(clusterModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        PropertyModel visitModel = mModelList.get(1).model;
+        assertFalse(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        visitModel = mModelList.get(2).model;
+        assertFalse(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        PropertyModel relatedSearchesModel = mModelList.get(3).model;
+        assertTrue(relatedSearchesModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+
+        // Hide the first cluster.
+        clusterModel.get(HistoryClustersItemProperties.CLICK_HANDLER).onClick(null);
+
+        assertTrue(clusterModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        assertEquals(ItemType.CLUSTER, mModelList.get(1).type);
+        assertEquals(ItemType.VISIT, mModelList.get(2).type);
+
+        clusterModel = mModelList.get(1).model;
+        assertFalse(clusterModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        visitModel = mModelList.get(2).model;
+        assertTrue(visitModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+
+        // Show the first cluster again.
+        clusterModel = mModelList.get(0).model;
+        clusterModel.get(HistoryClustersItemProperties.CLICK_HANDLER).onClick(null);
+        assertFalse(clusterModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
+        assertEquals(ItemType.RELATED_SEARCHES, mModelList.get(3).type);
+
+        relatedSearchesModel = mModelList.get(3).model;
+        assertTrue(relatedSearchesModel.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {
