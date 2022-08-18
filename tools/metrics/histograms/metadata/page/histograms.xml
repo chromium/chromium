@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe.{Navigation}{Window}.Gap{Gap}.Max{MaxWindowSize}"
-    units="scorex10" expires_after="2022-09-29">
+    units="scorex10" expires_after="2023-09-29">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -771,7 +771,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming.NavigationToFirstImagePaint"
-    units="ms" expires_after="2022-08-21">
+    units="ms" expires_after="2023-08-21">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2497,7 +2497,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.{Bfcache}{Window}.Gap{Gap}.Max{MaxWindowSize}"
-    units="scorex10" expires_after="2022-09-29">
+    units="scorex10" expires_after="2023-09-29">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
