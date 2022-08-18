@@ -54,6 +54,8 @@ class PrivacyBudgetReidScoreEstimatorStandaloneTest
       blink::IdentifiableSurface::FromMetricHash(2077075229u);
   const blink::IdentifiableSurface kSurface_2 =
       blink::IdentifiableSurface::FromMetricHash(1122849309u);
+  const blink::IdentifiableSurface kSurface_3 =
+      blink::IdentifiableSurface::FromMetricHash(1122849311u);
 
   // Expected Reid surface key to be reported based on the example surfaces
   // defined (kSurface_1, kSurface_2) using the function
@@ -152,11 +154,79 @@ TEST_P(PrivacyBudgetReidScoreEstimatorStandaloneTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(PrivacyBudgetReidScoreEstimatorParameterizedTest,
-                         PrivacyBudgetReidScoreEstimatorStandaloneTest,
-                         ::testing::Values(std::make_tuple(1000000, 1, 0, true),
-                                           std::make_tuple(1, 1, 0, false),
-                                           std::make_tuple(1, 32, 1, true)));
+INSTANTIATE_TEST_SUITE_P(
+    PrivacyBudgetReidScoreEstimatorParameterizedTest,
+    PrivacyBudgetReidScoreEstimatorStandaloneTest,
+    ::testing::Values(
+        /*RandomSaltFixedTokens*/ std::make_tuple(1000000, 1, 0, true),
+        /*FixedSaltRandomTokens*/ std::make_tuple(1, 1, 0, false),
+        /*AllNoise*/ std::make_tuple(1, 32, 1, true)));
+
+TEST_F(PrivacyBudgetReidScoreEstimatorStandaloneTest, ReportingMultiBlockReid) {
+  auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
+      /*enabled=*/true,
+      /*expected_surface_count=*/0,
+      /*surface_budget=*/0,
+      /*blocks=*/"",
+      /*blocks_weights=*/"",
+      /*allowed_random_types=*/"",
+      /*reid_blocks=*/
+      "2077075229;1122849309;1122849311,1122849310;1122849311,2077075229",
+      /*reid_blocks_salts_ranges=*/"1,1000000,1",
+      /*reid_blocks_bits=*/"10,1,1",
+      /*reid_blocks_noise_probabilities=*/"0,0,0");
+
+  ukm::TestAutoSetUkmRecorder test_recorder;
+
+  PrivacyBudgetReidScoreEstimator reid_storage(&settings, pref_service());
+  reid_storage.Init();
+
+  base::RunLoop run_loop;
+  test_recorder.SetOnAddEntryCallback(
+      ukm::builders::Identifiability::kEntryName,
+      BarrierClosure(2u, run_loop.QuitClosure()));
+  blink::test::ScopedIdentifiabilityTestSampleCollector collector;
+
+  // Process values for the surfaces.
+  reid_storage.ProcessForReidScore(kSurface_1, blink::IdentifiableToken(1));
+  reid_storage.ProcessForReidScore(kSurface_2, blink::IdentifiableToken(2));
+  reid_storage.ProcessForReidScore(kSurface_3, blink::IdentifiableToken(3));
+
+  // Get these values using IdentifiableSurface::FromTypeAndToken() with type
+  // IdentifiableSurface::Type::kReidScoreEstimator.
+  uint64_t expected_surface_key_for_block_0 = 11985663064608009253u;
+  uint64_t expected_surface_key_for_block_2 = 17524302200237928997u;
+
+  // Get the expected values of Reid hashes. The salt is forced to 0.
+  // The surfaces will be sorted in ReidBlockStorage so the hash will be
+  // computed based on the surface key order.
+  std::vector<uint64_t> tokens_0 = {0, 2, 3, 1};
+  std::vector<uint64_t> tokens_2 = {0, 1};
+  uint64_t reid_hash_0 = blink::IdentifiabilityDigestOfBytes(
+      base::as_bytes(base::make_span(tokens_0)));
+  uint64_t reid_hash_2 = blink::IdentifiabilityDigestOfBytes(
+      base::as_bytes(base::make_span(tokens_2)));
+
+  // Get the lower b bits required.
+  uint64_t reid_bits_0 = reid_hash_0 & ((1 << 10) - 1);
+  uint64_t reid_bits_2 = reid_hash_2 % 2;
+
+  // This should let the async tasks run.
+  run_loop.Run();
+
+  const auto& entries = collector.entries();
+  EXPECT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].metrics[0].surface.ToUkmMetricHash(),
+            expected_surface_key_for_block_2);
+  uint64_t value_2 =
+      static_cast<uint64_t>(entries[0].metrics[0].value.ToUkmMetricValue());
+  EXPECT_EQ(value_2, reid_bits_2);
+  EXPECT_EQ(entries[1].metrics[0].surface.ToUkmMetricHash(),
+            expected_surface_key_for_block_0);
+  uint64_t value_0 =
+      static_cast<uint64_t>(entries[1].metrics[0].value.ToUkmMetricValue());
+  EXPECT_EQ(value_0, reid_bits_0);
+}
 
 TEST_F(PrivacyBudgetReidScoreEstimatorStandaloneTest,
        ReidHashIsReportedOnlyOnce) {

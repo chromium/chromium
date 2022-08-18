@@ -68,6 +68,9 @@ class PrivacyBudgetReidScoreEstimator {
     void Record(blink::IdentifiableSurface surface,
                 blink::IdentifiableToken value);
 
+    // Compute the hash for estimating the REID score.
+    uint64_t ComputeHashForReidScore();
+
     // Returns the values of the surfaces. Can be called only if full.
     std::vector<blink::IdentifiableToken> GetValues() const;
 
@@ -112,9 +115,6 @@ class PrivacyBudgetReidScoreEstimator {
     // reported.
     blink::IdentifiableSurface reid_surface_key_;
   };
-
-  // Compute the hash for estimating the REID score.
-  uint64_t ComputeHashForReidScore(const ReidBlockStorage& reid_block);
 
   void WriteReportedReidBlocksToPrefs() const;
 
