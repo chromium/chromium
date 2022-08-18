@@ -406,8 +406,7 @@ void ExpectSeveralThreads(ThreadMap* thread_map,
   EXPECT_TRUE(thread_map->empty());
 }
 
-// TODO(crbug.com/1319307): Test is failing on Mac. Re-enable it.
-TEST(ProcessReaderMac, DISABLED_SelfSeveralThreads) {
+TEST(ProcessReaderMac, SelfSeveralThreads) {
   // Set up the ProcessReaderMac here, before any other threads are running.
   // This tests that the threads it returns are lazily initialized as a snapshot
   // of the threads at the time of the first call to Threads(), and not at the
@@ -610,8 +609,7 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
   size_t thread_count_;
 };
 
-// TODO(crbug.com/1319307): Test is failing on Mac. Re-enable it.
-TEST(ProcessReaderMac, DISABLED_ChildOneThread) {
+TEST(ProcessReaderMac, ChildOneThread) {
   // The main thread plus zero child threads equals one thread.
   constexpr size_t kChildThreads = 0;
   ProcessReaderThreadedChild process_reader_threaded_child("ChildOneThread",
@@ -620,7 +618,7 @@ TEST(ProcessReaderMac, DISABLED_ChildOneThread) {
 }
 
 // TODO(crbug.com/1319307): Test is failing on Mac. Re-enable it.
-TEST(ProcessReaderMac, DISABLED_ChildSeveralThreads) {
+TEST(ProcessReaderMac, ChildSeveralThreads) {
   constexpr size_t kChildThreads = 64;
   ProcessReaderThreadedChild process_reader_threaded_child(
       "ChildSeveralThreads", kChildThreads);
@@ -1030,9 +1028,7 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
   bool ensure_cl_kernels_success_;
 };
 
-// Disabled to investigate crbug.com/1268776.
-// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
-TEST(ProcessReaderMac, DISABLED_ChildModules) {
+TEST(ProcessReaderMac, ChildModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
