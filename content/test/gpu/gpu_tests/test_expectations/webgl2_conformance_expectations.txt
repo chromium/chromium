@@ -197,6 +197,12 @@ crbug.com/1237319 [ chromeos passthrough ] conformance/extensions/khr-parallel-s
 # Was timing out, but may be removable now.
 crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
 
+# Flakily causes subsequent tests to fail, particularly when running them in
+# parallel. This is likely a general AMD issue, but target specific GPUs for now
+# in case the upcoming AMD Macbooks don't have this issue.
+[ mac amd-0x6821 passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
+[ mac amd-0x679e passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -512,7 +518,6 @@ crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ 
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
-crbug.com/1214931 [ mac amd-0x6821 angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ RetryOnFailure ]
 crbug.com/1343793 [ mac amd-0x6821 angle-opengl ] deqp/functional/gles3/texturefiltering/3d_combinations_24.html [ RetryOnFailure ]
 
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/shaderoperator/binary_operator_14.html [ RetryOnFailure ]
