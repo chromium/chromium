@@ -212,8 +212,8 @@
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"],
+        "port_name": "mac-mac12",
+        "specifiers": ["Mac12", "Release"],
         "steps": {
             "blink_web_tests (with patch)": {},
             "blink_wpt_tests (with patch)": {}
@@ -259,19 +259,5 @@
         "main": "chromium.android.fyi",
         "specifiers": [
             "Android", "chrome_android", "Release"]
-    },
-    "linux-blink-optional-highdpi-rel": {
-        "main": "tryserver.blink",
-        "port_name": "linux-trusty",
-        "specifiers": ["Trusty", "Release"],
-        "steps": {
-            "high_dpi_blink_web_tests (with patch)": {
-                "flag_specific": "highdpi"
-            },
-            "high_dpi_blink_wpt_tests (with patch)": {
-                "flag_specific": "highdpi"
-            }
-        },
-        "is_try_builder": true
     }
 }

@@ -351,6 +351,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
         build_steps_to_fallback_paths = defaultdict(dict)
         wpt_build_steps = set()
+        #TODO: we should make the selection of (builder, step) deterministic
         for builder, step in list(release_build_steps) + list(
                 debug_build_steps):
             if not self._tool.builders.is_wpt_builder(builder):

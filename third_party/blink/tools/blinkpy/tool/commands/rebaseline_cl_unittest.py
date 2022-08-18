@@ -23,8 +23,6 @@ from blinkpy.web_tests.builder_list import BuilderList
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     command_constructor = RebaselineCL
-    command_constructor.flag_specific_builder = (
-        lambda self, flag_specific: frozenset(["MOCK Try Highdpi"]))
 
     def setUp(self):
         BaseTestCase.setUp(self)

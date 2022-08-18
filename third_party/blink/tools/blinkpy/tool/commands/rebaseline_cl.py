@@ -91,20 +91,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 action='append',
                 help=('Comma-separated-list of builders to pull new baselines '
                       'from (can also be provided multiple times).')),
-            optparse.make_option(
-                '--flag-specific',
-                dest='flag_specific',
-                # TODO(crbug/1291020): try to get the list from builders.json
-                choices=[
-                    "disable-layout-ng", "highdpi",
-                    "disable-site-isolation-trials", "skia-vulkan-swiftshader"
-                ],
-                default=None,
-                action='store',
-                help=('Name of a flag-specific configuration defined in '
-                      'FlagSpecificConfig. This option will rebaseline '
-                      'results for the given FlagSpecificConfig while '
-                      'ignoring results from other builders.')),
             self.patchset_option,
             optparse.make_option('--resultDB',
                                  dest='resultDB',
@@ -118,7 +104,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.results_directory_option,
         ])
         self.git_cl = None
-        self._selected_try_bots = None
+        self._use_blink_try_bots_only = False
+        self._builders = []
         self._resultdb_fetcher = False
 
     def execute(self, options, args, tool):
@@ -136,21 +123,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if not self.check_ok_to_run():
             return 1
 
-        if options.builders:
-            try_builders = set()
-            for builder_names in options.builders:
-                try_builders.update(builder_names.split(','))
-            self._selected_try_bots = frozenset(try_builders)
-
-        if options.use_blink_try_bots_only:
-            self._selected_try_bots = self.selected_try_bots - self.cq_try_bots
-
-        if options.flag_specific:
-            self._selected_try_bots = self.flag_specific_builder(options.flag_specific)
-            if not self._selected_try_bots:
-                _log.error(
-                    'Aborted: builder %s not found in builder list.' % options.flag_specific)
-                return 1
+        self._use_blink_try_bots_only = options.use_blink_try_bots_only
+        self._builders = options.builders
 
         build_resolver = BuildResolver(
             self._tool.builders,
@@ -222,19 +196,39 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     @property
     def selected_try_bots(self):
-        if self._selected_try_bots:
-            return self._selected_try_bots
-        return frozenset(self._tool.builders.filter_builders(
-            is_try=True, exclude_specifiers={'android'}))
+        try_builders = set()
+        if self._builders:
+            for builder_names in self._builders:
+                try_builders.update(builder_names.split(','))
+        else:
+            try_builders = frozenset(
+                self._tool.builders.filter_builders(
+                    is_try=True, exclude_specifiers={'android'}))
+
+        if self._use_blink_try_bots_only:
+            try_builders = try_builders - self.cq_try_bots
+        elif not self._builders:
+            # User did not specify builders and --use-blink-try-bots-only in
+            # command line. Trigger default set of builders in this case, that
+            # is CQ builders plus blink-rel builders that covers additional platforms.
+            # Running duplicated builders for the same platform wastes resource, and
+            # causes problem to rebaseline as we will randomly choose a builder later.
+            to_remove = set()
+            for try_builder, cq_builder in self.try_bots_with_cq_mirror:
+                if (try_builder in try_builders
+                        and cq_builder in try_builders):
+                    to_remove.add(try_builder)
+            try_builders = try_builders - to_remove
+
+        return try_builders
 
     @property
     def cq_try_bots(self):
         return frozenset(self._tool.builders.all_cq_try_builder_names())
 
-    def flag_specific_builder(self, flag_specific):
-        return frozenset(
-            self._tool.builders.all_flag_specific_try_builder_names(
-                flag_specific=flag_specific))
+    @property
+    def try_bots_with_cq_mirror(self):
+        return self._tool.builders.try_bots_with_cq_mirror()
 
     def _fetch_results(self, jobs):
         """Fetches results for all of the given builds.

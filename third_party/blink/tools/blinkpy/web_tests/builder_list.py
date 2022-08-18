@@ -102,6 +102,34 @@ class BuilderList(object):
     def all_flag_specific_try_builder_names(self, flag_specific):
         return self.filter_builders(is_try=True, flag_specific=flag_specific)
 
+    def try_bots_with_cq_mirror(self):
+        """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
+
+        When all steps in a blink-rel trybot exist in a cq trybot and the port
+        name matches, we say that blink-rel trybot has a cq mirror, and thus
+        there is no need to trigger both the blink-rel trybot and its cq mirror.
+
+        As of today, this should return:
+        [("linux-blink-rel", "linux-rel"),
+         ("mac12.0-blink-rel", "mac-rel"),
+         ("win10.20h2-blink-rel", "win10_chromium_x64_rel_ng")]
+        """
+        rv = []
+        all_blink_rel_trybots = sorted(
+            set(self.all_try_builder_names()) -
+            set(self.all_cq_try_builder_names()))
+        for builder_name in all_blink_rel_trybots:
+            step_names = set(self.step_names_for_builder(builder_name))
+            for cq_builder_name in self.all_cq_try_builder_names():
+                if (self.port_name_for_builder_name(cq_builder_name) !=
+                        self.port_name_for_builder_name(builder_name)):
+                    continue
+                cq_step_names = self.step_names_for_builder(cq_builder_name)
+                if step_names.issubset(cq_step_names):
+                    rv.append((builder_name, cq_builder_name))
+                    break
+        return rv
+
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 

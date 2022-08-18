@@ -38,6 +38,9 @@ class BuilderListTest(unittest.TestCase):
             'some-wpt-bot': {
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
+                'steps': {
+                    "wpt_tests_suite (with patch)": {},
+                },
                 'is_try_builder': True,
             },
             'Blink A': {
@@ -64,6 +67,9 @@ class BuilderListTest(unittest.TestCase):
             'Try B': {
                 'port_name': 'port-b',
                 'specifiers': ['B', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
                 'is_try_builder': True
             },
             'CQ Try A': {
@@ -84,6 +90,12 @@ class BuilderListTest(unittest.TestCase):
                 'bucket': 'bucket.c',
                 'port_name': 'port-c',
                 'specifiers': ['c', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'high_dpi_blink_web_tests (with patch)': {
+                        'flag_specific': 'highdpi'
+                    },
+                },
                 'is_try_builder': True,
                 'is_cq_builder': True,
                 'main': "luci",
@@ -155,12 +167,17 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_flag_specific_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['Flag Specific A'],
+        self.assertEqual(['CQ Try C', 'Flag Specific A'],
                          builders.all_flag_specific_try_builder_names(
                              flag_specific="highdpi"))
-        self.assertEqual(['Flag Specific A', 'Flag Specific B'],
-                         builders.all_flag_specific_try_builder_names(
-                             flag_specific="*"))
+        self.assertEqual(
+            ['CQ Try C', 'Flag Specific A', 'Flag Specific B'],
+            builders.all_flag_specific_try_builder_names(flag_specific="*"))
+
+    def test_try_bots_with_cq_mirror(self):
+        builders = self.sample_builder_list()
+        try_and_cq = [('Flag Specific A', 'CQ Try C'), ('Try A', 'CQ Try A')]
+        self.assertEqual(try_and_cq, builders.try_bots_with_cq_mirror())
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
