@@ -108,7 +108,8 @@ class CONTENT_EXPORT PrivateAggregationBudgetStorage {
 
   scoped_refptr<sqlite_proto::ProtoTableManager> table_manager_;
 
-  sqlite_proto::KeyValueTable<proto::PrivateAggregationBudgets> budgets_table_;
+  std::unique_ptr<sqlite_proto::KeyValueTable<proto::PrivateAggregationBudgets>>
+      budgets_table_;
   sqlite_proto::KeyValueData<proto::PrivateAggregationBudgets> budgets_data_;
 
   // Keep a handle on the DB task runner so that the destructor can use the DB

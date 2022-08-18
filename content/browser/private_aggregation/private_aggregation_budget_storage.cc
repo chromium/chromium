@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -78,9 +79,12 @@ PrivateAggregationBudgetStorage::PrivateAggregationBudgetStorage(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
           db_task_runner)),
-      budgets_table_(kBudgetsTableName),
+      budgets_table_(
+          std::make_unique<
+              sqlite_proto::KeyValueTable<proto::PrivateAggregationBudgets>>(
+              kBudgetsTableName)),
       budgets_data_(table_manager_,
-                    &budgets_table_,
+                    budgets_table_.get(),
                     /*max_num_entries=*/absl::nullopt,
                     kFlushDelay),
       db_task_runner_(std::move(db_task_runner)),
@@ -131,8 +135,13 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
 
 void PrivateAggregationBudgetStorage::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(!!db_, !!budgets_table_);
 
+  // Guard against `Shutdown()` being called multiple times.
   if (db_) {
+    // `budgets_table_` must be deleted on the database sequence.
+    db_task_runner_->DeleteSoon(FROM_HERE, budgets_table_.release());
+
     // The sequenced task runner will ensure that this `db_` destruction task
     // doesn't run until after `InitializeOnDbSequence()` runs.
     db_task_runner_->DeleteSoon(FROM_HERE, db_.release());
