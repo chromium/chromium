@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
@@ -39,6 +40,11 @@ constexpr char16_t kA11yDelimiter[] = u", ";
 
 constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<base::StringPiece>(
     {"egmafekfmcnknbdlbfbhafbllplmjlhn", "pnkcfpnngfokcnnijgkllghjlhkailce"});
+
+void LogIconLoadStatus(apps::DiscoveryError status) {
+  base::UmaHistogramEnumeration("Apps.AppList.GameResult.IconLoadStatus",
+                                status);
+}
 
 bool IsDarkModeEnabled() {
   // TODO(crbug.com/1258415): Simplify this logic once the productivity launcher
@@ -151,7 +157,7 @@ void GameResult::UpdateText(const apps::Result& game,
 
 void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
                               apps::DiscoveryError error) {
-  // TODO(crbug.com/1305880): Report the error to UMA.
+  LogIconLoadStatus(error);
   if (error != apps::DiscoveryError::kSuccess) {
     // Don't display results that have no icon.
     scoring().filter = true;
