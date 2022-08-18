@@ -507,7 +507,8 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Get(
 
 scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
     const GpuDiskCacheHandle& handle,
-    const BlobLoadedForCacheCallback& blob_loaded_cb) {
+    const BlobLoadedForCacheCallback& blob_loaded_cb,
+    CacheDestroyedCallback cache_destroyed_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(Get(handle) == nullptr);
 
@@ -515,20 +516,22 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
   if (it == handle_to_path_map_.end()) {
     return nullptr;
   }
-  return GetOrCreateByPath(it->second,
-                           base::BindRepeating(blob_loaded_cb, handle));
+  return GetOrCreateByPath(
+      it->second, base::BindRepeating(blob_loaded_cb, handle),
+      base::BindOnce(std::move(cache_destroyed_cb), handle));
 }
 
 scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
     const base::FilePath& path,
-    const GpuDiskCache::BlobLoadedCallback& blob_loaded_cb) {
+    const GpuDiskCache::BlobLoadedCallback& blob_loaded_cb,
+    base::OnceClosure cache_destroyed_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = gpu_cache_map_.find(path);
   if (iter != gpu_cache_map_.end())
     return iter->second;
 
-  auto cache =
-      base::WrapRefCounted(new GpuDiskCache(this, path, blob_loaded_cb));
+  auto cache = base::WrapRefCounted(new GpuDiskCache(
+      this, path, blob_loaded_cb, std::move(cache_destroyed_cb)));
   cache->Init();
   return cache;
 }
@@ -617,15 +620,18 @@ void GpuDiskCacheFactory::CacheCleared(GpuDiskCache* cache) {
 
 GpuDiskCache::GpuDiskCache(GpuDiskCacheFactory* factory,
                            const base::FilePath& cache_path,
-                           const BlobLoadedCallback& blob_loaded_cb)
+                           const BlobLoadedCallback& blob_loaded_cb,
+                           base::OnceClosure cache_destroyed_cb)
     : factory_(factory),
       cache_path_(cache_path),
-      blob_loaded_cb_(blob_loaded_cb) {
+      blob_loaded_cb_(blob_loaded_cb),
+      cache_destroyed_cb_(std::move(cache_destroyed_cb)) {
   factory_->AddToCache(cache_path_, this);
 }
 
 GpuDiskCache::~GpuDiskCache() {
   factory_->RemoveFromCache(cache_path_);
+  std::move(cache_destroyed_cb_).Run();
 }
 
 void GpuDiskCache::Init() {

@@ -65,6 +65,10 @@ interface GpuService {
   SetChannelDiskCacheHandle(int32 client_id,
                             gpu.mojom.GpuDiskCacheHandle cache_handle);
 
+  // Called by the browser when the last reference to a GPU disk cache handle
+  // is gone. Results in the GPU process purging the in memory copy.
+  OnDiskCacheHandleDestoyed(gpu.mojom.GpuDiskCacheHandle cache_handle);
+
   // Tells the GPU process to close the channel identified by |client_id|.
   // If no channel can be identified, do nothing.
   CloseChannel(int32 client_id);

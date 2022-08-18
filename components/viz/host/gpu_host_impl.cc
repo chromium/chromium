@@ -293,8 +293,11 @@ void GpuHostImpl::SetChannelDiskCacheHandle(
   if (!cache) {
     // Create the cache if necessary and save a reference.
     cache = delegate_->GetGpuDiskCacheFactory()->Create(
-        handle, base::BindRepeating(&GpuHostImpl::LoadedBlob,
-                                    weak_ptr_factory_.GetWeakPtr()));
+        handle,
+        base::BindRepeating(&GpuHostImpl::LoadedBlob,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&GpuHostImpl::OnDiskCacheHandleDestoyed,
+                       weak_ptr_factory_.GetWeakPtr()));
     if (!cache) {
       return;
     }
@@ -439,6 +442,12 @@ void GpuHostImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
       break;
     }
   }
+}
+
+void GpuHostImpl::OnDiskCacheHandleDestoyed(
+    const gpu::GpuDiskCacheHandle& handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  gpu_service_remote_->OnDiskCacheHandleDestoyed(handle);
 }
 
 void GpuHostImpl::OnChannelEstablished(

@@ -224,6 +224,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
                   const std::string& key,
                   const std::string& data);
+  void OnDiskCacheHandleDestoyed(const gpu::GpuDiskCacheHandle& handle);
 
   void OnChannelEstablished(int client_id,
                             bool sync,

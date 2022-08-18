@@ -120,6 +120,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
   void SetChannelDiskCacheHandle(int client_id,
                                  const gpu::GpuDiskCacheHandle& handle);
+  void OnDiskCacheHandleDestoyed(const gpu::GpuDiskCacheHandle& handle);
 
   void PopulateCache(const gpu::GpuDiskCacheHandle& handle,
                      const std::string& key,

@@ -1065,6 +1065,17 @@ void GpuServiceImpl::SetChannelDiskCacheHandle(
   gpu_channel_manager_->SetChannelDiskCacheHandle(client_id, handle);
 }
 
+void GpuServiceImpl::OnDiskCacheHandleDestoyed(
+    const gpu::GpuDiskCacheHandle& handle) {
+  if (!main_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::OnDiskCacheHandleDestoyed,
+                                  weak_ptr_, handle));
+    return;
+  }
+  gpu_channel_manager_->OnDiskCacheHandleDestoyed(handle);
+}
+
 void GpuServiceImpl::CloseChannel(int32_t client_id) {
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(

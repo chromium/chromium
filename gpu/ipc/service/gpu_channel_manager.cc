@@ -515,6 +515,25 @@ void GpuChannelManager::SetChannelDiskCacheHandle(
   }
 }
 
+void GpuChannelManager::OnDiskCacheHandleDestoyed(
+    const gpu::GpuDiskCacheHandle& handle) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  switch (gpu::GetHandleType(handle)) {
+    case gpu::GpuDiskCacheType::kGlShaders: {
+      // Currently there isn't any handling necessary for when the disk cache is
+      // destroyed for the shader cache because it consists of just 2 massive
+      // caches that are long-living and shared across all channels (i.e.
+      // unfortunately there is currently no access partitioning for it w.r.t
+      // different handles).
+      break;
+    }
+    case gpu::GpuDiskCacheType::kDawnWebGPU: {
+      // TODO(dawn:549) Implement cache destruction for Dawn.
+      break;
+    }
+  }
+}
+
 void GpuChannelManager::InternalDestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
     int client_id) {

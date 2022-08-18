@@ -181,4 +181,55 @@ TEST_F(GpuDiskCacheTest, ReleasedCacheHandle) {
   }
 }
 
+TEST_F(GpuDiskCacheTest, DestroyedCallbackCalledOneInstance) {
+  InitCache();
+
+  // Create a cache with a destroy callback set.
+  bool destroyed = false;
+  base::RunLoop run_loop;
+  {
+    scoped_refptr<GpuDiskCache> cache = factory()->Create(
+        handle_, base::DoNothing(),
+        base::BindLambdaForTesting(
+            [&destroyed, &run_loop](const GpuDiskCacheHandle&) {
+              destroyed = true;
+              run_loop.Quit();
+            }));
+    ASSERT_TRUE(cache.get() != nullptr);
+  }
+  // Destroying the last and only reference to the cache should cause the
+  // callback to run.
+  run_loop.Run();
+  EXPECT_TRUE(destroyed);
+}
+
+TEST_F(GpuDiskCacheTest, DestroyedCallbackCalledMultipleInstance) {
+  InitCache();
+
+  // Create a cache with a destroy callback set.
+  bool destroyed = false;
+  base::RunLoop run_loop;
+  scoped_refptr<GpuDiskCache> cache_1 =
+      factory()->Create(handle_, base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&destroyed, &run_loop](const GpuDiskCacheHandle&) {
+                              destroyed = true;
+                              run_loop.Quit();
+                            }));
+  ASSERT_TRUE(cache_1.get() != nullptr);
+
+  // Get another instance of the same cache.
+  scoped_refptr<GpuDiskCache> cache_2 = factory()->Get(handle_);
+  ASSERT_TRUE(cache_2.get() == cache_1.get());
+
+  // Destroying one of the references should not trigger the callback.
+  cache_1 = nullptr;
+  EXPECT_FALSE(destroyed);
+
+  // Destroying the last reference should trigger the callback.
+  cache_2 = nullptr;
+  run_loop.Run();
+  EXPECT_TRUE(destroyed);
+}
+
 }  // namespace gpu
