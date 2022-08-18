@@ -32,14 +32,18 @@ namespace safe_browsing {
 
 namespace {
 
-void SetLengthAndDigestForContainedFile(
+void SetNameForContainedFile(
     const base::FilePath& path,
-    base::File* temp_file,
-    int file_length,
     ClientDownloadRequest::ArchivedBinary* archived_binary) {
   std::string file_basename(path.BaseName().AsUTF8Unsafe());
   if (base::StreamingUtf8Validator::Validate(file_basename))
     archived_binary->set_file_basename(file_basename);
+}
+
+void SetLengthAndDigestForContainedFile(
+    base::File* temp_file,
+    int file_length,
+    ClientDownloadRequest::ArchivedBinary* archived_binary) {
   archived_binary->set_length(file_length);
 
   std::unique_ptr<crypto::SecureHash> hasher =
@@ -146,8 +150,10 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
     archived_archive->set_download_type(ClientDownloadRequest::ARCHIVE);
     archived_archive->set_is_encrypted(is_encrypted);
     archived_archive->set_is_archive(true);
-    SetLengthAndDigestForContainedFile(path, file, file_length,
-                                       archived_archive);
+    SetNameForContainedFile(path, archived_archive);
+    if (!is_encrypted) {
+      SetLengthAndDigestForContainedFile(file, file_length, archived_archive);
+    }
   } else {
 #if BUILDFLAG(IS_MAC)
     // This check prevents running analysis on .app files since they are
@@ -165,8 +171,10 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
       archived_binary->set_download_type(
           download_type_util::GetDownloadType(path));
       archived_binary->set_is_executable(current_entry_is_executable);
-      SetLengthAndDigestForContainedFile(path, file, file_length,
-                                         archived_binary);
+      SetNameForContainedFile(path, archived_binary);
+      if (!is_encrypted) {
+        SetLengthAndDigestForContainedFile(file, file_length, archived_binary);
+      }
       if (current_entry_is_executable) {
         AnalyzeContainedBinary(binary_feature_extractor, file, archived_binary);
       }

@@ -991,4 +991,30 @@ TEST_F(FileAnalyzerTest, DmgAnalysisResultMetric) {
 }
 #endif
 
+TEST_F(FileAnalyzerTest, EncryptedEntriesDoNotHaveHashOrLength) {
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor);
+  base::RunLoop run_loop;
+
+  base::FilePath target_path(FILE_PATH_LITERAL("encrypted.zip"));
+  base::FilePath zip_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &zip_path));
+  zip_path = zip_path.AppendASCII("safe_browsing")
+                 .AppendASCII("download_protection")
+                 .AppendASCII("encrypted.zip");
+
+  analyzer.Start(
+      target_path, zip_path,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_EXECUTABLE);
+  ASSERT_EQ(1, result_.archived_binaries.size());
+  EXPECT_TRUE(result_.archived_binaries.Get(0).digests().sha256().empty());
+  EXPECT_FALSE(result_.archived_binaries.Get(0).has_length());
+}
+
 }  // namespace safe_browsing
