@@ -57,8 +57,7 @@ using mojom::blink::UsageBreakdownPtr;
 namespace {
 
 StorageType GetStorageType(DeprecatedStorageQuota::Type type) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+  if (blink::features::IsPersistentQuotaIsTemporaryQuota()) {
     DCHECK_EQ(type, DeprecatedStorageQuota::kTemporary);
     return StorageType::kTemporary;
   }

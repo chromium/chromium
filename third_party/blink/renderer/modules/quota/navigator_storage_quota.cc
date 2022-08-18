@@ -81,10 +81,9 @@ DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage(
     Deprecation::CountDeprecation(navigator.DomWindow(),
                                   WebFeature::kPersistentQuotaType);
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+  if (blink::features::IsPersistentQuotaIsTemporaryQuota())
     return webkitTemporaryStorage(navigator);
-  }
+
   NavigatorStorageQuota& navigator_storage = From(navigator);
   if (!navigator_storage.persistent_storage_) {
     navigator_storage.persistent_storage_ =

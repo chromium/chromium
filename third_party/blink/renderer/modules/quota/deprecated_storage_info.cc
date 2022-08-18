@@ -105,10 +105,9 @@ DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
       // Show deprecation message and record usage for persistent storage type.
       Deprecation::CountDeprecation(execution_context,
                                     WebFeature::kPersistentQuotaType);
-      if (base::FeatureList::IsEnabled(
-              blink::features::kPersistentQuotaIsTemporaryQuota)) {
+      if (blink::features::IsPersistentQuotaIsTemporaryQuota())
         return GetStorageQuota(kTemporary, execution_context);
-      }
+
       if (!persistent_storage_) {
         persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
             DeprecatedStorageQuota::kPersistent, execution_context);
