@@ -85,10 +85,6 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // Also updates visibility when Dictation is enabled / disabled.
   void UpdateIcon(bool dictation_active);
 
-  // Updates opacity and transform for `icon_` to prevent overlap with the
-  // `progress_indicator_` when downloading is in progress.
-  void UpdateIconOpacityAndTransform();
-
   // Updates bounds for `progress_indicator_`.
   void UpdateProgressIndicatorBounds();
 
@@ -109,10 +105,8 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // in-progress.
   int download_progress_;
 
-  // A progress indicator to indicate SODA download progress and a subscription
-  // to be notified of progress changed events.
+  // A progress indicator to indicate SODA download progress.
   std::unique_ptr<ProgressIndicator> progress_indicator_;
-  base::CallbackListSubscription progress_changed_subscription_;
 
   // Whether the cursor and focus is currently in a text input field.
   bool in_text_input_ = false;
