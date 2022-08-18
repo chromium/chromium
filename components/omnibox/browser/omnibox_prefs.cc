@@ -100,8 +100,11 @@ void SetUserPreferenceForZeroSuggestCachedResponse(
     const std::string& response) {
   DCHECK(prefs);
 
-  DictionaryPrefUpdate update(prefs, kZeroSuggestCachedResultsWithURL);
-  update->SetStringKey(page_url, response);
+  // Constrain the ZPS cache to a single entry by overwriting the existing
+  // value.
+  base::Value::Dict new_dict;
+  new_dict.Set(page_url, response);
+  prefs->SetDict(kZeroSuggestCachedResultsWithURL, std::move(new_dict));
 }
 
 std::string GetUserPreferenceForZeroSuggestCachedResponse(
