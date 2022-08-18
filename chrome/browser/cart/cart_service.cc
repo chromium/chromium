@@ -1139,9 +1139,9 @@ void CartService::OnCartFeaturesChanged(const std::string& pref_name) {
 }
 
 bool CartService::IsCartAndDiscountEnabled() {
-  auto* list = profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-  if (list &&
-      base::Contains(list->GetListDeprecated(), base::Value(kCartPrefsKey))) {
+  const base::Value::List& list =
+      profile_->GetPrefs()->GetValueList(prefs::kNtpDisabledModules);
+  if (base::Contains(list, base::Value(kCartPrefsKey))) {
     return false;
   }
   return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled) &&
