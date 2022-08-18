@@ -910,6 +910,10 @@ message SAMLSettingsProto {
   // every time a user authenticates via SAML during login. If false, cookies
   // are transferred during each user's first login only.
   optional bool transfer_saml_cookies = 1;
+
+  // Deprecated. This field has been moved to SAMLUsernameProto.
+  optional string OBSOLETE_url_parameter_to_autofill_saml_username = 2
+      [deprecated = true];
 }
 
 message SAMLUsernameProto {
