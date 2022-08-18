@@ -71,6 +71,10 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
           'aux_attributes': {
               'passthrough_cmd_decoder': passthrough,
               'is_asan': is_asan,
+          },
+          'feature_status': {
+              'gpu_compositing': 'enabled',
+              'opengl': 'enabled_on'
           }
       }
   }
@@ -247,7 +251,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
-            'no-passthrough', 'skia-renderer-disabled', 'no-oop-c', 'no-asan'
+            'no-passthrough', 'renderer-skia-gl', 'no-oop-c', 'no-asan'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -264,7 +268,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination', 'no-asan',
             'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
-            'skia-renderer-disabled', 'no-oop-c'
+            'renderer-skia-gl', 'no-oop-c'
         ]))
 
   @mock.patch('sys.platform', 'darwin')
@@ -279,7 +283,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination', 'no-asan',
             'imagination-Triangle-Monster-3000', 'angle-disabled',
-            'no-passthrough', 'skia-renderer-disabled', 'no-oop-c'
+            'no-passthrough', 'renderer-skia-gl', 'no-oop-c'
         ]))
 
   @mock.patch.dict(os.environ, clear=True)

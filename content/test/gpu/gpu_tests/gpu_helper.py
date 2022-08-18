@@ -137,21 +137,19 @@ def GetCommandDecoder(gpu_info: tgi.GPUInfo) -> str:
 
 def GetSkiaRenderer(gpu_feature_status: Dict[str, str],
                     extra_browser_args: List[str]) -> str:
-  # TODO(crbug.com/1343379): Remove skia-renderer-disabled tag once unittests
-  # are updated to not produce it.
-  retval = 'skia-renderer-disabled'
+  retval = 'renderer-software'
   skia_renderer_enabled = (
       gpu_feature_status
       and gpu_feature_status.get('gpu_compositing') == 'enabled')
   if skia_renderer_enabled:
     if HasDawnSkiaRenderer(extra_browser_args):
-      retval = 'skia-renderer-dawn'
+      retval = 'renderer-skia-dawn'
     elif HasVulkanSkiaRenderer(gpu_feature_status):
-      retval = 'skia-renderer-vulkan'
+      retval = 'renderer-skia-vulkan'
     # The check for GL must come after Vulkan since the 'opengl' feature can be
     # enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
     elif HasGlSkiaRenderer(gpu_feature_status):
-      retval = 'skia-renderer-gl'
+      retval = 'renderer-skia-gl'
   return retval
 
 

@@ -40,9 +40,10 @@
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ skia-renderer-dawn
-#         skia-renderer-gl
-#         skia-renderer-vulkan ]
+# tags: [ renderer-skia-dawn
+#         renderer-skia-gl
+#         renderer-skia-vulkan
+#         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0 ]
@@ -377,25 +378,25 @@ crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/mat/ma
 # [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 # Sherlock failures
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/misc/texture-npot-video.html [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1261867 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1268138 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 
 ####################
 # Win failures     #

@@ -40,9 +40,10 @@
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ skia-renderer-dawn
-#         skia-renderer-gl
-#         skia-renderer-vulkan ]
+# tags: [ renderer-skia-dawn
+#         renderer-skia-gl
+#         renderer-skia-vulkan
+#         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0 ]

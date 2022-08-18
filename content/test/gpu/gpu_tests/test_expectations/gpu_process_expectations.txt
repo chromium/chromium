@@ -40,9 +40,10 @@
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ skia-renderer-dawn
-#         skia-renderer-gl
-#         skia-renderer-vulkan ]
+# tags: [ renderer-skia-dawn
+#         renderer-skia-gl
+#         renderer-skia-vulkan
+#         renderer-software ]
 # Driver
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0 ]
@@ -107,7 +108,7 @@ crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ 
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Dual-GPU problem with SkiaRenderer.
-crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
+crbug.com/1170840 [ mac amd renderer-skia-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 # Fuchsia flakes.
 crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
