@@ -18,7 +18,7 @@
       'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official',
       'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients',
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official',
-      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
@@ -884,7 +884,7 @@
       'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official',
       'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients',
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official',
-      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients',
+      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
@@ -2156,10 +2156,6 @@
     'chromeos_betty-pi-arc_dchecks': [
       'chromeos_device', 'betty-pi-arc', 'include_unwind_tables', 'official',
       'use_fake_dbus_clients', 'dcheck_always_on',
-    ],
-
-    'chromeos_betty-pi-arc_include_unwind_tables_official_use_fake_dbus_clients': [
-      'chromeos_device', 'betty-pi-arc', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
     ],
 
     'chromeos_eve-arc-r_include_unwind_tables_official': [
