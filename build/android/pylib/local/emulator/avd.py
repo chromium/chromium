@@ -376,29 +376,6 @@ class AvdConfig:
           ])
           config_ini_contents['hw.sdCard.path'] = sdcard_path
 
-      # Start & stop the AVD.
-      self._Initialize()
-      instance = _AvdInstance(self._emulator_path, self._emulator_home,
-                              self._config)
-      # Enable debug for snapshot when it is set to True
-      debug_tags = 'init,snapshot' if snapshot else None
-      instance.Start(
-          ensure_system_settings=False,
-          read_only=False,
-          # Installing privileged apks requires modifying the system
-          # image.
-          writable_system=True,
-          gpu_mode=_DEFAULT_GPU_MODE,
-          debug_tags=debug_tags)
-
-      assert instance.device is not None, '`instance.device` not initialized.'
-      # Android devices with full-disk encryption are encrypted on first boot,
-      # and then get decrypted to continue the boot process (See details in
-      # https://bit.ly/3agmjcM).
-      # Wait for this step to complete since it can take a while for old OSs
-      # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
-
       if not additional_apks:
         additional_apks = []
       for apk_package in self._config.additional_apk:
@@ -406,10 +383,6 @@ class AvdConfig:
         for f in os.listdir(apk_dir):
           if os.path.isfile(f) and f.endswith('.apk'):
             additional_apks.append(os.path.join(apk_dir, f))
-
-      if additional_apks:
-        for apk in additional_apks:
-          instance.device.Install(apk, allow_downgrade=True, reinstall=True)
 
       if not privileged_apk_tuples:
         privileged_apk_tuples = []
@@ -422,6 +395,33 @@ class AvdConfig:
           logging.info('Adding privilege apk for install: %s', apk_file)
           privileged_apk_tuples.append(
               (apk_file, self._config.install_privileged_apk_partition))
+
+      # Start & stop the AVD.
+      self._Initialize()
+      instance = _AvdInstance(self._emulator_path, self._emulator_home,
+                              self._config)
+      # Enable debug for snapshot when it is set to True
+      debug_tags = 'init,snapshot' if snapshot else None
+      # Installing privileged apks requires modifying the system
+      # image.
+      writable_system = bool(privileged_apk_tuples)
+      instance.Start(ensure_system_settings=False,
+                     read_only=False,
+                     writable_system=writable_system,
+                     gpu_mode=_DEFAULT_GPU_MODE,
+                     debug_tags=debug_tags)
+
+      assert instance.device is not None, '`instance.device` not initialized.'
+      # Android devices with full-disk encryption are encrypted on first boot,
+      # and then get decrypted to continue the boot process (See details in
+      # https://bit.ly/3agmjcM).
+      # Wait for this step to complete since it can take a while for old OSs
+      # like M, otherwise the avd may have "Encryption Unsuccessful" error.
+      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+
+      if additional_apks:
+        for apk in additional_apks:
+          instance.device.Install(apk, allow_downgrade=True, reinstall=True)
 
       if privileged_apk_tuples:
         system_app.InstallPrivilegedApps(instance.device, privileged_apk_tuples)
