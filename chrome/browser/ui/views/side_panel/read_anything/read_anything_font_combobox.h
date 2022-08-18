@@ -14,7 +14,7 @@ class ReadAnythingFontCombobox : public views::Combobox {
  public:
   class Delegate {
    public:
-    virtual void OnFontChoiceChanged(int new_choice) = 0;
+    virtual void OnFontChoiceChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetFontComboboxModel() = 0;
   };
 

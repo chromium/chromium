@@ -53,7 +53,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   friend class ReadAnythingControllerTest;
 
   // ReadAnythingFontCombobox::Delegate:
-  void OnFontChoiceChanged(int new_choice) override;
+  void OnFontChoiceChanged(int new_index) override;
   ui::ComboboxModel* GetFontComboboxModel() override;
 
   // ReadAnythingToolbarView::Delegate:

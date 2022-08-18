@@ -27,6 +27,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     browser()->profile()->GetPrefs()->SetDouble(
         prefs::kAccessibilityReadAnythingFontScale,
         kReadAnythingDefaultFontScale);
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingColorInfo,
+        (int)read_anything::mojom::Colors::kDefaultValue);
   }
 
   void MockOnFontChoiceChanged(int index) {
@@ -37,8 +40,12 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     controller_->OnFontSizeChanged(increase);
   }
 
-  void MockModelInit(std::string font_name, double font_scale) {
-    model_->Init(font_name, font_scale);
+  void MockOnColorsChanged(int index) { controller_->OnColorsChanged(index); }
+
+  void MockModelInit(std::string font_name,
+                     double font_scale,
+                     read_anything::mojom::Colors colors) {
+    model_->Init(font_name, font_scale, colors);
   }
 
   std::string GetPrefFontName() {
@@ -49,6 +56,11 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
   double GetPrefFontScale() {
     return browser()->profile()->GetPrefs()->GetDouble(
         prefs::kAccessibilityReadAnythingFontScale);
+  }
+
+  int GetPrefsColors() {
+    return browser()->profile()->GetPrefs()->GetInteger(
+        prefs::kAccessibilityReadAnythingColorInfo);
   }
 
  protected:
@@ -84,7 +96,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 4.9);
+  MockModelInit(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue);
 
   MockOnFontSizeChanged(true);
 
@@ -95,9 +107,17 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 0.3);
+  MockModelInit(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue);
 
   MockOnFontSizeChanged(false);
 
   EXPECT_NEAR(GetPrefFontScale(), 0.2, 0.01);
+}
+
+TEST_F(ReadAnythingControllerTest, OnColorsChangedUpdatesPref) {
+  EXPECT_EQ(GetPrefsColors(), 0);
+
+  MockOnColorsChanged((int)read_anything::mojom::Colors::kYellow);
+
+  EXPECT_EQ(GetPrefsColors(), 3);
 }

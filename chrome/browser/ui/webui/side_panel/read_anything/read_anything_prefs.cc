@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace prefs {
@@ -18,6 +19,10 @@ const char kAccessibilityReadAnythingFontName[] =
 const char kAccessibilityReadAnythingFontScale[] =
     "settings.a11y.read_anything.font_scale";
 
+// Int value to represent the user's preferred color settings.
+const char kAccessibilityReadAnythingColorInfo[] =
+    "settings.a11y.read_anything.color_info";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(
@@ -28,6 +33,10 @@ void RegisterReadAnythingProfilePrefs(
   registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
                                kReadAnythingDefaultFontScale,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityReadAnythingColorInfo,
+      (int)read_anything::mojom::Colors::kDefaultValue,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

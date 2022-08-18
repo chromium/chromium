@@ -31,17 +31,27 @@ ReadAnythingModel::ReadAnythingModel()
 
 ReadAnythingModel::~ReadAnythingModel() = default;
 
-void ReadAnythingModel::Init(std::string& font_name, double font_scale) {
-  // If this profile has previously selected a preferred font name choice,
-  // check that it is still a valid font, and then assign if so.
+void ReadAnythingModel::Init(std::string& font_name,
+                             double font_scale,
+                             read_anything::mojom::Colors colors) {
+  // If this profile has previously selected choices that were saved to
+  // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
     font_model_->SetDefaultIndexFromPrefsFontName(font_name);
     font_name_ = font_name;
   }
 
   font_scale_ = font_scale;
-  foreground_color_ = SkColors::kBlack.toSkColor();
-  background_color_ = SkColors::kWhite.toSkColor();
+
+  size_t colors_index = static_cast<size_t>((int)colors);
+  if (colors_model_->IsValidColorsIndex(colors_index)) {
+    colors_model_->SetDefaultColorsIndexFromPref(colors_index);
+  }
+
+  auto& initial_colors =
+      colors_model_->GetColorsAt(colors_model_->GetStartingStateIndex());
+  foreground_color_ = initial_colors.foreground;
+  background_color_ = initial_colors.background;
 }
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
@@ -212,6 +222,10 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
 }
 bool ReadAnythingColorsModel::IsValidColorsIndex(size_t index) {
   return index < GetItemCount();
+}
+
+void ReadAnythingColorsModel::SetDefaultColorsIndexFromPref(size_t index) {
+  default_index_ = index;
 }
 
 ReadAnythingColorsModel::ColorInfo& ReadAnythingColorsModel::GetColorsAt(

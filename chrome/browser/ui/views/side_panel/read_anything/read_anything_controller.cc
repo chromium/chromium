@@ -33,12 +33,15 @@ void ReadAnythingController::Activate(bool active) {
 // ReadAnythingFontCombobox::Delegate:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
-  model_->SetSelectedFontByIndex(new_choice);
+void ReadAnythingController::OnFontChoiceChanged(int new_index) {
+  if (!model_->GetFontModel()->IsValidFontIndex(new_index))
+    return;
+
+  model_->SetSelectedFontByIndex(new_index);
 
   browser_->profile()->GetPrefs()->SetString(
       prefs::kAccessibilityReadAnythingFontName,
-      model_->GetFontModel()->GetFontNameAt(new_choice));
+      model_->GetFontModel()->GetFontNameAt(new_index));
 }
 
 ui::ComboboxModel* ReadAnythingController::GetFontComboboxModel() {
@@ -61,9 +64,13 @@ void ReadAnythingController::OnFontSizeChanged(bool increase) {
 }
 
 void ReadAnythingController::OnColorsChanged(int new_index) {
+  if (!model_->GetColorsModel()->IsValidColorsIndex(new_index))
+    return;
+
   model_->SetSelectedColorsByIndex(new_index);
 
-  // TODO(crbug.com/1266555): Save color choice to prefs here.
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingColorInfo, new_index);
 }
 
 ui::ComboboxModel* ReadAnythingController::GetColorsModel() {

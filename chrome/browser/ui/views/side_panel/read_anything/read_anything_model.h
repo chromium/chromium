@@ -82,7 +82,11 @@ class ReadAnythingColorsModel : public ui::ComboboxModel {
   };
 
   bool IsValidColorsIndex(size_t index);
+  void SetDefaultColorsIndexFromPref(size_t index);
   ColorInfo& GetColorsAt(size_t index);
+
+  // Simple pass-through method so Init can set the starting state colors.
+  size_t GetStartingStateIndex() { return GetDefaultIndex().value(); }
 
  protected:
   // ui::Combobox implementation:
@@ -124,7 +128,9 @@ class ReadAnythingModel {
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
 
-  void Init(std::string& font_name, double font_scale);
+  void Init(std::string& font_name,
+            double font_scale,
+            read_anything::mojom::Colors colors);
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);

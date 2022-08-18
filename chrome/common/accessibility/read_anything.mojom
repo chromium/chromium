@@ -29,6 +29,16 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
+// Used as identifiers for the Read Anything theme options.
+// Next value: 4
+[Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
+enum Colors {
+  [Default]kDefault = 0,
+  kLight = 1,
+  kDark = 2,
+  kYellow = 3,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // TODO(crbug.com/1266555): Fill in with messages once Select to Read Anything

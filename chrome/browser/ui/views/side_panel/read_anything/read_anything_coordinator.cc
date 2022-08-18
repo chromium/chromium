@@ -45,11 +45,15 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
       prefs::kAccessibilityReadAnythingFontScale);
 
-  // TODO(crbug.com/1266555): Add initial color values fetched from Prefs.
+  read_anything::mojom::Colors prefs_colors;
+  prefs_colors = static_cast<read_anything::mojom::Colors>(
+      browser->profile()->GetPrefs()->GetInteger(
+          prefs::kAccessibilityReadAnythingColorInfo));
 
   model_->Init(
       /* font name = */ prefs_font_name,
-      /* font scale = */ prefs_font_scale);
+      /* font scale = */ prefs_font_scale,
+      /* colors = */ prefs_colors);
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
