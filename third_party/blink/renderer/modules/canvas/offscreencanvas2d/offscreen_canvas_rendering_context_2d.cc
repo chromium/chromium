@@ -313,7 +313,7 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvasForDraw(
   return GetCanvasResourceProvider()->Canvas();
 }
 
-sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
+sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilterImpl() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 

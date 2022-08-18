@@ -260,7 +260,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       const SkIRect& dirty_rect,
       CanvasPerformanceMonitor::DrawType) = 0;
 
-  virtual sk_sp<PaintFilter> StateGetFilter() = 0;
+  // If GlobalAlphaFilterMode::kInclude is passed in the parameter, the
+  // PaintFilter returned will include the globalAlpha property converted into
+  // a filter and composed with the rest of the filters. If
+  // GlobalAlphaFilterMode::kExcluded, it will only include the filters
+  // assigned in the javascript code to the canvas.
+  sk_sp<PaintFilter> StateGetFilter(
+      CanvasRenderingContext2DState::GlobalAlphaFilterMode);
+  virtual sk_sp<PaintFilter> StateGetFilterImpl() = 0;
   virtual void SnapshotStateForFilter() = 0;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override {
@@ -560,7 +567,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     const CanvasRenderingContext2DState& state = GetState();
     if (BlendModeRequiresCompositedDraw(state.GlobalComposite()))
       return true;
-    if (StateHasFilter())
+    // The globalAlpha effect is generated via filters, so it requires using
+    // CompositedDraw.
+    if (StateHasFilter() || GetState().GlobalAlpha() != 1.0)
       return true;
     if (state.ShouldDrawShadows() &&
         ShouldUseDropShadowPaintFilter(paint_type, image_type))
@@ -750,7 +759,8 @@ void BaseRenderingContext2D::Draw(
   if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds))
     return;
 
-  if (UNLIKELY(GetState().IsFilterUnresolved())) {
+  if (GetState().IsGlobalAlphaFilterUnresolved() ||
+      UNLIKELY(GetState().IsFilterUnresolved())) {
     // Resolving a filter requires allocating garbage-collected objects.
     PostDeferrableAction(WTF::Bind(
         &BaseRenderingContext2D::DrawInternal<CurrentOverdrawOp, DrawFunc,
@@ -784,7 +794,8 @@ void BaseRenderingContext2D::CompositedDraw(
   cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
       static_cast<cc::RecordPaintCanvas*>(c));
 
-  sk_sp<PaintFilter> canvas_filter = StateGetFilter();
+  sk_sp<PaintFilter> canvas_filter = StateGetFilter(
+      CanvasRenderingContext2DState::GlobalAlphaFilterMode::kInclude);
   const CanvasRenderingContext2DState& state = GetState();
   DCHECK(ShouldUseCompositedDraw(paint_type, image_type));
   SkM44 ctm = c->getLocalToDevice();
@@ -881,7 +892,8 @@ ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
   const CanvasRenderingContext2DState& state = GetState();
   if (UNLIKELY(state.IsFilterUnresolved())) {
     DCHECK(!IsInFastMode());  // Should de-opt before reaching this point.
-    return !!StateGetFilter();
+    return !!StateGetFilter(
+        CanvasRenderingContext2DState::GlobalAlphaFilterMode::kExclude);
   }
   // The fast path avoids the virtual call overhead of StateGetFilter
   return state.IsFilterResolved();

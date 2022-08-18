@@ -119,7 +119,7 @@ void PaintRenderingContext2D::ValidateStateStackWithCanvas(
 #endif
 }
 
-sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
+sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilterImpl() {
   return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }
 

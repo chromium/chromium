@@ -73,7 +73,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   double shadowBlur() const final;
   void setShadowBlur(double) final;
 
-  sk_sp<PaintFilter> StateGetFilter() final;
+  sk_sp<PaintFilter> StateGetFilterImpl() final;
   void SnapshotStateForFilter() final {}
 
   void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;

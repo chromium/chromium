@@ -190,7 +190,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
-  sk_sp<PaintFilter> StateGetFilter() final;
+  sk_sp<PaintFilter> StateGetFilterImpl() final;
   void SnapshotStateForFilter() final;
 
   void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;

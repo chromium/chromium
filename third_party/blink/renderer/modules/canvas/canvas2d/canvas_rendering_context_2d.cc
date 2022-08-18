@@ -398,7 +398,7 @@ void CanvasRenderingContext2D::clearRect(double x,
   BaseRenderingContext2D::clearRect(x, y, width, height);
 }
 
-sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
+sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilterImpl() {
   return GetState().GetFilter(canvas(), canvas()->Size(), this);
 }
 
