@@ -1688,6 +1688,7 @@ fyi_coverage_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     xcode = xcode.x14main,
 )
 
