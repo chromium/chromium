@@ -365,7 +365,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   // Unsupported file system.
   mount_info.mount_type = ash::MountType::kDevice;
   mount_info.mount_condition =
-      ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
+      ash::disks::MountCondition::kUnsupportedFilesystem;
   MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId,

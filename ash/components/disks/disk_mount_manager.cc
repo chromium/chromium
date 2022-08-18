@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -459,13 +460,13 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    MountCondition mount_condition = MOUNT_CONDITION_NONE;
+    MountCondition mount_condition = MountCondition::kNone;
     if (entry.mount_type == MountType::kDevice) {
       if (entry.error_code == MountError::kUnknownFilesystem) {
-        mount_condition = MOUNT_CONDITION_UNKNOWN_FILESYSTEM;
+        mount_condition = MountCondition::kUnknownFilesystem;
       }
       if (entry.error_code == MountError::kUnsupportedFilesystem) {
-        mount_condition = MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
+        mount_condition = MountCondition::kUnsupportedFilesystem;
       }
     }
 
@@ -475,12 +476,13 @@ class DiskMountManagerImpl : public DiskMountManager,
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
     if (entry.error_code == MountError::kNone ||
-        mount_condition != MOUNT_CONDITION_NONE) {
+        mount_condition != MountCondition::kNone) {
       mount_points_.insert(mount_info);
     }
 
     Disk* disk = nullptr;
-    if ((entry.error_code == MountError::kNone || mount_info.mount_condition) &&
+    if ((entry.error_code == MountError::kNone ||
+         mount_info.mount_condition != MountCondition::kNone) &&
         mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty()) {
       Disks::iterator disk_map_iter = disks_.find(mount_info.source_path);
@@ -1057,6 +1059,20 @@ class DiskMountManagerImpl : public DiskMountManager,
 };
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& out, MountCondition condition) {
+  switch (condition) {
+#define PRINT(s)          \
+  case MountCondition::s: \
+    return out << #s;
+    PRINT(kNone)
+    PRINT(kUnknownFilesystem)
+    PRINT(kUnsupportedFilesystem)
+#undef PRINT
+  }
+
+  return out << static_cast<std::underlying_type_t<MountCondition>>(condition);
+}
 
 DiskMountManager::Observer::~Observer() {
   DCHECK(!IsInObserverList());

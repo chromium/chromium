@@ -1132,14 +1132,14 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
       ash::disks::Disk::Builder().SetDeviceLabel("removable_label").Build();
   volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
       {"/source_path/removable", "/mount_path/removable",
-       ash::MountType::kDevice, ash::disks::MOUNT_CONDITION_NONE},
+       ash::MountType::kDevice, ash::disks::MountCondition::kNone},
       removable_disk.get()));
 
   // The source path for archives need to be inside an already mounted volume,
   // so add it under the My Files volume.
   volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
       {"/mount_path/my_files/archive", "/mount_path/archive.zip",
-       ash::MountType::kArchive, ash::disks::MOUNT_CONDITION_NONE},
+       ash::MountType::kArchive, ash::disks::MountCondition::kNone},
       nullptr));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForProvidedFileSystem(

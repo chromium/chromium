@@ -205,7 +205,7 @@ void StorageMonitorCros::OnMountEvent(
   // Ignore errors.
   if (error_code != ash::MountError::kNone)
     return;
-  if (mount_info.mount_condition != ash::disks::MOUNT_CONDITION_NONE)
+  if (mount_info.mount_condition != ash::disks::MountCondition::kNone)
     return;
 
   switch (event) {

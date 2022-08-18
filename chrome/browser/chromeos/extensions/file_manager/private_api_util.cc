@@ -573,15 +573,15 @@ void VolumeToVolumeMetadata(
   volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
-    case ash::disks::MOUNT_CONDITION_NONE:
+    case ash::disks::MountCondition::kNone:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;
-    case ash::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
+    case ash::disks::MountCondition::kUnknownFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNKNOWN;
       break;
-    case ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
+    case ash::disks::MountCondition::kUnsupportedFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
       break;
