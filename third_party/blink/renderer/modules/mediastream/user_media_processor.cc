@@ -1470,7 +1470,8 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
     auto* platform_source = static_cast<WebPlatformMediaStreamSource*>(
         local_source->GetPlatformSource());
     DCHECK(platform_source);
-    if (platform_source->device().id == audio_source->device().id) {
+    if (platform_source->device().id == audio_source->device().id &&
+        IsAudioInputMediaType(platform_source->device().type)) {
       auto* audio_platform_source =
           static_cast<MediaStreamAudioSource*>(platform_source);
       auto* processed_existing_source =
