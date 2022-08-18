@@ -24461,6 +24461,13 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Other Mode is Default"/>
 </enum>
 
+<enum name="DefaultDirectAttemptResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed at getting the SID"/>
+  <int value="2" label="Failed at finding the salt"/>
+  <int value="3" label="Failed at setting the registry value"/>
+</enum>
+
 <enum name="DefaultSearchChangeOrigin">
   <int value="0" label="DSP changed by synced Pref"/>
   <int value="1" label="DSP changed by Sync ADD"/>

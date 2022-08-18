@@ -32,6 +32,7 @@
 #include "base/hash/md5.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1847,6 +1848,19 @@ bool WriteUserChoiceValues(base::win::RegKey& user_choice_reg_key,
   return false;
 }
 
+enum class DirectSettingAttemptResult {
+  kSucceeded = 0,
+  kFailedSID = 1,
+  kFailedSalt = 2,
+  kFailedRegistrySet = 3,
+  kMaxValue = kFailedRegistrySet,
+};
+
+void ReportDirectSettingResult(DirectSettingAttemptResult result) {
+  base::UmaHistogramEnumeration("Windows.MakeChromeDefaultDirectly.Result",
+                                result);
+}
+
 }  // namespace
 
 const wchar_t* ShellUtil::kRegAppProtocolHandlers = L"\\AppProtocolHandlers";
@@ -2426,12 +2440,16 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
   std::wstring prog_id = GetBrowserProgId(suffix);
 
   std::wstring sid = GetSID();
-  if (sid.empty())
+  if (sid.empty()) {
+    ReportDirectSettingResult(DirectSettingAttemptResult::kFailedSID);
     return false;
+  }
 
   std::wstring shell_salt = GetShellUserChoiceSalt();
-  if (shell_salt.empty())
+  if (shell_salt.empty()) {
+    ReportDirectSettingResult(DirectSettingAttemptResult::kFailedSalt);
     return false;
+  }
 
   base::win::RegKey url_associations_key(
       HKEY_CURRENT_USER,
@@ -2446,6 +2464,7 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
                           KEY_READ | KEY_WRITE);
     if (!WriteUserChoiceValues(key, kBrowserProtocolAssociations[i], sid,
                                prog_id, shell_salt)) {
+      ReportDirectSettingResult(DirectSettingAttemptResult::kFailedRegistrySet);
       return false;
     }
   }
@@ -2463,12 +2482,14 @@ bool ShellUtil::MakeChromeDefaultDirectly(int shell_change,
                           KEY_READ | KEY_WRITE);
     if (!WriteUserChoiceValues(key, kDefaultFileAssociations[i], sid, prog_id,
                                shell_salt)) {
+      ReportDirectSettingResult(DirectSettingAttemptResult::kFailedRegistrySet);
       return false;
     }
   }
 
   ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
 
+  ReportDirectSettingResult(DirectSettingAttemptResult::kSucceeded);
   return true;
 }
 
