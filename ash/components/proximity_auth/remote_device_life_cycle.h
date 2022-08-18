@@ -61,9 +61,6 @@ class RemoteDeviceLifeCycle {
   // Starts the life cycle.
   virtual void Start() = 0;
 
-  // Stops the life cycle.
-  virtual void Stop() = 0;
-
   // Returns the RemoteDeviceRef instance that this life cycle manages.
   virtual ash::multidevice::RemoteDeviceRef GetRemoteDevice() const = 0;
 

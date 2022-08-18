@@ -8987,21 +8987,6 @@
             ]
         }
     ],
-    "SmartLockBluetoothScanningBackoff": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SmartLockBluetoothScanningBackoff"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartLockUIRevamp": [
         {
             "platforms": [

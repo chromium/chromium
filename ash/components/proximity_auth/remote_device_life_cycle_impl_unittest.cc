@@ -209,12 +209,4 @@ TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,
       RemoteDeviceLifeCycle::State::STOPPED /* expected_life_cycle_state */);
 }
 
-TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest, StopLifeCycle) {
-  CreateFakeConnectionAttempt();
-  StartLifeCycle();
-
-  life_cycle_.Stop();
-  EXPECT_EQ(RemoteDeviceLifeCycle::State::STOPPED, life_cycle_.GetState());
-}
-
 }  // namespace proximity_auth

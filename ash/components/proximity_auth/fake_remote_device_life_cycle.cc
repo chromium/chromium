@@ -21,11 +21,6 @@ void FakeRemoteDeviceLifeCycle::Start() {
   ChangeState(RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
 }
 
-void FakeRemoteDeviceLifeCycle::Stop() {
-  started_ = false;
-  ChangeState(RemoteDeviceLifeCycle::State::STOPPED);
-}
-
 ash::multidevice::RemoteDeviceRef FakeRemoteDeviceLifeCycle::GetRemoteDevice()
     const {
   return remote_device_;

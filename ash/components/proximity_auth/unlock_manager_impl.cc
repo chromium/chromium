@@ -12,7 +12,6 @@
 #include "ash/components/proximity_auth/metrics.h"
 #include "ash/components/proximity_auth/proximity_auth_client.h"
 #include "ash/components/proximity_auth/proximity_monitor_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -44,11 +43,6 @@ enum class FindAndConnectToHostResult {
 // The maximum amount of time that the unlock manager can stay in the 'waking
 // up' state after resuming from sleep.
 constexpr base::TimeDelta kWakingUpDuration = base::Seconds(15);
-
-// The amount of time to wait before resuming scan and connection attempt after
-// pausing following an error or timeout.
-constexpr base::TimeDelta kRetryAfterPausingScanAndConnectionAttempt =
-    base::Seconds(1);
 
 // The maximum amount of time that we wait for the BluetoothAdapter to be
 // fully initialized after resuming from sleep.
@@ -345,10 +339,6 @@ void UnlockManagerImpl::OnLifeCycleStateChanged(
           FindAndConnectToHostResult::kSecureChannelConnectionAttemptFailure);
       SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
     }
-    if (base::FeatureList::IsEnabled(
-            ash::features::kSmartLockBluetoothScanningBackoff)) {
-      SetShouldAttemptScanAndConnection(false);
-    }
   }
 
   if (new_state == RemoteDeviceLifeCycle::State::FINDING_CONNECTION &&
@@ -359,11 +349,6 @@ void UnlockManagerImpl::OnLifeCycleStateChanged(
     if (is_performing_initial_scan_) {
       OnDisconnected();
       SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
-    }
-
-    if (base::FeatureList::IsEnabled(
-            ash::features::kSmartLockBluetoothScanningBackoff)) {
-      SetShouldAttemptScanAndConnection(false);
     }
   }
 
@@ -562,8 +547,7 @@ bool UnlockManagerImpl::IsBluetoothAdapterRecoveringFromSuspend() const {
 
 void UnlockManagerImpl::AttemptToStartRemoteDeviceLifecycle() {
   if (IsBluetoothPresentAndPowered() && life_cycle_ &&
-      life_cycle_->GetState() == RemoteDeviceLifeCycle::State::STOPPED &&
-      should_attempt_scan_and_connection_) {
+      life_cycle_->GetState() == RemoteDeviceLifeCycle::State::STOPPED) {
     // If Bluetooth is disabled after this, |life_cycle_| will be notified by
     // SecureChannel that the connection attempt failed. From that point on,
     // |life_cycle_| will wait to be started again by UnlockManager.
@@ -803,45 +787,9 @@ void UnlockManagerImpl::OnInitialScanTimeout() {
     PA_LOG(INFO) << "Initial scan for host returned no result.";
     RecordFindAndConnectToHostResult(screenlock_type_,
                                      FindAndConnectToHostResult::kTimedOut);
-
-    if (base::FeatureList::IsEnabled(
-            ash::features::kSmartLockBluetoothScanningBackoff)) {
-      // Back off connection attempt and stop scanning to increase stability
-      // after a timeout occurs. Ideally this would only happen on failures to
-      // scan or connect, not if we timeout simply because the phone cannot be
-      // found. But for now we do not have a way to distinguish the difference.
-      // See b/208932863.
-      SetShouldAttemptScanAndConnection(false);
-    }
   }
 
   SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
-}
-
-void UnlockManagerImpl::SetShouldAttemptScanAndConnection(
-    bool should_attempt_scan_and_connection) {
-  if (should_attempt_scan_and_connection == should_attempt_scan_and_connection_)
-    return;
-
-  should_attempt_scan_and_connection_ = should_attempt_scan_and_connection;
-
-  if (should_attempt_scan_and_connection_) {
-    AttemptToStartRemoteDeviceLifecycle();
-    return;
-  }
-
-  if (life_cycle_ &&
-      life_cycle_->GetState() != RemoteDeviceLifeCycle::State::STOPPED) {
-    life_cycle_->Stop();
-    // After stopping lifecycle, we always want to resume scan and connection
-    // attempt after backing off a short period of time.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&UnlockManagerImpl::SetShouldAttemptScanAndConnection,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       /*should_attempt_scan_and_connection=*/true),
-        kRetryAfterPausingScanAndConnectionAttempt);
-  }
 }
 
 void UnlockManagerImpl::FinalizeAuthAttempt(
