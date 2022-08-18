@@ -48,4 +48,11 @@ IpczDriverHandle ObjectBase::PeekBox(IpczHandle box) {
   return handle;
 }
 
+// static
+scoped_refptr<ObjectBase> ObjectBase::Unbox(IpczHandle box) {
+  IpczDriverHandle handle = IPCZ_INVALID_DRIVER_HANDLE;
+  GetIpczAPI().Unbox(box, IPCZ_NO_FLAGS, nullptr, &handle);
+  return TakeFromHandle(handle);
+}
+
 }  // namespace mojo::core::ipcz_driver

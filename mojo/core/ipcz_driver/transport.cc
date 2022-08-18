@@ -15,6 +15,7 @@
 #include "mojo/core/core.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
+#include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -350,9 +351,8 @@ IpczResult Transport::DeserializeObject(
       break;
 
     case ObjectBase::kWrappedPlatformHandle:
-      // TODO: Implement this.
-      NOTIMPLEMENTED();
-      return IPCZ_RESULT_UNIMPLEMENTED;
+      object = WrappedPlatformHandle::Deserialize(object_data, object_handles);
+      break;
 
     default:
       return IPCZ_RESULT_UNIMPLEMENTED;

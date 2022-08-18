@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <tuple>
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
@@ -113,6 +114,9 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
   // Peeks at `box` and returns its underlying driver handle.
   static IpczDriverHandle PeekBox(IpczHandle box);
 
+  // Unboxes `box` and returns a reference to the object it contained.
+  static scoped_refptr<ObjectBase> Unbox(IpczHandle box);
+
  private:
   friend class base::RefCountedThreadSafe<ObjectBase>;
 
@@ -154,6 +158,16 @@ class Object : public ObjectBase {
   // Peeks at `box` and returns a pointer to its underlying T, if the underlying
   // driver object is in fact a T. Does not invalidate `box`.
   static T* FromBox(IpczHandle box) { return FromHandle(PeekBox(box)); }
+
+  // Unboxes `box` and returns a reference to its underlying T. If `box` is not
+  // a box that contains a T, this returns null.
+  static scoped_refptr<T> Unbox(IpczHandle box) {
+    scoped_refptr<T> object = base::WrapRefCounted(T::FromBox(box));
+    if (object) {
+      std::ignore = ObjectBase::Unbox(box);
+    }
+    return object;
+  }
 
  protected:
   ~Object() override = default;

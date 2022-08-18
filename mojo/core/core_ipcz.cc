@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
+#include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core {
@@ -481,14 +483,30 @@ MojoResult MojoWrapPlatformHandleIpcz(
     const MojoPlatformHandle* platform_handle,
     const MojoWrapPlatformHandleOptions* options,
     MojoHandle* mojo_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!platform_handle || !mojo_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  auto handle = PlatformHandle::FromMojoPlatformHandle(platform_handle);
+  *mojo_handle =
+      ipcz_driver::WrappedPlatformHandle::MakeBoxed(std::move(handle));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoUnwrapPlatformHandleIpcz(
     MojoHandle mojo_handle,
     const MojoUnwrapPlatformHandleOptions* options,
     MojoPlatformHandle* platform_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!mojo_handle || !platform_handle ||
+      platform_handle->struct_size < sizeof(*platform_handle)) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  auto wrapper = ipcz_driver::WrappedPlatformHandle::Unbox(mojo_handle);
+  if (!wrapper) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  PlatformHandle::ToMojoPlatformHandle(std::move(wrapper->handle()),
+                                       platform_handle);
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoWrapPlatformSharedMemoryRegionIpcz(

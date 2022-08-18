@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "mojo/core/ipcz_driver/driver.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
+#include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -110,6 +111,24 @@ class MojoIpczTransportTest : public test::MojoTestBase {
     CHECK_EQ(result, IPCZ_RESULT_OK);
     CHECK_EQ(object->type(), T::object_type());
     return base::WrapRefCounted(static_cast<T*>(object.get()));
+  }
+
+  static TestMessage SerializeFileFor(Transport& transmitter, base::File file) {
+    auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+        PlatformHandle(base::ScopedPlatformFile(file.TakePlatformFile())));
+    return SerializeObjectFor(transmitter, std::move(wrapper));
+  }
+
+  static base::File DeserializeFileFrom(Transport& receiver,
+                                        const TestMessage& message) {
+    scoped_refptr<WrappedPlatformHandle> wrapper =
+        DeserializeObjectFrom<WrappedPlatformHandle>(receiver, message);
+    CHECK(wrapper);
+#if BUILDFLAG(IS_WIN)
+    return base::File(wrapper->TakeHandle().TakeHandle());
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    return base::File(wrapper->TakeHandle().TakeFD());
+#endif
   }
 };
 
@@ -337,6 +356,38 @@ TEST_F(MojoIpczTransportTest, TransmitSerializedTransport) {
         EXPECT_EQ(kMessage4, listener.WaitForNextMessage().as_string());
         listener.WaitForDisconnect();
       });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitFileClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+
+  TransportListener listener(*transport);
+  base::File file =
+      DeserializeFileFrom(*transport, listener.WaitForNextMessage());
+
+  std::vector<char> data(file.GetLength());
+  file.Read(0, data.data(), data.size());
+  EXPECT_EQ(kMessage1, std::string(data.begin(), data.end()));
+}
+
+TEST_F(MojoIpczTransportTest, TransmitFile) {
+  RunTestClientWithController("TransmitFileClient", [&](ClientController& c) {
+    scoped_refptr<Transport> transport =
+        CreateAndSendTransport(c.pipe(), c.process());
+
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    base::File new_file(temp_dir.GetPath().AppendASCII("testfile"),
+                        base::File::FLAG_CREATE | base::File::FLAG_READ |
+                            base::File::FLAG_WRITE);
+    new_file.Write(0, kMessage1.data(), kMessage1.size());
+
+    TransportListener listener(*transport);
+    SerializeFileFor(*transport, std::move(new_file)).Transmit(*transport);
+    listener.WaitForDisconnect();
+  });
 }
 
 }  // namespace
