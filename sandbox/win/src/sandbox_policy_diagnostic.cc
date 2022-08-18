@@ -399,17 +399,17 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   }
 
   if (config->policy_) {
-    PolicyGlobal* policy_rules = config->policy_;
-    size_t policy_mem_size = policy_rules->data_size + sizeof(PolicyGlobal);
+    PolicyGlobal* original_rules = config->policy_;
+    size_t policy_mem_size = original_rules->data_size + sizeof(PolicyGlobal);
     policy_rules_.reset(
         static_cast<sandbox::PolicyGlobal*>(::operator new(policy_mem_size)));
-    memcpy(policy_rules_.get(), policy_rules, policy_mem_size);
+    memcpy(policy_rules_.get(), original_rules, policy_mem_size);
     // Fixup pointers (see |PolicyGlobal| in policy_low_level.h).
-    PolicyBuffer** original_entries = policy_rules->entry;
-    PolicyBuffer** copy_base = policy_rules->entry;
+    PolicyBuffer** original_entries = original_rules->entry;
+    PolicyBuffer** copy_base = policy_rules_->entry;
     for (size_t i = 0; i < kMaxServiceCount; i++) {
-      if (policy_rules->entry[i]) {
-        policy_rules->entry[i] = reinterpret_cast<PolicyBuffer*>(
+      if (policy_rules_->entry[i]) {
+        policy_rules_->entry[i] = reinterpret_cast<PolicyBuffer*>(
             reinterpret_cast<char*>(copy_base) +
             (reinterpret_cast<char*>(original_entries[i]) -
              reinterpret_cast<char*>(original_entries)));
