@@ -359,14 +359,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  trials.emplace("FakeBinaryExperiment",
-#if BUILDFLAG(USE_FAKE_BINARY_EXPERIMENT)
-                 "Enabled"
-#else
-                 "Disabled"
-#endif
-  );
-
   return trials;
 }
 

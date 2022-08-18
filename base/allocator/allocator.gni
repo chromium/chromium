@@ -116,11 +116,6 @@ declare_args() {
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
 
-  # Registers the binary for a fake binary A/B experiment. The binaries built
-  # with this flag have no behavior difference, except for setting a synthetic
-  # Finch.
-  use_fake_binary_experiment = false
-
   # The supported platforms are supposed to match `_is_brp_supported`, but we
   # enable the feature on Linux early because it's most widely used for security
   # research

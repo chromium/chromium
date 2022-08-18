@@ -39,8 +39,6 @@ buildflag_header("buildflags") {
 
     # Not to be used directly - see `partition_alloc_config.h`.
     "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
-
-    "USE_FAKE_BINARY_EXPERIMENT=$use_fake_binary_experiment",
   ]
 }
 
