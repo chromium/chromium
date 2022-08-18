@@ -733,7 +733,6 @@ void V4L2CaptureDelegate::ResetUserAndCameraControlsToDefault() {
   if (DoIoctl(VIDIOC_S_EXT_CTRLS, &ext_controls) < 0)
     DPLOG(INFO) << "VIDIOC_S_EXT_CTRLS";
 
-  std::vector<struct v4l2_ext_control> camera_controls;
   for (const auto& control : kControls) {
     std::vector<struct v4l2_ext_control> camera_controls;
 

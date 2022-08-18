@@ -94,12 +94,14 @@ static void SetControlsToMaxValues(int device_fd) {
   auto_focus.value = false;
   special_camera_controls.push_back(auto_focus);
 
-  struct v4l2_ext_controls ext_controls = {};
-  ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
-  ext_controls.count = special_camera_controls.size();
-  ext_controls.controls = special_camera_controls.data();
-  if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &ext_controls)) < 0)
+  struct v4l2_ext_controls camera_ext_controls = {};
+  camera_ext_controls.ctrl_class = V4L2_CID_CAMERA_CLASS;
+  camera_ext_controls.count = special_camera_controls.size();
+  camera_ext_controls.controls = special_camera_controls.data();
+  if (HANDLE_EINTR(ioctl(device_fd, VIDIOC_S_EXT_CTRLS, &camera_ext_controls)) <
+      0) {
     DPLOG(ERROR) << "VIDIOC_S_EXT_CTRLS";
+  }
 
   for (const auto& control : kControls) {
     std::vector<struct v4l2_ext_control> camera_controls;

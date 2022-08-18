@@ -67,8 +67,6 @@ void StatsEventSubscriber::SimpleHistogram::Reset() {
 base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
   base::Value::List histo;
 
-  base::Value::Dict bucket;
-
   if (buckets_.front()) {
     base::Value::Dict bucket;
     bucket.Set(base::StringPrintf("<%" PRId64, min_), buckets_.front());
