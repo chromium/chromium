@@ -54,6 +54,10 @@ TEST_F('NewTabPageAppTest', 'CustomizeUrl', function() {
   runMochaSuite('NewTabPageAppTest customize URL');
 });
 
+TEST_F('NewTabPageAppTest', 'CustomizeChromeSidePanel', function() {
+  runMochaSuite('NewTabPageAppTest customize chrome side panel');
+});
+
 var NewTabPageCustomizeDialogTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

@@ -553,4 +553,36 @@ suite('NewTabPageAppTest', () => {
           $$(app, 'ntp-customize-dialog')!.selectedPage);
     });
   });
+
+  suite('customize chrome side panel', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        customizeChromeEnabled: true,
+      });
+    });
+
+    test('customize chrome button shown initially', () => {
+      // Assert.
+      assertFalse($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+    });
+
+    test('customize chrome button hidden when side panel shown', async () => {
+      // Act.
+      $$<HTMLElement>(app, '#customizeButton')!.click();
+      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(true);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      assertTrue($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+    });
+
+    test('customize chrome button shown when side panel hidden', async () => {
+      // Act.
+      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(false);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      assertFalse($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+    });
+  });
 });
