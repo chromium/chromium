@@ -22,6 +22,7 @@ void* __real_calloc(size_t, size_t);
 void* __real_realloc(void*, size_t);
 void* __real_memalign(size_t, size_t);
 void __real_free(void*);
+size_t __real_malloc_usable_size(void*);
 }  // extern "C"
 
 namespace {
@@ -57,21 +58,27 @@ void RealFree(const AllocatorDispatch*, void* address, void* context) {
   __real_free(address);
 }
 
+size_t RealSizeEstimate(const AllocatorDispatch*,
+                        void* address,
+                        void* context) {
+  return __real_malloc_usable_size(address);
+}
+
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &RealMalloc,   /* alloc_function */
-    &RealMalloc,   /* alloc_unchecked_function */
-    &RealCalloc,   /* alloc_zero_initialized_function */
-    &RealMemalign, /* alloc_aligned_function */
-    &RealRealloc,  /* realloc_function */
-    &RealFree,     /* free_function */
-    nullptr,       /* get_size_estimate_function */
-    nullptr,       /* batch_malloc_function */
-    nullptr,       /* batch_free_function */
-    nullptr,       /* free_definite_size_function */
-    nullptr,       /* aligned_malloc_function */
-    nullptr,       /* aligned_realloc_function */
-    nullptr,       /* aligned_free_function */
-    nullptr,       /* next */
+    &RealMalloc,       /* alloc_function */
+    &RealMalloc,       /* alloc_unchecked_function */
+    &RealCalloc,       /* alloc_zero_initialized_function */
+    &RealMemalign,     /* alloc_aligned_function */
+    &RealRealloc,      /* realloc_function */
+    &RealFree,         /* free_function */
+    &RealSizeEstimate, /* get_size_estimate_function */
+    nullptr,           /* batch_malloc_function */
+    nullptr,           /* batch_free_function */
+    nullptr,           /* free_definite_size_function */
+    nullptr,           /* aligned_malloc_function */
+    nullptr,           /* aligned_realloc_function */
+    nullptr,           /* aligned_free_function */
+    nullptr,           /* next */
 };

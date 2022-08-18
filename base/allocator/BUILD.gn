@@ -68,6 +68,9 @@ config("wrap_malloc_symbols") {
     "-Wl,-wrap,realloc",
     "-Wl,-wrap,valloc",
 
+    # Not allocating memory, but part of the API
+    "-Wl,-wrap,malloc_usable_size",
+
     # <stdlib.h> functions
     "-Wl,-wrap,realpath",
 

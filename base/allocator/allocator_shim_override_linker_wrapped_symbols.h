@@ -54,6 +54,10 @@ SHIM_ALWAYS_EXPORT void* __wrap_valloc(size_t size) {
   return ShimValloc(size, nullptr);
 }
 
+SHIM_ALWAYS_EXPORT size_t __wrap_malloc_usable_size(void* address) {
+  return ShimGetSizeEstimate(address, nullptr);
+}
+
 const size_t kPathMaxSize = 8192;
 static_assert(kPathMaxSize >= PATH_MAX, "");
 
