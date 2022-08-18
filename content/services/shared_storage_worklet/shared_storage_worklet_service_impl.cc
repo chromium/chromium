@@ -4,6 +4,13 @@
 
 #include "content/services/shared_storage_worklet/shared_storage_worklet_service_impl.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "content/common/private_aggregation_host.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
 namespace shared_storage_worklet {
 
 SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
@@ -15,11 +22,15 @@ SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
 
 SharedStorageWorkletServiceImpl::~SharedStorageWorkletServiceImpl() = default;
 
-void SharedStorageWorkletServiceImpl::BindSharedStorageWorkletServiceClient(
+void SharedStorageWorkletServiceImpl::Initialize(
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-        client) {
+        client,
+    mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+        private_aggregation_host) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));
+  if (private_aggregation_host)
+    private_aggregation_host_.Bind(std::move(private_aggregation_host));
 }
 
 void SharedStorageWorkletServiceImpl::AddModule(
@@ -28,9 +39,10 @@ void SharedStorageWorkletServiceImpl::AddModule(
     const GURL& script_source_url,
     AddModuleCallback callback) {
   DCHECK(!global_scope_);
-  GetGlobalScope()->AddModule(std::move(pending_url_loader_factory),
-                              client_.get(), script_source_url,
-                              std::move(callback));
+  GetGlobalScope()->AddModule(
+      std::move(pending_url_loader_factory), client_.get(),
+      private_aggregation_host_ ? private_aggregation_host_.get() : nullptr,
+      script_source_url, std::move(callback));
 }
 
 void SharedStorageWorkletServiceImpl::RunURLSelectionOperation(

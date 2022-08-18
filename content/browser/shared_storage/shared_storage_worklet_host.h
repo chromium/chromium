@@ -165,6 +165,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   shared_storage_worklet::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
 
+  // Binds a receiver to the `PrivateAggregationManager` and returns the
+  // `PendingRemote`. If there is no `PrivateAggregationManger`, returns an
+  // invalid `PendingRemote`.
+  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+  MaybeBindPrivateAggregationHost();
+
   bool IsSharedStorageAllowed();
 
   AddModuleState add_module_state_ = AddModuleState::kNotInitiated;

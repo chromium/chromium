@@ -4,16 +4,25 @@
 
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/common/renderer.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
@@ -659,11 +668,32 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
     driver_->StartWorkletService(
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver());
 
-    shared_storage_worklet_service_->BindSharedStorageWorkletServiceClient(
-        shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote());
+    shared_storage_worklet_service_->Initialize(
+        shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
+        MaybeBindPrivateAggregationHost());
   }
 
   return shared_storage_worklet_service_.get();
+}
+
+mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
+  DCHECK(browser_context_);
+  PrivateAggregationManager* private_aggregation_manager =
+      PrivateAggregationManager::GetManager(*browser_context_);
+  if (!private_aggregation_manager)
+    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+
+  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+      pending_pa_host_remote;
+  if (!private_aggregation_manager->BindNewReceiver(
+          shared_storage_origin_,
+          PrivateAggregationBudgetKey::Api::kSharedStorage,
+          pending_pa_host_remote.InitWithNewPipeAndPassReceiver())) {
+    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+  }
+
+  return pending_pa_host_remote;
 }
 
 bool SharedStorageWorkletHost::IsSharedStorageAllowed() {
