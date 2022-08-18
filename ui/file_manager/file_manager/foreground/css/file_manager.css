@@ -1083,6 +1083,17 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   min-width: 123px;
 }
 
+.dialog-footer cr-input {
+  --cr-input-background-color: var(--cros-textfield-background-color);
+  --cr-input-border-radius: 0;
+  --cr-input-color: var(--cros-textfield-input-color);
+  --cr-input-error-color: var(--cros-textfield-label-color-error);
+  --cr-input-error-display: none;
+  --cr-input-focus-color: var(--cros-textfield-label-color-focus);
+  --cr-input-min-height: 32px;
+  width: 100%;
+}
+
 .dialog-footer .buttonbar {
   display: flex;
   height: 32px;
