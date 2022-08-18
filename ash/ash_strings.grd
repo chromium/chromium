@@ -5160,6 +5160,12 @@ New install
       <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
         Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>
       </message>
+      <message name="IDS_GLANCEABLES_UP_NEXT" desc="Section header for upcoming calendar events. Used on the glanceables surface (welcome screen).">
+        Up next
+      </message>
+      <message name="IDS_GLANCEABLES_RESTORE_SESSION" desc="Section header for a button that restores the last user session windows. Used on the glanceables surface (welcome screen).">
+        Restore last session
+      </message>
     </messages>
   </release>
 </grit>

@@ -8,6 +8,11 @@
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
+namespace views {
+class BoxLayout;
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class GlanceablesWeatherView;
@@ -21,12 +26,19 @@ class ASH_EXPORT GlanceablesView : public views::View {
   GlanceablesView& operator=(const GlanceablesView&) = delete;
   ~GlanceablesView() override;
 
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnThemeChanged() override;
+
   GlanceablesWelcomeLabel* welcome_label_for_test() { return welcome_label_; }
   GlanceablesWeatherView* weather_view_for_test() { return weather_view_; }
 
  private:
+  views::BoxLayout* layout_ = nullptr;
   GlanceablesWelcomeLabel* welcome_label_ = nullptr;
   GlanceablesWeatherView* weather_view_ = nullptr;
+  views::Label* up_next_label_ = nullptr;
+  views::Label* restore_session_label_ = nullptr;
 };
 
 }  // namespace ash
