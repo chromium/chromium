@@ -50,8 +50,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window || active_window != event->target() ||
-      !WindowState::Get(active_window)->CanResize() ||
-      WindowState::Get(active_window)->IsFullscreen()) {
+      !WindowState::Get(active_window)->CanResize()) {
     return;
   }
 

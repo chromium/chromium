@@ -74,6 +74,10 @@ TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
 
 void TabletModeMultitaskMenu::Show() {
   DCHECK(multitask_menu_widget_);
+  auto* multitask_menu_window = multitask_menu_widget_->GetNativeWindow();
+  // TODO(sophiewen): Consider adding transient child instead.
+  multitask_menu_window->parent()->StackChildAbove(multitask_menu_window,
+                                                   window_);
   multitask_menu_widget_->Show();
 }
 
