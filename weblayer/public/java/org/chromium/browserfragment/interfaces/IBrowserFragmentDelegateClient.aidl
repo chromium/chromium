@@ -8,5 +8,5 @@ import android.view.SurfaceControlViewHost.SurfacePackage;
 
 oneway interface IBrowserFragmentDelegateClient {
     void onSurfacePackageReady(in SurfacePackage surfacePackage) = 1;
-    void onStarted() = 2;
+    void onStarted(in Bundle instanceState) = 2;
 }

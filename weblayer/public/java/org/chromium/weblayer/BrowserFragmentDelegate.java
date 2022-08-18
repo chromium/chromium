@@ -128,8 +128,13 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     public void onStart() {
         mHandler.post(() -> {
             mFragment.onStart();
+
+            // Retrieve the instance state.
+            Bundle instanceState = new Bundle();
+            mFragment.onSaveInstanceState(instanceState);
+
             try {
-                mClient.onStarted();
+                mClient.onStarted(instanceState);
             } catch (RemoteException e) {
             }
         });

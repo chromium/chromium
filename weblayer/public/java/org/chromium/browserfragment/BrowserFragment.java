@@ -40,6 +40,7 @@ public class BrowserFragment extends Fragment {
     private final TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
     private ListenableFuture<TabManager> mFutureTabManager;
     private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
+    private Bundle mInstanceState = new Bundle();
 
     private final IBrowserFragmentDelegateClient mClient =
             new IBrowserFragmentDelegateClient.Stub() {
@@ -50,7 +51,8 @@ public class BrowserFragment extends Fragment {
                 }
 
                 @Override
-                public void onStarted() {
+                public void onStarted(Bundle instanceState) {
+                    mInstanceState = instanceState;
                     mTabManagerCompleter.set(new TabManager(mDelegate));
                 }
             };
@@ -193,8 +195,8 @@ public class BrowserFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO(rayankans): Synchronously retrieve instance state from delegate.
         super.onSaveInstanceState(outState);
+        outState.putAll(mInstanceState);
     }
 
     public Browser getBrowser() {
