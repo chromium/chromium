@@ -287,13 +287,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ReauthToken.FetchDuration.{Result}" units="ms"
-    expires_after="2022-06-01">
-  <owner>yunkez@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+    expires_after="2023-08-18">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Records the fetch duration of the reauth request token from the recovery
     service when it {Result}. This is recorded on the GAIA reauth screen when
     Cryptohome recovery is deemed to be needed in high probablity.
+
+    Warning: this histogram was expired from 2022-06-02 to 2022-08-18; data may
+    be missing.
   </summary>
   <token key="Result">
     <variant name="Failure" summary="fails to fetch"/>

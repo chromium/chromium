@@ -309,24 +309,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.LoginRequests" enum="GaiaLoginVariant"
-    expires_after="2022-04-24">
-  <owner>yunkez@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+    expires_after="2023-08-18">
+  <owner>dkuzmin@google.com</owner>
+  <owner>rsorokin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Tracks all user login requests differentiated by flows on the Gaia screen.
     Recorded when password is entered for authentication. Note: this is not
     recorded for SAML flows.
+
+    Warning: this histogram was expired from 2022-04-25 to 2022-08-18; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.SuccessLoginRequests" enum="GaiaLoginVariant"
-    expires_after="2022-04-24">
-  <owner>yunkez@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+    expires_after="2023-08-18">
+  <owner>dkuzmin@google.com</owner>
+  <owner>rsorokin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Tracks all successful user login requests differentiated by flows on the
     Gaia screen. Recorded when authentication is successful. Note: this is not
     recorded for SAML flows.
+
+    Warning: this histogram was expired from 2022-04-25 to 2022-08-18; data may
+    be missing.
   </summary>
 </histogram>
 
