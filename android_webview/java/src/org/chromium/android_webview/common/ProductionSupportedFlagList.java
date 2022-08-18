@@ -346,6 +346,9 @@ public final class ProductionSupportedFlagList {
                     "Controls whether wake ups are possible for canceled tasks."),
             Flag.baseFeature(BaseFeatures.REMOVE_CANCELED_TASKS_IN_TASK_QUEUE,
                     "Controls whether or not canceled delayed tasks are removed from task queues."),
+            Flag.baseFeature(BaseFeatures.ALWAYS_ABANDON_SCHEDULED_TASK,
+                    "Controls whether or not the scheduled task is always abandoned when a timer "
+                            + "is stopped or resets."),
             Flag.baseFeature(BlinkFeatures.THROTTLE_INTERSECTION_OBSERVER_UMA,
                     "Reduces fine-grained UMA metrics for IntersectionObserver."),
             Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,

@@ -60136,6 +60136,7 @@ from previous Chrome versions.
   <int value="542960889" label="HeavyAdIntervention:enabled"/>
   <int value="543210543" label="DisableQuickAnswersV2Translation:disabled"/>
   <int value="544229679" label="DmTokenDeletion:enabled"/>
+  <int value="544334545" label="AlwaysAbandonScheduledTask:enabled"/>
   <int value="544443920" label="QuickAnswers:disabled"/>
   <int value="546043947" label="ImplicitRootScroller:enabled"/>
   <int value="546464390" label="LiveCaption:enabled"/>
@@ -61155,6 +61156,7 @@ from previous Chrome versions.
   <int value="1184093076" label="WebRtcUseMinMaxVEADimensions:enabled"/>
   <int value="1184225265" label="AllowSyncXHRInPageDismissal:enabled"/>
   <int value="1185424279" label="enable-media-router"/>
+  <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1188109510" label="AssistantAudioEraser:enabled"/>
   <int value="1190035852" label="MediaRemoting:enabled"/>

@@ -54,6 +54,9 @@ const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks{
 const BASE_EXPORT Feature kRemoveCanceledTasksInTaskQueue = {
     "RemoveCanceledTasksInTaskQueue2", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const BASE_EXPORT Feature kAlwaysAbandonScheduledTask = {
+    "AlwaysAbandonScheduledTask", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const BASE_EXPORT Feature kAddTaskLeewayFeature = {
     "AddTaskLeeway", base::FEATURE_ENABLED_BY_DEFAULT};
 

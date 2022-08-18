@@ -74,6 +74,13 @@ extern const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks;
 // Controls whether or not canceled delayed tasks are removed from task queues.
 extern const BASE_EXPORT base::Feature kRemoveCanceledTasksInTaskQueue;
 
+// This feature controls whether or not the scheduled task is always abandoned
+// when a timer is stopped or reset. The re-use of the scheduled task is an
+// optimization that ensures a timer can not leave multiple canceled tasks in
+// the task queue. Meant to be used in conjunction with
+// kRemoveCanceledTasksInTaskQueue.
+extern const BASE_EXPORT base::Feature kAlwaysAbandonScheduledTask;
+
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
 extern const BASE_EXPORT Feature kAddTaskLeewayFeature;
