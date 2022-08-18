@@ -192,6 +192,17 @@ class WeaklyOwnedCallback {
   base::WeakPtrFactory<WeaklyOwnedCallback> weak_ptr_factory_{this};
 };
 
+struct DBusTypeInfo {
+  const char* dbus_signature;
+  const char* type_name;
+};
+
+// To minimize the overhead of constructing a struct, this function returns
+// a const reference. Specialization implementations are recommended to return
+// a statically allocated DBusTypeInfo for this reason.
+template <typename T>
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo();
+
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.
 class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
@@ -241,7 +252,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Generalized writer for container types using variants (i.e. a{sv}).
   template <typename T>
   static void WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                        const T& data);
+                                        const T& data) {
+    dbus::MessageWriter variant(nullptr);
+    writer->OpenVariant(GetDBusTypeInfo<T>().dbus_signature, &variant);
+    WriteDBusParam(&variant, data);
+    writer->CloseContainer(&variant);
+  }
 
   // Optional container type needs to be explicitly listed here.
   template <typename T>

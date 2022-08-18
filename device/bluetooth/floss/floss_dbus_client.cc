@@ -136,6 +136,96 @@ std::string Error::ToString() {
   return ss.str();
 }
 
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<bool>() {
+  static DBusTypeInfo info{"b", "bool"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<uint8_t>() {
+  static DBusTypeInfo info{"y", "uint8_t"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<int8_t>() {
+  static DBusTypeInfo info{"y", "int8"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<uint16_t>() {
+  static DBusTypeInfo info{"q", "uint16"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<int16_t>() {
+  static DBusTypeInfo info{"n", "int16"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<uint32_t>() {
+  static DBusTypeInfo info{"u", "uint32"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<int32_t>() {
+  static DBusTypeInfo info{"i", "int32"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<uint64_t>() {
+  static DBusTypeInfo info{"t", "uint64"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<int64_t>() {
+  static DBusTypeInfo info{"x", "int64"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<double>() {
+  static DBusTypeInfo info{"d", "double"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<std::string>() {
+  static DBusTypeInfo info{"s", "string"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<dbus::ObjectPath>() {
+  static DBusTypeInfo info{"o", "object_path"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<base::ScopedFD>() {
+  static DBusTypeInfo info{"h", "FD"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<FlossDeviceId>() {
+  static DBusTypeInfo info{"a{sv}", "FlossDeviceId"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<device::BluetoothUUID>() {
+  static DBusTypeInfo info{"ay", "BluetoothUUID"};
+  return info;
+}
+
 FlossDBusClient::FlossDBusClient() = default;
 FlossDBusClient::~FlossDBusClient() = default;
 
@@ -383,37 +473,15 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const FlossDeviceId& device) {
-  dbus::MessageWriter variant(nullptr);
-
-  writer->OpenVariant("a{sv}", &variant);
-  WriteDBusParam(&variant, device);
-  writer->CloseContainer(&variant);
-}
-
-template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const uint64_t& data) {
   writer->AppendUint64(data);
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const uint64_t& data) {
-  writer->AppendVariantOfUint64(data);
-}
-
-template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const uint32_t& data) {
   writer->AppendUint32(data);
-}
-
-template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const uint32_t& data) {
-  writer->AppendVariantOfUint32(data);
 }
 
 template void FlossDBusClient::WriteDBusParam<uint32_t>(
@@ -427,21 +495,9 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const int32_t& data) {
-  writer->AppendVariantOfInt32(data);
-}
-
-template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const std::string& data) {
   writer->AppendString(data);
-}
-
-template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const std::string& data) {
-  writer->AppendVariantOfString(data);
 }
 
 template <>
@@ -463,29 +519,9 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(
-    dbus::MessageWriter* writer,
-    const device::BluetoothUUID& uuid) {
-  dbus::MessageWriter variant(nullptr);
-  writer->OpenVariant("ay", &variant);
-  WriteDBusParam(&variant, uuid);
-  writer->CloseContainer(&variant);
-}
-
-template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const base::ScopedFD& fd) {
   writer->AppendFileDescriptor(fd.get());
-}
-
-template <>
-void FlossDBusClient::WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
-                                                const base::ScopedFD& fd) {
-  dbus::MessageWriter variant(nullptr);
-
-  writer->OpenVariant("h", &variant);
-  variant.AppendFileDescriptor(fd.get());
-  writer->CloseContainer(&variant);
 }
 
 template <>
