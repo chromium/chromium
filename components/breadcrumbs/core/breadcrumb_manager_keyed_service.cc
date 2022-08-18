@@ -36,21 +36,16 @@ void BreadcrumbManagerKeyedService::StartPersisting(
     BreadcrumbPersistentStorageManager* persistent_storage_manager) {
   DCHECK(persistent_storage_manager);
 
-  if (persistent_storage_manager_) {
+  if (persistent_storage_manager_)
     StopPersisting();
-  }
-
-  CHECK(breadcrumb_manager_);
-  CHECK(!breadcrumb_manager_->HasObserver(persistent_storage_manager));
 
   persistent_storage_manager_ = persistent_storage_manager;
   persistent_storage_manager_->MonitorBreadcrumbManagerService(this);
 }
 
 void BreadcrumbManagerKeyedService::StopPersisting() {
-  if (!persistent_storage_manager_) {
+  if (!persistent_storage_manager_)
     return;
-  }
 
   persistent_storage_manager_->StopMonitoringBreadcrumbManagerService(this);
   persistent_storage_manager_ = nullptr;
