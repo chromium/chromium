@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_task_selection_helper.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
@@ -679,6 +680,16 @@ bool ExecuteFileTask(Profile* profile,
     return result;
   }
 
+  for (const FileSystemURL& file_url : file_urls) {
+    if (file_manager::util::IsDriveLocalPath(profile, file_url.path()) &&
+        file_manager::file_tasks::IsOfficeFile(file_url.path())) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
+              OPEN_FROM_FILES_APP);
+    }
+  }
+
   // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
   if (ash::features::IsFileManagerSwaEnabled() && IsFilesAppId(task.app_id)) {
     std::u16string title;
@@ -938,6 +949,16 @@ bool IsHtmlFile(const base::FilePath& path) {
   constexpr const char* kHtmlExtensions[] = {".htm", ".html", ".mhtml",
                                              ".xht", ".xhtm", ".xhtml"};
   for (const char* extension : kHtmlExtensions) {
+    if (path.MatchesExtension(extension))
+      return true;
+  }
+  return false;
+}
+
+bool IsOfficeFile(const base::FilePath& path) {
+  constexpr const char* kOfficeExtensions[] = {".doc",  ".docx", ".xls",
+                                               ".xlsx", ".ppt",  ".pptx"};
+  for (const char* extension : kOfficeExtensions) {
     if (path.MatchesExtension(extension))
       return true;
   }

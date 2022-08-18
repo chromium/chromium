@@ -589,6 +589,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.UseOutsideDrive"
+    enum="OfficeFilesUseOutsideDriveHook" expires_after="2023-02-15">
+  <owner>cassycc@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: When a user uses a MS Office file outside of Drive,
+    records which file system operation is used (File picker selection,
+    Copy/Move/Zip or Open from files app).
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.WebDriveOffice"
     enum="WebDriveOfficeTaskResult" expires_after="M110">
   <owner>simmonsjosh@google.com</owner>

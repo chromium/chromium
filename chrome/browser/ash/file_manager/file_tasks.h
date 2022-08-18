@@ -167,6 +167,23 @@ enum class WebDriveOfficeTaskResult {
   kMaxValue = UNEXPECTED_ALTERNATE_URL,
 };
 
+// UMA metric name that tracks the result of using a MS Office file outside
+// of Drive.
+constexpr char kUseOutsideDriveMetricName[] =
+    "FileBrowser.OfficeFiles.UseOutsideDrive";
+
+// List of UMA enum values for file system operations that let a user use a
+// MS Office file outside of Drive. The enum values must be kept in sync with
+// OfficeFilesUseOutsideDriveHook in tools/metrics/histograms/enums.xml.
+enum class OfficeFilesUseOutsideDriveHook {
+  FILE_PICKER_SELECTION = 0,
+  COPY = 1,
+  MOVE = 2,
+  ZIP = 3,
+  OPEN_FROM_FILES_APP = 4,
+  kMaxValue = OPEN_FROM_FILES_APP,
+};
+
 // Describes a task.
 // See the comment above for <app-id>, <task-type>, and <action-id>.
 struct TaskDescriptor {
@@ -318,6 +335,9 @@ void ChooseAndSetDefaultTask(Profile* profile,
 
 // Returns whether |path| is an HTML file according to its extension.
 bool IsHtmlFile(const base::FilePath& path);
+
+// Returns whether |path| is a MS Office file according to its extension.
+bool IsOfficeFile(const base::FilePath& path);
 
 }  // namespace file_tasks
 }  // namespace file_manager

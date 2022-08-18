@@ -14,13 +14,14 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -209,6 +209,24 @@ void CopyOrMoveIOTask::Complete(State state) {
 // |progress_.total_bytes|.
 void CopyOrMoveIOTask::GetFileSize(size_t idx) {
   DCHECK(idx < progress_.sources.size());
+
+  const base::FilePath& source = progress_.sources[idx].url.path();
+  const base::FilePath& destination = progress_.destination_folder.path();
+
+  if (file_manager::util::IsDriveLocalPath(profile_, source) &&
+      file_manager::file_tasks::IsOfficeFile(source) &&
+      !file_manager::util::IsDriveLocalPath(profile_, destination)) {
+    if (progress_.type == OperationType::kCopy) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::COPY);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::MOVE);
+    }
+  }
+
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

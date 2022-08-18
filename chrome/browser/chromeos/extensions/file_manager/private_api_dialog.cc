@@ -10,8 +10,12 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +24,8 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using content::BrowserThread;
@@ -51,18 +57,32 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
 
   std::vector<GURL> file_paths;
   file_paths.emplace_back(params->selected_path);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+  const storage::FileSystemURL file_system_url =
+      file_system_context->CrackURLInFirstPartyContext(file_paths.back());
 
   file_manager::util::GetSelectedFileInfoLocalPathOption option =
       file_manager::util::NO_LOCAL_PATH_RESOLUTION;
   if (params->should_return_local_path) {
-    option = params->for_opening ?
-        file_manager::util::NEED_LOCAL_PATH_FOR_OPENING :
-        file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
+    option = params->for_opening
+                 ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
+                 : file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
+  }
+
+  if (file_manager::util::IsDriveLocalPath(profile, file_system_url.path()) &&
+      file_manager::file_tasks::IsOfficeFile(file_system_url.path()) &&
+      params->for_opening) {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_manager::file_tasks::kUseOutsideDriveMetricName,
+        file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
+            FILE_PICKER_SELECTION);
   }
 
   file_manager::util::GetSelectedFileInfo(
-      render_frame_host(), Profile::FromBrowserContext(browser_context()),
-      file_paths, option,
+      render_frame_host(), profile, file_paths, option,
       base::BindOnce(
           &FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse,
           this, params->for_opening, params->index));
@@ -93,9 +113,25 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+
   std::vector<GURL> file_urls;
-  for (size_t i = 0; i < params->selected_paths.size(); ++i)
-    file_urls.emplace_back(params->selected_paths[i]);
+  for (const auto& selected_path : params->selected_paths) {
+    file_urls.emplace_back(selected_path);
+    const storage::FileSystemURL file_system_url =
+        file_system_context->CrackURLInFirstPartyContext(file_urls.back());
+
+    if (file_manager::util::IsDriveLocalPath(profile, file_system_url.path()) &&
+        file_manager::file_tasks::IsOfficeFile(file_system_url.path())) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
+              FILE_PICKER_SELECTION);
+    }
+  }
 
   file_manager::util::GetSelectedFileInfo(
       render_frame_host(), Profile::FromBrowserContext(browser_context()),

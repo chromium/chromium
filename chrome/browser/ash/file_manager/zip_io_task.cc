@@ -16,9 +16,12 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -41,6 +44,14 @@ int64_t ComputeSize(base::FilePath src_dir,
   base::File::Info info;
   for (const base::FilePath& relative_path : src_files) {
     const base::FilePath absolute_path = src_dir.Append(relative_path);
+
+    if (drive::util::IsUnderDriveMountPoint(absolute_path) &&
+        file_manager::file_tasks::IsOfficeFile(absolute_path)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::ZIP);
+    }
+
     if (base::GetFileInfo(absolute_path, &info))
       total_bytes += info.is_directory
                          ? base::ComputeDirectorySize(absolute_path)

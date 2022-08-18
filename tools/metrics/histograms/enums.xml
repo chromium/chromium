@@ -71691,6 +71691,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Quick Office"/>
 </enum>
 
+<enum name="OfficeFilesUseOutsideDriveHook">
+  <summary>
+    Hooks for file system operations that use MS Office files outside of Drive.
+  </summary>
+  <int value="0" label="File picker selection"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Move"/>
+  <int value="3" label="Zip"/>
+  <int value="4" label="Open from files app"/>
+</enum>
+
 <enum name="OfflineCapableReason">
   <int value="0" label="kTimeout"/>
   <int value="1" label="kSuccess"/>
