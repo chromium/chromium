@@ -671,7 +671,8 @@ class RTCVideoEncoder::Impl
   // class, as there is no error callback in the webrtc::VideoEncoder interface.
   // Instead, we cache an error status here and return it the next time an
   // interface entry point is called.
-  int32_t status_;
+  int32_t status_ GUARDED_BY_CONTEXT(sequence_checker_){
+      WEBRTC_VIDEO_CODEC_UNINITIALIZED};
 
   // Protect |encoder_info_|. |encoder_info_| is read or written on
   // |gpu_task_runner_| in Impl. It can be read in RTCVideoEncoder on other
