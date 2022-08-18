@@ -11,7 +11,7 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/cdm/cdm_allocator.h"
@@ -40,19 +40,18 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
   // Map of available buffers. Done as a mapping of capacity to shmem regions to
   // make it efficient to find an available buffer of a particular size.
   // Regions in the map are unmapped.
-  using AvailableRegionMap =
-      std::multimap<size_t, base::UnsafeSharedMemoryRegion>;
+  using AvailableRegionMap = std::multimap<size_t, base::MappedReadOnlyRegion>;
 
   // Allocates a shmem region of at least |capacity| bytes.
-  base::UnsafeSharedMemoryRegion AllocateNewRegion(size_t capacity);
+  base::MappedReadOnlyRegion AllocateNewRegion(size_t capacity);
 
   // Returns |region| to the map of available buffers, ready to be used the
   // next time CreateCdmBuffer() is called.
-  void AddRegionToAvailableMap(base::UnsafeSharedMemoryRegion region);
+  void AddRegionToAvailableMap(base::MappedReadOnlyRegion region);
 
-  // Returns the base::UnsafeSharedMemoryRegion for a cdm::Buffer allocated by
-  // this class.
-  const base::UnsafeSharedMemoryRegion& GetRegionForTesting(
+  // Returns the base::MappedReadOnlyRegion for a cdm::Buffer allocated by this
+  // class.
+  const base::MappedReadOnlyRegion& GetRegionForTesting(
       cdm::Buffer* buffer) const;
 
   // Returns the number of buffers in |available_regions_|.

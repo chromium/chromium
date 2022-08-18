@@ -395,7 +395,7 @@ struct EosVideoFrameData {
 // This defines video frame data stored in a Mojo shared buffer.
 struct SharedBufferVideoFrameData {
   // Shared memory region for the frame data.
-  mojo_base.mojom.UnsafeSharedMemoryRegion frame_data;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion frame_data;
 
   // Stride and offsets for each plane. Offsets are relative to the start
   // of |frame_data|.

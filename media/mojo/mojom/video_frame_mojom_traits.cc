@@ -42,7 +42,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     const media::MojoSharedBufferVideoFrame* mojo_frame =
         static_cast<const media::MojoSharedBufferVideoFrame*>(input);
 
-    base::UnsafeSharedMemoryRegion region =
+    base::ReadOnlySharedMemoryRegion region =
         mojo_frame->shmem_region().Duplicate();
     DCHECK(region.IsValid());
     size_t num_planes = media::VideoFrame::NumPlanes(mojo_frame->format());
@@ -133,7 +133,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     media::mojom::SharedBufferVideoFrameDataDataView shared_buffer_data;
     data.GetSharedBufferDataDataView(&shared_buffer_data);
 
-    base::UnsafeSharedMemoryRegion region;
+    base::ReadOnlySharedMemoryRegion region;
     if (!shared_buffer_data.ReadFrameData(&region))
       return false;
 

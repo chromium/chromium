@@ -9,8 +9,8 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/stl_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
@@ -365,7 +365,7 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
 
 struct AlignedDataHelper::VideoFrameData {
   VideoFrameData() = default;
-  explicit VideoFrameData(base::UnsafeSharedMemoryRegion shmem_region)
+  explicit VideoFrameData(base::ReadOnlySharedMemoryRegion shmem_region)
       : shmem_region(std::move(shmem_region)) {}
   explicit VideoFrameData(gfx::GpuMemoryBufferHandle gmb_handle)
       : gmb_handle(std::move(gmb_handle)) {}
@@ -375,7 +375,7 @@ struct AlignedDataHelper::VideoFrameData {
   VideoFrameData(const VideoFrameData&) = delete;
   VideoFrameData& operator=(const VideoFrameData&) = delete;
 
-  base::UnsafeSharedMemoryRegion shmem_region;
+  base::ReadOnlySharedMemoryRegion shmem_region;
   gfx::GpuMemoryBufferHandle gmb_handle;
 };
 
@@ -538,9 +538,10 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
   const uint8_t* src_frame_ptr = &stream[0];
   for (size_t i = 0; i < num_frames_; i++) {
-    auto region = base::UnsafeSharedMemoryRegion::Create(video_frame_size);
-    ASSERT_TRUE(region.IsValid()) << "Failed allocating a region";
-    base::WritableSharedMemoryMapping mapping = region.Map();
+    auto mapped_region =
+        base::ReadOnlySharedMemoryRegion::Create(video_frame_size);
+    ASSERT_TRUE(mapped_region.IsValid()) << "Failed allocating a region";
+    base::WritableSharedMemoryMapping& mapping = mapped_region.mapping;
     ASSERT_TRUE(mapping.IsValid());
     uint8_t* buffer = mapping.GetMemoryAs<uint8_t>();
     for (size_t j = 0; j < num_planes; j++) {
@@ -553,7 +554,7 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
                         src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
-    video_frame_data_[i] = VideoFrameData(std::move(region));
+    video_frame_data_[i] = VideoFrameData(std::move(mapped_region.region));
   }
 }
 

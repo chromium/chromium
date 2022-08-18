@@ -36,7 +36,7 @@ class MojoCdmAllocatorTest : public testing::Test {
     return allocator_.CreateCdmVideoFrame();
   }
 
-  const base::UnsafeSharedMemoryRegion& GetRegion(cdm::Buffer* buffer) {
+  const base::MappedReadOnlyRegion& GetRegion(cdm::Buffer* buffer) {
     return allocator_.GetRegionForTesting(buffer);
   }
 
@@ -65,8 +65,7 @@ TEST_F(MojoCdmAllocatorTest, ReuseCdmBuffer) {
   cdm::Buffer* buffer = CreateCdmBuffer(kRandomDataSize);
   {
     // Create a mapping and write some test data.
-    const auto& region = GetRegion(buffer);
-    base::WritableSharedMemoryMapping mapping = region.Map();
+    auto& mapping = GetRegion(buffer).mapping;
     // Note: deliberately using sizeof() to include the null terminator.
     memcpy(mapping.memory(), kTestData, sizeof(kTestData));
   }
@@ -76,9 +75,7 @@ TEST_F(MojoCdmAllocatorTest, ReuseCdmBuffer) {
   // just freed.
   cdm::Buffer* new_buffer = CreateCdmBuffer(kRandomDataSize);
   {
-    const auto& region = GetRegion(new_buffer);
-    // Unsafe regions are always mapped as writable.
-    base::WritableSharedMemoryMapping mapping = region.Map();
+    auto& mapping = GetRegion(new_buffer).mapping;
     // Check that the test data that was written there is still there as a proxy
     // signal for checking that the shmem region is reused.
     EXPECT_STREQ(kTestData, mapping.GetMemoryAs<char>());

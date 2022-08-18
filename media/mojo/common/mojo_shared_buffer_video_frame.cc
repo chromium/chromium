@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 
@@ -41,8 +40,9 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
 
   // Allocate a shared memory buffer big enough to hold the desired frame.
   const size_t allocation_size = VideoFrame::AllocationSize(format, coded_size);
-  auto region = base::UnsafeSharedMemoryRegion::Create(allocation_size);
-  if (!region.IsValid()) {
+  auto mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(allocation_size);
+  if (!mapped_region.IsValid()) {
     DLOG(ERROR) << __func__ << " Unable to allocate memory.";
     return nullptr;
   }
@@ -64,7 +64,7 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
     const int32_t strides[] = {coded_size.width(), coded_size.width() / 2,
                                coded_size.width() / 2};
     return Create(format, coded_size, visible_rect, dimensions,
-                  std::move(region), offsets, strides, timestamp);
+                  std::move(mapped_region.region), offsets, strides, timestamp);
   } else {
     // |format| is PIXEL_FORMAT_NV12.
     // Create and initialize the frame. As this is NV12 format, the UV plane
@@ -76,7 +76,7 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
                                 static_cast<uint32_t>(coded_size.GetArea())};
     const int32_t strides[] = {coded_size.width(), coded_size.width()};
     return Create(format, coded_size, visible_rect, dimensions,
-                  std::move(region), offsets, strides, timestamp);
+                  std::move(mapped_region.region), offsets, strides, timestamp);
   }
 }
 
@@ -99,46 +99,28 @@ MojoSharedBufferVideoFrame::CreateFromYUVFrame(VideoFrame& frame) {
     aggregate_size += sizes[i];
   }
 
-  auto region = base::UnsafeSharedMemoryRegion::Create(aggregate_size);
-  if (!region.IsValid()) {
+  auto mapped_region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
+  if (!mapped_region.IsValid()) {
     DLOG(ERROR) << "Can't create new frame backing memory";
     return nullptr;
   }
-  base::WritableSharedMemoryMapping dst_mapping = region.Map();
-  if (!dst_mapping.IsValid()) {
-    DLOG(ERROR) << "Can't create map frame backing memory";
-    return nullptr;
-  }
 
+  base::WritableSharedMemoryMapping& dst_mapping = mapped_region.mapping;
+  uint8_t* dst_data = dst_mapping.GetMemoryAs<uint8_t>();
   // The data from |frame| may not be consecutive between planes. Copy data into
   // a shared memory buffer which is tightly packed. Padding inside each planes
   // are preserved.
+  for (size_t i = 0; i < num_planes; ++i) {
+    memcpy(dst_data + offsets[i], static_cast<const void*>(frame.data(i)),
+           sizes[i]);
+  }
+
   scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
       MojoSharedBufferVideoFrame::Create(
           frame.format(), frame.coded_size(), frame.visible_rect(),
-          frame.natural_size(), std::move(region), offsets, strides,
-          frame.timestamp());
+          frame.natural_size(), std::move(mapped_region.region), offsets,
+          strides, frame.timestamp());
   CHECK(!!mojo_frame);
-
-  // If the source memory region is a shared memory region we must map it too.
-  base::WritableSharedMemoryMapping src_mapping;
-  if (frame.storage_type() == VideoFrame::STORAGE_SHMEM) {
-    if (!frame.shm_region()->IsValid()) {
-      DLOG(ERROR) << "Invalid source shared memory region";
-      return nullptr;
-    }
-    src_mapping = frame.shm_region()->Map();
-    if (!src_mapping.IsValid()) {
-      DLOG(ERROR) << "Can't map source shared memory region";
-      return nullptr;
-    }
-  }
-
-  // Copy plane data while mappings are in scope.
-  for (size_t i = 0; i < num_planes; ++i) {
-    memcpy(mojo_frame->shared_buffer_data() + offsets[i],
-           static_cast<const void*>(frame.data(i)), sizes[i]);
-  }
 
   // TODO(xingliu): Maybe also copy the alpha plane in
   // |MojoSharedBufferVideoFrame|. The alpha plane is ignored here, but
@@ -153,7 +135,7 @@ scoped_refptr<MojoSharedBufferVideoFrame> MojoSharedBufferVideoFrame::Create(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    base::UnsafeSharedMemoryRegion region,
+    base::ReadOnlySharedMemoryRegion region,
     base::span<const uint32_t> offsets,
     base::span<const int32_t> strides,
     base::TimeDelta timestamp) {
@@ -242,7 +224,7 @@ MojoSharedBufferVideoFrame::MojoSharedBufferVideoFrame(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    base::UnsafeSharedMemoryRegion region,
+    base::ReadOnlySharedMemoryRegion region,
     base::TimeDelta timestamp)
     : VideoFrame(layout,
                  STORAGE_MOJO_SHARED_BUFFER,
@@ -253,36 +235,29 @@ MojoSharedBufferVideoFrame::MojoSharedBufferVideoFrame(
   DCHECK(region_.IsValid());
 }
 
+MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() = default;
+
 bool MojoSharedBufferVideoFrame::Init(base::span<const uint32_t> offsets) {
+  // TODO(hiroh): Don't map in a client side when sending
+  // MojoSharedBufferVideoFrame to a service process.
   DCHECK(!mapping_.IsValid());
   mapping_ = region_.Map();
   if (!mapping_.IsValid())
     return false;
   const size_t num_planes = NumPlanes(format());
+  uint8_t* read_only_buffer =
+      const_cast<uint8_t*>(mapping_.GetMemoryAs<uint8_t>());
   DCHECK_EQ(offsets.size(), num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
     offsets_[i] = offsets[i];
-    set_data(i, shared_buffer_data() + offsets[i]);
+    set_data(i, read_only_buffer + offsets[i]);
   }
   return true;
-}
-
-MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() {
-  // Call |mojo_shared_buffer_done_cb_| to take ownership of
-  // |shared_buffer_handle_|.
-  if (mojo_shared_buffer_done_cb_) {
-    std::move(mojo_shared_buffer_done_cb_).Run(std::move(region_));
-  }
 }
 
 size_t MojoSharedBufferVideoFrame::PlaneOffset(size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   return offsets_[plane];
-}
-
-void MojoSharedBufferVideoFrame::SetMojoSharedBufferDoneCB(
-    MojoSharedBufferDoneCB mojo_shared_buffer_done_cb) {
-  mojo_shared_buffer_done_cb_ = std::move(mojo_shared_buffer_done_cb);
 }
 
 }  // namespace media
