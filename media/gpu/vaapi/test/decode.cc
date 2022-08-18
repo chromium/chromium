@@ -203,14 +203,16 @@ int main(int argc, char** argv) {
 
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
   if (video_path.empty()) {
-    std::cout << "No input video path provided to decode.\n" << kUsageMsg;
+    LOG(ERROR) << "No input video path provided to decode.";
+    std::cerr << kUsageMsg;
     return EXIT_FAILURE;
   }
 
   const std::string codec =
       base::ToUpperASCII(cmd->GetSwitchValueASCII("codec"));
   if (codec.empty()) {
-    std::cout << "No codec string was provided.\n" << kUsageMsg;
+    LOG(ERROR) << "No codec string was provided.";
+    std::cerr << kUsageMsg;
     return EXIT_FAILURE;
   }
 
@@ -253,7 +255,6 @@ int main(int argc, char** argv) {
   const auto fetch_policy =
       GetFetchPolicy(va_device, cmd->GetSwitchValueASCII("fetch"));
   if (!fetch_policy) {
-    std::cout << kUsageMsg;
     return EXIT_FAILURE;
   }
 
