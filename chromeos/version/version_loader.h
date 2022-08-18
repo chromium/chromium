@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace version_loader {
@@ -27,11 +28,13 @@ std::string GetVersion(VersionFormat format);
 
 // Gets the ARC version.
 // May block.
-COMPONENT_EXPORT(CHROMEOS_VERSION) std::string GetARCVersion();
+COMPONENT_EXPORT(CHROMEOS_VERSION) std::string GetArcVersion();
 
 // Gets the ARC Android SDK version.
+// If not found returns absl::nullopt.
 // May block.
-COMPONENT_EXPORT(CHROMEOS_VERSION) std::string GetARCAndroidSDKVersion();
+COMPONENT_EXPORT(CHROMEOS_VERSION)
+absl::optional<std::string> GetArcAndroidSdkVersion();
 
 // Gets the firmware info.
 // May block.

@@ -48,7 +48,7 @@ void CreateUserAgent(std::string* user_agent) {
                       base::SysInfo::OperatingSystemVersion().c_str(),
                       base::SysInfo::GetLsbReleaseBoard().c_str());
 
-  std::string arc_version = chromeos::version_loader::GetARCVersion();
+  std::string arc_version = chromeos::version_loader::GetArcVersion();
   if (!arc_version.empty())
     base::StringAppendF(user_agent, " ARC/%s", arc_version.c_str());
 }

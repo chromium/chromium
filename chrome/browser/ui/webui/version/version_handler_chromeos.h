@@ -30,13 +30,14 @@ class VersionHandlerChromeOS : public VersionHandler {
   // Callbacks from chromeos::VersionLoader.
   void OnVersion(const std::string& version);
   void OnOSFirmware(const std::string& version);
-  void OnARCVersion(const std::string& version);
+  void OnArcAndArcAndroidSdkVersions(const std::string& version);
 
   // Callback for the "crosUrlVersionRedirect" message.
   void HandleCrosUrlVersionRedirect(const base::Value::List& args);
 
  private:
   base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_{this};
+  static std::string GetArcAndArcAndroidSdkVersions();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_
