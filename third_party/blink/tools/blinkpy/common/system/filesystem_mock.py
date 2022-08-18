@@ -82,7 +82,7 @@ class MockFileSystem(object):
         self.written_files = {}
 
     def _raise_not_found(self, path):
-        raise IOError(errno.ENOENT, path, os.strerror(errno.ENOENT))
+        raise FileNotFoundError('%s: %s' % (os.strerror(errno.ENOENT), path))
 
     def _split(self, path):
         # This is not quite a full implementation of os.path.split; see:

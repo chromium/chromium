@@ -322,13 +322,15 @@ class TestResultsFetcher(object):
                 ?token=AXsiX2kiOiIxNjQx...
 
         Arguments:
-            build_ids: One or more build IDs retrieved from Buildbucket.
+            build_ids: Build IDs retrieved from Buildbucket.
 
         Returns:
             A list of URLs, sorted by (product, shard index). Note that the URLs
             contain a time-sensitive `token` query parameter required for
             access.
         """
+        if not build_ids:
+            return []
         artifacts = self._resultdb_client.query_artifacts(
             list(build_ids), {
                 'followEdges': {
