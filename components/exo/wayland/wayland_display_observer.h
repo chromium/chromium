@@ -29,6 +29,8 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   // to be followed by "done" event, |false| otherwise.
   virtual bool SendDisplayMetrics(const display::Display& display,
                                   uint32_t changed_metrics) = 0;
+  // Called when wl_output is destroyed.
+  virtual void OnOutputDestroyed() = 0;
 
  protected:
   ~WaylandDisplayObserver() override {}
@@ -46,6 +48,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   ~WaylandDisplayHandler() override;
   void Initialize();
   void AddObserver(WaylandDisplayObserver* observer);
+  void RemoveObserver(WaylandDisplayObserver* observer);
   int64_t id() const;
 
   // Overridden from display::DisplayObserver:
@@ -57,6 +60,8 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void OnXdgOutputCreated(wl_resource* xdg_output_resource);
   // Unset the xdg output object.
   void UnsetXdgOutputResource();
+
+  size_t CountObserversForTesting() const;
 
  protected:
   wl_resource* output_resource() const { return output_resource_; }
@@ -70,6 +75,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void OnOutputDestroyed() override;
 
   // Output.
   WaylandDisplayOutput* output_;

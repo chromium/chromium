@@ -294,8 +294,7 @@ void remote_shell_get_remote_output(wl_client* client,
                          wl_resource_get_version(resource), id);
 
   auto remote_output = std::make_unique<WaylandRemoteOutput>(
-      remote_output_resource, remote_output_event_mapping_v1);
-  display_handler->AddObserver(remote_output.get());
+      remote_output_resource, remote_output_event_mapping_v1, display_handler);
 
   SetImplementation(remote_output_resource, &remote_output_implementation,
                     std::move(remote_output));

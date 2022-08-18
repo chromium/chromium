@@ -161,7 +161,7 @@ class AuraPopup {
 
 class AuraOutput : public WaylandDisplayObserver {
  public:
-  explicit AuraOutput(wl_resource* resource);
+  AuraOutput(wl_resource* resource, WaylandDisplayHandler* display_handler);
 
   AuraOutput(const AuraOutput&) = delete;
   AuraOutput& operator=(const AuraOutput&) = delete;
@@ -171,6 +171,9 @@ class AuraOutput : public WaylandDisplayObserver {
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void OnOutputDestroyed() override;
+
+  bool HasDisplayHandlerForTesting() const;
 
  protected:
   virtual void SendInsets(const gfx::Insets& insets);
@@ -178,6 +181,7 @@ class AuraOutput : public WaylandDisplayObserver {
 
  private:
   wl_resource* const resource_;
+  WaylandDisplayHandler* display_handler_;
 };
 
 }  // namespace wayland

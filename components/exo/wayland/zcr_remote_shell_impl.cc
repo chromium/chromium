@@ -363,6 +363,11 @@ bool WaylandRemoteOutput::SendDisplayMetrics(const display::Display& display,
   return true;
 }
 
+void WaylandRemoteOutput::OnOutputDestroyed() {
+  display_handler_->RemoveObserver(this);
+  display_handler_ = nullptr;
+}
+
 WaylandRemoteSurfaceDelegate::WaylandRemoteSurfaceDelegate(
     base::WeakPtr<WaylandRemoteShell> shell,
     wl_resource* resource,
@@ -415,6 +420,21 @@ void WaylandRemoteSurfaceDelegate::OnZoomLevelChanged(ZoomChange zoom_change) {
       shell_) {
     shell_->OnRemoteSurfaceChangeZoomLevel(resource_, zoom_change);
   }
+}
+
+WaylandRemoteOutput::WaylandRemoteOutput(
+    wl_resource* resource,
+    WaylandRemoteOutputEventMapping event_mapping,
+    WaylandDisplayHandler* display_handler)
+    : resource_(resource),
+      event_mapping_(event_mapping),
+      display_handler_(display_handler) {
+  display_handler_->AddObserver(this);
+}
+
+WaylandRemoteOutput::~WaylandRemoteOutput() {
+  if (display_handler_)
+    display_handler_->RemoveObserver(this);
 }
 
 using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;

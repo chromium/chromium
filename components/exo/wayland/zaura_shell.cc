@@ -838,9 +838,16 @@ const struct zaura_output_interface aura_output_implementation = {
 ////////////////////////////////////////////////////////////////////////////////
 // aura_output_interface:
 
-AuraOutput::AuraOutput(wl_resource* resource) : resource_(resource) {}
+AuraOutput::AuraOutput(wl_resource* resource,
+                       WaylandDisplayHandler* display_handler)
+    : resource_(resource), display_handler_(display_handler) {
+  display_handler_->AddObserver(this);
+}
 
-AuraOutput::~AuraOutput() = default;
+AuraOutput::~AuraOutput() {
+  if (display_handler_)
+    display_handler_->RemoveObserver(this);
+}
 
 bool AuraOutput::SendDisplayMetrics(const display::Display& display,
                                     uint32_t changed_metrics) {
@@ -914,6 +921,15 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
   }
 
   return true;
+}
+
+void AuraOutput::OnOutputDestroyed() {
+  display_handler_->RemoveObserver(this);
+  display_handler_ = nullptr;
+}
+
+bool AuraOutput::HasDisplayHandlerForTesting() const {
+  return !!display_handler_;
 }
 
 void AuraOutput::SendInsets(const gfx::Insets& insets) {
@@ -1347,8 +1363,8 @@ void aura_shell_get_aura_output(wl_client* client,
   wl_resource* aura_output_resource = wl_resource_create(
       client, &zaura_output_interface, wl_resource_get_version(resource), id);
 
-  auto aura_output = std::make_unique<AuraOutput>(aura_output_resource);
-  display_handler->AddObserver(aura_output.get());
+  auto aura_output =
+      std::make_unique<AuraOutput>(aura_output_resource, display_handler);
 
   SetImplementation(aura_output_resource, &aura_output_implementation,
                     std::move(aura_output));

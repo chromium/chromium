@@ -17,7 +17,10 @@
 #include "components/exo/buffer.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/wayland/scoped_wl.h"
+#include "components/exo/wayland/wayland_display_observer.h"
+#include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wayland_display_util.h"
+#include "components/exo/wayland/wl_output.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -429,13 +432,23 @@ class ZAuraOutputTest : public test::ExoTestBase {
     ASSERT_EQ(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, fds), 0);
     wayland_display_.reset(wl_display_create());
     client_ = wl_client_create(wayland_display_.get(), fds[0]);
+
+    wl_resource* output_resource =
+        wl_resource_create(client_, &wl_output_interface, kWlOutputVersion, 0);
+    display_handler_ = std::make_unique<WaylandDisplayHandler>(&display_output_,
+                                                               output_resource);
   }
 
   std::unique_ptr<MockAuraOutput> CreateAuraOutput(int version) {
     return std::make_unique<::testing::NiceMock<MockAuraOutput>>(
-        wl_resource_create(client_, &zaura_output_interface, version, 0));
+        wl_resource_create(client_, &zaura_output_interface, version, 0),
+        display_handler_.get());
   }
 
+  std::unique_ptr<WaylandDisplayHandler> display_handler_;
+
+ private:
+  WaylandDisplayOutput display_output_{0};
   std::unique_ptr<wl_display, WlDisplayDeleter> wayland_display_;
   wl_client* client_ = nullptr;
 };
@@ -500,6 +513,23 @@ TEST_F(ZAuraOutputTest, SendLogicalTransform) {
       .Times(1);
   mock_aura_output->SendDisplayMetrics(
       display, display::DisplayObserver::DISPLAY_METRIC_ROTATION);
+}
+
+// Make sure that data associated with wl/aura outputs are destroyd
+// properly regardless of which one is destroyed first.
+TEST_F(ZAuraOutputTest, DestroyAuraOutput) {
+  auto mock_aura_output =
+      CreateAuraOutput(ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION);
+  EXPECT_EQ(1u, display_handler_->CountObserversForTesting());
+  mock_aura_output.reset();
+  EXPECT_EQ(0u, display_handler_->CountObserversForTesting());
+
+  mock_aura_output =
+      CreateAuraOutput(ZAURA_OUTPUT_LOGICAL_TRANSFORM_SINCE_VERSION);
+  EXPECT_EQ(1u, display_handler_->CountObserversForTesting());
+  EXPECT_TRUE(mock_aura_output->HasDisplayHandlerForTesting());
+  display_handler_.reset();
+  EXPECT_FALSE(mock_aura_output->HasDisplayHandlerForTesting());
 }
 
 }  // namespace wayland

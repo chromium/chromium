@@ -28,14 +28,16 @@ using chromeos::WindowStateType;
 class WaylandRemoteOutput : public WaylandDisplayObserver {
  public:
   WaylandRemoteOutput(wl_resource* resource,
-                      WaylandRemoteOutputEventMapping event_mapping)
-      : resource_(resource), event_mapping_(event_mapping) {}
+                      WaylandRemoteOutputEventMapping event_mapping,
+                      WaylandDisplayHandler* display_handler);
   WaylandRemoteOutput(const WaylandRemoteOutput&) = delete;
   WaylandRemoteOutput& operator=(const WaylandRemoteOutput&) = delete;
+  ~WaylandRemoteOutput() override;
 
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
                           uint32_t changed_metrics) override;
+  void OnOutputDestroyed() override;
 
  private:
   wl_resource* const resource_;
@@ -43,6 +45,8 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   bool initial_config_sent_ = false;
 
   WaylandRemoteOutputEventMapping const event_mapping_;
+
+  WaylandDisplayHandler* display_handler_;
 };
 
 // Implements remote shell interface and monitors workspace state needed

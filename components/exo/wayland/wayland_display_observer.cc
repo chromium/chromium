@@ -29,6 +29,8 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
 }
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
+  for (auto& obs : observers_)
+    obs.OnOutputDestroyed();
   if (xdg_output_resource_)
     wl_resource_set_user_data(xdg_output_resource_, nullptr);
   output_->UnregisterOutput(output_resource_);
@@ -62,6 +64,10 @@ void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {
     }
     wl_client_flush(wl_resource_get_client(output_resource_));
   }
+}
+
+void WaylandDisplayHandler::RemoveObserver(WaylandDisplayObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 int64_t WaylandDisplayHandler::id() const {
@@ -203,6 +209,20 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   }
 
   return true;
+}
+
+void WaylandDisplayHandler::OnOutputDestroyed() {
+  // destroying itself.
+  RemoveObserver(this);
+}
+
+size_t WaylandDisplayHandler::CountObserversForTesting() const {
+  size_t count = 0;
+  for (auto& obs : observers_) {
+    if (&obs != this)
+      count++;
+  }
+  return count;
 }
 
 }  // namespace wayland
