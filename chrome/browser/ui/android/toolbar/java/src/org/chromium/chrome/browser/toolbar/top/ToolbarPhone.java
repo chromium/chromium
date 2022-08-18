@@ -106,18 +106,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     public static final int URL_FOCUS_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS = 100;
-    private static final int URL_CLEAR_FOCUS_EXPERIMENTAL_BUTTON_DELAY_MS = 150;
     private static final int URL_CLEAR_FOCUS_TABSTACK_DELAY_MS = 200;
     private static final int URL_CLEAR_FOCUS_MENU_DELAY_MS = 250;
 
-    private static final int TAB_SWITCHER_MODE_EXIT_FADE_ANIMATION_DURATION_MS = 100;
-    private static final int TAB_SWITCHER_MODE_POST_EXIT_ANIMATION_DURATION_MS = 100;
-
     // Values used during animation to show/hide optional toolbar button.
     public static final int LOC_BAR_WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
-    private static final int EXPERIMENTAL_ICON_ANIMATION_DURATION_MS = 100;
-    private static final int EXPERIMENTAL_ICON_ANIMATION_DELAY_MS = 125;
-
     private static final float UNINITIALIZED_FRACTION = -1f;
 
     /** States that the toolbar can be in regarding the tab switcher. */
@@ -151,9 +144,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private OptionalButtonCoordinator mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
-    private ObjectAnimator mTabSwitcherModeAnimation;
-    private ObjectAnimator mDelayedTabSwitcherModeAnimation;
-
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
     private boolean mForceHideShadow;
@@ -168,22 +158,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
-    @ViewDebug.ExportedProperty(category = "chrome")
-    private boolean mAnimateNormalToolbar;
-    @ViewDebug.ExportedProperty(category = "chrome")
-    private boolean mDelayingTabSwitcherAnimation;
-
     private TabSwitcherDrawable mTabSwitcherAnimationTabStackDrawable;
-    // Value that determines the amount of transition from the normal toolbar mode to TabSwitcher
-    // mode.  0 = entirely in normal mode and 1.0 = entirely in TabSwitcher mode.  In between values
-    // can be used for animating between the two view modes.
-    @ViewDebug.ExportedProperty(category = "chrome")
-    protected float mTabSwitcherModeFraction;
-
-    // Used to clip the toolbar during the fade transition into and out of TabSwitcher mode.  Only
-    // used when |mAnimateNormalToolbar| is false.
-    @ViewDebug.ExportedProperty(category = "chrome")
-    private Rect mClipRect;
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected boolean mUrlFocusChangeInProgress;
@@ -262,7 +237,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private boolean mPendingTriggerUrlFocusRequest;
     private ToolbarSnapshotState mToolbarSnapshotState;
     private ButtonData mButtonData;
-    private int mTabCount;
 
     /**
      * Used to specify the visual state of the toolbar.
@@ -283,18 +257,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int mPreTextureCaptureVisibility;
     private @BrandedColorScheme int mOverlayTabStackDrawableScheme;
 
-    private AnimatorSet mOptionalButtonAnimator;
     private boolean mOptionalButtonAnimationRunning;
-    private int mOptionalButtonTranslation;
     private int mUrlFocusTranslationX;
-
-    /**
-     * The progress fraction for the location bar width change animation that is run when the
-     * optional button is shown/hidden. Animates from 1.f to 0.f when showing the button and
-     * 0.f to 1.f when hiding the button, where 0.f indicates the location bar width is not offset
-     * at all for the animation.
-     */
-    private float mLocBarWidthChangeFraction;
 
     private boolean mOptimizationsEnabled;
 
@@ -311,34 +275,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 @Override
                 public void set(ToolbarPhone object, Float value) {
                     setUrlFocusChangeFraction(value);
-                }
-            };
-
-    private final Property<ToolbarPhone, Float> mTabSwitcherModeFractionProperty =
-            new Property<ToolbarPhone, Float>(Float.class, "") {
-                @Override
-                public Float get(ToolbarPhone object) {
-                    return object.mTabSwitcherModeFraction;
-                }
-
-                @Override
-                public void set(ToolbarPhone object, Float value) {
-                    object.mTabSwitcherModeFraction = value;
-                    triggerPaintInvalidate(ToolbarPhone.this::postInvalidateOnAnimation);
-                }
-            };
-
-    private final Property<ToolbarPhone, Float> mLocBarWidthChangeFractionProperty =
-            new Property<ToolbarPhone, Float>(Float.class, "") {
-                @Override
-                public Float get(ToolbarPhone object) {
-                    return object.mLocBarWidthChangeFraction;
-                }
-
-                @Override
-                public void set(ToolbarPhone object, Float value) {
-                    mLocBarWidthChangeFraction = value;
-                    updateLocationBarLayoutForExpansionAnimation();
                 }
             };
 
@@ -637,11 +573,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         int width = 0;
         int leftMargin = 0;
 
-        boolean changed = false;
-
         // Always update the unfocused layout params regardless of whether we are using
         // those in this current layout pass as they are needed for animations.
-        changed |= updateUnfocusedLocationBarLayoutParams();
+        boolean changed = updateUnfocusedLocationBarLayoutParams();
 
         if (mLayoutLocationBarInFocusedMode
                 || (mVisualState == VisualState.NEW_TAB_NORMAL
@@ -828,32 +762,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         if (mTextureCaptureMode) {
-            drawTabSwitcherAnimationOverlay(canvas, 0.f);
+            draWithoutBackground(canvas);
         } else {
-            boolean tabSwitcherAnimationFinished = false;
-            if (mTabSwitcherModeAnimation != null) {
-                tabSwitcherAnimationFinished = !mTabSwitcherModeAnimation.isRunning();
-
-                // Perform the fade logic before super.dispatchDraw(canvas) so that we can properly
-                // set the values before the draw happens.
-                if (!mAnimateNormalToolbar) {
-                    drawTabSwitcherFadeAnimation(
-                            tabSwitcherAnimationFinished, mTabSwitcherModeFraction);
-                }
-            }
-
             super.dispatchDraw(canvas);
-
-            if (mTabSwitcherModeAnimation != null) {
-                // Perform the overlay logic after super.dispatchDraw(canvas) as we need to draw on
-                // top of the current views.
-                if (mAnimateNormalToolbar) {
-                    drawTabSwitcherAnimationOverlay(canvas, mTabSwitcherModeFraction);
-                }
-
-                // Clear the animation.
-                if (tabSwitcherAnimationFinished) mTabSwitcherModeAnimation = null;
-            }
         }
     }
 
@@ -1061,9 +972,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             locationBarBaseTranslationX += mUnfocusedLocationBarLayoutWidth - currentWidth;
         }
 
-        locationBarBaseTranslationX *= 1f
-                - (mOptionalButtonAnimationRunning ? mLocBarWidthChangeFraction
-                                                   : mUrlExpansionFraction);
+        locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
         mLocationBarBackgroundNtpOffset.setEmpty();
         mLocationBarNtpOffsetLeft = 0;
@@ -1273,34 +1182,20 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         ViewUtils.setAncestorsShouldClipChildren(this, clip);
     }
 
-    private void drawTabSwitcherFadeAnimation(boolean animationFinished, float progress) {
-        setAlpha(progress);
-        if (animationFinished) {
-            mClipRect = null;
-        } else if (mClipRect == null) {
-            mClipRect = new Rect();
-        }
-        if (mClipRect != null) mClipRect.set(0, 0, getWidth(), (int) (getHeight() * progress));
-    }
-
     /**
-     * When entering and exiting the TabSwitcher mode, we fade out or fade in the browsing
-     * mode of the toolbar on top of the TabSwitcher mode version of it.  We do this by
-     * drawing all of the browsing mode views on top of the android view.
+     * Draws all the browsing mode views at full alpha, but without a background.
      */
     @VisibleForTesting
-    void drawTabSwitcherAnimationOverlay(Canvas canvas, float animationProgress) {
+    void draWithoutBackground(Canvas canvas) {
         if (!isNativeLibraryReady()) return;
 
-        float floatAlpha = 1 - animationProgress;
-        int rgbAlpha = (int) (255 * floatAlpha);
+        float floatAlpha = 1.0f;
+        int rgbAlpha = 255;
         canvas.save();
-        canvas.translate(0, -animationProgress * mBackgroundOverlayBounds.height());
         canvas.clipRect(mBackgroundOverlayBounds);
 
         float previousAlpha = 0.f;
         if (mHomeButton.getVisibility() != View.GONE) {
-            // Draw the New Tab button used in the URL view.
             previousAlpha = mHomeButton.getAlpha();
             mHomeButton.setAlpha(previousAlpha * floatAlpha);
             drawChild(canvas, mHomeButton, SystemClock.uptimeMillis());
@@ -1544,23 +1439,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // If capturing a texture of the toolbar, ensure the alpha is set prior to draw(...) being
         // called.  The alpha is being used prior to getting to draw(...), so updating the value
         // after this point was having no affect.
-        if (mTextureCaptureMode) assert getAlpha() == 1f;
-
-        // mClipRect can change in the draw call, so cache this value to ensure the canvas is
-        // restored correctly.
-        boolean shouldClip = !mTextureCaptureMode && mClipRect != null;
-        if (shouldClip) {
-            canvas.save();
-            canvas.clipRect(mClipRect);
-        }
+        assert !mTextureCaptureMode || getAlpha() == 1f;
         super.draw(canvas);
-        if (shouldClip) {
-            canvas.restore();
-
-            // Post an invalidate when the clip rect becomes null to ensure another draw pass occurs
-            // and the full toolbar is drawn again.
-            if (mClipRect == null) postInvalidate();
-        }
     }
 
     @Override
@@ -1626,7 +1506,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return mForceTextureCapture;
         }
 
-        mForceTextureCapture = forceTextureCapture;
+        mForceTextureCapture = false;
         return false;
     }
 
@@ -1648,16 +1528,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void finishAnimations() {
-        mClipRect = null;
-        if (mTabSwitcherModeAnimation != null) {
-            mTabSwitcherModeAnimation.end();
-            mTabSwitcherModeAnimation = null;
-        }
-        if (mDelayedTabSwitcherModeAnimation != null) {
-            mDelayedTabSwitcherModeAnimation.end();
-            mDelayedTabSwitcherModeAnimation = null;
-        }
-
         // The Android framework calls onAnimationEnd() on listeners before Animator#isRunning()
         // returns false. Sometimes this causes the progress bar visibility to be set incorrectly.
         // Update the visibility now that animations are set to null. (see crbug.com/606419)
@@ -1732,70 +1602,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void addHomeButton() {
-        mHomeButton.setVisibility(
-                urlHasFocus() || isTabSwitcherAnimationRunning() ? INVISIBLE : VISIBLE);
-    }
-
-    private ObjectAnimator createEnterTabSwitcherModeAnimation() {
-        ObjectAnimator enterAnimation =
-                ObjectAnimator.ofFloat(this, mTabSwitcherModeFractionProperty, 1.f);
-        enterAnimation.setDuration(
-                TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS);
-        enterAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
-
-        return enterAnimation;
-    }
-
-    private ObjectAnimator createExitTabSwitcherAnimation(final boolean animateNormalToolbar) {
-        ObjectAnimator exitAnimation =
-                ObjectAnimator.ofFloat(this, mTabSwitcherModeFractionProperty, 0.f);
-        exitAnimation.setDuration(animateNormalToolbar
-                        ? TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS
-                        : TAB_SWITCHER_MODE_EXIT_FADE_ANIMATION_DURATION_MS);
-        exitAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
-        exitAnimation.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animation) {
-                onExitTabSwitcherAnimationEnd();
-            }
-        });
-
-        return exitAnimation;
-    }
-
-    private ObjectAnimator createPostExitTabSwitcherAnimation() {
-        ObjectAnimator exitAnimation =
-                ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, -getHeight(), 0.f);
-        exitAnimation.setDuration(TAB_SWITCHER_MODE_POST_EXIT_ANIMATION_DURATION_MS);
-        exitAnimation.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
-        exitAnimation.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onStart(Animator animation) {
-                updateViewsForTabSwitcherMode();
-                // On older builds, force an update to ensure the new visuals are used
-                // when bringing in the toolbar.  crbug.com/404571
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN) {
-                    requestLayout();
-                }
-            }
-
-            @Override
-            public void onEnd(Animator animation) {
-                mDelayedTabSwitcherModeAnimation = null;
-                onExitTabSwitcherAnimationEnd();
-            }
-        });
-
-        return exitAnimation;
-    }
-
-    private void onExitTabSwitcherAnimationEnd() {
-        updateViewsForTabSwitcherMode();
-
-        // Request a texture update to ensure a texture is captured before the user
-        // re-enters the tab switcher.
-        postInvalidate();
-        mLayoutUpdater.run();
+        mHomeButton.setVisibility(urlHasFocus() ? INVISIBLE : VISIBLE);
     }
 
     @Override
@@ -1827,12 +1634,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private boolean hideShadowForRegularNtpTextureCapture() {
         return !isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl())
                 && mNtpSearchBoxScrollFraction < 1.f;
-    }
-
-    // TODO(dtrainor): This is always true when in the tab switcher (crbug.com/710750).
-    private boolean isTabSwitcherAnimationRunning() {
-        return mTabSwitcherState == ENTERING_TAB_SWITCHER
-                || mTabSwitcherState == EXITING_TAB_SWITCHER;
     }
 
     private void updateViewsForTabSwitcherMode() {
@@ -1895,8 +1696,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         finishAnimations();
 
-        mDelayingTabSwitcherAnimation = delayAnimation;
-
         if (inTabSwitcherMode) {
             if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
                 mUrlFocusLayoutAnimator.end();
@@ -1914,16 +1713,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             }
 
             updateViewsForTabSwitcherMode();
-            mTabSwitcherModeAnimation = createEnterTabSwitcherModeAnimation();
-        } else {
-            if (!mDelayingTabSwitcherAnimation) {
-                mTabSwitcherModeAnimation = createExitTabSwitcherAnimation(showToolbar);
-            }
         }
 
         updateButtonsTranslationY();
-        mAnimateNormalToolbar = showToolbar;
-        if (mTabSwitcherModeAnimation != null) mTabSwitcherModeAnimation.start();
 
         if (DeviceClassManager.enableAccessibilityLayout(getContext()) || !animate) {
             finishAnimations();
@@ -1975,7 +1767,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     public void onTabSwitcherTransitionFinished() {
         setAlpha(1.f);
-        mClipRect = null;
 
         // Detect what was being transitioned from and set the new state appropriately.
         if (mTabSwitcherState == EXITING_TAB_SWITCHER) {
@@ -1988,21 +1779,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // The width of location bar depends on mTabSwitcherState so layout request is needed. See
         // crbug.com/974745.
         requestLayout();
-
-        mTabSwitcherModeFraction = mTabSwitcherState != STATIC_TAB ? 1.0f : 0.0f;
-
-        if (!mAnimateNormalToolbar) {
-            finishAnimations();
-            updateVisualsForLocationBarState();
-        }
-
-        if (mDelayingTabSwitcherAnimation) {
-            mDelayingTabSwitcherAnimation = false;
-            mDelayedTabSwitcherModeAnimation = createPostExitTabSwitcherAnimation();
-            mDelayedTabSwitcherModeAnimation.start();
-        } else {
-            updateViewsForTabSwitcherMode();
-        }
+        finishAnimations();
+        updateVisualsForLocationBarState();
+        updateViewsForTabSwitcherMode();
     }
 
     @Override
@@ -2023,37 +1802,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public boolean shouldIgnoreSwipeGesture() {
         return super.shouldIgnoreSwipeGesture() || mUrlExpansionFraction > 0f
                 || mNtpSearchBoxTranslation.y < 0f;
-    }
-
-    private Property<TextView, Integer> buildUrlScrollProperty(
-            final View containerView, final boolean isContainerRtl) {
-        // If the RTL-ness of the container view changes during an animation, the scroll values
-        // become invalid.  If that happens, snap to the ending position and no longer update.
-        return new Property<TextView, Integer>(Integer.class, "scrollX") {
-            private boolean mRtlStateInvalid;
-
-            @Override
-            public Integer get(TextView view) {
-                return view.getScrollX();
-            }
-
-            @Override
-            public void set(TextView view, Integer scrollX) {
-                if (mRtlStateInvalid) return;
-                boolean rtl = containerView.getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-                if (rtl != isContainerRtl) {
-                    mRtlStateInvalid = true;
-                    if (!rtl || mUrlBar.getLayout() != null) {
-                        scrollX = 0;
-                        if (rtl) {
-                            scrollX = (int) view.getLayout().getPrimaryHorizontal(0);
-                            scrollX -= view.getWidth();
-                        }
-                    }
-                }
-                view.setScrollX(scrollX);
-            }
-        };
     }
 
     private void populateUrlExpansionAnimatorSet(List<Animator> animators) {
@@ -2761,10 +2509,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         if (mBrandColorTransitionAnimation != null && mBrandColorTransitionAnimation.isRunning()) {
             mBrandColorTransitionAnimation.cancel();
-        }
-
-        if (mOptionalButtonAnimator != null && mOptionalButtonAnimator.isRunning()) {
-            mOptionalButtonAnimator.cancel();
         }
     }
 

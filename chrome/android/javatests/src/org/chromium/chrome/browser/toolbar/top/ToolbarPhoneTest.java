@@ -92,7 +92,7 @@ public class ToolbarPhoneTest {
         doReturn(mMenuButton).when(mMenuButtonCoordinator).getMenuButton();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.drawTabSwitcherAnimationOverlay(mCanvas, 0);
+            mToolbar.draWithoutBackground(mCanvas);
             verify(mMenuButtonCoordinator)
                     .drawTabSwitcherAnimationOverlay(mToolbarButtonsContainer, mCanvas, 255);
 
