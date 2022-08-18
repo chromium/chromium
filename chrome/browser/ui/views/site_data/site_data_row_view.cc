@@ -20,6 +20,21 @@
 
 namespace {
 
+std::u16string GetSettingStateString(ContentSetting setting) {
+  // TODO(crbug.com/1344787): Return actual strings.
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return u"Allowed";
+    case CONTENT_SETTING_BLOCK:
+      return u"Blocked";
+    case CONTENT_SETTING_SESSION_ONLY:
+      return u"Clear on close";
+    default:
+      NOTREACHED();
+      return u"";
+  }
+}
+
 std::unique_ptr<views::TableLayout> SetupTableLayout() {
   const auto dialog_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG);
@@ -50,7 +65,9 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 
 }  // namespace
 
-SiteDataRowView::SiteDataRowView(const url::Origin& origin) {
+SiteDataRowView::SiteDataRowView(const url::Origin& origin,
+                                 ContentSetting setting)
+    : setting_(setting) {
   const int icon_size = 16;
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -70,39 +87,46 @@ SiteDataRowView::SiteDataRowView(const url::Origin& origin) {
       kBrowserToolsIcon, icon_size));
   menu->SetAccessibleName(u"Open context menu");
 
-  // TODO(crbug.com/1344787): Set the actual state based on the cookie setting.
-  // Show the state label when the state != allowed.
-  // Use actual strings.
   layout->AddRows(1, views::TableLayout::kFixedSize);
   AddChildView(std::make_unique<views::View>());
-  auto* state_label = AddChildView(std::make_unique<views::Label>(
-      u"Blocked", views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  state_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  state_label_ = AddChildView(std::make_unique<views::Label>(
+      GetSettingStateString(setting_), views::style::CONTEXT_LABEL,
+      views::style::STYLE_SECONDARY));
+  state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  state_label_->SetVisible(setting_ != CONTENT_SETTING_ALLOW);
 }
 
 void SiteDataRowView::OnMenuIconClicked() {
   // TODO(crbug.com/1344787): Use actual strings.
-  // TODO(crbug.com/1344787): Don't show the menu item that is equal to the
-  // current content setting.
-  auto dialog_model = std::make_unique<ui::DialogModelMenuModelAdapter>(
-      ui::DialogModel::Builder()
-          .AddMenuItem(
-              ui::ImageModel(), u"Delete",
-              base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
-                                  base::Unretained(this)))
-          .AddMenuItem(
-              ui::ImageModel(), u"Don't allow",
-              base::BindRepeating(&SiteDataRowView::OnBlockMenuItemClicked,
-                                  base::Unretained(this)))
-          .AddMenuItem(
-              ui::ImageModel(), u"Allow",
-              base::BindRepeating(&SiteDataRowView::OnAllowMenuItemClicked,
-                                  base::Unretained(this)))
-          .AddMenuItem(ui::ImageModel(), u"Clear when you close Chrome",
-                       base::BindRepeating(
-                           &SiteDataRowView::OnClearOnExitMenuItemClicked,
-                           base::Unretained(this)))
-          .Build());
+  // TODO(crbug.com/1344787): Respect partitioned cookies state and provide
+  // special options for it.
+  auto builder = ui::DialogModel::Builder();
+  builder.AddMenuItem(
+      ui::ImageModel(), u"Delete",
+      base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
+                          base::Unretained(this)));
+
+  if (setting_ != CONTENT_SETTING_BLOCK) {
+    builder.AddMenuItem(
+        ui::ImageModel(), u"Don't allow",
+        base::BindRepeating(&SiteDataRowView::OnBlockMenuItemClicked,
+                            base::Unretained(this)));
+  }
+  if (setting_ != CONTENT_SETTING_ALLOW) {
+    builder.AddMenuItem(
+        ui::ImageModel(), u"Allow",
+        base::BindRepeating(&SiteDataRowView::OnAllowMenuItemClicked,
+                            base::Unretained(this)));
+  }
+  if (setting_ != CONTENT_SETTING_SESSION_ONLY) {
+    builder.AddMenuItem(
+        ui::ImageModel(), u"Clear when you close Chrome",
+        base::BindRepeating(&SiteDataRowView::OnClearOnExitMenuItemClicked,
+                            base::Unretained(this)));
+  }
+
+  auto dialog_model =
+      std::make_unique<ui::DialogModelMenuModelAdapter>(builder.Build());
   auto menu_runner = std::make_unique<views::MenuRunner>(
       dialog_model.get(), views::MenuRunner::CONTEXT_MENU);
   menu_runner->RunMenuAt(GetWidget(), nullptr, GetBoundsInScreen(),
@@ -111,17 +135,27 @@ void SiteDataRowView::OnMenuIconClicked() {
 }
 
 void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
-  // TODO(crbug.com/1344787): Handle the action.
+  // TODO(crbug.com/1344787): Delete the stored data.
+  SetVisible(false);
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
-  // TODO(crbug.com/1344787): Handle the action.
+  SetContentSettingException(CONTENT_SETTING_BLOCK);
 }
 
 void SiteDataRowView::OnAllowMenuItemClicked(int event_flags) {
-  // TODO(crbug.com/1344787): Handle the action.
+  SetContentSettingException(CONTENT_SETTING_ALLOW);
 }
 
 void SiteDataRowView::OnClearOnExitMenuItemClicked(int event_flags) {
-  // TODO(crbug.com/1344787): Handle the action.
+  SetContentSettingException(CONTENT_SETTING_SESSION_ONLY);
+}
+
+void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
+  DCHECK_NE(setting_, setting);
+  // TODO(crbug.com/1344787): Create the exception.
+
+  setting_ = setting;
+  state_label_->SetVisible(true);
+  state_label_->SetText(GetSettingStateString(setting_));
 }

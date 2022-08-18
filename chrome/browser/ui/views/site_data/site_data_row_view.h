@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SITE_DATA_SITE_DATA_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SITE_DATA_SITE_DATA_ROW_VIEW_H_
 
+#include "components/content_settings/core/common/content_settings.h"
 #include "ui/views/view.h"
+
+namespace views {
+class Label;
+}  // namespace views
 
 namespace url {
 class Origin;
@@ -18,7 +23,7 @@ class Origin;
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
  public:
-  explicit SiteDataRowView(const url::Origin& origin);
+  explicit SiteDataRowView(const url::Origin& origin, ContentSetting setting);
 
  private:
   void OnMenuIconClicked();
@@ -27,6 +32,15 @@ class SiteDataRowView : public views::View {
   void OnBlockMenuItemClicked(int event_flags);
   void OnAllowMenuItemClicked(int event_flags);
   void OnClearOnExitMenuItemClicked(int event_flags);
+
+  // Sets a content setting exception for the |origin| with |setting| value.
+  // Updates the UI to represent the new state: update the state label and the
+  // content menu items. After an update the state label is always visible.
+  void SetContentSettingException(ContentSetting setting);
+
+  ContentSetting setting_;
+
+  raw_ptr<views::Label> state_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SITE_DATA_SITE_DATA_ROW_VIEW_H_

@@ -157,8 +157,10 @@ views::Widget* ShowPageSpecificSiteDataDialog(
     builder.AddBodyText(ui::DialogModelLabel(section.title));
     builder.AddBodyText(ui::DialogModelLabel(section.subtitle));
     for (const auto& origin : section.origins) {
-      builder.AddCustomField(
-          CreateCustomField(std::make_unique<SiteDataRowView>(origin)));
+      // TODO(crbug.com/1344787): Get the actual state based on the cookie
+      // setting.
+      builder.AddCustomField(CreateCustomField(
+          std::make_unique<SiteDataRowView>(origin, CONTENT_SETTING_BLOCK)));
     }
   }
   // TODO(crbug.com/1344787): Build the rest of the dialog. Add action handling.
