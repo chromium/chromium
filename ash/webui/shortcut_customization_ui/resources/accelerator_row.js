@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import './accelerator_view.js';
-import './icons.js';
-import './shortcut_customization_shared_css.js';
+import './shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface} from './shortcut_types.js';
 
@@ -106,7 +106,7 @@ export class AcceleratorRowElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

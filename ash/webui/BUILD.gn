@@ -81,7 +81,6 @@ group("closure_compile") {
     "//ash/webui/projector_app/resources:closure_compile",
     "//ash/webui/scanning:closure_compile",
     "//ash/webui/shimless_rma:closure_compile",
-    "//ash/webui/shortcut_customization_ui:closure_compile",
     "//ash/webui/system_apps:closure_compile",
   ]
 

@@ -24,7 +24,3 @@ static_library("shortcut_customization_ui") {
     "//ui/webui",
   ]
 }
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile" ]
-}

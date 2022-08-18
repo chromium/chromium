@@ -1,0 +1,20 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+:host {
+    --shortcut-customization-default-font-family:
+        "Google Sans", Roboto, sans-serif;
+    --shortcut-customization-default-font-size: 16px;
+    --shortcut-customization-default-font-weight: 400; /* regular */
+
+    --shortcut-customization-default-font: {
+      font-family: var(--shortcut-customization-default-font-family);
+      font-size: var(--shortcut-customization-default-font-size);
+      font-weight: var(--shortcut-customization-default-font-weight);
+ }
+}

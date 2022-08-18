@@ -1,0 +1,12 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/shared_vars_css.m.js
+ * #css_wrapper_metadata_end */
+
+html {
+    background-color: var(--cros-bg-color);
+  }
