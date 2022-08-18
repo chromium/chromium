@@ -6,9 +6,32 @@ var CHECK = requireNative('logging').CHECK;
 var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
+const isServiceWorkerContext =
+    requireNative('service_worker_natives').IsServiceWorkerContext();
 
-function getUniqueSubEventName(eventName) {
+function getGloballyUniqueSubEventName(eventName) {
   return eventName + '/' + idGeneratorNatives.GetNextId();
+}
+
+function getScopedUniqueSubEventName(eventName) {
+  return eventName + '/' + idGeneratorNatives.GetNextScopedId();
+}
+
+// A sub-event-name uses a suffix with an additional identifier. For service
+// worker contexts, we use a context-specific identifier; this allows multiple
+// runs of the service worker script to produce subevents with the same IDs.
+// For non-service worker contexts, we need to use a global identifier. This is
+// because there may be multiple contexts, each with listeners (such as multiple
+// webviews [https://crbug.com/1309302] or multiple frames
+// [https://crbug.com/1297276]) that run in the same process. This would result
+// in collisions between the event listener IDs in the webRequest API. This
+// isn't an issue with service worker contexts because, even though they run in
+// the same process, they have additional identifiers of the service worker
+// thread and version.
+function getUniqueSubEventName(eventName) {
+  return isServiceWorkerContext ?
+      getScopedUniqueSubEventName(eventName) :
+      getGloballyUniqueSubEventName(eventName);
 }
 
 // WebRequestEventImpl object. This is used for special webRequest events

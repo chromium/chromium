@@ -197,6 +197,8 @@ source_set("renderer") {
     "scripts_run_info.h",
     "service_worker_data.cc",
     "service_worker_data.h",
+    "service_worker_natives.cc",
+    "service_worker_natives.h",
     "set_icon_natives.cc",
     "set_icon_natives.h",
     "shared_l10n_map.cc",

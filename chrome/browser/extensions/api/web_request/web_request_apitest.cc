@@ -3734,6 +3734,87 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
+// Tests registering webRequest events in multiple contexts in the same
+// extension (which will thus be in the same process). Regression test for
+// https://crbug.com/1297276.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ListenersInMultipleContexts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that has a page with two iframes. Each iframe registers
+  // a listener for the same event.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "ext",
+           "manifest_version": 3,
+           "version": "1",
+           "permissions": ["webRequest"],
+           "host_permissions": ["http://example.com/*"]
+         })";
+  static constexpr char kParentHtml[] =
+      R"(<!doctype html>
+         <html>
+           Hello world
+           <iframe src="iframe.html" name="iframe1"></iframe>
+           <iframe src="iframe.html" name="iframe2"></iframe>
+         </html>)";
+  static constexpr char kIframeHtml[] =
+      R"(<!doctype html>
+         <html>
+           Iframe
+           <script src="iframe.js"></script>
+         </html>)";
+  static constexpr char kIframeJs[] =
+      R"(const frameName = window.name;
+         chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               chrome.test.sendMessage(frameName + ' event');
+             },
+             {urls: ['http://example.com/*'], types: ['main_frame']});
+         chrome.test.sendMessage(frameName + ' ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("parent.html"), kParentHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.html"), kIframeHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.js"), kIframeJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto* router = ExtensionWebRequestEventRouter::GetInstance();
+  ASSERT_TRUE(router);
+
+  static constexpr char kEventName[] = "webRequest.onBeforeRequest";
+  EXPECT_EQ(0u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Load the extension page and wait for it to register its listeners.
+  {
+    ExtensionTestMessageListener listener1("iframe1 ready");
+    ExtensionTestMessageListener listener2("iframe2 ready");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL("parent.html")));
+    ASSERT_TRUE(listener1.WaitUntilSatisfied());
+    ASSERT_TRUE(listener2.WaitUntilSatisfied());
+  }
+
+  // Two different listeners should be registered.
+  EXPECT_EQ(2u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Trigger an event. Both listeners should fire.
+  {
+    ExtensionTestMessageListener listener1("iframe1 event");
+    ExtensionTestMessageListener listener2("iframe2 event");
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(),
+        embedded_test_server()->GetURL("example.com", "/title1.html"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_TRUE(listener1.WaitUntilSatisfied());
+    EXPECT_TRUE(listener2.WaitUntilSatisfied());
+  }
+}
+
 struct SWBTestParams {
   SWBTestParams(bool extra_info_spec, ContextType context_type)
       : extra_info_spec(extra_info_spec), context_type(context_type) {}
@@ -5290,6 +5371,121 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
         embedded_test_server()->GetURL("block.example", "/simple.html")));
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
   }
+}
+
+// Tests a service worker-based extension registering multiple webRequest events
+// in multiple contexts. This ensures the subevent name logic for service worker
+// extensions doesn't result in any collisions of listener IDs, similar to the
+// issue found in https://crbug.com/1297276.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       MultipleListenersAndContexts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "storage"],
+           "host_permissions": [
+             "http://first.example/*",
+             "http://second.example/*",
+             "http://third.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // The extension has two contexts: the background service worker (which
+  // registers two listeners) and a separate page (which also registers a
+  // listener). This ensures that a) service worker listeners do not conflict
+  // with each other and b) service worker listeners do not conflict with
+  // listeners registered in other contexts.
+  static constexpr char kBackgroundJs[] =
+      R"(self.firstCount = 0;
+         self.secondCount = 0;
+         function firstListener() { ++firstCount; }
+         function secondListener() { ++secondCount; }
+         chrome.webRequest.onBeforeRequest.addListener(
+             firstListener,
+             {urls: ['http://first.example/*'], types: ['main_frame']}, []);
+         chrome.webRequest.onBeforeRequest.addListener(
+             secondListener,
+             {urls: ['http://second.example/*'], types: ['main_frame']}, []);)";
+  static constexpr char kPageHtml[] =
+      R"(<!doctype html>
+          <html>
+            Page
+            <script src="page.js"></script>
+          </html>)";
+  static constexpr char kPageJs[] =
+      R"(self.thirdCount = 0;
+         function thirdListener() { ++thirdCount; }
+         chrome.webRequest.onBeforeRequest.addListener(
+             thirdListener,
+             {urls: ['http://third.example/*'], types: ['main_frame']}, []);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Load the page with the extension listeners.
+  content::RenderFrameHost* page_host = ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(page_host);
+
+  // At this point, 3 listeners should be registered.
+  EXPECT_EQ(3u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Convenience lambdas for checking the count received in each listener.
+  auto get_first_count = [this, extension]() {
+    return GetCountFromBackgroundPage(extension, profile(), "firstCount");
+  };
+  auto get_second_count = [this, extension]() {
+    return GetCountFromBackgroundPage(extension, profile(), "secondCount");
+  };
+  auto get_third_count = [page_host]() {
+    int count = -1;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        page_host, "domAutomationController.send(window.thirdCount);", &count));
+    return count;
+  };
+
+  // No listeners should have fired yet.
+  EXPECT_EQ(0, get_first_count());
+  EXPECT_EQ(0, get_second_count());
+  EXPECT_EQ(0, get_third_count());
+
+  // Navigate to first.example (this first navigation needs to happen in a new
+  // tab so that we don't navigate the extension page).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      embedded_test_server()->GetURL("first.example", "/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // (Only) the first listener should have fired.
+  EXPECT_EQ(1, get_first_count());
+  EXPECT_EQ(0, get_second_count());
+  EXPECT_EQ(0, get_third_count());
+
+  // Navigate to second.example. The second listener should fire.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("second.example", "/title1.html")));
+  EXPECT_EQ(1, get_first_count());
+  EXPECT_EQ(1, get_second_count());
+  EXPECT_EQ(0, get_third_count());
+
+  // Navigate to third.example. The third listener should fire.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("third.example", "/title1.html")));
+  EXPECT_EQ(1, get_first_count());
+  EXPECT_EQ(1, get_second_count());
+  EXPECT_EQ(1, get_third_count());
 }
 
 // Tests that a service worker-based extension with webRequestBlocking can
