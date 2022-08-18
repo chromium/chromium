@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class HTMLDimension;
 class NGBlockBreakToken;
 
 class CORE_EXPORT NGFrameSetLayoutAlgorithm
@@ -21,6 +22,12 @@ class CORE_EXPORT NGFrameSetLayoutAlgorithm
 
   const NGLayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+
+ private:
+  Vector<LayoutUnit> LayoutAxis(wtf_size_t count,
+                                const Vector<HTMLDimension>& grid,
+                                const Vector<int>& deltas,
+                                LayoutUnit available_length);
 };
 
 }  // namespace blink
