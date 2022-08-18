@@ -107,12 +107,12 @@ ConflictResolutionPolicyToExtensionEnum(
   return sync_file_system::CONFLICT_RESOLUTION_POLICY_NONE;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateDictionaryValueForFileSystemEntry(
+absl::optional<base::Value::Dict> CreateDictionaryValueForFileSystemEntry(
     const storage::FileSystemURL& url,
     ::sync_file_system::SyncFileType file_type) {
   if (!url.is_valid() ||
       file_type == ::sync_file_system::SYNC_FILE_TYPE_UNKNOWN)
-    return nullptr;
+    return absl::nullopt;
 
   std::string file_path =
       base::FilePath(storage::VirtualPath::GetNormalizedFilePath(url.path()))
@@ -126,15 +126,15 @@ std::unique_ptr<base::DictionaryValue> CreateDictionaryValueForFileSystemEntry(
     root_url.append("/");
   }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetStringKey("fileSystemType",
-                     storage::GetFileSystemTypeString(url.mount_type()));
-  dict->SetStringKey("fileSystemName", storage::GetFileSystemName(
-                                           url.origin().GetURL(), url.type()));
-  dict->SetStringKey("rootUrl", root_url);
-  dict->SetStringKey("filePath", file_path);
-  dict->SetBoolKey("isDirectory",
-                   (file_type == ::sync_file_system::SYNC_FILE_TYPE_DIRECTORY));
+  base::Value::Dict dict;
+  dict.Set("fileSystemType",
+           storage::GetFileSystemTypeString(url.mount_type()));
+  dict.Set("fileSystemName",
+           storage::GetFileSystemName(url.origin().GetURL(), url.type()));
+  dict.Set("rootUrl", root_url);
+  dict.Set("filePath", file_path);
+  dict.Set("isDirectory",
+           (file_type == ::sync_file_system::SYNC_FILE_TYPE_DIRECTORY));
 
   return dict;
 }

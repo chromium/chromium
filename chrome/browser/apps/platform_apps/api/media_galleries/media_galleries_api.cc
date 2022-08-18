@@ -151,12 +151,12 @@ bool GetGalleryFilePathAndId(const std::string& gallery_id,
   return true;
 }
 
-base::ListValue* ConstructFileSystemList(
+absl::optional<base::Value::List> ConstructFileSystemList(
     content::RenderFrameHost* rfh,
     const extensions::Extension* extension,
     const std::vector<MediaFileSystemInfo>& filesystems) {
   if (!rfh)
-    return NULL;
+    return absl::nullopt;
 
   MediaGalleriesPermission::CheckParam read_param(
       MediaGalleriesPermission::kReadPermission);
@@ -174,44 +174,43 @@ base::ListValue* ConstructFileSystemList(
       extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
   const int child_id = rfh->GetProcess()->GetID();
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
-  for (size_t i = 0; i < filesystems.size(); ++i) {
+  base::Value::List list;
+  for (const auto& filesystem : filesystems) {
     base::Value::Dict file_system_dict_value;
 
     // Send the file system id so the renderer can create a valid FileSystem
     // object.
-    file_system_dict_value.Set("fsid", filesystems[i].fsid);
+    file_system_dict_value.Set("fsid", filesystem.fsid);
 
-    file_system_dict_value.Set(kNameKey, filesystems[i].name);
+    file_system_dict_value.Set(kNameKey, filesystem.name);
     file_system_dict_value.Set(kGalleryIdKey,
-                               base::NumberToString(filesystems[i].pref_id));
-    if (!filesystems[i].transient_device_id.empty()) {
-      file_system_dict_value.Set(kDeviceIdKey,
-                                 filesystems[i].transient_device_id);
+                               base::NumberToString(filesystem.pref_id));
+    if (!filesystem.transient_device_id.empty()) {
+      file_system_dict_value.Set(kDeviceIdKey, filesystem.transient_device_id);
     }
-    file_system_dict_value.Set(kIsRemovableKey, filesystems[i].removable);
-    file_system_dict_value.Set(kIsMediaDeviceKey, filesystems[i].media_device);
+    file_system_dict_value.Set(kIsRemovableKey, filesystem.removable);
+    file_system_dict_value.Set(kIsMediaDeviceKey, filesystem.media_device);
     file_system_dict_value.Set(kIsAvailableKey, true);
 
-    list->Append(base::Value(std::move(file_system_dict_value)));
+    list.Append(std::move(file_system_dict_value));
 
-    if (filesystems[i].path.empty())
+    if (filesystem.path.empty())
       continue;
 
     if (has_read_permission) {
       content::ChildProcessSecurityPolicy* policy =
           content::ChildProcessSecurityPolicy::GetInstance();
-      policy->GrantReadFile(child_id, filesystems[i].path);
+      policy->GrantReadFile(child_id, filesystem.path);
       if (has_delete_permission) {
-        policy->GrantDeleteFrom(child_id, filesystems[i].path);
+        policy->GrantDeleteFrom(child_id, filesystem.path);
         if (has_copy_to_permission) {
-          policy->GrantCopyInto(child_id, filesystems[i].path);
+          policy->GrantCopyInto(child_id, filesystem.path);
         }
       }
     }
   }
 
-  return list.release();
+  return list;
 }
 
 class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
@@ -472,15 +471,15 @@ void MediaGalleriesGetMediaFileSystemsFunction::GetAndReturnGalleries() {
 
 void MediaGalleriesGetMediaFileSystemsFunction::ReturnGalleries(
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  std::unique_ptr<base::ListValue> list(
-      ConstructFileSystemList(render_frame_host(), extension(), filesystems));
+  absl::optional<base::Value::List> list =
+      ConstructFileSystemList(render_frame_host(), extension(), filesystems);
   if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
     return;
   }
 
   // The custom JS binding will use this list to create DOMFileSystem objects.
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
+  Respond(WithArguments(std::move(*list)));
 }
 
 void MediaGalleriesGetMediaFileSystemsFunction::ShowDialog() {
@@ -589,9 +588,9 @@ void MediaGalleriesAddUserSelectedFolderFunction::OnDirectorySelected(
 void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
     MediaGalleryPrefId pref_id,
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  std::unique_ptr<base::ListValue> list(
-      ConstructFileSystemList(render_frame_host(), extension(), filesystems));
-  if (!list.get()) {
+  absl::optional<base::Value::List> list =
+      ConstructFileSystemList(render_frame_host(), extension(), filesystems);
+  if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
     return;
   }
@@ -605,11 +604,10 @@ void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
       }
     }
   }
-  std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue);
-  results->SetKey("mediaFileSystems",
-                  base::Value::FromUniquePtrValue(std::move(list)));
-  results->SetKey("selectedFileSystemIndex", base::Value(index));
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(results))));
+  base::Value::Dict results;
+  results.Set("mediaFileSystems", std::move(*list));
+  results.Set("selectedFileSystemIndex", base::Value(index));
+  Respond(WithArguments(std::move(results)));
 }
 
 void MediaGalleriesAddUserSelectedFolderFunction::
@@ -692,11 +690,10 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
     MediaGalleries::MediaMetadata metadata;
     metadata.mime_type = mime_type;
 
-    std::unique_ptr<base::DictionaryValue> result_dictionary(
-        new base::DictionaryValue);
-    result_dictionary->Set(kMetadataKey, metadata.ToValue());
-    Respond(OneArgument(
-        base::Value::FromUniquePtrValue(std::move(result_dictionary))));
+    base::Value::Dict result_dictionary;
+    result_dictionary.Set(kMetadataKey,
+                          base::Value::FromUniquePtrValue(metadata.ToValue()));
+    Respond(WithArguments(std::move(result_dictionary)));
     return;
   }
 
@@ -733,19 +730,17 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
   DCHECK(metadata);
   DCHECK(attached_images);
 
-  std::unique_ptr<base::DictionaryValue> result_dictionary(
-      new base::DictionaryValue);
-  result_dictionary->Set(kMetadataKey,
-                         SerializeMediaMetadata(std::move(metadata)));
+  base::Value::Dict result_dictionary;
+  result_dictionary.Set(kMetadataKey,
+                        base::Value::FromUniquePtrValue(
+                            SerializeMediaMetadata(std::move(metadata))));
 
   if (attached_images->empty()) {
-    Respond(OneArgument(
-        base::Value::FromUniquePtrValue(std::move(result_dictionary))));
+    Respond(WithArguments(std::move(result_dictionary)));
     return;
   }
 
-  result_dictionary->Set(kAttachedImagesBlobInfoKey,
-                         std::make_unique<base::ListValue>());
+  result_dictionary.EnsureList(kAttachedImagesBlobInfoKey);
   metadata::AttachedImage* first_image = &attached_images->front();
   browser_context()->CreateMemoryBackedBlob(
       base::as_bytes(base::make_span(first_image->data)), "",
@@ -756,13 +751,12 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
 }
 
 void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
-    std::unique_ptr<base::DictionaryValue> result_dictionary,
+    base::Value::Dict result_dictionary,
     std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images,
     std::unique_ptr<std::vector<std::string>> blob_uuids,
     std::unique_ptr<content::BlobHandle> current_blob) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DCHECK(result_dictionary.get());
   DCHECK(attached_images.get());
   DCHECK(blob_uuids.get());
   DCHECK(current_blob.get());
@@ -771,11 +765,10 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   DCHECK_LT(blob_uuids->size(), attached_images->size());
 
   // For the newly constructed Blob, store its image's metadata and Blob UUID.
-  base::ListValue* attached_images_list = NULL;
-  result_dictionary->GetList(kAttachedImagesBlobInfoKey, &attached_images_list);
+  base::Value::List* attached_images_list =
+      result_dictionary.FindList(kAttachedImagesBlobInfoKey);
   DCHECK(attached_images_list);
-  DCHECK_LT(attached_images_list->GetListDeprecated().size(),
-            attached_images->size());
+  DCHECK_LT(attached_images_list->size(), attached_images->size());
 
   metadata::AttachedImage* current_image =
       &(*attached_images)[blob_uuids->size()];
@@ -784,7 +777,7 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   attached_image.Set(kMediaGalleriesApiTypeKey, current_image->type);
   attached_image.Set(kSizeKey,
                      base::checked_cast<int>(current_image->data.size()));
-  attached_images_list->Append(base::Value(std::move(attached_image)));
+  attached_images_list->Append(std::move(attached_image));
 
   blob_uuids->push_back(current_blob->GetUUID());
 
@@ -812,8 +805,7 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
 
   // All Blobs have been constructed. The renderer will take ownership.
   SetTransferredBlobUUIDs(*blob_uuids);
-  Respond(OneArgument(
-      base::Value::FromUniquePtrValue(std::move(result_dictionary))));
+  Respond(WithArguments(std::move(result_dictionary)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -889,7 +881,7 @@ void MediaGalleriesAddGalleryWatchFunction::HandleResponse(
 
   result.success = error.empty();
   Respond(error.empty()
-              ? OneArgument(base::Value::FromUniquePtrValue(result.ToValue()))
+              ? WithArguments(base::Value::FromUniquePtrValue(result.ToValue()))
               : ErrorWithArguments(AddGalleryWatch::Results::Create(result),
                                    error));
 }
@@ -938,7 +930,7 @@ void MediaGalleriesRemoveGalleryWatchFunction::OnPreferencesInit(
 
   gallery_watch_manager()->RemoveWatch(profile, extension_id(),
                                        gallery_pref_id);
-  Respond(NoArguments());
+  Respond(WithArguments());
 }
 
 }  // namespace api

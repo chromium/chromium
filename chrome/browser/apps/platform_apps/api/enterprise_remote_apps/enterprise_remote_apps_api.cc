@@ -76,7 +76,7 @@ void EnterpriseRemoteAppsAddFolderFunction::OnResult(
     return;
   }
 
-  Respond(OneArgument(base::Value(result->get_folder_id())));
+  Respond(WithArguments(result->get_folder_id()));
 }
 
 EnterpriseRemoteAppsAddAppFunction::EnterpriseRemoteAppsAddAppFunction() =
@@ -128,7 +128,7 @@ void EnterpriseRemoteAppsAddAppFunction::OnResult(
     return;
   }
 
-  Respond(OneArgument(base::Value(result->get_app_id())));
+  Respond(WithArguments(result->get_app_id()));
 }
 
 EnterpriseRemoteAppsDeleteAppFunction::EnterpriseRemoteAppsDeleteAppFunction() =
@@ -162,7 +162,7 @@ void EnterpriseRemoteAppsDeleteAppFunction::OnResult(
     return;
   }
 
-  Respond(NoArguments());
+  Respond(WithArguments());
 }
 
 }  // namespace chrome_apps::api
