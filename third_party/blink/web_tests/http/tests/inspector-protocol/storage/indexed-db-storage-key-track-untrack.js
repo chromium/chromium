@@ -62,5 +62,8 @@
 
   testRunner.log(oneMoreValue);
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })
