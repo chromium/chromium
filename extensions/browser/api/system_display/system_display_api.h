@@ -12,13 +12,22 @@
 
 namespace extensions {
 
-class SystemDisplayCrOSRestrictedFunction : public ExtensionFunction {
+class SystemDisplayFunction : public ExtensionFunction {
+ public:
+  static const char kApiNotAvailableError[];
+
+ protected:
+  ~SystemDisplayFunction() override = default;
+  bool PreRunValidation(std::string* error) override;
+};
+
+class SystemDisplayCrOSRestrictedFunction : public SystemDisplayFunction {
  public:
   static const char kCrosOnlyError[];
   static const char kKioskOnlyError[];
 
  protected:
-  ~SystemDisplayCrOSRestrictedFunction() override {}
+  ~SystemDisplayCrOSRestrictedFunction() override = default;
   bool PreRunValidation(std::string* error) override;
 
   // Returns true if this function should be restricted to kiosk-mode apps and
@@ -26,9 +35,9 @@ class SystemDisplayCrOSRestrictedFunction : public ExtensionFunction {
   virtual bool ShouldRestrictToKioskAndWebUI();
 };
 
-// This function inherits from ExtensionFunction because, unlike the
+// This function inherits from SystemDisplayFunction because, unlike the
 // rest of this API, it's available on all platforms.
-class SystemDisplayGetInfoFunction : public ExtensionFunction {
+class SystemDisplayGetInfoFunction : public SystemDisplayFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.display.getInfo", SYSTEM_DISPLAY_GETINFO)
 

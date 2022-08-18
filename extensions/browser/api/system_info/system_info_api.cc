@@ -153,14 +153,15 @@ void SystemInfoEventRouter::StartOrStopDisplayEventDispatcherIfNecessary() {
   // Events should be dispatched if and only if at least one browser context has
   // the relevant listeners.
   const bool should_dispatch = !contexts_with_display_listeners_.empty();
+  DisplayInfoProvider* provider = DisplayInfoProvider::Get();
 
-  if (should_dispatch == is_dispatching_display_events_)
+  if (!provider || (should_dispatch == is_dispatching_display_events_))
     return;
 
   if (should_dispatch)
-    DisplayInfoProvider::Get()->StartObserving();
+    provider->StartObserving();
   else
-    DisplayInfoProvider::Get()->StopObserving();
+    provider->StopObserving();
 
   is_dispatching_display_events_ = should_dispatch;
 }

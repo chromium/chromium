@@ -415,7 +415,10 @@ class DeviceDisplayResolutionRecommendedTest
     base::RunLoop run_loop;
     base::OnceClosure quit_closure(run_loop.QuitClosure());
     absl::optional<std::string> operation_error;
-    extensions::DisplayInfoProvider::Get()->SetDisplayProperties(
+    extensions::DisplayInfoProvider* provider =
+        extensions::DisplayInfoProvider::Get();
+    ASSERT_TRUE(provider);
+    provider->SetDisplayProperties(
         std::to_string(display_id), std::move(props),
         base::BindOnce(
             [](base::OnceClosure quit_closure, absl::optional<std::string>) {

@@ -78,6 +78,9 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     DisplayInfoProvider::InitializeForTesting(
         new DisplayInfoProviderChromeOS(std::move(display_config)));
 
+    provider_ = DisplayInfoProvider::Get();
+    ASSERT_TRUE(provider_);
+
     // Wait for TabletModeController to take its initial state from the power
     // manager.
     base::RunLoop().RunUntilIdle();
@@ -102,7 +105,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
       const api::system_display::DisplayProperties& info) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetDisplayProperties(
+    provider_->SetDisplayProperties(
         display_id, info,
         base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
@@ -140,7 +143,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   DisplayUnitInfoList GetAllDisplaysInfoSetSingleUnified(bool single_unified) {
     DisplayUnitInfoList result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->GetAllDisplaysInfo(
+    provider_->GetAllDisplaysInfo(
         single_unified,
         base::BindOnce(
             [](DisplayUnitInfoList* result_ptr, base::OnceClosure callback,
@@ -160,7 +163,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   DisplayLayoutList GetDisplayLayout() {
     DisplayLayoutList result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->GetDisplayLayout(base::BindOnce(
+    provider_->GetDisplayLayout(base::BindOnce(
         [](DisplayLayoutList* result_ptr, base::OnceClosure callback,
            DisplayLayoutList result) {
           *result_ptr = std::move(result);
@@ -174,7 +177,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   bool SetDisplayLayout(const DisplayLayoutList& layouts) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetDisplayLayout(
+    provider_->SetDisplayLayout(
         layouts,
         base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
@@ -184,7 +187,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   bool SetMirrorMode(const api::system_display::MirrorModeInfo& info) {
     std::string result;
     base::RunLoop run_loop;
-    DisplayInfoProvider::Get()->SetMirrorMode(
+    provider_->SetMirrorMode(
         info, base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result.empty();
@@ -192,6 +195,9 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
+
+ protected:
+  DisplayInfoProvider* provider_;
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {
@@ -810,7 +816,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
 
   // Test that enabling unified desktop succeeds and sets the desktop mode to
   // unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetDisplayManager()->unified_desktop_enabled());
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
@@ -834,7 +840,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnified) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
@@ -846,7 +852,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
 
   // Enabling unified desktop with one display should succeed, but desktop mode
   // will not be unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetDisplayManager()->unified_desktop_enabled());
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
@@ -856,7 +862,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedOneDisplay) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
@@ -873,7 +879,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
 
   // Enabling unified desktop while mirroring should succeed, but desktop mode
   // will not be unified.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(true);
+  provider_->EnableUnifiedDesktop(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
 
@@ -882,7 +888,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.
-  DisplayInfoProvider::Get()->EnableUnifiedDesktop(false);
+  provider_->EnableUnifiedDesktop(false);
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginLeftExact) {

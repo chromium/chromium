@@ -667,7 +667,7 @@ std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
     return std::make_unique<DisplayInfoProviderChromeOS>(remote.Unbind());
   }
 
-  LOG(ERROR) << "Cannot create DisplayInfoProvider in Lacros. "
+  LOG(ERROR) << "Cannot create a DisplayInfoProvider instance in Lacros. "
                 "CrosDisplayConfigController interface is not available.";
   return nullptr;
 }
