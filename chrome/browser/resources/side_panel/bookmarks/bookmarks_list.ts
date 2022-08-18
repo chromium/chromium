@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './commerce/shopping_list.js';
+
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -12,6 +14,8 @@ import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 import {getTemplate} from './bookmarks_list.html.js';
+import {BookmarkProductInfo} from './commerce/shopping_list.mojom-webui.js';
+import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
@@ -56,11 +60,14 @@ export class BookmarksListElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
+  private shoppingListApi_: ShoppingListApiProxy =
+      ShoppingListApiProxyImpl.getInstance();
   private bookmarksDragManager_: BookmarksDragManager =
       new BookmarksDragManager(this);
   private focusOutlineManager_: FocusOutlineManager;
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[];
+  private productInfos_: BookmarkProductInfo[];
   hoverVisible: boolean;
   private openFolders_: string[];
 
@@ -115,6 +122,10 @@ export class BookmarksListElement extends PolymerElement {
       }
 
       this.bookmarksDragManager_.startObserving();
+    });
+
+    this.shoppingListApi_.getAllBookmarkProductInfo().then(res => {
+      this.productInfos_ = res.productInfos;
     });
   }
 

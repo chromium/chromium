@@ -60,6 +60,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"tooltipMarkAsRead", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ},
       {"tooltipMarkAsUnread", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_UNREAD},
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
+      {"shoppingListFolderTitle", IDS_SIDE_PANEL_TRACKED_PRODUCTS},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

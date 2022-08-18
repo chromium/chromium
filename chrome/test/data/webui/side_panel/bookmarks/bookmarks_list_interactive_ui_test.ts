@@ -8,11 +8,13 @@ import 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
 import {BookmarkFolderElement} from 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
 import {BookmarksListElement} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
+import {ShoppingListApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {down, keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
+import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarksListInteractiveUITest', () => {
@@ -74,6 +76,9 @@ suite('SidePanelBookmarksListInteractiveUITest', () => {
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
+
+    const shoppingListApi = new TestShoppingListApiProxy();
+    ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     bookmarksList = document.createElement('bookmarks-list');
     document.body.appendChild(bookmarksList);

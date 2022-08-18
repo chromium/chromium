@@ -10,7 +10,7 @@ export interface ShoppingListApiProxy {
   getAllBookmarkProductInfo(): Promise<{productInfos: BookmarkProductInfo[]}>;
 }
 
-export class ShoppingListProxyImpl implements ShoppingListApiProxy {
+export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
   handler: ShoppingListHandlerRemote;
 
   constructor() {
@@ -26,7 +26,7 @@ export class ShoppingListProxyImpl implements ShoppingListApiProxy {
   }
 
   static getInstance(): ShoppingListApiProxy {
-    return instance || (instance = new ShoppingListProxyImpl());
+    return instance || (instance = new ShoppingListApiProxyImpl());
   }
 
   static setInstance(obj: ShoppingListApiProxy) {

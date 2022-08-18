@@ -8,16 +8,19 @@ import 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
 import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_list.js';
+import {BookmarkProductInfo} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
+import {ShoppingListApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list_api_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelBookmarksListTest', () => {
   let bookmarksList: BookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
+  let shoppingListApi: TestShoppingListApiProxy;
 
   const folders: chrome.bookmarks.BookmarkTreeNode[] = [
     {
@@ -59,12 +62,34 @@ suite('SidePanelBookmarksListTest', () => {
     },
   ];
 
+  const products: BookmarkProductInfo[] = [{
+    bookmarkId: BigInt(3),
+    info: {
+      title: 'Product Foo',
+      domain: 'foo.com',
+      imageUrl: {url: 'https://foo.com/image'},
+      productUrl: {url: 'https://foo.com/product'},
+      currentPrice: '$12',
+      previousPrice: '$34',
+    },
+  }];
+
   function getFolderElements(root: HTMLElement): BookmarkFolderElement[] {
     return Array.from(root.shadowRoot!.querySelectorAll('bookmark-folder'));
   }
 
   function getBookmarkElements(root: HTMLElement): HTMLElement[] {
     return Array.from(root.shadowRoot!.querySelectorAll('.bookmark'));
+  }
+
+  function checkShoppingListVisibility(
+      root: HTMLElement, visible: boolean): void {
+    const shoppingListElement = root.shadowRoot!.getElementById('shoppingList');
+    const dividerElement =
+        root.shadowRoot!.querySelector<HTMLElement>('.divider');
+
+    assertEquals(visible, isVisible(shoppingListElement));
+    assertEquals(visible, isVisible(dividerElement));
   }
 
   setup(async () => {
@@ -74,6 +99,10 @@ suite('SidePanelBookmarksListTest', () => {
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
+
+    shoppingListApi = new TestShoppingListApiProxy();
+    shoppingListApi.setProducts(products);
+    ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     bookmarksList = document.createElement('bookmarks-list');
     document.body.appendChild(bookmarksList);
@@ -236,5 +265,15 @@ suite('SidePanelBookmarksListTest', () => {
     assertEquals(
         JSON.stringify(['5001']),
         window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
+  });
+
+  test('ShoppingListVisibility', () => {
+    checkShoppingListVisibility(bookmarksList, true);
+
+    shoppingListApi.setProducts([]);
+    const bookmarksListNoShopping = document.createElement('bookmarks-list');
+    document.body.appendChild(bookmarksListNoShopping);
+
+    checkShoppingListVisibility(bookmarksListNoShopping, false);
   });
 });
