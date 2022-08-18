@@ -5,7 +5,7 @@
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
-import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote, ContextMenuSource} from './bookmarks.mojom-webui.js';
+import {ActionSource, BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
@@ -14,9 +14,11 @@ export interface BookmarksApiProxy {
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
-  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers): void;
+  openBookmark(
+      id: string, depth: number, clickModifiers: ClickModifiers,
+      source: ActionSource): void;
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
-  showContextMenu(id: string, x: number, y: number): void;
+  showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   showUI(): void;
 }
 
@@ -61,8 +63,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
         }));
   }
 
-  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers) {
-    this.handler.openBookmark(BigInt(id), depth, clickModifiers);
+  openBookmark(
+      id: string, depth: number, clickModifiers: ClickModifiers,
+      source: ActionSource) {
+    this.handler.openBookmark(BigInt(id), depth, clickModifiers, source);
   }
 
   pasteToBookmark(parentId: string, destinationId?: string) {
@@ -72,8 +76,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     });
   }
 
-  showContextMenu(id: string, x: number, y: number) {
-    this.handler.showContextMenu(id, {x, y}, ContextMenuSource.kBookmark);
+  showContextMenu(id: string, x: number, y: number, source: ActionSource) {
+    this.handler.showContextMenu(id, {x, y}, source);
   }
 
   showUI() {

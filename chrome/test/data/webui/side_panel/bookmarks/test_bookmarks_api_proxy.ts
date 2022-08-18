@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
 import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -43,8 +44,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve(this.folders_);
   }
 
-  openBookmark(id: string, depth: number, clickModifiers: ClickModifiers) {
-    this.methodCalled('openBookmark', id, depth, clickModifiers);
+  openBookmark(
+      id: string, depth: number, clickModifiers: ClickModifiers,
+      source: ActionSource) {
+    this.methodCalled('openBookmark', id, depth, clickModifiers, source);
   }
 
   setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {
@@ -65,8 +68,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  showContextMenu(id: string, x: number, y: number) {
-    this.methodCalled('showContextMenu', id, x, y);
+  showContextMenu(id: string, x: number, y: number, source: ActionSource) {
+    this.methodCalled('showContextMenu', id, x, y, source);
   }
 
   showUI() {

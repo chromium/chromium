@@ -5,13 +5,18 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
 
+import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
+import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
 import {ShoppingListElement} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.js';
 import {BookmarkProductInfo} from 'chrome://read-later.top-chrome/bookmarks/commerce/shopping_list.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestBookmarksApiProxy} from '../test_bookmarks_api_proxy.js';
+
 suite('SidePanelShoppingListTest', () => {
   let shoppingList: ShoppingListElement;
+  let bookmarksApi: TestBookmarksApiProxy;
 
   const products: BookmarkProductInfo[] = [
     {
@@ -77,6 +82,9 @@ suite('SidePanelShoppingListTest', () => {
   setup(async () => {
     document.body.innerHTML = '';
 
+    bookmarksApi = new TestBookmarksApiProxy();
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
+
     shoppingList = document.createElement('shopping-list');
     shoppingList.productInfos = products;
     document.body.appendChild(shoppingList);
@@ -108,5 +116,39 @@ suite('SidePanelShoppingListTest', () => {
     for (let i = 0; i < productElements.length; i++) {
       assertFalse(isVisible(productElements[i]!));
     }
+  });
+
+  test('OpensProductItem', async () => {
+    getProductElements()[0]!.click();
+    const [id, parentFolderDepth, , source] =
+        await bookmarksApi.whenCalled('openBookmark');
+    assertEquals(products[0]!.bookmarkId.toString(), id);
+    assertEquals(0, parentFolderDepth);
+    assertEquals(ActionSource.kPriceTracking, source);
+  });
+
+  test('OpensProductItemContextMenu', async () => {
+    getProductElements()[0]!.dispatchEvent(new MouseEvent('contextmenu'));
+    const [id, , , source] = await bookmarksApi.whenCalled('showContextMenu');
+    assertEquals(products[0]!.bookmarkId.toString(), id);
+    assertEquals(ActionSource.kPriceTracking, source);
+  });
+
+  test('OpensProductItemWithAuxClick', async () => {
+    // Middle mouse button click.
+    getProductElements()[0]!.dispatchEvent(
+        new MouseEvent('auxclick', {button: 1}));
+    const [id, parentFolderDepth, , source] =
+        await bookmarksApi.whenCalled('openBookmark');
+    assertEquals(products[0]!.bookmarkId.toString(), id);
+    assertEquals(0, parentFolderDepth);
+    assertEquals(ActionSource.kPriceTracking, source);
+
+    bookmarksApi.resetResolver('openBookmark');
+
+    // Non-middle mouse aux clicks.
+    getProductElements()[0]!.dispatchEvent(
+        new MouseEvent('auxclick', {button: 2}));
+    assertEquals(0, bookmarksApi.getCallCount('openBookmark'));
   });
 });

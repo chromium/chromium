@@ -11,6 +11,7 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bookmark_folder.html.js';
+import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
 export interface BookmarkFolderElement {
@@ -89,26 +90,30 @@ export class BookmarkFolderElement extends PolymerElement {
 
     event.preventDefault();
     event.stopPropagation();
-    this.bookmarksApi_.openBookmark(event.model.item.id!, this.depth, {
-      middleButton: true,
-      altKey: event.altKey,
-      ctrlKey: event.ctrlKey,
-      metaKey: event.metaKey,
-      shiftKey: event.shiftKey,
-    });
+    this.bookmarksApi_.openBookmark(
+        event.model.item.id!, this.depth, {
+          middleButton: true,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        },
+        ActionSource.kBookmark);
   }
 
   private onBookmarkClick_(
       event: DomRepeatEvent<chrome.bookmarks.BookmarkTreeNode, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
-    this.bookmarksApi_.openBookmark(event.model.item.id!, this.depth, {
-      middleButton: false,
-      altKey: event.altKey,
-      ctrlKey: event.ctrlKey,
-      metaKey: event.metaKey,
-      shiftKey: event.shiftKey,
-    });
+    this.bookmarksApi_.openBookmark(
+        event.model.item.id!, this.depth, {
+          middleButton: false,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        },
+        ActionSource.kBookmark);
   }
 
   private onBookmarkContextMenu_(
@@ -116,14 +121,15 @@ export class BookmarkFolderElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.showContextMenu(
-        event.model.item.id, event.clientX, event.clientY);
+        event.model.item.id, event.clientX, event.clientY,
+        ActionSource.kBookmark);
   }
 
   private onFolderContextMenu_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.showContextMenu(
-        this.folder.id, event.clientX, event.clientY);
+        this.folder.id, event.clientX, event.clientY, ActionSource.kBookmark);
   }
 
   private getBookmarkIcon_(url: string): string {

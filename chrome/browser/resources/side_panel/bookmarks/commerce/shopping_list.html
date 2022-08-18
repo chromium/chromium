@@ -197,7 +197,10 @@
   </button>
   <template is="dom-if" if="[[open_]]" restamp>
     <template is="dom-repeat" items="[[productInfos]]">
-      <button class="product-item" role="treeitem">
+      <button class="product-item" role="treeitem"
+          on-click="onProductClick_"
+          on-auxclick="onProductAuxClick_"
+          on-contextmenu="onProductContextMenu_">
         <template is="dom-if" if="[[item.info.imageUrl.url.length]]" restamp>
           <img class="product-image item-image" is="cr-auto-img"
               auto-src="[[item.info.imageUrl.url]]"></img>

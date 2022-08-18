@@ -6,9 +6,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement} from 'chrome://read-later.top-chrome/bookmarks/bookmark_folder.js';
+import {ActionSource} from 'chrome://read-later.top-chrome/bookmarks/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/bookmarks/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -142,10 +142,18 @@ suite('SidePanelBookmarkFolderTest', () => {
 
   test('OpensBookmark', async () => {
     getChildElements()[1]!.click();
-    const [id, parentFolderDepth] =
+    const [id, parentFolderDepth, , source] =
         await bookmarksApi.whenCalled('openBookmark');
     assertEquals(folder.children![1]!.id, id);
     assertEquals(0, parentFolderDepth);
+    assertEquals(ActionSource.kBookmark, source);
+  });
+
+  test('OpensBookmarkContextMenu', async () => {
+    getChildElements()[1]!.dispatchEvent(new MouseEvent('contextmenu'));
+    const [id, , , source] = await bookmarksApi.whenCalled('showContextMenu');
+    assertEquals(folder.children![1]!.id, id);
+    assertEquals(ActionSource.kBookmark, source);
   });
 
   test('MovesFocusDown', () => {

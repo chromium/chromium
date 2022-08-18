@@ -44,7 +44,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
       Browser* browser,
       base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
       const bookmarks::BookmarkNode* bookmark,
-      const side_panel::mojom::ContextMenuSource& source)
+      const side_panel::mojom::ActionSource& source)
       : ui::SimpleMenuModel(this),
         embedder_(embedder),
         controller_(base::WrapUnique(new BookmarkContextMenuController(
@@ -55,7 +55,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
             BookmarkLaunchLocation::kSidePanelContextMenu,
             bookmark->parent(),
             {bookmark}))) {
-    if (source == side_panel::mojom::ContextMenuSource::kPriceTracking) {
+    if (source == side_panel::mojom::ActionSource::kPriceTracking) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
@@ -133,7 +133,8 @@ BookmarksPageHandler::~BookmarksPageHandler() = default;
 void BookmarksPageHandler::OpenBookmark(
     int64_t node_id,
     int32_t parent_folder_depth,
-    ui::mojom::ClickModifiersPtr click_modifiers) {
+    ui::mojom::ClickModifiersPtr click_modifiers,
+    side_panel::mojom::ActionSource source) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -150,6 +151,8 @@ void BookmarksPageHandler::OpenBookmark(
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
   chrome::OpenAllIfAllowed(browser, {bookmark_node}, open_location, false);
+  if (source == side_panel::mojom::ActionSource::kPriceTracking)
+    return;
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
   RecordBookmarkLaunch(
       parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
@@ -160,7 +163,7 @@ void BookmarksPageHandler::OpenBookmark(
 void BookmarksPageHandler::ShowContextMenu(
     const std::string& id_string,
     const gfx::Point& point,
-    side_panel::mojom::ContextMenuSource source) {
+    side_panel::mojom::ActionSource source) {
   int64_t id;
   if (!base::StringToInt64(id_string, &id))
     return;
