@@ -34,6 +34,8 @@ const int kPrivacyIndicatorsViewWidth = 50;
 
 PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
+  SetVisible(false);
+
   auto container_view = std::make_unique<views::View>();
   auto* layout =
       container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -63,9 +65,14 @@ void PrivacyIndicatorsTrayItemView::Update(bool camera_is_used,
   camera_is_used_ = camera_is_used;
   microphone_is_used_ = microphone_is_used;
 
-  TooltipTextChanged();
+  SetVisible(camera_is_used_ || microphone_is_used_);
+  if (!GetVisible())
+    return;
 
-  // TODO(crbug/1352595): Handle icon visibility change.
+  camera_icon_->SetVisible(camera_is_used);
+  microphone_icon_->SetVisible(microphone_is_used);
+
+  TooltipTextChanged();
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {

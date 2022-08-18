@@ -7,10 +7,17 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_prefs.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -21,7 +28,24 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
+
+namespace {
+
+// Check the visibility of privacy indicators in all displays.
+void ExpectPrivacyIndicatorsVisible(bool visible) {
+  for (ash::RootWindowController* root_window_controller :
+       ash::Shell::Get()->GetAllRootWindowControllers()) {
+    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
+                  ->unified_system_tray()
+                  ->privacy_indicators_view()
+                  ->GetVisible(),
+              visible);
+  }
+}
+
+}  // namespace
 
 const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 
@@ -55,7 +79,12 @@ class AppAccessNotifierTest : public testing::Test,
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled());
 
-    ash_test_helper_.SetUp();
+    // Setting ash prefs for testing multi-display.
+    ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
+
+    ash::AshTestHelper::InitParams params;
+    params.local_state = &local_state_;
+    ash_test_helper_.SetUp(std::move(params));
 
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
@@ -187,6 +216,9 @@ class AppAccessNotifierTest : public testing::Test,
   // This instance is needed for setting up `ash_test_helper_`.
   // See //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment task_environment_;
+
+  // Use this for testing multi-display.
+  TestingPrefServiceSimple local_state_;
 
   ash::AshTestHelper ash_test_helper_;
 
@@ -410,4 +442,37 @@ TEST_P(AppAccessNotifierTest, GetShortNameFromAppId) {
   EXPECT_EQ(AppAccessNotifier::GetAppShortNameFromAppId(
                 id, &registry_cache_primary_user_),
             u"test_app_name");
+}
+
+TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
+  if (!IsPrivacyIndicatorsFeatureEnabled())
+    return;
+
+  // Make sure privacy indicators work on multiple displays.
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("800x800,801+0-800x800");
+
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+
+  // Privacy indicators should show up if at least camera or microphone is being
+  // accessed.
+  LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/true);
+  ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/false);
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/false);
+  ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+
+  LaunchAppUsingCameraOrMicrophone("test_app_id", "test_app_name",
+                                   /*use_camera=*/false,
+                                   /*use_microphone=*/true);
+  ExpectPrivacyIndicatorsVisible(/*visible=*/true);
 }

@@ -237,6 +237,10 @@ class ASH_EXPORT UnifiedSystemTray
     return message_center_bubble_.get();
   }
 
+  PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
+    return privacy_indicators_view_;
+  }
+
   ChannelIndicatorView* channel_indicator_view() {
     return channel_indicator_view_;
   }

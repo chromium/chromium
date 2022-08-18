@@ -135,8 +135,8 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     DCHECK(ash::Shell::HasInstance());
     for (auto* root_window_controller :
          ash::Shell::Get()->GetAllRootWindowControllers()) {
-      DCHECK(root_window_controller &&
-             root_window_controller->GetStatusAreaWidget());
+      DCHECK(root_window_controller);
+      DCHECK(root_window_controller->GetStatusAreaWidget());
 
       root_window_controller->GetStatusAreaWidget()
           ->unified_system_tray()

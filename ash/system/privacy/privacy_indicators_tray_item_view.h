@@ -30,6 +30,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   void UpdateAlignmentForShelf(Shelf* shelf);
 
  private:
+  friend class PrivacyIndicatorsTrayItemViewTest;
+
   // TrayItemView:
   void HandleLocaleChange() override;
   gfx::Size CalculatePreferredSize() const override;
