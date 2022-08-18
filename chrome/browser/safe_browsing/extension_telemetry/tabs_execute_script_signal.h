@@ -21,7 +21,7 @@ class TabsExecuteScriptSignal : public ExtensionSignal {
   ExtensionSignalType GetType() const override;
 
   // SHA-256 hash of the script code (calculated at object creation time).
-  const std::string& script_hash() { return script_hash_; }
+  const std::string& script_hash() const { return script_hash_; }
 
  protected:
   std::string script_hash_;

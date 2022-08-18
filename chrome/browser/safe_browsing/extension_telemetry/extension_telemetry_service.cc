@@ -287,7 +287,10 @@ void ExtensionTelemetryService::AddSignal(
                              GetExtensionInfoForReport(*extension));
   }
 
-  processor.ProcessSignal(std::move(signal));
+  // Pass the signal as reference instead of relinquishing ownership to the
+  // signal processor. This change paves the way for passing the signal
+  // information to multiple signal processors in a future CL.
+  processor.ProcessSignal(*signal);
 }
 
 void ExtensionTelemetryService::CreateAndUploadReport() {

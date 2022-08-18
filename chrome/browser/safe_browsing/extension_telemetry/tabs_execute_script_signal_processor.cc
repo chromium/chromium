@@ -24,22 +24,22 @@ TabsExecuteScriptSignalProcessor::TabsExecuteScriptSignalProcessor()
 TabsExecuteScriptSignalProcessor::~TabsExecuteScriptSignalProcessor() = default;
 
 void TabsExecuteScriptSignalProcessor::ProcessSignal(
-    std::unique_ptr<ExtensionSignal> signal) {
-  DCHECK_EQ(ExtensionSignalType::kTabsExecuteScript, signal->GetType());
-  auto* tes_signal = static_cast<TabsExecuteScriptSignal*>(signal.get());
+    const ExtensionSignal& signal) {
+  DCHECK_EQ(ExtensionSignalType::kTabsExecuteScript, signal.GetType());
+  const auto& tes_signal = static_cast<const TabsExecuteScriptSignal&>(signal);
   // Note that if this is the first signal for an extension, a new entry is
   // created in the store.
   ScriptHashStoreEntry& store_entry =
-      script_hash_store_[tes_signal->extension_id()];
+      script_hash_store_[tes_signal.extension_id()];
   ScriptHashes& script_hashes = store_entry.script_hashes;
   // Only process signal if:
   // - the number of script hashes for the extension is under the max limit OR
   // - the script hash already exists in the extension's script hash list.
   if ((script_hashes.size() < max_script_hashes_) ||
-      (script_hashes.find(tes_signal->script_hash()) != script_hashes.end())) {
+      (script_hashes.find(tes_signal.script_hash()) != script_hashes.end())) {
     // Process signal - increment execution count for script hash.
     // Note that if this is a new script hash, a new entry is created.
-    ++(script_hashes[tes_signal->script_hash()]);
+    ++(script_hashes[tes_signal.script_hash()]);
   } else {
     // Max script hashes exceeded for this extension.
     store_entry.max_exceeded_script_count++;

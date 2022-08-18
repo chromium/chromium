@@ -36,9 +36,8 @@ TEST_F(RemoteHostContactedSignalProcessorTest,
 
 TEST_F(RemoteHostContactedSignalProcessorTest,
        StoresDataAfterProcessingSignal) {
-  auto signal = std::make_unique<RemoteHostContactedSignal>(kExtensionId[0],
-                                                            GURL(host_urls[0]));
-  processor_.ProcessSignal(std::move(signal));
+  auto signal = RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
+  processor_.ProcessSignal(signal);
 
   // Verify that processor now has some data to report.
   EXPECT_TRUE(processor_.HasDataToReportForTest());
@@ -53,23 +52,23 @@ TEST_F(RemoteHostContactedSignalProcessorTest, ReportsSignalInfoCorrectly) {
   // Process 3 signals for the first extension, each corresponding to the
   // web request sent to the first test url.
   for (int i = 0; i < 3; i++) {
-    auto signal = std::make_unique<RemoteHostContactedSignal>(
-        kExtensionId[0], GURL(host_urls[0]));
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
+    processor_.ProcessSignal(signal);
   }
 
   // Process 3 signals for the second extension. Two signal corresponds to the
   // web request sent to the first url, the third to the web request
   // sent to the second url.
   for (int i = 0; i < 2; i++) {
-    auto signal = std::make_unique<RemoteHostContactedSignal>(
-        kExtensionId[1], GURL(host_urls[0]));
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[0]));
+    processor_.ProcessSignal(signal);
   }
   {
-    auto signal = std::make_unique<RemoteHostContactedSignal>(
-        kExtensionId[1], GURL(host_urls[1]));
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[1]));
+    processor_.ProcessSignal(signal);
   }
 
   // Retrieve signal info for first extension.

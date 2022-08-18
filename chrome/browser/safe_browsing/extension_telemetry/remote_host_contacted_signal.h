@@ -20,7 +20,7 @@ class RemoteHostContactedSignal : public ExtensionSignal {
   // ExtensionSignal:
   ExtensionSignalType GetType() const override;
 
-  const GURL& contacted_host_url() { return contacted_host_url_; }
+  const GURL& contacted_host_url() const { return contacted_host_url_; }
 
  protected:
   // Url of the remote contacted host.

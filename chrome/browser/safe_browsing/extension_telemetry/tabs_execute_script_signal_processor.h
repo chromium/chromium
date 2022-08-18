@@ -28,7 +28,7 @@ class TabsExecuteScriptSignalProcessor : public ExtensionSignalProcessor {
       const TabsExecuteScriptSignalProcessor&) = delete;
 
   // ExtensionSignalProcessor:
-  void ProcessSignal(std::unique_ptr<ExtensionSignal> signal) override;
+  void ProcessSignal(const ExtensionSignal& signal) override;
   std::unique_ptr<ExtensionTelemetryReportRequest_SignalInfo>
   GetSignalInfoForReport(const extensions::ExtensionId& extension_id) override;
   bool HasDataToReportForTest() const override;

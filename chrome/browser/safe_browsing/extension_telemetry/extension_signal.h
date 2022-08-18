@@ -27,7 +27,7 @@ class ExtensionSignal {
   // Returns the type of the signal.
   virtual ExtensionSignalType GetType() const = 0;
 
-  const extensions::ExtensionId& extension_id() { return extension_id_; }
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
  protected:
   explicit ExtensionSignal(const extensions::ExtensionId& extension_id)

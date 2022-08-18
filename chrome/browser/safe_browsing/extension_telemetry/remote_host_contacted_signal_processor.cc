@@ -16,12 +16,13 @@ RemoteHostContactedSignalProcessor::~RemoteHostContactedSignalProcessor() =
     default;
 
 void RemoteHostContactedSignalProcessor::ProcessSignal(
-    std::unique_ptr<ExtensionSignal> signal) {
-  DCHECK_EQ(ExtensionSignalType::kRemoteHostContacted, signal->GetType());
-  auto* rhc_signal = static_cast<RemoteHostContactedSignal*>(signal.get());
+    const ExtensionSignal& signal) {
+  DCHECK_EQ(ExtensionSignalType::kRemoteHostContacted, signal.GetType());
+  const auto& rhc_signal =
+      static_cast<const RemoteHostContactedSignal&>(signal);
   // Extract only the host portion of the urls.
-  std::string host_url = rhc_signal->contacted_host_url().host();
-  ++((remote_host_url_store_[rhc_signal->extension_id()])[host_url]);
+  const std::string host_url = rhc_signal.contacted_host_url().host();
+  ++((remote_host_url_store_[rhc_signal.extension_id()])[host_url]);
 }
 
 std::unique_ptr<ExtensionTelemetryReportRequest_SignalInfo>

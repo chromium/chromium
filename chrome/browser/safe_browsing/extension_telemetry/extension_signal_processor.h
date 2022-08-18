@@ -22,7 +22,7 @@ class ExtensionSignalProcessor {
 
   // Processes (ie. aggregates/derives/adds additional data) the signal and
   // updates internal state & data.
-  virtual void ProcessSignal(std::unique_ptr<ExtensionSignal> signal) = 0;
+  virtual void ProcessSignal(const ExtensionSignal& signal) = 0;
 
   // Returns all signal data collected for the specified extension.
   // Also clears out the existing data.

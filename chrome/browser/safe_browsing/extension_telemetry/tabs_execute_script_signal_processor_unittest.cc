@@ -45,9 +45,8 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, NoDataPresentInitially) {
 
 TEST_F(TabsExecuteScriptSignalProcessorTest, StoresDataAfterProcessingSignal) {
   // Process a signal.
-  auto signal = std::make_unique<TabsExecuteScriptSignal>(kExtensionId[0],
-                                                          script_data_[0].code);
-  processor_.ProcessSignal(std::move(signal));
+  auto signal = TabsExecuteScriptSignal(kExtensionId[0], script_data_[0].code);
+  processor_.ProcessSignal(signal);
 
   // Verify that processor now has some data to report.
   EXPECT_TRUE(processor_.HasDataToReportForTest());
@@ -61,22 +60,22 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, ReportsSignalInfoCorrectly) {
   // Process 3 signals for the first extension, each corresponding to the
   // execution of the first test script.
   for (int i = 0; i < 3; i++) {
-    auto signal = std::make_unique<TabsExecuteScriptSignal>(
-        kExtensionId[0], script_data_[0].code);
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        TabsExecuteScriptSignal(kExtensionId[0], script_data_[0].code);
+    processor_.ProcessSignal(signal);
   }
 
   // Process 3 signals for second extension. Two signal corresponds to the
   // execution of first script, the third to the execution of the second script.
   for (int i = 0; i < 2; i++) {
-    auto signal = std::make_unique<TabsExecuteScriptSignal>(
-        kExtensionId[1], script_data_[0].code);
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        TabsExecuteScriptSignal(kExtensionId[1], script_data_[0].code);
+    processor_.ProcessSignal(signal);
   }
   {
-    auto signal = std::make_unique<TabsExecuteScriptSignal>(
-        kExtensionId[1], script_data_[1].code);
-    processor_.ProcessSignal(std::move(signal));
+    auto signal =
+        TabsExecuteScriptSignal(kExtensionId[1], script_data_[1].code);
+    processor_.ProcessSignal(signal);
   }
 
   // Retrieve signal info for first extension.
@@ -134,15 +133,12 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, EnforcesMaxScriptHashesLimit) {
   // Process 3 signals for same extension:
   // - signals 1,2 each have the same script hash.
   // - signals 3 has a different script hash.
-  auto signal1 = std::make_unique<TabsExecuteScriptSignal>(
-      kExtensionId[0], script_data_[0].code);
-  auto signal2 = std::make_unique<TabsExecuteScriptSignal>(
-      kExtensionId[0], script_data_[0].code);
-  auto signal3 = std::make_unique<TabsExecuteScriptSignal>(
-      kExtensionId[0], script_data_[1].code);
-  processor_.ProcessSignal(std::move(signal1));
-  processor_.ProcessSignal(std::move(signal2));
-  processor_.ProcessSignal(std::move(signal3));
+  auto signal1 = TabsExecuteScriptSignal(kExtensionId[0], script_data_[0].code);
+  auto signal2 = TabsExecuteScriptSignal(kExtensionId[0], script_data_[0].code);
+  auto signal3 = TabsExecuteScriptSignal(kExtensionId[0], script_data_[1].code);
+  processor_.ProcessSignal(signal1);
+  processor_.ProcessSignal(signal2);
+  processor_.ProcessSignal(signal3);
 
   // Verify that processor now has some data to report.
   EXPECT_TRUE(processor_.HasDataToReportForTest());
