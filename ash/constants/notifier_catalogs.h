@@ -168,6 +168,19 @@ enum class NotificationCatalogName {
   kMaxValue = kArcLowDiskSpacePostStop
 };
 
+// A living catalog that registers system nudges.
+// Current values should not be renumbered or removed.
+// To deprecate comment out the entry.
+enum class NudgeCatalogName {
+  kTestCatalogName = 0,
+  kDictation = 1,
+  kMultipaste = 2,
+  kDarkLightMode = 3,
+  kAutozoom = 4,
+  kAdaptiveCharging = 5,
+  kMaxValue = kAdaptiveCharging,
+};
+
 // A living catalog that registers toasts.
 // Current values should not be renumbered or removed. Please keep in sync with
 // "ToastCatalogName" in tools/metrics/histograms/enums.xml.

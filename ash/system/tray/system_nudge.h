@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell.h"
@@ -37,6 +38,7 @@ namespace ash {
 class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
  public:
   SystemNudge(const std::string& name,
+              NudgeCatalogName catalog_name,
               int icon_size,
               int icon_label_spacing,
               int nudge_padding,
@@ -85,6 +87,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
   struct SystemNudgeParams {
     // The name for the widget.
     std::string name;
+    // The catalog name for the system nudge.
+    NudgeCatalogName catalog_name;
     // The size of the icon.
     int icon_size;
     // The size of the space between icon and label.

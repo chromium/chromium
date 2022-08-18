@@ -4,6 +4,7 @@
 
 #include "ash/system/power/adaptive_charging_nudge.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -38,6 +39,7 @@ constexpr char kAdaptiveChargingNudgeName[] =
 
 AdaptiveChargingNudge::AdaptiveChargingNudge()
     : SystemNudge(kAdaptiveChargingNudgeName,
+                  NudgeCatalogName::kAdaptiveCharging,
                   kIconSize,
                   kIconLabelSpacing,
                   kNudgePadding) {}

@@ -4,6 +4,7 @@
 
 #include "ash/style/dark_light_mode_nudge.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -34,6 +35,7 @@ constexpr char kDarkLightModeNudgeName[] = "DarkLightModeEducationalNudge";
 
 DarkLightModeNudge::DarkLightModeNudge()
     : SystemNudge(kDarkLightModeNudgeName,
+                  NudgeCatalogName::kDarkLightMode,
                   kIconSize,
                   kIconLabelSpacing,
                   kNudgePadding) {}

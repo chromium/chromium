@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/system_nudge.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
@@ -27,6 +28,7 @@ class TestSystemNudge : public SystemNudge {
  public:
   explicit TestSystemNudge(bool anchor_status_area)
       : SystemNudge(kNudgeName,
+                    NudgeCatalogName::kTestCatalogName,
                     kIconSize,
                     kIconLabelSpacing,
                     kNudgePadding,

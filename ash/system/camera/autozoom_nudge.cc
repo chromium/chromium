@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -35,6 +36,7 @@ constexpr char kAutozoomNudgeName[] = "AutozoomNudge";
 
 AutozoomNudge::AutozoomNudge()
     : SystemNudge(kAutozoomNudgeName,
+                  NudgeCatalogName::kAutozoom,
                   kAutozoomIconSize,
                   kIconLabelSpacing,
                   kNudgePadding,
