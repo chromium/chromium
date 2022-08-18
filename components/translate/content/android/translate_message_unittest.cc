@@ -68,7 +68,8 @@ class TestBridge : public TranslateMessage::Bridge {
               (JNIEnv*,
                base::android::ScopedJavaLocalRef<jstring>,
                base::android::ScopedJavaLocalRef<jstring>,
-               base::android::ScopedJavaLocalRef<jstring>),
+               base::android::ScopedJavaLocalRef<jstring>,
+               jboolean),
               (override));
 
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobjectArray>,
@@ -162,12 +163,12 @@ class TranslateMessageTest : public ::testing::Test {
   void ShowBeforeTranslationMessage(JNIEnv* env,
                                     const std::string& source_language_code,
                                     const std::string& target_language_code) {
-    EXPECT_CALL(
-        *bridge_,
-        ShowMessage(env,
-                    /*title=*/Truly(IsJavaStringNonNull),
-                    /*description=*/Truly(IsJavaStringNonNull),
-                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+    EXPECT_CALL(*bridge_,
+                ShowMessage(env,
+                            /*title=*/Truly(IsJavaStringNonNull),
+                            /*description=*/Truly(IsJavaStringNonNull),
+                            /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                            /*has_overflow_menu=*/true));
 
     translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE,
                                           source_language_code,
@@ -181,7 +182,8 @@ class TranslateMessageTest : public ::testing::Test {
                 ShowMessage(env,
                             /*title=*/Truly(IsJavaStringNonNull),
                             /*description=*/Truly(IsJavaStringNonNull),
-                            /*primary_button_text=*/Truly(IsJavaStringNull)));
+                            /*primary_button_text=*/Truly(IsJavaStringNull),
+                            /*has_overflow_menu=*/true));
 
     EXPECT_CALL(
         *client_,
@@ -199,12 +201,12 @@ class TranslateMessageTest : public ::testing::Test {
   void FinishTranslation(JNIEnv* env,
                          const std::string& source_language_code,
                          const std::string& target_language_code) {
-    EXPECT_CALL(
-        *bridge_,
-        ShowMessage(env,
-                    /*title=*/Truly(IsJavaStringNonNull),
-                    /*description=*/Truly(IsJavaStringNonNull),
-                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+    EXPECT_CALL(*bridge_,
+                ShowMessage(env,
+                            /*title=*/Truly(IsJavaStringNonNull),
+                            /*description=*/Truly(IsJavaStringNonNull),
+                            /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                            /*has_overflow_menu=*/true));
 
     EXPECT_CALL(
         *client_,
@@ -227,12 +229,12 @@ class TranslateMessageTest : public ::testing::Test {
                                 const std::string& target_language_code) {
     EXPECT_CALL(driver_, RevertTranslation(_));
 
-    EXPECT_CALL(
-        *bridge_,
-        ShowMessage(env,
-                    /*title=*/Truly(IsJavaStringNonNull),
-                    /*description=*/Truly(IsJavaStringNonNull),
-                    /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+    EXPECT_CALL(*bridge_,
+                ShowMessage(env,
+                            /*title=*/Truly(IsJavaStringNonNull),
+                            /*description=*/Truly(IsJavaStringNonNull),
+                            /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                            /*has_overflow_menu=*/true));
   }
 
   void TranslateThenRevertThenDismiss(JNIEnv* env,
@@ -395,7 +397,8 @@ TEST_F(TranslateMessageTest, ShowErrorBeforeTranslation) {
               ShowMessage(env,
                           /*title=*/Truly(IsJavaStringNonNull),
                           /*description=*/Truly(IsJavaStringNonNull),
-                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                          /*has_overflow_menu=*/true));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");
@@ -416,7 +419,8 @@ TEST_F(TranslateMessageTest, ShowErrorAfterTranslation) {
               ShowMessage(env,
                           /*title=*/Truly(IsJavaStringNonNull),
                           /*description=*/Truly(IsJavaStringNonNull),
-                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                          /*has_overflow_menu=*/true));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");
@@ -960,7 +964,7 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageFails) {
       .WillOnce(Return(false));
 
   // ShowMessage should not be called after CreateTranslateMessage fails.
-  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _)).Times(0);
+  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _, _)).Times(0);
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE, "fr",
                                         "en");
@@ -975,7 +979,7 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageFailsThenSucceeds) {
       .WillOnce(Return(false));
 
   // ShowMessage should not be called after CreateTranslateMessage fails.
-  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _)).Times(0);
+  EXPECT_CALL(*bridge_, ShowMessage(_, _, _, _, _)).Times(0);
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE, "fr",
                                         "en");
@@ -1133,7 +1137,8 @@ TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseErrorOccurred) {
               ShowMessage(env,
                           /*title=*/Truly(IsJavaStringNonNull),
                           /*description=*/Truly(IsJavaStringNonNull),
-                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                          /*has_overflow_menu=*/true));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");
@@ -1222,7 +1227,8 @@ TEST_F(TranslateMessageTest, TranslationNotDeniedBecauseErrorOccurred) {
               ShowMessage(env,
                           /*title=*/Truly(IsJavaStringNonNull),
                           /*description=*/Truly(IsJavaStringNonNull),
-                          /*primary_button_text=*/Truly(IsJavaStringNonNull)));
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                          /*has_overflow_menu=*/true));
 
   translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATE_ERROR, "fr",
                                         "en");
@@ -1460,6 +1466,75 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateInterruptedByOverflowMenu) {
             translate_prefs_->GetTranslationAcceptedCount("fr"));
   EXPECT_EQ(GetMaximumNumberOfAutoAlways() - 1,
             translate_prefs_->GetTranslationAutoAlwaysCount("fr"));
+}
+
+TEST_F(TranslateMessageTest, AutoNeverTranslate) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  DictionaryPrefUpdate(pref_service_.get(),
+                       TranslatePrefs::kPrefTranslateDeniedCount)
+      ->GetDict()
+      .Set("fr", GetAutoNeverThreshold() - 1);
+
+  EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
+
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
+  ShowBeforeTranslationMessage(env, "fr", "en");
+
+  // Dismissing the message should cause the auto-never-translate confirmation
+  // message to be shown.
+  EXPECT_CALL(*bridge_,
+              ShowMessage(env,
+                          /*title=*/Truly(IsJavaStringNonNull),
+                          /*description=*/Truly(IsJavaStringNull),
+                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                          /*has_overflow_menu=*/false));
+  translate_message_->HandleDismiss(
+      env, static_cast<jint>(messages::DismissReason::GESTURE));
+
+  // The dismissal callback should not have been run.
+  EXPECT_EQ(0, on_dismiss_callback_called_count_);
+
+  EXPECT_TRUE(translate_prefs_->IsBlockedLanguage("fr"));
+
+  // Click "Undo" on the confirmation.
+  EXPECT_CALL(*bridge_, Dismiss(env))
+      .WillOnce(InvokeWithoutArgs([env, message = translate_message_.get()]() {
+        message->HandleDismiss(
+            env,
+            static_cast<jint>(messages::DismissReason::DISMISSED_BY_FEATURE));
+      }));
+  translate_message_->HandlePrimaryAction(env);
+  EXPECT_EQ(1, on_dismiss_callback_called_count_);
+  EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
+}
+
+TEST_F(TranslateMessageTest, AutoNeverTranslatePastMaximumTimes) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  DictionaryPrefUpdate(pref_service_.get(),
+                       TranslatePrefs::kPrefTranslateDeniedCount)
+      ->GetDict()
+      .Set("fr", GetAutoNeverThreshold());
+  DictionaryPrefUpdate(pref_service_.get(),
+                       TranslatePrefs::kPrefTranslateAutoNeverCount)
+      ->GetDict()
+      .Set("fr", GetMaximumNumberOfAutoNever());
+
+  EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
+
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
+  ShowBeforeTranslationMessage(env, "fr", "en");
+
+  // Dismiss the message.
+  translate_message_->HandleDismiss(
+      env, static_cast<jint>(messages::DismissReason::GESTURE));
+  EXPECT_EQ(1, on_dismiss_callback_called_count_);
+  EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 }
 
 }  // namespace

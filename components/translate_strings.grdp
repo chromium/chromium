@@ -116,6 +116,9 @@
       <message name="IDS_TRANSLATE_MESSAGE_AUTO_ALWAYS_TRANSLATE_LANGUAGE_DESCRIPTION" desc="A text label on the translate message popup that lets the user know that pages in the source language will be automatically translated to the target language from now on.">
         Pages in <ph name="source_language">$1<ex>French</ex></ph> will be translated to <ph name="target_language">$2<ex>English</ex></ph> from now on
       </message>
+      <message name="IDS_TRANSLATE_MESSAGE_AUTO_NEVER_TRANSLATE_LANGUAGE_TITLE" desc="A text label on the translate message popup that lets the user know that pages in [language] will not be translated to their chosen target language automatically.">
+        Pages in <ph name="language">$1<ex>French</ex></ph> will not be translated
+      </message>
   </if>
 
   <!-- Translate Notifications -->

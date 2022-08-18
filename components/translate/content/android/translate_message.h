@@ -100,7 +100,8 @@ class TranslateMessage {
         JNIEnv* env,
         base::android::ScopedJavaLocalRef<jstring> title,
         base::android::ScopedJavaLocalRef<jstring> description,
-        base::android::ScopedJavaLocalRef<jstring> primary_button_text) = 0;
+        base::android::ScopedJavaLocalRef<jstring> primary_button_text,
+        jboolean has_overflow_menu) = 0;
 
     virtual base::android::ScopedJavaLocalRef<jobjectArray>
     ConstructMenuItemArray(
@@ -141,6 +142,7 @@ class TranslateMessage {
     kAfterTranslate,
 
     kAfterTranslateWithAutoAlwaysConfirmation,
+    kAutoNeverTranslateConfirmation,
   };
 
   void RevertTranslationAndUpdateMessage();

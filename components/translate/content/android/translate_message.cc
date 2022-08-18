@@ -61,10 +61,11 @@ class BridgeImpl : public TranslateMessage::Bridge {
       JNIEnv* env,
       base::android::ScopedJavaLocalRef<jstring> title,
       base::android::ScopedJavaLocalRef<jstring> description,
-      base::android::ScopedJavaLocalRef<jstring> primary_button_text) override {
-    Java_TranslateMessage_showMessage(env, java_translate_message_,
-                                      std::move(title), std::move(description),
-                                      std::move(primary_button_text));
+      base::android::ScopedJavaLocalRef<jstring> primary_button_text,
+      jboolean has_overflow_menu) override {
+    Java_TranslateMessage_showMessage(
+        env, java_translate_message_, std::move(title), std::move(description),
+        std::move(primary_button_text), has_overflow_menu);
   }
 
   base::android::ScopedJavaLocalRef<jobjectArray> ConstructMenuItemArray(
@@ -145,11 +146,11 @@ TranslateMessage::~TranslateMessage() {
   // destruction. This prevents a possible use-after-free if the callback points
   // to a method on the owner of |this|.
   on_dismiss_callback_.Reset();
-  if (bridge_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (state_ != State::kDismissed)
     bridge_->Dismiss(env);
-    bridge_->ClearNativePointer(env);
-  }
+  bridge_->ClearNativePointer(env);
 }
 
 void TranslateMessage::ShowTranslateStep(TranslateStep step,
@@ -267,7 +268,8 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
   }
 
   bridge_->ShowMessage(env, std::move(title), std::move(description),
-                       std::move(primary_button_text));
+                       std::move(primary_button_text),
+                       /*has_overflow_menu=*/true);
 }
 
 void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
@@ -290,6 +292,15 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
     case State::kAfterTranslate:
       ui_delegate_->ReportUIInteraction(UIInteraction::kRevert);
       RevertTranslationAndUpdateMessage();
+      break;
+
+    case State::kAutoNeverTranslateConfirmation:
+      // The user clicked "Undo" on the message confirming that pages in this
+      // language will not be translated, so unblock that language. Also, since
+      // this confirmation message is only shown after the user has already
+      // tried to dismiss the translate UI, dismiss this popup as well.
+      ui_delegate_->SetLanguageBlocked(false);
+      bridge_->Dismiss(env);
       break;
 
     default:
@@ -329,9 +340,40 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
   }
 
   if (!has_been_interacted_with_ && state_ == State::kBeforeTranslate) {
+    // In order to have the same off-by-one counting as the infobar UI,
+    // ShouldAutoNeverTranslate() must be called before TranslationDeclined().
+    const bool should_auto_never_translate =
+        static_cast<messages::DismissReason>(dismiss_reason) ==
+            messages::DismissReason::GESTURE &&
+        ui_delegate_->ShouldAutoNeverTranslate();
+
     ui_delegate_->TranslationDeclined(
         static_cast<messages::DismissReason>(dismiss_reason) ==
         messages::DismissReason::GESTURE);
+
+    if (should_auto_never_translate) {
+      ui_delegate_->SetLanguageBlocked(true);
+      state_ = State::kAutoNeverTranslateConfirmation;
+
+      bridge_->ShowMessage(
+          env, /*title=*/
+          base::android::ConvertUTF16ToJavaString(
+              env,
+              l10n_util::GetStringFUTF16(
+                  IDS_TRANSLATE_MESSAGE_AUTO_NEVER_TRANSLATE_LANGUAGE_TITLE,
+                  ui_delegate_->GetLanguageNameAt(
+                      ui_delegate_->GetSourceLanguageIndex()))),
+          /*description=*/nullptr,
+          /*primary_button_text=*/
+          base::android::ConvertUTF16ToJavaString(
+              env, l10n_util::GetStringUTF16(IDS_TRANSLATE_NOTIFICATION_UNDO)),
+          /*has_overflow_menu=*/false);
+
+      // Return early here without calling the dismiss callback, since the
+      // dismiss callback could try to do things like show an IPH tooltip, which
+      // would be obscured by the auto-never-translate confirmation message.
+      return;
+    }
   }
 
   state_ = State::kDismissed;
