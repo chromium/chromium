@@ -141,15 +141,11 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
 }
 
 void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
-  const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
-
-  if (!metrics_value)
-    return;
-  const auto* metrics_dict = metrics_value->GetIfDict();
-  DCHECK(metrics_dict);
+  const base::Value::Dict& metrics_dict =
+      prefs_->GetValueDict(prefs::kKioskMetrics);
 
   const auto* previous_start_time_value =
-      metrics_dict->Find(kKioskSessionStartTime);
+      metrics_dict.Find(kKioskSessionStartTime);
   if (!previous_start_time_value)
     return;
   auto previous_start_time = base::ValueToTime(previous_start_time_value);
@@ -164,17 +160,14 @@ void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
 
 size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
     base::Time session_start_time) {
-  const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
+  const base::Value::Dict& metrics_dict =
+      prefs_->GetValueDict(prefs::kKioskMetrics);
   const base::Value::List* previous_times = nullptr;
-  if (metrics_value) {
-    const auto* metrics_dict = metrics_value->GetIfDict();
-    DCHECK(metrics_dict);
 
-    const auto* times_value = metrics_dict->Find(kKioskSessionLastDayList);
-    if (times_value) {
-      previous_times = times_value->GetIfList();
-      DCHECK(previous_times);
-    }
+  const auto* times_value = metrics_dict.Find(kKioskSessionLastDayList);
+  if (times_value) {
+    previous_times = times_value->GetIfList();
+    DCHECK(previous_times);
   }
 
   base::Value::List times;
@@ -201,13 +194,10 @@ size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
 
 void AppSessionMetricsService::ClearStartTime() {
   start_time_ = base::Time();
-  const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
-  if (!metrics_value)
-    return;
-  const auto* metrics_dict = metrics_value->GetIfDict();
-  DCHECK(metrics_dict);
+  const base::Value::Dict& metrics_dict =
+      prefs_->GetValueDict(prefs::kKioskMetrics);
 
-  base::Value::Dict new_metrics_dict = metrics_dict->Clone();
+  base::Value::Dict new_metrics_dict = metrics_dict.Clone();
   DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));
 
   prefs_->SetDict(prefs::kKioskMetrics, std::move(new_metrics_dict));
