@@ -291,4 +291,35 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       << kGenerateExpectationsMessage;
 }
 
+TEST(WebAppTest, IsolationDataStartsEmpty) {
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
+
+  EXPECT_FALSE(app.isolation_data().has_value());
+}
+
+TEST(WebAppTest, IsolationDataDebugValue) {
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
+  app.SetIsolationData(WebApp::IsolationData(
+      WebApp::IsolationData::InstalledBundle{.path = "random_path"}));
+
+  EXPECT_TRUE(app.isolation_data().has_value());
+
+  base::Value expected_isolation_data = base::JSONReader::Read(R"({
+        "content": {
+          "installed_bundle": {
+            "path": "random_path"
+          }
+        }
+      })")
+                                            .value();
+
+  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
+  base::Value::Dict* debug_isolation_data =
+      debug_app.FindDict("isolation_data");
+  EXPECT_TRUE(debug_isolation_data != nullptr);
+  EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
+}
+
 }  // namespace web_app

@@ -122,6 +122,28 @@ message ManagementToExternalConfigInfo {
   optional bool is_placeholder = 3;
 }
 
+// Contains information specific to Isolated Web Apps.
+message IsolationData {
+  // Information needed to load data from an installed web bundle.
+  message InstalledBundle {
+    optional string path = 1;
+  }
+  // Information needed to load data from an installed dev mode web bundle.
+  message DevModeBundle {
+    optional string path = 1;
+  }
+  // Information needed to load data for an app using a dev mode proxy.
+  message DevModeProxy {
+    optional string proxy_url = 1;
+  }
+
+  oneof content {
+    InstalledBundle installed_bundle = 1;
+    DevModeBundle dev_mode_bundle = 2;
+    DevModeProxy dev_mode_proxy = 3;
+  }
+}
+
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
@@ -356,4 +378,8 @@ message WebAppProto {
   // This will be populated from the fields in this proto when ran for the first
   // time after OS hooks have been registered.
   optional proto.WebAppOsIntegrationState current_os_integration_states = 59;
+
+  // If present, signals that this app is an Isolated Web App, and contains
+  // IWA-specific information like bundle location.
+  optional IsolationData isolation_data = 60;
 }

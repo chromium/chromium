@@ -26,6 +26,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -306,6 +307,48 @@ class WebApp {
   current_os_integration_states() const {
     return current_os_integration_states_;
   }
+
+  struct IsolationData {
+    struct InstalledBundle {
+      bool operator==(const InstalledBundle& other) const;
+      bool operator!=(const InstalledBundle& other) const;
+
+      std::string path;
+    };
+    struct DevModeBundle {
+      bool operator==(const DevModeBundle& other) const;
+      bool operator!=(const DevModeBundle& other) const;
+
+      std::string path;
+    };
+    struct DevModeProxy {
+      bool operator==(const DevModeProxy& other) const;
+      bool operator!=(const DevModeProxy& other) const;
+
+      std::string proxy_url;
+    };
+
+    explicit IsolationData(
+        absl::variant<InstalledBundle, DevModeBundle, DevModeProxy> content);
+    ~IsolationData();
+    IsolationData(const IsolationData&);
+    IsolationData& operator=(const IsolationData&);
+    IsolationData(IsolationData&&);
+    IsolationData& operator=(IsolationData&&);
+
+    bool operator==(const IsolationData&) const;
+    bool operator!=(const IsolationData&) const;
+    base::Value AsDebugValue() const;
+
+    absl::variant<InstalledBundle, DevModeBundle, DevModeProxy> content;
+  };
+
+  // If present, signals that this app is an Isolated Web App, and contains
+  // IWA-specific information like bundle location.
+  const absl::optional<IsolationData>& isolation_data() const {
+    return isolation_data_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -393,6 +436,7 @@ class WebApp {
   void SetCurrentOsIntegrationStates(
       absl::optional<proto::WebAppOsIntegrationState>
           current_os_integration_states);
+  void SetIsolationData(IsolationData isolation_data);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -515,6 +559,9 @@ class WebApp {
 
   absl::optional<proto::WebAppOsIntegrationState>
       current_os_integration_states_ = absl::nullopt;
+
+  absl::optional<IsolationData> isolation_data_;
+
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

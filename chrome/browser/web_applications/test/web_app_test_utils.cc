@@ -61,6 +61,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -599,6 +600,22 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (random.next_bool()) {
     proto::WebAppOsIntegrationState state;
     app->SetCurrentOsIntegrationStates(state);
+  }
+
+  if (random.next_bool()) {
+    using IsolationDataContent = decltype(WebApp::IsolationData::content);
+    constexpr size_t kNumContentTypes =
+        absl::variant_size<IsolationDataContent>::value;
+    IsolationDataContent content_types[] = {
+        WebApp::IsolationData::InstalledBundle{.path = seed_str},
+        WebApp::IsolationData::DevModeBundle{.path = seed_str},
+        WebApp::IsolationData::DevModeProxy{.proxy_url = seed_str},
+    };
+    static_assert(std::size(content_types) == kNumContentTypes);
+
+    WebApp::IsolationData isolation_data(
+        content_types[random.next_uint(kNumContentTypes)]);
+    app->SetIsolationData(isolation_data);
   }
 
   return app;

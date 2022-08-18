@@ -34,6 +34,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -720,6 +721,29 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_always_show_toolbar_in_fullscreen(
       web_app.always_show_toolbar_in_fullscreen());
 
+  if (web_app.isolation_data().has_value()) {
+    struct ContentVisitor {
+      void operator()(const WebApp::IsolationData::InstalledBundle& bundle) {
+        mutable_isolation_data->mutable_installed_bundle()->set_path(
+            bundle.path);
+      }
+
+      void operator()(const WebApp::IsolationData::DevModeBundle& bundle) {
+        mutable_isolation_data->mutable_dev_mode_bundle()->set_path(
+            bundle.path);
+      }
+
+      void operator()(const WebApp::IsolationData::DevModeProxy& proxy) {
+        mutable_isolation_data->mutable_dev_mode_proxy()->set_proxy_url(
+            proxy.proxy_url);
+      }
+
+      IsolationData* mutable_isolation_data;
+    };
+    absl::visit(ContentVisitor{local_data->mutable_isolation_data()},
+                web_app.isolation_data().value().content);
+  }
+
   return local_data;
 }
 
@@ -1325,6 +1349,35 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_always_show_toolbar_in_fullscreen()) {
     web_app->SetAlwaysShowToolbarInFullscreen(
         local_data.always_show_toolbar_in_fullscreen());
+  }
+
+  if (local_data.has_isolation_data()) {
+    switch (local_data.isolation_data().content_case()) {
+      case IsolationData::ContentCase::kInstalledBundle:
+        web_app->SetIsolationData(
+            WebApp::IsolationData(WebApp::IsolationData::InstalledBundle{
+                .path =
+                    local_data.isolation_data().installed_bundle().path()}));
+        break;
+
+      case IsolationData::ContentCase::kDevModeBundle:
+        web_app->SetIsolationData(
+            WebApp::IsolationData(WebApp::IsolationData::DevModeBundle{
+                .path = local_data.isolation_data().dev_mode_bundle().path()}));
+        break;
+
+      case IsolationData::ContentCase::kDevModeProxy:
+        web_app->SetIsolationData(
+            WebApp::IsolationData(WebApp::IsolationData::DevModeProxy{
+                .proxy_url =
+                    local_data.isolation_data().dev_mode_proxy().proxy_url()}));
+        break;
+
+      case IsolationData::ContentCase::CONTENT_NOT_SET:
+        DLOG(ERROR) << "WebApp proto isolation_data parse error: "
+                    << "content not set";
+        return nullptr;
+    }
   }
 
   return web_app;

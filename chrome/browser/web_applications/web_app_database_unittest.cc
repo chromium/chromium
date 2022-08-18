@@ -35,10 +35,16 @@
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/model_type_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
+
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Property;
+using ::testing::VariantWith;
 
 class WebAppDatabaseTest : public WebAppTest {
  public:
@@ -337,6 +343,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app->manifest_id().has_value());
   EXPECT_FALSE(app->IsStorageIsolated());
   EXPECT_TRUE(app->permissions_policy().empty());
+  EXPECT_FALSE(app->isolation_data().has_value());
   controller().RegisterApp(std::move(app));
 
   Registry registry = database_factory().ReadRegistry();
@@ -522,6 +529,77 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
       LaunchHandlerProto_DeprecatedNavigateExistingClient_UNSPECIFIED_NAVIGATE);
   EXPECT_EQ(new_focus_proto->launch_handler().client_mode(),
             LaunchHandlerProto_ClientMode_FOCUS_EXISTING);
+}
+
+class WebAppDatabaseIsolationDataTest : public ::testing::Test {
+ public:
+  std::unique_ptr<WebApp> CreateMinimalWebApp() {
+    GURL start_url{"https://example.com/"};
+    AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    auto web_app = std::make_unique<WebApp>(app_id);
+    web_app->SetStartUrl(start_url);
+    web_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
+    web_app->AddSource(WebAppManagement::Type::kDefault);
+    return web_app;
+  }
+
+  std::unique_ptr<WebApp> CreateIsolatedWebApp(
+      WebApp::IsolationData isolation_data) {
+    std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
+    web_app->SetIsolationData(isolation_data);
+    return web_app;
+  }
+
+  std::unique_ptr<WebApp> ToAndFromProto(const WebApp& web_app) {
+    return WebAppDatabase::CreateWebApp(
+        *WebAppDatabase::CreateWebAppProto(web_app));
+  }
+};
+
+TEST_F(WebAppDatabaseIsolationDataTest, NotIsolated) {
+  std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app,
+              AllOf(Eq(*protoed_web_app),
+                    Property("isolation_data", &WebApp::isolation_data,
+                             absl::nullopt)));
+}
+
+TEST_F(WebAppDatabaseIsolationDataTest, InstalledBundle) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      WebApp::IsolationData::InstalledBundle{.path = "bundle_path"}));
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
+  EXPECT_THAT(web_app->isolation_data()->content,
+              VariantWith<WebApp::IsolationData::InstalledBundle>(
+                  Field("path", &WebApp::IsolationData::InstalledBundle::path,
+                        Eq("bundle_path"))));
+}
+
+TEST_F(WebAppDatabaseIsolationDataTest, DevModeBundle) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      WebApp::IsolationData::DevModeBundle{.path = "dev_bundle_path"}));
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
+  EXPECT_THAT(web_app->isolation_data()->content,
+              VariantWith<WebApp::IsolationData::DevModeBundle>(
+                  Field("path", &WebApp::IsolationData::DevModeBundle::path,
+                        Eq("dev_bundle_path"))));
+}
+
+TEST_F(WebAppDatabaseIsolationDataTest, DevModeProxy) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      WebApp::IsolationData::DevModeProxy{.proxy_url = "proxy"}));
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
+  EXPECT_THAT(web_app->isolation_data()->content,
+              VariantWith<WebApp::IsolationData::DevModeProxy>(Field(
+                  "proxy_url", &WebApp::IsolationData::DevModeProxy::proxy_url,
+                  Eq("proxy"))));
 }
 
 }  // namespace web_app

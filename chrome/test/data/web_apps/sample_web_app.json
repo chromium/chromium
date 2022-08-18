@@ -151,6 +151,13 @@
    "is_locally_installed": false,
    "is_storage_isolated": true,
    "is_uninstalling": false,
+   "isolation_data": {
+      "content": {
+         "dev_mode_bundle": {
+            "path": "1234"
+         }
+      }
+   },
    "last_badging_time": "1970-01-13 20:12:59.451 UTC",
    "last_launch_time": "1970-01-04 17:38:34.900 UTC",
    "launch_handler": {
