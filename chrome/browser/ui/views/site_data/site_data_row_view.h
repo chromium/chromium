@@ -8,7 +8,14 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/views/view.h"
 
+class FaviconCache;
+
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 namespace views {
+class ImageView;
 class Label;
 }  // namespace views
 
@@ -23,9 +30,13 @@ class Origin;
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
  public:
-  explicit SiteDataRowView(const url::Origin& origin, ContentSetting setting);
+  explicit SiteDataRowView(const url::Origin& origin,
+                           ContentSetting setting,
+                           FaviconCache* favicon_cache);
 
  private:
+  void SetFaviconImage(const gfx::Image& image);
+
   void OnMenuIconClicked();
 
   void OnDeleteMenuItemClicked(int event_flags);
@@ -41,6 +52,7 @@ class SiteDataRowView : public views::View {
   ContentSetting setting_;
 
   raw_ptr<views::Label> state_label_ = nullptr;
+  raw_ptr<views::ImageView> favicon_image_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SITE_DATA_SITE_DATA_ROW_VIEW_H_

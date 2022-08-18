@@ -7,6 +7,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/controls/button/image_button.h"
@@ -66,14 +67,23 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 }  // namespace
 
 SiteDataRowView::SiteDataRowView(const url::Origin& origin,
-                                 ContentSetting setting)
+                                 ContentSetting setting,
+                                 FaviconCache* favicon_cache)
     : setting_(setting) {
   const int icon_size = 16;
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
-  auto* icon = AddChildView(std::make_unique<NonAccessibleImageView>());
-  // TODO(crbug.com/1344787): Use the favicon if available.
-  icon->SetImage(
+  favicon_image_ = AddChildView(std::make_unique<NonAccessibleImageView>());
+  favicon_image_->SetImage(
       ui::ImageModel::FromVectorIcon(kGlobeIcon, ui::kColorIcon, icon_size));
+
+  // It's safe to bind to this here because both the row view and the favicon
+  // service have the same lifetime and all be destroyed when the dialog is
+  // being destroyed.
+  const auto favicon = favicon_cache->GetFaviconForPageUrl(
+      origin.GetURL(), base::BindOnce(&SiteDataRowView::SetFaviconImage,
+                                      base::Unretained(this)));
+  if (!favicon.IsEmpty())
+    SetFaviconImage(favicon);
 
   // TODO(crbug.com/1344787): Use proper formatting of the host.
   auto* label = AddChildView(
@@ -94,6 +104,10 @@ SiteDataRowView::SiteDataRowView(const url::Origin& origin,
       views::style::STYLE_SECONDARY));
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   state_label_->SetVisible(setting_ != CONTENT_SETTING_ALLOW);
+}
+
+void SiteDataRowView::SetFaviconImage(const gfx::Image& image) {
+  favicon_image_->SetImage(ui::ImageModel::FromImage(image));
 }
 
 void SiteDataRowView::OnMenuIconClicked() {
@@ -136,6 +150,9 @@ void SiteDataRowView::OnMenuIconClicked() {
 
 void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
   // TODO(crbug.com/1344787): Delete the stored data.
+  // Hiding the view instead of trying to delete makes the lifecycle management
+  // easier. All the related items to the dialog have the same lifecycle and are
+  // created when dialog is shown and are deleted when the dialog is destroyed.
   SetVisible(false);
 }
 

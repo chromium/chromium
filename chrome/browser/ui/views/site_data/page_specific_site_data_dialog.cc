@@ -5,11 +5,15 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -99,6 +103,14 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         content_settings->allowed_local_shared_objects());
     blocked_cookies_tree_model_ = CreateCookiesTreeModel(
         content_settings->blocked_local_shared_objects());
+
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    favicon_cache_ = std::make_unique<FaviconCache>(
+        FaviconServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS));
   }
 
   void OnDialogExplicitlyClosed() {
@@ -125,6 +137,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     return all_origins;
   }
 
+  FaviconCache* favicon_cache() { return favicon_cache_.get(); }
+
  private:
   base::WeakPtr<content::WebContents> web_contents_;
   // Each model represent separate local storage container. The implementation
@@ -132,6 +146,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   // the actual content settings to determine the state.
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
+  std::unique_ptr<FaviconCache> favicon_cache_;
 };
 
 }  // namespace
@@ -159,8 +174,9 @@ views::Widget* ShowPageSpecificSiteDataDialog(
     for (const auto& origin : section.origins) {
       // TODO(crbug.com/1344787): Get the actual state based on the cookie
       // setting.
-      builder.AddCustomField(CreateCustomField(
-          std::make_unique<SiteDataRowView>(origin, CONTENT_SETTING_BLOCK)));
+      builder.AddCustomField(
+          CreateCustomField(std::make_unique<SiteDataRowView>(
+              origin, CONTENT_SETTING_BLOCK, delegate->favicon_cache())));
     }
   }
   // TODO(crbug.com/1344787): Build the rest of the dialog. Add action handling.
