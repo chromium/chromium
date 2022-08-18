@@ -1731,6 +1731,43 @@ inline ScrollbarGutter CSSIdentifierValue::ConvertTo() const {
   return kScrollbarGutterAuto;
 }
 
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(TimelineAxis axis)
+    : CSSValue(kIdentifierClass) {
+  switch (axis) {
+    case TimelineAxis::kBlock:
+      value_id_ = CSSValueID::kBlock;
+      break;
+    case TimelineAxis::kInline:
+      value_id_ = CSSValueID::kInline;
+      break;
+    case TimelineAxis::kVertical:
+      value_id_ = CSSValueID::kVertical;
+      break;
+    case TimelineAxis::kHorizontal:
+      value_id_ = CSSValueID::kHorizontal;
+      break;
+  }
+}
+
+template <>
+inline TimelineAxis CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kBlock:
+      return TimelineAxis::kBlock;
+    case CSSValueID::kInline:
+      return TimelineAxis::kInline;
+    case CSSValueID::kVertical:
+      return TimelineAxis::kVertical;
+    case CSSValueID::kHorizontal:
+      return TimelineAxis::kHorizontal;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return TimelineAxis::kBlock;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_

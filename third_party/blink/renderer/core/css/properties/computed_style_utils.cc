@@ -2974,6 +2974,44 @@ CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
   return list;
 }
 
+CSSValueList* ComputedStyleUtils::ValuesForScrollTimelineShorthand(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  CHECK_EQ(scrollTimelineShorthand().length(), 2u);
+  CHECK_EQ(scrollTimelineShorthand().properties()[0],
+           &GetCSSPropertyScrollTimelineAxis());
+  CHECK_EQ(scrollTimelineShorthand().properties()[1],
+           &GetCSSPropertyScrollTimelineName());
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  const CSSValue* axis =
+      GetCSSPropertyScrollTimelineAxis().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  const CSSValue* name =
+      GetCSSPropertyScrollTimelineName().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+
+  DCHECK(axis);
+  DCHECK(name);
+
+  // Append any value that's not the initial value.
+  if (To<CSSIdentifierValue>(*axis).GetValueID() != CSSValueID::kBlock) {
+    list->Append(*axis);
+  }
+  if (!(IsA<CSSIdentifierValue>(name) &&
+        To<CSSIdentifierValue>(*name).GetValueID() == CSSValueID::kNone)) {
+    list->Append(*name);
+  }
+
+  // If both values were the initial value, we append axis.
+  if (!list->length())
+    list->Append(*axis);
+
+  return list;
+}
+
 // Returns up to two values for 'scroll-customization' property. The values
 // correspond to the customization values for 'x' and 'y' axes.
 CSSValue* ComputedStyleUtils::ScrollCustomizationFlagsToCSSValue(

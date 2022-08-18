@@ -6562,6 +6562,45 @@ const CSSValue* ScrollSnapType::CSSValueFromComputedStyleInternal(
                                                     style);
 }
 
+const CSSValue* ScrollTimelineAxis::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollTimelineAxis(range);
+}
+
+const CSSValue* ScrollTimelineAxis::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.ScrollTimelineAxis());
+}
+
+const CSSValue* ScrollTimelineAxis::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kBlock);
+}
+
+const CSSValue* ScrollTimelineName::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeScrollTimelineName(range, context);
+}
+
+const CSSValue* ScrollTimelineName::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const AtomicString& ident = style.ScrollTimelineName();
+  if (ident.IsEmpty())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(ident);
+}
+
+const CSSValue* ScrollTimelineName::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
+}
+
 const CSSValue* ShapeImageThreshold::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

@@ -3000,7 +3000,8 @@ bool ConsumeShorthandGreedilyViaLonghands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 64>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties,
+    bool use_initial_value_function) {
   // Existing shorthands have at most 6 longhands.
   DCHECK_LE(shorthand.length(), 6u);
   const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
@@ -3027,9 +3028,12 @@ bool ConsumeShorthandGreedilyViaLonghands(
                   *longhands[i], important, IsImplicitProperty::kNotImplicit,
                   properties);
     } else {
-      AddProperty(shorthand_properties[i]->PropertyID(), shorthand.id(),
-                  *CSSInitialValue::Create(), important,
-                  IsImplicitProperty::kNotImplicit, properties);
+      const CSSValue* value =
+          use_initial_value_function
+              ? To<Longhand>(shorthand_properties[i])->InitialValue()
+              : CSSInitialValue::Create();
+      AddProperty(shorthand_properties[i]->PropertyID(), shorthand.id(), *value,
+                  important, IsImplicitProperty::kNotImplicit, properties);
     }
   }
   return true;
@@ -3321,6 +3325,18 @@ bool ConsumeAnimationShorthand(
   } while (ConsumeCommaIncludingWhitespace(range));
 
   return true;
+}
+
+CSSValue* ConsumeScrollTimelineAxis(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
+                      CSSValueID::kVertical, CSSValueID::kHorizontal>(range);
+}
+
+CSSValue* ConsumeScrollTimelineName(CSSParserTokenRange& range,
+                                    const CSSParserContext& context) {
+  if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
+    return value;
+  return ConsumeCustomIdentConservatively(range, context);
 }
 
 void AddBackgroundValue(CSSValue*& list, CSSValue* value) {

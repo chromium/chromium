@@ -333,6 +333,8 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scroll-timeline-axis
+    scroll-timeline-name
     scrollbar-gutter
     scrollbar-width
     shape-image-threshold
@@ -741,6 +743,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-padding-inline
         scroll-padding-inline-end
         scroll-padding-inline-start
+    scroll-timeline
+        scroll-timeline-axis
+        scroll-timeline-name
     text-decoration
         text-decoration-color
         text-decoration-line

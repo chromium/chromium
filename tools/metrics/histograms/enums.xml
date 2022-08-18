@@ -64331,6 +64331,9 @@ Called by update_use_counter_css.py.-->
   <int value="722" label="pop-up-show-delay"/>
   <int value="723" label="pop-up-hide-delay"/>
   <int value="724" label="hyphenate-character"/>
+  <int value="725" label="scroll-timeline"/>
+  <int value="726" label="scroll-timeline-name"/>
+  <int value="727" label="scroll-timeline-axis"/>
 </enum>
 
 <enum name="MappedEditingCommands">

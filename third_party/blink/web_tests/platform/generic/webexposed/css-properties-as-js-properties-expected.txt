@@ -381,6 +381,9 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollTimeline
+scrollTimelineAxis
+scrollTimelineName
 scrollbarGutter
 scrollbarWidth
 setProperty

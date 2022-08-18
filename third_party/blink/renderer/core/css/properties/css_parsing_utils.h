@@ -257,7 +257,8 @@ bool ConsumeShorthandGreedilyViaLonghands(
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 64>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties,
+    bool use_initial_value_function = false);
 
 void AddExpandedPropertyForValue(CSSPropertyID prop_id,
                                  const CSSValue&,
@@ -320,6 +321,10 @@ bool ConsumeAnimationShorthand(
     CSSParserTokenRange&,
     const CSSParserContext&,
     bool use_legacy_parsing);
+
+CSSValue* ConsumeScrollTimelineAxis(CSSParserTokenRange&);
+CSSValue* ConsumeScrollTimelineName(CSSParserTokenRange&,
+                                    const CSSParserContext&);
 
 void AddBackgroundValue(CSSValue*& list, CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange&);

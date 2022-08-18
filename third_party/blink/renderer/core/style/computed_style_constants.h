@@ -400,6 +400,8 @@ enum class ViewportUnitFlag {
   kDynamic = 0x2,
 };
 
+enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_
