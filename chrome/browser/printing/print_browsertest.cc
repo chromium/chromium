@@ -3552,9 +3552,8 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 };
 
 // TODO(crbug.com/1256506): Re-enable test on Windows
-// TODO(crbug.com/1321689): Re-enable test on Mac
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, DISABLED_PrintNow) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3572,7 +3571,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, DISABLED_PrintNow) {
              /*has_selection=*/false);
 
   print_view_manager->WaitOnScanning();
-  ASSERT_EQ(print_view_manager->print_now_called(),
+
+  // PrintNow uses the same code path as scripted prints to scan printed pages,
+  // so print_now_called() should always happen and scripted_print_called()
+  // should be called with the same result that is expected from scanning.
+  ASSERT_TRUE(print_view_manager->print_now_called());
+  ASSERT_EQ(print_view_manager->scripted_print_called(),
             content_analysis_allows_print());
 }
 
@@ -3609,7 +3613,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisScriptedPreviewlessPrintBrowserTest,
   RunScriptedPrintTest("window.print()");
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
@@ -3638,20 +3642,18 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1256506): Re-enable test on Windows
-// TODO(crbug.com/1321689): Re-enable test on Mac
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/1256506): Re-enable test on Windows
-// TODO(crbug.com/1321689): Re-enable test on Mac
 // This test suite doesn't run on CrOS since it doesn't support non-print
 // preview scripted printing.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(All,
                          ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                          testing::Bool());
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
 

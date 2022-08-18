@@ -236,25 +236,6 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
 #endif
 
   SetPrintingRFH(rfh);
-
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
-  if (base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
-      enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          web_contents()->GetLastCommittedURL(), &scanning_data,
-          enterprise_connectors::AnalysisConnector::PRINT)) {
-    auto scanning_done_cb = base::BindOnce(
-        &PrintViewManagerBase::CompletePrintNowAfterContentAnalysis,
-        weak_ptr_factory_.GetWeakPtr());
-    GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
-        &PrintViewManagerBase::OnGotSnapshotCallback,
-        weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_cb),
-        std::move(scanning_data), rfh_id));
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
   CompletePrintNow(rfh);
   return true;
 }
