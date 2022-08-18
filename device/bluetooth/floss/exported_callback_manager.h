@@ -75,8 +75,15 @@ class CallbackForwarder {
       FirstType data;
       if (!floss::FlossDBusClient::ReadDBusParam(reader, &data)) {
         std::stringstream message;
+        floss::DBusTypeInfo type_info = floss::GetDBusTypeInfo<FirstType>();
+        std::string next_data_type =
+            reader->HasMoreData() ? ("'" + reader->GetDataSignature() + "'")
+                                  : "none";
         message << "Cannot parse the " << (sizeof...(BuiltArgs) + 1)
-                << "th parameter";
+                << "th parameter, expected type signature '"
+                << type_info.dbus_signature << "' "
+                << "(" << type_info.type_name << ")"
+                << ", got " << next_data_type;
         std::move(response_sender)
             .Run(dbus::ErrorResponse::FromMethodCall(
                 method_call, floss::FlossDBusClient::kErrorInvalidParameters,

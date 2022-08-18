@@ -82,6 +82,8 @@ class ExportedCallbackManagerTest : public testing::Test {
     method_call.SetSerial(kTestSerial);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString("foo");
+    // Wrong data type, uint32 expected.
+    writer.AppendBool(true);
 
     std::unique_ptr<dbus::Response> saved_response;
     method_handler.Run(&method_call,
@@ -95,6 +97,14 @@ class ExportedCallbackManagerTest : public testing::Test {
     ASSERT_TRUE(!!saved_response);
     EXPECT_EQ(FlossDBusClient::kErrorInvalidParameters,
               saved_response->GetErrorName());
+
+    std::string error_message;
+    dbus::MessageReader reader(saved_response.get());
+    reader.PopString(&error_message);
+    EXPECT_EQ(
+        "Cannot parse the 2th parameter, expected type signature 'u' (uint32), "
+        "got 'b'",
+        error_message);
   }
 
   void TestSomethingHappenedRightParameters(
