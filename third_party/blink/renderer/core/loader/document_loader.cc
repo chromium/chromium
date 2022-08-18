@@ -56,6 +56,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -2546,9 +2547,19 @@ void DocumentLoader::CreateParserPostCommit() {
   // called for the metrics tracking logic to handle it properly.
   if (service_worker_network_provider_ &&
       service_worker_network_provider_->GetControllerServiceWorkerMode() ==
-          blink::mojom::ControllerServiceWorkerMode::kControlled) {
-    GetLocalFrameClient().DidObserveLoadingBehavior(
-        kLoadingBehaviorServiceWorkerControlled);
+          mojom::blink::ControllerServiceWorkerMode::kControlled) {
+    LoadingBehaviorFlag loading_behavior =
+        kLoadingBehaviorServiceWorkerControlled;
+    if (service_worker_network_provider_->GetFetchHandlerType() !=
+        mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable) {
+      DCHECK_NE(service_worker_network_provider_->GetFetchHandlerType(),
+                mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler);
+      // LoadingBehaviorFlag is a bit stream, and `|` should work.
+      loading_behavior = static_cast<LoadingBehaviorFlag>(
+          loading_behavior |
+          kLoadingBehaviorServiceWorkerFetchHandlerSkippable);
+    }
+    GetLocalFrameClient().DidObserveLoadingBehavior(loading_behavior);
   }
 
   // Links with media values need more information (like viewport information).

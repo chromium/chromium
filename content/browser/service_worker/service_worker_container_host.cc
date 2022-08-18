@@ -608,6 +608,7 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
   DCHECK_EQ(controller_registration_->active_version(), controller_.get());
 
   controller_info->mode = GetControllerMode();
+  controller_info->fetch_handler_type = controller()->fetch_handler_type();
 
   // Pass an endpoint for the client to talk to this controller.
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote =

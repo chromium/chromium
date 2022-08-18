@@ -36,6 +36,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
@@ -74,6 +75,7 @@ class WebServiceWorkerNetworkProvider {
   // For service worker clients.
   virtual blink::mojom::ControllerServiceWorkerMode
   GetControllerServiceWorkerMode() = 0;
+  virtual mojom::ServiceWorkerFetchHandlerType GetFetchHandlerType() = 0;
 
   // For service worker clients. Returns an identifier of the controller service
   // worker associated with the loading context.

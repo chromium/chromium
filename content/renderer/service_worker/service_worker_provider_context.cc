@@ -265,6 +265,14 @@ ServiceWorkerProviderContext::GetControllerServiceWorkerMode() const {
   return controller_mode_;
 }
 
+blink::mojom::ServiceWorkerFetchHandlerType
+ServiceWorkerProviderContext::GetFetchHandlerType() const {
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_NE(controller_version_id_,
+            blink::mojom::kInvalidServiceWorkerVersionId);
+  return fetch_handler_type_;
+}
+
 const blink::WebString ServiceWorkerProviderContext::client_id() const {
   return blink::WebString::FromUTF8(client_id_);
 }
@@ -305,6 +313,7 @@ void ServiceWorkerProviderContext::SetController(
               blink::mojom::ControllerServiceWorkerMode::kNoController &&
           controller_));
   controller_mode_ = controller_info->mode;
+  fetch_handler_type_ = controller_info->fetch_handler_type;
   remote_controller_ = std::move(controller_info->remote_controller);
 
   // Propagate the controller to workers related to this provider.

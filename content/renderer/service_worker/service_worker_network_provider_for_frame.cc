@@ -172,6 +172,13 @@ ServiceWorkerNetworkProviderForFrame::GetControllerServiceWorkerMode() {
   return context()->GetControllerServiceWorkerMode();
 }
 
+blink::mojom::ServiceWorkerFetchHandlerType
+ServiceWorkerNetworkProviderForFrame::GetFetchHandlerType() {
+  if (!context())
+    return blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  return context()->GetFetchHandlerType();
+}
+
 int64_t ServiceWorkerNetworkProviderForFrame::ControllerServiceWorkerID() {
   if (!context())
     return blink::mojom::kInvalidServiceWorkerVersionId;

@@ -186,7 +186,10 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   blink::CrossVariantMojoRemote<
       blink::mojom::ServiceWorkerContainerHostInterfaceBase>
   CloneRemoteContainerHost() override;
+  // SetController must be called before these functions.
   blink::mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
+      const override;
+  blink::mojom::ServiceWorkerFetchHandlerType GetFetchHandlerType()
       const override;
   const blink::WebString client_id() const override;
 
@@ -275,6 +278,9 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   blink::mojom::ControllerServiceWorkerMode controller_mode_ =
       blink::mojom::ControllerServiceWorkerMode::kNoController;
+
+  blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type_ =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
 
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;

@@ -40,6 +40,13 @@ const char kHistogramServiceWorkerFirstContentfulPaintForwardBack[] =
 const char kHistogramServiceWorkerFirstContentfulPaintForwardBackNoStore[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.LoadType.ForwardBackNavigation.NoStore";
+const char kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler[] =
+    "PageLoad.Clients.ServiceWorker2.PaintTiming."
+    "NavigationToFirstContentfulPaint.SkippableFetchHandler";
+const char
+    kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToFirstContentfulPaint.NonSkippableFetchHandler";
 const char kBackgroundHistogramServiceWorkerFirstContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.Background";
@@ -54,6 +61,14 @@ const char kHistogramServiceWorkerLoad[] =
 const char kHistogramServiceWorkerLargestContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToLargestContentfulPaint2";
+const char
+    kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToLargestContentfulPaint2.SkippableFetchHandler";
+const char
+    kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToLargestContentfulPaint2.NonSkippableFetchHandler";
 
 const char kHistogramServiceWorkerParseStartSearch[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
@@ -202,6 +217,18 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         internal::kHistogramServiceWorkerFirstContentfulPaintDocs,
         timing.paint_timing->first_contentful_paint.value());
   }
+
+  if (IsServiceWorkerFetchHandlerSkippable()) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+        timing.paint_timing->first_contentful_paint.value());
+  } else {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+        timing.paint_timing->first_contentful_paint.value());
+  }
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -334,6 +361,17 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
+    if (IsServiceWorkerFetchHandlerSkippable()) {
+      PAGE_LOAD_HISTOGRAM(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler,
+          all_frames_largest_contentful_paint.Time().value());
+    } else {
+      PAGE_LOAD_HISTOGRAM(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler,
+          all_frames_largest_contentful_paint.Time().value());
+    }
   }
 }
 
@@ -341,4 +379,12 @@ bool ServiceWorkerPageLoadMetricsObserver::IsServiceWorkerControlled() {
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerControlled) != 0;
+}
+
+bool ServiceWorkerPageLoadMetricsObserver::
+    IsServiceWorkerFetchHandlerSkippable() {
+  DCHECK(IsServiceWorkerControlled());
+  return (GetDelegate().GetMainFrameMetadata().behavior_flags &
+          blink::LoadingBehaviorFlag::
+              kLoadingBehaviorServiceWorkerFetchHandlerSkippable) != 0;
 }

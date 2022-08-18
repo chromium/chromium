@@ -21,10 +21,18 @@ extern const char kBackgroundHistogramServiceWorkerFirstContentfulPaint[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintForwardBack[];
 extern const char
     kHistogramServiceWorkerFirstContentfulPaintForwardBackNoStore[];
+extern const char
+    kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler[];
+extern const char
+    kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler[];
 extern const char kHistogramServiceWorkerParseStartToFirstContentfulPaint[];
 extern const char kHistogramServiceWorkerDomContentLoaded[];
 extern const char kHistogramServiceWorkerLoad[];
 extern const char kHistogramServiceWorkerLargestContentfulPaint[];
+extern const char
+    kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[];
+extern const char
+    kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[];
 extern const char kHistogramServiceWorkerFirstInputDelay[];
 extern const char kHistogramServiceWorkerParseStartSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
@@ -82,6 +90,7 @@ class ServiceWorkerPageLoadMetricsObserver
  private:
   void RecordTimingHistograms();
   bool IsServiceWorkerControlled();
+  bool IsServiceWorkerFetchHandlerSkippable();
 
   ui::PageTransition transition_ = ui::PAGE_TRANSITION_LINK;
   bool was_no_store_main_resource_ = false;

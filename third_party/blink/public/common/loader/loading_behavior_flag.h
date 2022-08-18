@@ -66,6 +66,9 @@ enum LoadingBehaviorFlag {
   kLoadingBehaviorPreactFrameworkUsed = 1 << 18,
   // Indicates that the page uses the React JavaScript framework.
   kLoadingBehaviorReactFrameworkUsed = 1 << 19,
+  // Indicates that the page is controlled by a Service Worker, but
+  // the fetch handler is considered skippable.
+  kLoadingBehaviorServiceWorkerFetchHandlerSkippable = 1 << 20,
 };
 
 }  // namespace blink
