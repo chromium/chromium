@@ -630,10 +630,6 @@
       status: "stable"
     },
     {
-      name: "CSSModules",
-      status: "stable",
-    },
-    {
       name: "CSSObjectViewBox",
       status: "stable",
     },

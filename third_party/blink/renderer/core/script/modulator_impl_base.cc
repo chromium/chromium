@@ -219,8 +219,7 @@ ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     // step="17"> If...module type is "json", then set module script to the
     // result of creating a JSON module script...</spec>
     return ModuleType::kJSON;
-  } else if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
-             module_type_string == "css" && GetExecutionContext()->IsWindow()) {
+  } else if (module_type_string == "css" && GetExecutionContext()->IsWindow()) {
     // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
     // step="16"> If...module type is "css", then set module script to the
     // result of creating a CSS module script...</spec>

@@ -79,32 +79,19 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
-      expected_module_type == ModuleType::kCSS &&
+  if (expected_module_type == ModuleType::kCSS &&
       MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
           response.HttpContentType())) {
     return true;
   }
 
-  String message;
-  if (base::FeatureList::IsEnabled(blink::features::kJSONModules) ||
-      RuntimeEnabledFeatures::CSSModulesEnabled()) {
-    message =
-        "Failed to load module script: Expected a " +
-        ModuleScriptCreationParams::ModuleTypeToString(expected_module_type) +
-        " module script but the server responded with a MIME type of \"" +
-        resource->GetResponse().HttpContentType() +
-        "\". Strict MIME type checking is enforced for module scripts per HTML "
-        "spec.";
-  } else {
-    message =
-        "Failed to load module script: The server responded with a "
-        "non-JavaScript "
-        "MIME type of \"" +
-        resource->GetResponse().HttpContentType() +
-        "\". Strict MIME type checking is enforced for module scripts per HTML "
-        "spec.";
-  }
+  String message =
+      "Failed to load module script: Expected a " +
+      ModuleScriptCreationParams::ModuleTypeToString(expected_module_type) +
+      " module script but the server responded with a MIME type of \"" +
+      resource->GetResponse().HttpContentType() +
+      "\". Strict MIME type checking is enforced for module scripts per HTML "
+      "spec.";
 
   error_messages->push_back(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,

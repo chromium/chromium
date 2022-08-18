@@ -281,7 +281,6 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
           CreateJSONWrapperSyntheticModuleScript(params, modulator_);
       break;
     case ModuleType::kCSS:
-      DCHECK(RuntimeEnabledFeatures::CSSModulesEnabled());
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
