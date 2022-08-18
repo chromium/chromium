@@ -87,9 +87,9 @@ void CanvasFormattedText::UpdateComputedStylesIfNeeded(
 CanvasFormattedTextRun* CanvasFormattedText::appendRun(
     CanvasFormattedTextRun* run,
     ExceptionState& exception_state) {
-  if (!CheckRunIsNotParented(run, &exception_state))
-    return nullptr;
-  if (!CheckViewExists(run, &exception_state))
+  if (!CheckRunIsNotParented(run, &exception_state) ||
+      !CheckViewExists(run, &exception_state) ||
+      !CheckRunBelongsToSameFrame(run, &exception_state))
     return nullptr;
   text_runs_.push_back(run);
   block_->AddChild(run->GetLayoutObject());
@@ -104,7 +104,8 @@ CanvasFormattedTextRun* CanvasFormattedText::setRun(
     ExceptionState& exception_state) {
   if (!CheckRunsIndexBound(index, &exception_state) ||
       !CheckRunIsNotParented(run, &exception_state) ||
-      !CheckViewExists(run, &exception_state))
+      !CheckViewExists(run, &exception_state) ||
+      !CheckRunBelongsToSameFrame(run, &exception_state))
     return nullptr;
   run->SetParent(this);
   block_->AddChild(run->GetLayoutObject(),
@@ -125,7 +126,8 @@ CanvasFormattedTextRun* CanvasFormattedText::insertRun(
   if (index == text_runs_.size())
     return appendRun(run, exception_state);
   if (!CheckRunsIndexBound(index, &exception_state) ||
-      !CheckViewExists(run, &exception_state))
+      !CheckViewExists(run, &exception_state) ||
+      !CheckRunBelongsToSameFrame(run, &exception_state))
     return nullptr;
   block_->AddChild(run->GetLayoutObject(),
                    text_runs_[index]->GetLayoutObject());
@@ -192,6 +194,44 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   NGBoxFragmentPainter(fragment).PaintObject(
       paint_info, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)));
   return paint_record_builder->EndRecording();
+}
+
+bool CanvasFormattedText::CheckViewExists(
+    CanvasFormattedTextRun* run,
+    ExceptionState* exception_state) const {
+  if (!block_ || !block_->View()) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The object is owned by a destroyed document.");
+    }
+    return false;
+  }
+  if (run) {
+    if (!run->GetLayoutObject() || !run->GetLayoutObject()->View()) {
+      if (exception_state) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The run is owned by a destroyed document.");
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
+bool CanvasFormattedText::CheckRunBelongsToSameFrame(
+    CanvasFormattedTextRun* run,
+    ExceptionState* exception_state) const {
+  if (run->GetLayoutObject()->GetDocument() != block_->GetDocument()) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kWrongDocumentError,
+          "The run is owned by a different document.");
+    }
+    return false;
+  }
+  return true;
 }
 
 }  // namespace blink

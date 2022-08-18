@@ -24,12 +24,12 @@ function getCanvas2DContext(name)
 
 /*
   This method checks to see if something was rendered on the canvas
-  at the passed in location. The purposed of these tests are not to 
+  at the passed in location. The purposed of these tests are not to
   accuratley validate rendering results but to check that mutations
-  on the CanvasFormattedText succeed, hence the all sanity check 
+  on the CanvasFormattedText succeed, hence the all sanity check
   validates is that there are expected number of rendered pixels.
 
-  After checking, this method also draws a line over the pixels that 
+  After checking, this method also draws a line over the pixels that
   we tested for visual diagnostics.
 */
 function sanity_check_rendering(context, x, y, expect_content=true)
@@ -189,7 +189,7 @@ test(function(t) {
    assert_exception(()=> { text2[0] = text[0]; },
    "InvalidModificationError",
    "can't set any parented run from another canvas formatted text.");
-   
+
    assert_equals(text.length, 1, "Unexpected length for CanvasFormattedText");
    assert_equals(text2.length, 1,
     "Unexpected length for CanvasFormattedText text2");
@@ -274,7 +274,7 @@ test(function(t) {
   var runA = new CanvasFormattedTextRun("E1");
   var runB = new CanvasFormattedTextRun("E2");
   text.appendRun(runA);
-  text.appendRun(runB);  
+  text.appendRun(runB);
   var context = getCanvas2DContext(t.name);
   context.fillFormattedText(text, 0, 0, 100);
   sanity_check_rendering(context, 2, 0);
@@ -432,4 +432,18 @@ test(function (t) {
     "InvalidStateError",
     "run owned by destroyed iframe");
 }, 'Use after iframe destroyed');
+
+test(function (t) {
+  // Create two iframes, and CFT/run on different frames
+  var frame1 = document.body.appendChild(document.createElement("iframe"));
+  var frame2 = document.body.appendChild(document.createElement("iframe"));
+  var cft = new frame1.contentWindow.CanvasFormattedText();
+  var cftrun = new frame2.contentWindow.CanvasFormattedTextRun("1");
+
+  // Try to use the CFT objects
+  assert_exception(() => { cft.appendRun(cftrun); },
+    "WrongDocumentError",
+    "different iframes");
+}, 'Cft & Run belong to different iframes');
+
 </script>

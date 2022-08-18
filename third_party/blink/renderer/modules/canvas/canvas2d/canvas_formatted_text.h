@@ -85,17 +85,9 @@ class MODULES_EXPORT CanvasFormattedText final
   }
 
   bool CheckViewExists(CanvasFormattedTextRun* run,
-                       ExceptionState* exception_state) const {
-    if (!run->GetLayoutObject() || !run->GetLayoutObject()->View()) {
-      if (exception_state) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kInvalidStateError,
-            "The run is owned by a destroyed document.");
-      }
-      return false;
-    }
-    return true;
-  }
+                       ExceptionState* exception_state) const;
+  bool CheckRunBelongsToSameFrame(CanvasFormattedTextRun* run,
+                                  ExceptionState* exception_state) const;
 
   CanvasFormattedTextRun* getRun(unsigned index,
                                  ExceptionState& exception_state) const {
