@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/fusebox/fusebox_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

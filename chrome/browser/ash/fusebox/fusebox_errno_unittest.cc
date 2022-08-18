@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/fusebox/fusebox_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_errno.h"
 
 #include "net/base/net_errors.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -12,14 +12,14 @@ namespace fusebox {
 
 namespace {
 
-class FuseBoxUtilTest : public testing::Test {
+class FuseBoxErrnoTest : public testing::Test {
  protected:
-  FuseBoxUtilTest() = default;
+  FuseBoxErrnoTest() = default;
 };
 
 }  // namespace
 
-TEST_F(FuseBoxUtilTest, FileErrorToErrno) {
+TEST_F(FuseBoxErrnoTest, FileErrorToErrno) {
   auto ok = base::File::Error::FILE_OK;
   EXPECT_EQ(0, FileErrorToErrno(ok));
 
@@ -33,7 +33,7 @@ TEST_F(FuseBoxUtilTest, FileErrorToErrno) {
   EXPECT_EQ(EIO, FileErrorToErrno(io));
 }
 
-TEST_F(FuseBoxUtilTest, NetErrorToErrno) {
+TEST_F(FuseBoxErrnoTest, NetErrorToErrno) {
   auto ok = net::OK;
   EXPECT_EQ(0, NetErrorToErrno(ok));
 
