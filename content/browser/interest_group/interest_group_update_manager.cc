@@ -108,6 +108,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (*maybe_execution_mode == "compatibility") {
     interest_group_update.execution_mode =
         blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+  } else if (*maybe_execution_mode == "groupByOrigin") {
+    interest_group_update.execution_mode =
+        blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
   } else {
     return false;
   }

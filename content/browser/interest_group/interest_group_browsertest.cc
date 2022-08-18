@@ -6383,6 +6383,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
+"executionMode": "groupByOrigin",
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
@@ -6425,7 +6426,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
             const auto& group = groups[0].interest_group;
             return group.name == "cars" && group.priority == 0.0 &&
                    group.execution_mode == blink::InterestGroup::ExecutionMode::
-                                               kCompatibilityMode &&
+                                               kGroupedByOriginMode &&
                    group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
                        "/interest_group/new_bidding_logic.js" &&
