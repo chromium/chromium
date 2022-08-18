@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/user_tuning/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/features.h"
@@ -72,6 +73,9 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
     manager_->Start();
     provider_.reset(new performance_manager::MetricsProvider(local_state()));
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
   base::test::ScopedFeatureList feature_list_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
 
 #include "base/feature_list.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "components/performance_manager/public/features.h"
@@ -61,6 +62,8 @@ UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
 UserPerformanceTuningManager::~UserPerformanceTuningManager() {
   DCHECK_EQ(this, g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = nullptr;
+
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 void UserPerformanceTuningManager::AddObserver(Observer* o) {
@@ -153,6 +156,10 @@ void UserPerformanceTuningManager::Start() {
         base::BindRepeating(
             &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
             base::Unretained(this)));
+
+    on_battery_power_ =
+        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+
     OnBatterySaverModePrefChanged();
   }
 }
@@ -171,15 +178,19 @@ void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
 void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
   DCHECK(was_started_);
 
+  using BatterySaverModeState =
+      performance_manager::user_tuning::prefs::BatterySaverModeState;
   performance_manager::user_tuning::prefs::BatterySaverModeState state =
       performance_manager::user_tuning::prefs::GetCurrentBatterySaverModeState(
           pref_change_registrar_.prefs());
 
   bool previously_enabled = battery_saver_mode_enabled_;
-  battery_saver_mode_enabled_ = !battery_saver_mode_disabled_for_session_ &&
-                                state ==
-                                    performance_manager::user_tuning::prefs::
-                                        BatterySaverModeState::kEnabled;
+
+  battery_saver_mode_enabled_ =
+      !battery_saver_mode_disabled_for_session_ &&
+      (state == BatterySaverModeState::kEnabled ||
+       (state == BatterySaverModeState::kEnabledOnBattery &&
+        on_battery_power_));
 
   // Don't change throttling or notify observers if the mode didn't change.
   if (previously_enabled == battery_saver_mode_enabled_)
@@ -194,6 +205,16 @@ void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
   for (auto& obs : observers_) {
     obs.OnBatterySaverModeChanged(battery_saver_mode_enabled_);
   }
+}
+
+void UserPerformanceTuningManager::OnPowerStateChange(bool on_battery_power) {
+  on_battery_power_ = on_battery_power;
+
+  for (auto& obs : observers_) {
+    obs.OnExternalPowerConnectedChanged(on_battery_power);
+  }
+
+  UpdateBatterySaverModeState();
 }
 
 }  // namespace performance_manager::user_tuning

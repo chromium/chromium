@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/power_monitor/power_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
@@ -15,7 +16,18 @@ class PrefService;
 
 namespace performance_manager::user_tuning {
 
-class UserPerformanceTuningManager {
+// This singleton is responsible for managing the state of high efficiency mode
+// and battery saver mode, as well as the different signals surrounding their
+// toggling.
+//
+// It is created and owned by `ChromeBrowserMainExtraPartsPerformanceManager`
+// and initialized in 2 parts:
+// - Created in PostCreateThreads (so that UI can start observing it as soon as
+// the first views are created) and
+// - Starts to manage the modes when Start() is called in PreMainMessageLoopRun.
+//
+// This object lives on the main thread and should be used from it exclusively.
+class UserPerformanceTuningManager : public base::PowerStateObserver {
  public:
   class FrameThrottlingDelegate {
    public:
@@ -40,8 +52,11 @@ class UserPerformanceTuningManager {
     // Raised when the device is plugged in or unplugged
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power.
-    virtual void OnExternalPowerConnectedChanged(
-        bool external_power_connected) = 0;
+    // If the connection/disconnection from power causes battery saver to be
+    // enabled/disabled, the state of battery saver will not yet be updated when
+    // this is invoked. `OnBatterySaverModeChanged` will be invoked after the
+    // state is updated.
+    virtual void OnExternalPowerConnectedChanged(bool on_battery_power) = 0;
 
     // Raised when the battery has reached the X% threshold
     // Can be used by the UI to show a promo if BSM isn't configured to be
@@ -63,7 +78,7 @@ class UserPerformanceTuningManager {
 
   static UserPerformanceTuningManager* GetInstance();
 
-  ~UserPerformanceTuningManager();
+  ~UserPerformanceTuningManager() override;
 
   void AddObserver(Observer* o);
   void RemoveObserver(Observer* o);
@@ -103,12 +118,17 @@ class UserPerformanceTuningManager {
 
   void UpdateBatterySaverModeState();
 
+  // base::PowerStateObserver:
+  void OnPowerStateChange(bool on_battery_power) override;
+
   bool was_started_ = false;
   bool battery_saver_mode_enabled_ = false;
   bool battery_saver_mode_disabled_for_session_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
   std::unique_ptr<HighEfficiencyModeToggleDelegate>
       high_efficiency_mode_toggle_delegate_;
+
+  bool on_battery_power_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
