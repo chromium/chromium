@@ -739,7 +739,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
   WaitForRecognitionStopped();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
+// TODO(crbug.com/1354284): Disabled due to flakiness
+IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_SmartCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   SendFinalResultAndWaitForTextAreaValue("This", "This");
