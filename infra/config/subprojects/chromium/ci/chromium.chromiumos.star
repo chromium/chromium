@@ -699,9 +699,7 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # This builder build 2 chrome(Ash and Lacros), so it need
-    # more time.
-    # TODO(crbug.com/1345687): use normal machines.
+    # See crbug.com/1345687. This builder need higher memory.
     builderless = False,
 )
 
@@ -733,7 +731,7 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # TODO(crbug.com/1345687): use normal machines.
+    # See crbug.com/1345687. This builder need higher memory.
     builderless = False,
 )
 
@@ -798,7 +796,7 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # TODO(crbug.com/1345687): use normal machines.
+    # See crbug.com/1345687. This builder need higher memory.
     builderless = False,
 )
 
