@@ -8,6 +8,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -151,6 +152,9 @@ struct SecondaryMenuItem {
   bool has_checkmark;
   std::string language_code;
 };
+
+constexpr const char kInfobarEventHistogram[] =
+    "Translate.CompactInfobar.Event";
 
 class TranslateMessageTest : public ::testing::Test {
  public:
@@ -369,7 +373,39 @@ TEST_F(TranslateMessageTest, TranslateAndRevert) {
                             env, _, _, kDefaultDismissalDurationSeconds))
       .WillOnce(Return(true));
 
-  TranslateThenRevertThenDismiss(env, "fr", "en");
+  {
+    base::HistogramTester histogram_tester;
+    ShowBeforeTranslationMessage(env, "fr", "en");
+    histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                        InfobarEvent::INFOBAR_IMPRESSION, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    ExpectTranslationInProgress(env, "fr", "en");
+    translate_message_->HandlePrimaryAction(env);
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_TARGET_TAB_TRANSLATE, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    FinishTranslation(env, "fr", "en");
+    histogram_tester.ExpectTotalCount(kInfobarEventHistogram, 0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    ExpectTranslationReverts(env, "fr", "en");
+    translate_message_->HandlePrimaryAction(env);
+    histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                        InfobarEvent::INFOBAR_REVERT, 1);
+  }
+
+  // Simulate a dismissal triggered by the Java side.
+  translate_message_->HandleDismiss(
+      env, static_cast<jint>(messages::DismissReason::TIMER));
+  EXPECT_EQ(1, on_dismiss_callback_called_count_);
 }
 
 TEST_F(TranslateMessageTest, TranslateAndRevertMultipleTimes) {
@@ -451,6 +487,37 @@ TEST_F(TranslateMessageTest, DismissMessageOnDestruction) {
   EXPECT_EQ(0, on_dismiss_callback_called_count_);
 }
 
+TEST_F(TranslateMessageTest, ShowOverflowMenu) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_CALL(*bridge_, CreateTranslateMessage(
+                            env, _, _, kDefaultDismissalDurationSeconds))
+      .WillOnce(Return(true));
+
+  ShowBeforeTranslationMessage(env, "fr", "en");
+
+  ExpectConstructMenuItemArray(
+      env,
+      std::vector<SecondaryMenuItem>(
+          {{TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
+            std::string()},
+           {TranslateMessage::OverflowMenuItemId::kInvalid, false,
+            std::string()},
+           {TranslateMessage::OverflowMenuItemId::
+                kToggleAlwaysTranslateLanguage,
+            false, std::string()},
+           {TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateLanguage,
+            false, std::string()},
+           {TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite,
+            false, std::string()},
+           {TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage, false,
+            std::string()}}));
+
+  base::HistogramTester histogram_tester;
+  translate_message_->BuildOverflowMenu(env);
+  histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                      InfobarEvent::INFOBAR_OPTIONS, 1);
+}
+
 TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
@@ -480,13 +547,20 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
 
-  ExpectTranslationInProgress(env, "fr", "en");
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleAlwaysTranslateLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Always translate pages in <language>" to on.
+    ExpectTranslationInProgress(env, "fr", "en");
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(TranslateMessage::OverflowMenuItemId::
+                             kToggleAlwaysTranslateLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_ALWAYS_TRANSLATE, 1);
+  }
+
   EXPECT_TRUE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
 
@@ -511,12 +585,18 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleAlwaysTranslateLanguage) {
 
   translate_message_->BuildOverflowMenu(env);
 
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleAlwaysTranslateLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(true)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Always translate pages in <language>" to off.
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(TranslateMessage::OverflowMenuItemId::
+                             kToggleAlwaysTranslateLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(true)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_ALWAYS_TRANSLATE_UNDO, 1);
+  }
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -554,13 +634,20 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateLanguage) {
   translate_message_->BuildOverflowMenu(env);
   EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 
-  ExpectTranslationReverts(env, "fr", "en");
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Never translate pages in <language>" to on.
+    ExpectTranslationReverts(env, "fr", "en");
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(TranslateMessage::OverflowMenuItemId::
+                             kToggleNeverTranslateLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE, 1);
+  }
+
   EXPECT_TRUE(translate_prefs_->IsBlockedLanguage("fr"));
 
   ExpectConstructMenuItemArray(
@@ -582,12 +669,19 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateLanguage) {
 
   translate_message_->BuildOverflowMenu(env);
 
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(true)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Never translate pages in <language>" to off.
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(TranslateMessage::OverflowMenuItemId::
+                             kToggleNeverTranslateLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(true)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_UNDO, 1);
+  }
+
   EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 }
 
@@ -624,13 +718,20 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateSite) {
   EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList(
       driver_.GetLastCommittedURL().HostNoBracketsPiece()));
 
-  ExpectTranslationReverts(env, "fr", "en");
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Never translate this site" to on.
+    ExpectTranslationReverts(env, "fr", "en");
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(
+            TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE, 1);
+  }
+
   EXPECT_TRUE(translate_prefs_->IsSiteOnNeverPromptList(
       driver_.GetLastCommittedURL().HostNoBracketsPiece()));
 
@@ -653,12 +754,20 @@ TEST_F(TranslateMessageTest, OverflowMenuToggleNeverTranslateSite) {
 
   translate_message_->BuildOverflowMenu(env);
 
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(true)));
+  {
+    base::HistogramTester histogram_tester;
+    // Toggle "Never translate this site" to off.
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(
+            TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(true)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE_UNDO,
+        1);
+  }
+
   EXPECT_FALSE(translate_prefs_->IsSiteOnNeverPromptList(
       driver_.GetLastCommittedURL().HostNoBracketsPiece()));
 }
@@ -706,15 +815,20 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
         std::move(language_code)});
   }
 
-  // Click the kChangeSourceLanguage option in the overflow menu, which should
-  // return a list of language picker menu items.
-  ExpectConstructMenuItemArray(env, menu_items, CreateTestJobjectArray(env));
-  EXPECT_TRUE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Click the kChangeSourceLanguage option in the overflow menu, which should
+    // return a list of language picker menu items.
+    ExpectConstructMenuItemArray(env, menu_items, CreateTestJobjectArray(env));
+    EXPECT_TRUE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(
+            TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                        InfobarEvent::INFOBAR_PAGE_NOT_IN, 1);
+  }
 
   // Clicking a language should kick off a translation.
   ExpectTranslationInProgress(env, "de", "en");
@@ -776,24 +890,35 @@ TEST_F(TranslateMessageTest,
         std::move(language_code)});
   }
 
-  // Click the kChangeTargetLanguage option in the overflow menu, which should
-  // return a list of language picker menu items.
-  ExpectConstructMenuItemArray(env, menu_items, CreateTestJobjectArray(env));
-  EXPECT_TRUE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
-      base::android::ConvertUTF8ToJavaString(env, std::string()),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Click the kChangeTargetLanguage option in the overflow menu, which should
+    // return a list of language picker menu items.
+    ExpectConstructMenuItemArray(env, menu_items, CreateTestJobjectArray(env));
+    EXPECT_TRUE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(
+            TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
+        base::android::ConvertUTF8ToJavaString(env, std::string()),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_MORE_LANGUAGES, 1);
+  }
 
-  // Clicking a language should kick off a translation.
-  ExpectTranslationInProgress(env, "fr", "de");
-  EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-      env,
-      static_cast<int>(
-          TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
-      base::android::ConvertUTF8ToJavaString(env, "de"),
-      static_cast<jboolean>(false)));
+  {
+    base::HistogramTester histogram_tester;
+    // Clicking a language should kick off a translation.
+    ExpectTranslationInProgress(env, "fr", "de");
+    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
+        env,
+        static_cast<int>(
+            TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
+        base::android::ConvertUTF8ToJavaString(env, "de"),
+        static_cast<jboolean>(false)));
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram, InfobarEvent::INFOBAR_MORE_LANGUAGES_TRANSLATE,
+        1);
+  }
 
   FinishTranslation(env, "fr", "de");
 }
@@ -1078,8 +1203,13 @@ TEST_F(TranslateMessageTest, TranslationIgnored) {
       .WillOnce(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
+  base::HistogramTester histogram_tester;
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::TIMER));
+
+  histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                      InfobarEvent::INFOBAR_DECLINE, 1);
+
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
 
   EXPECT_EQ(100, translate_prefs_->GetTranslationAcceptedCount("fr"));
@@ -1168,8 +1298,12 @@ TEST_F(TranslateMessageTest, TranslationDenied) {
       .WillOnce(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
+  base::HistogramTester histogram_tester;
   translate_message_->HandleDismiss(
       env, static_cast<jint>(messages::DismissReason::GESTURE));
+
+  histogram_tester.ExpectUniqueSample(kInfobarEventHistogram,
+                                      InfobarEvent::INFOBAR_DECLINE, 1);
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
 
   EXPECT_EQ(0, translate_prefs_->GetTranslationAcceptedCount("fr"));
@@ -1262,7 +1396,14 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslate) {
   ShowBeforeTranslationMessage(env, "fr", "en");
   ExpectTranslationInProgress(env, "fr", "en");
   translate_message_->HandlePrimaryAction(env);
-  FinishTranslation(env, "fr", "en");
+
+  {
+    base::HistogramTester histogram_tester;
+    FinishTranslation(env, "fr", "en");
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram,
+        InfobarEvent::INFOBAR_SNACKBAR_AUTO_ALWAYS_IMPRESSION, 1);
+  }
 
   EXPECT_TRUE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1270,9 +1411,20 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslate) {
             translate_prefs_->GetTranslationAutoAlwaysCount("fr"));
   EXPECT_EQ(0, translate_prefs_->GetTranslationAcceptedCount("fr"));
 
-  // Simulate clicking "Undo", which should disable "Always translate language."
-  ExpectTranslationReverts(env, "fr", "en");
-  translate_message_->HandlePrimaryAction(env);
+  {
+    base::HistogramTester histogram_tester;
+    // Simulate clicking "Undo", which should disable "Always translate
+    // language."
+    ExpectTranslationReverts(env, "fr", "en");
+    translate_message_->HandlePrimaryAction(env);
+
+    histogram_tester.ExpectBucketCount(
+        kInfobarEventHistogram,
+        InfobarEvent::INFOBAR_SNACKBAR_CANCEL_AUTO_ALWAYS, 1);
+    histogram_tester.ExpectBucketCount(kInfobarEventHistogram,
+                                       InfobarEvent::INFOBAR_REVERT, 1);
+    histogram_tester.ExpectTotalCount(kInfobarEventHistogram, 2);
+  }
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1483,30 +1635,50 @@ TEST_F(TranslateMessageTest, AutoNeverTranslate) {
       .WillOnce(Return(true));
   ShowBeforeTranslationMessage(env, "fr", "en");
 
-  // Dismissing the message should cause the auto-never-translate confirmation
-  // message to be shown.
-  EXPECT_CALL(*bridge_,
-              ShowMessage(env,
-                          /*title=*/Truly(IsJavaStringNonNull),
-                          /*description=*/Truly(IsJavaStringNull),
-                          /*primary_button_text=*/Truly(IsJavaStringNonNull),
-                          /*has_overflow_menu=*/false));
-  translate_message_->HandleDismiss(
-      env, static_cast<jint>(messages::DismissReason::GESTURE));
+  {
+    base::HistogramTester histogram_tester;
+
+    // Dismissing the message should cause the auto-never-translate confirmation
+    // message to be shown.
+    EXPECT_CALL(*bridge_,
+                ShowMessage(env,
+                            /*title=*/Truly(IsJavaStringNonNull),
+                            /*description=*/Truly(IsJavaStringNull),
+                            /*primary_button_text=*/Truly(IsJavaStringNonNull),
+                            /*has_overflow_menu=*/false));
+    translate_message_->HandleDismiss(
+        env, static_cast<jint>(messages::DismissReason::GESTURE));
+
+    histogram_tester.ExpectBucketCount(
+        kInfobarEventHistogram,
+        InfobarEvent::INFOBAR_SNACKBAR_AUTO_NEVER_IMPRESSION, 1);
+    histogram_tester.ExpectBucketCount(kInfobarEventHistogram,
+                                       InfobarEvent::INFOBAR_DECLINE, 1);
+    histogram_tester.ExpectTotalCount(kInfobarEventHistogram, 2);
+  }
 
   // The dismissal callback should not have been run.
   EXPECT_EQ(0, on_dismiss_callback_called_count_);
 
   EXPECT_TRUE(translate_prefs_->IsBlockedLanguage("fr"));
 
-  // Click "Undo" on the confirmation.
-  EXPECT_CALL(*bridge_, Dismiss(env))
-      .WillOnce(InvokeWithoutArgs([env, message = translate_message_.get()]() {
-        message->HandleDismiss(
-            env,
-            static_cast<jint>(messages::DismissReason::DISMISSED_BY_FEATURE));
-      }));
-  translate_message_->HandlePrimaryAction(env);
+  {
+    base::HistogramTester histogram_tester;
+    // Click "Undo" on the confirmation.
+    EXPECT_CALL(*bridge_, Dismiss(env))
+        .WillOnce(InvokeWithoutArgs([env,
+                                     message = translate_message_.get()]() {
+          message->HandleDismiss(
+              env,
+              static_cast<jint>(messages::DismissReason::DISMISSED_BY_FEATURE));
+        }));
+    translate_message_->HandlePrimaryAction(env);
+
+    histogram_tester.ExpectUniqueSample(
+        kInfobarEventHistogram,
+        InfobarEvent::INFOBAR_SNACKBAR_CANCEL_AUTO_NEVER, 1);
+  }
+
   EXPECT_EQ(1, on_dismiss_callback_called_count_);
   EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 }
