@@ -1929,11 +1929,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "enable-de-jelly",
-    "owners": [ "boliu", "//components/viz/OWNERS" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan", "web-payments-team@google.com" ],
     "expiry_milestone": 112

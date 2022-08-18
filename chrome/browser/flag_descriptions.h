@@ -1181,9 +1181,6 @@ extern const char kOsSettingsAppNotificationsPageDescription[];
 extern const char kOverviewButtonName[];
 extern const char kOverviewButtonDescription[];
 
-extern const char kEnableDeJellyName[];
-extern const char kEnableDeJellyDescription[];
-
 extern const char kOverlayScrollbarsName[];
 extern const char kOverlayScrollbarsDescription[];
 

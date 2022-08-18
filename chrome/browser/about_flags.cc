@@ -7056,10 +7056,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(screentime::kScreenTime)},
 #endif
 
-    {"enable-de-jelly", flag_descriptions::kEnableDeJellyName,
-     flag_descriptions::kEnableDeJellyDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnableDeJelly)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-cros-action-recorder",
      flag_descriptions::kEnableCrOSActionRecorderName,

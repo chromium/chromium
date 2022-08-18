@@ -2085,13 +2085,6 @@ const char kOptimizationGuidePushNotificationName[] =
 const char kOptimizationGuidePushNotificationDescription[] =
     "Enables the optimization guide to receive push notifications.";
 
-const char kEnableDeJellyName[] = "Experimental de-jelly effect";
-const char kEnableDeJellyDescription[] =
-    "Enables an experimental effect which attempts to mitigate "
-    "\"jelly-scrolling\". This is an experimental implementation with known "
-    "bugs, visual artifacts, and performance cost. This implementation may be "
-    "removed at any time.";
-
 const char kOrganicRepeatableQueriesName[] =
     "Organic repeatable queries in Most Visited tiles";
 const char kOrganicRepeatableQueriesDescription[] =
