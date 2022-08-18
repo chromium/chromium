@@ -38,3 +38,26 @@ android_library("java") {
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
   ]
 }
+
+robolectric_library("junit_test_support") {
+  sources = [ "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java" ]
+  deps = [ ":java" ]
+}
+
+robolectric_binary("components_stylus_handwriting_junit_tests") {
+  sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
+    "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",
+  ]
+  deps = [
+    ":java",
+    ":junit_test_support",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

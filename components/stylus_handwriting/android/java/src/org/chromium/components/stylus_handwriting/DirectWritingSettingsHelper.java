@@ -11,7 +11,7 @@ import android.provider.Settings;
 /**
  * Helper class for Direct writing feature support and settings.
  */
-class DirectWritingSettingsHelper {
+public class DirectWritingSettingsHelper {
     private DirectWritingSettingsHelper() {}
 
     // System setting for direct writing service. This setting is currently found under
@@ -24,7 +24,7 @@ class DirectWritingSettingsHelper {
     private static final String HONEYBOARD_SERVICE_PKG_NAME =
             DirectWritingConstants.SERVICE_PKG_NAME + "/.service.HoneyBoardService";
 
-    static boolean isEnabled(Context context) {
+    public static boolean isEnabled(Context context) {
         // Samsung keyboard supports handwriting in Chrome and Webview from Android S onwards.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
         return isHoneyboardDefault(context) && isFeatureEnabled(context);
