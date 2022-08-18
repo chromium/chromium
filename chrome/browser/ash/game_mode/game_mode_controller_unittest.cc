@@ -208,5 +208,19 @@ TEST_F(GameModeControllerTest, GameModeMetricsRecorded) {
                                        BorealisGameModeResult::kFailed, 1);
 }
 
+TEST_F(GameModeControllerTest, BorealisWindowLosesFocusAndGoesFullscreen) {
+  // If a game window without focus goes fullscreen, game mode should not
+  // activate.
+  std::unique_ptr<views::Widget> borealis_widget =
+      CreateFakeWidget("org.chromium.borealis.foo");
+  std::unique_ptr<views::Widget> other_widget =
+      CreateFakeWidget("org.chromium.other.baz");
+
+  // other_widget is non-Borealis and has focus.
+  borealis_widget->SetFullscreen(true);
+
+  EXPECT_EQ(0, fake_resourced_client_->get_enter_game_mode_count());
+}
+
 }  // namespace
 }  // namespace game_mode
