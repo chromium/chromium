@@ -50,6 +50,15 @@ TabRestorePageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+TabRestorePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in performance on tab restoration. Prerendering
+  // doesn't occur in such a case.
+  return STOP_OBSERVING;
+}
+
 void TabRestorePageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
