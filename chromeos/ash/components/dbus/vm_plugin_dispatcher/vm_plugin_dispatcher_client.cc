@@ -46,33 +46,33 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
     observer_list_.RemoveObserver(observer);
   }
 
-  void StartVm(
-      const dispatcher::StartVmRequest& request,
-      DBusMethodCallback<dispatcher::StartVmResponse> callback) override {
+  void StartVm(const dispatcher::StartVmRequest& request,
+               chromeos::DBusMethodCallback<dispatcher::StartVmResponse>
+                   callback) override {
     CallMethod(dispatcher::kStartVmMethod, request, std::move(callback));
   }
 
-  void ListVms(
-      const dispatcher::ListVmRequest& request,
-      DBusMethodCallback<dispatcher::ListVmResponse> callback) override {
+  void ListVms(const dispatcher::ListVmRequest& request,
+               chromeos::DBusMethodCallback<dispatcher::ListVmResponse>
+                   callback) override {
     CallMethod(dispatcher::kListVmsMethod, request, std::move(callback));
   }
 
-  void StopVm(
-      const dispatcher::StopVmRequest& request,
-      DBusMethodCallback<dispatcher::StopVmResponse> callback) override {
+  void StopVm(const dispatcher::StopVmRequest& request,
+              chromeos::DBusMethodCallback<dispatcher::StopVmResponse> callback)
+      override {
     CallMethod(dispatcher::kStopVmMethod, request, std::move(callback));
   }
 
-  void SuspendVm(
-      const dispatcher::SuspendVmRequest& request,
-      DBusMethodCallback<dispatcher::SuspendVmResponse> callback) override {
+  void SuspendVm(const dispatcher::SuspendVmRequest& request,
+                 chromeos::DBusMethodCallback<dispatcher::SuspendVmResponse>
+                     callback) override {
     CallMethod(dispatcher::kSuspendVmMethod, request, std::move(callback));
   }
 
-  void ShowVm(
-      const dispatcher::ShowVmRequest& request,
-      DBusMethodCallback<dispatcher::ShowVmResponse> callback) override {
+  void ShowVm(const dispatcher::ShowVmRequest& request,
+              chromeos::DBusMethodCallback<dispatcher::ShowVmResponse> callback)
+      override {
     CallMethod(dispatcher::kShowVmMethod, request, std::move(callback));
   }
 
@@ -115,7 +115,7 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
   template <typename RequestProto, typename ResponseProto>
   void CallMethod(const std::string& method_name,
                   const RequestProto& request,
-                  DBusMethodCallback<ResponseProto> callback) {
+                  chromeos::DBusMethodCallback<ResponseProto> callback) {
     dbus::MethodCall method_call(dispatcher::kVmPluginDispatcherInterface,
                                  method_name);
     dbus::MessageWriter writer(&method_call);
@@ -135,7 +135,7 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
   }
 
   template <typename ResponseProto>
-  void OnDBusProtoResponse(DBusMethodCallback<ResponseProto> callback,
+  void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
       std::move(callback).Run(absl::nullopt);

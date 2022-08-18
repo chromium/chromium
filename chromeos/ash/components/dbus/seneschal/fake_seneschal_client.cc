@@ -64,7 +64,8 @@ void FakeSeneschalClient::WaitForServiceToBeAvailable(
 
 void FakeSeneschalClient::SharePath(
     const vm_tools::seneschal::SharePathRequest& request,
-    DBusMethodCallback<vm_tools::seneschal::SharePathResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::seneschal::SharePathResponse>
+        callback) {
   share_path_called_ = true;
   last_share_path_request_ = request;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -73,7 +74,8 @@ void FakeSeneschalClient::SharePath(
 
 void FakeSeneschalClient::UnsharePath(
     const vm_tools::seneschal::UnsharePathRequest& request,
-    DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
+        callback) {
   unshare_path_called_ = true;
   last_unshare_path_request_ = request;
   base::ThreadTaskRunnerHandle::Get()->PostTask(

@@ -117,7 +117,7 @@ FakeRmadClient* FakeRmadClient::Get() {
 }
 
 void FakeRmadClient::GetCurrentState(
-    DBusMethodCallback<rmad::GetStateReply> callback) {
+    chromeos::DBusMethodCallback<rmad::GetStateReply> callback) {
   if (NumStates() > 0) {
     CHECK(state_index_ < NumStates());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -133,7 +133,7 @@ void FakeRmadClient::GetCurrentState(
 
 void FakeRmadClient::TransitionNextState(
     const rmad::RmadState& state,
-    DBusMethodCallback<rmad::GetStateReply> callback) {
+    chromeos::DBusMethodCallback<rmad::GetStateReply> callback) {
   if (NumStates() == 0) {
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
@@ -173,7 +173,7 @@ void FakeRmadClient::TransitionNextState(
 }
 
 void FakeRmadClient::TransitionPreviousState(
-    DBusMethodCallback<rmad::GetStateReply> callback) {
+    chromeos::DBusMethodCallback<rmad::GetStateReply> callback) {
   if (NumStates() == 0) {
     rmad::GetStateReply reply;
     reply.set_error(rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
@@ -196,21 +196,23 @@ void FakeRmadClient::TransitionPreviousState(
 }
 
 void FakeRmadClient::AbortRma(
-    DBusMethodCallback<rmad::AbortRmaReply> callback) {
+    chromeos::DBusMethodCallback<rmad::AbortRmaReply> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
-void FakeRmadClient::GetLog(DBusMethodCallback<rmad::GetLogReply> callback) {
+void FakeRmadClient::GetLog(
+    chromeos::DBusMethodCallback<rmad::GetLogReply> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      absl::optional<rmad::GetLogReply>(get_log_reply_)));
 }
 
-void FakeRmadClient::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
+void FakeRmadClient::SaveLog(
+    chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
@@ -219,7 +221,8 @@ void FakeRmadClient::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
 
 void FakeRmadClient::RecordBrowserActionMetric(
     const rmad::RecordBrowserActionMetricRequest request,
-    DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback) {
+    chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),

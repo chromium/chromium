@@ -18,7 +18,8 @@ namespace ash {
 class COMPONENT_EXPORT(ASH_DBUS_RUNTIME_PROBE) RuntimeProbeClient
     : public DBusClient {
  public:
-  using RuntimeProbeCallback = DBusMethodCallback<runtime_probe::ProbeResult>;
+  using RuntimeProbeCallback =
+      chromeos::DBusMethodCallback<runtime_probe::ProbeResult>;
 
   // Returns the global instance if initialized. May return null.
   static RuntimeProbeClient* Get();

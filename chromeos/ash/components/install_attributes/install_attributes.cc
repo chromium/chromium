@@ -222,8 +222,8 @@ void InstallAttributes::ReadAttributesIfReady(
 
 void InstallAttributes::SetBlockDevmodeInTpm(
     bool block_devmode,
-    DBusMethodCallback<user_data_auth::SetFirmwareManagementParametersReply>
-        callback) {
+    chromeos::DBusMethodCallback<
+        user_data_auth::SetFirmwareManagementParametersReply> callback) {
   DCHECK(!callback.is_null());
   DCHECK(!device_locked_);
 

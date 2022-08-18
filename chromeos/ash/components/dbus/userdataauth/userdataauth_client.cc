@@ -343,11 +343,12 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)
   // call finishes, |callback| is called with the response proto.
   template <typename RequestType, typename ReplyType>
-  void CallProtoMethodWithTimeout(const char* method_name,
-                                  const char* interface_name,
-                                  int timeout_ms,
-                                  const RequestType& request,
-                                  DBusMethodCallback<ReplyType> callback) {
+  void CallProtoMethodWithTimeout(
+      const char* method_name,
+      const char* interface_name,
+      int timeout_ms,
+      const RequestType& request,
+      chromeos::DBusMethodCallback<ReplyType> callback) {
     dbus::MethodCall method_call(interface_name, method_name);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
@@ -374,7 +375,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   void CallProtoMethod(const char* method_name,
                        const char* interface_name,
                        const RequestType& request,
-                       DBusMethodCallback<ReplyType> callback) {
+                       chromeos::DBusMethodCallback<ReplyType> callback) {
     CallProtoMethodWithTimeout(method_name, interface_name,
                                kUserDataAuthDefaultTimeoutMS, request,
                                std::move(callback));
@@ -384,7 +385,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   // the decoded message. Calls |callback| with std::nullopt on error, including
   // timeout.
   template <typename ReplyType>
-  void HandleResponse(DBusMethodCallback<ReplyType> callback,
+  void HandleResponse(chromeos::DBusMethodCallback<ReplyType> callback,
                       dbus::Response* response) {
     ReplyType reply_proto;
     if (!ParseProto(response, &reply_proto)) {

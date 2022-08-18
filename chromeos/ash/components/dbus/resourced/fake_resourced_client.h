@@ -20,9 +20,10 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   FakeResourcedClient& operator=(const FakeResourcedClient&) = delete;
 
   // ResourcedClient:
-  void SetGameModeWithTimeout(GameMode game_mode,
-                              uint32_t refresh_seconds,
-                              DBusMethodCallback<GameMode> callback) override;
+  void SetGameModeWithTimeout(
+      GameMode game_mode,
+      uint32_t refresh_seconds,
+      chromeos::DBusMethodCallback<GameMode> callback) override;
 
   void SetMemoryMarginsBps(uint32_t critical,
                            uint32_t moderate,

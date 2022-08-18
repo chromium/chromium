@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   virtual void SetGameModeWithTimeout(
       GameMode game_mode,
       uint32_t refresh_seconds,
-      DBusMethodCallback<GameMode> callback) = 0;
+      chromeos::DBusMethodCallback<GameMode> callback) = 0;
 
   using SetMemoryMarginsBpsCallback =
       base::OnceCallback<void(bool, uint64_t, uint64_t)>;

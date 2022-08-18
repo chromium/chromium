@@ -71,7 +71,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ModemMessagingClient {
                       VoidDBusMethodCallback callback) = 0;
 
   // Calls List method.  |callback| is called on method completion.
-  using ListCallback = DBusMethodCallback<std::vector<dbus::ObjectPath>>;
+  using ListCallback =
+      chromeos::DBusMethodCallback<std::vector<dbus::ObjectPath>>;
   virtual void List(const std::string& service_name,
                     const dbus::ObjectPath& object_path,
                     ListCallback callback) = 0;

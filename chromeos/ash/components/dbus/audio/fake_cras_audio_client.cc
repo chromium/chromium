@@ -131,51 +131,52 @@ bool FakeCrasAudioClient::HasObserver(const Observer* observer) const {
 }
 
 void FakeCrasAudioClient::GetVolumeState(
-    DBusMethodCallback<VolumeState> callback) {
+    chromeos::DBusMethodCallback<VolumeState> callback) {
   std::move(callback).Run(volume_state_);
 }
 
 void FakeCrasAudioClient::GetDefaultOutputBufferSize(
-    DBusMethodCallback<int> callback) {
+    chromeos::DBusMethodCallback<int> callback) {
   std::move(callback).Run(512);
 }
 
 void FakeCrasAudioClient::GetSystemAecSupported(
-    DBusMethodCallback<bool> callback) {
+    chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);
 }
 
 void FakeCrasAudioClient::GetSystemAecGroupId(
-    DBusMethodCallback<int32_t> callback) {
+    chromeos::DBusMethodCallback<int32_t> callback) {
   std::move(callback).Run(1);
 }
 
 void FakeCrasAudioClient::GetSystemNsSupported(
-    DBusMethodCallback<bool> callback) {
+    chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);
 }
 
 void FakeCrasAudioClient::GetSystemAgcSupported(
-    DBusMethodCallback<bool> callback) {
+    chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);
 }
 
-void FakeCrasAudioClient::GetNodes(DBusMethodCallback<AudioNodeList> callback) {
+void FakeCrasAudioClient::GetNodes(
+    chromeos::DBusMethodCallback<AudioNodeList> callback) {
   std::move(callback).Run(node_list_);
 }
 
 void FakeCrasAudioClient::GetNumberOfActiveOutputStreams(
-    DBusMethodCallback<int> callback) {
+    chromeos::DBusMethodCallback<int> callback) {
   std::move(callback).Run(0);
 }
 
 void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
-    DBusMethodCallback<ClientTypeToInputStreamCount> callback) {
+    chromeos::DBusMethodCallback<ClientTypeToInputStreamCount> callback) {
   std::move(callback).Run(active_input_streams_);
 }
 
 void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
-    DBusMethodCallback<bool> callback) {
+    chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);
 }
 
@@ -212,7 +213,7 @@ void FakeCrasAudioClient::SetNoiseCancellationEnabled(
 }
 
 void FakeCrasAudioClient::GetNoiseCancellationSupported(
-    DBusMethodCallback<bool> callback) {
+    chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(noise_cancellation_supported_);
 }
 

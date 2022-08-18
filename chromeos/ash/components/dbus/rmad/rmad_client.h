@@ -81,35 +81,39 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // The response contains an error code and the current state of the RMA
   // process.
   virtual void GetCurrentState(
-      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) = 0;
   // Asynchronously attempts to transition to the next RMA state.
   // The response contains an error code and the current state of the RMA
   // process.
   virtual void TransitionNextState(
       const rmad::RmadState& state,
-      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) = 0;
   // Asynchronously attempts to transition to the previous RMA state.
   // The response contains an error code and the current state of the RMA
   // process.
   virtual void TransitionPreviousState(
-      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) = 0;
 
   // Request the RMA process be cancelled.
   // There is no guarantee the callback is called if abort is successful because
   // the device will reboot.
   // Returns RMAD_ERROR_OK on success or an error code.
-  virtual void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
+  virtual void AbortRma(
+      chromeos::DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
 
   // Request the RMA process logs.
-  virtual void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) = 0;
+  virtual void GetLog(
+      chromeos::DBusMethodCallback<rmad::GetLogReply> callback) = 0;
 
   // Save RMA logs to a USB drive.
-  virtual void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) = 0;
+  virtual void SaveLog(
+      chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) = 0;
 
   // Send metrics to the platform side, which will upload them.
   virtual void RecordBrowserActionMetric(
       const rmad::RecordBrowserActionMetricRequest request,
-      DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback) = 0;
+      chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
+          callback) = 0;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;

@@ -25,26 +25,30 @@ class COMPONENT_EXPORT(ASH_DBUS_VM_PLUGIN_DISPATCHER)
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  void StartVm(const vm_tools::plugin_dispatcher::StartVmRequest& request,
-               DBusMethodCallback<vm_tools::plugin_dispatcher::StartVmResponse>
-                   callback) override;
+  void StartVm(
+      const vm_tools::plugin_dispatcher::StartVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::StartVmResponse>
+          callback) override;
 
-  void ListVms(const vm_tools::plugin_dispatcher::ListVmRequest& request,
-               DBusMethodCallback<vm_tools::plugin_dispatcher::ListVmResponse>
-                   callback) override;
+  void ListVms(
+      const vm_tools::plugin_dispatcher::ListVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::ListVmResponse>
+          callback) override;
 
-  void StopVm(const vm_tools::plugin_dispatcher::StopVmRequest& request,
-              DBusMethodCallback<vm_tools::plugin_dispatcher::StopVmResponse>
-                  callback) override;
+  void StopVm(
+      const vm_tools::plugin_dispatcher::StopVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::StopVmResponse>
+          callback) override;
 
   void SuspendVm(
       const vm_tools::plugin_dispatcher::SuspendVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::SuspendVmResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::plugin_dispatcher::SuspendVmResponse> callback) override;
 
-  void ShowVm(const vm_tools::plugin_dispatcher::ShowVmRequest& request,
-              DBusMethodCallback<vm_tools::plugin_dispatcher::ShowVmResponse>
-                  callback) override;
+  void ShowVm(
+      const vm_tools::plugin_dispatcher::ShowVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::ShowVmResponse>
+          callback) override;
 
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;

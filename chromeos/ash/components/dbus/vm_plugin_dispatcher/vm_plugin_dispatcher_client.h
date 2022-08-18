@@ -39,31 +39,31 @@ class COMPONENT_EXPORT(ASH_DBUS_VM_PLUGIN_DISPATCHER) VmPluginDispatcherClient
   // Asynchronously starts a given VM.
   virtual void StartVm(
       const vm_tools::plugin_dispatcher::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::StartVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::StartVmResponse>
           callback) = 0;
 
   // Retrieve metadata about a specific or all VMs.
   virtual void ListVms(
       const vm_tools::plugin_dispatcher::ListVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::ListVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::ListVmResponse>
           callback) = 0;
 
   // Asynchronously stop a given VM. This does not close the UI.
   virtual void StopVm(
       const vm_tools::plugin_dispatcher::StopVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::StopVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::StopVmResponse>
           callback) = 0;
 
   // Asynchronously suspend a given VM. This does not close the UI.
   virtual void SuspendVm(
       const vm_tools::plugin_dispatcher::SuspendVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::SuspendVmResponse>
-          callback) = 0;
+      chromeos::DBusMethodCallback<
+          vm_tools::plugin_dispatcher::SuspendVmResponse> callback) = 0;
 
   // Start the UI component responsible for rendering VM display.
   virtual void ShowVm(
       const vm_tools::plugin_dispatcher::ShowVmRequest& request,
-      DBusMethodCallback<vm_tools::plugin_dispatcher::ShowVmResponse>
+      chromeos::DBusMethodCallback<vm_tools::plugin_dispatcher::ShowVmResponse>
           callback) = 0;
 
   // Runs |callback| when the VM Plugin Dispatcher service becomes available.

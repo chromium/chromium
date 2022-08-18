@@ -48,7 +48,8 @@ class ShillManagerClientImpl : public ShillManagerClient {
     helper_->RemovePropertyChangedObserver(observer);
   }
 
-  void GetProperties(DBusMethodCallback<base::Value> callback) override {
+  void GetProperties(
+      chromeos::DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetPropertiesFunction);
     helper_->CallValueMethod(
@@ -59,7 +60,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void GetNetworksForGeolocation(
-      DBusMethodCallback<base::Value> callback) override {
+      chromeos::DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetNetworksForGeolocation);
     helper_->CallValueMethod(&method_call, std::move(callback));

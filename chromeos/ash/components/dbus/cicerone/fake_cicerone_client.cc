@@ -174,8 +174,8 @@ bool FakeCiceroneClient::IsPendingAppListUpdatesSignalConnected() {
 
 void FakeCiceroneClient::LaunchContainerApplication(
     const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::LaunchContainerApplicationResponse> callback) {
   if (launch_container_application_callback_) {
     launch_container_application_callback_.Run(request, std::move(callback));
   } else {
@@ -187,7 +187,8 @@ void FakeCiceroneClient::LaunchContainerApplication(
 
 void FakeCiceroneClient::GetContainerAppIcons(
     const vm_tools::cicerone::ContainerAppIconRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), container_app_icon_response_));
@@ -195,7 +196,8 @@ void FakeCiceroneClient::GetContainerAppIcons(
 
 void FakeCiceroneClient::GetLinuxPackageInfo(
     const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
+        callback) {
   most_recent_linux_package_info_request_ = request;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -204,8 +206,8 @@ void FakeCiceroneClient::GetLinuxPackageInfo(
 
 void FakeCiceroneClient::InstallLinuxPackage(
     const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::InstallLinuxPackageResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::InstallLinuxPackageResponse> callback) {
   most_recent_install_linux_package_request_ = request;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -224,8 +226,8 @@ void FakeCiceroneClient::SetOnUninstallPackageOwningFileCallback(
 
 void FakeCiceroneClient::UninstallPackageOwningFile(
     const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::UninstallPackageOwningFileResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::UninstallPackageOwningFileResponse> callback) {
   if (uninstall_package_owning_file_callback_) {
     uninstall_package_owning_file_callback_.Run(request, std::move(callback));
   } else {
@@ -243,7 +245,7 @@ void FakeCiceroneClient::WaitForServiceToBeAvailable(
 
 void FakeCiceroneClient::CreateLxdContainer(
     const vm_tools::cicerone::CreateLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
+    chromeos::DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
         callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -265,7 +267,7 @@ void FakeCiceroneClient::CreateLxdContainer(
 
 void FakeCiceroneClient::DeleteLxdContainer(
     const vm_tools::cicerone::DeleteLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::DeleteLxdContainerResponse>
+    chromeos::DBusMethodCallback<vm_tools::cicerone::DeleteLxdContainerResponse>
         callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -274,7 +276,7 @@ void FakeCiceroneClient::DeleteLxdContainer(
 
 void FakeCiceroneClient::StartLxdContainer(
     const vm_tools::cicerone::StartLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
+    chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
         callback) {
   start_lxd_container_response_.mutable_os_release()->CopyFrom(
       lxd_container_os_release_);
@@ -311,7 +313,8 @@ void FakeCiceroneClient::StartLxdContainer(
 
 void FakeCiceroneClient::StopLxdContainer(
     const vm_tools::cicerone::StopLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), stop_lxd_container_response_),
@@ -343,8 +346,8 @@ void FakeCiceroneClient::StopLxdContainer(
 
 void FakeCiceroneClient::GetLxdContainerUsername(
     const vm_tools::cicerone::GetLxdContainerUsernameRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::GetLxdContainerUsernameResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::GetLxdContainerUsernameResponse> callback) {
   last_container_username_ = get_lxd_container_username_response_.username();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
@@ -353,8 +356,8 @@ void FakeCiceroneClient::GetLxdContainerUsername(
 
 void FakeCiceroneClient::SetUpLxdContainerUser(
     const vm_tools::cicerone::SetUpLxdContainerUserRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::SetUpLxdContainerUserResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::SetUpLxdContainerUserResponse> callback) {
   setup_lxd_container_user_request_ = request;
   last_container_username_ = request.container_username();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -365,7 +368,7 @@ void FakeCiceroneClient::SetUpLxdContainerUser(
 
 void FakeCiceroneClient::ExportLxdContainer(
     const vm_tools::cicerone::ExportLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ExportLxdContainerResponse>
+    chromeos::DBusMethodCallback<vm_tools::cicerone::ExportLxdContainerResponse>
         callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -374,7 +377,7 @@ void FakeCiceroneClient::ExportLxdContainer(
 
 void FakeCiceroneClient::ImportLxdContainer(
     const vm_tools::cicerone::ImportLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ImportLxdContainerResponse>
+    chromeos::DBusMethodCallback<vm_tools::cicerone::ImportLxdContainerResponse>
         callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -383,8 +386,8 @@ void FakeCiceroneClient::ImportLxdContainer(
 
 void FakeCiceroneClient::CancelExportLxdContainer(
     const vm_tools::cicerone::CancelExportLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::CancelExportLxdContainerResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::CancelExportLxdContainerResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 cancel_export_lxd_container_response_));
@@ -392,8 +395,8 @@ void FakeCiceroneClient::CancelExportLxdContainer(
 
 void FakeCiceroneClient::CancelImportLxdContainer(
     const vm_tools::cicerone::CancelImportLxdContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::CancelImportLxdContainerResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::CancelImportLxdContainerResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 cancel_import_lxd_container_response_));
@@ -401,8 +404,8 @@ void FakeCiceroneClient::CancelImportLxdContainer(
 
 void FakeCiceroneClient::ApplyAnsiblePlaybook(
     const vm_tools::cicerone::ApplyAnsiblePlaybookRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::ApplyAnsiblePlaybookResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), apply_ansible_playbook_response_));
@@ -410,8 +413,8 @@ void FakeCiceroneClient::ApplyAnsiblePlaybook(
 
 void FakeCiceroneClient::ConfigureForArcSideload(
     const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ConfigureForArcSideloadResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::ConfigureForArcSideloadResponse> callback) {
   configure_for_arc_sideload_called_ = true;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -420,7 +423,8 @@ void FakeCiceroneClient::ConfigureForArcSideload(
 
 void FakeCiceroneClient::UpgradeContainer(
     const vm_tools::cicerone::UpgradeContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), upgrade_container_response_));
@@ -428,8 +432,8 @@ void FakeCiceroneClient::UpgradeContainer(
 
 void FakeCiceroneClient::CancelUpgradeContainer(
     const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::CancelUpgradeContainerResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::CancelUpgradeContainerResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), cancel_upgrade_container_response_));
@@ -437,7 +441,8 @@ void FakeCiceroneClient::CancelUpgradeContainer(
 
 void FakeCiceroneClient::StartLxd(
     const vm_tools::cicerone::StartLxdRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::StartLxdResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_lxd_response_),
       send_start_lxd_response_delay_);
@@ -445,7 +450,8 @@ void FakeCiceroneClient::StartLxd(
 
 void FakeCiceroneClient::AddFileWatch(
     const vm_tools::cicerone::AddFileWatchRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse>
+        callback) {
   add_file_watch_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), add_file_watch_response_));
@@ -453,7 +459,8 @@ void FakeCiceroneClient::AddFileWatch(
 
 void FakeCiceroneClient::RemoveFileWatch(
     const vm_tools::cicerone::RemoveFileWatchRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse>
+        callback) {
   remove_file_watch_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -462,7 +469,8 @@ void FakeCiceroneClient::RemoveFileWatch(
 
 void FakeCiceroneClient::GetVshSession(
     const vm_tools::cicerone::GetVshSessionRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), get_vsh_session_response_));
@@ -470,8 +478,8 @@ void FakeCiceroneClient::GetVshSession(
 
 void FakeCiceroneClient::AttachUsbToContainer(
     const vm_tools::cicerone::AttachUsbToContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::AttachUsbToContainerResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::AttachUsbToContainerResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), attach_usb_to_container_response_));
@@ -479,8 +487,8 @@ void FakeCiceroneClient::AttachUsbToContainer(
 
 void FakeCiceroneClient::DetachUsbFromContainer(
     const vm_tools::cicerone::DetachUsbFromContainerRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::DetachUsbFromContainerResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::DetachUsbFromContainerResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), detach_usb_from_container_response_));
@@ -491,8 +499,8 @@ void FakeCiceroneClient::FileSelected(
 
 void FakeCiceroneClient::ListRunningContainers(
     const vm_tools::cicerone::ListRunningContainersRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::ListRunningContainersResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), list_containers_response_));
@@ -500,8 +508,8 @@ void FakeCiceroneClient::ListRunningContainers(
 
 void FakeCiceroneClient::GetGarconSessionInfo(
     const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
-    DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::cicerone::GetGarconSessionInfoResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), get_garcon_session_info_response_));

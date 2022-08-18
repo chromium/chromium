@@ -40,17 +40,17 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   bool IsDiskImageProgressSignalConnected() override;
   void CreateDiskImage(
       const vm_tools::concierge::CreateDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+          callback) override;
   void CreateDiskImageWithFd(
       base::ScopedFD fd,
       const vm_tools::concierge::CreateDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+          callback) override;
   void DestroyDiskImage(
       const vm_tools::concierge::DestroyDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DestroyDiskImageResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::DestroyDiskImageResponse> callback) override;
   // Fake version of the method that imports a VM disk image.
   // This function can fake a series of callbacks. It always first runs the
   // callback provided as an argument, and then optionally a series of fake
@@ -58,86 +58,95 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void ImportDiskImage(
       base::ScopedFD fd,
       const vm_tools::concierge::ImportDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
+          callback) override;
   void CancelDiskImageOperation(
       const vm_tools::concierge::CancelDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+          callback) override;
   void DiskImageStatus(
       const vm_tools::concierge::DiskImageStatusRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse> callback)
-      override;
-  void ListVmDisks(const vm_tools::concierge::ListVmDisksRequest& request,
-                   DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
-                       callback) override;
-  void StartVm(const vm_tools::concierge::StartVmRequest& request,
-               DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                   callback) override;
-  void StartVmWithFd(base::ScopedFD fd,
-                     const vm_tools::concierge::StartVmRequest& request,
-                     DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                         callback) override;
-  void StartVmWithFds(std::vector<base::ScopedFD> fd,
-                      const vm_tools::concierge::StartVmRequest& request,
-                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                          callback) override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse>
+          callback) override;
+  void ListVmDisks(
+      const vm_tools::concierge::ListVmDisksRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
+          callback) override;
+  void StartVm(
+      const vm_tools::concierge::StartVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) override;
+  void StartVmWithFd(
+      base::ScopedFD fd,
+      const vm_tools::concierge::StartVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) override;
+  void StartVmWithFds(
+      std::vector<base::ScopedFD> fd,
+      const vm_tools::concierge::StartVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) override;
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
-              DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback)
-      override;
-  void SuspendVm(const vm_tools::concierge::SuspendVmRequest& request,
-                 DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
-                     callback) override;
-  void ResumeVm(const vm_tools::concierge::ResumeVmRequest& request,
-                DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
-                    callback) override;
-  void GetVmInfo(const vm_tools::concierge::GetVmInfoRequest& request,
-                 DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse>
-                     callback) override;
+              chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
+                  callback) override;
+  void SuspendVm(
+      const vm_tools::concierge::SuspendVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+          callback) override;
+  void ResumeVm(
+      const vm_tools::concierge::ResumeVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+          callback) override;
+  void GetVmInfo(
+      const vm_tools::concierge::GetVmInfoRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse>
+          callback) override;
   void GetVmEnterpriseReportingInfo(
       const vm_tools::concierge::GetVmEnterpriseReportingInfoRequest& request,
-      DBusMethodCallback<
+      chromeos::DBusMethodCallback<
           vm_tools::concierge::GetVmEnterpriseReportingInfoResponse> callback)
       override;
   void ArcVmCompleteBoot(
       const vm_tools::concierge::ArcVmCompleteBootRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::ArcVmCompleteBootResponse> callback) override;
   void SetVmCpuRestriction(
       const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::SetVmCpuRestrictionResponse> callback) override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
   void GetContainerSshKeys(
       const vm_tools::concierge::ContainerSshKeysRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::ContainerSshKeysResponse> callback) override;
   void AttachUsbDevice(
       base::ScopedFD fd,
       const vm_tools::concierge::AttachUsbDeviceRequest& request,
-      DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse>
+          callback) override;
   void DetachUsbDevice(
       const vm_tools::concierge::DetachUsbDeviceRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse> callback)
-      override;
-  void StartArcVm(const vm_tools::concierge::StartArcVmRequest& request,
-                  DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                      callback) override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+          callback) override;
+  void StartArcVm(
+      const vm_tools::concierge::StartArcVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) override;
   void ResizeDiskImage(
       const vm_tools::concierge::ResizeDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
+          callback) override;
 
   void ReclaimVmMemory(
       const vm_tools::concierge::ReclaimVmMemoryRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
+          callback) override;
 
-  void ListVms(const vm_tools::concierge::ListVmsRequest& request,
-               DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
-                   callback) override;
+  void ListVms(
+      const vm_tools::concierge::ListVmsRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
+          callback) override;
 
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;

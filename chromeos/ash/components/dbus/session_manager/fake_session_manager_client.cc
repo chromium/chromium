@@ -746,7 +746,7 @@ void FakeSessionManagerClient::EmitArcBooted(
 }
 
 void FakeSessionManagerClient::GetArcStartTime(
-    DBusMethodCallback<base::TimeTicks> callback) {
+    chromeos::DBusMethodCallback<base::TimeTicks> callback) {
   PostReply(
       FROM_HERE, std::move(callback),
       arc_available_ ? absl::make_optional(arc_start_time_) : absl::nullopt);

@@ -268,7 +268,7 @@ void FakeShillManagerClient::RemovePropertyChangedObserver(
 }
 
 void FakeShillManagerClient::GetProperties(
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   VLOG(1) << "Manager.GetProperties";
   if (return_null_properties_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -284,7 +284,7 @@ void FakeShillManagerClient::GetProperties(
 }
 
 void FakeShillManagerClient::GetNetworksForGeolocation(
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubGeoNetworks,
@@ -1149,12 +1149,12 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 // Private methods
 
 void FakeShillManagerClient::PassNullopt(
-    DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value> callback) const {
   std::move(callback).Run(absl::nullopt);
 }
 
 void FakeShillManagerClient::PassStubProperties(
-    DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value> callback) const {
   base::Value stub_properties = stub_properties_.Clone();
   stub_properties.SetKey(shill::kServiceCompleteListProperty,
                          GetEnabledServiceList());
@@ -1162,7 +1162,7 @@ void FakeShillManagerClient::PassStubProperties(
 }
 
 void FakeShillManagerClient::PassStubGeoNetworks(
-    DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value> callback) const {
   std::move(callback).Run(stub_geo_networks_.Clone());
 }
 

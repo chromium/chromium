@@ -157,7 +157,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
     return observers_.HasObserver(observer);
   }
 
-  void GetVolumeState(DBusMethodCallback<VolumeState> callback) override {
+  void GetVolumeState(
+      chromeos::DBusMethodCallback<VolumeState> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetVolumeState);
     cras_proxy_->CallMethod(
@@ -166,7 +167,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetDefaultOutputBufferSize(DBusMethodCallback<int> callback) override {
+  void GetDefaultOutputBufferSize(
+      chromeos::DBusMethodCallback<int> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetDefaultOutputBufferSize);
     cras_proxy_->CallMethod(
@@ -175,7 +177,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetSystemAecSupported(DBusMethodCallback<bool> callback) override {
+  void GetSystemAecSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetSystemAecSupported);
     cras_proxy_->CallMethod(
@@ -184,7 +187,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) override {
+  void GetSystemAecGroupId(
+      chromeos::DBusMethodCallback<int32_t> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetSystemAecGroupId);
 
@@ -194,7 +198,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override {
+  void GetSystemNsSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetSystemNsSupported);
     cras_proxy_->CallMethod(
@@ -203,7 +208,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override {
+  void GetSystemAgcSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetSystemAgcSupported);
     cras_proxy_->CallMethod(
@@ -212,7 +218,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetNodes(DBusMethodCallback<AudioNodeList> callback) override {
+  void GetNodes(chromeos::DBusMethodCallback<AudioNodeList> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface, cras::kGetNodes);
     cras_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -221,7 +227,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   void GetNumberOfActiveOutputStreams(
-      DBusMethodCallback<int> callback) override {
+      chromeos::DBusMethodCallback<int> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetNumberOfActiveOutputStreams);
     cras_proxy_->CallMethod(
@@ -231,8 +237,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   void GetNumberOfInputStreamsWithPermission(
-      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback)
-      override {
+      chromeos::DBusMethodCallback<base::flat_map<std::string, uint32_t>>
+          callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetNumberOfInputStreamsWithPermission);
     cras_proxy_->CallMethod(
@@ -242,7 +248,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override {
+  void GetDeprioritizeBtWbsMic(
+      chromeos::DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kGetDeprioritizeBtWbsMic);
     cras_proxy_->CallMethod(
@@ -306,7 +313,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   void GetNoiseCancellationSupported(
-      DBusMethodCallback<bool> callback) override {
+      chromeos::DBusMethodCallback<bool> callback) override {
     VLOG(1) << "cras_audio_client: Requesting noise cancellation support.";
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kIsNoiseCancellationSupported);
@@ -676,7 +683,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
       observer.BluetoothBatteryChanged(address, level);
   }
 
-  void OnGetVolumeState(DBusMethodCallback<VolumeState> callback,
+  void OnGetVolumeState(chromeos::DBusMethodCallback<VolumeState> callback,
                         dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetVolumeState;
@@ -750,7 +757,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
       observer.SurveyTriggered(res);
   }
 
-  void OnGetDefaultOutputBufferSize(DBusMethodCallback<int> callback,
+  void OnGetDefaultOutputBufferSize(chromeos::DBusMethodCallback<int> callback,
                                     dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetDefaultOutputBufferSize;
@@ -769,7 +776,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(buffer_size);
   }
 
-  void OnGetSystemAecSupported(DBusMethodCallback<bool> callback,
+  void OnGetSystemAecSupported(chromeos::DBusMethodCallback<bool> callback,
                                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAecSupported;
@@ -788,7 +795,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(system_aec_supported);
   }
 
-  void OnGetSystemAecGroupId(DBusMethodCallback<int32_t> callback,
+  void OnGetSystemAecGroupId(chromeos::DBusMethodCallback<int32_t> callback,
                              dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAecGroupId;
@@ -807,7 +814,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(system_aec_group_id);
   }
 
-  void OnGetSystemNsSupported(DBusMethodCallback<bool> callback,
+  void OnGetSystemNsSupported(chromeos::DBusMethodCallback<bool> callback,
                               dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemNsSupported;
@@ -826,7 +833,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(system_ns_supported);
   }
 
-  void OnGetSystemAgcSupported(DBusMethodCallback<bool> callback,
+  void OnGetSystemAgcSupported(chromeos::DBusMethodCallback<bool> callback,
                                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAgcSupported;
@@ -845,7 +852,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(system_agc_supported);
   }
 
-  void OnGetNodes(DBusMethodCallback<AudioNodeList> callback,
+  void OnGetNodes(chromeos::DBusMethodCallback<AudioNodeList> callback,
                   dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
@@ -879,8 +886,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(std::move(node_list));
   }
 
-  void OnGetNumberOfActiveOutputStreams(DBusMethodCallback<int> callback,
-                                        dbus::Response* response) {
+  void OnGetNumberOfActiveOutputStreams(
+      chromeos::DBusMethodCallback<int> callback,
+      dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetNumberOfActiveOutputStreams;
       std::move(callback).Run(absl::nullopt);
@@ -923,7 +931,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   void OnGetNumberOfInputStreamsWithPermission(
-      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback,
+      chromeos::DBusMethodCallback<base::flat_map<std::string, uint32_t>>
+          callback,
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling "
@@ -956,7 +965,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(std::move(res));
   }
 
-  void OnGetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback,
+  void OnGetDeprioritizeBtWbsMic(chromeos::DBusMethodCallback<bool> callback,
                                  dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling "
@@ -1000,8 +1009,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(true);
   }
 
-  void OnGetNoiseCancellationSupported(DBusMethodCallback<bool> callback,
-                                       dbus::Response* response) {
+  void OnGetNoiseCancellationSupported(
+      chromeos::DBusMethodCallback<bool> callback,
+      dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling "
                  << "GetNoiseCancellationSupported";

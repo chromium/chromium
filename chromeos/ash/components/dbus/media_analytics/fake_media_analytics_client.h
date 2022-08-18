@@ -33,10 +33,11 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
   // Inherited from MediaAnalyticsClient.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void GetState(DBusMethodCallback<mri::State> callback) override;
+  void GetState(chromeos::DBusMethodCallback<mri::State> callback) override;
   void SetState(const mri::State& state,
-                DBusMethodCallback<mri::State> callback) override;
-  void GetDiagnostics(DBusMethodCallback<mri::Diagnostics> callback) override;
+                chromeos::DBusMethodCallback<mri::State> callback) override;
+  void GetDiagnostics(
+      chromeos::DBusMethodCallback<mri::Diagnostics> callback) override;
   void BootstrapMojoConnection(base::ScopedFD file_descriptor,
                                VoidDBusMethodCallback callback) override;
 
@@ -55,10 +56,11 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
 
  private:
   // Echoes back the previously set state.
-  void OnState(DBusMethodCallback<mri::State> callback);
+  void OnState(chromeos::DBusMethodCallback<mri::State> callback);
 
   // Runs callback with the Diagnostics proto provided in SetDiagnostics.
-  void OnGetDiagnostics(DBusMethodCallback<mri::Diagnostics> callback);
+  void OnGetDiagnostics(
+      chromeos::DBusMethodCallback<mri::Diagnostics> callback);
 
   // Notifies observers with a MediaPerception proto provided in
   // FireMediaPerceptionEvent.

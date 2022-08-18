@@ -37,65 +37,70 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   };
 
   using IsMountedCallback =
-      DBusMethodCallback<::user_data_auth::IsMountedReply>;
-  using UnmountCallback = DBusMethodCallback<::user_data_auth::UnmountReply>;
-  using MountCallback = DBusMethodCallback<::user_data_auth::MountReply>;
-  using RemoveCallback = DBusMethodCallback<::user_data_auth::RemoveReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::IsMountedReply>;
+  using UnmountCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::UnmountReply>;
+  using MountCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::MountReply>;
+  using RemoveCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::RemoveReply>;
   using GetKeyDataCallback =
-      DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
-  using CheckKeyCallback = DBusMethodCallback<::user_data_auth::CheckKeyReply>;
-  using AddKeyCallback = DBusMethodCallback<::user_data_auth::AddKeyReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
+  using CheckKeyCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::CheckKeyReply>;
+  using AddKeyCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::AddKeyReply>;
   using RemoveKeyCallback =
-      DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
   using MassRemoveKeysCallback =
-      DBusMethodCallback<::user_data_auth::MassRemoveKeysReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::MassRemoveKeysReply>;
   using MigrateKeyCallback =
-      DBusMethodCallback<::user_data_auth::MigrateKeyReply>;
-  using StartFingerprintAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::StartFingerprintAuthSessionReply>;
-  using EndFingerprintAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::EndFingerprintAuthSessionReply>;
-  using StartMigrateToDircryptoCallback =
-      DBusMethodCallback<::user_data_auth::StartMigrateToDircryptoReply>;
-  using NeedsDircryptoMigrationCallback =
-      DBusMethodCallback<::user_data_auth::NeedsDircryptoMigrationReply>;
-  using GetSupportedKeyPoliciesCallback =
-      DBusMethodCallback<::user_data_auth::GetSupportedKeyPoliciesReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::MigrateKeyReply>;
+  using StartFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::StartFingerprintAuthSessionReply>;
+  using EndFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::EndFingerprintAuthSessionReply>;
+  using StartMigrateToDircryptoCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::StartMigrateToDircryptoReply>;
+  using NeedsDircryptoMigrationCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::NeedsDircryptoMigrationReply>;
+  using GetSupportedKeyPoliciesCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetSupportedKeyPoliciesReply>;
   using GetAccountDiskUsageCallback =
-      DBusMethodCallback<::user_data_auth::GetAccountDiskUsageReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetAccountDiskUsageReply>;
   using StartAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
-  using AuthenticateAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::AuthenticateAuthSessionReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
+  using AuthenticateAuthSessionCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::AuthenticateAuthSessionReply>;
   using AddCredentialsCallback =
-      DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
   using UpdateCredentialCallback =
-      DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
 
   using PrepareGuestVaultCallback =
-      DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
-  using PrepareEphemeralVaultCallback =
-      DBusMethodCallback<::user_data_auth::PrepareEphemeralVaultReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
+  using PrepareEphemeralVaultCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::PrepareEphemeralVaultReply>;
   using CreatePersistentUserCallback =
-      DBusMethodCallback<::user_data_auth::CreatePersistentUserReply>;
-  using PreparePersistentVaultCallback =
-      DBusMethodCallback<::user_data_auth::PreparePersistentVaultReply>;
-  using PrepareVaultForMigrationCallback =
-      DBusMethodCallback<::user_data_auth::PrepareVaultForMigrationReply>;
-  using InvalidateAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::InvalidateAuthSessionReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::CreatePersistentUserReply>;
+  using PreparePersistentVaultCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::PreparePersistentVaultReply>;
+  using PrepareVaultForMigrationCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::PrepareVaultForMigrationReply>;
+  using InvalidateAuthSessionCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::InvalidateAuthSessionReply>;
   using ExtendAuthSessionCallback =
-      DBusMethodCallback<::user_data_auth::ExtendAuthSessionReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::ExtendAuthSessionReply>;
   using AddAuthFactorCallback =
-      DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
-  using AuthenticateAuthFactorCallback =
-      DBusMethodCallback<::user_data_auth::AuthenticateAuthFactorReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
+  using AuthenticateAuthFactorCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::AuthenticateAuthFactorReply>;
   using UpdateAuthFactorCallback =
-      DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
   using RemoveAuthFactorCallback =
-      DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
   using GetAuthSessionStatusCallback =
-      DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;

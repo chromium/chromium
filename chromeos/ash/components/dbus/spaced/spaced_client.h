@@ -19,7 +19,7 @@ namespace ash {
 // A class to make DBus calls for the org.chromium.Spaced service.
 class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
  public:
-  using GetSizeCallback = DBusMethodCallback<int64_t>;
+  using GetSizeCallback = chromeos::DBusMethodCallback<int64_t>;
 
   SpacedClient(const SpacedClient&) = delete;
   SpacedClient& operator=(const SpacedClient&) = delete;

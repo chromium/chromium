@@ -53,13 +53,14 @@ class COMPONENT_EXPORT(SENESCHAL) SeneschalClient : public DBusClient {
   // |callback| is called after the method call finishes.
   virtual void SharePath(
       const vm_tools::seneschal::SharePathRequest& request,
-      DBusMethodCallback<vm_tools::seneschal::SharePathResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::seneschal::SharePathResponse>
+          callback) = 0;
 
   // Unshares a path in the Chrome OS host with the container.
   // |callback| is called after the method call finishes.
   virtual void UnsharePath(
       const vm_tools::seneschal::UnsharePathRequest& request,
-      DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
+      chromeos::DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
           callback) = 0;
 
   // Creates and initializes the global instance. |bus| must not be null.

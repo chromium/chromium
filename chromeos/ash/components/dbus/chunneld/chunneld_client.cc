@@ -56,7 +56,7 @@ class ChunneldClientImpl : public ChunneldClient {
 
  private:
   template <typename ResponseProto>
-  void OnDBusProtoResponse(DBusMethodCallback<ResponseProto> callback,
+  void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
       std::move(callback).Run(absl::nullopt);

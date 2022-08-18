@@ -54,9 +54,10 @@ class ResourcedClientImpl : public ResourcedClient {
   }
 
   // ResourcedClient interface.
-  void SetGameModeWithTimeout(GameMode game_mode,
-                              uint32_t refresh_seconds,
-                              DBusMethodCallback<GameMode> callback) override;
+  void SetGameModeWithTimeout(
+      GameMode game_mode,
+      uint32_t refresh_seconds,
+      chromeos::DBusMethodCallback<GameMode> callback) override;
 
   void SetMemoryMarginsBps(uint32_t critical_margin,
                            uint32_t moderate_margin,
@@ -73,7 +74,7 @@ class ResourcedClientImpl : public ResourcedClient {
  private:
   // D-Bus response handlers.
   void HandleSetGameModeWithTimeoutResponse(
-      DBusMethodCallback<GameMode> callback,
+      chromeos::DBusMethodCallback<GameMode> callback,
       dbus::Response* response);
 
   void HandleSetMemoryMarginBps(uint32_t critical_margin,
@@ -205,7 +206,7 @@ void ResourcedClientImpl::MemoryPressureConnected(
 
 // Response will be true if game mode was on previously, false otherwise.
 void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
-    DBusMethodCallback<GameMode> callback,
+    chromeos::DBusMethodCallback<GameMode> callback,
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   uint8_t previous;
@@ -219,7 +220,7 @@ void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
 void ResourcedClientImpl::SetGameModeWithTimeout(
     GameMode game_mode,
     uint32_t refresh_seconds,
-    DBusMethodCallback<GameMode> callback) {
+    chromeos::DBusMethodCallback<GameMode> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
                                resource_manager::kSetGameModeWithTimeoutMethod);
   dbus::MessageWriter writer(&method_call);

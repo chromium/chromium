@@ -205,7 +205,7 @@ template <typename ReplyType>
 class ReplyOnReturn {
  public:
   explicit ReplyOnReturn(ReplyType* reply,
-                         DBusMethodCallback<ReplyType> callback)
+                         chromeos::DBusMethodCallback<ReplyType> callback)
       : reply_(reply), callback_(std::move(callback)) {}
   ReplyOnReturn(const ReplyOnReturn<ReplyType>&) = delete;
 
@@ -218,7 +218,7 @@ class ReplyOnReturn {
 
  private:
   raw_ptr<ReplyType> reply_;
-  DBusMethodCallback<ReplyType> callback_;
+  chromeos::DBusMethodCallback<ReplyType> callback_;
 };
 
 }  // namespace
@@ -1231,7 +1231,7 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
 template <typename ReplyType>
 void FakeUserDataAuthClient::ReturnProtobufMethodCallback(
     const ReplyType& reply,
-    DBusMethodCallback<ReplyType> callback) {
+    chromeos::DBusMethodCallback<ReplyType> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }

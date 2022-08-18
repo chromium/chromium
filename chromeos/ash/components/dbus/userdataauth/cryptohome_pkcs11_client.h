@@ -24,10 +24,10 @@ namespace ash {
 // thread (UI thread) which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomePkcs11Client {
  public:
-  using Pkcs11IsTpmTokenReadyCallback =
-      DBusMethodCallback<::user_data_auth::Pkcs11IsTpmTokenReadyReply>;
-  using Pkcs11GetTpmTokenInfoCallback =
-      DBusMethodCallback<::user_data_auth::Pkcs11GetTpmTokenInfoReply>;
+  using Pkcs11IsTpmTokenReadyCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::Pkcs11IsTpmTokenReadyReply>;
+  using Pkcs11GetTpmTokenInfoCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::Pkcs11GetTpmTokenInfoReply>;
 
   // Not copyable or movable.
   CryptohomePkcs11Client(const CryptohomePkcs11Client&) = delete;

@@ -174,11 +174,11 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetRoutes(
-      bool numeric,
-      bool ipv6,
-      bool all_tables,
-      DBusMethodCallback<std::vector<std::string>> callback) override {
+  void GetRoutes(bool numeric,
+                 bool ipv6,
+                 bool all_tables,
+                 chromeos::DBusMethodCallback<std::vector<std::string>>
+                     callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface, debugd::kGetRoutes);
     dbus::MessageWriter writer(&method_call);
     dbus::MessageWriter sub_writer(NULL);
@@ -203,7 +203,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetNetworkStatus(DBusMethodCallback<std::string> callback) override {
+  void GetNetworkStatus(
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kGetNetworkStatus);
     debugdaemon_proxy_->CallMethod(
@@ -212,7 +213,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetNetworkInterfaces(DBusMethodCallback<std::string> callback) override {
+  void GetNetworkInterfaces(
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kGetInterfaces);
     debugdaemon_proxy_->CallMethod(
@@ -224,7 +226,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void GetPerfOutput(const std::vector<std::string>& quipper_args,
                      bool disable_cpu_idle,
                      int file_descriptor,
-                     DBusMethodCallback<uint64_t> callback) override {
+                     chromeos::DBusMethodCallback<uint64_t> callback) override {
     DCHECK(file_descriptor);
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kGetPerfOutputV2);
@@ -298,7 +300,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void GetLog(const std::string& log_name,
-              DBusMethodCallback<std::string> callback) override {
+              chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface, debugd::kGetLog);
     dbus::MessageWriter(&method_call).AppendString(log_name);
     debugdaemon_proxy_->CallMethod(
@@ -617,7 +619,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void GetU2fFlags(
-      DBusMethodCallback<std::set<std::string>> callback) override {
+      chromeos::DBusMethodCallback<std::set<std::string>> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kGetU2fFlags);
     debugdaemon_proxy_->CallMethod(
@@ -626,9 +628,10 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void SetSwapParameter(const std::string& parameter,
-                        int32_t value,
-                        DBusMethodCallback<std::string> callback) override {
+  void SetSwapParameter(
+      const std::string& parameter,
+      int32_t value,
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface, "SwapSetParameter");
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(parameter);
@@ -641,7 +644,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
 
   void SwapZramEnableWriteback(
       uint32_t size_mb,
-      DBusMethodCallback<std::string> callback) override {
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kSwapZramEnableWriteback);
     dbus::MessageWriter writer(&method_call);
@@ -654,7 +657,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
 
   void SwapZramSetWritebackLimit(
       uint32_t limit_pages,
-      DBusMethodCallback<std::string> callback) override {
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kSwapZramSetWritebackLimit);
     dbus::MessageWriter writer(&method_call);
@@ -665,8 +668,9 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void SwapZramMarkIdle(uint32_t age_seconds,
-                        DBusMethodCallback<std::string> callback) override {
+  void SwapZramMarkIdle(
+      uint32_t age_seconds,
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kSwapZramMarkIdle);
     dbus::MessageWriter writer(&method_call);
@@ -679,7 +683,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
 
   void InitiateSwapZramWriteback(
       debugd::ZramWritebackMode mode,
-      DBusMethodCallback<std::string> callback) override {
+      chromeos::DBusMethodCallback<std::string> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  "InitiateSwapZramWriteback");
     dbus::MessageWriter writer(&method_call);
@@ -736,8 +740,9 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
  private:
-  void OnGetRoutes(DBusMethodCallback<std::vector<std::string>> callback,
-                   dbus::Response* response) {
+  void OnGetRoutes(
+      chromeos::DBusMethodCallback<std::vector<std::string>> callback,
+      dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -754,7 +759,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(std::move(routes));
   }
 
-  void OnSetSwapParameter(DBusMethodCallback<std::string> callback,
+  void OnSetSwapParameter(chromeos::DBusMethodCallback<std::string> callback,
                           dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
@@ -825,7 +830,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(response);
   }
 
-  void OnUint64Method(DBusMethodCallback<uint64_t> callback,
+  void OnUint64Method(chromeos::DBusMethodCallback<uint64_t> callback,
                       dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
@@ -844,7 +849,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
 
   // Called when D-Bus method call which returns a string is completed or on
   // its error.
-  void OnStringMethod(DBusMethodCallback<std::string> callback,
+  void OnStringMethod(chromeos::DBusMethodCallback<std::string> callback,
                       dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
@@ -1043,8 +1048,9 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(result, num_cores_disabled);
   }
 
-  void OnGetU2fFlags(DBusMethodCallback<std::set<std::string>> callback,
-                     dbus::Response* response) {
+  void OnGetU2fFlags(
+      chromeos::DBusMethodCallback<std::set<std::string>> callback,
+      dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -1068,8 +1074,9 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(std::move(flags));
   }
 
-  void OnZramWritebackOptionResult(DBusMethodCallback<std::string> callback,
-                                   dbus::Response* response) {
+  void OnZramWritebackOptionResult(
+      chromeos::DBusMethodCallback<std::string> callback,
+      dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;

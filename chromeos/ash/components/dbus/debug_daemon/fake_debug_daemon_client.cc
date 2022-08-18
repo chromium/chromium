@@ -60,31 +60,31 @@ void FakeDebugDaemonClient::SetKstaledRatio(uint8_t val,
 void FakeDebugDaemonClient::SetSwapParameter(
     const std::string& parameter,
     int32_t value,
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::move(callback).Run(std::string());
 }
 
 void FakeDebugDaemonClient::SwapZramEnableWriteback(
     uint32_t size_mb,
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::move(callback).Run(std::string());
 }
 
 void FakeDebugDaemonClient::SwapZramSetWritebackLimit(
     uint32_t limit_pages,
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::move(callback).Run(std::string());
 }
 
 void FakeDebugDaemonClient::SwapZramMarkIdle(
     uint32_t age_seconds,
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::move(callback).Run(std::string());
 }
 
 void FakeDebugDaemonClient::InitiateSwapZramWriteback(
     debugd::ZramWritebackMode mode,
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::move(callback).Run(std::string());
 }
 
@@ -123,20 +123,20 @@ void FakeDebugDaemonClient::GetRoutes(
     bool numeric,
     bool ipv6,
     bool all_tables,
-    DBusMethodCallback<std::vector<std::string>> callback) {
+    chromeos::DBusMethodCallback<std::vector<std::string>> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), absl::make_optional(routes_)));
 }
 
 void FakeDebugDaemonClient::GetNetworkStatus(
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::GetNetworkInterfaces(
-    DBusMethodCallback<std::string> callback) {
+    chromeos::DBusMethodCallback<std::string> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
@@ -145,7 +145,7 @@ void FakeDebugDaemonClient::GetPerfOutput(
     const std::vector<std::string>& quipper_args,
     bool disable_cpu_idle,
     int file_descriptor,
-    DBusMethodCallback<uint64_t> error_callback) {}
+    chromeos::DBusMethodCallback<uint64_t> error_callback) {}
 
 void FakeDebugDaemonClient::StopPerf(uint64_t session_id,
                                      VoidDBusMethodCallback callback) {}
@@ -173,8 +173,9 @@ void FakeDebugDaemonClient::GetAllLogs(GetLogsCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), false, sample));
 }
 
-void FakeDebugDaemonClient::GetLog(const std::string& log_name,
-                                   DBusMethodCallback<std::string> callback) {
+void FakeDebugDaemonClient::GetLog(
+    const std::string& log_name,
+    chromeos::DBusMethodCallback<std::string> callback) {
   std::string result = log_name + ": response from GetLog";
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
@@ -326,7 +327,7 @@ void FakeDebugDaemonClient::SetU2fFlags(const std::set<std::string>& flags,
 }
 
 void FakeDebugDaemonClient::GetU2fFlags(
-    DBusMethodCallback<std::set<std::string>> callback) {
+    chromeos::DBusMethodCallback<std::set<std::string>> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), absl::make_optional(u2f_flags_)));

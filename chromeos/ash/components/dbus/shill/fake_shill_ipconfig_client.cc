@@ -35,7 +35,7 @@ void FakeShillIPConfigClient::RemovePropertyChangedObserver(
 
 void FakeShillIPConfigClient::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   const base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
   if (!dict)
     return;

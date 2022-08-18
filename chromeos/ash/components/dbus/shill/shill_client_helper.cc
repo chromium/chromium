@@ -127,7 +127,7 @@ void OnObjectPathMethodWithoutStatus(
 
 // Handles responses for methods with base::Value results.
 void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
-                   DBusMethodCallback<base::Value> callback,
+                   chromeos::DBusMethodCallback<base::Value> callback,
                    dbus::Response* response,
                    dbus::ErrorResponse* error_response) {
   if (!response) {
@@ -294,7 +294,7 @@ void ShillClientHelper::CallObjectPathMethodWithErrorCallback(
 
 void ShillClientHelper::CallValueMethod(
     dbus::MethodCall* method_call,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   DCHECK(!callback.is_null());
   proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -501,7 +501,7 @@ void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
 // static
 void ShillClientHelper::OnGetProperties(
     const dbus::ObjectPath& device_path,
-    DBusMethodCallback<base::Value> callback,
+    chromeos::DBusMethodCallback<base::Value> callback,
     absl::optional<base::Value> result) {
   if (result && !result->is_dict()) {
     NET_LOG(ERROR) << "GetProperties for: " << device_path.value()

@@ -30,23 +30,26 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void SetRmaRequiredCallbackForSessionManager(
       base::OnceClosure session_manager_callback) override;
   void GetCurrentState(
-      DBusMethodCallback<rmad::GetStateReply> callback) override;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(
       const rmad::RmadState& state,
-      DBusMethodCallback<rmad::GetStateReply> callback) override;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionPreviousState(
-      DBusMethodCallback<rmad::GetStateReply> callback) override;
+      chromeos::DBusMethodCallback<rmad::GetStateReply> callback) override;
 
-  void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
+  void AbortRma(
+      chromeos::DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) override;
+  void GetLog(
+      chromeos::DBusMethodCallback<rmad::GetLogReply> callback) override;
 
-  void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) override;
+  void SaveLog(
+      chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) override;
 
   void RecordBrowserActionMetric(
       const rmad::RecordBrowserActionMetricRequest request,
-      DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback)
-      override;
+      chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
+          callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

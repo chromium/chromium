@@ -23,7 +23,7 @@ namespace ash {
 class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
  public:
   using GetRgbKeyboardCapabilitiesCallback =
-      DBusMethodCallback<rgbkbd::RgbKeyboardCapabilities>;
+      chromeos::DBusMethodCallback<rgbkbd::RgbKeyboardCapabilities>;
 
   class Observer : public base::CheckedObserver {
    public:

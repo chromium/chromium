@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   // |callback| is called after the method call finishes.
   virtual void CreateDiskImage(
       const vm_tools::concierge::CreateDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
           callback) = 0;
 
   // Creates a disk image for a VM.
@@ -102,22 +102,22 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   virtual void CreateDiskImageWithFd(
       base::ScopedFD fd,
       const vm_tools::concierge::CreateDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
           callback) = 0;
 
   // Destroys a VM and removes its disk image.
   // |callback| is called after the method call finishes.
   virtual void DestroyDiskImage(
       const vm_tools::concierge::DestroyDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DestroyDiskImageResponse>
-          callback) = 0;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::DestroyDiskImageResponse> callback) = 0;
 
   // Imports a VM disk image.
   // |callback| is called after the method call finishes.
   virtual void ImportDiskImage(
       base::ScopedFD fd,
       const vm_tools::concierge::ImportDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
           callback) = 0;
 
   // Cancels a VM disk image operation (import or export) that is being
@@ -125,28 +125,29 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   // |callback| is called after the method call finishes.
   virtual void CancelDiskImageOperation(
       const vm_tools::concierge::CancelDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
           callback) = 0;
 
   // Retrieves the status of a disk image operation
   // |callback| is called after the method call finishes.
   virtual void DiskImageStatus(
       const vm_tools::concierge::DiskImageStatusRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse>
           callback) = 0;
 
   // Lists the Termina VMs.
   // |callback| is called after the method call finishes.
   virtual void ListVmDisks(
       const vm_tools::concierge::ListVmDisksRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
           callback) = 0;
 
   // Starts a Termina VM if there is not already one running.
   // |callback| is called after the method call finishes.
   virtual void StartVm(
       const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) = 0;
 
   // Starts a Termina VM if there is not already one running.
   // |fds| references an extra image for concierge to use.
@@ -154,7 +155,8 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   virtual void StartVmWithFd(
       base::ScopedFD fd,
       const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) = 0;
 
   // Starts a Termina VM if there is not already one running.
   // |fds| contains any number of file descriptors to be passed to concierge in
@@ -163,37 +165,42 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   virtual void StartVmWithFds(
       std::vector<base::ScopedFD> fds,
       const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) = 0;
 
   // Stops the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void StopVm(
       const vm_tools::concierge::StopVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
+          callback) = 0;
 
   // Suspends the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void SuspendVm(
       const vm_tools::concierge::SuspendVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SuspendVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+          callback) = 0;
 
   // Resumes the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void ResumeVm(
       const vm_tools::concierge::ResumeVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ResumeVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+          callback) = 0;
 
   // Get VM Info.
   // |callback| is called after the method call finishes.
   virtual void GetVmInfo(
       const vm_tools::concierge::GetVmInfoRequest& request,
-      DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse>
+          callback) = 0;
 
   // Get enterprise-reporting specific VM info.
   // |callback| is called after the method call finishes.
   virtual void GetVmEnterpriseReportingInfo(
       const vm_tools::concierge::GetVmEnterpriseReportingInfoRequest& request,
-      DBusMethodCallback<
+      chromeos::DBusMethodCallback<
           vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
           callback) = 0;
 
@@ -201,15 +208,15 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   // |callback| is called after the method call finishes.
   virtual void ArcVmCompleteBoot(
       const vm_tools::concierge::ArcVmCompleteBootRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
-          callback) = 0;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::ArcVmCompleteBootResponse> callback) = 0;
 
   // Set VM's CPU restriction state.
   // |callback| is called after the method call finishes.
   virtual void SetVmCpuRestriction(
       const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
-          callback) = 0;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::SetVmCpuRestrictionResponse> callback) = 0;
 
   // Registers |callback| to run when the Concierge service becomes available.
   // If the service is already available, or if connecting to the name-owner-
@@ -224,50 +231,52 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient : public DBusClient {
   // |callback| is called after the method call finishes.
   virtual void GetContainerSshKeys(
       const vm_tools::concierge::ContainerSshKeysRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
-          callback) = 0;
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::ContainerSshKeysResponse> callback) = 0;
 
   // Attaches a USB device to a VM.
   // |callback| is called once the method call has finished.
   virtual void AttachUsbDevice(
       base::ScopedFD fd,
       const vm_tools::concierge::AttachUsbDeviceRequest& request,
-      DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse>
           callback) = 0;
 
   // Removes a USB device from a VM it's been attached to.
   // |callback| is called once the method call has finished.
   virtual void DetachUsbDevice(
       const vm_tools::concierge::DetachUsbDeviceRequest& request,
-      DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
           callback) = 0;
 
   // Starts ARCVM if there is not already one running.
   // |callback| is called after the method call finishes.
   virtual void StartArcVm(
       const vm_tools::concierge::StartArcVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+          callback) = 0;
 
   // Launches a resize operation for the specified disk image.
   // |callback| is called after the method call finishes, then you must use
   // |DiskImageStatus| to poll for task completion.
   virtual void ResizeDiskImage(
       const vm_tools::concierge::ResizeDiskImageRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
           callback) = 0;
 
   // Reclaims memory of the given VM.
   // |callback| is called after the method call finishes.
   virtual void ReclaimVmMemory(
       const vm_tools::concierge::ReclaimVmMemoryRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
           callback) = 0;
 
   // Lists running VMs.
   // |callback| is called after the method call finishes.
   virtual void ListVms(
       const vm_tools::concierge::ListVmsRequest& request,
-      DBusMethodCallback<vm_tools::concierge::ListVmsResponse> callback) = 0;
+      chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
+          callback) = 0;
 
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);

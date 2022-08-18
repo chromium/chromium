@@ -21,7 +21,7 @@ void FakeArcAppfuseProviderClient::Init(dbus::Bus* bus) {}
 void FakeArcAppfuseProviderClient::Mount(
     uint32_t uid,
     int32_t mount_id,
-    DBusMethodCallback<base::ScopedFD> callback) {
+    chromeos::DBusMethodCallback<base::ScopedFD> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }
@@ -38,7 +38,7 @@ void FakeArcAppfuseProviderClient::OpenFile(
     int32_t mount_id,
     int32_t file_id,
     int32_t flags,
-    DBusMethodCallback<base::ScopedFD> callback) {
+    chromeos::DBusMethodCallback<base::ScopedFD> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }

@@ -44,7 +44,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   ~LorgnetteManagerClientImpl() override = default;
 
   void ListScanners(
-      DBusMethodCallback<lorgnette::ListScannersResponse> callback) override {
+      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
+      override {
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kListScannersMethod);
     lorgnette_daemon_proxy_->CallMethod(
@@ -55,7 +56,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   void GetScannerCapabilities(
       const std::string& device_name,
-      DBusMethodCallback<lorgnette::ScannerCapabilities> callback) override {
+      chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities> callback)
+      override {
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kGetScannerCapabilitiesMethod);
     dbus::MessageWriter writer(&method_call);
@@ -283,7 +285,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // Called when ListScanners completes.
   void OnListScanners(
-      DBusMethodCallback<lorgnette::ListScannersResponse> callback,
+      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback,
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ListScannersResponse";
@@ -304,7 +306,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // Handles the response received after calling GetScannerCapabilities().
   void OnScannerCapabilitiesResponse(
-      DBusMethodCallback<lorgnette::ScannerCapabilities> callback,
+      chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities> callback,
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ScannerCapabilities";

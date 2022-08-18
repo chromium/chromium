@@ -171,7 +171,7 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
 
 void FakeShillServiceClient::GetProperties(
     const dbus::ObjectPath& service_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   absl::optional<base::Value> result_properties;
   const base::Value* nested_dict = GetServiceProperties(service_path.value());
   if (nested_dict) {
@@ -335,7 +335,7 @@ void FakeShillServiceClient::CompleteCellularActivation(
 
 void FakeShillServiceClient::GetLoadableProfileEntries(
     const dbus::ObjectPath& service_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   ShillProfileClient::TestInterface* profile_client =
       ShillProfileClient::Get()->GetTestInterface();
   std::vector<std::string> profiles;
@@ -391,7 +391,7 @@ void FakeShillServiceClient::GetEapPassphrase(
 
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   std::move(callback).Run(fake_traffic_counters_.Clone());
 }
 

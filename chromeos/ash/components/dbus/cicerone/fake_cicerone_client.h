@@ -19,11 +19,11 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
  public:
   using LaunchContainerApplicationCallback = base::RepeatingCallback<void(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
-          callback)>;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::LaunchContainerApplicationResponse> callback)>;
   using UninstallPackageOwningFileCallback = base::RepeatingCallback<void(
       const vm_tools::cicerone::UninstallPackageOwningFileRequest&,
-      DBusMethodCallback<
+      chromeos::DBusMethodCallback<
           vm_tools::cicerone::UninstallPackageOwningFileResponse>)>;
 
   // Returns the fake global instance if initialized. May return null.
@@ -55,119 +55,129 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsLowDiskSpaceTriggeredSignalConnected() override;
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::LaunchContainerApplicationResponse> callback)
+      override;
   void GetContainerAppIcons(
       const vm_tools::cicerone::ContainerAppIconRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
+          callback) override;
   void GetLinuxPackageInfo(
       const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
+          callback) override;
   // Fake version of the method that installs an application inside a running
   // Container. |callback| is called after the method call finishes. This does
   // not cause progress events to be fired.
   void InstallLinuxPackage(
       const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::InstallLinuxPackageResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::InstallLinuxPackageResponse> callback) override;
   // If SetOnUninstallPackageOwningFileCallback has been called, it
   // just triggers that callback. Otherwise, it generates a task to call
   // |callback| with the response from
   // set_uninstall_package_owning_file_response.
   void UninstallPackageOwningFile(
       const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::UninstallPackageOwningFileResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::UninstallPackageOwningFileResponse> callback)
+      override;
   void CreateLxdContainer(
       const vm_tools::cicerone::CreateLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CreateLxdContainerResponse> callback) override;
   void DeleteLxdContainer(
       const vm_tools::cicerone::DeleteLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::DeleteLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::DeleteLxdContainerResponse> callback) override;
   void StartLxdContainer(
       const vm_tools::cicerone::StartLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::StartLxdContainerResponse> callback) override;
   void StopLxdContainer(
       const vm_tools::cicerone::StopLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse>
+          callback) override;
   void GetLxdContainerUsername(
       const vm_tools::cicerone::GetLxdContainerUsernameRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetLxdContainerUsernameResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::GetLxdContainerUsernameResponse> callback)
+      override;
   void SetUpLxdContainerUser(
       const vm_tools::cicerone::SetUpLxdContainerUserRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::SetUpLxdContainerUserResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::SetUpLxdContainerUserResponse> callback) override;
   void ExportLxdContainer(
       const vm_tools::cicerone::ExportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ExportLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ExportLxdContainerResponse> callback) override;
   void ImportLxdContainer(
       const vm_tools::cicerone::ImportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ImportLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ImportLxdContainerResponse> callback) override;
   void CancelExportLxdContainer(
       const vm_tools::cicerone::CancelExportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelExportLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelExportLxdContainerResponse> callback)
+      override;
   void CancelImportLxdContainer(
       const vm_tools::cicerone::CancelImportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelImportLxdContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelImportLxdContainerResponse> callback)
+      override;
   void ApplyAnsiblePlaybook(
       const vm_tools::cicerone::ApplyAnsiblePlaybookRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ApplyAnsiblePlaybookResponse> callback) override;
   void ConfigureForArcSideload(
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ConfigureForArcSideloadResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ConfigureForArcSideloadResponse> callback)
+      override;
   void UpgradeContainer(
       const vm_tools::cicerone::UpgradeContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
+          callback) override;
   void CancelUpgradeContainer(
       const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelUpgradeContainerResponse>
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelUpgradeContainerResponse> callback)
+      override;
+  void StartLxd(
+      const vm_tools::cicerone::StartLxdRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
           callback) override;
-  void StartLxd(const vm_tools::cicerone::StartLxdRequest& request,
-                DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
-                    callback) override;
-  void AddFileWatch(const vm_tools::cicerone::AddFileWatchRequest& request,
-                    DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse>
-                        callback) override;
+  void AddFileWatch(
+      const vm_tools::cicerone::AddFileWatchRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse>
+          callback) override;
   void RemoveFileWatch(
       const vm_tools::cicerone::RemoveFileWatchRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse>
+          callback) override;
   void GetVshSession(
       const vm_tools::cicerone::GetVshSessionRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse> callback)
-      override;
+      chromeos::DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse>
+          callback) override;
   void AttachUsbToContainer(
       const vm_tools::cicerone::AttachUsbToContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::AttachUsbToContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::AttachUsbToContainerResponse> callback) override;
   void DetachUsbFromContainer(
       const vm_tools::cicerone::DetachUsbFromContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::DetachUsbFromContainerResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::DetachUsbFromContainerResponse> callback)
+      override;
   void FileSelected(
       const vm_tools::cicerone::FileSelectedSignal& signal) override;
   void ListRunningContainers(
       const vm_tools::cicerone::ListRunningContainersRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ListRunningContainersResponse> callback) override;
   void GetGarconSessionInfo(
       const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
-          callback) override;
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::GetGarconSessionInfoResponse> callback) override;
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 

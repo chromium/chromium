@@ -338,8 +338,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
-  void ReturnProtobufMethodCallback(const ReplyType& reply,
-                                    DBusMethodCallback<ReplyType> callback);
+  void ReturnProtobufMethodCallback(
+      const ReplyType& reply,
+      chromeos::DBusMethodCallback<ReplyType> callback);
 
   // This method is used to implement StartMigrateToDircrypto with simulated
   // progress updates.

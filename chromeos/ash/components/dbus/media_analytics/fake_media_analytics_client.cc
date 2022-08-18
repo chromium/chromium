@@ -60,7 +60,7 @@ void FakeMediaAnalyticsClient::RemoveObserver(Observer* observer) {
 }
 
 void FakeMediaAnalyticsClient::GetState(
-    DBusMethodCallback<mri::State> callback) {
+    chromeos::DBusMethodCallback<mri::State> callback) {
   if (!process_running_) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -73,7 +73,7 @@ void FakeMediaAnalyticsClient::GetState(
 
 void FakeMediaAnalyticsClient::SetState(
     const mri::State& state,
-    DBusMethodCallback<mri::State> callback) {
+    chromeos::DBusMethodCallback<mri::State> callback) {
   if (!process_running_) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -101,12 +101,12 @@ void FakeMediaAnalyticsClient::SetStateSuspended() {
 }
 
 void FakeMediaAnalyticsClient::OnState(
-    DBusMethodCallback<mri::State> callback) {
+    chromeos::DBusMethodCallback<mri::State> callback) {
   std::move(callback).Run(current_state_);
 }
 
 void FakeMediaAnalyticsClient::GetDiagnostics(
-    DBusMethodCallback<mri::Diagnostics> callback) {
+    chromeos::DBusMethodCallback<mri::Diagnostics> callback) {
   if (!process_running_) {
     LOG(ERROR) << "Fake media analytics process not running.";
     std::move(callback).Run(absl::nullopt);
@@ -127,7 +127,7 @@ void FakeMediaAnalyticsClient::BootstrapMojoConnection(
 }
 
 void FakeMediaAnalyticsClient::OnGetDiagnostics(
-    DBusMethodCallback<mri::Diagnostics> callback) {
+    chromeos::DBusMethodCallback<mri::Diagnostics> callback) {
   std::move(callback).Run(diagnostics_);
 }
 

@@ -170,13 +170,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Calls the GetProperties DBus method and invokes |callback| when complete.
   // |callback| receives a dictionary Value containing the Manager properties on
   // success or nullopt on failure.
-  virtual void GetProperties(DBusMethodCallback<base::Value> callback) = 0;
+  virtual void GetProperties(
+      chromeos::DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls the GetNetworksForGeolocation DBus method and invokes |callback| when
   // complete. |callback| receives a dictionary Value containing an entry for
   // available network types. See Shill manager-api documentation for details.
   virtual void GetNetworksForGeolocation(
-      DBusMethodCallback<base::Value> callback) = 0;
+      chromeos::DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   virtual void SetProperty(const std::string& name,

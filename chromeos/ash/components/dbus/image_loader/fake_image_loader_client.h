@@ -51,20 +51,21 @@ class COMPONENT_EXPORT(ASH_DBUS_IMAGE_LOADER) FakeImageLoaderClient
   void RegisterComponent(const std::string& name,
                          const std::string& version,
                          const std::string& component_folder_abs_path,
-                         DBusMethodCallback<bool> callback) override;
-  void LoadComponent(const std::string& name,
-                     DBusMethodCallback<std::string> callback) override;
+                         chromeos::DBusMethodCallback<bool> callback) override;
+  void LoadComponent(
+      const std::string& name,
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void LoadComponentAtPath(
       const std::string& name,
       const base::FilePath& path,
-      DBusMethodCallback<base::FilePath> callback) override;
+      chromeos::DBusMethodCallback<base::FilePath> callback) override;
   void RemoveComponent(const std::string& name,
-                       DBusMethodCallback<bool> callback) override;
+                       chromeos::DBusMethodCallback<bool> callback) override;
   void RequestComponentVersion(
       const std::string& name,
-      DBusMethodCallback<std::string> callback) override;
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void UnmountComponent(const std::string& name,
-                        DBusMethodCallback<bool> callback) override;
+                        chromeos::DBusMethodCallback<bool> callback) override;
 
  private:
   // Maps registered component name to its registered version.

@@ -48,9 +48,10 @@ class SeneschalClientImpl : public SeneschalClient {
     seneschal_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
-  void SharePath(const vm_tools::seneschal::SharePathRequest& request,
-                 DBusMethodCallback<vm_tools::seneschal::SharePathResponse>
-                     callback) override {
+  void SharePath(
+      const vm_tools::seneschal::SharePathRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::seneschal::SharePathResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::seneschal::kSeneschalInterface,
                                  vm_tools::seneschal::kSharePathMethod);
     dbus::MessageWriter writer(&method_call);
@@ -69,9 +70,10 @@ class SeneschalClientImpl : public SeneschalClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void UnsharePath(const vm_tools::seneschal::UnsharePathRequest& request,
-                   DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
-                       callback) override {
+  void UnsharePath(
+      const vm_tools::seneschal::UnsharePathRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::seneschal::UnsharePathResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::seneschal::kSeneschalInterface,
                                  vm_tools::seneschal::kUnsharePathMethod);
     dbus::MessageWriter writer(&method_call);
@@ -101,7 +103,7 @@ class SeneschalClientImpl : public SeneschalClient {
 
  private:
   template <typename ResponseProto>
-  void OnDBusProtoResponse(DBusMethodCallback<ResponseProto> callback,
+  void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
       std::move(callback).Run(absl::nullopt);

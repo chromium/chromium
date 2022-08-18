@@ -46,13 +46,15 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
 
   // Gets a list of scanners from the lorgnette manager.
   virtual void ListScanners(
-      DBusMethodCallback<lorgnette::ListScannersResponse> callback) = 0;
+      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>
+          callback) = 0;
 
   // Gets the capabilities of the scanner corresponding to |device_name| and
   // returns them using the provided |callback|.
   virtual void GetScannerCapabilities(
       const std::string& device_name,
-      DBusMethodCallback<lorgnette::ScannerCapabilities> callback) = 0;
+      chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities>
+          callback) = 0;
 
   // Request a scanned image using lorgnette's StartScan API. As each page is
   // completed, calls |page_callback| with the page number and a string

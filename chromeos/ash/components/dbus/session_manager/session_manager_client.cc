@@ -706,7 +706,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetArcStartTime(DBusMethodCallback<base::TimeTicks> callback) override {
+  void GetArcStartTime(
+      chromeos::DBusMethodCallback<base::TimeTicks> callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerGetArcStartTimeTicks);
@@ -1111,7 +1112,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     std::move(callback).Run(psm_device_active_secret);
   }
 
-  void OnGetArcStartTime(DBusMethodCallback<base::TimeTicks> callback,
+  void OnGetArcStartTime(chromeos::DBusMethodCallback<base::TimeTicks> callback,
                          dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);

@@ -28,8 +28,8 @@ class TestConciergeClient : public FakeConciergeClient {
 
   void SetVmCpuRestriction(
       const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
-      DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::SetVmCpuRestrictionResponse> callback) override {
     requests_.push_back(request);
     FakeConciergeClient::SetVmCpuRestriction(request, std::move(callback));
   }

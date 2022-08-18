@@ -88,7 +88,7 @@ class ShillClientHelper {
 
   // Calls a method with a value result.
   void CallValueMethod(dbus::MethodCall* method_call,
-                       DBusMethodCallback<base::Value> callback);
+                       chromeos::DBusMethodCallback<base::Value> callback);
 
   // Calls a method without results with error callback.
   void CallVoidMethodWithErrorCallback(dbus::MethodCall* method_call,
@@ -130,9 +130,10 @@ class ShillClientHelper {
                                       const base::Value& dictionary);
 
   // Helper method to check for a dictionary result in GetProperties calls.
-  static void OnGetProperties(const dbus::ObjectPath& device_path,
-                              DBusMethodCallback<base::Value> callback,
-                              absl::optional<base::Value> result);
+  static void OnGetProperties(
+      const dbus::ObjectPath& device_path,
+      chromeos::DBusMethodCallback<base::Value> callback,
+      absl::optional<base::Value> result);
 
  protected:
   // Reference / Ownership management. If the number of active refs (observers

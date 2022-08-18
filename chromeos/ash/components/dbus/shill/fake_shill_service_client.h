@@ -40,8 +40,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void RemovePropertyChangedObserver(
       const dbus::ObjectPath& service_path,
       ShillPropertyChangedObserver* observer) override;
-  void GetProperties(const dbus::ObjectPath& service_path,
-                     DBusMethodCallback<base::Value> callback) override;
+  void GetProperties(
+      const dbus::ObjectPath& service_path,
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const dbus::ObjectPath& service_path,
                    const std::string& name,
                    const base::Value& value,
@@ -73,7 +74,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
                                   ErrorCallback error_callback) override;
   void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
-      DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void GetWiFiPassphrase(const dbus::ObjectPath& service_path,
                          StringCallback callback,
                          ErrorCallback error_callback) override;
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
                         ErrorCallback error_callback) override;
   void RequestTrafficCounters(
       const dbus::ObjectPath& service_path,
-      DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void ResetTrafficCounters(const dbus::ObjectPath& service_path,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override;

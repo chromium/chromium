@@ -25,13 +25,13 @@ namespace ash {
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
  public:
   using GetArcDiskFeaturesCallback =
-      DBusMethodCallback<::user_data_auth::GetArcDiskFeaturesReply>;
-  using GetCurrentSpaceForArcUidCallback =
-      DBusMethodCallback<::user_data_auth::GetCurrentSpaceForArcUidReply>;
-  using GetCurrentSpaceForArcGidCallback =
-      DBusMethodCallback<::user_data_auth::GetCurrentSpaceForArcGidReply>;
-  using GetCurrentSpaceForArcProjectIdCallback =
-      DBusMethodCallback<::user_data_auth::GetCurrentSpaceForArcProjectIdReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetArcDiskFeaturesReply>;
+  using GetCurrentSpaceForArcUidCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetCurrentSpaceForArcUidReply>;
+  using GetCurrentSpaceForArcGidCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetCurrentSpaceForArcGidReply>;
+  using GetCurrentSpaceForArcProjectIdCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetCurrentSpaceForArcProjectIdReply>;
 
   // Not copyable or movable.
   ArcQuotaClient(const ArcQuotaClient&) = delete;

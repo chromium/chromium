@@ -110,9 +110,9 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
 
   // TODO(crbug.com/1311355): This method can be cleaned up after full migration
   // to AuthSession.
-  void Mount(
-      const ::user_data_auth::MountRequest& request,
-      DBusMethodCallback<::user_data_auth::MountReply> callback) override {
+  void Mount(const ::user_data_auth::MountRequest& request,
+             chromeos::DBusMethodCallback<::user_data_auth::MountReply>
+                 callback) override {
     chromeos::CertificateProviderService* certificate_provider_service =
         chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
@@ -166,7 +166,7 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
   // to AuthSession.
   void ContinueMountExWithSignature(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      DBusMethodCallback<::user_data_auth::MountReply> callback,
+      chromeos::DBusMethodCallback<::user_data_auth::MountReply> callback,
       net::Error error,
       const std::vector<uint8_t>& signature) {
     ::user_data_auth::MountReply reply;

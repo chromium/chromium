@@ -142,7 +142,7 @@ void FakeCryptohomeMiscClient::ReportServiceIsNotAvailable() {
 template <typename ReplyType>
 void FakeCryptohomeMiscClient::ReturnProtobufMethodCallback(
     const ReplyType& reply,
-    DBusMethodCallback<ReplyType> callback) {
+    chromeos::DBusMethodCallback<ReplyType> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }

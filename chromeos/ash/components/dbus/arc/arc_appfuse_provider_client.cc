@@ -36,7 +36,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
   // ArcAppfuseProviderClient override:
   void Mount(uint32_t uid,
              int32_t mount_id,
-             DBusMethodCallback<base::ScopedFD> callback) override {
+             chromeos::DBusMethodCallback<base::ScopedFD> callback) override {
     dbus::MethodCall method_call(arc::appfuse::kArcAppfuseProviderInterface,
                                  arc::appfuse::kMountMethod);
     dbus::MessageWriter writer(&method_call);
@@ -62,11 +62,12 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void OpenFile(uint32_t uid,
-                int32_t mount_id,
-                int32_t file_id,
-                int32_t flags,
-                DBusMethodCallback<base::ScopedFD> callback) override {
+  void OpenFile(
+      uint32_t uid,
+      int32_t mount_id,
+      int32_t file_id,
+      int32_t flags,
+      chromeos::DBusMethodCallback<base::ScopedFD> callback) override {
     dbus::MethodCall method_call(arc::appfuse::kArcAppfuseProviderInterface,
                                  arc::appfuse::kOpenFileMethod);
     dbus::MessageWriter writer(&method_call);
@@ -94,7 +95,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  void OnFDMethod(DBusMethodCallback<base::ScopedFD> callback,
+  void OnFDMethod(chromeos::DBusMethodCallback<base::ScopedFD> callback,
                   dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);

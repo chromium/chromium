@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Used to report errors from |LoginScreenStorageStore()|. |error| should
   // contain an error message if an error occurred.
   using LoginScreenStorageStoreCallback =
-      DBusMethodCallback<std::string /* error */>;
+      chromeos::DBusMethodCallback<std::string /* error */>;
 
   // Stores data to the login screen storage. login screen storage is a D-Bus
   // API that is used by the custom login screen implementations to inject
@@ -277,7 +277,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // method. It receives |sessions| argument where the keys are cryptohome_ids
   // for all users that are currently active.
   using ActiveSessionsCallback =
-      DBusMethodCallback<ActiveSessionsMap /* sessions */>;
+      chromeos::DBusMethodCallback<ActiveSessionsMap /* sessions */>;
 
   // Enumerates active user sessions. Usually Chrome naturally keeps track of
   // active users when they are added into current session. When Chrome is
@@ -483,7 +483,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Asynchronously retrieves the timestamp which ARC instance is invoked.
   // Returns nullopt if there is no ARC instance or ARC is not available.
   virtual void GetArcStartTime(
-      DBusMethodCallback<base::TimeTicks> callback) = 0;
+      chromeos::DBusMethodCallback<base::TimeTicks> callback) = 0;
 
   using EnableAdbSideloadCallback =
       base::OnceCallback<void(AdbSideloadResponseCode response_code)>;

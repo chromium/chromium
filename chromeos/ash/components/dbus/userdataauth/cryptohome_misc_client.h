@@ -26,17 +26,17 @@ namespace ash {
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomeMiscClient {
  public:
   using GetSystemSaltCallback =
-      DBusMethodCallback<::user_data_auth::GetSystemSaltReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetSystemSaltReply>;
   using GetSanitizedUsernameCallback =
-      DBusMethodCallback<::user_data_auth::GetSanitizedUsernameReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetSanitizedUsernameReply>;
   using GetLoginStatusCallback =
-      DBusMethodCallback<::user_data_auth::GetLoginStatusReply>;
-  using LockToSingleUserMountUntilRebootCallback = DBusMethodCallback<
+      chromeos::DBusMethodCallback<::user_data_auth::GetLoginStatusReply>;
+  using LockToSingleUserMountUntilRebootCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::LockToSingleUserMountUntilRebootReply>;
   using GetRsuDeviceIdCallback =
-      DBusMethodCallback<::user_data_auth::GetRsuDeviceIdReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::GetRsuDeviceIdReply>;
   using CheckHealthCallback =
-      DBusMethodCallback<::user_data_auth::CheckHealthReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::CheckHealthReply>;
 
   // Not copyable or movable.
   CryptohomeMiscClient(const CryptohomeMiscClient&) = delete;

@@ -98,16 +98,18 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       bool numeric,
       bool ipv6,
       bool all_tables,
-      DBusMethodCallback<std::vector<std::string> /* routes */> callback) = 0;
+      chromeos::DBusMethodCallback<std::vector<std::string> /* routes */>
+          callback) = 0;
 
   // Gets information about network status as json.
-  virtual void GetNetworkStatus(DBusMethodCallback<std::string> callback) = 0;
+  virtual void GetNetworkStatus(
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Gets information about network interfaces as json.
   // For details, please refer to
   // http://gerrit.chromium.org/gerrit/#/c/28045/5/src/helpers/netif.cc
   virtual void GetNetworkInterfaces(
-      DBusMethodCallback<std::string> callback) = 0;
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Runs perf (via quipper) with |quipper_args| and returns data collected
   // over the passed |file_descriptor|.
@@ -117,10 +119,11 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // duplicates being closed with no data written.
   // This method duplicates |file_descriptor| so it's OK to close the FD without
   // waiting for the result.
-  virtual void GetPerfOutput(const std::vector<std::string>& quipper_args,
-                             bool disable_cpu_idle,
-                             int file_descriptor,
-                             DBusMethodCallback<uint64_t> callback) = 0;
+  virtual void GetPerfOutput(
+      const std::vector<std::string>& quipper_args,
+      bool disable_cpu_idle,
+      int file_descriptor,
+      chromeos::DBusMethodCallback<uint64_t> callback) = 0;
 
   // Stops the perf session identified with |session_id| that was started by a
   // prior call to GetPerfOutput(), and let the caller of GetPerfOutput() gather
@@ -156,7 +159,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   // Gets an individual log source provided by debugd.
   virtual void GetLog(const std::string& log_name,
-                      DBusMethodCallback<std::string> callback) = 0;
+                      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   virtual void SetStopAgentTracingTaskRunner(
       scoped_refptr<base::TaskRunner> task_runner) = 0;
@@ -173,7 +176,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   //   specified host as json.
   //   For details please refer to
   //   https://gerrit.chromium.org/gerrit/#/c/30310/2/src/helpers/icmp.cc
-  using TestICMPCallback = DBusMethodCallback<std::string>;
+  using TestICMPCallback = chromeos::DBusMethodCallback<std::string>;
 
   // Tests ICMP connectivity to a specified host. The |ip_address| contains the
   // IPv4 or IPv6 address of the host, for example "8.8.8.8".
@@ -310,28 +313,30 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                            VoidDBusMethodCallback callback) = 0;
   // Get U2F flags.
   virtual void GetU2fFlags(
-      DBusMethodCallback<std::set<std::string>> callback) = 0;
+      chromeos::DBusMethodCallback<std::set<std::string>> callback) = 0;
 
   // Set Swap Parameter
-  virtual void SetSwapParameter(const std::string& parameter,
-                                int32_t value,
-                                DBusMethodCallback<std::string> callback) = 0;
+  virtual void SetSwapParameter(
+      const std::string& parameter,
+      int32_t value,
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Zram Writeback Dbus Messages
   virtual void SwapZramEnableWriteback(
       uint32_t size_mb,
-      DBusMethodCallback<std::string> callback) = 0;
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   virtual void SwapZramSetWritebackLimit(
       uint32_t limit_pages,
-      DBusMethodCallback<std::string> callback) = 0;
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
-  virtual void SwapZramMarkIdle(uint32_t age_seconds,
-                                DBusMethodCallback<std::string> callback) = 0;
+  virtual void SwapZramMarkIdle(
+      uint32_t age_seconds,
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   virtual void InitiateSwapZramWriteback(
       debugd::ZramWritebackMode mode,
-      DBusMethodCallback<std::string> callback) = 0;
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Stops the packet capture process identified with |handle|. |handle| is a
   // unique process identifier that is returned from debugd's PacketCaptureStart

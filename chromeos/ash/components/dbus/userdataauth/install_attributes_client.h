@@ -26,16 +26,17 @@ namespace ash {
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
  public:
   using InstallAttributesGetCallback =
-      DBusMethodCallback<::user_data_auth::InstallAttributesGetReply>;
+      chromeos::DBusMethodCallback<::user_data_auth::InstallAttributesGetReply>;
   using InstallAttributesSetCallback =
-      DBusMethodCallback<::user_data_auth::InstallAttributesSetReply>;
-  using InstallAttributesFinalizeCallback =
-      DBusMethodCallback<::user_data_auth::InstallAttributesFinalizeReply>;
-  using InstallAttributesGetStatusCallback =
-      DBusMethodCallback<::user_data_auth::InstallAttributesGetStatusReply>;
-  using RemoveFirmwareManagementParametersCallback = DBusMethodCallback<
-      ::user_data_auth::RemoveFirmwareManagementParametersReply>;
-  using SetFirmwareManagementParametersCallback = DBusMethodCallback<
+      chromeos::DBusMethodCallback<::user_data_auth::InstallAttributesSetReply>;
+  using InstallAttributesFinalizeCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::InstallAttributesFinalizeReply>;
+  using InstallAttributesGetStatusCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::InstallAttributesGetStatusReply>;
+  using RemoveFirmwareManagementParametersCallback =
+      chromeos::DBusMethodCallback<
+          ::user_data_auth::RemoveFirmwareManagementParametersReply>;
+  using SetFirmwareManagementParametersCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::SetFirmwareManagementParametersReply>;
 
   // Not copyable or movable.

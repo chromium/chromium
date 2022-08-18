@@ -20,14 +20,14 @@ FakeLorgnetteManagerClient::~FakeLorgnetteManagerClient() = default;
 void FakeLorgnetteManagerClient::Init(dbus::Bus* bus) {}
 
 void FakeLorgnetteManagerClient::ListScanners(
-    DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
+    chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_scanners_response_));
 }
 
 void FakeLorgnetteManagerClient::GetScannerCapabilities(
     const std::string& device_name,
-    DBusMethodCallback<lorgnette::ScannerCapabilities> callback) {
+    chromeos::DBusMethodCallback<lorgnette::ScannerCapabilities> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), capabilities_response_));
 }

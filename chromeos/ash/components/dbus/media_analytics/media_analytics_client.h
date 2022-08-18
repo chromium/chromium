@@ -51,17 +51,17 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Gets the media analytics process state.
-  virtual void GetState(DBusMethodCallback<mri::State> callback) = 0;
+  virtual void GetState(chromeos::DBusMethodCallback<mri::State> callback) = 0;
 
   // Sets the media analytics process state. |state.status| is expected to be
   // set.
   virtual void SetState(const mri::State& state,
-                        DBusMethodCallback<mri::State> callback) = 0;
+                        chromeos::DBusMethodCallback<mri::State> callback) = 0;
 
   // API for getting diagnostic information from the media analytics process
   // over D-Bus as a Diagnostics proto message.
   virtual void GetDiagnostics(
-      DBusMethodCallback<mri::Diagnostics> callback) = 0;
+      chromeos::DBusMethodCallback<mri::Diagnostics> callback) = 0;
 
   // Bootstrap the Mojo connection between Chrome and the media analytics
   // process. Should pass in the file descriptor for the child end of the Mojo

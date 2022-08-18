@@ -37,25 +37,32 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
-  void GetVolumeState(DBusMethodCallback<VolumeState> callback) override;
-  void GetDefaultOutputBufferSize(DBusMethodCallback<int> callback) override;
-  void GetSystemAecSupported(DBusMethodCallback<bool> callback) override;
-  void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) override;
-  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override;
-  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override;
-  void GetNodes(DBusMethodCallback<AudioNodeList> callback) override;
+  void GetVolumeState(
+      chromeos::DBusMethodCallback<VolumeState> callback) override;
+  void GetDefaultOutputBufferSize(
+      chromeos::DBusMethodCallback<int> callback) override;
+  void GetSystemAecSupported(
+      chromeos::DBusMethodCallback<bool> callback) override;
+  void GetSystemAecGroupId(
+      chromeos::DBusMethodCallback<int32_t> callback) override;
+  void GetSystemNsSupported(
+      chromeos::DBusMethodCallback<bool> callback) override;
+  void GetSystemAgcSupported(
+      chromeos::DBusMethodCallback<bool> callback) override;
+  void GetNodes(chromeos::DBusMethodCallback<AudioNodeList> callback) override;
   void GetNumberOfActiveOutputStreams(
-      DBusMethodCallback<int> callback) override;
+      chromeos::DBusMethodCallback<int> callback) override;
   void GetNumberOfInputStreamsWithPermission(
-      DBusMethodCallback<ClientTypeToInputStreamCount>) override;
-  void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override;
+      chromeos::DBusMethodCallback<ClientTypeToInputStreamCount>) override;
+  void GetDeprioritizeBtWbsMic(
+      chromeos::DBusMethodCallback<bool> callback) override;
   void SetOutputNodeVolume(uint64_t node_id, int32_t volume) override;
   void SetOutputUserMute(bool mute_on) override;
   void SetInputNodeGain(uint64_t node_id, int32_t gain) override;
   void SetInputMute(bool mute_on) override;
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
   void GetNoiseCancellationSupported(
-      DBusMethodCallback<bool> callback) override;
+      chromeos::DBusMethodCallback<bool> callback) override;
   void SetActiveOutputNode(uint64_t node_id) override;
   void SetActiveInputNode(uint64_t node_id) override;
   void SetHotwordModel(uint64_t node_id,

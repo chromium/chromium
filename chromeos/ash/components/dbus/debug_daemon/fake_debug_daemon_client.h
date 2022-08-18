@@ -40,23 +40,25 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                     VoidDBusMethodCallback callback) override;
   std::string GetTracingAgentName() override;
   std::string GetTraceEventLabel() override;
-  void SetSwapParameter(const std::string& parameter,
-                        int32_t value,
-                        DBusMethodCallback<std::string> callback) override;
+  void SetSwapParameter(
+      const std::string& parameter,
+      int32_t value,
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void SwapZramEnableWriteback(
       uint32_t size_mb,
-      DBusMethodCallback<std::string> callback) override;
+      chromeos::DBusMethodCallback<std::string> callback) override;
 
   void SwapZramSetWritebackLimit(
       uint32_t limit_pages,
-      DBusMethodCallback<std::string> callback) override;
+      chromeos::DBusMethodCallback<std::string> callback) override;
 
-  void SwapZramMarkIdle(uint32_t age_seconds,
-                        DBusMethodCallback<std::string> callback) override;
+  void SwapZramMarkIdle(
+      uint32_t age_seconds,
+      chromeos::DBusMethodCallback<std::string> callback) override;
 
   void InitiateSwapZramWriteback(
       debugd::ZramWritebackMode mode,
-      DBusMethodCallback<std::string> callback) override;
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void StartAgentTracing(const base::trace_event::TraceConfig& trace_config,
                          StartAgentTracingCallback callback) override;
   void StopAgentTracing(StopAgentTracingCallback callback) override;
@@ -66,14 +68,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       bool numeric,
       bool ipv6,
       bool all_tables,
-      DBusMethodCallback<std::vector<std::string>> callback) override;
+      chromeos::DBusMethodCallback<std::vector<std::string>> callback) override;
   void SetKstaledRatio(uint8_t val, KstaledRatioCallback callback) override;
-  void GetNetworkStatus(DBusMethodCallback<std::string> callback) override;
-  void GetNetworkInterfaces(DBusMethodCallback<std::string> callback) override;
+  void GetNetworkStatus(
+      chromeos::DBusMethodCallback<std::string> callback) override;
+  void GetNetworkInterfaces(
+      chromeos::DBusMethodCallback<std::string> callback) override;
   void GetPerfOutput(const std::vector<std::string>& quipper_args,
                      bool disable_cpu_idle,
                      int file_descriptor,
-                     DBusMethodCallback<uint64_t> callback) override;
+                     chromeos::DBusMethodCallback<uint64_t> callback) override;
   void StopPerf(uint64_t session_id, VoidDBusMethodCallback callback) override;
   void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
                           GetLogsCallback callback) override;
@@ -81,7 +85,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                           VoidDBusMethodCallback callback) override;
   void GetAllLogs(GetLogsCallback callback) override;
   void GetLog(const std::string& log_name,
-              DBusMethodCallback<std::string> callback) override;
+              chromeos::DBusMethodCallback<std::string> callback) override;
   void TestICMP(const std::string& ip_address,
                 TestICMPCallback callback) override;
   void TestICMPWithOptions(const std::string& ip_address,
@@ -118,7 +122,8 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       SetSchedulerConfigurationV2Callback callback) override;
   void SetU2fFlags(const std::set<std::string>& flags,
                    VoidDBusMethodCallback callback) override;
-  void GetU2fFlags(DBusMethodCallback<std::set<std::string>> callback) override;
+  void GetU2fFlags(
+      chromeos::DBusMethodCallback<std::set<std::string>> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

@@ -166,7 +166,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       VoidDBusMethodCallback callback) override;
   void EmitArcBooted(const cryptohome::AccountIdentifier& cryptohome_id,
                      VoidDBusMethodCallback callback) override;
-  void GetArcStartTime(DBusMethodCallback<base::TimeTicks> callback) override;
+  void GetArcStartTime(
+      chromeos::DBusMethodCallback<base::TimeTicks> callback) override;
   void EnableAdbSideload(EnableAdbSideloadCallback callback) override;
   void QueryAdbSideload(QueryAdbSideloadCallback callback) override;
 

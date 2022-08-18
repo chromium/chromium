@@ -49,8 +49,9 @@ class ShillIPConfigClientImpl : public ShillIPConfigClient {
       ShillPropertyChangedObserver* observer) override {
     GetHelper(ipconfig_path)->RemovePropertyChangedObserver(observer);
   }
-  void GetProperties(const dbus::ObjectPath& ipconfig_path,
-                     DBusMethodCallback<base::Value> callback) override;
+  void GetProperties(
+      const dbus::ObjectPath& ipconfig_path,
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const dbus::ObjectPath& ipconfig_path,
                    const std::string& name,
                    const base::Value& value,
@@ -88,7 +89,7 @@ class ShillIPConfigClientImpl : public ShillIPConfigClient {
 
 void ShillIPConfigClientImpl::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   dbus::MethodCall method_call(shill::kFlimflamIPConfigInterface,
                                shill::kGetPropertiesFunction);
   GetHelper(ipconfig_path)

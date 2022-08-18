@@ -98,38 +98,46 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual bool HasObserver(const Observer* observer) const = 0;
 
   // Gets the volume state, asynchronously.
-  virtual void GetVolumeState(DBusMethodCallback<VolumeState> callback) = 0;
+  virtual void GetVolumeState(
+      chromeos::DBusMethodCallback<VolumeState> callback) = 0;
 
   // Gets the default output buffer size in frames.
-  virtual void GetDefaultOutputBufferSize(DBusMethodCallback<int> callback) = 0;
+  virtual void GetDefaultOutputBufferSize(
+      chromeos::DBusMethodCallback<int> callback) = 0;
 
   // Gets if system AEC is supported.
-  virtual void GetSystemAecSupported(DBusMethodCallback<bool> callback) = 0;
+  virtual void GetSystemAecSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Gets any available group ID for the system AEC
-  virtual void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) = 0;
+  virtual void GetSystemAecGroupId(
+      chromeos::DBusMethodCallback<int32_t> callback) = 0;
 
   // Gets if system NS is supported.
-  virtual void GetSystemNsSupported(DBusMethodCallback<bool> callback) = 0;
+  virtual void GetSystemNsSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Gets if system AGC is supported.
-  virtual void GetSystemAgcSupported(DBusMethodCallback<bool> callback) = 0;
+  virtual void GetSystemAgcSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Gets an array of audio input and output nodes.
-  virtual void GetNodes(DBusMethodCallback<AudioNodeList> callback) = 0;
+  virtual void GetNodes(
+      chromeos::DBusMethodCallback<AudioNodeList> callback) = 0;
 
   // Gets the number of active output streams.
   virtual void GetNumberOfActiveOutputStreams(
-      DBusMethodCallback<int> callback) = 0;
+      chromeos::DBusMethodCallback<int> callback) = 0;
 
   // Gets the number of input streams with permission per client type.
   virtual void GetNumberOfInputStreamsWithPermission(
-      DBusMethodCallback<base::flat_map<std::string, uint32_t>>) = 0;
+      chromeos::DBusMethodCallback<base::flat_map<std::string, uint32_t>>) = 0;
 
   // Gets the DeprioritzeBtWbsMic flag. On a few platforms CRAS may
   // report to deprioritize Bluetooth WBS mic's node priority because
   // WBS feature is still working to be stabilized.
-  virtual void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) = 0;
+  virtual void GetDeprioritizeBtWbsMic(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Sets output volume of the given |node_id| to |volume|, in the rage of
   // [0, 100].
@@ -150,7 +158,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Gets if Noise Cancellation is supported.
   virtual void GetNoiseCancellationSupported(
-      DBusMethodCallback<bool> callback) = 0;
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Sets the active output node to |node_id|.
   virtual void SetActiveOutputNode(uint64_t node_id) = 0;

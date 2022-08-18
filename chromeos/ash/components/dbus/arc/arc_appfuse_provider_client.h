@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcAppfuseProviderClient
   // associated with the mounted file system.
   virtual void Mount(uint32_t uid,
                      int32_t mount_id,
-                     DBusMethodCallback<base::ScopedFD> callback) = 0;
+                     chromeos::DBusMethodCallback<base::ScopedFD> callback) = 0;
 
   // Unmounts the specified appfuse file system.
   virtual void Unmount(uint32_t uid,
@@ -45,11 +45,12 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcAppfuseProviderClient
                        VoidDBusMethodCallback callback) = 0;
 
   // Opens a file under the specified appfuse file system.
-  virtual void OpenFile(uint32_t uid,
-                        int32_t mount_id,
-                        int32_t file_id,
-                        int32_t flags,
-                        DBusMethodCallback<base::ScopedFD> callback) = 0;
+  virtual void OpenFile(
+      uint32_t uid,
+      int32_t mount_id,
+      int32_t file_id,
+      int32_t flags,
+      chromeos::DBusMethodCallback<base::ScopedFD> callback) = 0;
 
  protected:
   ArcAppfuseProviderClient();

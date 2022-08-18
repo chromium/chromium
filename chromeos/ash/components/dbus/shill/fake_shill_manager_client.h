@@ -36,9 +36,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       ShillPropertyChangedObserver* observer) override;
   void RemovePropertyChangedObserver(
       ShillPropertyChangedObserver* observer) override;
-  void GetProperties(DBusMethodCallback<base::Value> callback) override;
+  void GetProperties(
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void GetNetworksForGeolocation(
-      DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const std::string& name,
                    const base::Value& value,
                    base::OnceClosure callback,
@@ -131,9 +132,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
  private:
   void SetDefaultProperties();
-  void PassNullopt(DBusMethodCallback<base::Value> callback) const;
-  void PassStubProperties(DBusMethodCallback<base::Value> callback) const;
-  void PassStubGeoNetworks(DBusMethodCallback<base::Value> callback) const;
+  void PassNullopt(chromeos::DBusMethodCallback<base::Value> callback) const;
+  void PassStubProperties(
+      chromeos::DBusMethodCallback<base::Value> callback) const;
+  void PassStubGeoNetworks(
+      chromeos::DBusMethodCallback<base::Value> callback) const;
   void CallNotifyObserversPropertyChanged(const std::string& property);
   void NotifyObserversPropertyChanged(const std::string& property);
   base::Value::List& GetListProperty(const std::string& property);

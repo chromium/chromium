@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcAppfuseProviderClient
   // ArcAppfuseProviderClient override:
   void Mount(uint32_t uid,
              int32_t mount_id,
-             DBusMethodCallback<base::ScopedFD> callback) override;
+             chromeos::DBusMethodCallback<base::ScopedFD> callback) override;
   void Unmount(uint32_t uid,
                int32_t mount_id,
                VoidDBusMethodCallback callback) override;
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcAppfuseProviderClient
                 int32_t mount_id,
                 int32_t file_id,
                 int32_t flags,
-                DBusMethodCallback<base::ScopedFD> callback) override;
+                chromeos::DBusMethodCallback<base::ScopedFD> callback) override;
 };
 
 }  // namespace ash

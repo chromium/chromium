@@ -84,8 +84,8 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // called before LockDevice is done. Used to update TPM on enrollment.
   void SetBlockDevmodeInTpm(
       bool block_devmode,
-      DBusMethodCallback<user_data_auth::SetFirmwareManagementParametersReply>
-          callback);
+      chromeos::DBusMethodCallback<
+          user_data_auth::SetFirmwareManagementParametersReply> callback);
 
   // Locks the device into |device_mode|.  Depending on |device_mode|, a
   // specific subset of |domain|, |realm| and |device_id| must be set.  Can also

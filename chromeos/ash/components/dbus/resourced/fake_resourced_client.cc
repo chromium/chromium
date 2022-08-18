@@ -15,7 +15,7 @@ FakeResourcedClient::~FakeResourcedClient() = default;
 void FakeResourcedClient::SetGameModeWithTimeout(
     GameMode state,
     uint32_t refresh_seconds,
-    DBusMethodCallback<GameMode> callback) {
+    chromeos::DBusMethodCallback<GameMode> callback) {
   absl::optional<GameMode> response = previous_game_mode_state_;
   if (state == GameMode::OFF) {
     exit_game_mode_count_++;

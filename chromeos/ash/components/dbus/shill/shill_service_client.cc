@@ -33,7 +33,7 @@ ShillServiceClient* g_instance = nullptr;
 // Error callback for GetProperties.
 void OnGetDictionaryError(const std::string& method_name,
                           const dbus::ObjectPath& service_path,
-                          DBusMethodCallback<base::Value> callback,
+                          chromeos::DBusMethodCallback<base::Value> callback,
                           const std::string& error_name,
                           const std::string& error_message) {
   const std::string log_string = "Failed to call org.chromium.shill.Service." +
@@ -82,8 +82,9 @@ class ShillServiceClientImpl : public ShillServiceClient {
     GetHelper(service_path)->RemovePropertyChangedObserver(observer);
   }
 
-  void GetProperties(const dbus::ObjectPath& service_path,
-                     DBusMethodCallback<base::Value> callback) override {
+  void GetProperties(
+      const dbus::ObjectPath& service_path,
+      chromeos::DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetPropertiesFunction);
     auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -192,7 +193,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
-      DBusMethodCallback<base::Value> callback) override {
+      chromeos::DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetLoadableProfileEntriesFunction);
     auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -228,7 +229,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   void RequestTrafficCounters(
       const dbus::ObjectPath& service_path,
-      DBusMethodCallback<base::Value> callback) override {
+      chromeos::DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRequestTrafficCountersFunction);
 
@@ -293,11 +294,11 @@ class ShillServiceClientImpl : public ShillServiceClient {
   }
 
   static base::OnceCallback<void(base::Value result)>
-  AdaptCallbackWithoutStatus(DBusMethodCallback<base::Value> callback) {
+  AdaptCallbackWithoutStatus(
+      chromeos::DBusMethodCallback<base::Value> callback) {
     return base::BindOnce(
-        [](DBusMethodCallback<base::Value> callback, base::Value result) {
-          std::move(callback).Run(std::move(result));
-        },
+        [](chromeos::DBusMethodCallback<base::Value> callback,
+           base::Value result) { std::move(callback).Run(std::move(result)); },
         std::move(callback));
   }
 

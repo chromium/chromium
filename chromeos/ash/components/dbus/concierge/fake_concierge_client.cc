@@ -87,7 +87,8 @@ bool FakeConciergeClient::IsDiskImageProgressSignalConnected() {
 
 void FakeConciergeClient::CreateDiskImage(
     const vm_tools::concierge::CreateDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+        callback) {
   create_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -98,7 +99,8 @@ void FakeConciergeClient::CreateDiskImage(
 void FakeConciergeClient::CreateDiskImageWithFd(
     base::ScopedFD fd,
     const vm_tools::concierge::CreateDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse>
+        callback) {
   create_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -107,7 +109,7 @@ void FakeConciergeClient::CreateDiskImageWithFd(
 
 void FakeConciergeClient::DestroyDiskImage(
     const vm_tools::concierge::DestroyDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::DestroyDiskImageResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::DestroyDiskImageResponse>
         callback) {
   destroy_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -118,7 +120,8 @@ void FakeConciergeClient::DestroyDiskImage(
 void FakeConciergeClient::ImportDiskImage(
     base::ScopedFD fd,
     const vm_tools::concierge::ImportDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
+        callback) {
   import_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -130,7 +133,8 @@ void FakeConciergeClient::ImportDiskImage(
 
 void FakeConciergeClient::CancelDiskImageOperation(
     const vm_tools::concierge::CancelDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
+        callback) {
   // Removes signals sent during disk image import.
   disk_image_status_signals_.clear();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -154,7 +158,8 @@ void FakeConciergeClient::OnDiskImageProgress(
 
 void FakeConciergeClient::DiskImageStatus(
     const vm_tools::concierge::DiskImageStatusRequest& request,
-    DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::DiskImageStatusResponse>
+        callback) {
   disk_image_status_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -164,7 +169,8 @@ void FakeConciergeClient::DiskImageStatus(
 
 void FakeConciergeClient::ListVmDisks(
     const vm_tools::concierge::ListVmDisksRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
+        callback) {
   list_vm_disks_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -173,7 +179,8 @@ void FakeConciergeClient::ListVmDisks(
 
 void FakeConciergeClient::StartVm(
     const vm_tools::concierge::StartVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+        callback) {
   start_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_),
@@ -209,14 +216,16 @@ void FakeConciergeClient::StartVm(
 void FakeConciergeClient::StartVmWithFd(
     base::ScopedFD fd,
     const vm_tools::concierge::StartVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+        callback) {
   StartVm(std::move(request), std::move(callback));
 }
 
 void FakeConciergeClient::StartVmWithFds(
     std::vector<base::ScopedFD> fds,
     const vm_tools::concierge::StartVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+        callback) {
   StartVm(std::move(request), std::move(callback));
 }
 
@@ -232,7 +241,8 @@ void FakeConciergeClient::NotifyTremplinStarted(
 
 void FakeConciergeClient::StopVm(
     const vm_tools::concierge::StopVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
+        callback) {
   stop_vm_call_count_++;
   vm_tools::concierge::VmStoppedSignal signal;
   signal.set_name(request.name());
@@ -247,21 +257,24 @@ void FakeConciergeClient::StopVm(
 
 void FakeConciergeClient::SuspendVm(
     const vm_tools::concierge::SuspendVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::SuspendVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuspendVmResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), suspend_vm_response_));
 }
 
 void FakeConciergeClient::ResumeVm(
     const vm_tools::concierge::ResumeVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ResumeVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ResumeVmResponse>
+        callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), resume_vm_response_));
 }
 
 void FakeConciergeClient::GetVmInfo(
     const vm_tools::concierge::GetVmInfoRequest& request,
-    DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::GetVmInfoResponse>
+        callback) {
   get_vm_info_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), get_vm_info_response_));
@@ -269,7 +282,7 @@ void FakeConciergeClient::GetVmInfo(
 
 void FakeConciergeClient::GetVmEnterpriseReportingInfo(
     const vm_tools::concierge::GetVmEnterpriseReportingInfoRequest& request,
-    DBusMethodCallback<
+    chromeos::DBusMethodCallback<
         vm_tools::concierge::GetVmEnterpriseReportingInfoResponse> callback) {
   get_vm_enterprise_reporting_info_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -279,7 +292,7 @@ void FakeConciergeClient::GetVmEnterpriseReportingInfo(
 
 void FakeConciergeClient::ArcVmCompleteBoot(
     const vm_tools::concierge::ArcVmCompleteBootRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::ArcVmCompleteBootResponse>
         callback) {
   arcvm_complete_boot_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -289,8 +302,8 @@ void FakeConciergeClient::ArcVmCompleteBoot(
 
 void FakeConciergeClient::SetVmCpuRestriction(
     const vm_tools::concierge::SetVmCpuRestrictionRequest& request,
-    DBusMethodCallback<vm_tools::concierge::SetVmCpuRestrictionResponse>
-        callback) {
+    chromeos::DBusMethodCallback<
+        vm_tools::concierge::SetVmCpuRestrictionResponse> callback) {
   set_vm_cpu_restriction_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -307,7 +320,7 @@ void FakeConciergeClient::WaitForServiceToBeAvailable(
 
 void FakeConciergeClient::GetContainerSshKeys(
     const vm_tools::concierge::ContainerSshKeysRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
+    chromeos::DBusMethodCallback<vm_tools::concierge::ContainerSshKeysResponse>
         callback) {
   get_container_ssh_keys_call_count_++;
 
@@ -320,7 +333,8 @@ void FakeConciergeClient::GetContainerSshKeys(
 void FakeConciergeClient::AttachUsbDevice(
     base::ScopedFD fd,
     const vm_tools::concierge::AttachUsbDeviceRequest& request,
-    DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::AttachUsbDeviceResponse>
+        callback) {
   attach_usb_device_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -330,7 +344,8 @@ void FakeConciergeClient::AttachUsbDevice(
 
 void FakeConciergeClient::DetachUsbDevice(
     const vm_tools::concierge::DetachUsbDeviceRequest& request,
-    DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::DetachUsbDeviceResponse>
+        callback) {
   detach_usb_device_call_count_++;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -340,7 +355,8 @@ void FakeConciergeClient::DetachUsbDevice(
 
 void FakeConciergeClient::StartArcVm(
     const vm_tools::concierge::StartArcVmRequest& request,
-    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+        callback) {
   start_arc_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_));
@@ -348,7 +364,8 @@ void FakeConciergeClient::StartArcVm(
 
 void FakeConciergeClient::ResizeDiskImage(
     const vm_tools::concierge::ResizeDiskImageRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse>
+        callback) {
   resize_disk_image_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -360,7 +377,8 @@ void FakeConciergeClient::ResizeDiskImage(
 
 void FakeConciergeClient::ReclaimVmMemory(
     const vm_tools::concierge::ReclaimVmMemoryRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
+        callback) {
   reclaim_vm_memory_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -369,7 +387,8 @@ void FakeConciergeClient::ReclaimVmMemory(
 
 void FakeConciergeClient::ListVms(
     const vm_tools::concierge::ListVmsRequest& request,
-    DBusMethodCallback<vm_tools::concierge::ListVmsResponse> callback) {
+    chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
+        callback) {
   list_vms_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_vms_response_));

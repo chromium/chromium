@@ -84,7 +84,7 @@ void FakeShillDeviceClient::RemovePropertyChangedObserver(
 
 void FakeShillDeviceClient::GetProperties(
     const dbus::ObjectPath& device_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillDeviceClient::PassStubDeviceProperties,
@@ -549,7 +549,7 @@ bool FakeShillDeviceClient::SimTryPuk(const std::string& device_path,
 
 void FakeShillDeviceClient::PassStubDeviceProperties(
     const dbus::ObjectPath& device_path,
-    DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value> callback) const {
   const base::Value* device_properties =
       stub_devices_.FindDictKey(device_path.value());
   if (!device_properties) {

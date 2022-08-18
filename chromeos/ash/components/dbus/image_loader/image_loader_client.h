@@ -38,35 +38,38 @@ class COMPONENT_EXPORT(ASH_DBUS_IMAGE_LOADER) ImageLoaderClient
 
   // Registers a component by copying from |component_folder_abs_path| into its
   // internal storage, if and only if, the component passes verification.
-  virtual void RegisterComponent(const std::string& name,
-                                 const std::string& version,
-                                 const std::string& component_folder_abs_path,
-                                 DBusMethodCallback<bool> callback) = 0;
+  virtual void RegisterComponent(
+      const std::string& name,
+      const std::string& version,
+      const std::string& component_folder_abs_path,
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Mounts a component given the |name| and return the mount point (if call is
   // successful).
-  virtual void LoadComponent(const std::string& name,
-                             DBusMethodCallback<std::string> callback) = 0;
+  virtual void LoadComponent(
+      const std::string& name,
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Mounts a component given the |name| and install path |path|, then returns
   // the mount point (if call is successful).
   virtual void LoadComponentAtPath(
       const std::string& name,
       const base::FilePath& path,
-      DBusMethodCallback<base::FilePath> callback) = 0;
+      chromeos::DBusMethodCallback<base::FilePath> callback) = 0;
 
   // Requests the currently registered version of the given component |name|.
   virtual void RequestComponentVersion(
       const std::string& name,
-      DBusMethodCallback<std::string> callback) = 0;
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
 
   // Removes a component and returns true (if call is successful).
   virtual void RemoveComponent(const std::string& name,
-                               DBusMethodCallback<bool> callback) = 0;
+                               chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Unmounts all mount points given component |name|.
-  virtual void UnmountComponent(const std::string& name,
-                                DBusMethodCallback<bool> callback) = 0;
+  virtual void UnmountComponent(
+      const std::string& name,
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
  protected:
   // Initialize() should be used instead.

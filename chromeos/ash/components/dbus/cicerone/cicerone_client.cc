@@ -127,8 +127,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::LaunchContainerApplicationResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kLaunchContainerApplicationMethod);
@@ -153,8 +154,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void GetContainerAppIcons(
       const vm_tools::cicerone::ContainerAppIconRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
+          callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kGetContainerAppIconMethod);
@@ -176,8 +177,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void GetLinuxPackageInfo(
       const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
+          callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kGetLinuxPackageInfoMethod);
@@ -198,8 +199,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void InstallLinuxPackage(
       const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::InstallLinuxPackageResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::InstallLinuxPackageResponse> callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kInstallLinuxPackageMethod);
@@ -221,8 +222,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void UninstallPackageOwningFile(
       const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::UninstallPackageOwningFileResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::UninstallPackageOwningFileResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kUninstallPackageOwningFileMethod);
@@ -246,8 +248,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void CreateLxdContainer(
       const vm_tools::cicerone::CreateLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CreateLxdContainerResponse> callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kCreateLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -268,8 +270,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void DeleteLxdContainer(
       const vm_tools::cicerone::DeleteLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::DeleteLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::DeleteLxdContainerResponse> callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kDeleteLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -290,8 +292,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void StartLxdContainer(
       const vm_tools::cicerone::StartLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::StartLxdContainerResponse> callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kStartLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -312,8 +314,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void StopLxdContainer(
       const vm_tools::cicerone::StopLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kStopLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -334,8 +336,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void GetLxdContainerUsername(
       const vm_tools::cicerone::GetLxdContainerUsernameRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetLxdContainerUsernameResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::GetLxdContainerUsernameResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kGetLxdContainerUsernameMethod);
@@ -357,8 +360,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void SetUpLxdContainerUser(
       const vm_tools::cicerone::SetUpLxdContainerUserRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::SetUpLxdContainerUserResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::SetUpLxdContainerUserResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kSetUpLxdContainerUserMethod);
@@ -380,8 +384,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void ExportLxdContainer(
       const vm_tools::cicerone::ExportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ExportLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ExportLxdContainerResponse> callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kExportLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -402,8 +406,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void ImportLxdContainer(
       const vm_tools::cicerone::ImportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ImportLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ImportLxdContainerResponse> callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kImportLxdContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -424,8 +428,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void CancelExportLxdContainer(
       const vm_tools::cicerone::CancelExportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelExportLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelExportLxdContainerResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kCancelExportLxdContainerMethod);
@@ -448,8 +453,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void CancelImportLxdContainer(
       const vm_tools::cicerone::CancelImportLxdContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelImportLxdContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelImportLxdContainerResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kCancelImportLxdContainerMethod);
@@ -472,8 +478,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void ApplyAnsiblePlaybook(
       const vm_tools::cicerone::ApplyAnsiblePlaybookRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ApplyAnsiblePlaybookResponse> callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kApplyAnsiblePlaybookMethod);
@@ -495,8 +501,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void ConfigureForArcSideload(
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ConfigureForArcSideloadResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ConfigureForArcSideloadResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kConfigureForArcSideloadMethod);
@@ -518,8 +525,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void UpgradeContainer(
       const vm_tools::cicerone::UpgradeContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kUpgradeContainerMethod);
     dbus::MessageWriter writer(&method_call);
@@ -540,8 +547,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void CancelUpgradeContainer(
       const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::CancelUpgradeContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::CancelUpgradeContainerResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kCancelUpgradeContainerMethod);
@@ -561,9 +569,10 @@ class CiceroneClientImpl : public CiceroneClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void StartLxd(const vm_tools::cicerone::StartLxdRequest& request,
-                DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
-                    callback) override {
+  void StartLxd(
+      const vm_tools::cicerone::StartLxdRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kStartLxdMethod);
     dbus::MessageWriter writer(&method_call);
@@ -582,9 +591,10 @@ class CiceroneClientImpl : public CiceroneClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void AddFileWatch(const vm_tools::cicerone::AddFileWatchRequest& request,
-                    DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse>
-                        callback) override {
+  void AddFileWatch(
+      const vm_tools::cicerone::AddFileWatchRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kAddFileWatchMethod);
     dbus::MessageWriter writer(&method_call);
@@ -605,8 +615,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void RemoveFileWatch(
       const vm_tools::cicerone::RemoveFileWatchRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kRemoveFileWatchMethod);
     dbus::MessageWriter writer(&method_call);
@@ -627,8 +637,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void GetVshSession(
       const vm_tools::cicerone::GetVshSessionRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse> callback)
-      override {
+      chromeos::DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse>
+          callback) override {
     dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
                                  vm_tools::cicerone::kGetVshSessionMethod);
     dbus::MessageWriter writer(&method_call);
@@ -649,8 +659,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void AttachUsbToContainer(
       const vm_tools::cicerone::AttachUsbToContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::AttachUsbToContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::AttachUsbToContainerResponse> callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kAttachUsbToContainerMethod);
@@ -672,8 +682,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void DetachUsbFromContainer(
       const vm_tools::cicerone::DetachUsbFromContainerRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::DetachUsbFromContainerResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::DetachUsbFromContainerResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kDetachUsbFromContainerMethod);
@@ -710,8 +721,9 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void ListRunningContainers(
       const vm_tools::cicerone::ListRunningContainersRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::ListRunningContainersResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::ListRunningContainersResponse> callback)
+      override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kListRunningContainersMethod);
@@ -733,8 +745,8 @@ class CiceroneClientImpl : public CiceroneClient {
 
   void GetGarconSessionInfo(
       const vm_tools::cicerone::GetGarconSessionInfoRequest& request,
-      DBusMethodCallback<vm_tools::cicerone::GetGarconSessionInfoResponse>
-          callback) override {
+      chromeos::DBusMethodCallback<
+          vm_tools::cicerone::GetGarconSessionInfoResponse> callback) override {
     dbus::MethodCall method_call(
         vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kGetGarconSessionInfoMethod);
@@ -912,7 +924,7 @@ class CiceroneClientImpl : public CiceroneClient {
 
  private:
   template <typename ResponseProto>
-  void OnDBusProtoResponse(DBusMethodCallback<ResponseProto> callback,
+  void OnDBusProtoResponse(chromeos::DBusMethodCallback<ResponseProto> callback,
                            dbus::Response* dbus_response) {
     if (!dbus_response) {
       std::move(callback).Run(absl::nullopt);

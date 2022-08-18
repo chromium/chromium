@@ -192,7 +192,7 @@ void FakeInstallAttributesClient::ReportServiceIsNotAvailable() {
 template <typename ReplyType>
 void FakeInstallAttributesClient::ReturnProtobufMethodCallback(
     const ReplyType& reply,
-    DBusMethodCallback<ReplyType> callback) {
+    chromeos::DBusMethodCallback<ReplyType> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }

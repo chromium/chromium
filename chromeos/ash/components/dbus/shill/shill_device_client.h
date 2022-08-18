@@ -100,8 +100,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Calls the GetProperties DBus method and invokes |callback| when complete.
   // |callback| receives a dictionary Value containing the Device properties on
   // success or nullopt on failure.
-  virtual void GetProperties(const dbus::ObjectPath& device_path,
-                             DBusMethodCallback<base::Value> callback) = 0;
+  virtual void GetProperties(
+      const dbus::ObjectPath& device_path,
+      chromeos::DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call finishes.

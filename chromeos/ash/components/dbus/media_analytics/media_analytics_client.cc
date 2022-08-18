@@ -45,7 +45,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
     observer_list_.RemoveObserver(observer);
   }
 
-  void GetState(DBusMethodCallback<mri::State> callback) override {
+  void GetState(chromeos::DBusMethodCallback<mri::State> callback) override {
     dbus::MethodCall method_call(media_perception::kMediaPerceptionServiceName,
                                  media_perception::kStateFunction);
     dbus_proxy_->CallMethod(
@@ -55,7 +55,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
   }
 
   void SetState(const mri::State& state,
-                DBusMethodCallback<mri::State> callback) override {
+                chromeos::DBusMethodCallback<mri::State> callback) override {
     DCHECK(state.has_status()) << "Attempting to SetState without status set.";
 
     dbus::MethodCall method_call(media_perception::kMediaPerceptionServiceName,
@@ -70,7 +70,8 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetDiagnostics(DBusMethodCallback<mri::Diagnostics> callback) override {
+  void GetDiagnostics(
+      chromeos::DBusMethodCallback<mri::Diagnostics> callback) override {
     dbus::MethodCall method_call(media_perception::kMediaPerceptionServiceName,
                                  media_perception::kGetDiagnosticsFunction);
     // TODO(lasoren): Verify that this timeout setting is sufficient.
@@ -136,7 +137,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
       observer.OnDetectionSignal(media_perception);
   }
 
-  void OnState(DBusMethodCallback<mri::State> callback,
+  void OnState(chromeos::DBusMethodCallback<mri::State> callback,
                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Call to State failed to get response.";
@@ -155,7 +156,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
     std::move(callback).Run(std::move(state));
   }
 
-  void OnGetDiagnostics(DBusMethodCallback<mri::Diagnostics> callback,
+  void OnGetDiagnostics(chromeos::DBusMethodCallback<mri::Diagnostics> callback,
                         dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Call to GetDiagnostics failed to get response.";

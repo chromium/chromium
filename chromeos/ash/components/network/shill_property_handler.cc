@@ -306,12 +306,12 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
 
 void ShillPropertyHandler::RequestTrafficCounters(
     const std::string& service_path,
-    DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value> callback) {
   ShillServiceClient::Get()->RequestTrafficCounters(
       dbus::ObjectPath(service_path),
       base::BindOnce(
           [](const std::string& service_path,
-             DBusMethodCallback<base::Value> callback,
+             chromeos::DBusMethodCallback<base::Value> callback,
              absl::optional<base::Value> traffic_counters) {
             if (!traffic_counters) {
               NET_LOG(ERROR) << "Error requesting traffic counters for: "
