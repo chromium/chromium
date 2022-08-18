@@ -215,6 +215,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
   PartitionPage<thread_safe>* page = nullptr;
 
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  const PartitionTag tag = root->GetNewPartitionTag();
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
     // rest of the allocator, but takes a long time, as it involves several
@@ -408,6 +412,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     map_extent->reservation_size = reservation_size;
     map_extent->padding_for_alignment = padding_for_alignment;
     map_extent->bucket = &metadata->bucket;
+
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+    DirectMapPartitionTagSetValue(slot_start, tag);
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   }
 
   root->lock_.AssertAcquired();
@@ -884,7 +892,8 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     TagMemoryRangeRandomly(return_slot, slot_size);
   }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-  PartitionTagSetValue(return_slot, slot_size, root->GetNewPartitionTag());
+  NormalBucketPartitionTagSetValue(return_slot, slot_size,
+                                   root->GetNewPartitionTag());
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
   // Add all slots that fit within so far committed pages to the free list.
@@ -903,7 +912,8 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    PartitionTagSetValue(next_slot, slot_size, root->GetNewPartitionTag());
+    NormalBucketPartitionTagSetValue(next_slot, slot_size,
+                                     root->GetNewPartitionTag());
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {

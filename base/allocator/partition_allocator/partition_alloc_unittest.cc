@@ -4581,13 +4581,13 @@ TEST_P(PartitionAllocTest, PartitionTagBasic) {
   constexpr partition_alloc::PartitionTag kTag3 =
       static_cast<partition_alloc::PartitionTag>(0xA3C4);
 
-  partition_alloc::internal::PartitionTagSetValue(
+  partition_alloc::internal::NormalBucketPartitionTagSetValue(
       allocator.root()->ObjectToSlotStart(ptr1), slot_span->bucket->slot_size,
       kTag1);
-  partition_alloc::internal::PartitionTagSetValue(
+  partition_alloc::internal::NormalBucketPartitionTagSetValue(
       allocator.root()->ObjectToSlotStart(ptr2), slot_span->bucket->slot_size,
       kTag2);
-  partition_alloc::internal::PartitionTagSetValue(
+  partition_alloc::internal::NormalBucketPartitionTagSetValue(
       allocator.root()->ObjectToSlotStart(ptr3), slot_span->bucket->slot_size,
       kTag3);
 
@@ -4620,6 +4620,34 @@ TEST_P(PartitionAllocTest, PartitionTagBasic) {
 
   EXPECT_EQ(kTag3, partition_alloc::internal::PartitionTagGetValue(ptr3));
   allocator.root()->Free(ptr3);
+}
+
+// Verifies basic PA support for MTECheckedPtr used with direct map
+// allocations.
+TEST_P(PartitionAllocTest, PartitionTagDirectMapBasic) {
+  constexpr size_t kAllocSize = partition_alloc::internal::kSuperPageSize * 3;
+  void* object = allocator.root()->AllocWithFlags(AllocFlags::kZeroFill,
+                                                  kAllocSize, type_name);
+  ASSERT_TRUE(object);
+  ASSERT_TRUE(IsManagedByDirectMap(UntagPtr(object)));
+
+  constexpr partition_alloc::PartitionTag kTag =
+      static_cast<partition_alloc::PartitionTag>(0xBADA);
+  partition_alloc::internal::DirectMapPartitionTagSetValue(
+      allocator.root()->ObjectToSlotStart(object), kTag);
+  EXPECT_EQ(kTag, partition_alloc::internal::PartitionTagGetValue(object));
+
+  // As the allocation spans four (bumped over three by metadata) super
+  // pages, we expect offsets into the two subsequent super pages to
+  // also bear the same tag.
+  EXPECT_EQ(kTag, partition_alloc::internal::PartitionTagGetValue(
+                      static_cast<char*>(object) + kSuperPageSize));
+  EXPECT_EQ(kTag, partition_alloc::internal::PartitionTagGetValue(
+                      static_cast<char*>(object) + (2 * kSuperPageSize)));
+  EXPECT_EQ(kTag, partition_alloc::internal::PartitionTagGetValue(
+                      static_cast<char*>(object) + (3 * kSuperPageSize) - 1));
+
+  allocator.root()->Free(object);
 }
 
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)

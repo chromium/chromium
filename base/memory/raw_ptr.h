@@ -161,12 +161,7 @@ struct MTECheckedPtrImplPartitionAllocSupport {
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this class
     // is responsible for handling the software MTE tag.
     auto addr = partition_alloc::UntagPtr(ptr);
-    // MTECheckedPtr algorithms work only when memory is
-    // allocated by PartitionAlloc, from normal buckets pool.
-    //
-    // TODO(crbug.com/1307514): Allow direct-map buckets.
-    return partition_alloc::IsManagedByPartitionAlloc(addr) &&
-           partition_alloc::internal::IsManagedByNormalBuckets(addr);
+    return partition_alloc::IsManagedByPartitionAlloc(addr);
   }
 
   // Returns pointer to the tag that protects are pointed by |addr|.
@@ -203,6 +198,7 @@ struct MTECheckedPtrImpl {
     static_assert(sizeof(partition_alloc::PartitionTag) * 8 <= kTagBits, "");
     uintptr_t tag = *(static_cast<volatile partition_alloc::PartitionTag*>(
         PartitionAllocSupport::TagPointer(addr)));
+    DCHECK(tag);
 
     tag <<= kValidAddressBits;
     addr |= tag;

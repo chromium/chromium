@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -30,11 +31,7 @@ static_assert(
     sizeof(PartitionTag) == internal::tag_bitmap::kPartitionTagSize,
     "sizeof(PartitionTag) must be equal to bitmap::kPartitionTagSize.");
 
-PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
-  // TODO(crbug.com/1307514): Add direct map support. For now, just assume
-  // that direct maps don't have tags.
-  PA_DCHECK(internal::IsManagedByNormalBuckets(addr));
-
+PA_ALWAYS_INLINE PartitionTag* NormalBucketPartitionTagPointer(uintptr_t addr) {
   uintptr_t bitmap_base =
       internal::SuperPageTagBitmapAddr(addr & internal::kSuperPageBaseMask);
   const size_t bitmap_end_offset =
@@ -49,6 +46,23 @@ PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
   return reinterpret_cast<PartitionTag*>(bitmap_base + offset_in_bitmap);
 }
 
+PA_ALWAYS_INLINE PartitionTag* DirectMapPartitionTagPointer(uintptr_t addr) {
+  uintptr_t first_super_page = internal::GetDirectMapReservationStart(addr);
+  PA_DCHECK(first_super_page) << "not managed by a direct map: " << addr;
+  auto* subsequent_page_metadata = GetSubsequentPageMetadata(
+      internal::PartitionSuperPageToMetadataArea<internal::ThreadSafe>(
+          first_super_page));
+  return &subsequent_page_metadata->direct_map_tag;
+}
+
+PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
+  // UNLIKELY because direct maps are far less common than normal buckets.
+  if (PA_UNLIKELY(internal::IsManagedByDirectMap(addr))) {
+    return DirectMapPartitionTagPointer(addr);
+  }
+  return NormalBucketPartitionTagPointer(addr);
+}
+
 PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(const void* ptr) {
   // Disambiguation: UntagPtr relates to hwardware MTE, and it strips the tag
   // from the pointer. Whereas, PartitionTagPointer relates to software MTE
@@ -58,13 +72,18 @@ PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(const void* ptr) {
 
 namespace internal {
 
-PA_ALWAYS_INLINE void PartitionTagSetValue(uintptr_t slot_start,
-                                           size_t size,
-                                           PartitionTag value) {
+PA_ALWAYS_INLINE void DirectMapPartitionTagSetValue(uintptr_t addr,
+                                                    PartitionTag value) {
+  *DirectMapPartitionTagPointer(addr) = value;
+}
+
+PA_ALWAYS_INLINE void NormalBucketPartitionTagSetValue(uintptr_t slot_start,
+                                                       size_t size,
+                                                       PartitionTag value) {
   PA_DCHECK((size % tag_bitmap::kBytesPerPartitionTag) == 0);
   PA_DCHECK((slot_start % tag_bitmap::kBytesPerPartitionTag) == 0);
   size_t tag_count = size >> tag_bitmap::kBytesPerPartitionTagShift;
-  PartitionTag* tag_ptr = PartitionTagPointer(slot_start);
+  PartitionTag* tag_ptr = NormalBucketPartitionTagPointer(slot_start);
   if (sizeof(PartitionTag) == 1) {
     memset(tag_ptr, value, tag_count);
   } else {
@@ -84,6 +103,7 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(uintptr_t slot_start,
   ++new_tag;
   new_tag += !new_tag;  // Avoid 0.
 #if BUILDFLAG(PA_DCHECK_IS_ON)
+  PA_DCHECK(internal::IsManagedByNormalBuckets(slot_start));
   // This verifies that tags for the entire slot have the same value and that
   // |size| doesn't exceed the slot size.
   size_t tag_count = size >> tag_bitmap::kBytesPerPartitionTagShift;
@@ -93,7 +113,7 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(uintptr_t slot_start,
     tag_ptr++;
   }
 #endif
-  PartitionTagSetValue(slot_start, size, new_tag);
+  NormalBucketPartitionTagSetValue(slot_start, size, new_tag);
 }
 
 }  // namespace internal

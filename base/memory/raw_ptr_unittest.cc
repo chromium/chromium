@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
@@ -2011,6 +2012,30 @@ TEST(MTECheckedPtrImpl, CrashOnUseAfterFree_WithOffset) {
   for (uint8_t i = 0; i < kSize; i += 15) {
     EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *ptrs[i], "");
   }
+}
+
+TEST(MTECheckedPtrImpl, DirectMapCrashOnUseAfterFree) {
+  // Alloc two super pages' worth of ints.
+  constexpr size_t kIntsPerSuperPage =
+      partition_alloc::kSuperPageSize / sizeof(int);
+  constexpr size_t kAllocAmount = kIntsPerSuperPage * 2;
+  int* unwrapped_ptr = new int[kAllocAmount];
+  ASSERT_TRUE(partition_alloc::internal::IsManagedByDirectMap(
+      partition_alloc::UntagPtr(unwrapped_ptr)));
+
+  // Use the actual CheckedPtr implementation, not a test substitute, to
+  // exercise real PartitionAlloc paths.
+  raw_ptr<int> ptr = unwrapped_ptr;
+
+  *ptr = 42;
+  EXPECT_EQ(*ptr, 42);
+  *(ptr + kIntsPerSuperPage) = 42;
+  EXPECT_EQ(*(ptr + kIntsPerSuperPage), 42);
+  *(ptr + kAllocAmount - 1) = 42;
+  EXPECT_EQ(*(ptr + kAllocAmount - 1), 42);
+
+  delete[] unwrapped_ptr;
+  EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *ptr, "");
 }
 
 TEST(MTECheckedPtrImpl, AdvancedPointerShiftedAppropriately) {
