@@ -75,7 +75,8 @@ class ASH_EXPORT AutozoomControllerImpl
   // controlled by this class.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  cros::mojom::CameraAutoFramingState state_;
+  cros::mojom::CameraAutoFramingState state_ =
+      cros::mojom::CameraAutoFramingState::OFF;
 
   base::ObserverList<AutozoomObserver> observers_;
 
