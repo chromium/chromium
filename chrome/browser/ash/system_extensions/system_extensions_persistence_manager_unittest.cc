@@ -8,11 +8,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kPersistedSystemExtensions[] = "system_extensions.persisted";
 
 constexpr char kFirstTypeStr[] = "echo";
 constexpr SystemExtensionId kFirstId = {1, 2, 3, 4};
@@ -90,7 +93,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   auto* prefs = profile()->GetPrefs();
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict("system_extensions.persisted");
+        prefs->GetValueDict(kPersistedSystemExtensions);
     auto* persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_EQ(*persisted_system_extension->FindDict("manifest"),
@@ -111,7 +114,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   // Test that the System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict("system_extensions.persisted");
+        prefs->GetValueDict(kPersistedSystemExtensions);
     auto* persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_FALSE(persisted_system_extension);
@@ -131,7 +134,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   auto* prefs = profile()->GetPrefs();
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict("system_extensions.persisted");
+        prefs->GetValueDict(kPersistedSystemExtensions);
 
     auto* first_persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
@@ -169,7 +172,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   // Test that the System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict("system_extensions.persisted");
+        prefs->GetValueDict(kPersistedSystemExtensions);
 
     auto* first_persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
@@ -199,7 +202,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   // Test that the last System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict("system_extensions.persisted");
+        prefs->GetValueDict(kPersistedSystemExtensions);
     EXPECT_TRUE(persisted_system_extensions_map.empty());
   }
 
@@ -239,6 +242,77 @@ TEST_F(SystemExtensionsPersistenceManagerTest, PersistTwice) {
 TEST_F(SystemExtensionsPersistenceManagerTest, RemoveNonExistent) {
   SystemExtensionsPersistenceManager manager(profile());
   manager.Delete(kFirstId);
+}
+
+// Tests that corrupt ids are ignored when returning values.
+TEST_F(SystemExtensionsPersistenceManagerTest, CorruptId) {
+  SystemExtensionsPersistenceManager manager(profile());
+
+  // Add a System Extension with a corrupted id.
+  {
+    DictionaryPrefUpdate update(profile()->GetPrefs(),
+                                kPersistedSystemExtensions);
+    base::Value::Dict& persisted_system_extensions_map = update->GetDict();
+
+    base::Value::Dict corrupted_system_extension;
+    corrupted_system_extension.Set("manifest", first_test_manifest().Clone());
+    persisted_system_extensions_map.Set("corrupted_id",
+                                        std::move(corrupted_system_extension));
+  }
+
+  // Check that API calls return no entries, since the only entry is corrupted,
+  // and that they don't crash because of the corrupted entry.
+  EXPECT_FALSE(manager.Get(kFirstId));
+  EXPECT_FALSE(manager.Get(kSecondId));
+  EXPECT_TRUE(manager.GetAll().empty());
+
+  // Persist a non-corrupted System Extension. Only the non-corrupted System
+  // Extension should be returned since the first one is corrupted.
+  manager.Persist(second_test_system_extension());
+
+  EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+
+  auto infos = manager.GetAll();
+  EXPECT_EQ(infos.size(), 1u);
+  EXPECT_EQ(infos[0].manifest, second_test_manifest());
+
+  manager.Delete(kSecondId);
+  EXPECT_FALSE(manager.Get(kSecondId));
+  EXPECT_TRUE(manager.GetAll().empty());
+}
+
+// Tests that entries with no manifest are ignored when returning values.
+TEST_F(SystemExtensionsPersistenceManagerTest, NoManifest) {
+  SystemExtensionsPersistenceManager manager(profile());
+
+  // Add a System Extension with no manifest.
+  {
+    DictionaryPrefUpdate update(profile()->GetPrefs(),
+                                kPersistedSystemExtensions);
+
+    base::Value::Dict& persisted_system_extensions_map = update->GetDict();
+    persisted_system_extensions_map.Set(kFirstIdStr, base::Value::Dict());
+  }
+
+  // Check that the System Extension with no manifest is not returned by
+  // the API.
+  EXPECT_FALSE(manager.Get(kFirstId));
+  EXPECT_FALSE(manager.Get(kSecondId));
+  EXPECT_TRUE(manager.GetAll().empty());
+
+  // Persist a System Extension with a manifest. Only the System Extension
+  // with a manifest should be returned.
+  manager.Persist(second_test_system_extension());
+
+  EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+
+  auto infos = manager.GetAll();
+  EXPECT_EQ(infos.size(), 1u);
+  EXPECT_EQ(infos[0].manifest, second_test_manifest());
+
+  manager.Delete(kSecondId);
+  EXPECT_FALSE(manager.Get(kSecondId));
+  EXPECT_TRUE(manager.GetAll().empty());
 }
 
 }  // namespace ash
