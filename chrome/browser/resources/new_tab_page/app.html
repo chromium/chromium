@@ -343,7 +343,8 @@
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
            button in container to enforce solid background color. -->
-      <div id="customizeButtonContainer">
+      <div id="customizeButtonContainer" 
+          hidden="[[customizeChromeSidePanelShowing_]]">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}">
           <div id="customizeIcon"></div>

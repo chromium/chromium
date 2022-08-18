@@ -8,8 +8,9 @@
 
 namespace customize_chrome {
 
-std::unique_ptr<CustomizeChromeTabHelper::Delegate> CreateDelegate() {
-  return std::make_unique<CustomizeChromeSidePanelController>();
+std::unique_ptr<CustomizeChromeTabHelper::Delegate> CreateDelegate(
+    content::WebContents* web_contents) {
+  return std::make_unique<CustomizeChromeSidePanelController>(web_contents);
 }
 
 }  // namespace customize_chrome

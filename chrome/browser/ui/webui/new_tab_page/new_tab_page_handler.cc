@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -465,6 +466,17 @@ NewTabPageHandler::NewTabPageHandler(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
   OnThemeChanged();
+  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+    auto* customize_chrome_tab_helper =
+        CustomizeChromeTabHelper::FromWebContents(web_contents_);
+    // Lifetime is tied to NewTabPageUI which owns the NewTabPageHandler.
+    DCHECK(customize_chrome_tab_helper);
+    page_->CustomizeChromeSidePanelVisibilityChanged(
+        customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
+    customize_chrome_tab_helper->SetCallback(base::BindRepeating(
+        &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -782,6 +794,12 @@ void NewTabPageHandler::LogModulesFreOptInStatus(
                                     ntp_modules_shown_count,
                                     kMaxModuleFreImpressions);
   }
+}
+
+void NewTabPageHandler::ShowCustomizeChromeSidePanel() {
+  auto* customize_chrome_tab_helper =
+      CustomizeChromeTabHelper::FromWebContents(web_contents_);
+  customize_chrome_tab_helper->ShowCustomizeChromeSidePanel();
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {
@@ -1256,4 +1274,9 @@ bool NewTabPageHandler::IsCustomLinksEnabled() const {
 
 bool NewTabPageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
+}
+
+void NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
+    bool is_open) {
+  page_->CustomizeChromeSidePanelVisibilityChanged(is_open);
 }

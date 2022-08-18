@@ -8,7 +8,8 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 
 namespace customize_chrome {
-std::unique_ptr<CustomizeChromeTabHelper::Delegate> CreateDelegate();
+std::unique_ptr<CustomizeChromeTabHelper::Delegate> CreateDelegate(
+    content::WebContents* web_contents);
 }  // namespace customize_chrome
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_SIDE_PANEL_CONTROLLER_UTLS_H_

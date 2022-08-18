@@ -278,6 +278,8 @@ interface PageHandler {
   UpdateModulesFreVisibility();
   // Log user's FRE |optInStatus|.
   LogModulesFreOptInStatus(OptInStatus opt_in_status);
+  // Shows customize chrome in unified side panel.
+  ShowCustomizeChromeSidePanel();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
@@ -314,6 +316,8 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // Called when the customize chrome side panel is shown/hidden.
+  CustomizeChromeSidePanelVisibilityChanged(bool visible);
   // Sets the current theme.
   SetTheme(Theme theme);
   // Disables the modules in |ids|. If |all|, disables all modules and passes an
