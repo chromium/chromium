@@ -61,9 +61,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   SkColor GetBackgroundColor() const;
 
  private:
-  // Gets the background default color based on the current color mode.
-  SkColor GetBackgroundDefaultColor() const;
-
   // Gets the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
   // prominent color + SK_ColorBLACK 50%. For light mode, it will be light

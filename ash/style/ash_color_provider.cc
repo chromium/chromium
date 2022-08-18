@@ -283,12 +283,9 @@ std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
 }
 
 SkColor AshColorProvider::GetBackgroundColor() const {
-  return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
-                                      IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetBackgroundDefaultColor() const {
-  return IsDarkModeEnabled() ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+  return GetBackgroundThemedColorImpl(
+      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque),
+      IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetBackgroundThemedColorImpl(
