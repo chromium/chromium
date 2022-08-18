@@ -6978,6 +6978,7 @@ crbug.com/1352607 external/wpt/css/css-transitions/transition-base-response-002.
 
 # Sheriff 2022-08-17
 crbug.com/1342623 [ Win ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Failure Pass ]
+crbug.com/1340167 fast/loader/iframe-navigation-stealing-focus.html [ Pass Timeout ]
 
 # Sheriff 2022-08-18
 crbug.com/1354013 virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Skip ]
