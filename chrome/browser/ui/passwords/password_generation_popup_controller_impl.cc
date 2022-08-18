@@ -146,7 +146,12 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
     zoom_controller->AddObserver(this);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+  help_text_ = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER);
+#else
   help_text_ = l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 PasswordGenerationPopupControllerImpl::
