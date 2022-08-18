@@ -175,14 +175,11 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value* policy_value =
-      pref_change_registrar_.prefs()->GetList(pref);
-  if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings :
-         policy_value->GetListDeprecated())
-      analysis_connector_settings_[connector].emplace_back(
-          service_settings, *service_provider_config_);
-  }
+  const base::Value::List& policy_value =
+      pref_change_registrar_.prefs()->GetValueList(pref);
+  for (const base::Value& service_settings : policy_value)
+    analysis_connector_settings_[connector].emplace_back(
+        service_settings, *service_provider_config_);
 }
 
 void ConnectorsManager::CacheReportingConnectorPolicy(
@@ -193,14 +190,11 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value* policy_value =
-      pref_change_registrar_.prefs()->GetList(pref);
-  if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings :
-         policy_value->GetListDeprecated())
-      reporting_connector_settings_[connector].emplace_back(
-          service_settings, *service_provider_config_);
-  }
+  const base::Value::List& policy_value =
+      pref_change_registrar_.prefs()->GetValueList(pref);
+  for (const base::Value& service_settings : policy_value)
+    reporting_connector_settings_[connector].emplace_back(
+        service_settings, *service_provider_config_);
 }
 
 void ConnectorsManager::CacheFileSystemConnectorPolicy(
@@ -211,14 +205,11 @@ void ConnectorsManager::CacheFileSystemConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value* policy_value =
-      pref_change_registrar_.prefs()->GetList(pref);
-  if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings :
-         policy_value->GetListDeprecated())
-      file_system_connector_settings_[connector].emplace_back(
-          service_settings, *service_provider_config_);
-  }
+  const base::Value::List& policy_value =
+      pref_change_registrar_.prefs()->GetValueList(pref);
+  for (const base::Value& service_settings : policy_value)
+    file_system_connector_settings_[connector].emplace_back(
+        service_settings, *service_provider_config_);
 }
 
 bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
