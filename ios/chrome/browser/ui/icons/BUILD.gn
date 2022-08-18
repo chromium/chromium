@@ -98,6 +98,8 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:camera_fill",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
+    "//ios/chrome/browser/ui/icons/resources:photo_badge_magnifyingglass",
+    "//ios/chrome/browser/ui/icons/resources:photo_badge_plus",
     "//ios/chrome/browser/ui/icons/resources:plus_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:popup_badge_minus",
     "//ios/chrome/browser/ui/icons/resources:square_number",

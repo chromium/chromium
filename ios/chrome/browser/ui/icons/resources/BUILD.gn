@@ -73,3 +73,16 @@ symbolset("popup_badge_minus") {
     "popup_badge_minus.symbolset/popup.badge.minus.cr.svg",
   ]
 }
+
+symbolset("photo_badge_plus") {
+  sources = [
+    "photo_badge_plus.symbolset/Contents.json",
+    "photo_badge_plus.symbolset/photo.badge.plus.cr.svg",
+  ]
+}
+symbolset("photo_badge_magnifyingglass") {
+  sources = [
+    "photo_badge_magnifyingglass.symbolset/Contents.json",
+    "photo_badge_magnifyingglass.symbolset/photo.badge.magnifyingglass.cr.svg",
+  ]
+}

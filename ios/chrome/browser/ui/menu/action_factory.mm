@@ -263,8 +263,12 @@
 
 - (UIAction*)actionSearchImageWithTitle:(NSString*)title
                                   Block:(ProceduralBlock)block {
+  UIImage* image =
+      UseSymbols() ? CustomSymbolWithPointSize(kPhotoBadgeMagnifyingglassSymbol,
+                                               kSymbolActionPointSize)
+                   : [UIImage imageNamed:@"search_image"];
   UIAction* action = [self actionWithTitle:title
-                                     image:[UIImage imageNamed:@"search_image"]
+                                     image:image
                                       type:MenuActionType::SearchImage
                                      block:block];
   return action;

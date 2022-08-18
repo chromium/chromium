@@ -172,10 +172,14 @@
                                                (ProceduralBlock)completion {
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UIImage* image = UseSymbols()
+                       ? CustomSymbolWithPointSize(kPhotoBadgePlusSymbol,
+                                                   kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"open_image_in_new_tab"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB)
-                      image:[UIImage imageNamed:@"open_image_in_new_tab"]
+                      image:image
                        type:MenuActionType::OpenImageInNewTab
                       block:^{
                         loadingAgent->Load(params);

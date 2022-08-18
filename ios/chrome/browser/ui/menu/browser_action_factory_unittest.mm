@@ -220,7 +220,8 @@ TEST_F(BrowserActionFactoryTest, OpenImageInNewTabAction) {
   GURL testURL = GURL("https://example.com/logo.png");
   UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
 
-  UIImage* expectedImage = [UIImage imageNamed:@"open_image_in_new_tab"];
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kPhotoBadgePlusSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
 

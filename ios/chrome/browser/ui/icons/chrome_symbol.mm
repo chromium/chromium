@@ -54,6 +54,9 @@ NSString* const kCameraSymbol = @"camera";
 NSString* const kCameraFillSymbol = @"camera_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
+NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
+NSString* const kPhotoBadgeMagnifyingglassSymbol =
+    @"photo_badge_magnifyinggglass";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";

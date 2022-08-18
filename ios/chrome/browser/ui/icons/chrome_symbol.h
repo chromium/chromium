@@ -17,7 +17,8 @@ extern NSString* const kCameraSymbol;
 extern NSString* const kCameraFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
-
+extern NSString* const kPhotoBadgePlusSymbol;
+extern NSString* const kPhotoBadgeMagnifyingglassSymbol;
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
