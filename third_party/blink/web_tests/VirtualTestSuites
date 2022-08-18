@@ -4,7 +4,8 @@
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["wpt_internal/origin_trials/anonymous-iframe"],
     "args": [
-      "--disable-blink-features=AnonymousIframe"
+      "--disable-blink-features=AnonymousIframe",
+      "--disable-features=PartitionedCookies"
     ]
   },
   {
