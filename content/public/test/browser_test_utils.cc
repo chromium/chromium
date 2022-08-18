@@ -2376,6 +2376,11 @@ RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents) {
   return static_cast<WebContentsImpl*>(web_contents)->GetKeyboardLockWidget();
 }
 
+RenderWidgetHost* GetMouseLockWidget(WebContents* web_contents) {
+  return static_cast<WebContentsImpl*>(web_contents)
+      ->mouse_lock_widget_for_testing();
+}
+
 bool RequestKeyboardLock(WebContents* web_contents,
                          absl::optional<base::flat_set<ui::DomCode>> codes) {
   DCHECK(!codes.has_value() || !codes.value().empty());

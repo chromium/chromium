@@ -1309,6 +1309,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     suppress_ime_events_for_testing_ = suppress;
   }
 
+  RenderWidgetHost* mouse_lock_widget_for_testing() {
+    return mouse_lock_widget_;
+  }
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
   using RenderViewHostIterationCallback =
