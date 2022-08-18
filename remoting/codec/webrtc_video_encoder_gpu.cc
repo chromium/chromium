@@ -22,6 +22,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
@@ -218,6 +219,7 @@ void WebrtcVideoEncoderGpu::Core::Encode(
     std::unique_ptr<webrtc::DesktopFrame> frame,
     const FrameParams& params,
     WebrtcVideoEncoder::EncodeCallback done) {
+  TRACE_EVENT0("media", "WebrtcVideoEncoderGpu::Core::Encode");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bitrate_filter_.SetFrameSize(frame->size().width(), frame->size().height());
 

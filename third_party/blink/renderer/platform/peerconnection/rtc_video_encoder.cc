@@ -23,6 +23,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
@@ -1314,6 +1315,7 @@ void RTCVideoEncoder::Impl::LogAndNotifyError(
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrame() {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrame");
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_next_frame_);
@@ -1357,6 +1359,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   }
 
   if (requires_copy_or_scale) {
+    TRACE_EVENT0("webrtc",
+                 "RTCVideoEncoder::Impl::EncodeOneFrame::CopyOrScale");
     const base::TimeDelta timestamp =
         frame ? frame->timestamp()
               : base::Milliseconds(next_frame->ntp_time_ms());
@@ -1462,6 +1466,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
+  TRACE_EVENT0("webrtc",
+               "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput");
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.IsEmpty() && input_buffers_free_.IsEmpty());
