@@ -363,6 +363,7 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
+    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
   ]
 }
 

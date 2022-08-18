@@ -4,6 +4,7 @@
 
 declare_args() {
   make_partition_alloc_standalone = false
+  use_freeslot_bitmap = false
 }
 
 # TODO(): move partition allocator's own args defined by
