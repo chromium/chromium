@@ -167,9 +167,15 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
             fps_context_config.customizations().find(normalized_site);
         customizations_it != fps_context_config.customizations().end()) {
       entry = customizations_it->second;
-    } else if (const auto sets_it = sets_->find(normalized_site);
-               sets_it != sets_->end()) {
-      entry = sets_it->second;
+    } else {
+      const auto canonical_it = aliases_.find(normalized_site);
+      const net::SchemefulSite& canonical_site = canonical_it == aliases_.end()
+                                                     ? normalized_site
+                                                     : canonical_it->second;
+      if (const auto sets_it = sets_->find(canonical_site);
+          sets_it != sets_->end()) {
+        entry = sets_it->second;
+      }
     }
   }
 
@@ -262,8 +268,7 @@ void FirstPartySetsManager::SetCompleteSets(
   if (sets_.has_value())
     return;
   sets_ = std::move(public_sets->sets);
-  // TODO(https://crbug.com/1349781): store aliases and read them when resolving
-  // queries.
+  aliases_ = std::move(public_sets->aliases);
   InvokePendingQueries();
 }
 

@@ -154,6 +154,11 @@ class FirstPartySetsManager {
   // received.
   absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // The site aliases. Used to normalize a given SchemefulSite into its
+  // canonical representative, before looking it up in `sets_`.
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The queue of queries that are waiting for the instance to be initialized.
