@@ -464,7 +464,16 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
 void AccountManagerFacadeImpl::ReportAuthError(
     const account_manager::AccountKey& account,
     const GoogleServiceAuthError& error) {
-  NOTIMPLEMENTED();
+  if (!account_manager_remote_ ||
+      remote_version_ < RemoteMinVersions::kReportAuthErrorMinVersion) {
+    LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
+                 << RemoteMinVersions::kReportAuthErrorMinVersion
+                 << " for ReportAuthError.";
+    return;
+  }
+
+  account_manager_remote_->ReportAuthError(ToMojoAccountKey(account),
+                                           ToMojoGoogleServiceAuthError(error));
 }
 
 void AccountManagerFacadeImpl::UpsertAccountForTesting(
