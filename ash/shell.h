@@ -425,6 +425,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return display_error_observer_.get();
   }
 
+  ProjectingObserver* projecting_observer() {
+    return projecting_observer_.get();
+  }
+
   DisplayHighlightController* display_highlight_controller() {
     return display_highlight_controller_.get();
   }

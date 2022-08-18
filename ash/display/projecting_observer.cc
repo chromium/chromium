@@ -5,6 +5,7 @@
 #include "ash/display/projecting_observer.h"
 
 #include "ash/shell.h"
+#include "ash/system/power/power_event_observer.h"
 #include "base/check_op.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/types/display_snapshot.h"
@@ -59,10 +60,12 @@ void ProjectingObserver::OnCastingSessionStartedOrStopped(bool started) {
 void ProjectingObserver::SetIsProjecting() {
   // "Projecting" is defined as having more than 1 output connected while at
   // least one of them is an internal output.
-  bool projecting =
+  is_projecting_ =
       has_internal_output_ && (output_count_ + casting_session_count_ > 1);
 
-  chromeos::PowerManagerClient::Get()->SetIsProjecting(projecting);
+  chromeos::PowerManagerClient::Get()->SetIsProjecting(is_projecting_);
+  if (Shell::HasInstance())
+    Shell::Get()->power_event_observer()->SetIsProjecting(is_projecting_);
 }
 
 }  // namespace ash
