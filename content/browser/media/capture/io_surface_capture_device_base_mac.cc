@@ -9,23 +9,6 @@
 
 namespace content {
 
-namespace {
-
-float ComputeMinFrameRate(float requested_frame_rate) {
-  // Set a minimum frame rate of 5 fps, unless the requested frame rate is
-  // even lower.
-  constexpr float kMinFrameRate = 5.f;
-
-  // Don't send frames at more than 80% the requested rate, because doing so
-  // can stochastically toggle between repeated and new frames.
-  constexpr float kRequestedFrameRateFactor = 0.8f;
-
-  return std::min(requested_frame_rate * kRequestedFrameRateFactor,
-                  kMinFrameRate);
-}
-
-}  // namespace
-
 IOSurfaceCaptureDeviceBase::IOSurfaceCaptureDeviceBase() = default;
 IOSurfaceCaptureDeviceBase::~IOSurfaceCaptureDeviceBase() = default;
 
@@ -36,18 +19,22 @@ void IOSurfaceCaptureDeviceBase::AllocateAndStart(
   DCHECK(client && !client_);
   client_ = std::move(client);
   capture_params_ = params;
-  min_frame_rate_ =
-      ComputeMinFrameRate(capture_params_.requested_format.frame_rate);
 
   OnStart();
 }
 
 void IOSurfaceCaptureDeviceBase::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  min_frame_rate_enforcement_timer_.reset();
   weak_factory_base_.InvalidateWeakPtrs();
 
   OnStop();
+}
+
+void IOSurfaceCaptureDeviceBase::RequestRefreshFrame() {
+  // Simply send the last received surface, if we ever received one.
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (last_received_io_surface_)
+    SendLastReceivedIOSurfaceToClient();
 }
 
 void IOSurfaceCaptureDeviceBase::OnReceivedIOSurfaceFromStream(
@@ -80,16 +67,6 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
                                          last_received_capture_format_,
                                          gfx::ColorSpace::CreateREC709()),
       {}, now, now - first_frame_time_);
-
-  // Reset `min_frame_rate_enforcement_timer_`.
-  if (!min_frame_rate_enforcement_timer_) {
-    min_frame_rate_enforcement_timer_ = std::make_unique<base::RepeatingTimer>(
-        FROM_HERE, base::Seconds(1 / min_frame_rate_),
-        base::BindRepeating(
-            &IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient,
-            weak_factory_base_.GetWeakPtr()));
-  }
-  min_frame_rate_enforcement_timer_->Reset();
 }
 
 void IOSurfaceCaptureDeviceBase::ComputeFrameSizeAndDestRect(

@@ -29,6 +29,9 @@ class CONTENT_EXPORT IOSurfaceCaptureDeviceBase
   // OnStop is called by StopAndDeAllocate.
   virtual void OnStop() = 0;
 
+  // media::VideoCaptureDevice overrides.
+  void RequestRefreshFrame() override;
+
  protected:
   void OnReceivedIOSurfaceFromStream(
       gfx::ScopedInUseIOSurface io_surface,
@@ -68,15 +71,6 @@ class CONTENT_EXPORT IOSurfaceCaptureDeviceBase
   // frames come in, then this will be repeatedly sent at `min_frame_rate_`.
   gfx::ScopedInUseIOSurface last_received_io_surface_;
   media::VideoCaptureFormat last_received_capture_format_;
-
-  // The minimum frame rate.
-  float min_frame_rate_ = 1.f;
-
-  // Timer to enforce `min_frame_rate_` by repeatedly calling
-  // SendLastReceivedIOSurfaceToClient.
-  // TODO(https://crbug.com/1171127): Remove the need for the capture device
-  // to re-submit static content.
-  std::unique_ptr<base::RepeatingTimer> min_frame_rate_enforcement_timer_;
 
   base::WeakPtrFactory<IOSurfaceCaptureDeviceBase> weak_factory_base_{this};
 };
