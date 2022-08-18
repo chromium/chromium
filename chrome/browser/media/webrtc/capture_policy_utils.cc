@@ -39,14 +39,11 @@ struct RestrictedCapturePolicy {
 }  // namespace
 
 bool IsOriginInList(const GURL& request_origin,
-                    const base::Value* allowed_origins) {
-  if (!allowed_origins || !allowed_origins->is_list())
-    return false;
-
+                    const base::Value::List& allowed_origins) {
   // Though we are not technically a Content Setting, ContentSettingsPattern
   // aligns better than URLMatcher with the rules from:
   // https://chromeenterprise.google/policies/url-patterns/.
-  for (const auto& value : allowed_origins->GetListDeprecated()) {
+  for (const auto& value : allowed_origins) {
     if (!value.is_string())
       continue;
     ContentSettingsPattern pattern =
@@ -92,7 +89,8 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
                                   AllowedScreenCaptureLevel::kDesktop}}};
 
   for (const auto& policy_list : kScreenCapturePolicyLists) {
-    if (IsOriginInList(request_origin, prefs.GetList(policy_list.pref_name))) {
+    if (IsOriginInList(request_origin,
+                       prefs.GetValueList(policy_list.pref_name))) {
       return policy_list.capture_level;
     }
   }
