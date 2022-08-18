@@ -92,7 +92,10 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener, Snac
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), mActivity, mActivity.getResources(), mModelList,
                 mToolbarModel, mDelegate, System::currentTimeMillis, templateUrlService,
-                mSelectionDelegate, mMetricsLogger, accessibilityUtil);
+                mSelectionDelegate, mMetricsLogger, accessibilityUtil, (message) -> {
+                    if (mRecyclerView == null) return;
+                    mRecyclerView.announceForAccessibility(message);
+                });
     }
 
     /**

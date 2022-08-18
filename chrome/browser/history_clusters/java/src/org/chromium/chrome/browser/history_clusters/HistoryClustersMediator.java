@@ -21,6 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
@@ -103,6 +104,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
     private final AccessibilityUtil mAccessibilityUtil;
+    private final Callback<String> mAnnounceForAccessibilityCallback;
     private final boolean mIsScrollToLoadDisabled;
 
     /**
@@ -122,13 +124,15 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      *         items in the list we're displaying.
      * @param metricsLogger Object that records metrics about user interactions.
      * @param accessibilityUtil Utility object that tells us about the current accessibility state.
+     * @param announceForAccessibilityCallback Callback that announces the given string for a11y.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
             TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate,
-            HistoryClustersMetricsLogger metricsLogger, AccessibilityUtil accessibilityUtil) {
+            HistoryClustersMetricsLogger metricsLogger, AccessibilityUtil accessibilityUtil,
+            Callback<String> announceForAccessibilityCallback) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -144,6 +148,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mSelectionDelegate = selectionDelegate;
         mMetricsLogger = metricsLogger;
         mAccessibilityUtil = accessibilityUtil;
+        mAnnounceForAccessibilityCallback = announceForAccessibilityCallback;
 
         PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         mToggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
@@ -313,6 +318,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mMetricsLogger.recordVisitAction(
                     HistoryClustersMetricsLogger.VisitAction.DELETED, visit);
             removeVisit(visit);
+        }
+
+        if (visits.size() == 1) {
+            announceForAccessibility(
+                    mResources.getString(R.string.delete_message, visits.get(0).getTitle()));
+        } else {
+            announceForAccessibility(
+                    mResources.getString(R.string.multiple_history_items_deleted, visits.size()));
         }
 
         mDelegate.removeMarkedItems();
@@ -533,6 +546,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         if (shouldShow) {
             mModelList.add(mMoreProgressItem);
         }
+    }
+
+    private void announceForAccessibility(String messsage) {
+        mAnnounceForAccessibilityCallback.onResult(messsage);
     }
 
     @VisibleForTesting
