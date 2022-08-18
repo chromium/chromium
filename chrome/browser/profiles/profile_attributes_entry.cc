@@ -173,9 +173,9 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
 
   MigrateObsoleteProfileAttributes();
 
-  const base::Value* entry_data = GetEntryData();
+  const base::Value::Dict* entry_data = GetEntryData();
   if (entry_data) {
-    if (!entry_data->FindKey(kIsConsentedPrimaryAccountKey)) {
+    if (!entry_data->contains(kIsConsentedPrimaryAccountKey)) {
       SetBool(kIsConsentedPrimaryAccountKey,
               !GetGAIAId().empty() || !GetUserName().empty());
     }
@@ -885,15 +885,15 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
   }
 }
 
-const base::Value* ProfileAttributesEntry::GetEntryData() const {
-  const base::Value* attributes =
-      prefs_->GetDictionary(prefs::kProfileAttributes);
-  return attributes->FindDictKey(storage_key_);
+const base::Value::Dict* ProfileAttributesEntry::GetEntryData() const {
+  const base::Value::Dict& attributes =
+      prefs_->GetValueDict(prefs::kProfileAttributes);
+  return attributes.FindDict(storage_key_);
 }
 
 const base::Value* ProfileAttributesEntry::GetValue(const char* key) const {
-  const base::Value* entry_data = GetEntryData();
-  return entry_data ? entry_data->FindKey(key) : nullptr;
+  const base::Value::Dict* entry_data = GetEntryData();
+  return entry_data ? entry_data->Find(key) : nullptr;
 }
 
 std::string ProfileAttributesEntry::GetString(const char* key) const {

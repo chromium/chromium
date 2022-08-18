@@ -284,7 +284,7 @@ class ProfileAttributesEntry {
   void RecordAccountNamesMetric() const;
 
   // Loads and saves the data to the local state.
-  const base::Value* GetEntryData() const;
+  const base::Value::Dict* GetEntryData() const;
 
   // Internal getter that returns a base::Value*, or nullptr if the key is not
   // present.
