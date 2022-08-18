@@ -36,8 +36,12 @@ const int32_t kMaxFileSizeBytes = 150 * 1024;
 base::expected<std::string, PasswordImporter::Status> ReadFileToString(
     const base::FilePath& path) {
   int64_t file_size;
-  if (GetFileSize(path, &file_size) && file_size > kMaxFileSizeBytes)
-    return base::unexpected(PasswordImporter::Status::LARGE_FILE);
+
+  if (GetFileSize(path, &file_size)) {
+    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
+    if (file_size > kMaxFileSizeBytes)
+      return base::unexpected(PasswordImporter::Status::LARGE_FILE);
+  }
 
   std::string contents;
   if (!base::ReadFileToString(path, &contents))
