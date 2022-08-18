@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -581,6 +582,7 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
   return new ConnectorsService(
       context,
       std::make_unique<ConnectorsManager>(
+          std::make_unique<BrowserCrashEventRouter>(context),
           ExtensionInstallEventRouter(context),
           user_prefs::UserPrefs::Get(context), GetServiceProviderConfig(),
           base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled)));

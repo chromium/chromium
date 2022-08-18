@@ -22,6 +22,7 @@ class FileSystemURL;
 }
 
 namespace enterprise_connectors {
+class BrowserCrashEventRouter;
 
 // Manages access to Connector policies for a given profile. This class is
 // responsible for caching the Connector policies, validate them against
@@ -36,10 +37,12 @@ class ConnectorsManager {
   using FileSystemConnectorsSettings =
       std::map<FileSystemConnector, std::vector<FileSystemServiceSettings>>;
 
-  ConnectorsManager(ExtensionInstallEventRouter extension_install_router,
-                    PrefService* pref_service,
-                    const ServiceProviderConfig* config,
-                    bool observe_prefs = true);
+  ConnectorsManager(
+      std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
+      ExtensionInstallEventRouter extension_install_router,
+      PrefService* pref_service,
+      const ServiceProviderConfig* config,
+      bool observe_prefs = true);
   ~ConnectorsManager();
 
   // Validates which settings should be applied to a reporting event
@@ -142,6 +145,9 @@ class ConnectorsManager {
   // Used to track changes of connector policies and propagate them in
   // |connector_settings_|.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // A router to report browser crash events via the reporting pipeline.
+  std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router_;
 
   // An observer to report extension install events via the reporting pipeline.
   ExtensionInstallEventRouter extension_install_event_router_;

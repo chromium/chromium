@@ -8,6 +8,7 @@
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -15,11 +16,13 @@
 namespace enterprise_connectors {
 
 ConnectorsManager::ConnectorsManager(
+    std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
     ExtensionInstallEventRouter extension_install_event_router,
     PrefService* pref_service,
     const ServiceProviderConfig* config,
     bool observe_prefs)
     : service_provider_config_(config),
+      browser_crash_event_router_(std::move(browser_crash_event_router)),
       extension_install_event_router_(
           std::move(extension_install_event_router)) {
   if (observe_prefs)

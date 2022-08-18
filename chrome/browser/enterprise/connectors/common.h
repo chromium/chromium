@@ -67,6 +67,10 @@ constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 // A MIME type string that matches all MIME types.
 constexpr char kWildcardMimeType[] = "*";
 
+// The reporting connector subdirectory in User_Data_Directory
+constexpr base::FilePath::CharType RC_BASE_DIR[] =
+    FILE_PATH_LITERAL("Enterprise/ReportingConnector/");
+
 enum class ReportingConnector {
   SECURITY_EVENT,
 };

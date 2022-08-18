@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -262,7 +263,8 @@ class ConnectorsManagerConnectorPoliciesTest
 };
 
 TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
   ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
@@ -290,7 +292,8 @@ TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
 }
 
 TEST_P(ConnectorsManagerConnectorPoliciesTest, EmptyPref) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // If the connector's settings list is empty, no analysis settings are ever
   // returned.
@@ -602,7 +605,8 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
 };
 
 TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, NormalPref) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
   ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
@@ -633,7 +637,8 @@ TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, NormalPref) {
 }
 
 TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, EmptyPref) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // If the connector's settings list is empty, no analysis settings are ever
   // returned.
@@ -687,7 +692,8 @@ class ConnectorsManagerAnalysisConnectorsTest
 };
 
 TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
@@ -780,7 +786,8 @@ class ConnectorsManagerAnalysisConnectorsSourceDestinationTest
 
 TEST_P(ConnectorsManagerAnalysisConnectorsSourceDestinationTest,
        DynamicPolicies) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
@@ -844,7 +851,8 @@ class ConnectorsManagerReportingTest
 };
 
 TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
@@ -889,7 +897,8 @@ class ConnectorsManagerFileSystemTest
 };
 
 TEST_P(ConnectorsManagerFileSystemTest, DynamicPolicies) {
-  ConnectorsManager manager(ExtensionInstallEventRouter(profile_),
+  ConnectorsManager manager(std::make_unique<BrowserCrashEventRouter>(profile_),
+                            ExtensionInstallEventRouter(profile_),
                             pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetFileSystemConnectorsSettingsForTesting().empty());

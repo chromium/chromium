@@ -3768,6 +3768,8 @@ static_library("browser") {
       "enterprise/connectors/file_system/signin_experience.h",
       "enterprise/connectors/file_system/uma_metrics_util.cc",
       "enterprise/connectors/file_system/uma_metrics_util.h",
+      "enterprise/connectors/reporting/browser_crash_event_router.cc",
+      "enterprise/connectors/reporting/browser_crash_event_router.h",
       "enterprise/connectors/reporting/extension_install_event_router.cc",
       "enterprise/connectors/reporting/extension_install_event_router.h",
       "enterprise/connectors/reporting/realtime_reporting_client.cc",
