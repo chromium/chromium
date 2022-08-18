@@ -28,13 +28,11 @@ base::StringPiece ToStringPiece(const char* str) {
 }  // namespace
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
-    const base::Value& dict) {
-  const std::string* search_url =
-      dict.FindStringKey(DefaultSearchManager::kURL);
-  const std::string* keyword =
-      dict.FindStringKey(DefaultSearchManager::kKeyword);
+    const base::Value::Dict& dict) {
+  const std::string* search_url = dict.FindString(DefaultSearchManager::kURL);
+  const std::string* keyword = dict.FindString(DefaultSearchManager::kKeyword);
   const std::string* short_name =
-      dict.FindStringKey(DefaultSearchManager::kShortName);
+      dict.FindString(DefaultSearchManager::kShortName);
   // Check required TemplateURLData fields first.
   if (!search_url || !keyword || !short_name) {
     return nullptr;
@@ -44,7 +42,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->SetKeyword(base::UTF8ToUTF16(*keyword));
   result->SetURL(*search_url);
 
-  const std::string* id = dict.FindStringKey(DefaultSearchManager::kID);
+  const std::string* id = dict.FindString(DefaultSearchManager::kID);
   if (id) {
     base::StringToInt64(*id, &result->id);
   }
@@ -52,72 +50,71 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   const std::string* string_value = nullptr;
 
   result->SetShortName(base::UTF8ToUTF16(*short_name));
-  result->prepopulate_id = dict.FindIntKey(DefaultSearchManager::kPrepopulateID)
+  result->prepopulate_id = dict.FindInt(DefaultSearchManager::kPrepopulateID)
                                .value_or(result->prepopulate_id);
-  result->starter_pack_id =
-      dict.FindIntKey(DefaultSearchManager::kStarterPackId)
-          .value_or(result->starter_pack_id);
-  string_value = dict.FindStringKey(DefaultSearchManager::kSyncGUID);
+  result->starter_pack_id = dict.FindInt(DefaultSearchManager::kStarterPackId)
+                                .value_or(result->starter_pack_id);
+  string_value = dict.FindString(DefaultSearchManager::kSyncGUID);
   if (string_value) {
     result->sync_guid = *string_value;
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kSuggestionsURL);
+  string_value = dict.FindString(DefaultSearchManager::kSuggestionsURL);
   if (string_value) {
     result->suggestions_url = *string_value;
   }
 
-  string_value = dict.FindStringKey(DefaultSearchManager::kImageURL);
+  string_value = dict.FindString(DefaultSearchManager::kImageURL);
   if (string_value) {
     result->image_url = *string_value;
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kNewTabURL);
+  string_value = dict.FindString(DefaultSearchManager::kNewTabURL);
   if (string_value) {
     result->new_tab_url = *string_value;
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kContextualSearchURL);
+  string_value = dict.FindString(DefaultSearchManager::kContextualSearchURL);
   if (string_value) {
     result->contextual_search_url = *string_value;
   }
 
-  string_value = dict.FindStringKey(DefaultSearchManager::kFaviconURL);
+  string_value = dict.FindString(DefaultSearchManager::kFaviconURL);
   if (string_value) {
     result->favicon_url = GURL(*string_value);
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kOriginatingURL);
+  string_value = dict.FindString(DefaultSearchManager::kOriginatingURL);
   if (string_value) {
     result->originating_url = GURL(*string_value);
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kLogoURL);
+  string_value = dict.FindString(DefaultSearchManager::kLogoURL);
   if (string_value) {
     result->logo_url = GURL(*string_value);
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kDoodleURL);
+  string_value = dict.FindString(DefaultSearchManager::kDoodleURL);
   if (string_value) {
     result->doodle_url = GURL(*string_value);
   }
 
   const std::string* search_url_post_params =
-      dict.FindStringKey(DefaultSearchManager::kSearchURLPostParams);
+      dict.FindString(DefaultSearchManager::kSearchURLPostParams);
   if (search_url_post_params) {
     result->search_url_post_params = *search_url_post_params;
   }
   const std::string* suggestions_url_post_params =
-      dict.FindStringKey(DefaultSearchManager::kSuggestionsURLPostParams);
+      dict.FindString(DefaultSearchManager::kSuggestionsURLPostParams);
   if (suggestions_url_post_params) {
     result->suggestions_url_post_params = *suggestions_url_post_params;
   }
   const std::string* image_url_post_params =
-      dict.FindStringKey(DefaultSearchManager::kImageURLPostParams);
+      dict.FindString(DefaultSearchManager::kImageURLPostParams);
   if (image_url_post_params) {
     result->image_url_post_params = *image_url_post_params;
   }
   const std::string* side_search_param =
-      dict.GetDict().FindString(DefaultSearchManager::kSideSearchParam);
+      dict.FindString(DefaultSearchManager::kSideSearchParam);
   if (side_search_param) {
     result->side_search_param = *side_search_param;
   }
   absl::optional<bool> safe_for_autoreplace =
-      dict.FindBoolKey(DefaultSearchManager::kSafeForAutoReplace);
+      dict.FindBool(DefaultSearchManager::kSafeForAutoReplace);
   if (safe_for_autoreplace) {
     result->safe_for_autoreplace = *safe_for_autoreplace;
   }
@@ -126,15 +123,15 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   std::string last_modified_str;
   std::string last_visited_str;
 
-  string_value = dict.FindStringKey(DefaultSearchManager::kDateCreated);
+  string_value = dict.FindString(DefaultSearchManager::kDateCreated);
   if (string_value) {
     date_created_str = *string_value;
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kLastModified);
+  string_value = dict.FindString(DefaultSearchManager::kLastModified);
   if (string_value) {
     last_modified_str = *string_value;
   }
-  string_value = dict.FindStringKey(DefaultSearchManager::kLastVisited);
+  string_value = dict.FindString(DefaultSearchManager::kLastVisited);
   if (string_value) {
     last_visited_str = *string_value;
   }
@@ -151,22 +148,22 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   if (base::StringToInt64(last_visited_str, &last_visited))
     result->last_visited = base::Time::FromInternalValue(last_visited);
 
-  result->usage_count = dict.FindIntKey(DefaultSearchManager::kUsageCount)
+  result->usage_count = dict.FindInt(DefaultSearchManager::kUsageCount)
                             .value_or(result->usage_count);
 
-  const base::Value* alternate_urls =
-      dict.FindListKey(DefaultSearchManager::kAlternateURLs);
+  const base::Value::List* alternate_urls =
+      dict.FindList(DefaultSearchManager::kAlternateURLs);
   if (alternate_urls) {
-    for (const auto& it : alternate_urls->GetListDeprecated()) {
+    for (const auto& it : *alternate_urls) {
       if (it.is_string())
         result->alternate_urls.push_back(it.GetString());
     }
   }
 
-  const base::Value* encodings =
-      dict.FindListKey(DefaultSearchManager::kInputEncodings);
+  const base::Value::List* encodings =
+      dict.FindList(DefaultSearchManager::kInputEncodings);
   if (encodings) {
-    for (const auto& it : encodings->GetListDeprecated()) {
+    for (const auto& it : *encodings) {
       std::string encoding;
       if (it.is_string())
         result->input_encodings.push_back(it.GetString());
@@ -174,19 +171,19 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   }
 
   result->created_by_policy =
-      dict.FindBoolKey(DefaultSearchManager::kCreatedByPolicy)
+      dict.FindBool(DefaultSearchManager::kCreatedByPolicy)
           .value_or(result->created_by_policy);
   result->created_from_play_api =
-      dict.FindBoolKey(DefaultSearchManager::kCreatedFromPlayAPI)
+      dict.FindBool(DefaultSearchManager::kCreatedFromPlayAPI)
           .value_or(result->created_from_play_api);
   result->preconnect_to_search_url =
-      dict.FindBoolKey(DefaultSearchManager::kPreconnectToSearchUrl)
+      dict.FindBool(DefaultSearchManager::kPreconnectToSearchUrl)
           .value_or(result->preconnect_to_search_url);
   result->prefetch_likely_navigations =
-      dict.FindBoolKey(DefaultSearchManager::kPrefetchLikelyNavigations)
+      dict.FindBool(DefaultSearchManager::kPrefetchLikelyNavigations)
           .value_or(result->prefetch_likely_navigations);
   result->is_active = static_cast<TemplateURLData::ActiveStatus>(
-      dict.FindIntKey(DefaultSearchManager::kIsActive)
+      dict.FindInt(DefaultSearchManager::kIsActive)
           .value_or(static_cast<int>(result->is_active)));
   return result;
 }

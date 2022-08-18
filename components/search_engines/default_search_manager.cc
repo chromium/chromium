@@ -171,7 +171,7 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   const base::Value* user_value =
       pref_service_->GetUserPrefValue(kDefaultSearchProviderDataPrefName);
   if (user_value && user_value->is_dict()) {
-    auto turl_data = TemplateURLDataFromDictionary(*user_value);
+    auto turl_data = TemplateURLDataFromDictionary(user_value->GetDict());
     if (turl_data)
       return turl_data;
   }
@@ -294,18 +294,18 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   default_search_mandatory_by_policy_ = pref->IsManaged();
   default_search_recommended_by_policy_ = pref->IsRecommended();
 
-  const base::Value* url_dict =
-      pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);
-  if (url_dict->DictEmpty())
+  const base::Value::Dict& url_dict =
+      pref_service_->GetValueDict(kDefaultSearchProviderDataPrefName);
+  if (url_dict.empty())
     return;
 
   if (default_search_mandatory_by_policy_ ||
       default_search_recommended_by_policy_) {
-    if (url_dict->FindBoolKey(kDisabledByPolicy).value_or(false))
+    if (url_dict.FindBool(kDisabledByPolicy).value_or(false))
       return;
   }
 
-  auto turl_data = TemplateURLDataFromDictionary(*url_dict);
+  auto turl_data = TemplateURLDataFromDictionary(url_dict);
   if (!turl_data)
     return;
 

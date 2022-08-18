@@ -7,10 +7,7 @@
 
 #include <memory>
 
-namespace base {
-class DictionaryValue;
-class Value;
-}
+#include <base/values.h>
 
 namespace TemplateURLPrepopulateData {
 struct PrepopulatedEngine;
@@ -23,7 +20,7 @@ struct TemplateURLData;
 
 // Deserializes a TemplateURLData from |dict|.
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
-    const base::Value& dict);
+    const base::Value::Dict& dict);
 
 // Serializes a TemplateURLData to |dict|.
 std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
