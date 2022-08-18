@@ -123,7 +123,6 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       AnimationHost* animation_host = GetAnimationHost(window_);
       if (animation_host)
         animation_host->OnWindowHidingAnimationCompleted();
-      window_->RemoveObserver(this);
     }
     delete this;
   }
