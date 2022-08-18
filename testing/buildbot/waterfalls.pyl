@@ -1565,7 +1565,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
-          'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'os_type': 'chromeos',
       },
