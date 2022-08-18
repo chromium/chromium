@@ -173,8 +173,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
 TEST_F(ArcSettingsServiceTest,
        InitialSettingsAppliedForInstanceAfterProvisioning) {
   arc_session_manager()->RequestEnable();
-  arc_session_manager()->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
 
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcInitialSettingsPending));
@@ -209,8 +208,7 @@ TEST_F(ArcSettingsServiceTest,
 TEST_F(ArcSettingsServiceTest,
        DISABLED_InitialSettingsAppliedForInstanceBeforeProvisioning) {
   arc_session_manager()->RequestEnable();
-  arc_session_manager()->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
 
   SetInstances();
   EXPECT_FALSE(

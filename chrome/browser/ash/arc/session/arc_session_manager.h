@@ -58,26 +58,26 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
                           public ash::SessionManagerClient::Observer,
                           public ash::ConciergeClient::VmObserver,
-                          public policy::PolicyService::Observer {
+                          public policy::PolicyService::Observer,
+                          public ArcRequirementChecker::Delegate {
  public:
   // Represents each State of ARC session.
   // NOT_INITIALIZED: represents the state that the Profile is not yet ready
   //   so that this service is not yet initialized, or Chrome is being shut
   //   down so that this is destroyed.
   // STOPPED: ARC session is not running, or being terminated.
-  // NEGOTIATING_TERMS_OF_SERVICE: Negotiating Google Play Store "Terms of
-  //   Service" with a user. There are several ways for the negotiation,
-  //   including opt-in flow, which shows "Terms of Service" page on ARC
-  //   support app, and OOBE flow, which shows "Terms of Service" page as a
-  //   part of Chrome OOBE flow.
-  //   If user does not accept the Terms of Service, disables Google Play
-  //   Store, which triggers RequestDisable() and the state will be set to
-  //   STOPPED, then.
-  // CHECKING_ANDROID_MANAGEMENT: Checking Android management status. Note that
-  //   the status is checked for each ARC session starting, but this is the
-  //   state only for the first boot case (= opt-in case). The second time and
-  //   later the management check is running in parallel with ARC session
-  //   starting, and in such a case, State is ACTIVE, instead.
+  // CHECKING_REQUIREMENTS: Checking requirements before starting ARC.
+  //   First, negotiates Google Play Store "Terms of Service" with a user. There
+  //   are several ways for the negotiation, including opt-in flow, which shows
+  //   "Terms of Service" page on ARC support app, and OOBE flow, which shows
+  //   "Terms of Service" page as a part of Chrome OOBE flow. If user does not
+  //   accept the Terms of Service, disables Google Play Store, which triggers
+  //   RequestDisable() and the state will be set to STOPPED, then.
+  //   Second, checks Android management status. Note that the status is checked
+  //   for each ARC session starting, but this is the state only for the first
+  //   boot case (= opt-in case). The second time and later the management check
+  //   is running in parallel with ARC session starting, and in such a case,
+  //   State is ACTIVE, instead.
   // REMOVING_DATA_DIR: When ARC is disabled, the data directory is removed.
   //   While removing is processed, ARC cannot be started. This is the state.
   // ACTIVE: ARC is running.
@@ -90,19 +90,16 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // ...(any)... -> STOPPED: on error.
   //
   // In the first boot case:
-  //   STOPPED -> NEGOTIATING_TERMS_OF_SERVICE: On request to enable.
-  //   NEGOTIATING_TERMS_OF_SERVICE -> CHECKING_ANDROID_MANAGEMENT: when a user
-  //     accepts "Terms Of Service"
-  //   CHECKING_ANDROID_MANAGEMENT -> ACTIVE: when the auth token is
-  //     successfully fetched.
+  //   STOPPED -> CHECKING_REQUIREMENTS: On request to enable.
+  //   CHECKING_REQUIREMENTS -> ACTIVE: when a user accepts "Terms Of Service"
+  //     and the auth token is successfully fetched.
   //
   // In the second (or later) boot case:
   //   STOPPED -> ACTIVE: when arc.enabled preference is checked that it is
   //     true. Practically, this is when the primary Profile gets ready.
   //
   // In the disabling case:
-  //   NEGOTIATING_TERMS_OF_SERVICE -> STOPPED
-  //   CHECKING_ANDROID_MANAGEMENT -> STOPPED
+  //   CHECKING_REQUIREMENTS -> STOPPED
   //   ACTIVE -> STOPPING -> (maybe REMOVING_DATA_DIR ->) STOPPED
   //   STOPPING: Eventually change the state to STOPPED. Do nothing
   //     immediately.
@@ -114,8 +111,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   enum class State {
     NOT_INITIALIZED,
     STOPPED,
-    NEGOTIATING_TERMS_OF_SERVICE,
-    CHECKING_ANDROID_MANAGEMENT,
+    CHECKING_REQUIREMENTS,
     REMOVING_DATA_DIR,
     ACTIVE,
     STOPPING,
@@ -297,9 +293,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Service then passing Android management check successfully.
   void StartArcForTesting();
 
-  // Invokes OnTermsOfServiceNegotiated as if negotiation is done for testing.
-  void OnTermsOfServiceNegotiatedForTesting(bool accepted) {
-    OnTermsOfServiceNegotiated(accepted);
+  // Invokes functions as if requirement checks are completed for testing.
+  void EmulateRequirementCheckCompletionForTesting() {
+    DCHECK(requirement_checker_);
+    requirement_checker_->EmulateRequirementCheckCompletionForTesting();
   }
 
   // Invokes OnExpandPropertyFilesAndReadSalt as if the expansion is done.
@@ -350,21 +347,17 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Negotiates the terms of service to user, if necessary.
   // Otherwise, move to StartAndroidManagementCheck().
   void MaybeStartTermsOfServiceNegotiation();
-  void OnTermsOfServiceNegotiated(bool accepted);
+
+  // ArcRequirementChecker::Delegate override:
+  void OnArcOptInManagementCheckStarted() override;
+  void OnAndroidManagementChecked(
+      ArcAndroidManagementChecker::CheckResult result) override;
+  void OnBackgroundAndroidManagementChecked(
+      ArcAndroidManagementChecker::CheckResult result) override;
 
   void ShutdownSession();
   void ResetArcState();
   void OnArcSignInTimeout();
-
-  // Starts Android management check. This is for first boot case (= Opt-in
-  // or OOBE flow case). In secondary or later ARC enabling, the check should
-  // run in background.
-  void StartAndroidManagementCheck();
-
-  // Called when the Android management check is done in opt-in flow or
-  // OOBE flow.
-  void OnAndroidManagementChecked(
-      ArcAndroidManagementChecker::CheckResult result);
 
   // Starts Android management check in background (in parallel with starting
   // ARC). This is for secondary or later ARC enabling.
@@ -374,11 +367,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // typically not yet ready. Thus, if we block ARC boot, it delays several
   // seconds, which is not very user friendly.
   void StartBackgroundAndroidManagementCheck();
-
-  // Called when the background Android management check is done. It is
-  // triggered when the second or later ARC boot timing.
-  void OnBackgroundAndroidManagementChecked(
-      ArcAndroidManagementChecker::CheckResult result);
 
   // Requests to start ARC instance. Also, updates the internal state to
   // ACTIVE.
@@ -463,8 +451,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcDataRemover> data_remover_;
 
   std::unique_ptr<ArcRequirementChecker> requirement_checker_;
-
-  std::unique_ptr<ArcAndroidManagementChecker> android_management_checker_;
 
   std::unique_ptr<ScopedOptInFlowTracker> scoped_opt_in_tracker_;
   std::unique_ptr<ArcPaiStarter> pai_starter_;

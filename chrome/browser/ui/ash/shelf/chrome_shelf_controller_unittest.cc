@@ -4394,12 +4394,12 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcManaged) {
                    "Chrome, Play Store");
 
   // ARC is managed and enabled, Play Store pin should be available.
-  // Note: CHECKING_ANDROID_MANAGEMENT here means that opt-in flow is skipped.
+  // Note: CHECKING_REQUIREMENTS here means that opt-in flow is skipped.
   profile()->GetTestingPrefService()->SetManagedPref(
       arc::prefs::kArcEnabled, std::make_unique<base::Value>(true));
   base::RunLoop().RunUntilIdle();
   ValidateArcState(true, true,
-                   arc::ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+                   arc::ArcSessionManager::State::CHECKING_REQUIREMENTS,
                    "Chrome, Play Store");
 
   // ARC is managed and disabled, Play Store pin should not be available.
@@ -4417,10 +4417,10 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcManaged) {
                    "Chrome, Play Store");
 
   // ARC is not managed and enabled, Play Store pin should be available.
-  // Note: NEGOTIATING_TERMS_OF_SERVICE here means that opt-in flow starts.
+  // Note: CHECKING_REQUIREMENTS here means that opt-in flow starts.
   EnablePlayStore(true);
   ValidateArcState(true, false,
-                   arc::ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+                   arc::ArcSessionManager::State::CHECKING_REQUIREMENTS,
                    "Chrome, Play Store");
 
   // User disables ARC. ARC is not managed and disabled, Play Store pin should
@@ -4432,7 +4432,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcManaged) {
   // Even if re-enable it again, Play Store pin does not appear automatically.
   EnablePlayStore(true);
   ValidateArcState(true, false,
-                   arc::ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+                   arc::ArcSessionManager::State::CHECKING_REQUIREMENTS,
                    "Chrome");
 }
 

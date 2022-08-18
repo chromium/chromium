@@ -147,7 +147,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -228,7 +228,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -269,7 +269,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -306,12 +306,11 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
 
   // Emulate accepting the terms of service.
-  arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager_->StartArcForTesting();
+  arc_session_manager_->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
 
   // Emulate successful provisioning.
@@ -378,12 +377,11 @@ TEST_F(ArcProvisionNotificationServiceOobeTest,
   arc_session_manager_->RequestEnable();
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
 
   // Emulate accepting the terms of service.
-  arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager_->StartArcForTesting();
+  arc_session_manager_->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
 
   // Emulate successful provisioning.

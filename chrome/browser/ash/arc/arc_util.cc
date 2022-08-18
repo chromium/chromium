@@ -142,8 +142,7 @@ bool IsUnaffiliatedArcAllowed() {
       case ArcSessionManager::State::STOPPED:
         // Apply logic below
         break;
-      case ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE:
-      case ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT:
+      case ArcSessionManager::State::CHECKING_REQUIREMENTS:
       case ArcSessionManager::State::REMOVING_DATA_DIR:
       case ArcSessionManager::State::ACTIVE:
       case ArcSessionManager::State::STOPPING:

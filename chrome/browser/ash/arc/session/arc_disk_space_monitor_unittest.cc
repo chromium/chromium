@@ -63,10 +63,6 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     arc_session_manager_->Initialize();
     arc_session_manager_->RequestEnable();
 
-    // Invoke OnTermsOfServiceNegotiated as if negotiation is done for testing.
-    // Now we are ready to call arc_session_manager_->StartArcForTesting().
-    arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
-
     // ArcDiskSpaceMonitor should be initialized after the session manager is
     // created.
     arc_disk_space_monitor_ = std::make_unique<ArcDiskSpaceMonitor>();
@@ -132,7 +128,7 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsHigherThanPreStopNotification) {
   ash::FakeSpacedClient::Get()->set_free_disk_space(
       absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
 
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
   // Wait until ArcDiskSpaceMonitor::CheckDiskSpace() runs.
@@ -159,7 +155,7 @@ TEST_F(ArcDiskSpaceMonitorTest,
   ash::FakeSpacedClient::Get()->set_free_disk_space(
       absl::make_optional(kDiskSpaceThresholdForPreStopNotification - 1));
 
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
   // Wait until ArcDiskSpaceMonitor::CheckDiskSpace() runs.
@@ -198,7 +194,7 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
   ash::FakeSpacedClient::Get()->set_free_disk_space(
       absl::make_optional(kDiskSpaceThresholdForStoppingArc - 1));
 
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
   // Wait until ArcDiskSpaceMonitor::CheckDiskSpace() runs.

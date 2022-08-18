@@ -113,6 +113,8 @@ base::TimeDelta GetArcSignInTimeout() {
 }
 
 // Updates UMA with user cancel only if error is not currently shown.
+// TODO(hashimoto): Move the caller code to arc_requirement_checker.cc to remove
+// this duplicate.
 void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
   if (!support_host ||
       support_host->ui_page() == ArcSupportHost::UIPage::NO_PAGE ||
@@ -817,8 +819,7 @@ void ArcSessionManager::ShutdownSession() {
       // Now ARC is stopping. Do nothing here.
       VLOG(1) << "Skipping session shutdown because state is: " << state_;
       break;
-    case State::NEGOTIATING_TERMS_OF_SERVICE:
-    case State::CHECKING_ANDROID_MANAGEMENT:
+    case State::CHECKING_REQUIREMENTS:
       // We need to kill the mini-container that might be running here.
       arc_session_runner_->RequestStop();
       // While RequestStop is asynchronous, ArcSessionManager is agnostic to the
@@ -843,7 +844,6 @@ void ArcSessionManager::ResetArcState() {
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
-  android_management_checker_.reset();
   wait_for_policy_timer_.AbandonAndStop();
 }
 
@@ -890,8 +890,7 @@ void ArcSessionManager::CancelAuthCode() {
   // ACTIVE_DIRECTORY_AUTH, closing the window should stop ARC since the user
   // chooses to not sign in. In any other case, ARC is booting normally and
   // the instance should not be stopped.
-  if ((state_ != State::NEGOTIATING_TERMS_OF_SERVICE &&
-       state_ != State::CHECKING_ANDROID_MANAGEMENT) &&
+  if (state_ != State::CHECKING_REQUIREMENTS &&
       (!support_host_ ||
        (support_host_->ui_page() != ArcSupportHost::UIPage::ERROR &&
         support_host_->ui_page() !=
@@ -1148,7 +1147,7 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   DCHECK(!IsArcOptInVerificationDisabled());
 
   DCHECK_EQ(state_, State::STOPPED);
-  state_ = State::NEGOTIATING_TERMS_OF_SERVICE;
+  state_ = State::CHECKING_REQUIREMENTS;
 
   // TODO(hidehiko): In kArcSignedIn = true case, this method should never
   // be called. Remove the check.
@@ -1159,6 +1158,7 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     scoped_opt_in_tracker_ = std::make_unique<ScopedOptInFlowTracker>();
   }
 
+  bool is_terms_of_service_negotiation_needed = true;
   if (!IsArcTermsOfServiceNegotiationNeeded(profile_)) {
     if (IsArcStatsReportingEnabled() &&
         !profile_->GetPrefs()->GetBoolean(prefs::kArcTermsAccepted)) {
@@ -1166,28 +1166,22 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
       // notice during ARC setup.
       profile_->GetPrefs()->SetBoolean(prefs::kArcSkippedReportingNotice, true);
     }
-
-    // Moves to next state, Android management check, immediately, as if
-    // Terms of Service negotiation is done successfully.
-    StartAndroidManagementCheck();
-    return;
+    is_terms_of_service_negotiation_needed = false;
+  } else {
+    // Start the mini-container (or mini-VM) here to save time starting the OS
+    // if the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
+    // login screen, doing so on ToS screen is safe and desirable. The user has
+    // already shown the intent to opt-in (or, if this is during OOBE, accepting
+    // the ToS is mandatory), and the user's cryptohome has already been
+    // mounted. vm_concierge is already running too. For those reasons, calling
+    // StartMiniArc() for ARCVM here will actually make its perceived boot time
+    // faster.
+    StartMiniArc();
   }
-
-  // Start the mini-container (or mini-VM) here to save time starting the OS if
-  // the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
-  // login screen, doing so on ToS screen is safe and desirable. The user has
-  // already shown the intent to opt-in (or, if this is during OOBE, accepting
-  // the ToS is mandatory), and the user's cryptohome has already been mounted.
-  // vm_concierge is already running too. For those reasons, calling
-  // StartMiniArc() for ARCVM here will actually make its perceived boot time
-  // faster.
-  StartMiniArc();
-
-  requirement_checker_ =
-      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
-  requirement_checker_->StartTermsOfServiceNegotiation(
-      base::BindOnce(&ArcSessionManager::OnTermsOfServiceNegotiated,
-                     weak_ptr_factory_.GetWeakPtr()));
+  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
+      this, profile_, support_host_.get());
+  requirement_checker_->StartRequirementChecks(
+      is_terms_of_service_negotiation_needed);
 }
 
 void ArcSessionManager::StartArcForTesting() {
@@ -1195,27 +1189,7 @@ void ArcSessionManager::StartArcForTesting() {
   StartArc();
 }
 
-void ArcSessionManager::OnTermsOfServiceNegotiated(bool accepted) {
-  DCHECK_EQ(state_, State::NEGOTIATING_TERMS_OF_SERVICE);
-  DCHECK(profile_);
-  DCHECK(requirement_checker_ || !g_ui_enabled);
-  requirement_checker_.reset();
-
-  if (!accepted) {
-    VLOG(1) << "Terms of services declined";
-    // User does not accept the Terms of Service. Disable Google Play Store.
-    MaybeUpdateOptInCancelUMA(support_host_.get());
-    SetArcPlayStoreEnabledForProfile(profile_, false);
-    return;
-  }
-
-  // Terms were accepted.
-  VLOG(1) << "Terms of services accepted";
-  profile_->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
-  StartAndroidManagementCheck();
-}
-
-void ArcSessionManager::StartAndroidManagementCheck() {
+void ArcSessionManager::OnArcOptInManagementCheckStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // State::STOPPED appears here in following scenario.
@@ -1225,40 +1199,19 @@ void ArcSessionManager::StartAndroidManagementCheck() {
   // At this moment |prefs::kArcTermsAccepted| is set to true, once user
   // confirmed ToS prior to provisioning flow. Once user presses "Try Again"
   // button, OnRetryClicked calls this immediately.
-  DCHECK(state_ == State::NEGOTIATING_TERMS_OF_SERVICE ||
-         state_ == State::CHECKING_ANDROID_MANAGEMENT ||
-         state_ == State::STOPPED)
+  DCHECK(state_ == State::CHECKING_REQUIREMENTS || state_ == State::STOPPED)
       << state_;
-  state_ = State::CHECKING_ANDROID_MANAGEMENT;
-
-  // Show loading UI only if ARC support app's window is already shown.
-  // User may not see any ARC support UI if everything needed is done in
-  // background. In such a case, showing loading UI here (then closed sometime
-  // soon later) would look just noisy.
-  if (support_host_ &&
-      support_host_->ui_page() != ArcSupportHost::UIPage::NO_PAGE) {
-    support_host_->ShowArcLoading();
-  }
 
   for (auto& observer : observer_list_)
     observer.OnArcOptInManagementCheckStarted();
-
-  if (!g_ui_enabled)
-    return;
-
-  android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
-      profile_, false /* retry_on_error */);
-  android_management_checker_->StartCheck(
-      base::BindOnce(&ArcSessionManager::OnAndroidManagementChecked,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::OnAndroidManagementChecked(
     ArcAndroidManagementChecker::CheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(state_, State::CHECKING_ANDROID_MANAGEMENT);
-  DCHECK(android_management_checker_);
-  android_management_checker_.reset();
+  DCHECK_EQ(state_, State::CHECKING_REQUIREMENTS);
+  DCHECK(requirement_checker_);
+  requirement_checker_.reset();
 
   switch (result) {
     case ArcAndroidManagementChecker::CheckResult::ALLOWED:
@@ -1287,7 +1240,7 @@ void ArcSessionManager::OnAndroidManagementChecked(
 void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::ACTIVE);
-  DCHECK(!android_management_checker_);
+  DCHECK(!requirement_checker_);
 
   // Skip Android management check for testing.
   // We also skip Android management check for Kiosk and Public Session mode,
@@ -1298,11 +1251,9 @@ void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
     return;
   }
 
-  android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
-      profile_, true /* retry_on_error */);
-  android_management_checker_->StartCheck(
-      base::BindOnce(&ArcSessionManager::OnBackgroundAndroidManagementChecked,
-                     weak_ptr_factory_.GetWeakPtr()));
+  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
+      this, profile_, support_host_.get());
+  requirement_checker_->StartBackgroundAndroidManagementCheck();
 }
 
 void ArcSessionManager::OnBackgroundAndroidManagementChecked(
@@ -1310,8 +1261,8 @@ void ArcSessionManager::OnBackgroundAndroidManagementChecked(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (g_enable_check_android_management_in_tests.value_or(true)) {
-    DCHECK(android_management_checker_);
-    android_management_checker_.reset();
+    DCHECK(requirement_checker_);
+    requirement_checker_.reset();
   }
 
   switch (result) {
@@ -1389,8 +1340,7 @@ void ArcSessionManager::OnFirstPoliciesLoadedOrTimeout() {
 
 void ArcSessionManager::StartArc() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(state_ == State::STOPPED ||
-         state_ == State::CHECKING_ANDROID_MANAGEMENT)
+  DCHECK(state_ == State::STOPPED || state_ == State::CHECKING_REQUIREMENTS)
       << state_;
   state_ = State::ACTIVE;
 
@@ -1757,8 +1707,7 @@ std::ostream& operator<<(std::ostream& os,
   switch (state) {
     MAP_STATE(NOT_INITIALIZED);
     MAP_STATE(STOPPED);
-    MAP_STATE(NEGOTIATING_TERMS_OF_SERVICE);
-    MAP_STATE(CHECKING_ANDROID_MANAGEMENT);
+    MAP_STATE(CHECKING_REQUIREMENTS);
     MAP_STATE(REMOVING_DATA_DIR);
     MAP_STATE(ACTIVE);
     MAP_STATE(STOPPING);

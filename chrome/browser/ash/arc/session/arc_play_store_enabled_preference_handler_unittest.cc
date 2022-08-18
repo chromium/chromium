@@ -169,7 +169,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeTriggersService) {
 
   SetArcPlayStoreEnabledForProfile(profile(), true);
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  ASSERT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 
   SetArcPlayStoreEnabledForProfile(profile(), false);
@@ -188,7 +188,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest,
   preference_handler()->Start();
 
   // Setting profile initiates a code fetching process.
-  ASSERT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  ASSERT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 }
 
@@ -228,7 +228,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
 
   SetArcPlayStoreEnabledForProfile(profile(), true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 
   SetArcPlayStoreEnabledForProfile(profile(), false);
@@ -259,7 +259,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, ManualStart) {
   arc_session_manager()->RequestEnable();
 
   // Now ARC started by manual request.
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 }
 
@@ -283,7 +283,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, ManualStartIgnorePreference) {
   // Now ARC started by manual request even if Play Store enabled preference
   // was not set.
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 }
 
@@ -393,7 +393,7 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateManagedEnabled) {
   EXPECT_TRUE(arc_session_manager()
                   ->GetArcSessionRunnerForTesting()
                   ->GetArcSessionForTesting());
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 }
 
