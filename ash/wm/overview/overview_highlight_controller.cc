@@ -87,6 +87,12 @@ void OverviewHighlightController::MoveHighlight(bool reverse) {
   UpdateHighlight(traversable_views[index]);
 }
 
+void OverviewHighlightController::UpdateA11yFocusWindow(
+    OverviewHighlightableView* name_view) {
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      name_view->GetView()->GetWidget()->GetNativeWindow());
+}
+
 void OverviewHighlightController::MoveHighlightToView(
     OverviewHighlightableView* target_view) {
   const std::vector<OverviewHighlightableView*> traversable_views =

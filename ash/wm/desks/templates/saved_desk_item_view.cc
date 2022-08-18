@@ -29,6 +29,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -461,8 +462,12 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
                                    ->overview_controller()
                                    ->overview_session()
                                    ->highlight_controller();
-  if (highlight_controller->IsFocusHighlightVisible())
+  if (highlight_controller->IsFocusHighlightVisible()) {
     highlight_controller->MoveHighlightToView(name_view_);
+
+    // Update a11y focus window.
+    highlight_controller->UpdateA11yFocusWindow(name_view_);
+  }
 
   if (!defer_select_all_)
     name_view_->SelectAll(false);
