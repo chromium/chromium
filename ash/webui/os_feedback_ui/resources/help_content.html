@@ -76,7 +76,8 @@
     <dom-repeat items="[[searchResult.contentList]]">
       <template>
         <div class="help-item">
-          <a href="[[getUrl_(item)]]" target="_blank">
+          <a href="[[getUrl_(item)]]" target="_blank"
+              on-click="handleHelpContentClicked_">
             <iron-icon icon="[[getIcon_(item.contentType)]]"
                 class="help-item-icon">
             </iron-icon>

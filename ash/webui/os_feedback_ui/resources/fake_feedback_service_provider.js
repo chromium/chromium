@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {FeedbackAppPostSubmitAction, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppExitPath, FeedbackAppPostSubmitAction, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -50,6 +50,9 @@ export class FakeFeedbackServiceProvider {
 
     /** @type {?FeedbackAppPostSubmitAction} */
     this.postSubmitAction_ = null;
+
+    /** @type {?FeedbackAppExitPath} */
+    this.exitPath_ = null;
 
     /** @type {Map<FeedbackAppPreSubmitAction, number>} */
     this.preSubmitActionMap_ = new Map();
@@ -214,6 +217,23 @@ export class FakeFeedbackServiceProvider {
   recordPostSubmitAction(action) {
     if (this.postSubmitAction_ === null) {
       this.postSubmitAction_ = action;
+    }
+  }
+
+  /**
+   * @param {?FeedbackAppExitPath} exitPath
+   * @return {boolean}
+   */
+  isRecordExitPathCalled(exitPath) {
+    return this.exitPath_ === exitPath;
+  }
+
+  /**
+   * @param {?FeedbackAppExitPath} exitPath
+   */
+  recordExitPath(exitPath) {
+    if (this.exitPath_ === null) {
+      this.exitPath_ = exitPath;
     }
   }
 

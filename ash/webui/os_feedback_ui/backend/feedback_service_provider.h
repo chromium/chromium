@@ -42,6 +42,8 @@ class FeedbackServiceProvider
       os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) override;
   void RecordPreSubmitAction(
       os_feedback_ui::mojom::FeedbackAppPreSubmitAction action) override;
+  void RecordExitPath(
+      os_feedback_ui::mojom::FeedbackAppExitPath exit_path) override;
 
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>

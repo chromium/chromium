@@ -68,4 +68,8 @@ void EmitFeedbackAppDescriptionLength(int length) {
   base::UmaHistogramCounts1000(kFeedbackAppDescriptionLength, length);
 }
 
+void EmitFeedbackAppExitPath(mojom::FeedbackAppExitPath exit_path) {
+  base::UmaHistogramEnumeration(kFeedbackAppExitPath, exit_path);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

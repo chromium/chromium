@@ -165,6 +165,25 @@ enum FeedbackAppPreSubmitAction {
   kViewedMetrics
 };
 
+// User exit paths.
+enum FeedbackAppExitPath {
+  // User quit on search page after clicking some help contents.
+  kQuitSearchPageHelpContentClicked,
+  // User quit on search page without clicking some help contents.
+  kQuitSearchPageNoHelpContentClicked,
+  // User close on search page because no help content is shown (Offline or
+  // Search is down).
+  kQuitNoResultFound,
+  // User close on share data page after clicking some help contents.
+  kQuitShareDataPageHelpContentClicked,
+  // User close on share data page without clicking some help contents.
+  kQuitShareDataPageNoHelpContentClicked,
+  // User submit feedback and click the help content.
+  kSuccessHelpContentClicked,
+  // User submit feedback without clicking the help content.
+  kSuccessNoHelpContentClicked
+};
+
 // Provides services needed by the feedback UI to display data and send reports.
 // Implemented in the browser process and called by the Feedback SWA
 // (a renderer process).
@@ -193,4 +212,6 @@ interface FeedbackServiceProvider {
   RecordPostSubmitAction(FeedbackAppPostSubmitAction action);
   // Record metrics of users' action before sending the feedback.
   RecordPreSubmitAction(FeedbackAppPreSubmitAction action);
+  // Record metrics of users' exit paths of feedback app.
+  RecordExitPath(FeedbackAppExitPath exit_path);
 };

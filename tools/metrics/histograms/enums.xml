@@ -41352,6 +41352,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="kNo"/>
 </enum>
 
+<enum name="FeedbackAppExitPath">
+  <int value="0" label="kQuitSearchPageHelpContentClicked"/>
+  <int value="1" label="kQuitSearchPageNoHelpContentClicked"/>
+  <int value="2" label="kQuitNoResultFound"/>
+  <int value="3" label="kQuitShareDataPageHelpContentClicked"/>
+  <int value="4" label="kQuitShareDataPageNoHelpContentClicked"/>
+  <int value="5" label="kSuccessHelpContentClicked"/>
+  <int value="6" label="kSuccessNoHelpContentClicked"/>
+</enum>
+
 <enum name="FeedbackAppPostSubmitAction">
   <int value="0" label="kSendNewReport"/>
   <int value="1" label="kClickDoneButton"/>

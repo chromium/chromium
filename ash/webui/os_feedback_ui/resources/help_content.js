@@ -18,6 +18,13 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';
 
+
+/**
+ * The host of trusted parent page.
+ * @type {string}
+ */
+export const OS_FEEDBACK_TRUSTED_ORIGIN = 'chrome://os-feedback';
+
 /**
  * @const {string}
  */
@@ -169,6 +176,19 @@ export class HelpContentElement extends HelpContentElementBase {
     } else {
       return 'illustrations/network_unavailable_lightmode.svg';
     }
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleHelpContentClicked_(e) {
+    e.stopPropagation();
+    window.parent.postMessage(
+        {
+          id: 'help-content-clicked',
+        },
+        OS_FEEDBACK_TRUSTED_ORIGIN);
   }
 }
 

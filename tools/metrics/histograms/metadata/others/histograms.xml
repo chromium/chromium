@@ -5802,6 +5802,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.ExitPath" enum="FeedbackAppExitPath"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records a summary of the actions the user took before exiting the app. Fires
+    when user closes the feedback app, case includes: User quits on search page
+    after clicking some help contents; User quits on search page without
+    clicking some help contents; User closes on search page because no help
+    content is shown(Offline or Search is down); User closes on share data page
+    after clicking help content; User closes on share data page without clicking
+    help content; User submits feedback after clicking the help content; User
+    submits feedback without clicking the help content.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

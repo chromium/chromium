@@ -11,8 +11,20 @@ import './strings.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppExitPath, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
+
+/**
+ * The host of untrusted child page.
+ * @type {string}
+ */
+const OS_FEEDBACK_UNTRUSTED_ORIGIN = 'chrome-untrusted://os-feedback';
+
+/**
+ * The id of help-content-clicked message.
+ * @type {string}
+ */
+const HELP_CONTENT_CLICKED = 'help-content-clicked';
 
 /**
  * Enum for feedback flow states.
@@ -95,6 +107,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.sendReportStatus_;
+
+    /**
+     * Whether user clicks the help content or not.
+     * @type {boolean}
+     * @private
+     */
+    this.helpContentClicked_ = false;
   }
 
   ready() {
@@ -103,6 +122,40 @@ export class FeedbackFlowElement extends PolymerElement {
     this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
       this.feedbackContext_ = response.feedbackContext;
       this.setAdditionalContextFromQueryParams_();
+    });
+
+    window.addEventListener('message', event => {
+      if (event.data.id !== HELP_CONTENT_CLICKED) {
+        return;
+      }
+      if (event.origin !== OS_FEEDBACK_UNTRUSTED_ORIGIN) {
+        console.error('Unknown origin: ' + event.origin);
+        return;
+      }
+      this.helpContentClicked_ = true;
+    });
+
+    window.addEventListener('beforeunload', event => {
+      event.preventDefault();
+
+      // TODO(longbowei): Handle kQuitNoResultFound case.
+      switch (this.currentState_) {
+        case FeedbackFlowState.SEARCH:
+          this.recordExitPath_(
+              FeedbackAppExitPath.kQuitSearchPageHelpContentClicked,
+              FeedbackAppExitPath.kQuitSearchPageNoHelpContentClicked);
+          break;
+        case FeedbackFlowState.SHARE_DATA:
+          this.recordExitPath_(
+              FeedbackAppExitPath.kQuitShareDataPageHelpContentClicked,
+              FeedbackAppExitPath.kQuitShareDataPageNoHelpContentClicked);
+          break;
+        case FeedbackFlowState.CONFIRMATION:
+          this.recordExitPath_(
+              FeedbackAppExitPath.kSuccessHelpContentClicked,
+              FeedbackAppExitPath.kSuccessNoHelpContentClicked);
+          break;
+      }
     });
   }
 
@@ -203,6 +256,17 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   /**
+   * @param {!FeedbackAppExitPath} pathHelpContentClicked
+   * @param {!FeedbackAppExitPath} pathNoHelpContentClicked
+   * @private
+   */
+  recordExitPath_(pathHelpContentClicked, pathNoHelpContentClicked) {
+    this.helpContentClicked_ ?
+        this.feedbackServiceProvider_.recordExitPath(pathHelpContentClicked) :
+        this.feedbackServiceProvider_.recordExitPath(pathNoHelpContentClicked);
+  }
+
+  /**
    * @param {!FeedbackFlowState} newState
    */
   setCurrentStateForTesting(newState) {
@@ -221,6 +285,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   setDescriptionForTesting(text) {
     this.description_ = text;
+  }
+
+  /**
+   * @param {boolean} helpContentClicked
+   */
+  setHelpContentClickedForTesting(helpContentClicked) {
+    this.helpContentClicked_ = helpContentClicked;
   }
 }
 

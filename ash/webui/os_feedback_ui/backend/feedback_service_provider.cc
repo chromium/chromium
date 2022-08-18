@@ -82,6 +82,11 @@ void FeedbackServiceProvider::RecordPreSubmitAction(
   os_feedback_ui::metrics::EmitFeedbackAppPreSubmitAction(action);
 }
 
+void FeedbackServiceProvider::RecordExitPath(
+    os_feedback_ui::mojom::FeedbackAppExitPath exit_path) {
+  os_feedback_ui::metrics::EmitFeedbackAppExitPath(exit_path);
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

@@ -6,7 +6,8 @@ import {fakeFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {FeedbackContext, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
+import {FeedbackAppExitPath, FeedbackContext, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
+import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -70,6 +71,33 @@ export function FeedbackFlowTestSuite() {
     assertTrue(!!page);
 
     return /** @type {!SearchPageElement} */ (page.$['searchPage']);
+  }
+
+  /**
+   * @param {boolean} isCalled
+   * @param {FeedbackAppExitPath} exitPath
+   * @private
+   */
+  function verifyRecordExitPathCalled(isCalled, exitPath) {
+    isCalled ?
+        assertTrue(feedbackServiceProvider.isRecordExitPathCalled(exitPath)) :
+        assertFalse(feedbackServiceProvider.isRecordExitPathCalled(exitPath));
+  }
+
+  /**
+   * @param {FeedbackFlowState} exitPage
+   * @param {FeedbackAppExitPath} exitPath
+   * @param {boolean} helpContentClicked
+   * @private
+   */
+  function verifyExitPathMetricsEmitted(
+      exitPage, exitPath, helpContentClicked) {
+    page.setCurrentStateForTesting(exitPage);
+    page.setHelpContentClickedForTesting(helpContentClicked);
+
+    verifyRecordExitPathCalled(/*metric_emitted=*/ false, exitPath);
+    window.dispatchEvent(new CustomEvent('beforeunload'));
+    verifyRecordExitPathCalled(/*metric_emitted=*/ true, exitPath);
   }
 
   // Test that the search page is shown by default.
@@ -396,4 +424,96 @@ export function FeedbackFlowTestSuite() {
         assertEquals('', feedbackContext.extraDiagnostics);
         assertEquals('', descriptionElement.value);
       });
+
+  /**
+   * Test that the untrusted page can send "help-content-clicked" message to
+   * feedback flow page via postMessage.
+   */
+  test('CanCommunicateWithUntrustedPage', async () => {
+    // Whether feedback flow page has received that help content has been
+    // clicked;
+    let helpContentClicked = false;
+    await initializePage();
+
+    // Get Search Page.
+    const SearchPage = getSearchPage();
+    const iframe = /** @type {!HTMLIFrameElement} */ (
+        SearchPage.shadowRoot.querySelector('iframe'));
+
+    assertTrue(!!iframe);
+    // Wait for the iframe completes loading.
+    await eventToPromise('load', iframe);
+
+    window.addEventListener('message', event => {
+      if ('help-content-clicked-for-testing' === event.data.id &&
+          OS_FEEDBACK_TRUSTED_ORIGIN === event.origin) {
+        helpContentClicked = true;
+      }
+    });
+
+    // Data to be posted from untrusted page to feedback flow page.
+    const data = {
+      id: 'help-content-clicked-for-testing',
+    };
+    iframe.contentWindow.parent.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
+
+    // Wait for the "help-content-clicked" message has been received
+    await eventToPromise('message', window);
+    // Verify that help content have been clicked.
+    assertTrue(helpContentClicked);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user clicks help content
+  // and quits on search page.
+  test('QuitSearchPageHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.SEARCH,
+        FeedbackAppExitPath.kQuitSearchPageHelpContentClicked, true);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user quits on search page
+  // without clicking any help contents.
+  test('QuitSearchPageNoHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.SEARCH,
+        FeedbackAppExitPath.kQuitSearchPageNoHelpContentClicked, false);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user quits on share data
+  // page.
+  test('QuitShareDataPageHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.SHARE_DATA,
+        FeedbackAppExitPath.kQuitShareDataPageHelpContentClicked, true);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user quits on share data
+  // page.
+  test('QuitShareDataPageNoHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.SHARE_DATA,
+        FeedbackAppExitPath.kQuitShareDataPageNoHelpContentClicked, false);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user clicks help content
+  // and quits on confirmation page.
+  test('QuitConfirmationPageHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.CONFIRMATION,
+        FeedbackAppExitPath.kSuccessHelpContentClicked, true);
+  });
+
+  // Test that correct exitPathMetrics is emitted when user quits on
+  // confirmation page without clicking any help contents.
+  test('QuitConfirmationPageNoHelpContentClicked', async () => {
+    await initializePage();
+    verifyExitPathMetricsEmitted(
+        FeedbackFlowState.CONFIRMATION,
+        FeedbackAppExitPath.kSuccessNoHelpContentClicked, false);
+  });
 }

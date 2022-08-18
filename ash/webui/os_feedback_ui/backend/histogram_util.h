@@ -35,6 +35,7 @@ constexpr char kFeedbackAppIncludedSystemInfo[] =
     "Feedback.ChromeOSApp.IncludedSystemInfo";
 constexpr char kFeedbackAppDescriptionLength[] =
     "Feedback.ChromeOSApp.DescriptionLength";
+constexpr char kFeedbackAppExitPath[] = "Feedback.ChromeOSApp.ExitPath";
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
@@ -66,6 +67,8 @@ void EmitFeedbackAppIncludedUrl(bool included_url);
 void EmitFeedbackAppIncludedSystemInfo(bool included_system_info);
 
 void EmitFeedbackAppDescriptionLength(int length);
+
+void EmitFeedbackAppExitPath(mojom::FeedbackAppExitPath exit_path);
 
 }  // namespace ash::os_feedback_ui::metrics
 
