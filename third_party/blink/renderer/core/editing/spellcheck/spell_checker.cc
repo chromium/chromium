@@ -505,10 +505,12 @@ void SpellChecker::RespondToChangedContents() {
 
 void SpellChecker::RespondToChangedEnablement(const HTMLElement& element,
                                               bool enabled) {
-  if (enabled)
+  if (enabled) {
     idle_spell_check_controller_->SetNeedsInvocation();
-  else
+  } else {
     RemoveSpellingAndGrammarMarkers(element);
+    idle_spell_check_controller_->SetSpellCheckingDisabled(element);
+  }
 }
 
 void SpellChecker::RemoveSpellingMarkers() {

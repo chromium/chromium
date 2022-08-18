@@ -1,0 +1,78 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+<script>
+const n = 100;
+const markup = '<div>zz zz zz zz.</div>'.repeat(n);
+const checkedMarkup = '<div>#zz# #zz# #zz# #zz#.</div>'.repeat(n);
+
+const step1 = () => spellcheck_test(
+    `<div contenteditable id="target">${markup}</div>`,
+    document => document.getElementById('target').focus(),
+    `<div contenteditable id="target">${checkedMarkup}</div>`,
+    {
+      title: '1. Initial full checking for contenteditable',
+      needsFullCheck: true,
+      callback: step2,
+    }
+);
+
+const step2 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'false'),
+    `<div contenteditable id="target" spellcheck="false">${markup}</div>`,
+    {
+      title: '1. Clear markers after disabling spellcheck',
+      callback: step3,
+    }
+);
+
+const step3 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'true'),
+    `<div contenteditable id="target" spellcheck="true">${checkedMarkup}</div>`,
+    {
+      title: '1. Content is re-checked in full after re-enabling spellcheck',
+      needsFullCheck: true,
+    }
+);
+
+const text = 'zz zz zz zz.\n'.repeat(n - 1) + 'zz zz zz zz.';
+const checkedText = '#zz# #zz# #zz# #zz#.\n'.repeat(n - 1) + '#zz# #zz# #zz# #zz#.';
+
+const step4 = () => spellcheck_test(
+    `<textarea id="target">${text}</textarea>`,
+    document => document.getElementById('target').focus(),
+    `<textarea id="target">${checkedText}</textarea>`,
+    {
+      title: '2. Initial full checking for textarea',
+      needsFullCheck: true,
+      callback: step5,
+    }
+);
+
+const step5 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'false'),
+    `<textarea id="target" spellcheck="false">${text}</textarea>`,
+    {
+      title: '2. Clear markers after disabling spellcheck',
+      callback: step6,
+    }
+);
+
+const step6 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'true'),
+    `<textarea id="target" spellcheck="true">${checkedText}</textarea>`,
+    {
+      title: '2. Content is re-checked in full after re-enabling spellcheck',
+      needsFullCheck: true,
+    }
+);
+
+step1();
+step4();
+</script>
