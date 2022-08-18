@@ -791,7 +791,7 @@ message ActionsResponseProto {
 
   // Opaque data for reporting progress. Only included in the initial response
   // from GetActions.
-  optional string report_token = 14;
+  optional bytes report_token = 14;
 
   reserved 1, 6 to 10;
 }
