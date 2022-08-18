@@ -131,6 +131,15 @@ ServiceWorkerPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ServiceWorkerPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // As this class are interested in evaluating the performance gain through the
+  // service workers, we don't count in prerendered metrics.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ServiceWorkerPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   transition_ = navigation_handle->GetPageTransition();
