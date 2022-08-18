@@ -201,9 +201,7 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_LEFT, ui::EF_ALT_DOWN, IDC_BACK},
     {ui::VKEY_LEFT, ui::EF_ALTGR_DOWN, IDC_BACK},
 #if BUILDFLAG(ENABLE_PRINTING)
-    {ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_BASIC_PRINT_DEPRECATED},
-    {ui::VKEY_P, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN, IDC_BASIC_PRINT},
+    {ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_BASIC_PRINT},
 #endif  // ENABLE_PRINTING
     {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
     {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,

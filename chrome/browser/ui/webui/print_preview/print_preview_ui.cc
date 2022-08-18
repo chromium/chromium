@@ -93,7 +93,7 @@ namespace {
 #if BUILDFLAG(IS_MAC)
 const char16_t kBasicPrintShortcut[] = u"\u0028\u21e7\u2318\u0050\u0029";
 #elif !BUILDFLAG(IS_CHROMEOS)
-const char16_t kBasicPrintShortcut[] = u"(Ctrl+Alt+P)";
+const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 #endif
 
 constexpr char kInvalidArgsForDidStartPreview[] =
