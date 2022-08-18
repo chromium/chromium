@@ -529,6 +529,8 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
       /*enabled_features=*/{}, /*disabled_features=*/{
           chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
           features::kProductivityLauncher});
+  // Cache needs to be reset to get the colors for the feature flags.
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
 
   // Reset ColorProvider's cache to reflect the flag value changes above.
   ui::ColorProviderManager::Get().ResetColorProviderCache();

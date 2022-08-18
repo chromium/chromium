@@ -13,7 +13,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/android_intent_helper.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -77,8 +76,12 @@ void AssistantControllerImpl::SetAssistant(assistant::Assistant* assistant) {
 
   OnAccessibilityStatusChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-  OnColorModeChanged(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+  bool dark_mode_enabled = false;
+  if (ash::features::IsProductivityLauncherEnabled() ||
+      ash::features::IsDarkLightModeEnabled()) {
+    dark_mode_enabled = DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  }
+  OnColorModeChanged(dark_mode_enabled);
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)
