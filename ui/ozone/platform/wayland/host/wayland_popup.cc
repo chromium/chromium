@@ -52,8 +52,13 @@ bool WaylandPopup::CreateShellPopup() {
       delegate()->GetMenuType().value_or(MenuType::kRootContextMenu);
   params.anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
   if (params.anchor.has_value()) {
-    params.anchor->anchor_rect = wl::TranslateBoundsToParentCoordinates(
-        params.anchor->anchor_rect, parent_window()->GetBoundsInDIP());
+    // The anchor should originate from the window geometry, not from the
+    // surface.  See https://crbug.com/1292486.
+    params.anchor->anchor_rect =
+        wl::TranslateBoundsToParentCoordinates(
+            params.anchor->anchor_rect, parent_window()->GetBoundsInDIP()) -
+        parent_window()->GetWindowGeometryOffsetInDIP();
+
     // If size is empty, set 1x1.
     if (params.anchor->anchor_rect.size().IsEmpty())
       params.anchor->anchor_rect.set_size({1, 1});
@@ -69,18 +74,6 @@ bool WaylandPopup::CreateShellPopup() {
   if (!shell_popup_) {
     LOG(ERROR) << "Failed to create Wayland shell popup";
     return false;
-  }
-
-  const auto parent_insets_px = parent_window()->frame_insets_px();
-  if (parent_insets_px && !parent_insets_px->IsEmpty()) {
-    set_frame_insets_px(*parent_insets_px);
-    // Popups should have the same offset for their geometry as their parents
-    // have, otherwise Wayland draws them incorrectly.
-    const gfx::Point p = gfx::ScaleToRoundedPoint(
-        {parent_insets_px->left(), parent_insets_px->top()},
-        1.f / window_scale());
-    shell_popup_->SetWindowGeometry(
-        {p.x(), p.y(), params.bounds.width(), params.bounds.height()});
   }
 
   parent_window()->set_child_window(this);

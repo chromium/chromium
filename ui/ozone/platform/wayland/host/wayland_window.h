@@ -214,8 +214,6 @@ class WaylandWindow : public PlatformWindow,
   EventTarget* GetParentTarget() override;
   std::unique_ptr<EventTargetIterator> GetChildIterator() const override;
   EventTargeter* GetEventTargeter() override;
-  void ConvertEventToTarget(const EventTarget* target,
-                            LocatedEvent* event) const override;
 
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
@@ -275,6 +273,9 @@ class WaylandWindow : public PlatformWindow,
 
   // Sets the window geometry.
   virtual void SetWindowGeometry(gfx::Rect bounds);
+
+  // Returns the offset of the window geometry within the window surface.
+  gfx::Vector2d GetWindowGeometryOffsetInDIP() const;
 
   // Sends configure acknowledgement to the wayland server.
   virtual void AckConfigure(uint32_t serial) = 0;

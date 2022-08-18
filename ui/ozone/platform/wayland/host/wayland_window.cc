@@ -469,7 +469,8 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
         event_grabber &&
         root_parent_window == event_grabber->GetRootParentWindow();
     if (send_to_grabber) {
-      ConvertEventToTarget(event_grabber, event->AsLocatedEvent());
+      WaylandEventSource::ConvertEventToTarget(event_grabber,
+                                               event->AsLocatedEvent());
       Event::DispatcherApi(event).set_target(event_grabber);
     }
 
@@ -513,12 +514,6 @@ std::unique_ptr<EventTargetIterator> WaylandWindow::GetChildIterator() const {
 
 EventTargeter* WaylandWindow::GetEventTargeter() {
   return nullptr;
-}
-
-void WaylandWindow::ConvertEventToTarget(const EventTarget* new_target,
-                                         LocatedEvent* event) const {
-  // Move this to wayland event soruce?
-  WaylandEventSource::ConvertEventToTarget(new_target, event);
 }
 
 void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
@@ -674,6 +669,14 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 }
 
 void WaylandWindow::SetWindowGeometry(gfx::Rect bounds) {}
+
+gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
+  if (!frame_insets_px_.has_value())
+    return {};
+
+  return {static_cast<int>(frame_insets_px_->left() / window_scale_),
+          static_cast<int>(frame_insets_px_->top() / window_scale_)};
+}
 
 void WaylandWindow::UpdateDecorations() {}
 
