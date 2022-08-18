@@ -128,8 +128,8 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
   std::istringstream stream(raw_sets);
   FirstPartySetParser::SetsAndAliases public_sets =
       FirstPartySetParser::ParseSetsFromStream(stream);
-  sets_ = public_sets.first;
-  aliases_ = public_sets.second;
+  sets_ = std::move(public_sets.first);
+  aliases_ = std::move(public_sets.second);
 
   component_sets_parse_progress_ = Progress::kFinished;
   UmaHistogramTimes(
