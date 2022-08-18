@@ -4965,6 +4965,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "osk-resizes-visual-viewport",
+    "owners": [ "bokan", "rendering-core-dev@chromium.org" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng", "bokan", "input-dev" ],
     "expiry_milestone": 107

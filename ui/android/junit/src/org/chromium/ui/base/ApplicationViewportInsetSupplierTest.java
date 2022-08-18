@@ -43,7 +43,7 @@ public class ApplicationViewportInsetSupplierTest {
         mFeatureInsetSupplier = new ObservableSupplierImpl<>();
         mWindowInsetObserver = new CapturingCallback<>();
 
-        mWindowApplicationInsetSupplier.addSupplier(mFeatureInsetSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(mFeatureInsetSupplier);
         mWindowApplicationInsetSupplier.addObserver(mWindowInsetObserver);
     }
 
@@ -63,7 +63,7 @@ public class ApplicationViewportInsetSupplierTest {
     @Test
     public void testSupplierTriggersObserver_multipleSuppliers_2() {
         ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addSupplier(secondSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
 
         mFeatureInsetSupplier.set(5);
         secondSupplier.set(10);
@@ -75,10 +75,10 @@ public class ApplicationViewportInsetSupplierTest {
     @Test
     public void testSupplierTriggersObserver_multipleSuppliers_3() {
         ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addSupplier(secondSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
 
         ObservableSupplierImpl<Integer> thirdSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addSupplier(thirdSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(thirdSupplier);
 
         mFeatureInsetSupplier.set(5);
         secondSupplier.set(20);
@@ -93,7 +93,7 @@ public class ApplicationViewportInsetSupplierTest {
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
         supplier.set(20);
 
-        mWindowApplicationInsetSupplier.addSupplier(supplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(supplier);
 
         assertEquals("The observer should have been triggered after the supplier was added.",
                 (Integer) 20, mWindowInsetObserver.getCapturedValue());
@@ -102,10 +102,10 @@ public class ApplicationViewportInsetSupplierTest {
     @Test
     public void testSupplierRemoveTriggersEvent() {
         ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addSupplier(secondSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
 
         ObservableSupplierImpl<Integer> thirdSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addSupplier(thirdSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(thirdSupplier);
 
         mFeatureInsetSupplier.set(5);
         secondSupplier.set(20);

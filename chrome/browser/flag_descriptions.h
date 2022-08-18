@@ -1942,6 +1942,9 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kEnableFamilyInfoFeedbackName[];
 extern const char kEnableFamilyInfoFeedbackDescription[];
 
+extern const char kEnableOskResizesVisualViewportName[];
+extern const char kEnableOskResizesVisualViewportDescription[];
+
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 

@@ -1351,6 +1351,12 @@ void WebViewImpl::ResizeWithBrowserControls(
     ResizeViewportAnchor::ResizeScope resize_scope(*resize_viewport_anchor_);
     ResizeViewWhileAnchored(browser_controls_params, visible_viewport_size);
   }
+
+  // TODO(bokan): This will send a resize event even if the innerHeight on the
+  // page didn't change (e.g. virtual keyboard causes resize of only visual
+  // viewport). Lets remove this and have the frame send this event when its
+  // frame rect is resized (as noted by the ancient FIXME inside this method).
+  // https://crbug.com/1353728.
   SendResizeEventForMainFrame();
 }
 

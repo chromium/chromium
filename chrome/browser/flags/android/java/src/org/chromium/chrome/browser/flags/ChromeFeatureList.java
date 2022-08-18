@@ -452,6 +452,7 @@ public abstract class ChromeFeatureList {
     public static final String OPTIMIZE_GEOLOCATION_HEADER_GENERATION =
             "OptimizeGeolocationHeaderGeneration";
     public static final String OPTIMIZE_LAYOUTS_FOR_PULL_REFRESH = "OptimizeLayoutsForPullRefresh";
+    public static final String OSK_RESIZES_VISUAL_VIEWPORT = "OSKResizesVisualViewport";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_EN = "PageInfoAboutThisSiteEn";
@@ -668,6 +669,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
+    public static final CachedFlag sOSKResizesVisualViewport =
+            new CachedFlag(OSK_RESIZES_VISUAL_VIEWPORT, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPaintPreviewShowOnStartup =
             new CachedFlag(PAINT_PREVIEW_SHOW_ON_STARTUP, false);

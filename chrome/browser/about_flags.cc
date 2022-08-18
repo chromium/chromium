@@ -3454,6 +3454,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCSSContainerQueriesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSContainerQueries)},
 #if BUILDFLAG(IS_ANDROID)
+    {"osk-resizes-visual-viewport",
+     flag_descriptions::kEnableOskResizesVisualViewportName,
+     flag_descriptions::kEnableOskResizesVisualViewportDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOSKResizesVisualViewport)},
     {"contextual-search-debug", flag_descriptions::kContextualSearchDebugName,
      flag_descriptions::kContextualSearchDebugDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(kContextualSearchDebug)},

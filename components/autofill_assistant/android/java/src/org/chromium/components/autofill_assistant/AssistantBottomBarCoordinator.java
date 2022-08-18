@@ -110,7 +110,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mTabObscuringUtil = tabObscuringUtil;
 
         mWindowApplicationInsetSupplier = applicationViewportInsetSupplier;
-        mWindowApplicationInsetSupplier.addSupplier(mInsetSupplier);
+        mWindowApplicationInsetSupplier.addOverlappingSupplier(mInsetSupplier);
 
         BottomSheetContent currentSheetContent = controller.getCurrentSheetContent();
         if (currentSheetContent instanceof AssistantBottomSheetContent) {

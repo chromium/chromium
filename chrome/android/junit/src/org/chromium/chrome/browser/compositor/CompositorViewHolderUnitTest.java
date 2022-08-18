@@ -37,12 +37,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -51,6 +53,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
  * Unit tests for {@link CompositorViewHolder}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT)
 public class CompositorViewHolderUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -340,6 +343,8 @@ public class CompositorViewHolderUnitTest {
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(741);
         mCompositorViewHolder.setSize(
                 mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
+        // TODO(bokan): This fails when OSK_RESIZES_VISUAL_VIEWPORT is enabled.
+        // https://crbug.com/1353728.
         verify(mWebContents, times(1)).setSize(totalAdjustedWidth, totalAdjustedHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);

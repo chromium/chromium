@@ -487,6 +487,11 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(JNIEnv* env) {
     return;
   bool should_overlay_content =
       web_contents_->GetPrimaryPage().virtual_keyboard_overlays_content();
+  // TODO(bokan): Autofill is notified of focus changes at the end of the
+  // scrollIntoView call using DidCompleteFocusChangeInFrame, see
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/web_local_frame_impl.cc;l=3047;drc=aeadb03c8553c39e88d5d11d10f706d42f06a1d7.
+  // By avoiding this call in should_overlay_content, we never notify autofill
+  // of changed focus so we don't e.g. show the keyboard accessory.
   if (!should_overlay_content)
     input_handler->ScrollFocusedEditableNodeIntoView();
 }

@@ -106,6 +106,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sNewWindowAppMenu);
                 add(ChromeFeatureList.sOmniboxModernizeVisualUpdate);
                 add(ChromeFeatureList.sOptimizationGuidePushNotifications);
+                add(ChromeFeatureList.sOSKResizesVisualViewport);
                 add(ChromeFeatureList.sPaintPreviewDemo);
                 add(ChromeFeatureList.sPaintPreviewShowOnStartup);
                 add(ChromeFeatureList.sQueryTiles);

@@ -96,7 +96,7 @@ public class AssistantTriggerScript {
         mWebContents = webContents;
         mBottomSheetController = controller;
         mApplicationViewportInsetSupplier = applicationViewportInsetSupplier;
-        mApplicationViewportInsetSupplier.addSupplier(mInsetSupplier);
+        mApplicationViewportInsetSupplier.addOverlappingSupplier(mInsetSupplier);
         mAccessibilityUtil = accessibilityUtil;
         mProfileImageUtil = profileImageUtil;
         mSettingsUtil = settingsUtil;

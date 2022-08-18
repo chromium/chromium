@@ -116,6 +116,7 @@ extern const base::Feature kNotificationPermissionVariant;
 extern const base::Feature kOmahaMinSdkVersionAndroid;
 extern const base::Feature kOmniboxModernizeVisualUpdate;
 extern const base::Feature kOptimizeGeolocationHeaderGeneration;
+extern const base::Feature kOSKResizesVisualViewport;
 extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kBookmarksImprovedSaveFlow;
 extern const base::Feature kBookmarksRefresh;

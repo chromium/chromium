@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -183,7 +184,7 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mInGesture;
     private boolean mContentViewScrolling;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
-    private final Callback<Integer> mBottomInsetObserver = (inset) -> updateViewportSize();
+    private final Callback<Integer> mBottomInsetObserver = (inset) -> bottomInsetChanged();
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
@@ -393,7 +394,7 @@ public class CompositorViewHolder extends FrameLayout
         // contents.
         //
         // [1] - https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
-        if (mShowingFullscreen
+        if (mShowingFullscreen && (!ChromeFeatureList.sOSKResizesVisualViewport.isEnabled())
                 && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
@@ -530,6 +531,13 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void handleWindowInsetChanged() {
+        // The InsetObserverView is used to monitor keyboard resizes while
+        // fullscreened to simulate a view resize. This is unneeded when the
+        // OSK resizes only the visual viewport.
+        if (ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) {
+            return;
+        }
+
         // Notify the WebContents that the size has changed.
         View contentView = getContentView();
         if (contentView != null) {
@@ -804,7 +812,13 @@ public class CompositorViewHolder extends FrameLayout
             // Also the geometrychange event should only fire to the foreground tab.
             int keyboardHeight = 0;
             boolean overlayContentForegroundTab = shouldVirtualKeyboardOverlayContent(webContents);
-            if (overlayContentForegroundTab) {
+
+            // In fullscreen, the keyboard doesn't resize the view so there's
+            // no need to adjust the layout height by the keyboard height to
+            // keep it from changing in response.
+            if (!mShowingFullscreen
+                    && (overlayContentForegroundTab
+                            || ChromeFeatureList.sOSKResizesVisualViewport.isEnabled())) {
                 // During orientation changes, width of the |WebContents| changes to match the width
                 // of the screen and so does the keyboard. We fire geometrychange with the updated
                 // keyboard size as well as resize the viewport so the height resize doesn't affect
@@ -988,6 +1002,22 @@ public class CompositorViewHolder extends FrameLayout
             // in a partly-updated state.
             onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
         }
+    }
+
+    /**
+     * Called when keyboard-related UI insets the bottom of the viewport
+     */
+    private void bottomInsetChanged() {
+        // updateViewportSize only needs to be called if OSK related UI
+        // actually resizes the view. Otherwise the inset only resizes the
+        // visual viewport which is communicated to the renderer by observing
+        // the inset provider in TabViewAndroidDelegate. This is a no-op in
+        // CompositorViewHolder.
+        if (ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) {
+            return;
+        }
+
+        updateViewportSize();
     }
 
     // View.OnHierarchyChangeListener implementation
@@ -1249,6 +1279,13 @@ public class CompositorViewHolder extends FrameLayout
      * @return The inset height in pixels.
      */
     private int getKeyboardBottomInsetForControlsPixels() {
+        // If osk-resizes-visual-viewport is enabled, the OSK and its
+        // accessories don't resize the view/page so the autofill inset
+        // supplier must not have been set.
+        if (ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) {
+            return 0;
+        }
+
         return mAutofillUiBottomInsetSupplier != null
                         && mAutofillUiBottomInsetSupplier.get() != null
                 ? mAutofillUiBottomInsetSupplier.get()

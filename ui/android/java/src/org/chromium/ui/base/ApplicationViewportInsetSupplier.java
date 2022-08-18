@@ -15,12 +15,36 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A class responsible for managing multiple users of window viewport insets. The class that
- * actually updates the viewport insets listens to this class via {@link #addObserver(Callback)}.
- * Other features can also listen to this class to know if something is obscuring part of the
- * screen. Features that wish to update the viewport's insets can attach an inset supplier via
- * {@link #addSupplier(ObservableSupplier)}. This class will use the largest inset value to
- * adjust the viewport inset.
+ * A class responsible for managing multiple users of UI insets affecting
+ * the visual viewport.
+ *
+ * Insetting the visual viewport overlays web content without resizing its
+ * container (meaning it doesn't affect page layout); however, the user can
+ * always scroll within the visual viewport to reveal overlaid content and
+ * authors can respond to changes in the visual viewport.
+ *
+ * Features needing to know if something is obscuring part of the screen listen
+ * to this class via {@link #addObserver(Callback)}. UI that wishes to inset
+ * the visual viewport can attach an inset supplier via {@link
+ * #addSupplier(ObservableSupplier)}.
+ *
+ * This class supports two kinds of inset suppliers: overlapping and stacking.
+ *
+ * Stacking suppliers are assumed to be presented "stacked", one of top (in the
+ * y-axis) of the other. For example, the autofill keyboard accessory and the
+ * on-screen keyboard are presented with the accessory appearing directly above
+ * the keyboard. In this case, the keyboard inset is added to the accessory
+ * inset to compute the total "stacking inset".
+ *
+ * Overlapping suppliers assume each supplier is attached to the viewport
+ * bottom and don't take each other into account. For example, if a bottom info
+ * bar is showing but a contextual search panel slides in from below, obscuring
+ * the info bar. In this case, both the info bar and search panel provide their
+ * own overlapping inset. The total "overlapping inset" is computed by taking
+ * the largest value of all overlap suppliers.
+ *
+ * The final inset (the one provided to observers) is the largest between the
+ * stacking and overlapping insets.
  *
  * In general:
  *  - Features that want to modify the inset should pass around the
@@ -30,8 +54,9 @@ import java.util.Set;
  */
 public class ApplicationViewportInsetSupplier
         extends ObservableSupplierImpl<Integer> implements Destroyable {
-    /** The list of inset providers that this class manages. */
-    private final Set<ObservableSupplier<Integer>> mInsetSuppliers = new HashSet<>();
+    /** The lists of inset providers that this class manages. */
+    private final Set<ObservableSupplier<Integer>> mOverlappingInsetSuppliers = new HashSet<>();
+    private final Set<ObservableSupplier<Integer>> mStackingInsetSuppliers = new HashSet<>();
 
     /** The observer that gets attached to all inset providers. */
     private final Callback<Integer> mInsetSupplierObserver = (inset) -> computeInset();
@@ -52,22 +77,34 @@ public class ApplicationViewportInsetSupplier
     /** Clean up observers and suppliers. */
     @Override
     public void destroy() {
-        for (ObservableSupplier<Integer> os : mInsetSuppliers) {
+        for (ObservableSupplier<Integer> os : mOverlappingInsetSuppliers) {
             os.removeObserver(mInsetSupplierObserver);
         }
-        mInsetSuppliers.clear();
+        for (ObservableSupplier<Integer> os : mStackingInsetSuppliers) {
+            os.removeObserver(mInsetSupplierObserver);
+        }
+
+        mOverlappingInsetSuppliers.clear();
+        mStackingInsetSuppliers.clear();
     }
 
     /** Compute the new inset based on the current registered providers. */
     private void computeInset() {
-        int currentInset = 0;
-        for (ObservableSupplier<Integer> os : mInsetSuppliers) {
+        int stackingInset = 0;
+        for (ObservableSupplier<Integer> os : mStackingInsetSuppliers) {
             // Similarly to the constructor, check that the Integer object isn't null as the
             // supplier may not yet have supplied the initial value.
-            currentInset = Math.max(currentInset, os.get() == null ? 0 : os.get());
+            stackingInset += os.get() == null ? 0 : os.get();
         }
 
-        super.set(currentInset);
+        int overlappingInset = 0;
+        for (ObservableSupplier<Integer> os : mOverlappingInsetSuppliers) {
+            // Similarly to the constructor, check that the Integer object isn't null as the
+            // supplier may not yet have supplied the initial value.
+            overlappingInset = Math.max(overlappingInset, os.get() == null ? 0 : os.get());
+        }
+
+        super.set(Math.max(stackingInset, overlappingInset));
     }
 
     @Override
@@ -76,15 +113,40 @@ public class ApplicationViewportInsetSupplier
                 "#set(...) should not be called directly on ApplicationViewportInsetSupplier.");
     }
 
-    /** @param insetSupplier A supplier of bottom insets to be added. */
-    public void addSupplier(ObservableSupplier<Integer> insetSupplier) {
-        mInsetSuppliers.add(insetSupplier);
+    /**
+     * Adds a supplier of viewport insets that overlap.
+     *
+     * Of all overlap insets, only the largest is applied to the final inset.
+     *
+     * @param insetSupplier A supplier of bottom insets to be added.
+     */
+    public void addOverlappingSupplier(ObservableSupplier<Integer> insetSupplier) {
+        mOverlappingInsetSuppliers.add(insetSupplier);
         insetSupplier.addObserver(mInsetSupplierObserver);
     }
 
-    /** @param insetSupplier A supplier of bottom insets to be removed. */
+    /**
+     * Adds a supplier of viewport insets that stack.
+     *
+     * Stacking insets are added together when applied to the final inset.
+     *
+     * @param insetSupplier A supplier of bottom insets to be added.
+     */
+    public void addStackingSupplier(ObservableSupplier<Integer> insetSupplier) {
+        mStackingInsetSuppliers.add(insetSupplier);
+        insetSupplier.addObserver(mInsetSupplierObserver);
+    }
+
+    /**
+     * Removes a previously added supplier.
+     *
+     * The given supplier is removed regardless of whether it was overlapping or stacking.
+     *
+     * @param insetSupplier A supplier of bottom insets to be removed.
+     */
     public void removeSupplier(ObservableSupplier<Integer> insetSupplier) {
-        mInsetSuppliers.remove(insetSupplier);
+        mOverlappingInsetSuppliers.remove(insetSupplier);
+        mStackingInsetSuppliers.remove(insetSupplier);
         insetSupplier.removeObserver(mInsetSupplierObserver);
         computeInset();
     }

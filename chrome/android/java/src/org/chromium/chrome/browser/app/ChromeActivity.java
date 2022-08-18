@@ -797,6 +797,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mInsetObserverViewSupplier.set(InsetObserverView.create(this));
         rootView.addView(mInsetObserverViewSupplier.get(), 0);
 
+        if (ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) {
+            getWindowAndroid().getApplicationBottomInsetProvider().addStackingSupplier(
+                    mInsetObserverViewSupplier.get().getSupplierForBottomInset());
+        }
+
         super.onInitialLayoutInflationComplete();
     }
 
@@ -2040,6 +2045,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         compositorViewHolder.setInsetObserverView(mInsetObserverViewSupplier.get());
         compositorViewHolder.setAutofillUiBottomInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
+
+        if (ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) {
+            getWindowAndroid().getApplicationBottomInsetProvider().addStackingSupplier(
+                    mManualFillingComponentSupplier.get().getBottomInsetSupplier());
+        }
+
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());
         compositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);

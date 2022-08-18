@@ -59447,6 +59447,7 @@ from previous Chrome versions.
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106840653" label="mus"/>
   <int value="107900612" label="ChromeHomePersistentIph:disabled"/>
+  <int value="108656675" label="OSKResizesVisualViewport:enabled"/>
   <int value="108874121" label="InstanceSwitcher:disabled"/>
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
@@ -61630,6 +61631,7 @@ from previous Chrome versions.
   <int value="1486092162"
       label="AutofillEnableOffersInClankKeyboardAccessory:enabled"/>
   <int value="1486171015" label="disable-fill-on-account-select"/>
+  <int value="1486269568" label="OSKResizesVisualViewport:disabled"/>
   <int value="1486347614" label="IsolatedWebApps:disabled"/>
   <int value="1486784197" label="MouseSubframeNoImplicitCapture:disabled"/>
   <int value="1487341558" label="MacViewsAutofillPopup:enabled"/>

@@ -265,6 +265,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxModernizeVisualUpdate,
     &kOptimizeGeolocationHeaderGeneration,
     &kOptimizeLayoutsForPullRefresh,
+    &kOSKResizesVisualViewport,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
@@ -757,6 +758,9 @@ const base::Feature kOmniboxModernizeVisualUpdate{
 
 const base::Feature kOptimizeGeolocationHeaderGeneration{
     "OptimizeGeolocationHeaderGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOSKResizesVisualViewport{
+    "OSKResizesVisualViewport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOptimizeLayoutsForPullRefresh{
     "OptimizeLayoutsForPullRefresh", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -14,6 +14,8 @@ import android.view.WindowInsets;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 
 /**
  * The purpose of this view is to store the system window insets (OSK, status bar) for
@@ -22,6 +24,7 @@ import org.chromium.base.ObserverList;
 public class InsetObserverView extends View {
     private final Rect mWindowInsets;
     protected final ObserverList<WindowInsetObserver> mObservers;
+    private final BottomInsetObservableSupplier mBottomInsetSupplier;
 
     /**
      * Allows observing changes to the window insets from Android system UI.
@@ -39,6 +42,17 @@ public class InsetObserverView extends View {
 
         /** Called when a new Display Cutout safe area is applied. */
         void onSafeAreaChanged(Rect area);
+    }
+
+    private class BottomInsetObservableSupplier
+            extends ObservableSupplierImpl<Integer> implements WindowInsetObserver {
+        @Override
+        public void onInsetChanged(int left, int top, int right, int bottom) {
+            this.set(bottom);
+        }
+
+        @Override
+        public void onSafeAreaChanged(Rect area) {}
     }
 
     /**
@@ -63,6 +77,17 @@ public class InsetObserverView extends View {
         setVisibility(INVISIBLE);
         mWindowInsets = new Rect();
         mObservers = new ObserverList<>();
+        mBottomInsetSupplier = new BottomInsetObservableSupplier();
+        addObserver(mBottomInsetSupplier);
+    }
+
+    /**
+     * Returns a supplier that observes this {@link InsetObserverView} and
+     * provides changes to the bottom inset using the {@link
+     * ObservableSupplier} interface.
+     */
+    public ObservableSupplier<Integer> getSupplierForBottomInset() {
+        return mBottomInsetSupplier;
     }
 
     /**
