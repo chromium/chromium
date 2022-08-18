@@ -5,6 +5,7 @@
 #include <array>
 #include <string>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
@@ -4308,6 +4309,54 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
   // Verify the active desk is now named "Desk 1".
   EXPECT_EQ(1ul, desks_controller->desks().size());
   EXPECT_EQ(kDefaultDeskName, desks_controller->active_desk()->name());
+}
+
+// Tests that ChromeVox focuses correctly when we exit the desks library and
+// that there is no crash. Regression test for https://crbug.com/1351467.
+TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
+  // The fade out animation of the desks templates grid must be enabled for this
+  // crash to have happened.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  accessibility_controller->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+
+  // Ensure we have a desk saved so we can go into the library.
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kSaveAndRecall);
+
+  // Check that we can enter overview, and that there are no windows present.
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                  ->no_windows_widget());
+
+  // Enter the desks library.
+  ShowDesksTemplatesGrids();
+  WaitForLibraryUI();
+
+  // Simulate how ChromeVox would focus on the desk item view.
+  SavedDeskItemView* first_item = GetItemViewFromTemplatesGrid(0);
+  first_item->RequestFocus();
+
+  ASSERT_FALSE(Shell::IsSystemModalWindowOpen());
+
+  // Press "Ctrl + w" to show and focus on the delete dialog.
+  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
+
+  // Exit the dialog and wait for it to close.
+  SendKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(Shell::IsSystemModalWindowOpen());
+  ASSERT_TRUE(InOverviewSession());
+
+  // We should be able to exit overview without a crash.
+  ToggleOverview();
+  ASSERT_FALSE(InOverviewSession());
 }
 
 // Tests that if the user somehow exits the overview session that the function

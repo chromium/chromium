@@ -38,6 +38,7 @@
 #include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -107,6 +108,10 @@ void FadeInWidgetToOverview(views::Widget* widget,
 
 void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
                                OverviewAnimationType animation_type) {
+  // Make it so the widget is no longer activatable, since it will be deleted
+  // when the animation is complete.
+  widget->widget_delegate()->SetCanActivate(false);
+
   // The overview controller may be nullptr on shutdown.
   OverviewController* controller = Shell::Get()->overview_controller();
   if (!controller) {
