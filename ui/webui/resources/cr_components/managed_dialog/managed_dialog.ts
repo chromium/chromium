@@ -6,7 +6,7 @@
  * @fileoverview 'managed-dialog' is a dialog that is displayed when a user
  * interact with some UI features which are managed by the user's organization.
  */
-import '../../cr_elements/cr_button/cr_button.m.js';
+import '../../cr_elements/cr_button/cr_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../cr_elements/icons.m.js';
 import '../../cr_elements/shared_vars_css.m.js';

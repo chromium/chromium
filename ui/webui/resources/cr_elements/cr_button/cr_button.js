@@ -7,11 +7,22 @@
  * be interacted with like a normal button using click as well as space and
  * enter to effectively click the button and fire a 'click' event.
  */
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../hidden_style_css.m.js';
+import '../shared_vars_css.m.js';
+
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
+
 Polymer({
   is: 'cr-button',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
-    Polymer.PaperRippleBehavior,
+    PaperRippleBehavior,
   ],
 
   properties: {
@@ -70,7 +81,7 @@ Polymer({
 
   /** @override */
   ready() {
-    cr.ui.FocusOutlineManager.forDocument(document);
+    FocusOutlineManager.forDocument(document);
     this.timeoutIds_ = new Set();
   },
 
@@ -197,7 +208,7 @@ Polymer({
    * @return {PaperRippleElement}
    */
   _createRipple() {
-    const ripple = Polymer.PaperRippleBehavior._createRipple();
+    const ripple = PaperRippleBehavior._createRipple();
 
     if (this.circleRipple) {
       ripple.setAttribute('center', '');
@@ -207,4 +218,3 @@ Polymer({
     return ripple;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

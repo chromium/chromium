@@ -7,7 +7,7 @@
  * Root UI element for Bluetooth pairing dialog.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './bluetooth_pairing_device_selection_page.js';
 import './bluetooth_pairing_enter_code_page.js';
 import './bluetooth_pairing_request_code_page.js';

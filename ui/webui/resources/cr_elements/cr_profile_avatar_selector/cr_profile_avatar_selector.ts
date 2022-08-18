@@ -7,7 +7,7 @@
  * profile avatar icons and allows an avatar to be selected.
  */
 
-import '../cr_button/cr_button.m.js';
+import '../cr_button/cr_button.js';
 import '../shared_vars_css.m.js';
 import '../shared_style_css.m.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';

@@ -159,7 +159,7 @@ js_library("diagnostics_test_utils") {
     "//ash/webui/diagnostics_ui/resources:routine_result_entry",
     "//ash/webui/diagnostics_ui/resources:routine_result_list",
     "//ash/webui/diagnostics_ui/resources:routine_section",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
 }
 
@@ -261,7 +261,7 @@ js_library("memory_card_test") {
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
     "//ash/webui/diagnostics_ui/resources:memory_card",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
 }
 
@@ -406,7 +406,7 @@ js_library("routine_section_test") {
     "//ash/webui/diagnostics_ui/resources:routine_section",
     "//ash/webui/diagnostics_ui/resources:text_badge",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
 }
 

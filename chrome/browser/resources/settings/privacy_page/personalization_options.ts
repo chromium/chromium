@@ -7,7 +7,7 @@
  * 'personalization-options' contains several toggles related to
  * personalizations.
  */
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.js';

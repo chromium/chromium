@@ -12,7 +12,7 @@ import 'chrome://resources/cr_components/chromeos/network/network_property_list_
 import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';

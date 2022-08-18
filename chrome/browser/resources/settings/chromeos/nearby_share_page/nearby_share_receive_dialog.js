@@ -19,7 +19,7 @@
  *  - showConfirmPage()
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../prefs/prefs.js';
 import '../../shared/nearby_onboarding_one_page.js';
 import '../../shared/nearby_onboarding_page.js';

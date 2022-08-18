@@ -7,7 +7,7 @@
  * 'all-sites' is the polymer element for showing the list of all sites under
  * Site Settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';

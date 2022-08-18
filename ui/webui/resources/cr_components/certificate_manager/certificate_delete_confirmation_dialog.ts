@@ -6,7 +6,7 @@
  * @fileoverview A confirmation dialog allowing the user to delete various types
  * of certificates.
  */
-import '../../cr_elements/cr_button/cr_button.m.js';
+import '../../cr_elements/cr_button/cr_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
 import './certificate_shared.css.js';
 

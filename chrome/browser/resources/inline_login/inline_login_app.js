@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';

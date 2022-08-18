@@ -83,7 +83,7 @@ js_library("files_format_dialog") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -123,7 +123,7 @@ js_unittest("files_password_dialog_unittest") {
 js_library("files_password_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:load_time_data.m",
@@ -167,7 +167,7 @@ js_library("files_spinner") {
 js_library("files_toast") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
@@ -215,7 +215,7 @@ js_unittest("files_xf_elements_unittest") {
 }
 
 js_library("xf_button") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_button:cr_button.m" ]
+  deps = [ "//ui/webui/resources/cr_elements/cr_button:cr_button" ]
 }
 
 js_library("xf_circular_progress") {

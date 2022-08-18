@@ -2,43 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-if (is_chromeos_ash) {
-  js_type_check("closure_compile") {
-    uses_legacy_modules = true
-    deps = [ ":cr_button" ]
-  }
-
-  js_library("cr_button") {
-    deps = [
-      "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
-      "//ui/webui/resources/js/cr/ui:focus_outline_manager",
-    ]
-  }
-}
-
-polymer_modulizer("cr_button") {
-  js_file = "cr_button.js"
-  html_file = "cr_button.html"
-  html_type = "dom-module"
+html_to_js("web_components") {
+  js_files = [ "cr_button.js" ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_button.m" ]
+  deps = [ ":cr_button" ]
 }
 
-js_library("cr_button.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_button/cr_button.m.js",
-  ]
+js_library("cr_button") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
-  extra_deps = [ ":cr_button_module" ]
 }

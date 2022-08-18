@@ -8,11 +8,11 @@ import("../../oobe_auto_imports.gni")
 
 group("polymer3_elements") {
   public_deps = [
+    ":modulize",
     ":oobe_back_button_module",
     ":oobe_icon_button_module",
     ":oobe_next_button_module",
     ":oobe_text_button_module",
-    ":modulize",
   ]
 }
 
@@ -32,8 +32,8 @@ js_type_check("closure_compile") {
 js_library("oobe_back_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ":oobe_base_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_back_button_module" ]
 }
@@ -51,8 +51,8 @@ js_library("oobe_base_button.m") {
 js_library("oobe_next_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ":oobe_base_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_next_button_module" ]
 }
@@ -60,8 +60,8 @@ js_library("oobe_next_button.m") {
 js_library("oobe_text_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ":oobe_base_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_text_button_module" ]
 }
@@ -69,8 +69,8 @@ js_library("oobe_text_button.m") {
 js_library("oobe_icon_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ":oobe_base_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":oobe_icon_button_module" ]
 }
@@ -82,6 +82,7 @@ polymer_modulizer("oobe_back_button") {
   html_file = "oobe_back_button.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_next_button") {
@@ -89,6 +90,7 @@ polymer_modulizer("oobe_next_button") {
   html_file = "oobe_next_button.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_text_button") {
@@ -96,6 +98,7 @@ polymer_modulizer("oobe_text_button") {
   html_file = "oobe_text_button.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_icon_button") {
@@ -103,12 +106,10 @@ polymer_modulizer("oobe_icon_button") {
   html_file = "oobe_icon_button.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }
 
 js_modulizer("modulize") {
-  input_files = [
-    "oobe_base_button.js",
-  ]
+  input_files = [ "oobe_base_button.js" ]
   namespace_rewrites = oobe_namespace_rewrites
 }
-

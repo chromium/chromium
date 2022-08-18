@@ -8,7 +8,7 @@
  * browsing history. It informs the user about the existence of other forms
  * of browsing history in their account.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 

@@ -10,7 +10,7 @@
 
 import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';

@@ -7,7 +7,7 @@
  * 'crostini-arc-adb' is the ARC adb sideloading subpage for Crostini.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import './crostini_arc_adb_confirmation_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';

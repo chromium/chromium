@@ -18,7 +18,7 @@ js_type_check("closure_compile_module") {
 js_library("add_smb_share_dialog") {
   deps = [
     ":smb_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",

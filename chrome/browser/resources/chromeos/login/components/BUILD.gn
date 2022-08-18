@@ -92,7 +92,7 @@ js_library("gaia_button.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   extra_deps = [ ":gaia_button_module" ]
 }
@@ -279,6 +279,7 @@ polymer_modulizer("gaia_button") {
   html_file = "gaia_button.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

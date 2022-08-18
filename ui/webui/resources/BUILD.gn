@@ -164,7 +164,7 @@ group("closure_compile") {
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 checked_in_dts_files = [
-  "cr_elements/cr_button/cr_button.m.d.ts",
+  "cr_elements/cr_button/cr_button.d.ts",
   "cr_elements/cr_dialog/cr_dialog.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.d.ts",
   "cr_elements/cr_input/cr_input.d.ts",

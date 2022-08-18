@@ -7,7 +7,7 @@
  * component warning the user that resizing a sparse disk cannot be undone.
  * By clicking 'Reserve size', the user agrees to start the operation.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

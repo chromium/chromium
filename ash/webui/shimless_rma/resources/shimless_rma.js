@@ -27,7 +27,7 @@ import './wrapup_finalize_page.js';
 import './wrapup_repair_complete_page.js';
 import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

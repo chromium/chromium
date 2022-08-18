@@ -36,7 +36,7 @@ js_library("crostini_arc_adb") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
@@ -50,7 +50,7 @@ js_library("crostini_arc_adb_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
     "..:metrics_recorder",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -77,7 +77,7 @@ js_library("crostini_disk_resize_dialog") {
   deps = [
     ":crostini_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -89,7 +89,7 @@ js_library("crostini_disk_resize_dialog") {
 js_library("crostini_disk_resize_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -106,7 +106,7 @@ js_library("crostini_export_import") {
     "../..:router",
     "../guest_os:guest_os_browser_proxy",
     "../guest_os:guest_os_container_select",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -116,7 +116,7 @@ js_library("crostini_import_confirmation_dialog") {
   deps = [
     ":crostini_browser_proxy",
     "../guest_os:guest_os_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -138,7 +138,7 @@ js_library("crostini_page") {
     "../..:router",
     "../guest_os:guest_os_shared_paths",
     "../guest_os:guest_os_shared_usb_devices",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -173,7 +173,7 @@ js_library("crostini_port_forwarding_add_port_dialog") {
     "..:metrics_recorder",
     "../guest_os:guest_os_browser_proxy",
     "../guest_os:guest_os_container_select",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",
@@ -227,7 +227,7 @@ js_library("crostini_subpage") {
     "..:route_observer_behavior",
     "..:route_origin_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -244,7 +244,7 @@ js_library("bruschetta_subpage") {
     "..:route_observer_behavior",
     "..:route_origin_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

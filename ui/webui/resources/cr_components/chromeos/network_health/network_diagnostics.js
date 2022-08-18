@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../cr_elements/cr_button/cr_button.m.js';
+import '../../../cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';

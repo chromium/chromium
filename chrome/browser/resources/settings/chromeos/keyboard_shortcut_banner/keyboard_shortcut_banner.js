@@ -12,7 +12,7 @@
  * keyboard shortcuts. For example, "Press Ctrl + Space" should be passed in as
  * "Press <kbd><kbd>Ctrl</kbd>+<kbd>Space</kbd></kbd>".
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

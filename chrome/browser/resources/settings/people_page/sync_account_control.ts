@@ -7,7 +7,7 @@
  * settings.
  */
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
@@ -18,7 +18,7 @@ import '../icons.html.js';
 import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 
-import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

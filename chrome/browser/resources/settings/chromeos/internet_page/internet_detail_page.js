@@ -17,7 +17,7 @@ import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js
 import 'chrome://resources/cr_components/chromeos/network/network_nameservers.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/icons.m.js';

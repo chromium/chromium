@@ -7,7 +7,7 @@
  * 'privacy-guide-welcome-fragment' is the fragment in a privacy guide
  * card that contains the welcome screen and its description.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './privacy_guide_fragment_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

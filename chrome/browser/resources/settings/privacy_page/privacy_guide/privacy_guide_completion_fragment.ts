@@ -7,7 +7,7 @@
  * 'privacy-guide-completion-fragment' is the fragment in a privacy guide
  * card that contains the completion screen and its description.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './privacy_guide_completion_link_row.js';
 import './privacy_guide_fragment_shared.css.js';

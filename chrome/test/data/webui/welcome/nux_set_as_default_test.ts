@@ -4,7 +4,7 @@
 
 import 'chrome://welcome/set_as_default/nux_set_as_default.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {NuxSetAsDefaultElement} from 'chrome://welcome/set_as_default/nux_set_as_default.js';

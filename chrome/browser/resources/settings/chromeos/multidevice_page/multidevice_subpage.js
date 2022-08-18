@@ -8,7 +8,7 @@
  * individually and for forgetting a host.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../settings_shared.css.js';

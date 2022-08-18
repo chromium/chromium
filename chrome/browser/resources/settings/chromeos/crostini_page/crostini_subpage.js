@@ -7,7 +7,7 @@
  * 'crostini-subpage' is the settings subpage for managing Crostini.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import '../../controls/settings_toggle_button.js';

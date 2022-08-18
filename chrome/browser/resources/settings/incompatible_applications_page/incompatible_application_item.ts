@@ -33,7 +33,7 @@
  *   </div>
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../settings_shared.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';

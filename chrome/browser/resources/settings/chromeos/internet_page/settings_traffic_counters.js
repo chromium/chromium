@@ -8,7 +8,7 @@
  */
 import './internet_shared_css.js';
 import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_counters.js';

@@ -6,7 +6,7 @@
  * @fileoverview A dialog for showing SSL certificate related error messages.
  * The user can only close the dialog, there is no other possible interaction.
  */
-import '../../cr_elements/cr_button/cr_button.m.js';
+import '../../cr_elements/cr_button/cr_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
 import './certificate_shared.css.js';
 

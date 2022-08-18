@@ -4,7 +4,7 @@
 
 import 'chrome://welcome/google_apps/nux_google_apps.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {GoogleAppProxyImpl} from 'chrome://welcome/google_apps/google_app_proxy.js';
 import {GoogleAppsMetricsProxyImpl} from 'chrome://welcome/google_apps/google_apps_metrics_proxy.js';

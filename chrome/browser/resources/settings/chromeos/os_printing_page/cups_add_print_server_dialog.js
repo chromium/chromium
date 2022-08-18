@@ -7,7 +7,7 @@
  *   add a print server.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';

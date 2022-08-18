@@ -72,6 +72,7 @@ cr_components_chromeos_auto_imports = [
 ]
 
 cr_components_migrated_imports = [
+  "ui/webui/resources/cr_elements/cr_button/cr_button.html",
   "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html",
   "ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.html",
   "ui/webui/resources/cr_elements/cr_input/cr_input.html",

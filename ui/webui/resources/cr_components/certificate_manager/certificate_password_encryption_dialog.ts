@@ -6,7 +6,7 @@
  * @fileoverview A dialog prompting the user to encrypt a personal certificate
  * before it is exported to disk.
  */
-import '../../cr_elements/cr_button/cr_button.m.js';
+import '../../cr_elements/cr_button/cr_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../cr_elements/cr_input/cr_input.js';
 import '../../cr_elements/shared_vars_css.m.js';
@@ -14,7 +14,7 @@ import './certificate_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 

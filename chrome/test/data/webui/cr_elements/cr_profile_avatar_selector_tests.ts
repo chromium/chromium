@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {CrProfileAvatarSelectorGridElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';

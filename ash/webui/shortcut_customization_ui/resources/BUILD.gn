@@ -72,7 +72,7 @@ js_library("accelerator_edit_dialog") {
   deps = [
     ":accelerator_view",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
 }
@@ -84,7 +84,7 @@ js_library("accelerator_edit_view") {
     ":icons",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
 }
 

@@ -23,7 +23,7 @@ js_library("parental_controls_page") {
   deps = [
     ":parental_controls_browser_proxy",
     "../..:router",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]

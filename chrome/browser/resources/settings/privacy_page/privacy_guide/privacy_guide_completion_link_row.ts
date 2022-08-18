@@ -8,7 +8,7 @@
  * privacy guide completion card.
  */
 import 'chrome://resources/cr_elements/cr_actionable_row_style.m.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 

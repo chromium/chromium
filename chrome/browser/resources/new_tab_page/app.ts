@@ -5,7 +5,7 @@
 import './iframe.js';
 import './realbox/realbox.js';
 import './logo.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';

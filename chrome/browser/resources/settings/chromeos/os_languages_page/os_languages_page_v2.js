@@ -7,7 +7,7 @@
  * for languages and inputs settings.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_css.m.js';

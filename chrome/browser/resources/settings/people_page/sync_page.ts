@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/js/util.m.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';

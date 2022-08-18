@@ -7,7 +7,7 @@
  * manually enter the information to set up a new printer.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cups_add_printer_dialog.js';

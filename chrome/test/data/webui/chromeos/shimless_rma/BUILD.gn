@@ -295,7 +295,7 @@ js_library("repair_component_chip_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:repair_component_chip",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -309,7 +309,7 @@ js_library("wrapup_finalize_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:wrapup_finalize_page",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -320,7 +320,7 @@ js_library("wrapup_repair_complete_page_test") {
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:wrapup_repair_complete_page",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -331,7 +331,7 @@ js_library("wrapup_restock_page_test") {
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:shimless_rma",
     "//ash/webui/shimless_rma/resources:wrapup_restock_page",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -340,7 +340,7 @@ js_library("wrapup_wait_for_manual_wp_enable_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:wrapup_wait_for_manual_wp_enable_page",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

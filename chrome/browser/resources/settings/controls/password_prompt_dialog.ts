@@ -19,7 +19,7 @@
  * </settings-password-prompt-dialog>
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/shared_style_css.m.js';

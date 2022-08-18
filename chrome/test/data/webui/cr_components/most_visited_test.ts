@@ -8,7 +8,7 @@ import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_vis
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';

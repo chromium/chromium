@@ -7,7 +7,7 @@
  * to confirm for enabling or disabling adb sideloading. After the confirmation,
  * reboot will happens.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 

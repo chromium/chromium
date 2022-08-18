@@ -9,7 +9,7 @@
  * NOTE: This module depends on I18nBehavior which depends on loadTimeData.
  */
 
-import '../../../cr_elements/cr_button/cr_button.m.js';
+import '../../../cr_elements/cr_button/cr_button.js';
 import '../../../cr_elements/cr_input/cr_input.js';
 import '../../../cr_elements/hidden_style_css.m.js';
 import '../../../js/cr.m.js';

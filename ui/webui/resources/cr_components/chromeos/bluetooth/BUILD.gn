@@ -143,7 +143,7 @@ js_library("bluetooth_base_page") {
   deps = [
     ":bluetooth_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

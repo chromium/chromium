@@ -89,8 +89,6 @@ if (is_chromeos_ash) {
       "action_link_css.html",
       "chromeos/cros_color_overrides.html",
       "cr_actionable_row_style.html",
-      "cr_button/cr_button.html",
-      "cr_button/cr_button.js",
       "cr_container_shadow_behavior.html",
       "cr_container_shadow_behavior.js",
       "cr_icons_css.html",
@@ -132,7 +130,7 @@ if (include_polymer) {
     in_files = [
       "action_link_css.m.js",
       "cr_actionable_row_style.m.js",
-      "cr_button/cr_button.m.js",
+      "cr_button/cr_button.js",
       "cr_dialog/cr_dialog.js",
       "cr_icon_button/cr_icon_button.js",
       "cr_icons_css.m.js",
@@ -180,10 +178,6 @@ if (include_polymer) {
       "cr_toggle:closure_compile_module",
       "policy:closure_compile_module",
     ]
-
-    if (is_chromeos_ash) {
-      deps += [ "cr_button:closure_compile" ]
-    }
   }
 
   js_type_check("cr_elements_resources") {
@@ -274,7 +268,7 @@ if (include_polymer) {
       ":modulize",
       ":shared_style_css_module",
       ":shared_vars_css_module",
-      "cr_button:cr_button_module",
+      "cr_button:web_components",
       "cr_dialog:web_components",
       "cr_icon_button:web_components",
       "cr_input:web_components",

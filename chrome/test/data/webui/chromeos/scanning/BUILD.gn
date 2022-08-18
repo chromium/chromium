@@ -138,7 +138,7 @@ js_library("scanning_app_test") {
     "../..:test_util",
     "//ash/webui/scanning/resources:scanning_app",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

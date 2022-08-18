@@ -7,7 +7,7 @@
  * 'settings-privacy-guide-page' is the settings page that helps users guide
  * various privacy settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';

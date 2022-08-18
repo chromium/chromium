@@ -8,7 +8,7 @@
  */
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import '../../prefs/prefs.js';

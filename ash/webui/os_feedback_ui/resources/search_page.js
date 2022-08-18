@@ -5,7 +5,7 @@
 import './help_content.js';
 import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

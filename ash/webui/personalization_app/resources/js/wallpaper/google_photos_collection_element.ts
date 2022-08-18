@@ -7,7 +7,7 @@
  * collection.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 

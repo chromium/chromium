@@ -9,7 +9,7 @@
  * destroyed when finished, and re-created when shown again.
  */
 
-import '../../../cr_elements/cr_button/cr_button.m.js';
+import '../../../cr_elements/cr_button/cr_button.js';
 import '../../../cr_elements/cr_checkbox/cr_checkbox.js';
 import '../../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../../cr_elements/cr_input/cr_input.js';

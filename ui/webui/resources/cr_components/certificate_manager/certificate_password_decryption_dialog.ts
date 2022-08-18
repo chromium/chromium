@@ -6,14 +6,14 @@
  * @fileoverview A dialog prompting the user for a decryption password such that
  * a previously exported personal certificate can be imported.
  */
-import '../../cr_elements/cr_button/cr_button.m.js';
+import '../../cr_elements/cr_button/cr_button.js';
 import '../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../cr_elements/cr_input/cr_input.js';
 import './certificate_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 

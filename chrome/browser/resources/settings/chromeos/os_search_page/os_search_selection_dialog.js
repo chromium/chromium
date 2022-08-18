@@ -6,7 +6,7 @@
  * @fileoverview 'os-settings-search-selection-dialog' is a dialog for setting
  * the preferred search engine.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';

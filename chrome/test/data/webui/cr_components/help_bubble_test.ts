@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
-import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleButtonParams, HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

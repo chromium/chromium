@@ -8,7 +8,7 @@
  * Crostini.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './crostini_import_confirmation_dialog.js';
 import '../../settings_shared.css.js';
 

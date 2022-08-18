@@ -319,7 +319,7 @@ js_library("network_apnlist.m") {
     ":network_shared_css.m",
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -336,7 +336,7 @@ js_library("network_choose_mobile.m") {
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_choose_mobile_module" ]
@@ -534,7 +534,7 @@ js_library("network_proxy.m") {
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:assert.m",
@@ -600,7 +600,7 @@ js_library("network_siminfo.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior",
@@ -638,7 +638,7 @@ js_library("sim_lock_dialogs.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -686,6 +686,7 @@ polymer_modulizer("network_apnlist") {
   html_file = "network_apnlist.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
 }
 
 polymer_modulizer("network_choose_mobile") {
@@ -693,6 +694,7 @@ polymer_modulizer("network_choose_mobile") {
   html_file = "network_choose_mobile.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
+  migrated_imports = cr_components_migrated_imports
   namespace_rewrites =
       cr_components_chromeos_namespace_rewrites + [
         "cros_network_config.mojom.m.js|cros_network_config.mojom-lite.js",

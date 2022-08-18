@@ -5,7 +5,7 @@
 import './settings_ui/settings_ui.js';
 
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 export {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 export {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';

@@ -4,7 +4,7 @@
 
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';

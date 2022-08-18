@@ -9,7 +9,7 @@
  * the user to run Linux apps on their Chromebook.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '../../settings_page/settings_animated_pages.js';
