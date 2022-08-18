@@ -17,14 +17,14 @@ export abstract class CrTreeBaseElement extends CustomElement {
   }
 
   static get observedAttributes() {
-    return ['icon-visibility', 'tree-focused'];
+    return ['icon-visibility'];
   }
 
   detail: object = {};
   private parent_: CrTreeBaseElement|null = null;
 
   attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
-    assert(name === 'icon-visibility' || name === 'tree-focused');
+    assert(name === 'icon-visibility');
     this.items.forEach(item => item.setAttribute(name, newValue));
   }
 
