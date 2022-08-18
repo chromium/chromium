@@ -1077,7 +1077,7 @@ message SystemProfileProto {
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
 
   // Demo mode related dimension information.
-  // Next Tag: 3
+  // Next Tag: 4
   message DemoModeDimensions {
     optional string country = 1;
 
@@ -1088,6 +1088,12 @@ message SystemProfileProto {
       optional string store_id = 2;
     }
     optional Retailer retailer = 2;
+
+    enum CustomizationFacet {
+      UNDEFINED = 0;
+      CLOUD_GAMING_DEVICE = 1;
+    }
+    repeated CustomizationFacet customization_facet = 3 [packed = true];
   }
   optional DemoModeDimensions demo_mode_dimensions = 41;
 }
