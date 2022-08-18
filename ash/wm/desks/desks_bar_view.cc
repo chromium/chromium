@@ -37,6 +37,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -1329,9 +1330,7 @@ void DesksBarView::NudgeDeskName(int desk_index) {
         DesksController::GetDeskDefaultName(desk_index));
   }
 
-  auto* highlight_controller = GetHighlightController();
-  if (highlight_controller->IsFocusHighlightVisible())
-    highlight_controller->MoveHighlightToView(name_view);
+  UpdateOverviewHighlightForFocus(name_view);
 
   // If we're in tablet mode and there are no external keyboards, open up the
   // virtual keyboard.

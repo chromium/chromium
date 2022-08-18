@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
@@ -66,6 +67,17 @@ void SaveDeskTemplateButton::OnThemeChanged() {
   PillButton::OnThemeChanged();
   SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80));
+}
+
+void SaveDeskTemplateButton::OnFocus() {
+  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
+  OnViewHighlighted();
+  View::OnFocus();
+}
+
+void SaveDeskTemplateButton::OnBlur() {
+  OnViewUnhighlighted();
+  View::OnBlur();
 }
 
 BEGIN_METADATA(SaveDeskTemplateButton, PillButton)

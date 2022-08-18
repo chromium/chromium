@@ -789,11 +789,12 @@ void OverviewSession::OnWindowActivating(
   if (ignore_activations_ || gained_active == GetOverviewFocusWindow())
     return;
 
-  // Activating the Desks bar or the Desks Templates grid should not end
-  // overview.
+  // Activating the Desks bar window, the Saved Desk Library window, or the Save
+  // Desk Button Container window should not end overview.
   if (gained_active &&
       (gained_active->GetId() == kShellWindowId_DesksBarWindow ||
-       gained_active->GetId() == kShellWindowId_SavedDeskLibraryWindow)) {
+       gained_active->GetId() == kShellWindowId_SavedDeskLibraryWindow ||
+       gained_active->GetId() == kShellWindowId_SaveDeskButtonContainer)) {
     return;
   }
 

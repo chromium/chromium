@@ -20,9 +20,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_textfield.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
@@ -500,12 +499,7 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   desk_name_view_->UpdateViewAppearance();
 
   // Set the Overview highlight to move focus with the DeskNameView.
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  if (highlight_controller->IsFocusHighlightVisible())
-    highlight_controller->MoveHighlightToView(desk_name_view_);
+  UpdateOverviewHighlightForFocus(desk_name_view_);
 
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);

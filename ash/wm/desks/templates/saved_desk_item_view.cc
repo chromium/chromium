@@ -31,6 +31,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -548,17 +549,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
 }
 
 void SavedDeskItemView::OnFocus() {
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  DCHECK(highlight_controller);
-  AccessibilityControllerImpl* accessibility_controller =
-      Shell::Get()->accessibility_controller();
-  if (highlight_controller->IsFocusHighlightVisible() ||
-      accessibility_controller->spoken_feedback().enabled()) {
-    highlight_controller->MoveHighlightToView(this);
-  }
+  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
   OnViewHighlighted();
   View::OnFocus();
 }

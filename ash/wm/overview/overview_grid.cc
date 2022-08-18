@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
@@ -299,6 +300,13 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
     aura::Window* root_window) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
+  // If Chromevox is on, let the widget be activatable.
+  // TODO(crbug.com/1354295): Fix focus ring when turning on Chromevox during
+  // overview.
+  const bool spoken_feedback_enabled =
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
+  if (spoken_feedback_enabled)
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "SaveDeskButtonContainerWidget";
@@ -308,6 +316,9 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   // beneath the dragged window when it is animating back to the overview grid.
   params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  // This should not show up in the MRU list. Otherwise, it will be treated as
+  // unsupported crostini app.
+  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
 
   auto widget = std::make_unique<views::Widget>();
   widget->set_focus_on_creation(false);

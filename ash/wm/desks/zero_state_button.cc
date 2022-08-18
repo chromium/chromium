@@ -14,8 +14,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -90,18 +89,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 }
 
 void DeskButtonBase::OnFocus() {
-  auto* highlight_controller = Shell::Get()
-                                   ->overview_controller()
-                                   ->overview_session()
-                                   ->highlight_controller();
-  DCHECK(highlight_controller);
-  AccessibilityControllerImpl* accessibility_controller =
-      Shell::Get()->accessibility_controller();
-  if (highlight_controller->IsFocusHighlightVisible() ||
-      accessibility_controller->spoken_feedback().enabled()) {
-    highlight_controller->MoveHighlightToView(this);
-  }
-
+  UpdateOverviewHighlightForFocusAndSpokenFeedback(this);
   UpdateBorderState();
   View::OnFocus();
 }
