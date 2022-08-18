@@ -10,7 +10,6 @@
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 
 namespace autofill {
 namespace l10n {
@@ -38,9 +37,6 @@ std::unique_ptr<icu::Collator> GetCollatorForLocale(const icu::Locale& locale) {
                  << "locale.";
     }
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Autofill.IcuCollatorCreationSuccess",
-                        (!!collator && U_SUCCESS(error_code)));
   return collator;
 }
 
