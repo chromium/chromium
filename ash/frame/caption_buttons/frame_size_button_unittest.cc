@@ -754,12 +754,4 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   EXPECT_TRUE(window_state()->IsFullscreen());
 }
 
-TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
-  ShowMultitaskMenu();
-  ASSERT_TRUE(multitask_menu()->GetWidget());
-
-  ash::TabletMode::Get()->SetEnabledForTest(true);
-  EXPECT_FALSE(multitask_menu()->GetWidget());
-}
-
 }  // namespace ash

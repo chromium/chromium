@@ -13,7 +13,6 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/display/display_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace chromeos {
@@ -30,8 +29,7 @@ class MultitaskMenu;
 // is executed. For the sake of simplicity, the size button is the event
 // handler for a click starting on the size button and the entire drag.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
-    : public views::FrameCaptionButton,
-      public display::DisplayObserver {
+    : public views::FrameCaptionButton {
  public:
   METADATA_HEADER(FrameSizeButton);
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
@@ -51,10 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   void StateChanged(views::Button::ButtonState old_state) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  // display::DisplayObserver:
-  void OnDisplayTabletStateChanged(display::TabletState state) override;
-
-  // Cancel the snap operation if we're currently in snap mode. The snap
+  // Cancel the snap opereation if we're currently in snap mode. The snap
   // preview will be deleted and the button will be set back to its normal mode.
   void CancelSnap();
 
@@ -128,8 +123,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Whether the buttons adjacent to the size button snap the window left and
   // right.
   bool in_snap_mode_;
-
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace chromeos
