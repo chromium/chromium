@@ -33,16 +33,8 @@ constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 std::unique_ptr<Config> GetConfigForFeedSegments() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kFeedUserSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  const proto::SegmentId segment_id =
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
-  std::string feed_segment_name =
-      stats::OptimizationTargetToHistogramVariant(segment_id);
-  config->segments.insert(
-      {segment_id,
-       std::make_unique<Config::SegmentMetadata>(
-           feed_segment_name, std::make_unique<FeedUserSegment>())});
+  config->segmentation_uma_name = kFeedUserSegmentUmaName;
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,

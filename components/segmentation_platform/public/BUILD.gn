@@ -11,6 +11,8 @@ source_set("public") {
   sources = [
     "config.cc",
     "config.h",
+    "constants.cc",
+    "constants.h",
     "features.cc",
     "features.h",
     "field_trial_register.h",

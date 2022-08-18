@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -16,40 +17,6 @@
 #include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
-
-// The key to be used for adaptive toolbar feature.
-const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
-
-// The key to be used for any feature that needs to collect and store data on
-// client side while being built.
-const char kDummySegmentationKey[] = "dummy_feature";
-
-// The key is used to decide whether to show Chrome Start or not.
-const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
-
-// The key is used to decide whether to show query tiles.
-const char kQueryTilesSegmentationKey[] = "query_tiles";
-
-// The key is used to decide whether a user has low user engagement with chrome.
-// This is a generic model that can be used by multiple features targeting
-// low-engaged users. Typically low engaged users are active in chrome below a
-// certain threshold number of days over a time period. This is computed using
-// Session.TotalDuration histogram.
-const char kChromeLowUserEngagementSegmentationKey[] =
-    "chrome_low_user_engagement";
-
-// The key is used to decide whether the user likes to use Feed.
-const char kFeedUserSegmentationKey[] = "feed_user_segment";
-
-// The key is used to show a contextual page action.
-const char kContextualPageActionsKey[] = "contextual_page_actions";
-
-// The key provide a list of segment IDs, separated by commas, whose ML model
-// execution results are allowed to be uploaded through UKM.
-const char kSegmentIdsAllowedForReportingKey[] =
-    "segment_ids_allowed_for_reporting";
-
-const char kSubsegmentDiscreteMappingSuffix[] = "_subsegment";
 
 // Contains various finch configuration params used by the segmentation
 // platform.
@@ -117,6 +84,11 @@ struct Config {
   base::flat_map<proto::CustomInput::FillPolicy,
                  std::unique_ptr<processing::InputDelegate>>
       input_delegates;
+
+  // Helper methods to add segments to `segments`:
+  void AddSegmentId(proto::SegmentId segment_id);
+  void AddSegmentId(proto::SegmentId segment_id,
+                    std::unique_ptr<ModelProvider> default_provider);
 
   // Returns the filter name that will be shown in the metrics for this
   // segmentation config.

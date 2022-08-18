@@ -14,7 +14,6 @@
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
-#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,12 +30,6 @@ class SegmentInfo;
 }  // namespace proto
 
 namespace {
-
-#define SEGMENT_ID_ENTRY(segment)                                      \
-  {                                                                    \
-    segment, std::make_unique<Config::SegmentMetadata>(                \
-                 stats::OptimizationTargetToHistogramVariant(segment)) \
-  }
 
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
@@ -56,10 +49,8 @@ std::unique_ptr<Config> CreateTestConfig() {
   config->segmentation_uma_name = "TestKey";
   config->segment_selection_ttl = base::Days(28);
   config->unknown_selection_ttl = base::Days(14);
-  config->segments.insert(
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
-  config->segments.insert(
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   return config;
 }
 
@@ -332,8 +323,8 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
   auto config = CreateTestConfig();
   config->segments.clear();
-  config->segments.insert(SEGMENT_ID_ENTRY(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID));
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID);
   SetUpWithConfig(std::move(config));
 
   SegmentId segment_id =
@@ -477,7 +468,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
 
   // Create config with Feed segment.
   auto config = CreateTestConfig();
-  config->segments.insert(SEGMENT_ID_ENTRY(kSubsegmentEnabledTarget));
+  config->AddSegmentId(kSubsegmentEnabledTarget);
   // Previous selection result is not available at this time, so it should
   // record unselected.
   EXPECT_CALL(field_trial_register_,

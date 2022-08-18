@@ -4,9 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform::processing {
 
@@ -53,8 +52,8 @@ FeatureProcessorState::~FeatureProcessorState() = default;
 void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
   stats::RecordFeatureProcessingError(segment_id_, error);
   DVLOG(1) << "Processing error occured: model "
-           << stats::OptimizationTargetToHistogramVariant(segment_id_)
-           << " failed with " << stats::FeatureProcessingErrorToString(error);
+           << SegmentIdToHistogramVariant(segment_id_) << " failed with "
+           << stats::FeatureProcessingErrorToString(error);
   error_ = true;
   input_tensor_.clear();
 }

@@ -44,12 +44,6 @@ enum class BooleanSegmentSwitch {
   kMaxValue = kEnabledToNone,
 };
 
-// Returns an UMA display string for the given segment_id.
-std::string OptimizationTargetToHistogramVariant(SegmentId segment_id);
-
-// Returns an UMA display string for the given `segmentation_key`.
-const char* SegmentationKeyToUmaName(const std::string& segmentation_key);
-
 // Records the score computed for a given segment.
 void RecordModelScore(SegmentId segment_id, float score);
 

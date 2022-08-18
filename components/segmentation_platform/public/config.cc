@@ -6,6 +6,8 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -29,6 +31,19 @@ bool Config::SegmentMetadata::operator==(const SegmentMetadata& other) const {
 Config::Config() = default;
 
 Config::~Config() = default;
+
+void Config::AddSegmentId(proto::SegmentId segment_id) {
+  AddSegmentId(segment_id, nullptr);
+}
+
+void Config::AddSegmentId(proto::SegmentId segment_id,
+                          std::unique_ptr<ModelProvider> default_provider) {
+  auto it =
+      segments.insert({segment_id, std::make_unique<SegmentMetadata>(
+                                       SegmentIdToHistogramVariant(segment_id),
+                                       std::move(default_provider))});
+  DCHECK(it.second);
+}
 
 std::string Config::GetSegmentationFilterName() const {
   return base::StrCat({"Segmentation_", segmentation_uma_name});
