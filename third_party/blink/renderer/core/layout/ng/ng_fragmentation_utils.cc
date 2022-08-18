@@ -876,6 +876,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // fragments with nothing useful inside, if it's to be resumed in the next
     // fragmentainer.
     must_break_before = !layout_result.ColumnSpannerPath() && break_token &&
+                        !break_token->IsRepeated() &&
                         !break_token->IsAtBlockEnd();
   }
   if (must_break_before) {
