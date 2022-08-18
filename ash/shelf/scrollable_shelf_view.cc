@@ -1044,6 +1044,10 @@ void ScrollableShelfView::OnButtonWillBeRemoved() {
       std::min(first_tappable_app_index_, last_tappable_app_index_);
 }
 
+void ScrollableShelfView::OnAppButtonActivated(const ShelfButton* button) {
+  ScrollRectToVisible(button->bounds());
+}
+
 std::unique_ptr<ScrollableShelfView::ScopedActiveInkDropCount>
 ScrollableShelfView::CreateScopedActiveInkDropCount(const ShelfButton* sender) {
   if (!ShouldCountActivatedInkDrop(sender))

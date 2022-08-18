@@ -64,6 +64,9 @@ class ShelfButtonDelegate {
 
   // Notifies the host view that one button will be removed.
   virtual void OnButtonWillBeRemoved() {}
+
+  // Notifies the host view that the app button `button` is activated.
+  virtual void OnAppButtonActivated(const ShelfButton* button) {}
 };
 
 }  // namespace ash

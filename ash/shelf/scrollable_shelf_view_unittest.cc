@@ -20,6 +20,7 @@
 #include "ash/shelf/test/scrollable_shelf_test_base.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/i18n/rtl.h"
@@ -1547,6 +1548,74 @@ TEST_F(ScrollableShelfViewTest, RightClickArrows) {
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(
       shelf_view_->IsShowingMenuForView(scrollable_shelf_view_->left_arrow()));
+}
+
+// Verifies that activating an app will automatically scroll the shelf to show
+// the activated app icon.
+TEST_P(ScrollableShelfViewRTLTest, ActivateAppScrollShelfToMakeAppVisible) {
+  AddAppShortcutsUntilOverflow();
+  const ShelfButton* first_button = test_api_->GetButton(0);
+  const int last_button_index = test_api_->GetButtonCount() - 1;
+  const ShelfButton* last_button = test_api_->GetButton(last_button_index);
+  gfx::Rect visible_space_in_screen = scrollable_shelf_view_->visible_space();
+  views::View::ConvertRectToScreen(scrollable_shelf_view_,
+                                   &visible_space_in_screen);
+
+  // Initially, the first button will show while the last one will not because
+  // of the overflow.
+  EXPECT_TRUE(
+      visible_space_in_screen.Contains(first_button->GetBoundsInScreen()));
+  EXPECT_FALSE(
+      visible_space_in_screen.Contains(last_button->GetBoundsInScreen()));
+
+  gfx::Rect first_window_bounds(0, 0, 200, 200);
+  gfx::Rect last_window_bounds(200, 0, 200, 200);
+
+  // Create new windows for the first and last apps on the shelf. Set the
+  // `kShelfIDKey` property to associate windows with shelf apps.
+  std::unique_ptr<aura::Window> first_app_window =
+      CreateTestWindow(first_window_bounds);
+  first_app_window->SetProperty(kShelfIDKey,
+                                ShelfModel::Get()->items()[0].id.Serialize());
+  std::unique_ptr<aura::Window> last_app_window =
+      CreateTestWindow(last_window_bounds);
+  last_app_window->SetProperty(
+      kShelfIDKey,
+      ShelfModel::Get()->items()[last_button_index].id.Serialize());
+
+  // Activate `last_app_window` by mouse click. It emulates the process that an
+  // app window is activated after clicking at a shelf app icon.
+  GetEventGenerator()->MoveMouseTo(last_window_bounds.CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Get the new visible space of `scrollable_shelf_view_`
+  visible_space_in_screen = scrollable_shelf_view_->visible_space();
+  views::View::ConvertRectToScreen(scrollable_shelf_view_,
+                                   &visible_space_in_screen);
+
+  // The last app button should be showing while the first app button is not
+  // because the shelf is scrolled.
+  EXPECT_FALSE(
+      visible_space_in_screen.Contains(first_button->GetBoundsInScreen()));
+  EXPECT_TRUE(
+      visible_space_in_screen.Contains(last_button->GetBoundsInScreen()));
+
+  // Activate `last_app_window` by mouse click. It emulates the process that an
+  // app window is activated after clicking at a shelf app icon.
+  GetEventGenerator()->MoveMouseTo(first_window_bounds.CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Get the new visible space of `scrollable_shelf_view_`
+  visible_space_in_screen = scrollable_shelf_view_->visible_space();
+  views::View::ConvertRectToScreen(scrollable_shelf_view_,
+                                   &visible_space_in_screen);
+
+  // The first app button should be showing while the last app button is not
+  // because the shelf is scrolled.
+  EXPECT_TRUE(
+      visible_space_in_screen.Contains(first_button->GetBoundsInScreen()));
+  EXPECT_FALSE(
+      visible_space_in_screen.Contains(last_button->GetBoundsInScreen()));
 }
 
 }  // namespace ash

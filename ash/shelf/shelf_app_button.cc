@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_view.h"
@@ -565,6 +566,9 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
     AddState(ShelfAppButton::STATE_ACTIVE);
     ClearState(ShelfAppButton::STATE_RUNNING);
     ClearState(ShelfAppButton::STATE_ATTENTION);
+
+    // Notify the parent scrollable shelf view to show the current active app.
+    shelf_button_delegate()->OnAppButtonActivated(this);
     return;
   }
 
