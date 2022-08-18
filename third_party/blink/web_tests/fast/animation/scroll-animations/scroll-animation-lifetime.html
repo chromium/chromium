@@ -4,8 +4,7 @@
 <link rel="help" href="https://wicg.github.io/scroll-animations">
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
-<script src='../../../external/wpt/web-animations/testcommon.js'></script>
-<script src='../../../external/wpt/scroll-animations/testcommon.js'></script>
+<Script src='resources/testcommon.js'></Script>
 <style>
   .scroller {
     overflow: auto;
@@ -26,7 +25,7 @@
 
 promise_test(async t => {
   var animation = createScrollLinkedAnimation(t);
-  var scroller = animation.timeline.scrollSource;
+  var scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
   animation.play();

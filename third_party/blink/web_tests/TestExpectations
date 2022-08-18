@@ -5175,10 +5175,6 @@ crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-inline-orientation.html [ Failure ]
 
-crbug.com/1343365 fast/animation/scroll-animations/scroll-animation-lifetime.html [ Failure ]
-crbug.com/1343365 fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]
-crbug.com/1343365 fast/animation/scroll-animations/scrolltimeline-root-scroller-quirks-mode.html [ Failure ]
-
 crbug.com/971031 [ Mac ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
 
 crbug.com/1071189 [ Debug ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
