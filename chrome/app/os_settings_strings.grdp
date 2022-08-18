@@ -2318,7 +2318,7 @@ Press an assigned switch or key to remove assignment.
     Remove from account
   </message>
   <message name="IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL" desc="Label in Saved Devices sub-page when account has no saved devices.">
-    No Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
+    No devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
   </message>
   <message name="IDS_SAVED_DEVICE_ITEM_A11Y_LABEL" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
