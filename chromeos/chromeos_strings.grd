@@ -2787,13 +2787,10 @@ Try tapping the mic to ask me anything.
         Exit repair?
       </message>
       <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION" translateable="false" desc="Detailed description for the exit dialog.">
-        Are you sure you want to exit?
+        If you exit now, you will need to begin the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair process from the start.
       </message>
       <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CANCEL_BUTTON_LABEL" translateable="false" desc="Button used to close the exit dialog.">
         Cancel
-      </message>
-      <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_CONFIRM_BUTTON_LABEL" translateable="false" desc="Button used to confirm exiting the RMA process and close the exit dialog.">
-        Confirm
       </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">

@@ -83,11 +83,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"doneButtonLabel", IDS_SHIMLESS_RMA_DONE_BUTTON},
       // Exit dialog
       {"exitDialogTitleText", IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE},
-      {"exitDialogDescriptionText", IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION},
       {"exitDialogCancelButtonLabel",
        IDS_SHIMLESS_RMA_EXIT_DIALOG_CANCEL_BUTTON_LABEL},
-      {"exitDialogConfirmButtonLabel",
-       IDS_SHIMLESS_RMA_EXIT_DIALOG_CONFIRM_BUTTON_LABEL},
       // Landing page
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
       {"validatingComponentsText", IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS},
@@ -360,6 +357,9 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "criticalErrorTitleText",
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
+  html_source->AddString("exitDialogDescriptionText",
+                         ui::SubstituteChromeOSDeviceType(
+                             IDS_SHIMLESS_RMA_EXIT_DIALOG_DESCRIPTION));
 }
 
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
