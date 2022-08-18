@@ -4,17 +4,22 @@
 
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 
+#include <string>
+#include <vector>
+
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 using content::BrowserThread;
@@ -69,57 +74,6 @@ std::vector<uint8_t> GenerateThumbnail(const gfx::ImageSkia& image,
 
 }  // namespace
 
-namespace wallpaper_api_util {
-
-WallpaperDecoder::WallpaperDecoder(DecodedCallback decoded_cb,
-                                   CanceledCallback canceled_cb,
-                                   FailedCallback failed_cb)
-    : decoded_cb_(std::move(decoded_cb)),
-      canceled_cb_(std::move(canceled_cb)),
-      failed_cb_(std::move(failed_cb)) {}
-
-WallpaperDecoder::~WallpaperDecoder() = default;
-
-void WallpaperDecoder::Start(const std::vector<uint8_t>& image_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
-  ImageDecoder::StartWithOptions(this, image_data, ImageDecoder::DEFAULT_CODEC,
-                                 true);
-}
-
-void WallpaperDecoder::Cancel() {
-  cancel_flag_.Set();
-}
-
-void WallpaperDecoder::OnImageDecoded(const SkBitmap& decoded_image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Make the SkBitmap immutable as we won't modify it. This is important
-  // because otherwise it gets duplicated during painting, wasting memory.
-  SkBitmap immutable(decoded_image);
-  immutable.setImmutable();
-  gfx::ImageSkia final_image = gfx::ImageSkia::CreateFrom1xBitmap(immutable);
-  final_image.MakeThreadSafe();
-  if (cancel_flag_.IsSet()) {
-    std::move(canceled_cb_).Run();
-    delete this;
-    return;
-  }
-  std::move(decoded_cb_).Run(final_image);
-  delete this;
-}
-
-void WallpaperDecoder::OnDecodeImageFailed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::move(failed_cb_)
-      .Run(l10n_util::GetStringUTF8(IDS_WALLPAPER_MANAGER_INVALID_WALLPAPER));
-  delete this;
-}
-
-}  // namespace wallpaper_api_util
-
 namespace crosapi {
 
 WallpaperAsh::WallpaperAsh() = default;
@@ -131,61 +85,43 @@ void WallpaperAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper,
+void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
                                 const std::string& extension_id,
                                 const std::string& extension_name,
                                 SetWallpaperCallback callback) {
-  // Cancel any ongoing SetWallpaper call as it will be replaced by this new
-  // one.
-  CancelAndReset();
-
-  pending_callback_ = std::move(callback);
-  wallpaper_settings_ = std::move(wallpaper);
-  extension_id_ = extension_id;
-  extension_name_ = extension_name;
-
-  StartDecode(wallpaper_settings_->data);
-}
-
-void WallpaperAsh::CancelAndReset() {
-  if (wallpaper_decoder_) {
-    wallpaper_decoder_->Cancel();
-    wallpaper_decoder_ = nullptr;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+  // Prevent any in progress decodes from changing wallpaper.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Notify the last pending request, if any, that it is canceled.
   if (pending_callback_) {
     std::move(pending_callback_).Run(std::vector<uint8_t>());
   }
-  wallpaper_settings_ = nullptr;
-  extension_id_.clear();
-  extension_name_.clear();
+  pending_callback_ = std::move(callback);
+  const std::vector<uint8_t>& data = wallpaper_settings->data;
+  data_decoder::DecodeImage(
+      &data_decoder_, data, data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(
+          &WallpaperAsh::OnWallpaperDecoded, weak_ptr_factory_.GetWeakPtr(),
+          std::move(wallpaper_settings), extension_id, extension_name));
 }
 
-void WallpaperAsh::StartDecode(const std::vector<uint8_t>& data) {
+void WallpaperAsh::OnWallpaperDecoded(
+    mojom::WallpaperSettingsPtr wallpaper_settings,
+    const std::string& extension_id,
+    const std::string& extension_name,
+    const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (wallpaper_decoder_)
-    wallpaper_decoder_->Cancel();
-  wallpaper_decoder_ = new wallpaper_api_util::WallpaperDecoder(
-      base::BindOnce(&WallpaperAsh::OnWallpaperDecoded,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&WallpaperAsh::OnDecodingCanceled,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&WallpaperAsh::OnDecodingFailed,
-                     weak_ptr_factory_.GetWeakPtr()));
-  wallpaper_decoder_->Start(data);
-}
-
-void WallpaperAsh::OnDecodingCanceled() {
-  wallpaper_decoder_ = nullptr;
-  CancelAndReset();
-}
-
-void WallpaperAsh::OnDecodingFailed(const std::string& error) {
-  wallpaper_decoder_ = nullptr;
-  CancelAndReset();
-}
-
-void WallpaperAsh::OnWallpaperDecoded(const gfx::ImageSkia& image) {
-  ash::WallpaperLayout layout = GetLayoutEnum(wallpaper_settings_->layout);
+  if (bitmap.isNull()) {
+    LOG(ERROR) << "Decoding wallpaper data failed from extension_id '"
+               << extension_id << "'";
+    DCHECK(pending_callback_);
+    std::move(pending_callback_).Run(std::vector<uint8_t>());
+    return;
+  }
+  ash::WallpaperLayout layout = GetLayoutEnum(wallpaper_settings->layout);
   RecordCustomWallpaperLayout(layout);
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -194,11 +130,18 @@ void WallpaperAsh::OnWallpaperDecoded(const gfx::ImageSkia& image) {
   auto account_id = user->GetAccountId();
 
   const std::string file_name =
-      base::FilePath(wallpaper_settings_->filename).BaseName().value();
+      base::FilePath(wallpaper_settings->filename).BaseName().value();
+
+  // Make the SkBitmap immutable as we won't modify it. This is important
+  // because otherwise it gets duplicated during painting, wasting memory.
+  SkBitmap immutable_bitmap(bitmap);
+  immutable_bitmap.setImmutable();
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(immutable_bitmap);
+  image.MakeThreadSafe();
+
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
       account_id, file_name, layout, image,
       /*preview_mode=*/false);
-  wallpaper_decoder_ = nullptr;
 
   // We need to generate thumbnail image anyway to make the current third party
   // wallpaper syncable through different devices.
@@ -209,12 +152,8 @@ void WallpaperAsh::OnWallpaperDecoded(const gfx::ImageSkia& image) {
   WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
       ash::WallpaperType::kThirdParty);
 
+  DCHECK(pending_callback_);
   std::move(pending_callback_).Run(thumbnail_data);
-
-  // reset remaining state
-  wallpaper_settings_ = nullptr;
-  extension_id_.clear();
-  extension_name_.clear();
 }
 
 }  // namespace crosapi

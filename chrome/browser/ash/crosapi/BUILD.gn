@@ -321,6 +321,7 @@ source_set("crosapi") {
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
+    "//services/data_decoder/public/cpp:cpp",
     "//services/device/wake_lock/power_save_blocker",
     "//services/video_capture/public/cpp:cpp",
     "//services/video_capture/public/mojom",
