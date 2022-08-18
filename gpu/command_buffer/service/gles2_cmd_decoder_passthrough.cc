@@ -1423,6 +1423,9 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
   surface_ = nullptr;
 
   if (group_) {
+    // `resources_` depends on `group_`. It must be cleared before we set
+    // `group_` to nullptr.
+    resources_ = nullptr;
     group_->Destroy(this, have_context);
     group_ = nullptr;
   }
@@ -1433,6 +1436,9 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
 
   if (context_.get()) {
     context_->ReleaseCurrent(nullptr);
+    //`api_` might depend on `context_`. It must be cleared before we set
+    //`context_` to nullptr.
+    api_ = nullptr;
     context_ = nullptr;
   }
 }
