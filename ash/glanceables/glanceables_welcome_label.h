@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_WELCOME_LABEL_H_
-#define ASH_GLANCEABLES_WELCOME_LABEL_H_
+#ifndef ASH_GLANCEABLES_GLANCEABLES_WELCOME_LABEL_H_
+#define ASH_GLANCEABLES_GLANCEABLES_WELCOME_LABEL_H_
 
 #include <string>
 
@@ -33,4 +33,4 @@ class ASH_EXPORT GlanceablesWelcomeLabel : public views::Label {
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_WELCOME_LABEL_H_
+#endif  // ASH_GLANCEABLES_GLANCEABLES_WELCOME_LABEL_H_

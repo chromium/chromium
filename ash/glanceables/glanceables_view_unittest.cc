@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/welcome_label.h"
+#include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/glanceables/glanceables_weather_view.h"
-#include "ash/glanceables/welcome_label.h"
+#include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
