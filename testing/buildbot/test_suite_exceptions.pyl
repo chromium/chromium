@@ -86,6 +86,11 @@
           'quickrun_shards': 6,
         },
       },
+      'android-pie-x86-fyi-rel-reviver': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-pie-x86-rel': {
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
@@ -1282,6 +1287,12 @@
         ],
         'ci_only': True, # https://crbug.com/1233700
       },
+      'android-pie-x86-fyi-rel-reviver': {
+        'swarming': {
+          # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
+          'shards': 30,
+        },
+      },
       'android-pie-x86-rel': {
         'args': [
           # https://crbug.com/1046059
@@ -1339,6 +1350,27 @@
             {
               'name': 'generic_playstore_android31',
               'path': '.android_emulator/generic_playstore_android31',
+            },
+          ],
+        },
+      },
+      'android-pie-x86-fyi-rel-reviver': {
+        'args': [
+          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
+        ],
+        'swarming': {
+          # soft affinity so that bots with caches will be picked first
+          'optional_dimensions': {
+            '60': [
+              {
+                'caches': 'generic_playstore_android28',
+              }
+            ],
+          },
+          'named_caches': [
+            {
+              'name': 'generic_playstore_android28',
+              'path': '.android_emulator/generic_playstore_android28',
             },
           ],
         },
@@ -1674,6 +1706,13 @@
         'swarming': {
           'quickrun_shards': 40
         }
+      },
+      'android-pie-x86-fyi-rel-reviver': {
+        'swarming': {
+          # Flaking with only 20 shards with 40-60 minute runs.
+          # https://crbug.com/1230118
+          'shards': 30,
+        },
       },
       'android-pie-x86-rel': {
         'args': [
@@ -2884,6 +2923,7 @@
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
       'android-pie-arm64-rel',
+      'android-pie-x86-fyi-rel-reviver',
       'android-pie-x86-rel',
       'android-11-x86-rel',
       'Marshmallow 64 bit Tester',
@@ -3523,11 +3563,13 @@
   },
   'vr_common_unittests': {
     'remove_from': [
+      'android-pie-x86-fyi-rel-reviver',
       'android-pie-x86-rel',
     ],
   },
   'vr_pixeltests': {
     'remove_from': [
+      'android-pie-x86-fyi-rel-reviver',
       'android-pie-x86-rel',
       'VR Linux',
     ],
@@ -4010,6 +4052,11 @@
         },
       },
       'android-pie-arm64-rel': {
+        'swarming': {
+          'shards': 9,
+        },
+      },
+      'android-pie-x86-fyi-rel-reviver': {
         'swarming': {
           'shards': 9,
         },

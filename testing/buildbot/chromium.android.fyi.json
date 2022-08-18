@@ -7959,7 +7959,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -9028,7 +9029,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 30
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -9040,7 +9041,8 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--gtest_also_run_disabled_tests",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb"
         ],
         "merge": {
           "args": [
@@ -9082,14 +9084,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_playstore_android28",
+              "path": ".android_emulator/generic_playstore_android28"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_playstore_android28"
               }
             ]
           },
@@ -9380,7 +9382,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 30
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -11144,73 +11146,6 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "perfetto_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "device_os": null,
-              "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
-              "os": "Ubuntu-18.04",
-              "pool": "chromium.tests.avd"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
-            }
-          ],
-          "optional_dimensions": {
-            "60": [
-              {
-                "caches": "generic_android28"
-              }
-            ]
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "perfetto_unittests",
-        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
-          "--gtest_also_run_disabled_tests"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
             "sandbox_linux_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -12542,7 +12477,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 9
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
