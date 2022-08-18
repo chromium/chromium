@@ -136,7 +136,13 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // highlight/fragment.
   bool opened_from_highlight = false;
 
-  // The context menu was opened on an input field. Otherwise, `absl::nullopt`.
+  // The context menu was opened on an input or textarea field. Denotes the
+  // renderer id of the form containing the input or the textarea field.
+  // `absl::nullopt` if the click was not on an input field or a formless field.
+  absl::optional<uint64_t> form_renderer_id;
+
+  // The context menu was opened on an input or textarea field.
+  // Otherwise, `absl::nullopt`.
   absl::optional<uint64_t> field_renderer_id;
 
  private:

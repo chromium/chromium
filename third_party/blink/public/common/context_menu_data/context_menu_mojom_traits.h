@@ -17,6 +17,14 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::FormRendererIdDataView, uint64_t> {
+  static uint64_t id(uint64_t r) { return r; }
+
+  static bool Read(blink::mojom::FormRendererIdDataView data, uint64_t* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FieldRendererIdDataView, uint64_t> {
   static uint64_t id(uint64_t r) { return r; }
 
@@ -169,6 +177,11 @@ struct BLINK_COMMON_EXPORT
   static bool opened_from_highlight(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.opened_from_highlight;
+  }
+
+  static const absl::optional<uint64_t>& form_renderer_id(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.form_renderer_id;
   }
 
   static const absl::optional<uint64_t>& field_renderer_id(
