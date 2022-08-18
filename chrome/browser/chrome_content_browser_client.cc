@@ -722,12 +722,8 @@ bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
   if (prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed))
     return true;
 
-  if (!prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins))
-    return false;
-
-  base::Value::ConstListView allow_list_urls =
-      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
-          ->GetListDeprecated();
+  const base::Value::List& allow_list_urls =
+      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins);
   if (allow_list_urls.empty())
     return false;
 
@@ -841,7 +837,7 @@ bool HandleNewTabPageLocationOverride(
 #if !BUILDFLAG(IS_ANDROID)
 // Check if the current url is allowlisted based on a list of allowlisted urls.
 bool IsURLAllowlisted(const GURL& current_url,
-                      base::Value::ConstListView allowlisted_urls) {
+                      const base::Value::List& allowlisted_urls) {
   // Only check on HTTP and HTTPS pages.
   if (!current_url.SchemeIsHTTPOrHTTPS())
     return false;
@@ -873,12 +869,10 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
     return false;
 
   // Check if the current URL matches a URL pattern on the allowlist.
-  const base::Value* autoplay_allowlist =
-      prefs->GetList(prefs::kAutoplayAllowlist);
-  return autoplay_allowlist &&
-         prefs->IsManagedPreference(prefs::kAutoplayAllowlist) &&
-         IsURLAllowlisted(contents->GetURL(),
-                          autoplay_allowlist->GetListDeprecated());
+  const base::Value::List& autoplay_allowlist =
+      prefs->GetValueList(prefs::kAutoplayAllowlist);
+  return prefs->IsManagedPreference(prefs::kAutoplayAllowlist) &&
+         IsURLAllowlisted(contents->GetURL(), autoplay_allowlist);
 }
 #endif
 
