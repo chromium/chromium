@@ -17,7 +17,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 

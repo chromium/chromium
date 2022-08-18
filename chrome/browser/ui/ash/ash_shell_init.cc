@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/ash/chrome_shell_delegate.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/browser/context_factory.h"
 #include "ui/aura/window_tree_host.h"
 

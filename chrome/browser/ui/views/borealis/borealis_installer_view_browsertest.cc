@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"

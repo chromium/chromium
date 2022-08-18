@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {

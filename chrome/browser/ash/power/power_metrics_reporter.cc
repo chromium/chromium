@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

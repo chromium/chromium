@@ -34,7 +34,7 @@ source_set("media_transfer_protocol") {
     ":mtp_storage_info_proto",
     "//base",
     "//build:chromeos_buildflags",
-    "//chromeos/dbus",
+    "//chromeos/ash/components/dbus",
     "//dbus",
   ]
 }

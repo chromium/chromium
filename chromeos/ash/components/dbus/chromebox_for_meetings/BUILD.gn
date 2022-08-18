@@ -12,7 +12,7 @@ assert(is_cfm, "Non-CfM builds cannot depend on this library")
 component("chromebox_for_meetings") {
   defines = [ "IS_CFM_HOTLINE_CLIENT_IMPL" ]
   public_deps = [
-    "//chromeos/dbus:dbus",
+    "//chromeos/ash/components/dbus",
     "//chromeos/dbus/common",
   ]
   deps = [

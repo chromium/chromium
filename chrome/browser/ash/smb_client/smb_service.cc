@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"

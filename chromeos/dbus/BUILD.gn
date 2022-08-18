@@ -6,27 +6,10 @@ import("//testing/test.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
-component("dbus") {
-  output_name = "chromeos_dbus"  # Avoid conflict with //dbus
-  defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
-  public_deps = [
-    "//chromeos/dbus/common",
-    "//chromeos/dbus/constants",
-    "//chromeos/dbus/init",
-    "//dbus",
-  ]
-  deps = [ "//base" ]
-  sources = [
-    "dbus_thread_manager.cc",
-    "dbus_thread_manager.h",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
   testonly = true
   deps = [
-    ":dbus",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/dlcservice:unit_tests",
@@ -44,7 +27,6 @@ source_set("unit_tests") {
   ]
   sources = [
     "blocking_method_caller_unittest.cc",
-    "dbus_thread_manager_unittest.cc",
     "native_timer_unittest.cc",
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",

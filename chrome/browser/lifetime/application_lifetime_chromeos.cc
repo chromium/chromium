@@ -5,8 +5,8 @@
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chrome {

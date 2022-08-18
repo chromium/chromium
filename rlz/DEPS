@@ -4,8 +4,7 @@
 
 include_rules = [
   "+build",
-  "+chromeos/ash/components/dbus/debug_daemon",
-  "+chromeos/dbus",
+  "+chromeos/ash/components/dbus",
   "+chromeos/system",
   "+dbus",
   "+mojo/core/embedder",

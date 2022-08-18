@@ -55,7 +55,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/about_flags.h"
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ChromeFeatureListCreator::ChromeFeatureListCreator() = default;

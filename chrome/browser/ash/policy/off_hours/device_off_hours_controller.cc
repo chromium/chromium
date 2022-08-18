@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

@@ -60,9 +60,9 @@ source_set("loader") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/dbus",
     "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/services/libassistant/public/cpp:loader",
@@ -151,6 +151,7 @@ source_set("internal") {
     "./grpc/external_services:grpc_services_observer",
     "//build/util:chromium_git_revision",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/dbus",
     "//chromeos/ash/resources",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",
@@ -159,7 +160,6 @@ source_set("internal") {
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal/proto:assistant",
-    "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/services/network_config/public/cpp",

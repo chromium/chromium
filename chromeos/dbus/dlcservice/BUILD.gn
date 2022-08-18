@@ -11,7 +11,7 @@ component("dlcservice") {
 
   public_deps = [
     ":dlcservice_proto",
-    "//chromeos/dbus:dbus",
+    "//chromeos/ash/components/dbus",
     "//chromeos/dbus/common",
   ]
 
@@ -35,7 +35,6 @@ source_set("unit_tests") {
   deps = [
     ":dlcservice_proto",
     "//base/test:test_support",
-    "//chromeos/dbus",
     "//dbus:test_support",
     "//testing/gmock",
     "//testing/gtest",

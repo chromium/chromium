@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {

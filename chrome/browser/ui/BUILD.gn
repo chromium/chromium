@@ -3160,6 +3160,7 @@ static_library("ui") {
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
+      "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/cryptohome",
       "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
@@ -3198,7 +3199,6 @@ static_library("ui") {
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/dbus",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/login/login_state",
@@ -5883,7 +5883,7 @@ static_library("test_support") {
     ]
     deps += [
       "//ash/public/cpp",
-      "//chromeos/dbus",
+      "//chromeos/ash/components/dbus",
       "//chromeos/ui/base",
     ]
   }

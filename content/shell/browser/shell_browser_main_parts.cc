@@ -55,7 +55,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"

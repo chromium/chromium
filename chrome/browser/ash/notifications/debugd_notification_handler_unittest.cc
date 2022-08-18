@@ -8,9 +8,9 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"

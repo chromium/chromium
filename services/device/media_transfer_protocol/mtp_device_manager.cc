@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "dbus/bus.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

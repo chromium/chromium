@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/net/network_diagnostics/gateway_can_be_pinged_routine.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

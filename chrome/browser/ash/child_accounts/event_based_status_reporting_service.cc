@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/network_service_instance.h"
 

@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/browser/web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

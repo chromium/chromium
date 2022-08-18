@@ -11,7 +11,7 @@
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
