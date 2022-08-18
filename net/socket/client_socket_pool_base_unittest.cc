@@ -1257,14 +1257,14 @@ TEST_F(ClientSocketPoolBaseTest, StallAndThenCancelAndTriggerAvailableSocket) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSockets);
   connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
 
-  ClientSocketHandle handle;
   TestCompletionCallback callback;
-  EXPECT_EQ(
-      ERR_IO_PENDING,
-      handle.Init(TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
-                  SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-                  pool_.get(), NetLogWithSource()));
+  ClientSocketHandle stalled_handle;
+  EXPECT_EQ(ERR_IO_PENDING,
+            stalled_handle.Init(
+                TestGroupId("a"), params_, absl::nullopt, DEFAULT_PRIORITY,
+                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                pool_.get(), NetLogWithSource()));
 
   ClientSocketHandle handles[4];
   for (auto& handle : handles) {

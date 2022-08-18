@@ -295,10 +295,10 @@ int UDPSocketPosix::GetPeerAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getpeername(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(errno);
-    auto address = std::make_unique<IPEndPoint>();
-    if (!address->FromSockAddr(storage.addr, storage.addr_len))
+    auto endpoint = std::make_unique<IPEndPoint>();
+    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
-    remote_address_ = std::move(address);
+    remote_address_ = std::move(endpoint);
   }
 
   *address = *remote_address_;
@@ -315,10 +315,10 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getsockname(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(errno);
-    auto address = std::make_unique<IPEndPoint>();
-    if (!address->FromSockAddr(storage.addr, storage.addr_len))
+    auto endpoint = std::make_unique<IPEndPoint>();
+    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
-    local_address_ = std::move(address);
+    local_address_ = std::move(endpoint);
     net_log_.AddEvent(NetLogEventType::UDP_LOCAL_ADDRESS, [&] {
       return CreateNetLogUDPConnectParams(*local_address_, bound_network_);
     });
@@ -393,9 +393,10 @@ int UDPSocketPosix::SendToOrWrite(IOBuffer* buf,
   DCHECK(!callback.is_null());  // Synchronous operation not supported
   DCHECK_GT(buf_len, 0);
 
-  int result = InternalSendTo(buf, buf_len, address);
-  if (result != ERR_IO_PENDING)
+  if (int result = InternalSendTo(buf, buf_len, address);
+      result != ERR_IO_PENDING) {
     return result;
+  }
 
   if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           socket_, true, base::MessagePumpForIO::WATCH_WRITE,

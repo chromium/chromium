@@ -2625,16 +2625,16 @@ TEST_F(DiskCacheEntryTest, CleanupSparseEntry) {
 
   std::unique_ptr<TestIterator> iter = CreateIterator();
   int count = 0;
-  std::string child_key[2];
+  std::string child_keys[2];
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(entry != nullptr);
     // Writing to an entry will alter the LRU list and invalidate the iterator.
     if (entry->GetKey() != key && count < 2)
-      child_key[count++] = entry->GetKey();
+      child_keys[count++] = entry->GetKey();
     entry->Close();
   }
-  for (const auto& key : child_key) {
-    ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+  for (const auto& child_key : child_keys) {
+    ASSERT_THAT(OpenEntry(child_key, &entry), IsOk());
     // Overwrite the header's magic and signature.
     EXPECT_EQ(12, WriteData(entry, 2, 0, buf1.get(), 12, false));
     entry->Close();

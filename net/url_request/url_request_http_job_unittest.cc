@@ -1843,21 +1843,24 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
       /*first_party_sets_enabled=*/false));
   auto context = context_builder->Build();
 
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      https_test.GetURL("/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
-                        ";Partitioned;"),
-      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://www.toplevelsite.com"));
   const IsolationInfo kTestIsolationInfo =
       IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
 
-  req->set_isolation_info(kTestIsolationInfo);
-  req->Start();
-  ASSERT_TRUE(req->is_pending());
-  delegate.RunUntilComplete();
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL(
+            "/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
+            ";Partitioned;"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+  }
 
   {  // Test request from the same top-level site.
     TestDelegate delegate;
@@ -1932,17 +1935,19 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
   context_builder->SetCookieStore(std::move(cookie_monster));
   auto context = context_builder->Build();
 
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      https_test.GetURL("/set-cookie?__Host-foo=0;SameSite=None;Secure;Path=/"
-                        ";Partitioned;"),
-      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL("/set-cookie?__Host-foo=0;SameSite=None;Secure;Path=/"
+                          ";Partitioned;"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  // Start with the set's owner as the top-level site.
-  req->set_isolation_info(kOwnerIsolationInfo);
-  req->Start();
-  ASSERT_TRUE(req->is_pending());
-  delegate.RunUntilComplete();
+    // Start with the set's owner as the top-level site.
+    req->set_isolation_info(kOwnerIsolationInfo);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+  }
 
   {
     // Test the cookie is present in a request with the same top-frame site as
@@ -1970,15 +1975,18 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
     EXPECT_EQ("__Host-foo=0", delegate.data_received());
   }
 
-  // Set a cookie from the member site.
-  req = context->CreateRequest(
-      https_test.GetURL("/set-cookie?__Host-bar=1;SameSite=None;Secure;Path=/"
-                        ";Partitioned;"),
-      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-  req->set_isolation_info(kMemberIsolationInfo);
-  req->Start();
-  ASSERT_TRUE(req->is_pending());
-  delegate.RunUntilComplete();
+  {
+    // Set a cookie from the member site.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL("/set-cookie?__Host-bar=1;SameSite=None;Secure;Path=/"
+                          ";Partitioned;"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kMemberIsolationInfo);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+  }
 
   {
     // Check request whose top-frame site is the owner site has the cookie set
@@ -2030,17 +2038,19 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, PrivacyMode) {
   const IsolationInfo kTestIsolationInfo =
       IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
 
-  // Set an unpartitioned and partitioned cookie.
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      https_test.GetURL(
-          "/set-cookie?__Host-partitioned=0;SameSite=None;Secure;Path=/"
-          ";Partitioned;&__Host-unpartitioned=1;SameSite=None;Secure;Path=/"),
-      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_isolation_info(kTestIsolationInfo);
-  req->Start();
-  ASSERT_TRUE(req->is_pending());
-  delegate.RunUntilComplete();
+  {
+    // Set an unpartitioned and partitioned cookie.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL(
+            "/set-cookie?__Host-partitioned=0;SameSite=None;Secure;Path=/"
+            ";Partitioned;&__Host-unpartitioned=1;SameSite=None;Secure;Path=/"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+  }
 
   {  // Get both cookies when privacy mode is disabled.
     TestDelegate delegate;
@@ -2134,23 +2144,26 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
                                       /*first_party_sets_enabled=*/false));
   auto context = context_builder->Build();
 
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> req(context->CreateRequest(
-      https_test.GetURL("/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
-                        ";Partitioned;"),
-      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://www.toplevelsite.com"));
   const IsolationInfo kTestIsolationInfo =
       IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
 
-  req->set_isolation_info(kTestIsolationInfo);
-  req->Start();
-  ASSERT_TRUE(req->is_pending());
-  delegate.RunUntilComplete();
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL(
+            "/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
+            ";Partitioned;"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  ASSERT_TRUE(req->HasPartitionedCookie());
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+
+    ASSERT_TRUE(req->HasPartitionedCookie());
+  }
 
   {  // Test request from the same top-level site.
     TestDelegate delegate;

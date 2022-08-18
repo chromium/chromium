@@ -130,23 +130,25 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
         free_digest_info.reset(digest_item.data);
     }
 
-    int len = PK11_SignatureLen(key_.get());
-    if (len <= 0) {
-      LogPRError("PK11_SignatureLen failed");
-      return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
-    }
-    signature->resize(len);
-    SECItem signature_item;
-    signature_item.data = signature->data();
-    signature_item.len = signature->size();
+    {
+      const int len = PK11_SignatureLen(key_.get());
+      if (len <= 0) {
+        LogPRError("PK11_SignatureLen failed");
+        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      }
+      signature->resize(len);
+      SECItem signature_item;
+      signature_item.data = signature->data();
+      signature_item.len = signature->size();
 
-    SECStatus rv = PK11_SignWithMechanism(key_.get(), mechanism, &param,
-                                          &signature_item, &digest_item);
-    if (rv != SECSuccess) {
-      LogPRError("PK11_SignWithMechanism failed");
-      return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      SECStatus rv = PK11_SignWithMechanism(key_.get(), mechanism, &param,
+                                            &signature_item, &digest_item);
+      if (rv != SECSuccess) {
+        LogPRError("PK11_SignWithMechanism failed");
+        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      }
+      signature->resize(signature_item.len);
     }
-    signature->resize(signature_item.len);
 
     // NSS emits raw ECDSA signatures, but BoringSSL expects a DER-encoded
     // ECDSA-Sig-Value.
@@ -164,15 +166,20 @@ class SSLPlatformKeyNSS : public ThreadedSSLPrivateKey::Delegate {
         return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
       }
 
-      int len = i2d_ECDSA_SIG(sig.get(), nullptr);
-      if (len <= 0)
-        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
-      signature->resize(len);
-      uint8_t* ptr = signature->data();
-      len = i2d_ECDSA_SIG(sig.get(), &ptr);
-      if (len <= 0)
-        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
-      signature->resize(len);
+      {
+        const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
+        if (len <= 0)
+          return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        signature->resize(len);
+      }
+
+      {
+        uint8_t* ptr = signature->data();
+        const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
+        if (len <= 0)
+          return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        signature->resize(len);
+      }
     }
 
     return OK;

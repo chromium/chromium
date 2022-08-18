@@ -64,10 +64,10 @@ ConnectionEndpointMetadata::FromValue(const base::Value& value) {
   ConnectionEndpointMetadata metadata;
 
   std::vector<std::string> alpns;
-  for (const base::Value& value : *alpns_list) {
-    if (!value.is_string())
+  for (const base::Value& alpn : *alpns_list) {
+    if (!alpn.is_string())
       return absl::nullopt;
-    metadata.supported_protocol_alpns.push_back(value.GetString());
+    metadata.supported_protocol_alpns.push_back(alpn.GetString());
   }
 
   absl::optional<std::vector<uint8_t>> decoded =
