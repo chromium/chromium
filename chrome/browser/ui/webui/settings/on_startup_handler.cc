@@ -69,14 +69,13 @@ base::Value OnStartupHandler::GetNtpExtension() {
     return base::Value();
   }
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("id", ntp_extension->id());
-  dict.SetStringKey("name", ntp_extension->name());
-  dict.SetBoolKey("canBeDisabled",
-                  !extensions::ExtensionSystem::Get(profile_)
-                       ->management_policy()
-                       ->MustRemainEnabled(ntp_extension, nullptr));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("id", ntp_extension->id());
+  dict.Set("name", ntp_extension->name());
+  dict.Set("canBeDisabled", !extensions::ExtensionSystem::Get(profile_)
+                                 ->management_policy()
+                                 ->MustRemainEnabled(ntp_extension, nullptr));
+  return base::Value(std::move(dict));
 }
 
 void OnStartupHandler::HandleGetNtpExtension(const base::Value::List& args) {
