@@ -208,6 +208,8 @@ chromium-metrics-reviews@google.com.
       summary="A text bubble showing that a product can be tracked from the
                overflow menu"/>
   <variant name="IPH_SideSearch" summary="side search discovery"/>
+  <variant name="IPH_SideSearchAutoTriggering"
+      summary="side search automatic triggering"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
