@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/promos_manager/impression_limit.h"
 
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams interested in displaying promos should
@@ -29,6 +32,12 @@ class PromosManager {
 
   // base::Value::List of the promo impression history.
   base::Value::List impression_history_;
+
+  // Impression limits that count against all promos.
+  NSArray<ImpressionLimit*>* GlobalImpressionLimits();
+
+  // Impression limits that count against any given promo.
+  NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits();
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

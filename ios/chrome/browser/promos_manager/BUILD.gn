@@ -4,10 +4,6 @@
 
 source_set("promos_manager") {
   sources = [
-    "impression_limit.h",
-    "impression_limit.mm",
-    "promo.h",
-    "promo.mm",
     "promos_manager.h",
     "promos_manager.mm",
   ]
@@ -16,10 +12,23 @@ source_set("promos_manager") {
   deps = [
     ":constants",
     ":features",
+    ":types",
     "//base",
     "//components/prefs",
     "//ios/chrome/browser:pref_names",
   ]
+}
+
+source_set("types") {
+  sources = [
+    "impression_limit.h",
+    "impression_limit.mm",
+    "promo.h",
+    "promo.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [ ":constants" ]
 }
 
 source_set("promos_manager_scene_agent") {
@@ -66,6 +75,7 @@ source_set("unit_tests") {
     ":constants",
     ":features",
     ":promos_manager",
+    ":types",
     "//base",
     "//base/test:test_support",
     "//components/prefs",
