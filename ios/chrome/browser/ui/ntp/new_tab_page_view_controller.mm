@@ -347,26 +347,26 @@
         toParentViewController:parentViewController];
   }
 
-    [self addViewController:self.headerController
-        toParentViewController:parentViewController];
+  [self addViewController:self.headerController
+      toParentViewController:parentViewController];
 
-    DCHECK([self.headerController.view isDescendantOfView:self.containerView]);
-    self.headerController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  DCHECK([self.headerController.view isDescendantOfView:self.containerView]);
+  self.headerController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-    // TODO(crbug.com/1170995): The contentCollectionView width might be
-    // narrower than the ContentSuggestions view. This causes elements to be
-    // hidden, so we set clipsToBounds to ensure that they remain visible. The
-    // collection view changes, so we must set this property each time it does.
-    self.collectionView.clipsToBounds = NO;
+  // TODO(crbug.com/1170995): The contentCollectionView width might be
+  // narrower than the ContentSuggestions view. This causes elements to be
+  // hidden, so we set clipsToBounds to ensure that they remain visible. The
+  // collection view changes, so we must set this property each time it does.
+  self.collectionView.clipsToBounds = NO;
 
-    [self.overscrollActionsController invalidate];
-    [self configureOverscrollActionsController];
+  [self.overscrollActionsController invalidate];
+  [self configureOverscrollActionsController];
 
-    // If viewDidAppear, then we are just changing the NTP collection view. In
-    // that case, we apply the constraints here.
-    if (self.viewDidAppear) {
-      [self applyCollectionViewConstraints];
-    }
+  // If viewDidAppear, then we are just changing the NTP collection view. In
+  // that case, we apply the constraints here.
+  if (self.viewDidAppear) {
+    [self applyCollectionViewConstraints];
+  }
 
   // If the feed is not visible, we control the delegate ourself (since it is
   // otherwise controlled by the feed service). The view is also layed out
