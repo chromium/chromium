@@ -4,6 +4,7 @@
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -19,9 +20,13 @@ namespace {
 
 bool ShouldOfferSignin(syncer::SyncService* sync_service,
                        PrefService* pref_service) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return false;
+#else
   return pref_service->GetBoolean(prefs::kSigninAllowed) && sync_service &&
          sync_service->GetAccountInfo().IsEmpty() &&
          !sync_service->IsLocalSyncEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace

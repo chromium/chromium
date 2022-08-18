@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/features.h"
@@ -94,6 +95,8 @@ TEST_F(EntryPointDisplayReasonTest,
                                           pref_service()));
 }
 
+// The promo isn't supported on Lacros yet.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(EntryPointDisplayReasonTest,
        ShouldShowPromoIfSignedOutAndPromoFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
@@ -104,6 +107,7 @@ TEST_F(EntryPointDisplayReasonTest,
                                        send_tab_to_self_sync_service(),
                                        pref_service()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfModelNotReady) {
   SignIn();
