@@ -338,6 +338,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkSurface::ContentChangeMode mode_ = SkSurface::kRetain_ContentChangeMode;
 
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
  private:
   friend class FlushForImageListener;
@@ -352,7 +353,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void WillDraw() {}
 
   size_t ComputeSurfaceSize() const;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
 
   cc::ImageDecodeCache* ImageDecodeCacheRGBA8();

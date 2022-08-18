@@ -30,6 +30,7 @@ include_rules = [
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/command_buffer/common/mailbox.h",
     "+gpu/command_buffer/common/mailbox_holder.h",
+    "+gpu/command_buffer/common/shared_image_trace_utils.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/command_buffer/common/sync_token.h",
     "+gpu/ipc/common/mailbox.mojom-blink.h",

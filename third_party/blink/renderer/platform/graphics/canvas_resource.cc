@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -20,6 +21,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -760,6 +762,28 @@ base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 CanvasResourceRasterSharedImage::ContextProviderWrapper() const {
   DCHECK(!is_cross_thread());
   return context_provider_wrapper_;
+}
+
+void CanvasResourceRasterSharedImage::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd,
+    size_t bytes_per_pixel) const {
+  if (!IsValid())
+    return;
+
+  std::string dump_name =
+      base::StringPrintf("canvas/ResourceProvider/CanvasResource/0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+  size_t memory_size = Size().height() * Size().width() * bytes_per_pixel;
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  memory_size);
+
+  auto guid = gpu::GetSharedImageGUIDForTracing(mailbox());
+  pmd->CreateSharedGlobalAllocatorDump(guid);
+  // This memory is allocated on our behalf, claim it by setting the importance
+  // to >0.
+  pmd->AddOwnershipEdge(dump->guid(), guid, 1);
 }
 
 // CanvasResourceSkiaDawnSharedImage

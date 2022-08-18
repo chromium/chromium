@@ -302,6 +302,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage : public CanvasResource {
   virtual bool HasReadAccess() const = 0;
   virtual bool IsLost() const = 0;
   virtual void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>&) = 0;
+  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                            size_t bytes_per_pixel) const {}
 
  protected:
   CanvasResourceSharedImage(base::WeakPtr<CanvasResourceProvider>,
@@ -362,6 +364,8 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   bool IsLost() const final { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image) final;
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    size_t bytes_per_pixel) const override;
 
  private:
   // These members are either only accessed on the owning thread, or are only
