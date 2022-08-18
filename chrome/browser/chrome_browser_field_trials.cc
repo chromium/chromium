@@ -140,7 +140,8 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     const std::string group =
         fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kFREMobileIdentityConsistencyTrial, group);
+        kFREMobileIdentityConsistencyTrial, group,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
     if (fre_mobile_identity_consistency_field_trial::IsFREFieldTrialEnabled()) {
       // MobileIdentityConsistencyFREVariationsSynthetic field trial.
