@@ -581,10 +581,6 @@ void SidePanelCoordinator::OnTabStripModelChanged(
 
   // If an active entry is available, show it. If not, close the panel.
   if (GetContentView()) {
-    header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
-        GetLastActiveEntryId().value_or(kDefaultEntry)));
-    header_combobox_->SchedulePaint();
-
     if ((!new_contextual_registry ||
          !new_contextual_registry->active_entry().has_value()) &&
         !global_registry_->active_entry().has_value()) {
@@ -592,6 +588,9 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     } else {
       Show(GetLastActiveEntryId().value_or(kDefaultEntry),
            SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
+      header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
+          GetLastActiveEntryId().value_or(kDefaultEntry)));
+      header_combobox_->SchedulePaint();
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
