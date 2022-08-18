@@ -282,7 +282,8 @@ bool CommandBufferStub::MakeCurrent() {
 gles2::ProgramCache::ScopedCacheUse CommandBufferStub::CreateCacheUse() {
   return gles2::ProgramCache::ScopedCacheUse(
       channel_->gpu_channel_manager()->program_cache(),
-      base::BindRepeating(&DecoderClient::CacheShader, base::Unretained(this)));
+      base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
+                          gpu::GpuDiskCacheType::kGlShaders));
 }
 
 void CommandBufferStub::Destroy() {
@@ -629,9 +630,10 @@ void CommandBufferStub::OnConsoleMessage(int32_t id,
   client_->OnConsoleMessage(message);
 }
 
-void CommandBufferStub::CacheShader(const std::string& key,
-                                    const std::string& shader) {
-  channel_->CacheShader(key, shader);
+void CommandBufferStub::CacheBlob(gpu::GpuDiskCacheType type,
+                                  const std::string& key,
+                                  const std::string& shader) {
+  channel_->CacheBlob(type, key, shader);
 }
 
 void CommandBufferStub::AddDestructionObserver(DestructionObserver* observer) {

@@ -184,7 +184,9 @@ MockClientGpuControl::~MockClientGpuControl() = default;
 
 FakeDecoderClient::~FakeDecoderClient() = default;
 void FakeDecoderClient::OnConsoleMessage(int32_t, const std::string&) {}
-void FakeDecoderClient::CacheShader(const std::string&, const std::string&) {}
+void FakeDecoderClient::CacheBlob(gpu::GpuDiskCacheType,
+                                  const std::string&,
+                                  const std::string&) {}
 void FakeDecoderClient::OnFenceSyncRelease(uint64_t) {}
 void FakeDecoderClient::OnDescheduleUntilFinished() {}
 void FakeDecoderClient::OnRescheduleAfterFinished() {}

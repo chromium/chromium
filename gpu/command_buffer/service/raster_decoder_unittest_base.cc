@@ -73,8 +73,9 @@ RasterDecoderTestBase::~RasterDecoderTestBase() = default;
 
 void RasterDecoderTestBase::OnConsoleMessage(int32_t id,
                                              const std::string& message) {}
-void RasterDecoderTestBase::CacheShader(const std::string& key,
-                                        const std::string& shader) {}
+void RasterDecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
+                                      const std::string& key,
+                                      const std::string& blob) {}
 void RasterDecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void RasterDecoderTestBase::OnDescheduleUntilFinished() {}
 void RasterDecoderTestBase::OnRescheduleAfterFinished() {}

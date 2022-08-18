@@ -141,7 +141,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   void RemoveRoute(int32_t route_id);
 
   void RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle);
-  void CacheShader(const std::string& key, const std::string& shader);
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& shader);
 
   uint64_t GetMemoryUsage() const;
 

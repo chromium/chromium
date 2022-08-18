@@ -203,7 +203,7 @@ void RunShaderCallback(DecoderClient* client,
 
   std::string key;
   base::Base64Encode(sha_string, &key);
-  client->CacheShader(key, shader);
+  client->CacheBlob(gpu::GpuDiskCacheType::kGlShaders, key, shader);
 }
 
 bool ProgramBinaryExtensionsAvailable() {

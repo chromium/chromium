@@ -78,8 +78,9 @@ void CommandBufferDirect::OnParseError() {}
 void CommandBufferDirect::OnConsoleMessage(int32_t id,
                                            const std::string& message) {}
 
-void CommandBufferDirect::CacheShader(const std::string& key,
-                                      const std::string& shader) {}
+void CommandBufferDirect::CacheBlob(gpu::GpuDiskCacheType type,
+                                    const std::string& key,
+                                    const std::string& blob) {}
 
 void CommandBufferDirect::OnFenceSyncRelease(uint64_t release) {
   NOTIMPLEMENTED();

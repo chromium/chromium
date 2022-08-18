@@ -169,9 +169,10 @@ absl::optional<gles2::ProgramCache::ScopedCacheUse>
 InProcessCommandBuffer::CreateCacheUse() {
   absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (context_group_->has_program_cache()) {
-    cache_use.emplace(context_group_->get_program_cache(),
-                      base::BindRepeating(&DecoderClient::CacheShader,
-                                          base::Unretained(this)));
+    cache_use.emplace(
+        context_group_->get_program_cache(),
+        base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
+                            gpu::GpuDiskCacheType::kGlShaders));
   }
   return cache_use;
 }
@@ -819,8 +820,9 @@ void InProcessCommandBuffer::OnConsoleMessage(int32_t id,
   // TODO(piman): implement this.
 }
 
-void InProcessCommandBuffer::CacheShader(const std::string& key,
-                                         const std::string& shader) {}
+void InProcessCommandBuffer::CacheBlob(gpu::GpuDiskCacheType type,
+                                       const std::string& key,
+                                       const std::string& shader) {}
 
 void InProcessCommandBuffer::OnFenceSyncRelease(uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

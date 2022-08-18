@@ -141,8 +141,9 @@ GLES2DecoderTestBase::~GLES2DecoderTestBase() = default;
 
 void GLES2DecoderTestBase::OnConsoleMessage(int32_t id,
                                             const std::string& message) {}
-void GLES2DecoderTestBase::CacheShader(const std::string& key,
-                                       const std::string& shader) {}
+void GLES2DecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
+                                     const std::string& key,
+                                     const std::string& blob) {}
 void GLES2DecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderTestBase::OnRescheduleAfterFinished() {}
@@ -2402,8 +2403,9 @@ GLES2DecoderPassthroughTestBase::~GLES2DecoderPassthroughTestBase() = default;
 void GLES2DecoderPassthroughTestBase::OnConsoleMessage(
     int32_t id,
     const std::string& message) {}
-void GLES2DecoderPassthroughTestBase::CacheShader(const std::string& key,
-                                                  const std::string& shader) {}
+void GLES2DecoderPassthroughTestBase::CacheBlob(gpu::GpuDiskCacheType type,
+                                                const std::string& key,
+                                                const std::string& blob) {}
 void GLES2DecoderPassthroughTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderPassthroughTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderPassthroughTestBase::OnRescheduleAfterFinished() {}

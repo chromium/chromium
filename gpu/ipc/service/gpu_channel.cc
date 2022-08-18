@@ -1046,12 +1046,14 @@ void GpuChannel::RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle) {
   caches_[gpu::GetHandleType(handle)] = handle;
 }
 
-void GpuChannel::CacheShader(const std::string& key,
-                             const std::string& shader) {
-  const auto it = caches_.find(gpu::GpuDiskCacheType::kGlShaders);
-  if (it != caches_.end()) {
-    gpu_channel_manager_->delegate()->StoreBlobToDisk(it->second, key, shader);
+void GpuChannel::CacheBlob(gpu::GpuDiskCacheType type,
+                           const std::string& key,
+                           const std::string& shader) {
+  auto it = caches_.find(type);
+  if (it == caches_.end()) {
+    return;
   }
+  gpu_channel_manager_->delegate()->StoreBlobToDisk(it->second, key, shader);
 }
 
 uint64_t GpuChannel::GetMemoryUsage() const {

@@ -91,9 +91,12 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   ~MemoryProgramCacheTest() override { shader_manager_.Destroy(false); }
 
   void OnConsoleMessage(int32_t id, const std::string& message) override {}
-  void CacheShader(const std::string& key, const std::string& shader) override {
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& blob) override {
+    ASSERT_EQ(type, gpu::GpuDiskCacheType::kGlShaders);
     shader_cache_count_++;
-    shader_cache_shader_ = shader;
+    shader_cache_shader_ = blob;
   }
   void OnFenceSyncRelease(uint64_t release) override {}
   void OnDescheduleUntilFinished() override {}

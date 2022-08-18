@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
@@ -26,9 +27,11 @@ class GPU_EXPORT DecoderClient {
   // Notifies the renderer process that the active GPU changed.
   virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
 
-  // Cache a newly linked shader.
-  virtual void CacheShader(const std::string& key,
-                           const std::string& shader) = 0;
+  // Cache a blob (i.e. shader intermediates, shader bytecodes, pipelines, etc)
+  // to persistent storage.
+  virtual void CacheBlob(gpu::GpuDiskCacheType type,
+                         const std::string& key,
+                         const std::string& blob) = 0;
 
   // Called when the decoder releases a fence sync. Allows the client to
   // reschedule waiting decoders.
