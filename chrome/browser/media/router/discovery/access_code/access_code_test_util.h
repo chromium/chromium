@@ -54,7 +54,7 @@ class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
               (override));
 };
 
-MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink);
+MediaRoute CreateRouteForTesting(const MediaSink::Id& sink_id);
 
 }  // namespace media_router
 

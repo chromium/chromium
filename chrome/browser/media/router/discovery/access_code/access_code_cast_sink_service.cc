@@ -49,11 +49,6 @@ using SinkSource = CastDeviceCountMetrics::SinkSource;
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
 
-// This value is used in whenever expiration timers are created. It is a buffer
-// used to ensure all cast protocol steps are finished before instant expiration
-// occurs.
-const base::TimeDelta kExpirationDelay = base::Milliseconds(450);
-
 }  // namespace
 
 bool IsAccessCodeCastEnabled() {
@@ -584,7 +579,6 @@ base::TimeDelta AccessCodeCastSinkService::CalculateDurationTillExpiration(
   // expiration.
   if (time_till_expiration.is_negative())
     return base::Seconds(0);
-
   return time_till_expiration;
 }
 
@@ -689,7 +683,6 @@ void AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter(
   if (GetActiveRoute(sink->id()).has_value() &&
       GetActiveRoute(sink->id()).value().is_local())
     return;
-
   LogInfo(
       "Attempting to disconnect and remove the cast sink from "
       "the media router.",

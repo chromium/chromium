@@ -74,6 +74,12 @@ class AccessCodeCastSinkService : public KeyedService,
 
   static constexpr base::TimeDelta kExpirationTimerDelay = base::Seconds(20);
 
+  // This value is used in whenever expiration timers are created. It is a
+  // buffer
+  // used to ensure all cast protocol steps are finished before instant
+  // expiration occurs.
+  static constexpr base::TimeDelta kExpirationDelay = base::Milliseconds(450);
+
   // This function manually calculates the duration till expiration and
   // overrides any existing expiration timers if the duration is zero. This
   // function exists largely for edge case scenarios with instant expiration

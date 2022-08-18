@@ -7,8 +7,10 @@
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -49,18 +51,7 @@ class TestMediaRouter : public media_router::MockMediaRouter {
     return logger_.get();
   }
 
-  void RegisterMediaRoutesObserver(
-      media_router::MediaRoutesObserver* observer) override {
-    routes_observers_.push_back(observer);
-  }
-
-  void UnregisterMediaRoutesObserver(
-      media_router::MediaRoutesObserver* observer) override {
-    base::Erase(routes_observers_, observer);
-  }
-
  private:
-  std::vector<media_router::MediaRoutesObserver*> routes_observers_;
   std::unique_ptr<media_router::LoggerImpl> logger_;
 };
 
@@ -87,9 +78,9 @@ namespace media_router {
 
 AccessCodeCastIntegrationBrowserTest::AccessCodeCastIntegrationBrowserTest()
     : url_to_intercept_(std::string(kDefaultDiscoveryEndpoint) +
-                        kDiscoveryServicePath) {
+                        kDiscoveryServicePath),
+      mock_cast_socket_service_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   feature_list_.InitAndEnableFeature(features::kAccessCodeCastUI);
-  SetMockOpenChannelCallbackResponse(false);
 }
 
 AccessCodeCastIntegrationBrowserTest::~AccessCodeCastIntegrationBrowserTest() =
@@ -124,6 +115,7 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
         media_sinks_observers_.push_back(observer);
         return true;
       });
+
   // Remove sink observers as appropriate (destructing handlers will cause
   // this to occur).
   ON_CALL(*media_router_, UnregisterMediaSinksObserver(_))
@@ -132,6 +124,23 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
                             media_sinks_observers_.end(), observer);
         if (it != media_sinks_observers_.end()) {
           media_sinks_observers_.erase(it);
+        }
+      });
+
+  ON_CALL(*media_router_, RegisterMediaRoutesObserver(_))
+      .WillByDefault([this](MediaRoutesObserver* observer) {
+        media_routes_observers_.push_back(observer);
+        return true;
+      });
+
+  // Remove route observers as appropriate (destructing handlers will cause
+  // this to occur).
+  ON_CALL(*media_router_, UnregisterMediaRoutesObserver(_))
+      .WillByDefault([this](MediaRoutesObserver* observer) {
+        auto it = std::find(media_routes_observers_.begin(),
+                            media_routes_observers_.end(), observer);
+        if (it != media_routes_observers_.end()) {
+          media_routes_observers_.erase(it);
         }
       });
 
@@ -158,6 +167,11 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
             }
             std::move(callback).Run(nullptr, *result);
           });
+
+  // We must create the CastMediaSinkServiceImpl before the
+  // AccessCodeCastSinkService is generated.
+  if (!impl_)
+    impl_ = CreateImpl();
 
   AccessCodeCastSinkServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&AccessCodeCastIntegrationBrowserTest::
@@ -265,96 +279,130 @@ int AccessCodeCastIntegrationBrowserTest::WaitForAddSinkErrorCode(
   while (0 ==
          EvalJs(GetErrorElementScript() + ".getMessageCode();", dialog_contents)
              .ExtractInt()) {
-    SpinRunLoop();
+    SpinRunLoop(base::Milliseconds(20));
   }
   return EvalJs(GetErrorElementScript() + ".getMessageCode();", dialog_contents)
       .ExtractInt();
 }
 
+void AccessCodeCastIntegrationBrowserTest::WaitForPrefRemoval(
+    const MediaSink::Id& sink_id) {
+  while (GetPrefUpdater()->GetMediaSinkInternalValueBySinkId(sink_id)) {
+    SpinRunLoop(AccessCodeCastSinkService::kExpirationDelay);
+  }
+}
+
 void AccessCodeCastIntegrationBrowserTest::TearDownOnMainThread() {
-  // We need to release the CastMediaSinkServiceImpl on the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&AccessCodeCastIntegrationBrowserTest::
-                                    ValidateAndReleaseCastMediaSinkServiceImpl,
-                                base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  ValidateCastMediaSinkServiceImpl();
 
   url_loader_interceptor_.reset();
-  mock_cast_socket_service_.reset();
+
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
-void AccessCodeCastIntegrationBrowserTest::
-    ValidateAndReleaseCastMediaSinkServiceImpl() {
-  EXPECT_TRUE(
-      testing::Mock::VerifyAndClearExpectations(cast_media_sink_service_impl_));
-  delete (cast_media_sink_service_impl_);
+void AccessCodeCastIntegrationBrowserTest::ValidateCastMediaSinkServiceImpl() {
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      mock_cast_media_sink_service_impl()));
+}
+
+void AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasNoSinks(
+    bool has_sink) {
+  EXPECT_FALSE(has_sink);
+}
+
+void AccessCodeCastIntegrationBrowserTest::ExpectMediaRouterHasSink(
+    bool has_sink) {
+  EXPECT_TRUE(has_sink);
 }
 
 std::unique_ptr<KeyedService>
 AccessCodeCastIntegrationBrowserTest::CreateAccessCodeCastSinkService(
     content::BrowserContext* context) {
-  // CastMediaSinkServiceImpl is a global leaky singleton. We need to make sure
-  // that it is only generated once when the initial" AccessCodeCastSinkService
-  // is created.
-  if (!cast_media_sink_service_impl_) {
-    mock_cast_socket_service_ =
-        std::make_unique<cast_channel::MockCastSocketService>(
-            (content::GetIOThreadTaskRunner({})));
-
-    // We need to use a raw_ptr here instead of a unique_ptr since using .get()
-    // will call the unique_ptr dtor. The dtor of CastMediaSinkServiceImpl must
-    // be called on the IO thread, so we manually delete it on tear down via the
-    // IO thread task runner.
-    cast_media_sink_service_impl_ =
-        new testing::NiceMock<MockCastMediaSinkServiceImpl>(
-            OnSinksDiscoveredCallback(), mock_cast_socket_service_.get(),
-            DiscoveryNetworkMonitor::GetInstance(),
-            mock_dual_media_sink_service_.get());
-
-    ON_CALL(*cast_media_sink_service_impl_, OpenChannel(_, _, _, _, _))
-        .WillByDefault(testing::Invoke(
-            [this](const MediaSinkInternal& cast_sink,
-                   std::unique_ptr<net::BackoffEntry> backoff_entry,
-                   CastDeviceCountMetrics::SinkSource sink_source,
-                   ChannelOpenedCallback callback,
-                   cast_channel::CastSocketOpenParams open_params) {
-              std::move(callback).Run(open_channel_response_);
-              if (!open_channel_response_)
-                return;
-
-              // On a successful addition to the media router, we have to mock
-              // the channel open response within the Media Router AND that the
-              // sink has been added to the QueryResultsManager. We achieve this
-              // by notifying observers that a sink was successfully added.
-              std::vector<media_router::MediaSink> one_sink;
-              one_sink.push_back(cast_sink.sink());
-
-              // A delay is added to the QRM notification to since this
-              // simulates the non-instant time it takes for a sink to be added
-              // to the QRM.
-              content::GetUIThreadTaskRunner({})->PostDelayedTask(
-                  FROM_HERE,
-                  base::BindOnce(
-                      &AccessCodeCastIntegrationBrowserTest::UpdateSinks,
-                      base::Unretained(this), one_sink,
-                      std::vector<url::Origin>()),
-                  base::Milliseconds(20));
-            }));
-  }
+  DCHECK(media_router_);
+  DCHECK(mock_cast_media_sink_service_impl());
 
   Profile* profile = Profile::FromBrowserContext(context);
   return base::WrapUnique(new AccessCodeCastSinkService(
-      profile, media_router_, cast_media_sink_service_impl_,
+      profile, media_router_, mock_cast_media_sink_service_impl(),
       DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs()));
 }
 
-void AccessCodeCastIntegrationBrowserTest::SpinRunLoop() {
+MockCastMediaSinkServiceImpl*
+AccessCodeCastIntegrationBrowserTest::CreateImpl() {
+  mock_cast_socket_service_ =
+      std::unique_ptr<cast_channel::MockCastSocketService,
+                      base::OnTaskRunnerDeleter>(
+          new cast_channel::MockCastSocketService(
+              (content::GetIOThreadTaskRunner({}))),
+          base::OnTaskRunnerDeleter(content::GetIOThreadTaskRunner({})));
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      mock_cast_socket_service_->task_runner();
+
+  MockCastMediaSinkServiceImpl* cast_media_sink_service_impl =
+      new MockCastMediaSinkServiceImpl(OnSinksDiscoveredCallback(),
+                                       mock_cast_socket_service_.get(),
+                                       DiscoveryNetworkMonitor::GetInstance(),
+                                       mock_dual_media_sink_service_.get());
+
+  ON_CALL(*cast_media_sink_service_impl, OpenChannel(_, _, _, _, _))
+      .WillByDefault(testing::Invoke(
+          this,
+          &AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall));
+
+  ON_CALL(*cast_media_sink_service_impl, HasSink(_))
+      .WillByDefault(testing::Invoke([this](const MediaSink::Id& sink_id) {
+        return base::Contains(added_sink_ids_, sink_id);
+      }));
+
+  // TODO(b/242777549): Properly delete the cast_media_sink_service_impl instead
+  // of allowing leak.
+  testing::Mock::AllowLeak(cast_media_sink_service_impl);
+  return cast_media_sink_service_impl;
+}
+
+void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
+    const MediaSinkInternal& cast_sink,
+    std::unique_ptr<net::BackoffEntry> backoff_entry,
+    CastDeviceCountMetrics::SinkSource sink_source,
+    ChannelOpenedCallback callback,
+    cast_channel::CastSocketOpenParams open_params) {
+  std::move(callback).Run(open_channel_response_);
+  if (!open_channel_response_)
+    return;
+
+  // On a successful addition to the media router, we have to mock
+  // the channel open response within the Media Router AND that the
+  // sink has been added to the QueryResultsManager. We achieve this
+  // by notifying observers that a sink was successfully added.
+  std::vector<media_router::MediaSink> one_sink;
+  one_sink.push_back(cast_sink.sink());
+
+  added_sink_ids_.insert(cast_sink.sink().id());
+
+  mock_cast_media_sink_service_impl()->task_runner().get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MockCastMediaSinkServiceImpl::AddSinkForTest,
+                     base::Unretained(mock_cast_media_sink_service_impl()),
+                     cast_sink));
+
+  // A delay is added to the QRM notification since this
+  // simulates the non-instant time it takes for a sink to be added
+  // to the QRM.
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccessCodeCastIntegrationBrowserTest::UpdateSinks,
+                     base::Unretained(this), one_sink,
+                     std::vector<url::Origin>()),
+      base::Milliseconds(20));
+}
+
+void AccessCodeCastIntegrationBrowserTest::SpinRunLoop(base::TimeDelta delay) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
+      FROM_HERE, run_loop.QuitClosure(), delay);
   run_loop.Run();
 }
 
@@ -415,6 +463,13 @@ void AccessCodeCastIntegrationBrowserTest::UpdateSinks(
   }
 }
 
+void AccessCodeCastIntegrationBrowserTest::UpdateRoutes(
+    const std::vector<MediaRoute>& routes) {
+  for (MediaRoutesObserver* routes_observer : media_routes_observers_) {
+    routes_observer->OnRoutesUpdated(routes);
+  }
+}
+
 void AccessCodeCastIntegrationBrowserTest::ExpectStartRouteCallFromTabMirroring(
     const std::string& sink_name,
     const std::string& media_source_id,
@@ -429,6 +484,12 @@ void AccessCodeCastIntegrationBrowserTest::ExpectStartRouteCallFromTabMirroring(
   EXPECT_CALL(*media_router,
               CreateRouteInternal(media_source_id, sink_name, _, web_contents,
                                   _, timeout, false));
+}
+
+raw_ptr<AccessCodeCastPrefUpdater>
+AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
+  return AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
+      ->pref_updater_.get();
 }
 
 }  // namespace media_router

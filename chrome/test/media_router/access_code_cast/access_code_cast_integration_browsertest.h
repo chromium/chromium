@@ -72,13 +72,22 @@ class AccessCodeCastIntegrationBrowserTest
   // This function spins the run loop until an error code is surfaced.
   int WaitForAddSinkErrorCode(content::WebContents* dialog_contents);
 
+  // This function spins the run loop until we detect the given sink_id in the
+  // pref service.
+  void WaitForPrefRemoval(const MediaSink::Id& sink_id);
+
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   std::unique_ptr<KeyedService> CreateAccessCodeCastSinkService(
       content::BrowserContext* context);
 
-  void SpinRunLoop();
+  // This function should be called once.
+  MockCastMediaSinkServiceImpl* CreateCastMediaSinkServiceImpl();
+
+  MockCastMediaSinkServiceImpl* CreateImpl();
+
+  void SpinRunLoop(base::TimeDelta delay);
 
   std::string GetElementScript() {
     return std::string(
@@ -98,6 +107,7 @@ class AccessCodeCastIntegrationBrowserTest
   void SetMockOpenChannelCallbackResponse(bool channel_opened);
   void UpdateSinks(const std::vector<MediaSink>& sinks,
                    const std::vector<url::Origin>& origins);
+  void UpdateRoutes(const std::vector<MediaRoute>& routes);
 
   void ExpectStartRouteCallFromTabMirroring(
       const std::string& sink_name,
@@ -105,11 +115,34 @@ class AccessCodeCastIntegrationBrowserTest
       content::WebContents* web_contents,
       base::TimeDelta timeout = base::Seconds(60),
       media_router::MockMediaRouter* media_router = nullptr);
-  void ValidateAndReleaseCastMediaSinkServiceImpl();
+
+  // Verifies that all testing expectations have been met on the
+  // CastMediaSinkServiceImpl object.
+  void ValidateCastMediaSinkServiceImpl();
+
+  void ExpectMediaRouterHasNoSinks(bool has_sink);
+  void ExpectMediaRouterHasSink(bool has_sink);
+
+  void MockOnChannelOpenedCall(const MediaSinkInternal& cast_sink,
+                               std::unique_ptr<net::BackoffEntry> backoff_entry,
+                               CastDeviceCountMetrics::SinkSource sink_source,
+                               ChannelOpenedCallback callback,
+                               cast_channel::CastSocketOpenParams open_params);
+
+  raw_ptr<AccessCodeCastPrefUpdater> GetPrefUpdater();
+
+  MockCastMediaSinkServiceImpl* mock_cast_media_sink_service_impl() {
+    return impl_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription subscription_;
 
  protected:
   raw_ptr<media_router::MockMediaRouter> media_router_ = nullptr;
   std::vector<MediaSinksObserver*> media_sinks_observers_;
+  std::vector<media_router::MediaRoutesObserver*> media_routes_observers_;
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -124,24 +157,25 @@ class AccessCodeCastIntegrationBrowserTest
   std::string url_to_intercept_;
   bool should_intercept_response_ = false;
 
-  std::unique_ptr<TestMediaSinkService> mock_dual_media_sink_service_;
-  std::unique_ptr<cast_channel::MockCastSocketService>
+  std::unique_ptr<cast_channel::MockCastSocketService,
+                  base::OnTaskRunnerDeleter>
       mock_cast_socket_service_;
+  MockCastMediaSinkServiceImpl* impl_ = nullptr;
 
-  raw_ptr<testing::NiceMock<MockCastMediaSinkServiceImpl>>
-      cast_media_sink_service_impl_ = nullptr;
+  std::unique_ptr<TestMediaSinkService> mock_dual_media_sink_service_;
 
   net::Error error_;
   net::HttpStatusCode response_code_;
   std::string response_data_;
 
-  bool open_channel_response_ = false;
+  bool open_channel_response_ = true;
+  std::set<MediaSink::Id> added_sink_ids_ = {};
+
   mojom::RouteRequestResultCode result_code_ =
       mojom::RouteRequestResultCode::OK;
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription subscription_;
+  base::WeakPtrFactory<AccessCodeCastIntegrationBrowserTest> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace media_router

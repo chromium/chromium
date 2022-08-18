@@ -223,7 +223,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   // Add a non-access code cast sink to media router and route list.
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
-  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1.id());
   std::vector<MediaRoute> route_list = {media_route_cast};
 
   // Expect that the removed_route_id_ member variable has not changes since no
@@ -237,7 +237,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   MediaSinkInternal access_code_sink2 = CreateCastSink(2);
   access_code_sink2.cast_data().discovery_type =
       CastDiscoveryType::kAccessCodeManualEntry;
-  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink2);
+  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink2.id());
 
   route_list.push_back(media_route_access);
 
@@ -978,7 +978,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
 
   mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
-  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1.id());
   std::vector<MediaRoute> route_list = {media_route_cast};
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(cast_sink1.id()));
@@ -1041,7 +1041,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
   mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
   access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
-  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1.id());
   std::vector<MediaRoute> route_list = {media_route_cast};
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(), HasSink(cast_sink1.id()));

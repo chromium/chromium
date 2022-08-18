@@ -490,7 +490,7 @@ TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
   UpdateSinks({access_code_sink.sink()}, std::vector<url::Origin>());
   handler()->set_sink_id_for_testing(access_code_sink.sink().id());
 
-  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink);
+  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink.id());
   std::vector<MediaRoute> route_list = {media_route_access};
   ON_CALL(*router(), GetCurrentRoutes()).WillByDefault(Return(route_list));
 

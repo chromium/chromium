@@ -45,3 +45,4 @@
 # in the browser tests, simply disable them.
 -AccessCodeCastDialogBrowserTest.*
 -AccessCodeCastHandlerBrowserTest.*
+-AccessCodeCastSinkServiceBrowserTest.*
