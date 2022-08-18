@@ -3649,6 +3649,7 @@ enum WebFeature {
   kContentVisibilityAutoStateChangedHandlerRegistered = 4328,
   kReplacedElementPaintedWithLargeOverflow = 4329,
   kFlexboxAbsPosJustifyContent = 4330,
+  kMultipleFetchHandlersInServiceWorker = 4331,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

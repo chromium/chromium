@@ -383,9 +383,13 @@ void ServiceWorkerGlobalScope::DidEvaluateScript() {
   DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
-  base::UmaHistogramCounts1000(
-      "ServiceWorker.NumberOfRegisteredFetchHandlers",
-      NumberOfEventListeners(event_type_names::kFetch));
+  int number_of_fetch_handlers =
+      NumberOfEventListeners(event_type_names::kFetch);
+  if (number_of_fetch_handlers > 1) {
+    UseCounter::Count(this, WebFeature::kMultipleFetchHandlersInServiceWorker);
+  }
+  base::UmaHistogramCounts1000("ServiceWorker.NumberOfRegisteredFetchHandlers",
+                               number_of_fetch_handlers);
   event_queue_->Start();
 }
 
