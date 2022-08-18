@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/promos_manager/promos_manager_unittest.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -21,6 +24,21 @@ PromosManagerTest::PromosManagerTest() {
   scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
 }
 PromosManagerTest::~PromosManagerTest() {}
+
+NSArray<ImpressionLimit*>* PromosManagerTest::TestImpressionLimits() {
+  static NSArray<ImpressionLimit*>* limits;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    ImpressionLimit* oncePerWeek = [[ImpressionLimit alloc] initWithLimit:1
+                                                               forNumDays:7];
+    ImpressionLimit* twicePerMonth = [[ImpressionLimit alloc] initWithLimit:2
+                                                                 forNumDays:31];
+    limits = @[ oncePerWeek, twicePerMonth ];
+  });
+
+  return limits;
+}
 
 void PromosManagerTest::CreatePromosManager() {
   CreatePrefs();
@@ -62,4 +80,16 @@ TEST_F(PromosManagerTest, ReturnsNameForTestPromo) {
 TEST_F(PromosManagerTest, ReturnsTestPromoForName) {
   EXPECT_EQ(promos_manager::PromoForName("promos_manager::Promo::Test"),
             promos_manager::Promo::Test);
+}
+
+// Tests PromosManagerTest::TestImpressionLimits() correctly creates two mock
+// impression limits.
+TEST_F(PromosManagerTest, CreatesImpressionLimits) {
+  NSArray<ImpressionLimit*>* impressionLimits = TestImpressionLimits();
+
+  EXPECT_NE(impressionLimits, nil);
+  EXPECT_EQ(impressionLimits[0].numImpressions, 1);
+  EXPECT_EQ(impressionLimits[0].numDays, 7);
+  EXPECT_EQ(impressionLimits[1].numImpressions, 2);
+  EXPECT_EQ(impressionLimits[1].numDays, 31);
 }

@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_UNITTEST_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_UNITTEST_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "testing/platform_test.h"
 
@@ -14,6 +17,9 @@ class PromosManagerTest : public PlatformTest {
  public:
   PromosManagerTest();
   ~PromosManagerTest() override;
+
+  // Creates mock impression limits.
+  NSArray<ImpressionLimit*>* TestImpressionLimits();
 
  protected:
   // Creates PromosManager with empty pref data.

@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "promos_manager_unittest.h",
     "promos_manager_unittest.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":constants",
