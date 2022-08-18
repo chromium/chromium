@@ -225,9 +225,22 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
 
     case TRANSLATE_STEP_TRANSLATING:
-      title = base::android::ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(
-                   IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE));
+      if (state_ == State::kDismissed) {
+        // If the UI is currently not shown and being opened directly into the
+        // translation-in-progress state (e.g. if the page was loaded and
+        // "Always translate pages in <language>" triggered, or if the
+        // "Translate" menu item was clicked in the browser 3-dots menu), show a
+        // separate title string indicating that the translation is in progress
+        // instead of the default "Translate page?" title used in the
+        // before-translate state.
+        title = base::android::ConvertUTF16ToJavaString(
+            env, l10n_util::GetStringUTF16(
+                     IDS_TRANSLATE_MESSAGE_TRANSLATING_COLD_OPEN_TITLE));
+      } else {
+        title = base::android::ConvertUTF16ToJavaString(
+            env, l10n_util::GetStringUTF16(
+                     IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE));
+      }
       description = GetDefaultMessageDescription(
           env, source_language_display_name, target_language_display_name);
       primary_button_text = nullptr;

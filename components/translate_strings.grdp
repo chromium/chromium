@@ -98,6 +98,9 @@
       <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page.">
         Translate page?
       </message>
+      <message name="IDS_TRANSLATE_MESSAGE_TRANSLATING_COLD_OPEN_TITLE" desc="A text label on the translate message popup that indicates the page is currently being translated.">
+        Translating page
+      </message>
       <message name="IDS_TRANSLATE_MESSAGE_AFTER_TRANSLATE_TITLE" desc="A text label on the translate message popup that announces to the user that Chrome has finished translating the page.">
         Page translated
       </message>
