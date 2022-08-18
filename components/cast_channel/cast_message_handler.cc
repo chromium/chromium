@@ -57,7 +57,7 @@ bool VirtualConnection::operator<(const VirtualConnection& other) const {
 
 InternalMessage::InternalMessage(CastMessageType type,
                                  const std::string& message_namespace,
-                                 base::Value message)
+                                 base::Value::Dict message)
     : type(type),
       message_namespace(message_namespace),
       message(std::move(message)) {}
@@ -396,8 +396,8 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  base::Value& payload = *parse_result;
-  if (!payload.is_dict()) {
+  base::Value::Dict* payload = parse_result->GetIfDict();
+  if (!payload) {
     ReportParseError("Parsed message not a dictionary");
     return;
   }
@@ -409,17 +409,17 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  absl::optional<int> request_id = GetRequestIdFromResponse(payload);
+  absl::optional<int> request_id = GetRequestIdFromResponse(*payload);
   if (request_id) {
     auto requests_it = pending_requests_.find(channel_id);
     if (requests_it != pending_requests_.end())
       // You might think this method should return in this case, but there is at
       // least one message type (RECEIVER_STATUS), that has a request ID but
       // also needs to be handled by the registered observers.
-      requests_it->second->HandlePendingRequest(*request_id, payload);
+      requests_it->second->HandlePendingRequest(*request_id, *payload);
   }
 
-  CastMessageType type = ParseMessageTypeFromPayload(payload);
+  CastMessageType type = ParseMessageTypeFromPayload(*payload);
   if (type == CastMessageType::kOther) {
     DVLOG(2) << "Unknown type in message: " << payload;
     return;
@@ -432,7 +432,7 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  InternalMessage internal_message(type, namespace_, std::move(payload));
+  InternalMessage internal_message(type, namespace_, std::move(*payload));
   for (auto& observer : observers_)
     observer.OnInternalMessage(channel_id, internal_message);
 }
@@ -571,7 +571,7 @@ void CastMessageHandler::PendingRequests::AddVolumeRequest(
 
 void CastMessageHandler::PendingRequests::HandlePendingRequest(
     int request_id,
-    const base::Value& response) {
+    const base::Value::Dict& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
       std::find_if(pending_app_availability_requests_.begin(),

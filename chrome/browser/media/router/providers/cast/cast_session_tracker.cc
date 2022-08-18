@@ -153,10 +153,12 @@ void CastSessionTracker::HandleMediaStatusMessage(
   DVLOG(2) << "Final updated MEDIA_STATUS: " << *updated_status;
   session->UpdateMedia(*updated_status);
 
-  base::Value updated_message_value(std::move(updated_message));
   absl::optional<int> request_id =
-      cast_channel::GetRequestIdFromResponse(updated_message_value);
+      cast_channel::GetRequestIdFromResponse(updated_message);
 
+  // NOTE: Media status is always passed as a dictionary. Consider making
+  // OnMediaStatusUpdated() take a base::Value::Dict.
+  base::Value updated_message_value(std::move(updated_message));
   // Notify observers of media update.
   for (auto& observer : observers_)
     observer.OnMediaStatusUpdated(sink, updated_message_value, request_id);
@@ -233,10 +235,10 @@ void CastSessionTracker::OnInternalMessage(
 
   if (message.type == cast_channel::CastMessageType::kReceiverStatus) {
     DVLOG(2) << "Got receiver status: " << message.message;
-    HandleReceiverStatusMessage(*sink, message.message.GetDict());
+    HandleReceiverStatusMessage(*sink, message.message);
   } else if (message.type == cast_channel::CastMessageType::kMediaStatus) {
     DVLOG(2) << "Got media status: " << message.message;
-    HandleMediaStatusMessage(*sink, message.message.GetDict());
+    HandleMediaStatusMessage(*sink, message.message);
   }
 }
 

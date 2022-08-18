@@ -167,7 +167,7 @@ bool IsCastReservedNamespace(base::StringPiece message_namespace);
 
 // Returns the value in the "type" field or |kOther| if the field is not found.
 // The result is only valid if |payload| is a Cast application protocol message.
-CastMessageType ParseMessageTypeFromPayload(const base::Value& payload);
+CastMessageType ParseMessageTypeFromPayload(const base::Value::Dict& payload);
 
 // Returns a human readable string for |message_type|.
 const char* ToString(CastMessageType message_type);
@@ -294,12 +294,12 @@ enum class GetAppAvailabilityResult {
 const char* ToString(GetAppAvailabilityResult result);
 
 // Extracts request ID from |payload| corresponding to a Cast message response.
-absl::optional<int> GetRequestIdFromResponse(const base::Value& payload);
+absl::optional<int> GetRequestIdFromResponse(const base::Value::Dict& payload);
 
 // Returns the GetAppAvailabilityResult corresponding to |app_id| in |payload|.
 // Returns kUnknown if result is not found.
 GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
-    const base::Value& payload,
+    const base::Value::Dict& payload,
     const std::string& app_id);
 
 // Result of a session launch.
@@ -324,7 +324,8 @@ struct LaunchSessionResponse {
 // LaunchSessionResponse if |payload| is not a properly formatted launch
 // response. |payload| must be a dictionary from the string payload of a
 // CastMessage.
-LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload);
+LaunchSessionResponse GetLaunchSessionResponse(
+    const base::Value::Dict& payload);
 
 LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg);
 

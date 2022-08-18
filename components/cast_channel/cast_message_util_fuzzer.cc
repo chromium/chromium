@@ -19,7 +19,7 @@ namespace fuzz {
 
 namespace {
 
-base::Value MakeValue(const JunkValue& junk) {
+base::Value::Dict MakeDict(const JunkValue& junk) {
   base::Value::Dict result;
   for (int i = 0; i < junk.field_size(); i++) {
     const auto& field = junk.field(i);
@@ -32,7 +32,11 @@ base::Value MakeValue(const JunkValue& junk) {
                                               : base::Value(field.bool_value());
     result.Set(field.name(), std::move(field_value));
   }
-  return base::Value(std::move(result));
+  return result;
+}
+
+base::Value MakeValue(const JunkValue& junk) {
+  return base::Value(MakeDict(junk));
 }
 
 template <typename Field, typename T = typename Field::value_type>
@@ -132,23 +136,23 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
     }
     case CastMessageUtilInputs::kGetRequestIdFromResponseInput: {
       const auto& input = input_union.get_request_id_from_response_input();
-      base::Value payload = MakeValue(input.payload());
+      base::Value::Dict payload = MakeDict(input.payload());
       if (input.has_request_id())
-        payload.GetDict().Set("requestId", input.request_id());
+        payload.Set("requestId", input.request_id());
       GetRequestIdFromResponse(payload);
       break;
     }
     case CastMessageUtilInputs::kGetLaunchSessionResponseInput: {
       const auto& input = input_union.get_launch_session_response_input();
-      base::Value payload = MakeValue(input.payload());
+      base::Value::Dict payload = MakeDict(input.payload());
       GetLaunchSessionResponse(payload);
       break;
     }
     case CastMessageUtilInputs::kParseMessageTypeFromPayloadInput: {
       const auto& input = input_union.parse_message_type_from_payload_input();
-      base::Value payload = MakeValue(input.payload());
+      base::Value::Dict payload = MakeDict(input.payload());
       if (input.has_type())
-        payload.GetDict().Set("type", input.type());
+        payload.Set("type", input.type());
       ParseMessageTypeFromPayload(payload);
       break;
     }

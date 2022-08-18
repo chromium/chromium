@@ -101,7 +101,7 @@ struct VirtualConnection {
 struct InternalMessage {
   InternalMessage(CastMessageType type,
                   const std::string& message_namespace,
-                  base::Value message);
+                  base::Value::Dict message);
   ~InternalMessage();
 
   CastMessageType type;
@@ -111,7 +111,7 @@ struct InternalMessage {
   // One possibility is to derive namespace when it's needed based on the
   // context and/or message type.
   std::string message_namespace;
-  base::Value message;
+  base::Value::Dict message;
 };
 
 // Default timeout amount for requests waiting for a response.
@@ -275,7 +275,8 @@ class CastMessageHandler : public CastSocket::Observer {
                           base::TimeDelta timeout);
     bool AddStopRequest(std::unique_ptr<StopSessionRequest> request);
     void AddVolumeRequest(std::unique_ptr<SetVolumeRequest> request);
-    void HandlePendingRequest(int request_id, const base::Value& response);
+    void HandlePendingRequest(int request_id,
+                              const base::Value::Dict& response);
 
    private:
     // Invokes the pending callback associated with |request_id| with a timed

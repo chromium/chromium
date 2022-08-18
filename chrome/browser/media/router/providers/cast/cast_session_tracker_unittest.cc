@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::IsJson;
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using cast_channel::kMediaNamespace;
 using cast_channel::kReceiverNamespace;
 using testing::_;
@@ -103,7 +103,7 @@ class CastSessionTrackerTest : public testing::Test {
         sink_.cast_data().cast_channel_id,
         cast_channel::InternalMessage(
             cast_channel::CastMessageType::kReceiverStatus, kReceiverNamespace,
-            ParseJson(kReceiverStatus)));
+            ParseJsonDict(kReceiverStatus)));
 
     session_ = session_tracker_.GetSessions().begin()->second.get();
     ASSERT_TRUE(session_);
@@ -149,7 +149,7 @@ TEST_F(CastSessionTrackerTest, RemoveSession) {
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(
           cast_channel::CastMessageType::kReceiverStatus, kReceiverNamespace,
-          ParseJson(kIdleReceiverStatus)));
+          ParseJsonDict(kIdleReceiverStatus)));
 }
 
 TEST_F(CastSessionTrackerTest, GetSessions) {
@@ -196,7 +196,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "status": [{
         "playerState": "anything but IDLE",
         "supportedMediaCommands": 0,
@@ -257,7 +257,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageFancy) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "requestId": 12345,
     "status": [{
         "playerState": "anything but IDLE",
@@ -292,7 +292,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "status": [{
         "media": "theMedia",
         "mediaSessionId": 345,
@@ -338,7 +338,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "status": [{
         "mediaSessionId": 345,
         "playerState": "anything but IDLE",
@@ -367,7 +367,7 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "status": [{
         "media": "oldMedia",
         "mediaSessionId": 345,
@@ -383,7 +383,7 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJson(R"({
+                                    kMediaNamespace, ParseJsonDict(R"({
     "status": [{
         "media": "newMedia",
         "mediaSessionId": 345,

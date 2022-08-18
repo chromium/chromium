@@ -267,8 +267,8 @@ bool IsCastReservedNamespace(base::StringPiece message_namespace) {
   return false;
 }
 
-CastMessageType ParseMessageTypeFromPayload(const base::Value& payload) {
-  const std::string* type_string = payload.GetDict().FindString("type");
+CastMessageType ParseMessageTypeFromPayload(const base::Value::Dict& payload) {
+  const std::string* type_string = payload.FindString("type");
   return type_string ? CastMessageTypeFromString(*type_string)
                      : CastMessageType::kOther;
 }
@@ -576,19 +576,14 @@ const char* ToString(GetAppAvailabilityResult result) {
   return EnumToString(result).value_or("").data();
 }
 
-absl::optional<int> GetRequestIdFromResponse(const Value& payload) {
-  DCHECK(payload.is_dict());
-
-  return payload.GetDict().FindInt("requestId");
+absl::optional<int> GetRequestIdFromResponse(const Value::Dict& payload) {
+  return payload.FindInt("requestId");
 }
 
 GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
-    const Value& payload,
+    const Value::Dict& payload,
     const std::string& app_id) {
-  DCHECK(payload.is_dict());
-
-  const Value::Dict* availability_dict =
-      payload.GetDict().FindDict("availability");
+  const Value::Dict* availability_dict = payload.FindDict("availability");
   if (!availability_dict)
     return GetAppAvailabilityResult::kUnknown;
   const std::string* availability = availability_dict->FindString(app_id);
@@ -613,8 +608,9 @@ LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg) {
   return response;
 }
 
-LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload) {
-  const std::string* type_string = payload.GetDict().FindString("type");
+LaunchSessionResponse GetLaunchSessionResponse(
+    const base::Value::Dict& payload) {
+  const std::string* type_string = payload.FindString("type");
   if (!type_string)
     return LaunchSessionResponse();
 
@@ -630,7 +626,7 @@ LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload) {
     return response;
   }
 
-  const Value::Dict* receiver_status = payload.GetDict().FindDict("status");
+  const Value::Dict* receiver_status = payload.FindDict("status");
   if (!receiver_status)
     return LaunchSessionResponse();
 

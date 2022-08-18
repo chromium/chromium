@@ -12,6 +12,7 @@
 
 using base::test::IsJson;
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 
 namespace cast_channel {
 
@@ -58,7 +59,8 @@ TEST(CastMessageUtilTest, GetLaunchSessionResponseOk) {
       "status": )",
                                       status, "}"});
 
-  LaunchSessionResponse response = GetLaunchSessionResponse(ParseJson(payload));
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
   EXPECT_EQ(LaunchSessionResponse::Result::kOk, response.result);
   EXPECT_EQ(ParseJson(status), response.receiver_status);
 }
@@ -71,7 +73,8 @@ TEST(CastMessageUtilTest, GetLaunchSessionResponseError) {
     }
   )";
 
-  LaunchSessionResponse response = GetLaunchSessionResponse(ParseJson(payload));
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
   EXPECT_EQ(LaunchSessionResponse::Result::kError, response.result);
   EXPECT_FALSE(response.receiver_status);
 }
@@ -86,7 +89,8 @@ TEST(CastMessageUtilTest, GetLaunchSessionResponseUnknown) {
     }
   )";
 
-  LaunchSessionResponse response = GetLaunchSessionResponse(ParseJson(payload));
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
   EXPECT_EQ(LaunchSessionResponse::Result::kUnknown, response.result);
   EXPECT_FALSE(response.receiver_status);
 }

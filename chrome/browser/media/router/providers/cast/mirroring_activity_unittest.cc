@@ -325,8 +325,9 @@ TEST_F(MirroringActivityTest, OnInternalMessageNonlocal) {
   route_is_local_ = false;
   MakeActivity();
   ASSERT_FALSE(channel_to_service_);
-  activity_->OnInternalMessage(cast_channel::InternalMessage(
-      cast_channel::CastMessageType::kPing, "the_namespace", base::Value()));
+  activity_->OnInternalMessage(
+      cast_channel::InternalMessage(cast_channel::CastMessageType::kPing,
+                                    "the_namespace", base::Value::Dict()));
 }
 
 TEST_F(MirroringActivityTest, OnInternalMessage) {
@@ -343,7 +344,7 @@ TEST_F(MirroringActivityTest, OnInternalMessage) {
 
   activity_->OnInternalMessage(cast_channel::InternalMessage(
       cast_channel::CastMessageType::kPing, kNamespace,
-      base::test::ParseJson(kPayload)));
+      base::test::ParseJsonDict(kPayload)));
 }
 
 TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
