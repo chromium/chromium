@@ -823,17 +823,13 @@ void RestrictedCookieManager::SetCookieFromString(
   // SetCanonicalCookie()
   SetCanonicalCookie(
       *parsed_cookie, url, site_for_cookies, top_frame_origin, status,
-      base::BindOnce(
-          [](SetCookieFromStringCallback user_callback,
-             bool site_for_cookies_ok, bool top_frame_origin_ok, bool success) {
-            std::move(user_callback)
-                .Run(site_for_cookies_ok, top_frame_origin_ok);
-          },
-          std::move(callback),
-          // Although these values are being called outside
-          // ValidateAccessToCookiesAt, the checks done in that method are
-          // called shortly after synchronously.
-          site_for_cookies_ok, top_frame_origin_ok));
+      base::BindOnce([](base::OnceClosure closure,
+                        bool success) { std::move(closure).Run(); },
+                     // Although these values are being called outside
+                     // ValidateAccessToCookiesAt, the checks done in that
+                     // method are called shortly after synchronously.
+                     base::BindOnce(std::move(callback), site_for_cookies_ok,
+                                    top_frame_origin_ok)));
 }
 
 void RestrictedCookieManager::GetCookiesString(
@@ -852,13 +848,10 @@ void RestrictedCookieManager::GetCookiesString(
   GetAllForUrl(url, site_for_cookies, top_frame_origin,
                std::move(match_options),
                partitioned_cookies_runtime_feature_enabled,
-               base::BindOnce(
-                   [](GetCookiesStringCallback user_callback,
-                      const std::vector<net::CookieWithAccessResult>& cookies) {
-                     std::move(user_callback)
-                         .Run(net::CanonicalCookie::BuildCookieLine(cookies));
-                   },
-                   std::move(callback)));
+               base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
+                                     cookies) {
+                 return net::CanonicalCookie::BuildCookieLine(cookies);
+               }).Then(std::move(callback)));
 }
 
 void RestrictedCookieManager::CookiesEnabledFor(
