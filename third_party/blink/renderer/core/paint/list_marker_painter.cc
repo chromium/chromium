@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
@@ -164,7 +165,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     // Since there is no way for the developer to specify decode behavior, use
     // kSync by default.
     context.DrawImage(target_image.get(), Image::kSyncDecode,
-                      image_auto_dark_mode, marker_rect, &src_rect);
+                      image_auto_dark_mode, ImagePaintTimingInfo(), marker_rect,
+                      &src_rect);
     return;
   }
 

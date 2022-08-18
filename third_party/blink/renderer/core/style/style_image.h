@@ -152,6 +152,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   ALWAYS_INLINE bool IsImageResource() const { return is_image_resource_; }
   ALWAYS_INLINE bool IsPendingImage() const { return is_pending_image_; }
   ALWAYS_INLINE bool IsGeneratedImage() const { return is_generated_image_; }
+  ALWAYS_INLINE bool IsContentful() const { return !is_generated_image_; }
   ALWAYS_INLINE bool IsImageResourceSet() const {
     return is_image_resource_set_;
   }

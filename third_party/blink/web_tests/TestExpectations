@@ -4621,9 +4621,6 @@ crbug.com/934818 http/tests/devtools/tracing/decode-resize.js [ Failure Pass ]
 # Sheriff 2019-02-28
 crbug.com/936827 external/wpt/fullscreen/api/element-request-fullscreen-and-remove-manual.html [ Failure Pass ]
 
-# Paint Timing failures
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-gradient.html [ Failure ]
-
 # Contentful First Paint failures
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.html [ Failure ]
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure ]

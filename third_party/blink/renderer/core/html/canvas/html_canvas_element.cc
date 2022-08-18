@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
@@ -838,7 +839,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     // Make the icon more visually prominent on high-DPI displays.
     icon_size.Scale(dpr);
     context.DrawImage(broken_canvas, Image::kSyncDecode,
-                      ImageAutoDarkMode::Disabled(),
+                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                       gfx::RectF(upper_left, icon_size));
     context.Restore();
     return;
@@ -861,7 +862,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
     context.DrawImage(image_for_printing.get(), Image::kSyncDecode,
-                      ImageAutoDarkMode::Disabled(),
+                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                       gfx::RectF(ToPixelSnappedRect(r)));
     return;
   }
@@ -913,9 +914,10 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
       DCHECK(!snapshot->IsTextureBacked());
-      context.DrawImage(
-          snapshot.get(), Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
-          gfx::RectF(ToPixelSnappedRect(r)), &src_rect, composite_operator);
+      context.DrawImage(snapshot.get(), Image::kSyncDecode,
+                        ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                        gfx::RectF(ToPixelSnappedRect(r)), &src_rect,
+                        composite_operator);
     }
   } else {
     // When alpha is false, we should draw to opaque black.

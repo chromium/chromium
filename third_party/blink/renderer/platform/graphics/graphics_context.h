@@ -143,6 +143,20 @@ struct ImageAutoDarkMode : AutoDarkMode {
   DarkModeFilter::ImageType image_type;
 };
 
+struct ImagePaintTimingInfo {
+  explicit ImagePaintTimingInfo(bool image_may_be_lcp_candidate)
+      : image_may_be_lcp_candidate(image_may_be_lcp_candidate) {}
+  ImagePaintTimingInfo(bool image_may_be_lcp_candidate,
+                       bool report_paint_timing)
+      : image_may_be_lcp_candidate(image_may_be_lcp_candidate),
+        report_paint_timing(report_paint_timing) {}
+  ImagePaintTimingInfo() = default;
+  bool image_may_be_lcp_candidate = false;
+  // Whether |PaintController::SetImagePainted| should be called if the image
+  // is painted.
+  bool report_paint_timing = true;
+};
+
 class PLATFORM_EXPORT GraphicsContext {
   USING_FAST_MALLOC(GraphicsContext);
 
@@ -315,35 +329,34 @@ class PLATFORM_EXPORT GraphicsContext {
                        const gfx::RectF& dest,
                        const gfx::RectF& src,
                        SkBlendMode);
-
   void DrawImage(Image*,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
+                 const ImagePaintTimingInfo& paint_timing_info,
                  const gfx::RectF& dest_rect,
                  const gfx::RectF* src_rect = nullptr,
                  SkBlendMode = SkBlendMode::kSrcOver,
                  RespectImageOrientationEnum = kRespectImageOrientation,
-                 bool image_may_be_lcp_candidate = false,
                  Image::ImageClampingMode clamping_mode =
                      Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageRRect(Image*,
                       Image::ImageDecodingMode,
                       const ImageAutoDarkMode& auto_dark_mode,
+                      const ImagePaintTimingInfo& paint_timing_info,
                       const FloatRoundedRect& dest,
                       const gfx::RectF& src_rect,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation,
-                      bool image_may_be_lcp_candidate = false,
                       Image::ImageClampingMode clamping_mode =
                           Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageTiled(Image* image,
                       const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
                       const ImageAutoDarkMode& auto_dark_mode,
+                      const ImagePaintTimingInfo& paint_timing_info,
                       SkBlendMode = SkBlendMode::kSrcOver,
-                      RespectImageOrientationEnum = kRespectImageOrientation,
-                      bool image_may_be_lcp_candidate = false);
-
+                      RespectImageOrientationEnum = kRespectImageOrientation);
+  void SetImagePainted(bool report_paint_timing);
   // These methods write to the canvas.
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().

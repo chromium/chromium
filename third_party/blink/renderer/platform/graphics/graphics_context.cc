@@ -722,11 +722,11 @@ void GraphicsContext::DrawImage(
     Image* image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
+    const ImagePaintTimingInfo& paint_timing_info,
     const gfx::RectF& dest,
     const gfx::RectF* src_ptr,
     SkBlendMode op,
     RespectImageOrientationEnum should_respect_image_orientation,
-    bool image_may_be_lcp_candidate,
     Image::ImageClampingMode clamping_mode) {
   if (!image)
     return;
@@ -741,28 +741,26 @@ void GraphicsContext::DrawImage(
   ImageDrawOptions draw_options(dark_mode_filter, sampling,
                                 should_respect_image_orientation, clamping_mode,
                                 decode_mode, auto_dark_mode.enabled,
-                                image_may_be_lcp_candidate);
-
+                                paint_timing_info.image_may_be_lcp_candidate);
   image->Draw(canvas_, image_flags, dest, src, draw_options);
-  paint_controller_.SetImagePainted();
+  SetImagePainted(paint_timing_info.report_paint_timing);
 }
-
 void GraphicsContext::DrawImageRRect(
     Image* image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
+    const ImagePaintTimingInfo& paint_timing_info,
     const FloatRoundedRect& dest,
     const gfx::RectF& src_rect,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
-    bool image_may_be_lcp_candidate,
     Image::ImageClampingMode clamping_mode) {
   if (!image)
     return;
 
   if (!dest.IsRounded()) {
-    DrawImage(image, decode_mode, auto_dark_mode, dest.Rect(), &src_rect, op,
-              respect_orientation, image_may_be_lcp_candidate, clamping_mode);
+    DrawImage(image, decode_mode, auto_dark_mode, paint_timing_info,
+              dest.Rect(), &src_rect, op, respect_orientation, clamping_mode);
     return;
   }
 
@@ -780,9 +778,10 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setColor(SK_ColorBLACK);
 
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
-  ImageDrawOptions draw_options(
-      dark_mode_filter, sampling, respect_orientation, clamping_mode,
-      decode_mode, auto_dark_mode.enabled, image_may_be_lcp_candidate);
+  ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
+                                clamping_mode, decode_mode,
+                                auto_dark_mode.enabled,
+                                paint_timing_info.image_may_be_lcp_candidate);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -807,6 +806,14 @@ void GraphicsContext::DrawImageRRect(
     PaintCanvasAutoRestore auto_restore(canvas_, true);
     canvas_->clipRRect(SkRRect(dest), image_flags.isAntiAlias());
     image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
+  }
+
+  SetImagePainted(paint_timing_info.report_paint_timing);
+}
+
+void GraphicsContext::SetImagePainted(bool report_paint_timing) {
+  if (!report_paint_timing) {
+    return;
   }
 
   paint_controller_.SetImagePainted();
@@ -843,9 +850,9 @@ void GraphicsContext::DrawImageTiled(
     const gfx::RectF& dest_rect,
     const ImageTilingInfo& tiling_info,
     const ImageAutoDarkMode& auto_dark_mode,
+    const ImagePaintTimingInfo& paint_timing_info,
     SkBlendMode op,
-    RespectImageOrientationEnum respect_orientation,
-    bool image_may_be_lcp_candidate) {
+    RespectImageOrientationEnum respect_orientation) {
   if (!image)
     return;
 
@@ -856,10 +863,10 @@ void GraphicsContext::DrawImageTiled(
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
                                 Image::kClampImageToSourceRect,
                                 Image::kSyncDecode, auto_dark_mode.enabled,
-                                image_may_be_lcp_candidate);
+                                paint_timing_info.image_may_be_lcp_candidate);
 
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
-  paint_controller_.SetImagePainted();
+  SetImagePainted(paint_timing_info.report_paint_timing);
 }
 
 void GraphicsContext::DrawOval(const SkRect& oval,

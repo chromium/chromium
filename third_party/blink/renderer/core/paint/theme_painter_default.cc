@@ -562,9 +562,9 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
                             : color_scheme_adjusted_cancel_image;
   // TODO(penglin): It's no need to do further classification here but
   // force Dark mode may not pick up the correct resource image now.
-  paint_info.context.DrawImage(target_image, Image::kSyncDecode,
-                               ImageAutoDarkMode::Disabled(),
-                               gfx::RectF(painting_rect));
+  paint_info.context.DrawImage(
+      target_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
+      ImagePaintTimingInfo(), gfx::RectF(painting_rect));
   return false;
 }
 

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -59,17 +60,11 @@ bool IsBackgroundImageContentful(const LayoutObject& object,
     return false;
   }
 
-  // Generated images are excluded here, as they are likely to serve for
-  // background purpose.
-
-  // TODO(yoav): Instead of verifying through negating all the other types, it'd
-  // be more readable and safer to verify against generated images directly. Add
-  // `IsGeneratedImage` and test for it directly.
   DCHECK(!image.IsSVGImage());
-  return (image.IsBitmapImage() || image.IsStaticBitmapImage() ||
-          image.IsPlaceholderImage() ||
-          (base::FeatureList::IsEnabled(features::kIncludeBackgroundSVGInLCP) &&
-           image.IsSVGImageForContainer()));
+  if (!base::FeatureList::IsEnabled(features::kIncludeBackgroundSVGInLCP) &&
+      image.IsSVGImageForContainer())
+    return false;
+  return true;
 }
 
 }  // namespace
