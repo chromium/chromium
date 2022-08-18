@@ -8,8 +8,11 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
@@ -34,9 +37,10 @@ namespace {
 const int kIconSize = 48;
 
 // Loads an app's icon and uses it to display a notification.
-class AppNotificationLauncher : public AppIconLoaderDelegate {
+class AppNotificationLauncher : public AppIconLoaderDelegate,
+                                public message_center::NotificationDelegate {
  public:
-  // This class owns and deletes itself after showing the notification.
+  // This class owns and deletes itself after the shown notification closes.
   AppNotificationLauncher() = default;
 
   AppNotificationLauncher(const AppNotificationLauncher&) = delete;
@@ -51,24 +55,33 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
     icon_loader_ =
         std::make_unique<ChromeAppIconLoader>(profile, kIconSize, this);
     icon_loader_->FetchImage(extension.id());
-
-    // |this| may be destroyed!
   }
 
   // AppIconLoaderDelegate overrides:
+  // This is triggered from FetchImage() in InitAndShow(), and can be called
+  // multiple times, synchronously or asynchronously.
   void OnAppImageUpdated(const std::string& id,
                          const gfx::ImageSkia& image) override {
     pending_notification_->set_icon(ui::ImageModel::FromImageSkia(image));
-    NotificationDisplayService::GetForProfile(profile_)->Display(
-        NotificationHandler::Type::TRANSIENT, *pending_notification_,
-        /*metadata=*/nullptr);
-    delete this;
+    auto* notification_display_service =
+        NotificationDisplayService::GetForProfile(profile_);
+
+    notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
+                                          *pending_notification_,
+                                          /*metadata=*/nullptr);
+  }
+
+  // message_center::NotificationDelegate override.
+  void Close(bool by_user) override {
+    // On notification close, free |pending_notification| (which holds a
+    // reference to this) to trigger self-deletion.
+    pending_notification_.reset();
   }
 
  private:
   ~AppNotificationLauncher() override = default;
 
-  Profile* profile_;
+  base::raw_ptr<Profile> profile_;
   std::unique_ptr<AppIconLoader> icon_loader_;
   std::unique_ptr<message_center::Notification> pending_notification_;
 };
@@ -81,13 +94,19 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
     const base::WeakPtr<Volume>& volume,
     bool writable) {
   DCHECK(profile);
+  static int sequence = 0;
+  // Create globally unique |notification_id| so that notifications are not
+  // suppressed, thus allowing each AppNotificationLauncher instance to
+  // correspond to an actual notification, and properly deallocated on close.
+  const std::string notification_id =
+      base::StringPrintf("%s-%s-%d", extension.id().c_str(),
+                         volume->volume_id().c_str(), sequence);
+  ++sequence;
 
   // If the volume is gone, then do not show the notification.
   if (!volume.get())
     return;
 
-  const std::string notification_id =
-      extension.id() + "-" + volume->volume_id();
   message_center::RichNotificationData data;
 
   // TODO(mtomasz): Share this code with RequestFileSystemDialogView.
@@ -100,6 +119,10 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
           : IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_MESSAGE,
       display_name);
 
+  // Helper that self-deletes when the displayed notification closes.
+  scoped_refptr<AppNotificationLauncher> app_notification_launcher =
+      base::MakeRefCounted<AppNotificationLauncher>();
+
   std::unique_ptr<message_center::Notification> notification(new Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       base::UTF8ToUTF16(extension.name()), message,
@@ -108,11 +131,10 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
       GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  notification_id),
-      data, base::MakeRefCounted<message_center::NotificationDelegate>()));
+      data, app_notification_launcher));
 
-  // AppNotificationLauncher will delete itself.
-  (new AppNotificationLauncher())
-      ->InitAndShow(profile, extension, std::move(notification));
+  app_notification_launcher->InitAndShow(profile, extension,
+                                         std::move(notification));
 }
 
 }  // namespace extensions
