@@ -337,4 +337,21 @@ TEST_F(InsertListCommandTest, EmptyInlineBlock) {
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ("<ul><li><span></span></li></ul>|<br>", GetSelectionTextFromBody());
 }
+
+// Refer https://crbug.com/1350571
+TEST_F(InsertListCommandTest, SelectionFromEndOfTableToAfterTable) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+  Selection().SetSelection(SetSelectionTextToBody("<table><td>^</td></table>|"),
+                           SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      document, InsertListCommand::kOrderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<table><tbody><tr><td><ol><li>|<br></li></ol></td></tr></tbody></table>",
+      GetSelectionTextFromBody());
+}
 }
