@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/usb/web_usb_service_impl.h"
+#include "content/browser/usb/web_usb_service_impl.h"
 
 #include <memory>
 #include <utility>
@@ -11,13 +11,16 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+#include "services/device/public/mojom/usb_manager_client.mojom.h"
 
-using ::content::RenderFrameHost;
+namespace content {
 
 // A UsbDeviceClient represents a UsbDevice pipe that has been passed to the
 // renderer process. The UsbDeviceClient pipe allows the browser process to
@@ -69,18 +72,15 @@ class WebUsbServiceImpl::UsbDeviceClient
   mojo::Receiver<device::mojom::UsbDeviceClient> receiver_;
 };
 
-WebUsbServiceImpl::WebUsbServiceImpl(RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host),
-      delegate_(std::make_unique<ChromeUsbDelegate>()) {
-  DCHECK(render_frame_host_);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host_);
+WebUsbServiceImpl::WebUsbServiceImpl(RenderFrameHost* frame)
+    : DocumentUserData(frame) {
+  auto* web_contents = WebContents::FromRenderFrameHost(&render_frame_host());
   // This class is destroyed on cross-origin navigations and so it is safe to
   // cache these values.
   origin_ = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   if (delegate())
-    delegate()->AddObserver(*render_frame_host_, this);
+    delegate()->AddObserver(render_frame_host(), this);
 }
 
 WebUsbServiceImpl::~WebUsbServiceImpl() {
@@ -93,6 +93,10 @@ void WebUsbServiceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+UsbDelegate* WebUsbServiceImpl::delegate() const {
+  return GetContentClient()->browser()->GetUsbDelegate();
+}
+
 std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
   // Specified in https://wicg.github.io/webusb#protected-interface-classes
   std::vector<uint8_t> classes = {
@@ -103,18 +107,9 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
   };
 
   if (delegate())
-    delegate()->AdjustProtectedInterfaceClasses(*render_frame_host_, classes);
+    delegate()->AdjustProtectedInterfaceClasses(render_frame_host(), classes);
 
   return classes;
-}
-
-void WebUsbServiceImpl::SetUsbDelegateForTesting(
-    std::unique_ptr<ChromeUsbDelegate> usb_delegate) {
-  if (delegate())
-    delegate()->RemoveObserver(this);
-  delegate_ = std::move(usb_delegate);
-  if (delegate())
-    delegate()->AddObserver(*render_frame_host_, this);
 }
 
 void WebUsbServiceImpl::GetDevices(GetDevicesCallback callback) {
@@ -124,7 +119,7 @@ void WebUsbServiceImpl::GetDevices(GetDevicesCallback callback) {
   }
 
   delegate()->GetDevices(
-      *render_frame_host_,
+      render_frame_host(),
       base::BindOnce(&WebUsbServiceImpl::OnGetDevices,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -136,7 +131,7 @@ void WebUsbServiceImpl::OnGetDevices(
 
   std::vector<device::mojom::UsbDeviceInfoPtr> device_infos;
   for (auto& device_info : device_info_list) {
-    if (delegate()->HasDevicePermission(*render_frame_host_, *device_info)) {
+    if (delegate()->HasDevicePermission(render_frame_host(), *device_info)) {
       device_infos.push_back(device_info.Clone());
     }
   }
@@ -146,12 +141,13 @@ void WebUsbServiceImpl::OnGetDevices(
 void WebUsbServiceImpl::GetDevice(
     const std::string& guid,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver) {
-  if (!delegate())
+  if (!delegate()) {
     return;
+  }
 
-  auto* device_info = delegate()->GetDeviceInfo(*render_frame_host_, guid);
+  auto* device_info = delegate()->GetDeviceInfo(render_frame_host(), guid);
   if (!device_info ||
-      !delegate()->HasDevicePermission(*render_frame_host_, *device_info)) {
+      !delegate()->HasDevicePermission(render_frame_host(), *device_info)) {
     return;
   }
 
@@ -163,7 +159,7 @@ void WebUsbServiceImpl::GetDevice(
   device_clients_.push_back(std::make_unique<UsbDeviceClient>(
       this, guid, device_client.InitWithNewPipeAndPassReceiver()));
 
-  delegate()->GetDevice(*render_frame_host_, guid,
+  delegate()->GetDevice(render_frame_host(), guid,
                         GetProtectedInterfaceClasses(),
                         std::move(device_receiver), std::move(device_client));
 }
@@ -172,22 +168,22 @@ void WebUsbServiceImpl::GetPermission(
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     GetPermissionCallback callback) {
   if (!delegate() ||
-      !delegate()->CanRequestDevicePermission(*render_frame_host_)) {
+      !delegate()->CanRequestDevicePermission(render_frame_host())) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   usb_chooser_ = delegate()->RunChooser(
-      *render_frame_host_, std::move(device_filters), std::move(callback));
+      render_frame_host(), std::move(device_filters), std::move(callback));
 }
 
 void WebUsbServiceImpl::ForgetDevice(const std::string& guid,
                                      ForgetDeviceCallback callback) {
   if (delegate()) {
-    auto* device_info = delegate()->GetDeviceInfo(*render_frame_host_, guid);
+    auto* device_info = delegate()->GetDeviceInfo(render_frame_host(), guid);
     if (device_info &&
-        delegate()->HasDevicePermission(*render_frame_host_, *device_info)) {
-      delegate()->RevokeDevicePermissionWebInitiated(*render_frame_host_,
+        delegate()->HasDevicePermission(render_frame_host(), *device_info)) {
+      delegate()->RevokeDevicePermissionWebInitiated(render_frame_host(),
                                                      *device_info);
     }
   }
@@ -210,17 +206,17 @@ void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
   // permission.
   base::EraseIf(device_clients_, [this](const auto& client) {
     auto* device_info =
-        delegate()->GetDeviceInfo(*render_frame_host_, client->device_guid());
+        delegate()->GetDeviceInfo(render_frame_host(), client->device_guid());
     if (!device_info)
       return true;
 
-    return !delegate()->HasDevicePermission(*render_frame_host_, *device_info);
+    return !delegate()->HasDevicePermission(render_frame_host(), *device_info);
   });
 }
 
 void WebUsbServiceImpl::OnDeviceAdded(
     const device::mojom::UsbDeviceInfo& device_info) {
-  if (!delegate()->HasDevicePermission(*render_frame_host_, device_info))
+  if (!delegate()->HasDevicePermission(render_frame_host(), device_info))
     return;
 
   for (auto& client : clients_)
@@ -233,7 +229,7 @@ void WebUsbServiceImpl::OnDeviceRemoved(
     return device_info.guid == client->device_guid();
   });
 
-  if (!delegate()->HasDevicePermission(*render_frame_host_, device_info))
+  if (!delegate()->HasDevicePermission(render_frame_host(), device_info))
     return;
 
   for (auto& client : clients_)
@@ -249,18 +245,21 @@ void WebUsbServiceImpl::OnDeviceManagerConnectionError() {
 // device::mojom::UsbDeviceClient implementation:
 void WebUsbServiceImpl::IncrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host_);
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents);
-  tab_helper->IncrementConnectionCount();
+  if (connection_count_++ == 0) {
+    auto* web_contents = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(&render_frame_host()));
+    web_contents->IncrementUsbActiveFrameCount();
+  }
 }
 
 void WebUsbServiceImpl::DecrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host_);
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents);
-  tab_helper->DecrementConnectionCount();
+  DCHECK_GT(connection_count_, 0);
+  if (--connection_count_ == 0) {
+    auto* web_contents = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(&render_frame_host()));
+    web_contents->DecrementUsbActiveFrameCount();
+  }
 }
 
 void WebUsbServiceImpl::RemoveDeviceClient(const UsbDeviceClient* client) {
@@ -268,3 +267,7 @@ void WebUsbServiceImpl::RemoveDeviceClient(const UsbDeviceClient* client) {
     return client == this_client.get();
   });
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(WebUsbServiceImpl);
+
+}  // namespace content

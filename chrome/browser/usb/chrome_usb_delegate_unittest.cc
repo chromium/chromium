@@ -8,18 +8,18 @@
 #include "base/barrier_closure.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "content/public/test/back_forward_cache_util.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -203,7 +203,8 @@ class ChromeUsbDelegateTest : public ChromeRenderViewHostTestHarness {
           std::move(pending_device_manager));
     }
 
-    FrameUsbServices::CreateFrameUsbServices(main_rfh(), std::move(receiver));
+    content::RenderFrameHostTester::For(main_rfh())
+        ->CreateWebUsbServiceForTesting(std::move(receiver));
   }
 
   UsbChooserContext* GetChooserContext() {
@@ -394,8 +395,6 @@ TEST_F(ChromeUsbDelegateTest, OpenAndCloseDevice) {
 
   mojo::Remote<blink::mojom::WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
 
   // Connect a device and grant permission to access it.
   auto device_info = device_manager()->CreateAndAddDevice(
@@ -407,28 +406,28 @@ TEST_F(ChromeUsbDelegateTest, OpenAndCloseDevice) {
   // Call GetDevices and expect the device to be returned.
   GetDevicesBlocking(service.get(), {device_info->guid});
 
-  // Call GetDevice to get the device. The UsbTabHelper should not indicate we
+  // Call GetDevice to get the device. The WebContents should not indicate we
   // are connected to a device since the device is not opened.
   mojo::Remote<device::mojom::UsbDevice> device;
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
-  // Open the device. Now the UsbTabHelper should indicate we are connected to a
+  // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
   TestFuture<device::mojom::UsbOpenDeviceError> open_future;
   device->Open(open_future.GetCallback());
   EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
-  EXPECT_TRUE(tab_helper->IsDeviceConnected());
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
-  // Close the device and check that the UsbTabHelper no longer indicates we are
+  // Close the device and check that the WebContents no longer indicates we are
   // connected.
   EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
   base::RunLoop loop;
   device->Close(loop.QuitClosure());
   loop.Run();
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 }
 
 TEST_F(ChromeUsbDelegateTest, OpenAndDisconnectDevice) {
@@ -436,8 +435,6 @@ TEST_F(ChromeUsbDelegateTest, OpenAndDisconnectDevice) {
 
   mojo::Remote<blink::mojom::WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
 
   // Connect a device and grant permission to access it.
   auto fake_device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
@@ -450,45 +447,34 @@ TEST_F(ChromeUsbDelegateTest, OpenAndDisconnectDevice) {
   // Call GetDevices and expect the device to be returned.
   GetDevicesBlocking(service.get(), {device_info->guid});
 
-  // Call GetDevice to get the device. The UsbTabHelper should not indicate we
+  // Call GetDevice to get the device. The WebContents should not indicate we
   // are connected to a device since the device is not opened.
   mojo::Remote<device::mojom::UsbDevice> device;
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
-  // Open the device. Now the UsbTabHelper should indicate we are connected to a
+  // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
   TestFuture<device::mojom::UsbOpenDeviceError> open_future;
   device->Open(open_future.GetCallback());
   EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
-  EXPECT_TRUE(tab_helper->IsDeviceConnected());
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
-  // Remove the device and check that the UsbTabHelper no longer indicates we
-  // are connected.
+  // Remove the device and check that the WebContents no longer indicates we are
+  // connected.
   EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
   device_manager()->RemoveDevice(fake_device);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 }
 
 TEST_F(ChromeUsbDelegateTest, OpenAndNavigateCrossOrigin) {
-  // The test assumes the previous page gets deleted after navigation,
-  // disconnecting the device. Disable back/forward cache to ensure that it
-  // doesn't get preserved in the cache.
-  // TODO(https://crbug.com/1220314): WebUSB actually already disables
-  // back/forward cache in RenderFrameHostImpl::CreateWebUsbService(), but that
-  // path is not triggered in unit tests, so this test fails. Fix this.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
-
   const auto origin = url::Origin::Create(GURL(kDefaultTestUrl));
 
   mojo::Remote<blink::mojom::WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
 
   // Connect a device and grant permission to access it.
   auto fake_device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
@@ -501,27 +487,27 @@ TEST_F(ChromeUsbDelegateTest, OpenAndNavigateCrossOrigin) {
   // Call GetDevices and expect the device info to be returned.
   GetDevicesBlocking(service.get(), {device_info->guid});
 
-  // Call GetDevice to get the device. The UsbTabHelper should not indicate we
+  // Call GetDevice to get the device. The WebContents should not indicate we
   // are connected to a device since the device is not opened.
   mojo::Remote<device::mojom::UsbDevice> device;
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
-  // Open the device. Now the UsbTabHelper should indicate we are connected to a
+  // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
       .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
   TestFuture<device::mojom::UsbOpenDeviceError> open_future;
   device->Open(open_future.GetCallback());
   EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
-  EXPECT_TRUE(tab_helper->IsDeviceConnected());
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
-  // Perform a cross-origin navigation. The UsbTabHelper should indicate we are
+  // Perform a cross-origin navigation. The WebContents should indicate we are
   // no longer connected.
   EXPECT_CALL(mock_device, Close).WillOnce(RunOnceClosure<0>());
   NavigateAndCommit(GURL(kCrossOriginTestUrl));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -541,19 +527,17 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedImprivataExtension) {
 
   mojo::Remote<blink::mojom::WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
 
   GetDevicesBlocking(service.get(), {device_info->guid});
 
   mojo::Remote<device::mojom::UsbDevice> device;
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
   TestFuture<device::mojom::UsbOpenDeviceError> open_future;
   device->Open(open_future.GetCallback());
   EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
-  EXPECT_TRUE(tab_helper->IsDeviceConnected());
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
   TestFuture<bool> set_configuration_future;
   device->SetConfiguration(1, set_configuration_future.GetCallback());
@@ -590,8 +574,6 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedSmartCardConnectorExtension) {
 
   mojo::Remote<blink::mojom::WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
-  UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
-  ASSERT_TRUE(tab_helper);
 
   // Check that the extensions is automatically granted access to the CCID
   // device and can claim its interfaces.
@@ -601,12 +583,12 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedSmartCardConnectorExtension) {
     mojo::Remote<device::mojom::UsbDevice> device;
     service->GetDevice(ccid_device_info->guid,
                        device.BindNewPipeAndPassReceiver());
-    EXPECT_FALSE(tab_helper->IsDeviceConnected());
+    EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
     TestFuture<device::mojom::UsbOpenDeviceError> open_future;
     device->Open(open_future.GetCallback());
     EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
-    EXPECT_TRUE(tab_helper->IsDeviceConnected());
+    EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
     TestFuture<bool> set_configuration_future;
     device->SetConfiguration(1, set_configuration_future.GetCallback());

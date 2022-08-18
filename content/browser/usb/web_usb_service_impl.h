@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
-#define CHROME_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
+#ifndef CONTENT_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
+#define CONTENT_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -12,8 +12,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/usb/chrome_usb_delegate.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/usb_chooser.h"
+#include "content/public/browser/usb_delegate.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,17 +25,18 @@
 #include "url/origin.h"
 
 namespace content {
+
 class RenderFrameHost;
-}
 
 // Implements a restricted device::mojom::UsbDeviceManager interface by wrapping
 // another UsbDeviceManager instance and enforces the rules of the WebUSB
 // permission model as well as permission granted by the user through a device
 // chooser UI.
 class WebUsbServiceImpl : public blink::mojom::WebUsbService,
-                          public ChromeUsbDelegate::Observer {
+                          public UsbDelegate::Observer,
+                          public DocumentUserData<WebUsbServiceImpl> {
  public:
-  explicit WebUsbServiceImpl(content::RenderFrameHost* render_frame_host);
+  explicit WebUsbServiceImpl(RenderFrameHost* render_frame_host);
 
   WebUsbServiceImpl(const WebUsbServiceImpl&) = delete;
   WebUsbServiceImpl& operator=(const WebUsbServiceImpl&) = delete;
@@ -44,13 +46,12 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  // Allow tests to set the ChromeUsbDelegate.
-  void SetUsbDelegateForTesting(std::unique_ptr<ChromeUsbDelegate> delegate);
-
  private:
+  friend class DocumentUserData<WebUsbServiceImpl>;
+
   class UsbDeviceClient;
 
-  ChromeUsbDelegate* delegate() const { return delegate_.get(); }
+  UsbDelegate* delegate() const;
 
   std::vector<uint8_t> GetProtectedInterfaceClasses() const;
 
@@ -83,10 +84,7 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void DecrementConnectionCount();
   void RemoveDeviceClient(const UsbDeviceClient* client);
 
-  void OnConnectionError();
-
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  std::unique_ptr<content::UsbChooser> usb_chooser_;
+  std::unique_ptr<UsbChooser> usb_chooser_;
   url::Origin origin_;
 
   // Used to bind with Blink.
@@ -95,10 +93,13 @@ class WebUsbServiceImpl : public blink::mojom::WebUsbService,
 
   // A UsbDeviceClient tracks a UsbDevice pipe that has been passed to Blink.
   std::vector<std::unique_ptr<UsbDeviceClient>> device_clients_;
-
-  std::unique_ptr<ChromeUsbDelegate> delegate_;
+  int connection_count_ = 0;
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};
+
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_

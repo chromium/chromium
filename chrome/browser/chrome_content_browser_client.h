@@ -46,7 +46,6 @@ class CommandLine;
 namespace blink {
 namespace mojom {
 class WindowFeatures;
-class WebUsbService;
 }  // namespace mojom
 namespace web_pref {
 struct WebPreferences;
@@ -100,6 +99,7 @@ enum class Channel;
 
 class ChromeHidDelegate;
 class ChromeSerialDelegate;
+class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 
 #if BUILDFLAG(ENABLE_VR)
@@ -595,9 +595,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationUIData* navigation_ui_data) override;
   bool ShouldForceDownloadResource(const GURL& url,
                                    const std::string& mime_type) override;
-  void CreateWebUsbService(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
   content::BluetoothDelegate* GetBluetoothDelegate() override;
 #if !BUILDFLAG(IS_ANDROID)
   void CreateDeviceInfoService(
@@ -609,6 +606,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   content::SerialDelegate* GetSerialDelegate() override;
   content::HidDelegate* GetHidDelegate() override;
+  content::UsbDelegate* GetUsbDelegate() override;
   content::WebAuthenticationDelegate* GetWebAuthenticationDelegate() override;
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
@@ -914,6 +912,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
+  std::unique_ptr<ChromeUsbDelegate> usb_delegate_;
 
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;

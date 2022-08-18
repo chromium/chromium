@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(USE_AURA)
@@ -159,6 +160,10 @@ class RenderFrameHostTester {
   virtual void CreateHidServiceForTesting(
       mojo::PendingReceiver<blink::mojom::HidService> receiever) = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Creates the WebUsbService and binds `receiver`.
+  virtual void CreateWebUsbServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.

@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/vr/win/vr_browser_renderer_thread_win.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -429,10 +428,7 @@ void VRUiHostImpl::PollCapturingState() {
       web_contents_->IsConnectedToBluetoothDevice();
 
   // USB.
-  UsbTabHelper* usb_tab_helper =
-      UsbTabHelper::GetOrCreateForWebContents(web_contents_);
-  DCHECK(usb_tab_helper != nullptr);
-  active_capturing.usb_connected = usb_tab_helper->IsDeviceConnected();
+  active_capturing.usb_connected = web_contents_->IsConnectedToUsbDevice();
 
   auto capturing_switched_on =
       active_capturing.NewlyUpdatedPermissions(active_capturing_);

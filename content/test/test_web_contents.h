@@ -132,6 +132,9 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void SetLastActiveTime(base::TimeTicks last_active_time) override;
 
+  void TestIncrementUsbActiveFrameCount() override;
+  void TestDecrementUsbActiveFrameCount() override;
+
   void TestIncrementBluetoothConnectedDeviceCount() override;
   void TestDecrementBluetoothConnectedDeviceCount() override;
 

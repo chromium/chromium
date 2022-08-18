@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -112,6 +113,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderFrameHost* AppendFencedFrame(
       blink::mojom::FencedFrameMode mode =
           blink::mojom::FencedFrameMode::kDefault) override;
+  void CreateWebUsbServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void CreateHidServiceForTesting(

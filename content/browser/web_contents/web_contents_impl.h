@@ -403,6 +403,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsScanningForBluetoothDevices() override;
   bool IsConnectedToSerialPort() override;
   bool IsConnectedToHidDevice() override;
+  bool IsConnectedToUsbDevice() override;
   bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool HasPictureInPictureDocument() override;
@@ -1136,6 +1137,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // devices.
   void IncrementHidActiveFrameCount();
   void DecrementHidActiveFrameCount();
+
+  // Notifies the delegate and observers when the connected to USB device state
+  // changes.
+  void OnIsConnectedToUsbDeviceChanged(bool is_connected_to_usb_device);
+
+  // Modify the counter of frames in this WebContents actively using USB
+  // devices.
+  void IncrementUsbActiveFrameCount();
+  void DecrementUsbActiveFrameCount();
 
   // Modify the counter of File System Access handles for this WebContents.
   void IncrementFileSystemAccessHandleCount();
@@ -2162,6 +2172,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   size_t bluetooth_scanning_sessions_count_ = 0;
   size_t serial_active_frame_count_ = 0;
   size_t hid_active_frame_count_ = 0;
+  size_t usb_active_frame_count_ = 0;
 
   size_t file_system_access_handle_count_ = 0;
 

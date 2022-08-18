@@ -564,6 +564,11 @@ void TestRenderFrameHost::CreateHidServiceForTesting(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void TestRenderFrameHost::CreateWebUsbServiceForTesting(
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  RenderFrameHostImpl::CreateWebUsbService(std::move(receiver));
+}
+
 void TestRenderFrameHost::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,

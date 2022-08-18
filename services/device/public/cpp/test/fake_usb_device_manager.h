@@ -63,10 +63,8 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
 
   void RemoveAllDevices();
 
- protected:
-  DeviceMap& devices() { return devices_; }
+  const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
 
- private:
   // mojom::UsbDeviceManager implementation:
   void EnumerateDevicesAndSetClient(
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
@@ -100,6 +98,9 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
 
   void SetClient(mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient>
                      client) override;
+
+ protected:
+  DeviceMap& devices() { return devices_; }
 
   mojo::ReceiverSet<mojom::UsbDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;

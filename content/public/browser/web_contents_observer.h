@@ -641,6 +641,10 @@ class CONTENT_EXPORT WebContentsObserver {
   // Called when the audio state of an individual frame changes.
   virtual void OnFrameAudioStateChanged(RenderFrameHost* rfh, bool audible) {}
 
+  // Called when the connected to USB device state changes.
+  virtual void OnIsConnectedToUsbDeviceChanged(
+      bool is_connected_to_usb_device) {}
+
   // Called when the connected to Bluetooth device state changes.
   virtual void OnIsConnectedToBluetoothDeviceChanged(
       bool is_connected_to_bluetooth_device) {}

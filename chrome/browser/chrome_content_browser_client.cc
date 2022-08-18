@@ -151,7 +151,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/universal_web_contents_observers.h"
-#include "chrome/browser/usb/frame_usb_services.h"
+#include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -5664,17 +5664,6 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
 #endif
 }
 
-void ChromeContentBrowserClient::CreateWebUsbService(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
-  if (!base::FeatureList::IsEnabled(features::kWebUsb))
-    return;
-
-  CHECK(render_frame_host);
-  FrameUsbServices::CreateFrameUsbServices(render_frame_host,
-                                           std::move(receiver));
-}
-
 content::BluetoothDelegate* ChromeContentBrowserClient::GetBluetoothDelegate() {
   if (!bluetooth_delegate_) {
     bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
@@ -5709,6 +5698,12 @@ content::HidDelegate* ChromeContentBrowserClient::GetHidDelegate() {
   if (!hid_delegate_)
     hid_delegate_ = std::make_unique<ChromeHidDelegate>();
   return hid_delegate_.get();
+}
+
+content::UsbDelegate* ChromeContentBrowserClient::GetUsbDelegate() {
+  if (!usb_delegate_)
+    usb_delegate_ = std::make_unique<ChromeUsbDelegate>();
+  return usb_delegate_.get();
 }
 
 content::WebAuthenticationDelegate*

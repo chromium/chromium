@@ -161,6 +161,37 @@ TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToBluetoothDevice) {
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, false);
 }
 
+TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToUsbDevice) {
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, false);
+  content::WebContentsTester::For(web_contents())
+      ->TestIncrementUsbActiveFrameCount();
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
+  content::WebContentsTester::For(web_contents())
+      ->TestIncrementUsbActiveFrameCount();
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
+  content::WebContentsTester::For(web_contents())
+      ->TestDecrementUsbActiveFrameCount();
+  EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, true);
+  content::WebContentsTester::For(web_contents())
+      ->TestDecrementUsbActiveFrameCount();
+  EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, false);
+}
+
 // Create many WebContents to exercice the code that maintains the linked list
 // of PageLiveStateDecoratorHelper::WebContentsObservers.
 TEST_F(PageLiveStateDecoratorHelperTest, ManyPageNodes) {

@@ -156,6 +156,14 @@ void FakeUsbDeviceManager::RemoveAllDevices() {
   }
 }
 
+const device::mojom::UsbDeviceInfo* FakeUsbDeviceManager::GetDeviceInfo(
+    const std::string& guid) {
+  if (!base::Contains(devices_, guid))
+    return nullptr;
+
+  return &devices_[guid]->GetDeviceInfo();
+}
+
 bool FakeUsbDeviceManager::SetMockForDevice(const std::string& guid,
                                             MockUsbMojoDevice* mock_device) {
   if (!base::Contains(devices_, guid))

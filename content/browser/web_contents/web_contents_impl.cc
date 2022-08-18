@@ -2122,6 +2122,10 @@ bool WebContentsImpl::IsConnectedToHidDevice() {
   return hid_active_frame_count_ > 0;
 }
 
+bool WebContentsImpl::IsConnectedToUsbDevice() {
+  return usb_active_frame_count_ > 0;
+}
+
 bool WebContentsImpl::HasFileSystemAccessHandles() {
   return file_system_access_handle_count_ > 0;
 }
@@ -8670,6 +8674,47 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   hid_active_frame_count_--;
   if (hid_active_frame_count_ == 0)
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+}
+
+void WebContentsImpl::OnIsConnectedToUsbDeviceChanged(
+    bool is_connected_to_usb_device) {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::OnIsConnectedToUsbDeviceChanged");
+  NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+  observers_.NotifyObservers(
+      &WebContentsObserver::OnIsConnectedToUsbDeviceChanged,
+      is_connected_to_usb_device);
+}
+
+void WebContentsImpl::IncrementUsbActiveFrameCount() {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::IncrementUsbActiveFrameCount");
+  // Trying to invalidate the tab state while being destroyed could result in a
+  // use after free.
+  if (IsBeingDestroyed())
+    return;
+
+  // Notify for UI updates if the active frame count transitions from zero to
+  // non-zero.
+  usb_active_frame_count_++;
+  if (usb_active_frame_count_ == 1)
+    OnIsConnectedToUsbDeviceChanged(true);
+}
+
+void WebContentsImpl::DecrementUsbActiveFrameCount() {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::DecrementUsbActiveFrameCount");
+  // Trying to invalidate the tab state while being destroyed could result in a
+  // use after free.
+  if (IsBeingDestroyed())
+    return;
+
+  // Notify for UI updates if the active frame count transitions from non-zero
+  // to zero.
+  DCHECK_NE(0u, usb_active_frame_count_);
+  usb_active_frame_count_--;
+  if (usb_active_frame_count_ == 0)
+    OnIsConnectedToUsbDeviceChanged(false);
 }
 
 void WebContentsImpl::IncrementFileSystemAccessHandleCount() {

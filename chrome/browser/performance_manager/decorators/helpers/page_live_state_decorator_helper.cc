@@ -47,6 +47,13 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
         web_contents(), is_connected_to_bluetooth_device);
   }
 
+  void OnIsConnectedToUsbDeviceChanged(
+      bool is_connected_to_usb_device) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
+        web_contents(), is_connected_to_usb_device);
+  }
+
   void WebContentsDestroyed() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DetachAndDestroy();

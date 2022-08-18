@@ -135,6 +135,7 @@
 #include "content/browser/speech/speech_synthesis_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/usb/web_usb_service_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
@@ -10337,10 +10338,18 @@ void RenderFrameHostImpl::CreateWebBluetoothService(
 
 void RenderFrameHostImpl::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  if (!base::FeatureList::IsEnabled(features::kWebUsb)) {
+    return;
+  }
+  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kUsb)) {
+    mojo::ReportBadMessage("Permissions policy blocks access to USB.");
+    return;
+  }
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kWebUSB));
-  GetContentClient()->browser()->CreateWebUsbService(this, std::move(receiver));
+  WebUsbServiceImpl::GetOrCreateForCurrentDocument(this)->BindReceiver(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {

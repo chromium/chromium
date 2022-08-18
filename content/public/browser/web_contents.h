@@ -700,6 +700,10 @@ class WebContents : public PageNavigator,
   // device.
   virtual bool IsConnectedToHidDevice() = 0;
 
+  // Indicates whether any frame in the WebContents is connected to a USB
+  // device.
+  virtual bool IsConnectedToUsbDevice() = 0;
+
   // Indicates whether any frame in the WebContents has File System Access
   // handles.
   virtual bool HasFileSystemAccessHandles() = 0;

@@ -6,10 +6,6 @@
 #define CHROME_BROWSER_USB_CHROME_USB_DELEGATE_H_
 
 #include "base/containers/span.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/usb/usb_chooser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/usb_chooser.h"
 #include "content/public/browser/usb_delegate.h"
@@ -21,10 +17,7 @@
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/origin.h"
 
-class ChromeUsbDelegate
-    : public content::UsbDelegate,
-      public permissions::ObjectPermissionContextBase::PermissionObserver,
-      public UsbChooserContext::DeviceObserver {
+class ChromeUsbDelegate : public content::UsbDelegate {
  public:
   ChromeUsbDelegate();
   ChromeUsbDelegate(ChromeUsbDelegate&&) = delete;
@@ -61,26 +54,11 @@ class ChromeUsbDelegate
                    Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  // permissions::ObjectPermissionContextBase::PermissionObserver:
-  void OnPermissionRevoked(const url::Origin& origin) override;
-
-  // UsbChooserContext::DeviceObserver:
-  void OnDeviceAdded(const device::mojom::UsbDeviceInfo&) override;
-  void OnDeviceRemoved(const device::mojom::UsbDeviceInfo&) override;
-  void OnDeviceManagerConnectionError() override;
-  void OnBrowserContextShutdown() override;
-
  private:
-  base::ScopedObservation<UsbChooserContext,
-                          UsbChooserContext::DeviceObserver,
-                          &UsbChooserContext::AddObserver,
-                          &UsbChooserContext::RemoveObserver>
-      device_observation_{this};
-  base::ScopedObservation<
-      permissions::ObjectPermissionContextBase,
-      permissions::ObjectPermissionContextBase::PermissionObserver>
-      permission_observation_{this};
-  base::ObserverList<Observer> observer_list_;
+  class ContextObservation;
+
+  base::flat_map<content::BrowserContext*, std::unique_ptr<ContextObservation>>
+      observations_;
 };
 
 #endif  // CHROME_BROWSER_USB_CHROME_USB_DELEGATE_H_

@@ -32,7 +32,6 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/device_event_log/device_event_log.h"
@@ -649,11 +648,9 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(
     DecisionDetails* decision_details) const {
   DCHECK(decision_details);
 
-  if (auto* usb_tab_helper = UsbTabHelper::FromWebContents(web_contents())) {
-    if (usb_tab_helper->IsDeviceConnected()) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
-    }
+  if (web_contents()->IsConnectedToUsbDevice()) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
   }
 
   if (web_contents()->IsConnectedToBluetoothDevice()) {

@@ -2061,6 +2061,8 @@ source_set("browser") {
     "url_loader_factory_getter.h",
     "url_loader_factory_params_helper.cc",
     "url_loader_factory_params_helper.h",
+    "usb/web_usb_service_impl.cc",
+    "usb/web_usb_service_impl.h",
     "utility_process_host.cc",
     "utility_process_host.h",
     "utility_process_host_receiver_bindings.cc",

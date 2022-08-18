@@ -994,10 +994,6 @@ bool ContentBrowserClient::ShouldForceDownloadResource(
   return false;
 }
 
-void ContentBrowserClient::CreateWebUsbService(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {}
-
 void ContentBrowserClient::CreateDeviceInfoService(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {}
@@ -1018,6 +1014,10 @@ HidDelegate* ContentBrowserClient::GetHidDelegate() {
 }
 
 BluetoothDelegate* ContentBrowserClient::GetBluetoothDelegate() {
+  return nullptr;
+}
+
+UsbDelegate* ContentBrowserClient::GetUsbDelegate() {
   return nullptr;
 }
 

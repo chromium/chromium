@@ -8,6 +8,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -30,9 +34,9 @@ namespace {
 using ::content::RenderFrameHost;
 using ::content::UsbChooser;
 
-UsbChooserContext* GetChooserContext(RenderFrameHost& frame) {
+UsbChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
   return UsbChooserContextFactory::GetForProfile(
-      Profile::FromBrowserContext(frame.GetBrowserContext()));
+      Profile::FromBrowserContext(browser_context));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -79,6 +83,77 @@ bool IsDevicePermissionAutoGranted(
 }
 
 }  // namespace
+
+// Manages the UsbDelegate observers for a single browser context.
+class ChromeUsbDelegate::ContextObservation
+    : public permissions::ObjectPermissionContextBase::PermissionObserver,
+      public UsbChooserContext::DeviceObserver {
+ public:
+  ContextObservation(ChromeUsbDelegate* parent,
+                     content::BrowserContext* browser_context)
+      : parent_(parent), browser_context_(browser_context) {
+    auto* chooser_context = GetChooserContext(browser_context_);
+    device_observation_.Observe(chooser_context);
+    permission_observation_.Observe(chooser_context);
+  }
+  ContextObservation(ContextObservation&) = delete;
+  ContextObservation& operator=(ContextObservation&) = delete;
+  ~ContextObservation() override = default;
+
+  // permissions::ObjectPermissionContextBase::PermissionObserver:
+  void OnPermissionRevoked(const url::Origin& origin) override {
+    for (auto& observer : observer_list_)
+      observer.OnPermissionRevoked(origin);
+  }
+
+  // UsbChooserContext::DeviceObserver:
+  void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override {
+    for (auto& observer : observer_list_)
+      observer.OnDeviceAdded(device_info);
+  }
+
+  void OnDeviceRemoved(
+      const device::mojom::UsbDeviceInfo& device_info) override {
+    for (auto& observer : observer_list_)
+      observer.OnDeviceRemoved(device_info);
+  }
+
+  void OnDeviceManagerConnectionError() override {
+    for (auto& observer : observer_list_)
+      observer.OnDeviceManagerConnectionError();
+  }
+
+  void OnBrowserContextShutdown() override {
+    parent_->observations_.erase(browser_context_);
+    // Return since `this` is now deleted.
+  }
+
+  void AddObserver(content::UsbDelegate::Observer* observer) {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(content::UsbDelegate::Observer* observer) {
+    observer_list_.RemoveObserver(observer);
+  }
+
+ private:
+  // Safe because `parent_` owns `this`.
+  const raw_ptr<ChromeUsbDelegate> parent_;
+
+  // Safe because `this` is destroyed when the context is lost.
+  const raw_ptr<content::BrowserContext> browser_context_;
+
+  base::ScopedObservation<UsbChooserContext,
+                          UsbChooserContext::DeviceObserver,
+                          &UsbChooserContext::AddObserver,
+                          &UsbChooserContext::RemoveObserver>
+      device_observation_{this};
+  base::ScopedObservation<
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
+      permission_observation_{this};
+  base::ObserverList<content::UsbDelegate::Observer> observer_list_;
+};
 
 ChromeUsbDelegate::ChromeUsbDelegate() = default;
 
@@ -174,60 +249,29 @@ std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
     RenderFrameHost& frame,
     std::vector<device::mojom::UsbDeviceFilterPtr> filters,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
-  auto* chooser_context = GetChooserContext(frame);
-  if (!device_observation_.IsObserving())
-    device_observation_.Observe(chooser_context);
-  if (!permission_observation_.IsObserving())
-    permission_observation_.Observe(chooser_context);
-
   auto controller = std::make_unique<UsbChooserController>(
       &frame, std::move(filters), std::move(callback));
   return WebUsbChooser::Create(&frame, std::move(controller));
 }
 
 bool ChromeUsbDelegate::CanRequestDevicePermission(RenderFrameHost& frame) {
-  return GetChooserContext(frame)->CanRequestObjectPermission(
-      frame.GetMainFrame()->GetLastCommittedOrigin());
+  return GetChooserContext(frame.GetBrowserContext())
+      ->CanRequestObjectPermission(
+          frame.GetMainFrame()->GetLastCommittedOrigin());
 }
 
 void ChromeUsbDelegate::RevokeDevicePermissionWebInitiated(
     content::RenderFrameHost& frame,
     const device::mojom::UsbDeviceInfo& device) {
-  GetChooserContext(frame)->RevokeDevicePermissionWebInitiated(
-      frame.GetMainFrame()->GetLastCommittedOrigin(), device);
+  GetChooserContext(frame.GetBrowserContext())
+      ->RevokeDevicePermissionWebInitiated(
+          frame.GetMainFrame()->GetLastCommittedOrigin(), device);
 }
 
 const device::mojom::UsbDeviceInfo* ChromeUsbDelegate::GetDeviceInfo(
     RenderFrameHost& frame,
     const std::string& guid) {
-  return GetChooserContext(frame)->GetDeviceInfo(guid);
-}
-
-void ChromeUsbDelegate::OnPermissionRevoked(const url::Origin& origin) {
-  for (auto& observer : observer_list_)
-    observer.OnPermissionRevoked(origin);
-}
-
-void ChromeUsbDelegate::OnDeviceAdded(
-    const device::mojom::UsbDeviceInfo& device) {
-  for (auto& observer : observer_list_)
-    observer.OnDeviceAdded(device);
-}
-
-void ChromeUsbDelegate::OnDeviceRemoved(
-    const device::mojom::UsbDeviceInfo& device) {
-  for (auto& observer : observer_list_)
-    observer.OnDeviceRemoved(device);
-}
-
-void ChromeUsbDelegate::OnDeviceManagerConnectionError() {
-  for (auto& observer : observer_list_)
-    observer.OnDeviceManagerConnectionError();
-}
-
-void ChromeUsbDelegate::OnBrowserContextShutdown() {
-  device_observation_.Reset();
-  permission_observation_.Reset();
+  return GetChooserContext(frame.GetBrowserContext())->GetDeviceInfo(guid);
 }
 
 bool ChromeUsbDelegate::HasDevicePermission(
@@ -237,13 +281,14 @@ bool ChromeUsbDelegate::HasDevicePermission(
   if (IsDevicePermissionAutoGranted(origin, device))
     return true;
 
-  return GetChooserContext(frame)->HasDevicePermission(origin, device);
+  return GetChooserContext(frame.GetBrowserContext())
+      ->HasDevicePermission(origin, device);
 }
 
 void ChromeUsbDelegate::GetDevices(
     RenderFrameHost& frame,
     blink::mojom::WebUsbService::GetDevicesCallback callback) {
-  GetChooserContext(frame)->GetDevices(std::move(callback));
+  GetChooserContext(frame.GetBrowserContext())->GetDevices(std::move(callback));
 }
 
 void ChromeUsbDelegate::GetDevice(
@@ -252,21 +297,22 @@ void ChromeUsbDelegate::GetDevice(
     base::span<const uint8_t> blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client) {
-  GetChooserContext(frame)->GetDevice(guid, blocked_interface_classes,
-                                      std::move(device_receiver),
-                                      std::move(device_client));
+  GetChooserContext(frame.GetBrowserContext())
+      ->GetDevice(guid, blocked_interface_classes, std::move(device_receiver),
+                  std::move(device_client));
 }
 
 void ChromeUsbDelegate::AddObserver(RenderFrameHost& frame,
                                     Observer* observer) {
-  observer_list_.AddObserver(observer);
-  auto* chooser_context = GetChooserContext(frame);
-  if (!device_observation_.IsObserving())
-    device_observation_.Observe(chooser_context);
-  if (!permission_observation_.IsObserving())
-    permission_observation_.Observe(chooser_context);
+  auto* browser_context = frame.GetBrowserContext();
+  if (!base::Contains(observations_, browser_context)) {
+    observations_.emplace(browser_context, std::make_unique<ContextObservation>(
+                                               this, browser_context));
+  }
+  observations_[browser_context]->AddObserver(observer);
 }
 
 void ChromeUsbDelegate::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+  for (auto& entry : observations_)
+    entry.second->RemoveObserver(observer);
 }
