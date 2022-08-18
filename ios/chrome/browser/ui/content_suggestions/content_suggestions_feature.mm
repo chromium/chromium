@@ -69,7 +69,8 @@ bool IsContentSuggestionsUIModuleRefreshEnabled() {
 }
 
 bool IsTrendingQueriesModuleEnabled() {
-  return base::FeatureList::IsEnabled(kTrendingQueriesModule) &&
+  return base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh) &&
+         base::FeatureList::IsEnabled(kTrendingQueriesModule) &&
          !ShouldNeverShowTrendingQueriesModule();
 }
 
