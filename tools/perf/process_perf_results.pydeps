@@ -542,8 +542,11 @@ contrib/orderfile/orderfile_unittest.py
 contrib/power/__init__.py
 contrib/power/perf_benchmark_with_profiling.py
 contrib/power/perf_benchmark_with_profiling_unittest.py
+contrib/power/power_mobile.py
+contrib/power/process_results.py
 contrib/power/profiling_util.py
 contrib/power/profiling_util_unittest.py
+contrib/power/top_sites_story.py
 contrib/system_health_scroll_jank/__init__.py
 contrib/system_health_scroll_jank/janky_story_set.py
 contrib/system_health_scroll_jank/system_health_scroll_jank.py
