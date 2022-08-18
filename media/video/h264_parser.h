@@ -19,6 +19,7 @@
 #include "media/base/ranges.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/video/h264_bit_reader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -218,6 +219,7 @@ struct MEDIA_EXPORT H264SPS {
   absl::optional<gfx::Size> GetCodedSize() const;
   absl::optional<gfx::Rect> GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
+  VideoChromaSampling GetChromaSampling() const;
 
   // Helper to compute indicated level from parsed SPS data. The value of
   // indicated level would be included in H264LevelIDC enum representing the

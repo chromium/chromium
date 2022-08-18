@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/gpu/h265_decoder.h"
@@ -423,6 +424,11 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
   }
 
   VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
+  if (new_chroma_sampling != chroma_sampling_) {
+    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
+                                  new_chroma_sampling);
+  }
+
   if (!accelerator_->IsChromaSamplingSupported(new_chroma_sampling)) {
     DVLOG(1) << "Only YUV 4:2:0 is supported";
     return false;

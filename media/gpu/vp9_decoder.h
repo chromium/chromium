@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "media/base/video_types.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/vp9_picture.h"
@@ -187,6 +188,8 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   // Bit depth of input bitstream.
   uint8_t bit_depth_ = 0;
+  // Chroma subsampling format of input bitstream.
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   // Pending picture for decode when accelerator returns kTryAgain.
   scoped_refptr<VP9Picture> pending_pic_;

@@ -93,13 +93,17 @@ enum VideoPixelFormat {
       PIXEL_FORMAT_YUV444AP10,  // Must always be equal to largest entry logged.
 };
 
-// Chroma sampling formats
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VideoChromaSampling : uint8_t {
   kUnknown = 0,
   k420,  // 4:2:0 chroma channel has 1/2 height/width of luma channel.
   k422,  // 4:2:2 chroma channel has same height & 1/2 width of luma channel.
   k444,  // 4:4:4 chroma channel has same height/width of luma channel.
-  k400,  // 4:0:0 monochrome without chroma subsampling..
+  k400,  // 4:0:0 monochrome without chroma subsampling.
+
+  // Please update UMA histogram enumeration when adding new formats here.
+  kMaxValue = k400,  // Must always be equal to largest entry logged.
 };
 
 // Return the name of chroma sampling format as a string.

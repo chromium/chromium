@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
@@ -164,6 +165,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   VideoColorSpace container_color_space_;
   uint8_t bit_depth_ = 0;
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;

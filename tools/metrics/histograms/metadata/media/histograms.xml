@@ -3876,6 +3876,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.PlatformVideoDecoding.ChromaSampling"
+    enum="VideoChromaSampling" expires_after="2023-02-08">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Video chroma sub-sampling format requested for decoding through platform
+    decoders. This collection happens regardless of whether the platform decoder
+    supports non-420 video format decoding or not.
+  </summary>
+</histogram>
+
 <histogram name="Media.PlatformVideoDecoding.Decode" units="ms"
     expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->

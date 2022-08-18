@@ -195,6 +195,23 @@ VideoColorSpace H264SPS::GetColorSpace() const {
   }
 }
 
+VideoChromaSampling H264SPS::GetChromaSampling() const {
+  // Spec section 6.2
+  switch (chroma_format_idc) {
+    case 0:
+      return VideoChromaSampling::k400;
+    case 1:
+      return VideoChromaSampling::k420;
+    case 2:
+      return VideoChromaSampling::k422;
+    case 3:
+      return VideoChromaSampling::k444;
+    default:
+      DVLOG(1) << "Unknown chroma subsampling format.";
+      return VideoChromaSampling::kUnknown;
+  }
+}
+
 uint8_t H264SPS::GetIndicatedLevel() const {
   // Spec A.3.1 and A.3.2
   // For Baseline, Constrained Baseline and Main profile, the indicated level is

@@ -99067,6 +99067,14 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Using DirectShow as fallback"/>
 </enum>
 
+<enum name="VideoChromaSampling">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="420 1/2 sampling horizontally and vertically"/>
+  <int value="2" label="422 1/2 sampling horizontally and 1:1 vertically"/>
+  <int value="3" label="444 1:1 sampling horizontally and vertically"/>
+  <int value="4" label="400 no chroma sub-sampling"/>
+</enum>
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>

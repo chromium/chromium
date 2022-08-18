@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_switches.h"
 #include "media/video/h264_level_limits.h"
@@ -78,11 +79,6 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       NOTREACHED();
       return false;
   }
-}
-
-bool IsYUV420Sequence(const H264SPS& sps) {
-  // Spec 6.2
-  return sps.chroma_format_idc == 1;
 }
 }  // namespace
 
@@ -1188,7 +1184,15 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     DVLOG(1) << "Invalid DPB size: " << max_dpb_size;
     return false;
   }
-  if (!IsYUV420Sequence(*sps)) {
+
+  VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
+  if (new_chroma_sampling != chroma_sampling_) {
+    chroma_sampling_ = new_chroma_sampling;
+    base::UmaHistogramEnumeration("Media.PlatformVideoDecoding.ChromaSampling",
+                                  chroma_sampling_);
+  }
+
+  if (chroma_sampling_ != VideoChromaSampling::k420) {
     DVLOG(1) << "Only YUV 4:2:0 is supported";
     return false;
   }
@@ -1669,9 +1673,7 @@ uint8_t H264Decoder::GetBitDepth() const {
 }
 
 VideoChromaSampling H264Decoder::GetChromaSampling() const {
-  // H264 decoder does not rely on chroma sampling format for creating
-  // or reconfiguring decoder, so return an unknown format.
-  return VideoChromaSampling::kUnknown;
+  return chroma_sampling_;
 }
 
 size_t H264Decoder::GetRequiredNumOfPictures() const {

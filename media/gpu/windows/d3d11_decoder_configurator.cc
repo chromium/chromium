@@ -63,7 +63,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
       decoder_dxgi_format = DXGI_FORMAT_P016;
       break;
     default:
-      MEDIA_LOG(INFO, media_log)
+      MEDIA_LOG(WARNING, media_log)
           << "D3D11VideoDecoder does not support bit depth "
           << base::strict_cast<int>(bit_depth);
       return nullptr;
