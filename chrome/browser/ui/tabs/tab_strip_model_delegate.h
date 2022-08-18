@@ -153,6 +153,9 @@ class TabStripModelDelegate {
   // Adds the specified WebContents to read later.
   virtual void AddToReadLater(content::WebContents* web_contents) = 0;
 
+  // Returns whether the tabstrip supports the read later feature.
+  virtual bool SupportsReadLater() = 0;
+
   // Gives the delegate an opportunity to cache (take ownership) of
   // WebContents before they are destroyed. The delegate takes ownership by way
   // of using std::move() on the `owned_contents` and resetting `remove_reason`

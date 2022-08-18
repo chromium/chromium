@@ -50,6 +50,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldDisplayFavicon(content::WebContents* web_contents) const override;
   bool CanReload() const override;
   void AddToReadLater(content::WebContents* web_contents) override;
+  bool SupportsReadLater() override;
   void CacheWebContents(
       const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
           web_contents) override;

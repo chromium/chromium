@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -240,6 +241,11 @@ void BrowserTabStripModelDelegate::AddToReadLater(
     return;
 
   chrome::MoveTabToReadLater(browser_, web_contents);
+}
+
+bool BrowserTabStripModelDelegate::SupportsReadLater() {
+  return !browser_->profile()->IsGuestSession() &&
+         !web_app::AppBrowserController::IsWebApp(browser_);
 }
 
 void BrowserTabStripModelDelegate::CacheWebContents(

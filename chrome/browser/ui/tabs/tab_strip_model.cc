@@ -1154,7 +1154,7 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
 bool TabStripModel::IsReadLaterSupportedForAny(
     const std::vector<int>& indices) {
-  if (profile_->IsGuestSession())
+  if (!delegate_->SupportsReadLater())
     return false;
 
   ReadingListModel* model =
