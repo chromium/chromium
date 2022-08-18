@@ -159,6 +159,14 @@ class GTestsApp(object):
     plistlib.writePlist(self.fill_xctestrun_node(), xctestrun)
     return xctestrun
 
+  @staticmethod
+  def _replace_multiple_slashes(name):
+    """Replace slashes with dots (.) except at the end."""
+    count = name.count('/')
+    if count == 0:
+      return name
+    return name.replace('/', '.', count - 1)
+
   def fill_xctestrun_node(self):
     """Fills only required nodes for egtests in xctestrun file.
 
@@ -216,11 +224,15 @@ class GTestsApp(object):
 
     if self.excluded_tests:
       xctestrun_data[module].update({
-          'SkipTestIdentifiers': self.excluded_tests
+          'SkipTestIdentifiers': [
+              self._replace_multiple_slashes(x) for x in self.excluded_tests
+          ]
       })
     if self.included_tests:
       xctestrun_data[module].update({
-          'OnlyTestIdentifiers': self.included_tests
+          'OnlyTestIdentifiers': [
+              self._replace_multiple_slashes(x) for x in self.included_tests
+          ]
       })
     return xctestrun_data
 
