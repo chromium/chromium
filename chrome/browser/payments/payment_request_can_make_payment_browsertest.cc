@@ -9,56 +9,25 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace payments {
 
 class PaymentRequestCanMakePaymentQueryTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
-  PaymentRequestCanMakePaymentQueryTest(
-      const PaymentRequestCanMakePaymentQueryTest&) = delete;
-  PaymentRequestCanMakePaymentQueryTest& operator=(
-      const PaymentRequestCanMakePaymentQueryTest&) = delete;
-  net::EmbeddedTestServer nickpay_server_;
-
- protected:
-  PaymentRequestCanMakePaymentQueryTest()
-      : nickpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
-  void SetUpOnMainThread() override {
-    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
-
-    // Choosing nickpay for its JIT installation support.
-    nickpay_server_.ServeFilesFromSourceDirectory(
-        "components/test/data/payments/nickpay.com/");
-
-    ASSERT_TRUE(nickpay_server_.Start());
+  void ExpectCanMakePayment(bool expected, const std::string& method) {
+    EXPECT_EQ(
+        expected,
+        content::EvalJs(GetActiveWebContents(),
+                        content::JsReplace("checkCanMakePayment($1)", method)));
   }
 
-  void NavigateTo(const std::string& file_path) {
-    PaymentRequestPlatformBrowserTestBase::NavigateTo("a.com", file_path);
-  }
-
-  void CallCanMakePaymentWithMethod(const std::string& method) {
-    ResetEventWaiterForEventSequence(
-        {TestEvent::kCanMakePaymentCalled, TestEvent::kCanMakePaymentReturned});
-    ASSERT_TRUE(content::ExecuteScript(
-        GetActiveWebContents(),
-        content::JsReplace("buyWithMethods([{supportedMethods:$1}]);",
-                           method)));
-    WaitForObservedEvent();
-  }
-
-  void CallHasEnrolledInstrumentWithMethod(const std::string& method) {
-    ResetEventWaiterForEventSequence(
-        {TestEvent::kHasEnrolledInstrumentCalled,
-         TestEvent::kHasEnrolledInstrumentReturned});
-    ASSERT_TRUE(content::ExecuteScript(
-        GetActiveWebContents(),
-        content::JsReplace(
-            "hasEnrolledInstrumentWithMethods([{supportedMethods:$1}]);",
-            method)));
-    WaitForObservedEvent();
+  void ExpectHasEnrolledInstrument(bool expected, const std::string& method) {
+    EXPECT_EQ(expected,
+              content::EvalJs(GetActiveWebContents(),
+                              content::JsReplace(
+                                  "checkHasEnrolledInstrument($1)", method)));
   }
 };
 
@@ -66,86 +35,73 @@ class PaymentRequestCanMakePaymentQueryTest
 // "canmakepayment" event. PaymentRequest.canMakePayment() should  return true,
 // but PaymentRequest.hasEnrolledInstrument() should return false.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_False) {
+                       AppRespondsFalseToCanMakePaymentEvent) {
   std::string method;
   InstallPaymentApp("a.com", "can_make_payment_false_responder.js", &method);
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("false");
+  ExpectCanMakePayment(true, method);
+  ExpectHasEnrolledInstrument(false, method);
 }
 
-// A payment method is required, user has installed the payment app, the
-// payment app responds true to the "canmakepayment" event.
+// A user has installed a payment app that responds "true" to the
+// "canmakepayment" event. Both PaymentRequest.canMakePayment() and
+// PaymentRequest.hasEnrolledInstrument() should return true."
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_Supported) {
+                       AppRespondsTrueToCanMakePaymentEvent) {
   std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
+  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("true");
+  ExpectCanMakePayment(true, method);
+  ExpectHasEnrolledInstrument(true, method);
 }
 
-// A payment method is required, user has installed the payment app, the
-// payment app responds true to the "canmakepayment" event and user is in
-// incognito mode. In this case, hasEnrolledInstrument() returns false because
-// the "canmakepayment" event is not fired in incognito mode.
+// A user has installed a payment app that responds "true" to the
+// "canmakepayment" event and the user is in incognito mode. In this case,
+// hasEnrolledInstrument() returns false because the "canmakepayment" event is
+// not fired in incognito mode.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_Supported_InIncognitoMode) {
+                       IncognitoModeWithInstalledPaymentHandler) {
   std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
+  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetOffTheRecord(true);
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("false");
+  ExpectCanMakePayment(true, method);
+  ExpectHasEnrolledInstrument(false, method);
 }
 
 // Nickpay is requested but not installed, but it supports just-in-time
 // installation. In this case canMakePayment() returns true and
 // hasEnrolledInstrument() returns false.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       DISABLED_CanMakePayment_NotSupported) {
-  std::string method = nickpay_server_.GetURL("nickpay.com", "/pay").spec();
+                       AppIsNotInstalledButCanBeInstalledJustInTime) {
+  std::string method =
+      https_server()->GetURL("a.com", "/nickpay.com/pay").spec();
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("false");
+  ExpectCanMakePayment(true, method);
+  ExpectHasEnrolledInstrument(false, method);
 }
 
 // Nickpay is requested in incognito mode and it supports just-in-time
 // installation but is not installed. In this case canMakePayment() returns true
 // and hasEnrolledInstrument() returns false as in a normal mode.
-// DISABLED for flakiness. See https://crbug.com/1288946
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       DISABLED_CanMakePayment_NotSupported_InIncognitoMode) {
-  std::string method = nickpay_server_.GetURL("nickpay.com", "/pay").spec();
+                       IncognitoModeWithJITInstallableButNotInstalledApp) {
+  std::string method =
+      https_server()->GetURL("a.com", "/nickpay.com/pay").spec();
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetOffTheRecord(true);
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("true");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("false");
+  ExpectCanMakePayment(true, method);
+  ExpectHasEnrolledInstrument(false, method);
 }
 
 // Test the case where canMakePayment/hasEnrolledInstrument would return true,
@@ -155,70 +111,49 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   test_controller()->SetCanMakePaymentEnabledPref(false);
 
   std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
+  InstallPaymentApp("a.com", "can_make_payment_true_responder.js", &method);
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
-  CallCanMakePaymentWithMethod(method);
-  ExpectBodyContains("false");
-
-  CallHasEnrolledInstrumentWithMethod(method);
-  ExpectBodyContains("false");
+  ExpectCanMakePayment(false, method);
+  ExpectHasEnrolledInstrument(false, method);
 }
 
 // Pages without a valid SSL certificate always get "false" from
-// .canMakePayment().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       CanMakePayment_InvalidSSL) {
+// canMakePayment() and hasEnrolledInstrument() and NotSupported error from
+// show().
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, InvalidSSL) {
   std::string method;
   InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
 
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
   test_controller()->SetValidSsl(false);
 
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(
+  content::EvalJsResult can_make_payment_result =
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("checkCanMakePayment($1)", method));
+  // canMakePayment() will either reject or resolve with "false", depending on
+  // timing of when the browser completes the SSL check and when the website
+  // calls canMakePayment().
+  // TODO(crbug.com/1353065): More consistent canMakePayment() behavior.
+  EXPECT_TRUE("a JavaScript error: \"false\"\n" ==
+                  can_make_payment_result.error ||
+              false == can_make_payment_result.ExtractBool());
+
+  content::EvalJsResult has_enrolled_instrument_result = content::EvalJs(
       GetActiveWebContents(),
-      content::JsReplace("buyWithMethods([{supportedMethods:$1}]);", method)));
-  WaitForObservedEvent();
-  ExpectBodyContains("false");
-}
+      content::JsReplace("checkHasEnrolledInstrument($1)", method));
+  // hasEnrolledInstrument() will either reject or resolve with "false",
+  // depending on timing of when the browser completes the SSL check and when
+  // the website calls hasEnrolledInstrument().
+  // TODO(crbug.com/1353065): More consistent hasEnrolledInstrument() behavior.
+  EXPECT_TRUE("a JavaScript error: \"false\"\n" ==
+                  has_enrolled_instrument_result.error ||
+              false == has_enrolled_instrument_result.ExtractBool());
 
-// Pages without a valid SSL certificate always get NotSupported error from
-// .show().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest, Show_InvalidSSL) {
-  std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
-
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  test_controller()->SetValidSsl(false);
-
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
-      content::JsReplace("showWithMethods([{supportedMethods:$1}]);", method)));
-  WaitForObservedEvent();
-  ExpectBodyContains("NotSupportedError: Invalid SSL certificate");
-}
-
-// Pages without a valid SSL certificate always get "false" from
-// .hasEnrolledInstrument().
-IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
-                       HasEnrolledInstrument_InvalidSSL) {
-  std::string method;
-  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
-
-  NavigateTo("/payment_request_can_make_payment_query_test.html");
-  test_controller()->SetValidSsl(false);
-
-  ResetEventWaiterForEventSequence({TestEvent::kConnectionTerminated});
-  ASSERT_TRUE(content::ExecuteScript(
-      GetActiveWebContents(),
-      content::JsReplace(
-          "hasEnrolledInstrumentWithMethods([{supportedMethods:$1}]);",
-          method)));
-  WaitForObservedEvent();
-  ExpectBodyContains("false");
+  EXPECT_EQ("NotSupportedError: Invalid SSL certificate",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("getShowResponse($1)", method)));
 }
 
 }  // namespace payments

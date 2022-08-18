@@ -9,13 +9,6 @@
 
 const bobPayMethod = {supportedMethods: 'https://bobpay.com'};
 
-const visaMethod = {
-  supportedMethods: 'basic-card',
-  data: {
-    supportedNetworks: ['visa'],
-  },
-};
-
 const defaultDetails = {
   total: {
     label: 'Total',
@@ -43,7 +36,55 @@ function run(testFunction) {
  * Checks for existence of Bob Pay or a complete credit card.
  */
 function buy() { // eslint-disable-line no-unused-vars
-  buyWithMethods([bobPayMethod, visaMethod]);
+  buyWithMethods([bobPayMethod]);
+}
+
+/**
+ * Checks for availability of the given method.
+ * @param {string} methodName - The payment method name to check.
+ * @return {Promise<bool|string>} Either the boolean indicating whether the
+ * given payment method is available, or an error message string.
+ */
+async function checkCanMakePayment(methodName) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    return new PaymentRequest([{supportedMethods: methodName}], defaultDetails)
+        .canMakePayment();
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Checks for enrolled instrument presence of the given method.
+ * @param {string} methodName - The payment method name to check.
+ * @return {Promise<bool|string>} Either the boolean indicating whether the
+ * given payment method has an enrolled instrument, or an error message string.
+ */
+async function checkHasEnrolledInstrument(methodName) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    return new PaymentRequest([{supportedMethods: methodName}], defaultDetails)
+        .hasEnrolledInstrument();
+  } catch (e) {
+    return e.toString();
+  }
+}
+
+/**
+ * Returns the payment response from the payment handler.
+ * @param {string} methodName - The payment method name to invoke.
+ * @return {Promise<string>} The payment response from the payment handler, or
+ * an error message.
+ */
+async function getShowResponse(methodName) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    const request =
+        new PaymentRequest([{supportedMethods: methodName}], defaultDetails);
+    const response = await request.show();
+    await response.complete('success');
+    return JSON.stringify(response);
+  } catch (e) {
+    return e.toString();
+  }
 }
 
 /**
@@ -62,7 +103,7 @@ function buyWithMethods(methodData) {
  * Show payment UI for Bob Pay or a complete credit card.
  */
 function show() { // eslint-disable-line no-unused-vars
-  showWithMethods([bobPayMethod, visaMethod]);
+  showWithMethods([bobPayMethod]);
 }
 
 /**
@@ -81,7 +122,7 @@ function showWithMethods(methodData) {
  * Checks for enrolled instrument of Bob Pay or a complete credit card.
  */
 function hasEnrolledInstrument() { // eslint-disable-line no-unused-vars
-  hasEnrolledInstrumentWithMethods([bobPayMethod, visaMethod]);
+  hasEnrolledInstrumentWithMethods([bobPayMethod]);
 }
 
 /**
