@@ -284,6 +284,16 @@ void WebsiteMetrics::OnTabStripModelChangeInsert(
       activation_client_observations_.AddObservation(activation_client);
     }
   }
+
+  for (const auto& inserted_tab : insert.contents) {
+    content::WebContents* contents = inserted_tab.contents;
+    // The tab is new.
+    if (!base::Contains(webcontents_to_observer_map_, contents)) {
+      webcontents_to_observer_map_[contents] =
+          std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
+              contents, this);
+    }
+  }
 }
 
 void WebsiteMetrics::OnTabStripModelChangeRemove(
@@ -334,13 +344,7 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
 
   if (new_contents) {
     SetTabActivated(new_contents);
-
     window_to_web_contents_[window] = new_contents;
-    if (!base::Contains(webcontents_to_observer_map_, new_contents)) {
-      webcontents_to_observer_map_[new_contents] =
-          std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
-              new_contents, this);
-    }
   }
 }
 
