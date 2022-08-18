@@ -210,6 +210,8 @@ TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
       /*enabled_features=*/{}, /*disabled_features=*/{
           chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
           features::kProductivityLauncher});
+  // ColorProvider cache needs to be cleared to update for the feature flags.
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =

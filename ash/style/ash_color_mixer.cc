@@ -384,8 +384,11 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       !features::IsDarkLightModeEnabled()) {
     mixer[kColorAshAssistantGreetingEnabled] = {
         cros_tokens::kColorPrimaryLight};
+    mixer[kColorAshSuggestionChipViewTextView] = {
+        cros_tokens::kColorSecondaryLight};
   } else {
     mixer[kColorAshAssistantGreetingEnabled] = {cros_tokens::kColorPrimary};
+    mixer[kColorAshSuggestionChipViewTextView] = {cros_tokens::kColorSecondary};
   }
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {

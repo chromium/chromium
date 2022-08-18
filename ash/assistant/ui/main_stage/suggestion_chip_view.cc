@@ -14,8 +14,7 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/util/resource_util.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,6 +22,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -52,6 +52,16 @@ constexpr int kIconMarginDip = 8;
 constexpr int kIconSizeDip = 16;
 constexpr int kChipPaddingDip = 16;
 constexpr int kPreferredHeightDip = 32;
+
+// Returns the color of the border stroke.
+SkColor GetStrokeColor(ui::ColorProvider* color_provider,
+                       bool use_dark_light_mode_colors) {
+  if (use_dark_light_mode_colors) {
+    DCHECK(color_provider);
+    return color_provider->GetColor(kColorAshSeparatorColor);
+  }
+  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
+}
 
 }  // namespace
 
@@ -166,9 +176,6 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
     SetBackground(
         views::CreateRoundedRectBackground(SK_ColorTRANSPARENT, radius));
   }
-
-  SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, radius,
-                                           GetStrokeColor()));
 }
 
 void SuggestionChipView::OnFocus() {
@@ -216,8 +223,14 @@ void SuggestionChipView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
         HasFocus() ? kFocusColor : SK_ColorTRANSPARENT, radius));
   }
 
-  SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, radius,
-                                           GetStrokeColor()));
+  // Only set the border if a ColorProvider is available. Otherwise, we cannot
+  // compute the stroke color.
+  auto* color_provider = GetColorProvider();
+  if (color_provider) {
+    SetBorder(views::CreateRoundedRectBorder(
+        kStrokeWidthDip, radius,
+        GetStrokeColor(color_provider, use_dark_light_mode_colors_)));
+  }
 
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), radius);
 }
@@ -225,16 +238,16 @@ void SuggestionChipView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 void SuggestionChipView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-
-  text_view_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
-      ColorProvider::ContentLayerType::kTextColorSecondary));
-
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+  text_view_->SetEnabledColor(
+      color_provider->GetColor(kColorAshSuggestionChipViewTextView));
   if (use_dark_light_mode_colors_) {
     const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
         views::Emphasis::kMaximum, size());
-    SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, radius,
-                                             GetStrokeColor()));
+    SetBorder(views::CreateRoundedRectBorder(
+        kStrokeWidthDip, radius,
+        GetStrokeColor(color_provider, use_dark_light_mode_colors_)));
   }
 }
 
@@ -253,14 +266,6 @@ void SuggestionChipView::SetText(const std::u16string& text) {
 
 const std::u16string& SuggestionChipView::GetText() const {
   return text_view_->GetText();
-}
-
-SkColor SuggestionChipView::GetStrokeColor() const {
-  if (use_dark_light_mode_colors_) {
-    return ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
-  }
-  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
 }
 
 BEGIN_METADATA(SuggestionChipView, views::Button)
