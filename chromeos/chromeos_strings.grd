@@ -2520,6 +2520,24 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic dark mode', 'Automatic light mode'">
         Automatic dark theme
       </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting.">
+        Keyboard backlight
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 1">
+        keyboard light color
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 2">
+        keyboard color
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT3" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 3">
+        key color
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 4">
+        backlight color
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT5" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 5">
+        backlit color
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

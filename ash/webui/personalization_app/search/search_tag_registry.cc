@@ -13,6 +13,8 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
@@ -262,6 +264,23 @@ SearchTagRegistry::SearchConceptUpdates GetDarkModePrefChangedUpdates(
           {&GetDarkModeOffSearchConcept(), !dark_mode_on}};
 }
 
+const SearchConcept& GetKeyboardBacklightSearchConcept() {
+  static const base::NoDestructor<const SearchConcept> search_concept({
+      .id = mojom::SearchConceptId::kKeyboardBacklight,
+      .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT,
+      .alternate_message_ids =
+          {
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT1,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT2,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT3,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT4,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT5,
+          },
+      .relative_url = "",
+  });
+  return *search_concept;
+}
+
 }  // namespace
 
 SearchTagRegistry::SearchTagRegistry(
@@ -294,6 +313,11 @@ SearchTagRegistry::SearchTagRegistry(
     }
     updates.merge(GetDarkModePrefChangedUpdates(
         pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
+  }
+
+  if (::ash::features::IsRgbKeyboardEnabled() &&
+      Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    updates[&GetKeyboardBacklightSearchConcept()] = true;
   }
 
   if (IsAmbientModeAllowed()) {

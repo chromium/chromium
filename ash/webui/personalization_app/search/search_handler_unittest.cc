@@ -13,6 +13,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_suite.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
@@ -24,7 +26,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom-test-utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -34,6 +35,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace personalization_app {
@@ -144,7 +146,7 @@ class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
 
 }  // namespace
 
-class PersonalizationAppSearchHandlerTest : public testing::Test {
+class PersonalizationAppSearchHandlerTest : public AshTestBase {
  protected:
   PersonalizationAppSearchHandlerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -156,7 +158,12 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
 
   ~PersonalizationAppSearchHandlerTest() override = default;
 
+  // ash::AshTestBase:
   void SetUp() override {
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
+
     local_search_service_proxy_ =
         std::make_unique<::ash::local_search_service::LocalSearchServiceProxy>(
             /*for_testing=*/true);
@@ -230,7 +237,6 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<::chromeos::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;

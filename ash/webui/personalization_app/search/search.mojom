@@ -23,6 +23,7 @@ enum SearchConceptId {
     kDarkModeSchedule = 401,
     kDarkModeTurnOff = 402,
     kDarkModeTurnOn = 403,
+    kKeyboardBacklight = 500,
 };
 
 // A result to display in launcher search that represents a personalization

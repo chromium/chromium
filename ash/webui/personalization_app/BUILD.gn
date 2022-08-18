@@ -95,6 +95,7 @@ source_set("unit_tests") {
   deps = [
     ":personalization_app",
     "search:mojo_bindings",
+    "//ash:test_support",
     "//ash/constants:constants",
     "//ash/public/cpp:cpp",
     "//base/test:test_support",
