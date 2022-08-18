@@ -7,8 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #import "base/metrics/field_trial_params.h"
+#import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,11 +70,17 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
 }
 
 bool IsFeedOverrideDefaultsEnabled() {
+  if (GetChannel() == version_info::Channel::STABLE) {
+    return false;
+  }
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"FeedOverrideDefaultsEnabled"];
 }
 
 bool IsFeedBackgroundRefreshCompletedNotificationEnabled() {
+  if (GetChannel() == version_info::Channel::STABLE) {
+    return false;
+  }
   return IsFeedBackgroundRefreshEnabled() &&
          [[NSUserDefaults standardUserDefaults]
              boolForKey:@"FeedBackgroundRefreshNotificationEnabled"];

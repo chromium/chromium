@@ -36,8 +36,10 @@ source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
+    "//components/version_info:channel",
     "//ios/chrome/app:buildflags",
     "//ios/chrome/browser:utils",
+    "//ios/chrome/common",
   ]
 }
 
