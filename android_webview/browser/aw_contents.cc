@@ -89,6 +89,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "net/base/auth.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -1462,6 +1463,9 @@ void AwContents::RenderViewHostChanged(content::RenderViewHost* old_host,
 void AwContents::PrimaryPageChanged(content::Page& page) {
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
   const std::string& scheme = origin.scheme();
+  const std::string& etld_plus1 =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   if (scheme_ != scheme) {
     scheme_ = scheme;
     AwBrowserProcess::GetInstance()
@@ -1474,8 +1478,13 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
     ScopedJavaLocalRef<jobject> j_ref = java_ref_.get(env);
     if (j_ref) {
       uint32_t origin_hash = base::PersistentHash(origin.Serialize());
+      uint32_t etld_plus1_hash = base::PersistentHash(etld_plus1);
+
       jlong j_origin_hash = static_cast<jlong>(origin_hash);
+      jlong j_etld_plus1_hash = static_cast<jlong>(etld_plus1_hash);
+
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
+      Java_AwContents_logSiteVisit(env, j_ref, j_etld_plus1_hash);
     }
   }
 }

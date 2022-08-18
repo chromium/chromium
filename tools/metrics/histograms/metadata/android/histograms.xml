@@ -4608,6 +4608,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SitesVisitedWeekly" units="sites"
+    expires_after="2023-02-15">
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Measures the count of distinct sites visited per week in WebView. This is
+    recorded at the time of a navigation when stored hashed site navigations are
+    older than a week. The purpose of this metric is to slice it by package name
+    to help characterize the usage of that package. This histogram uses eTLD+1
+    as the definition of a site.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
     units="ms" expires_after="2023-12-31">
   <owner>torne@chromium.org</owner>
