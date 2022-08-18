@@ -69,11 +69,6 @@ class AX_EXPORT AXNode final {
     // turn it into a class and make it compute the unignored selection given
     // the `AXTreeData`.
     struct Selection final {
-      Selection() = default;
-      ~Selection() = default;
-      constexpr Selection(const Selection&) = default;
-      constexpr Selection& operator=(const Selection&) = default;
-
       // Returns true if this instance represents the position of the caret.
       constexpr bool IsCollapsed() const {
         return focus_object_id != kInvalidAXNodeID &&
