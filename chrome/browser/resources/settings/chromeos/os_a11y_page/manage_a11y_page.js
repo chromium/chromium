@@ -422,6 +422,14 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
     /** @private {!DevicePageBrowserProxy} */
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
+
+    if (loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
+      this.redirectToNewA11ySettings();
+    }
+  }
+
+  redirectToNewA11ySettings() {
+    location.href = 'chrome://os-settings/osAccessibility';
   }
 
   /** @override */

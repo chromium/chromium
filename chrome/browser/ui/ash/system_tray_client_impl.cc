@@ -75,6 +75,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 using session_manager::SessionManager;
@@ -503,8 +504,13 @@ void SystemTrayClientImpl::ShowAccessibilityHelp() {
 
 void SystemTrayClientImpl::ShowAccessibilitySettings() {
   base::RecordAction(base::UserMetricsAction("ShowAccessibilitySettings"));
-  ShowSettingsSubPageForActiveUser(
-      chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+  if (::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
+    ShowSettingsSubPageForActiveUser(
+        chromeos::settings::mojom::kAccessibilitySectionPath);
+  } else {
+    ShowSettingsSubPageForActiveUser(
+        chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+  }
 }
 
 void SystemTrayClientImpl::ShowGestureEducationHelp() {
