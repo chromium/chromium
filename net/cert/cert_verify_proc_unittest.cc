@@ -4217,11 +4217,11 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
   EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
 // Tests that an EV cert verification with that could not retrieve online OCSP
-// revocation information is verified but not marked as CERT_STATUS_IS_EV.
+// revocation information is verified but still marked as CERT_STATUS_IS_EV.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        EVOnlineOCSPRevocationCheckingSoftFail) {
   if (!SupportsEV()) {
@@ -4259,12 +4259,12 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
   EXPECT_THAT(error, IsOk());
-  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
 // Tests that an EV cert verification with online OCSP returning affirmatively
-// revoked is not marked as CERT_STATUS_IS_EV. On some platforms verification
-// will fail with ERR_CERT_REVOKED.
+// revoked is marked as CERT_STATUS_IS_EV.
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        EVOnlineOCSPRevocationCheckingRevoked) {
   if (!SupportsEV()) {
@@ -4301,11 +4301,9 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   int error =
       Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
-  if (VerifyProcTypeIsBuiltin())
-    EXPECT_THAT(error, IsOk());
-  else
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_THAT(error, IsOk());
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {

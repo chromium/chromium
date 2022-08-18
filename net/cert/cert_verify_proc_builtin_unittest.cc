@@ -475,9 +475,9 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
 }
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
-// Tests that if the verification deadline is exceeded during EV revocation
-// checking, the certificate is verified as non-EV.
-TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
+// Tests that if we're doing EV verification, that no OCSP revocation checking
+// is done.
+TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
   CreateChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
@@ -487,31 +487,20 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   leaf->SetCertificatePolicies({kEVTestCertPolicy});
   intermediate->SetCertificatePolicies({kEVTestCertPolicy});
 
-  const base::TimeDelta timeout_increment =
-      CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::Milliseconds(1);
-  const int expected_request_count =
-      base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
-                       timeout_increment) +
-      1;
-
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
 
-  // Set up the test intermediate to have enough OCSP urls that if all the
-  // requests hang the deadline will be exceeded.
+  // Set up the test intermediate to have an OCSP url that fails the test if
+  // called.
   std::vector<GURL> ocsp_urls;
-  std::vector<base::RunLoop> runloops(expected_request_count);
-  for (int i = 0; i < expected_request_count; ++i) {
-    std::string path = base::StringPrintf("/hung/%i", i);
-    ocsp_urls.emplace_back(test_server.GetURL(path));
-    test_server.RegisterRequestHandler(
-        base::BindRepeating(&test_server::HandlePrefixedRequest, path,
-                            base::BindRepeating(&HangRequestAndCallback,
-                                                runloops[i].QuitClosure())));
-  }
+  std::string path = "/failtest";
+  ocsp_urls.emplace_back(test_server.GetURL(path));
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      &test_server::HandlePrefixedRequest, path,
+      base::BindRepeating(FailRequestAndFailTest,
+                          "no OCSP requests should be sent",
+                          base::SequencedTaskRunnerHandle::Get())));
   intermediate->SetCaIssuersAndOCSPUrls({}, ocsp_urls);
-
   test_server.StartAcceptingConnections();
 
   // Consider the root of the test chain a valid EV root for the test policy.
@@ -532,22 +521,12 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
          &verify_result, &verify_net_log_source, verify_callback.callback());
 
-  for (int i = 0; i < expected_request_count; i++) {
-    // Wait for request #|i| to be made.
-    runloops[i].Run();
-    // Advance virtual time to cause the timeout task to become runnable.
-    task_environment().AdvanceClock(timeout_increment);
-  }
-
-  // Once |expected_request_count| requests have been made and timed out, the
-  // overall deadline should be reached, causing the EV verification attempt to
-  // fail.
+  // EV doesn't do revocation checking, therefore verification result
+  // should be OK and EV.
   int error = verify_callback.WaitForResult();
-  // EV uses soft-fail revocation checking, therefore verification result
-  // should be OK but not EV.
   EXPECT_THAT(error, IsOk());
-  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 
   auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
 
@@ -558,35 +537,6 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
   ASSERT_TRUE(event->params.is_dict());
   EXPECT_EQ(true, event->params.FindBoolKey("is_ev_attempt"));
-
-  event = std::find_if(++event, events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;
-  });
-  ASSERT_NE(event, events.end());
-  EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  const std::string* errors = event->params.FindStringKey("errors");
-  ASSERT_TRUE(errors);
-  EXPECT_EQ("----- Certificate i=1 (CN=" +
-                intermediate->GetX509Certificate()->subject().common_name +
-                ") -----\nERROR: Unable to check revocation\n\n",
-            *errors);
-
-  event = std::find_if(++event, events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
-  });
-  ASSERT_NE(event, events.end());
-  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  EXPECT_EQ(false, event->params.FindBoolKey("has_valid_path"));
-
-  event = std::find_if(++event, events.end(), [](const auto& e) {
-    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
-  });
-  ASSERT_NE(event, events.end());
-  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  EXPECT_EQ(absl::nullopt, event->params.FindBoolKey("is_ev_attempt"));
 
   event = std::find_if(++event, events.end(), [](const auto& e) {
     return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;

@@ -1143,44 +1143,10 @@ int CertVerifyProcMac::VerifyInternal(
   if (!candidate_ev_policy_oid.empty() &&
       CheckCertChainEV(verify_result->verified_cert.get(),
                        candidate_ev_policy_oid)) {
-    // EV policies check out and the verification succeeded. See if revocation
-    // checking still needs to be done before it can be marked as EV. Even if
-    // the first verification had VERIFY_REV_CHECKING_ENABLED, verification
-    // must be repeated since the previous verification was done with soft-fail
-    // revocation checking.
-    if (completed_chain_crl_result == kCRLSetUnknown) {
-      // If this is an EV cert and it wasn't covered by CRLSets and revocation
-      // checking wasn't already on, try again with revocation forced on.
-      //
-      // Restore the input state of |*verify_result|, so that the
-      // re-verification starts with a clean slate.
-      CertVerifyResult ev_verify_result = input_verify_result;
-      int tmp_rv = VerifyWithGivenFlags(
-          verify_result->verified_cert.get(), hostname, ocsp_response, sct_list,
-          flags | VERIFY_REV_CHECKING_ENABLED,
-          /*rev_checking_soft_fail=*/false, crl_set, &ev_verify_result,
-          &completed_chain_crl_result);
-      if (tmp_rv == OK) {
-        // If EV re-verification succeeded, mark as EV and return those results.
-        *verify_result = ev_verify_result;
-        verify_result->cert_status |= CERT_STATUS_IS_EV;
-      } else if (tmp_rv == ERR_CERT_REVOKED) {
-        // This matches the historical behavior of cert_verify_proc_mac where a
-        // revoked result from the EV verification attempt results in revoked
-        // result overall. (Technically this may not be correct if there was a
-        // different non-revoked, non-EV path that could have been built.)
-        *verify_result = ev_verify_result;
-        return tmp_rv;
-      } else {
-        // If EV was attempted, set CERT_STATUS_REV_CHECKING_ENABLED even if the
-        // EV result wasn't used. This is a little weird but matches the
-        // behavior of the other verifiers.
-        verify_result->cert_status |= CERT_STATUS_REV_CHECKING_ENABLED;
-      }
-    } else {
-      // EV cert and it was covered by CRLSets.
-      verify_result->cert_status |= CERT_STATUS_IS_EV;
-    }
+    // EV policies check out and the verification succeeded. Revocation checking
+    // may have been done, but revocation checking is not required for EV certs
+    // (see https://crbug.com/705285).
+    verify_result->cert_status |= CERT_STATUS_IS_EV;
   }
 
   LogNameNormalizationMetrics(".Mac", verify_result->verified_cert.get(),

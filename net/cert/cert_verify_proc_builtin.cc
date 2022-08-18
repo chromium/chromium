@@ -276,11 +276,8 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
     }
 
     // Select an appropriate revocation policy for this chain based on the
-    // verifier flags and root, and whether this is an EV or DV path building
-    // attempt.
-    bool crlset_leaf_coverage_sufficient;
-    RevocationPolicy policy =
-        ChooseRevocationPolicy(path->certs, &crlset_leaf_coverage_sufficient);
+    // verifier flags and root.
+    RevocationPolicy policy = ChooseRevocationPolicy(path->certs);
 
     // Check for revocations using the CRLSet.
     switch (
@@ -288,12 +285,6 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       case CRLSet::Result::REVOKED:
         return;
       case CRLSet::Result::GOOD:
-        if (crlset_leaf_coverage_sufficient) {
-          // Weaken the revocation checking requirement as it has been
-          // satisfied. (Don't early-return, since still want to consult
-          // cached OCSP/CRL if available).
-          policy = NoRevocationChecking();
-        }
         break;
       case CRLSet::Result::UNKNOWN:
         // CRLSet was inconclusive.
@@ -317,12 +308,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
  private:
   // Selects a revocation policy based on the CertVerifier flags and the given
   // certificate chain.
-  RevocationPolicy ChooseRevocationPolicy(
-      const ParsedCertificateList& certs,
-      bool* crlset_leaf_coverage_sufficient) {
-    // The only case this is set to true is for EV.
-    *crlset_leaf_coverage_sufficient = false;
-
+  RevocationPolicy ChooseRevocationPolicy(const ParsedCertificateList& certs) {
     // Use hard-fail revocation checking for local trust anchors, if requested
     // by the load flag and the chain uses a non-public root.
     if ((flags_ & CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS) &&
@@ -331,22 +317,6 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       policy.check_revocation = true;
       policy.networking_allowed = true;
       policy.crl_allowed = true;
-      policy.allow_missing_info = false;
-      policy.allow_unable_to_check = false;
-      return policy;
-    }
-
-    // Use hard-fail revocation checking for EV certificates.
-    if (verification_type_ == VerificationType::kEV) {
-      // For EV verification leaf coverage is considered sufficient.
-      *crlset_leaf_coverage_sufficient = true;
-
-      RevocationPolicy policy;
-      policy.check_revocation = true;
-      policy.networking_allowed = true;
-      // EV is only enabled for certain publicly trusted roots, so it is not
-      // necessary to check IsKnownRoot here, |crl_allowed| is always false.
-      policy.crl_allowed = false;
       policy.allow_missing_info = false;
       policy.allow_unable_to_check = false;
       return policy;
@@ -868,16 +838,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
       break;
 
     if (result.exceeded_deadline) {
-      if (verification_type == VerificationType::kEV &&
-          result.AnyPathContainsError(cert_errors::kUnableToCheckRevocation)) {
-        // EV verification failed due to deadline exceeded and unable to check
-        // revocation. Try the non-EV attempt even though the deadline has been
-        // reached, since a revocation checking failure on EV should be a
-        // soft-fail. (Since the non-EV attempt generally will not be using
-        // revocation checking it hopefully won't hit the deadline too.)
-        continue;
-      }
-      // Otherwise, stop immediately if an attempt exceeds the deadline.
+      // Stop immediately if an attempt exceeds the deadline.
       break;
     }
 
