@@ -33,6 +33,8 @@ class PasswordImporter {
     MAX_STATUS
   };
 
+  static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
+
   // CompletionCallback is the type of the processing function for parsed
   // passwords.
   using CompletionCallback =

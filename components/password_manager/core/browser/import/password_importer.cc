@@ -121,6 +121,13 @@ void PasswordImporter::ConsumePasswords(
     std::move(results_callback_).Run(results);
     return;
   }
+  if (seq->csv_passwords.size() > MAX_PASSWORDS_PER_IMPORT) {
+    results.status =
+        password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED;
+    std::move(results_callback_).Run(results);
+    // TODO(crbug/1325290): log to a histogram.
+    return;
+  }
 
   base::Time start_time = base::Time::Now();
 

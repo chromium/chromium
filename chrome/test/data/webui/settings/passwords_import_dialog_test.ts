@@ -68,6 +68,27 @@ function assertIntialStatePartsAndClose(
   cancel.click();
 }
 
+async function assertErrorStateAndClose(
+    importDialog: PasswordsImportDialogElement,
+    passwordManager: TestPasswordManagerProxy, expectedDescription: string) {
+  await triggerImportHelper(importDialog, passwordManager);
+  flush();
+  // After the import, the dialog should switch to ERROR state.
+  assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
+
+  assertEquals(
+      expectedDescription, importDialog.$.descriptionText.textContent!.trim());
+
+  const close =
+      importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
+  assertTrue(!!close);
+  assertEquals(importDialog.i18n('close'), close.textContent!.trim());
+  assertTrue(isVisible(close));
+  assertFalse(close.disabled);
+  close.click();
+  await eventToPromise('close', importDialog);
+}
+
 suite('PasswordsImportDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
@@ -162,23 +183,9 @@ suite('PasswordsImportDialog', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importDialog, passwordManager);
-    flush();
-    // After the import, the dialog should switch to ERROR state.
-    assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
-
-    assertEquals(
-        importDialog.i18n('importPasswordsBadFormatError', 'test.csv'),
-        importDialog.$.descriptionText.textContent!.trim());
-
-    const close =
-        importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
-    assertTrue(!!close);
-    assertEquals(importDialog.i18n('close'), close.textContent!.trim());
-    assertTrue(isVisible(close));
-    assertFalse(close.disabled);
-    close.click();
-    await eventToPromise('close', importDialog);
+    await assertErrorStateAndClose(
+        importDialog, passwordManager,
+        importDialog.i18n('importPasswordsBadFormatError', 'test.csv'));
   });
 
   test('hasCorrectUnknownErrorState', async function() {
@@ -191,23 +198,25 @@ suite('PasswordsImportDialog', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importDialog, passwordManager);
-    flush();
-    // After the import, the dialog should switch to ERROR state.
-    assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
+    await assertErrorStateAndClose(
+        importDialog, passwordManager,
+        importDialog.i18n('importPasswordsUnknownError'));
+  });
 
-    assertEquals(
-        importDialog.i18n('importPasswordsUnknownError'),
-        importDialog.$.descriptionText.textContent!.trim());
+  test('hasCorrectLimitExceededState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status:
+          chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED,
+      numberImported: 0,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
 
-    const close =
-        importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
-    assertTrue(!!close);
-    assertEquals(importDialog.i18n('close'), close.textContent!.trim());
-    assertTrue(isVisible(close));
-    assertFalse(close.disabled);
-    close.click();
-    await eventToPromise('close', importDialog);
+    await assertErrorStateAndClose(
+        importDialog, passwordManager,
+        importDialog.i18n('importPasswordsLimitExceeded', 3000));
   });
 
   test('hasCorrectSuccessStateWithFailures', async function() {

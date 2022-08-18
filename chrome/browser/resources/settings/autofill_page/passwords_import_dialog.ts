@@ -169,6 +169,10 @@ export class PasswordsImportDialogElement extends
         this.descriptionText_ = this.i18n('importPasswordsUnknownError');
         this.dialogState = ImportDialogState.ERROR;
         break;
+      case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
+        this.descriptionText_ = this.i18n('importPasswordsLimitExceeded', 3000);
+        this.dialogState = ImportDialogState.ERROR;
+        break;
       case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
         this.descriptionText_ =
             this.i18n('importPasswordsBadFormatError', this.results_.fileName);

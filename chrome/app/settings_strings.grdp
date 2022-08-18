@@ -814,6 +814,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
     Can't import passwords. Check <ph name="FILENAME"><ex>file_name.csv</ex>$1</ph> and make sure it's formatted correctly.
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_LIMIT_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because user tried to import more than `NUMBER` passwords from a single file.">
+    Can't import passwords. You can only import up to <ph name="COUNT"><ex>3000</ex>$1</ph> passwords at a time.
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_PASSWORD" desc="An error message for a row that wasn't imported, because password was missing. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     A password is required
   </message>

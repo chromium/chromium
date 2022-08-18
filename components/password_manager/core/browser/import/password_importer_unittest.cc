@@ -86,6 +86,9 @@ class PasswordImporterTest : public testing::Test {
   PasswordImporter::Status GetImportStatus() const {
     return importer_.GetStatus();
   }
+  ImportResults::Status GetResultsStatus() const {
+    return import_results_.status;
+  }
 
   // Directory for creating files by this test.
   base::ScopedTempDir temp_directory_;
@@ -177,6 +180,25 @@ TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0);
 
   EXPECT_EQ(PasswordImporter::Status::LARGE_FILE, GetImportStatus());
+  base::DeleteFile(temp_file_path);
+}
+
+TEST_F(PasswordImporterTest, CSVImportHitMaxPasswordsLimit) {
+  std::string content = "url,login,password\n";
+  std::string row = "http://a.b,c,d\n";
+  const size_t EXCEEDS_LIMIT = PasswordImporter::MAX_PASSWORDS_PER_IMPORT + 1;
+  content.reserve(row.size() * EXCEEDS_LIMIT);
+  for (size_t i = 0; i < EXCEEDS_LIMIT; i++)
+    content.append(row);
+
+  base::FilePath temp_file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, std::move(content)));
+
+  ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(temp_file_path));
+
+  EXPECT_THAT(imported_passwords(), IsEmpty());
+  EXPECT_EQ(ImportResults::Status::NUM_PASSWORDS_EXCEEDED, GetResultsStatus());
   base::DeleteFile(temp_file_path);
 }
 
