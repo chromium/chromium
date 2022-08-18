@@ -20,19 +20,20 @@ The tables in this file are parsed as action templates for critical user journey
 
 | #Enum Name | Values (* = default) |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Site | SiteA* | SiteB | SiteC | SiteAFoo | SiteABar | SiteWco | SiteIsolatedApp |  |
-| InstallableSite | SiteA* | SiteB | SiteAFoo | SiteABar | SiteWco |  |  |
-| Scope | SiteARoot |  |  |  |
-| Title | SiteA | SiteAUpdated |  |  |  |  |  |
+| Site | Standalone*  | StandaloneSubSite | MinimalUi | NotPromotable | StandaloneNestedA | StandaloneNestedB | Wco | Isolated |  |
+| PromotableSite | Standalone* | MinimalUi | StandaloneNestedA | StandaloneNestedB | Wco |  |  |
+| Title | StandaloneOriginal | StandaloneUpdated |  |  |  |  |  |
 | Color | Red | Green |  |  |  |  |  |
 | ProfileClient | Client2* | Client1 |  |  |  |  |  |
 | UserDisplayPreference | Standalone | Browser |  |  |  |  |  |
 | IsShown | Shown | NotShown |  |  |  |  |  |
 | IsOn | On | Off |  |  |  |  |  |
-| Display | Standalone | Minimal | Wco |  |  |  |  |
+| Display | Standalone | MinimalUi | Wco | Browser |  |  |  |
 | FileExtension | Txt | Png |  |  |  |  |  |
 | Location | StartUrl | FileHandleUrlForTxt | FileHandleUrlForPng |  |  |  |  |
 | Number | One | Two |  |  |  |  |  |
 | FilesOptions | OneTextFile | MultipleTextFiles | OnePngFile | MultiplePngFiles | AllTestAndPngFiles |  |  |
 | AllowDenyOptions | Allow | Deny |
 | AskAgainOptions | AskAgain | Remember |
+| ShortcutOptions | WithShortcut | NoShortcut |
+| WindowOptions | Windowed | Browser |

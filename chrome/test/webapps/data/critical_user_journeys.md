@@ -20,203 +20,206 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 ## App Identity Updating tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_by_user_windowed(SiteA) | manifest_update_title(SiteA) | accept_app_id_update_dialog | close_pwa | launch(SiteA) | check_app_title_site_a_is(SiteAUpdated) |
-| WMLC | install_by_user_windowed(SiteA) | manifest_update_title(SiteA) | deny_app_update_dialog | check_app_not_in_list | check_platform_shortcut_not_exists | 
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_icon | check_app_in_list_icon_correct |
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_icon | check_platform_shortcut_and_icon |
-| WMLC | install_policy_app(SiteA) | manifest_update_title(SiteA) | check_update_dialog_not_shown | close_pwa | launch(SiteA) | check_app_title_site_a_is(SiteAUpdated) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) |  launch(Standalone) | check_app_title(Standalone, StandaloneOriginal) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | accept_app_id_update_dialog | close_pwa | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | deny_app_update_dialog | check_app_not_in_list | check_platform_shortcut_not_exists | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_icon | check_app_in_list_icon_correct |
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_icon | check_platform_shortcut_and_icon |
+| WMLC | install_policy_app(Standalone, NoShortcut, WindowOptions::All) | manifest_update_title(Standalone, StandaloneUpdated) | check_update_dialog_not_shown | close_pwa | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
 
 ## Run on OS Login
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WML | install | apply_run_on_os_login_policy_blocked | check_user_cannot_set_run_on_os_login | 
-| WML | install | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | check_run_on_os_login_disabled |
-| WML | install | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_enabled | 
-| WML | install | apply_run_on_os_login_policy_run_windowed | check_user_cannot_set_run_on_os_login | 
-| WML | install | enable_run_on_os_login | check_run_on_os_login_enabled | 
-| WML | install | enable_run_on_os_login | disable_run_on_os_login | check_run_on_os_login_disabled |
-| WML | install | apply_run_on_os_login_policy_run_windowed | remove_run_on_os_login_policy | check_run_on_os_login_disabled |
-| WML | install | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | remove_run_on_os_login_policy | check_run_on_os_login_enabled | 
-| WML | install_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled |
-| WML | install_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled | install_locally | check_run_on_os_login_enabled |
+| WML | install_or_shortcut | apply_run_on_os_login_policy_blocked | check_user_cannot_set_run_on_os_login | 
+| WML | install_or_shortcut | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | check_run_on_os_login_disabled |
+| WML | install_or_shortcut | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_enabled | 
+| WML | install_or_shortcut | apply_run_on_os_login_policy_run_windowed | check_user_cannot_set_run_on_os_login | 
+| WML | install_or_shortcut | enable_run_on_os_login | check_run_on_os_login_enabled | 
+| WML | install_or_shortcut | enable_run_on_os_login | disable_run_on_os_login | check_run_on_os_login_disabled |
+| WML | install_or_shortcut | apply_run_on_os_login_policy_run_windowed | remove_run_on_os_login_policy | check_run_on_os_login_disabled |
+| WML | install_or_shortcut | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | remove_run_on_os_login_policy | check_run_on_os_login_enabled | 
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled | install_locally | check_run_on_os_login_enabled |
 
 ## Badging
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_by_user_windowed | set_app_badge | clear_app_badge | check_app_badge_empty |
-| WMLC | install_by_user_windowed | set_app_badge | check_app_badge_has_value | 
-| WMLC | navigate_browser(SiteA) | set_app_badge | check_platform_shortcut_not_exists | 
+| WMLC | install_or_shortcut_by_user_windowed | set_app_badge | clear_app_badge | check_app_badge_empty |
+| WMLC | install_or_shortcut_by_user_windowed | set_app_badge | check_app_badge_has_value | 
+| WMLC | navigate_browser(Standalone) | set_app_badge | check_platform_shortcut_not_exists | 
 | # Toolbar |
-| WMLC | install_windowed | navigate_pwa_site_a_to(SiteB) | close_custom_toolbar | check_app_navigation_is_start_url |
-| WMLC | install_by_user_windowed | navigate_pwa_site_a_to(SiteB) | check_custom_toolbar | 
+| WMLC | install_or_shortcut_windowed | navigate_pwa(Standalone, MinimalUi) | close_custom_toolbar | check_app_navigation_is_start_url |
+| WMLC | install_or_shortcut_by_user_windowed | navigate_pwa(Standalone, MinimalUi) | check_custom_toolbar | 
 | # Initial state sanity checks |
-| WMLC | navigate_browser(SiteA) | check_app_not_in_list |
-| WMLC | navigate_browser(SiteA) | check_platform_shortcut_not_exists |
-| WMLC | navigate_browser(SiteC) | check_app_not_in_list |
-| WMLC | navigate_browser(SiteC) | check_platform_shortcut_not_exists |
+| WMLC | navigate_browser(Standalone) | check_app_not_in_list |
+| WMLC | navigate_browser(Standalone) | check_platform_shortcut_not_exists |
+| WMLC | navigate_browser(NotPromotable) | check_app_not_in_list |
+| WMLC | navigate_browser(NotPromotable) | check_platform_shortcut_not_exists |
 
 # Installation
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_by_user_windowed | check_window_created |
+| WMLC | install_or_shortcut(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_or_shortcut_by_user_windowed | check_window_created |
 | WMLC | install_no_shortcut | check_platform_shortcut_not_exists |
-| WMLC | install_no_shortcut(SiteC) | check_platform_shortcut_not_exists(SiteC) |
-| WMLC | install_tabbed | check_app_in_list_tabbed |
-| WMLC | install_tabbed | navigate_browser(SiteA) | check_create_shortcut_shown | 
-| WMLC | install_tabbed | navigate_browser(SiteA) | check_install_icon_shown | 
-| WMLC | install_tabbed | navigate_browser(SiteA) | check_launch_icon_not_shown | 
-| WMLC | install_tabbed(SiteC) | check_app_in_list_tabbed(SiteC) |
-| WMLC | install_tabbed(SiteC) | navigate_browser(SiteC) | check_create_shortcut_shown | 
-| WMLC | install_tabbed(SiteC) | navigate_browser(SiteC) | check_install_icon_not_shown | 
-| WMLC | install_tabbed(SiteC) | navigate_browser(SiteC) | check_launch_icon_not_shown | 
-| WMLC | install_windowed | check_app_in_list_windowed |
-| WMLC | install_windowed | navigate_browser(SiteA) | check_create_shortcut_not_shown | 
-| WMLC | install_windowed | navigate_browser(SiteA) | check_install_icon_not_shown | 
-| WMLC | install_windowed | navigate_browser(SiteA) | check_launch_icon_shown | 
-| WMLC | install_windowed(SiteB) | navigate_browser(SiteB) | check_launch_icon_shown | 
-| WMLC | install_windowed(SiteC) | check_app_in_list_windowed(SiteC) |
-| WMLC | install_windowed(SiteC) | navigate_browser(SiteC) | check_create_shortcut_not_shown | 
-| WMLC | install_windowed(SiteC) | navigate_browser(SiteC) | check_install_icon_not_shown | 
-| WMLC | install_windowed(SiteC) | navigate_browser(SiteC) | check_launch_icon_shown | 
-| WMLC | install_with_shortcut | check_platform_shortcut_and_icon |
-| WMLC | install_with_shortcut(SiteC) | check_platform_shortcut_and_icon(SiteC) |
+| WMLC | install_no_shortcut(NotPromotable) | check_platform_shortcut_not_exists(NotPromotable) |
+| WMLC | install_or_shortcut_tabbed | check_app_in_list_tabbed |
+| WMLC | install_or_shortcut_tabbed | navigate_browser(Standalone) | check_create_shortcut_shown | 
+| WMLC | install_or_shortcut_tabbed | navigate_browser(Standalone) | check_install_icon_shown | 
+| WMLC | install_or_shortcut_tabbed | navigate_browser(Standalone) | check_launch_icon_not_shown | 
+| WMLC | install_or_shortcut_tabbed(NotPromotable) | check_app_in_list_tabbed(NotPromotable) |
+| WMLC | install_or_shortcut_tabbed(NotPromotable) | navigate_browser(NotPromotable) | check_create_shortcut_shown | 
+| WMLC | install_or_shortcut_tabbed(NotPromotable) | navigate_browser(NotPromotable) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_tabbed(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed | check_app_in_list_windowed |
+| WMLC | install_or_shortcut_windowed | navigate_browser(Standalone) | check_create_shortcut_not_shown | 
+| WMLC | install_or_shortcut_windowed | navigate_browser(Standalone) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed | navigate_browser(Standalone) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_windowed(MinimalUi) | navigate_browser(MinimalUi) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_windowed(NotPromotable) | check_app_in_list_windowed(NotPromotable) |
+| WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_create_shortcut_not_shown | 
+| WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_with_shortcut | check_platform_shortcut_and_icon |
+| WMLC | install_or_shortcut_with_shortcut(NotPromotable) | check_platform_shortcut_and_icon(NotPromotable) |
+
 
 ## Uninstallation
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WML | install_by_user_windowed | uninstall_by_user | check_app_not_in_list | 
-| WML | install_by_user_windowed | uninstall_by_user | navigate_browser(SiteA) | check_install_icon_shown |
-| WML | install_by_user_windowed | uninstall_by_user | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| WML | install_by_user_windowed | uninstall_by_user | check_platform_shortcut_not_exists | 
-| WML | install_by_user_windowed(SiteC) | uninstall_by_user(SiteC) | check_app_not_in_list | 
-| WML | install_by_user_windowed(SiteC) | uninstall_by_user(SiteC) | check_platform_shortcut_not_exists(SiteC) | 
-| WMLC | install_by_user_tabbed | uninstall_from_list | check_app_not_in_list | 
-| WMLC | install_by_user_tabbed | uninstall_from_list | navigate_browser(SiteA) | check_install_icon_shown |
-| WMLC | install_by_user_tabbed | uninstall_from_list | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| WMLC | install_by_user_tabbed | uninstall_from_list | check_platform_shortcut_not_exists | 
-| C | install_by_user_windowed | uninstall_from_list | check_app_not_in_list | 
-| C | install_by_user_windowed | uninstall_from_list | navigate_browser(SiteA) | check_install_icon_shown |
-| C | install_by_user_windowed | uninstall_from_list | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| C | install_by_user_windowed | uninstall_from_list | check_platform_shortcut_not_exists | 
-| WMLC | install_by_user_tabbed(SiteC) | uninstall_from_list(SiteC) | check_app_not_in_list | 
-| WMLC | install_by_user_tabbed(SiteC) | uninstall_from_list(SiteC) | check_platform_shortcut_not_exists(SiteC) | 
-| C | install_by_user_windowed(SiteC) | uninstall_from_list(SiteC) | check_app_not_in_list | 
-| C | install_by_user_windowed(SiteC) | uninstall_from_list(SiteC) | check_platform_shortcut_not_exists(SiteC) | 
-| WMLC | install_policy_app | uninstall_policy_app | check_app_not_in_list | 
-| WMLC | install_policy_app_tabbed_shortcut | uninstall_policy_app | navigate_browser(SiteA) | check_install_icon_shown |
-| WMLC | install_policy_app_tabbed_shortcut | uninstall_policy_app | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| WMLC | install_policy_app | uninstall_policy_app | check_platform_shortcut_not_exists | check_app_not_in_list |
+| WML | install_or_shortcut_by_user_windowed | uninstall_by_user | check_app_not_in_list | 
+| WML | install_or_shortcut_by_user_windowed | uninstall_by_user | navigate_browser(Standalone) | check_install_icon_shown |
+| WML | install_or_shortcut_by_user_windowed | uninstall_by_user | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| WML | install_or_shortcut_by_user_windowed | uninstall_by_user | check_platform_shortcut_not_exists | 
+| WML | install_or_shortcut_by_user_windowed(NotPromotable) | uninstall_by_user(NotPromotable) | check_app_not_in_list | 
+| WML | install_or_shortcut_by_user_windowed(NotPromotable) | uninstall_by_user(NotPromotable) | check_platform_shortcut_not_exists(NotPromotable) | 
+| WMLC | install_or_shortcut_by_user_tabbed | uninstall_from_list | check_app_not_in_list | 
+| WMLC | install_or_shortcut_by_user_tabbed | uninstall_from_list | navigate_browser(Standalone) | check_install_icon_shown |
+| WMLC | install_or_shortcut_by_user_tabbed | uninstall_from_list | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| WMLC | install_or_shortcut_by_user_tabbed | uninstall_from_list | check_platform_shortcut_not_exists | 
+| C | install_or_shortcut_by_user_windowed | uninstall_from_list | check_app_not_in_list | 
+| C | install_or_shortcut_by_user_windowed | uninstall_from_list | navigate_browser(Standalone) | check_install_icon_shown |
+| C | install_or_shortcut_by_user_windowed | uninstall_from_list | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| C | install_or_shortcut_by_user_windowed | uninstall_from_list | check_platform_shortcut_not_exists | 
+| WMLC | install_or_shortcut_by_user_tabbed(NotPromotable) | uninstall_from_list(NotPromotable) | check_app_not_in_list | 
+| WMLC | install_or_shortcut_by_user_tabbed(NotPromotable) | uninstall_from_list(NotPromotable) | check_platform_shortcut_not_exists(NotPromotable) | 
+| C | install_or_shortcut_by_user_windowed(NotPromotable) | uninstall_from_list(NotPromotable) | check_app_not_in_list | 
+| C | install_or_shortcut_by_user_windowed(NotPromotable) | uninstall_from_list(NotPromotable) | check_platform_shortcut_not_exists(NotPromotable) | 
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_app_not_in_list | 
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | uninstall_policy_app | navigate_browser(Standalone) | check_install_icon_shown |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | uninstall_policy_app | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_platform_shortcut_not_exists | check_app_not_in_list |
 
 # Launch behavior tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_windowed | launch | check_window_created | 
-| WMLC | install_windowed | launch | check_window_display_standalone | 
-| WMLC | install_tabbed | set_open_in_window | launch | check_window_created |
-| WMLC | install_windowed | set_open_in_tab | launch_from_shortcut_or_list | check_tab_created |
-| WMLC | install_tabbed(SiteC) | launch_from_shortcut_or_list(SiteC) | check_tab_created | 
-| WMLC | install_windowed(SiteB) | launch(SiteB) | check_window_display_minimal | 
-| WMLC | install_windowed(SiteC) | launch(SiteC) | check_window_created | 
+| WMLC | install_or_shortcut_windowed | launch | check_window_created | 
+| WMLC | install_or_shortcut_windowed | launch | check_window_display_standalone | 
+| WMLC | install_or_shortcut_tabbed | set_open_in_window | launch | check_window_created |
+| WMLC | install_or_shortcut_windowed | set_open_in_tab | launch_from_shortcut_or_list | check_tab_created |
+| WMLC | install_or_shortcut_tabbed(NotPromotable) | launch_from_shortcut_or_list(NotPromotable) | check_tab_created | 
+| WMLC | install_or_shortcut_windowed(MinimalUi) | launch(MinimalUi) | check_window_display_minimal | 
+| WMLC | install_or_shortcut_windowed(NotPromotable) | launch(NotPromotable) | check_window_created | 
 
 # Misc UX Flows
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_no_shortcut | create_shortcuts | check_platform_shortcut_and_icon | 
-| WMLC | install | delete_profile | check_app_list_empty | 
-| WMLC | install | delete_profile | check_app_not_in_list | 
-| WMLC | install_with_shortcut | delete_profile | check_platform_shortcut_not_exists | 
-| WMLC | install_tabbed_with_shortcut | delete_platform_shortcut | create_shortcuts | launch_from_platform_shortcut | check_tab_created | 
-| WMLC | install_windowed_with_shortcut | delete_platform_shortcut | create_shortcuts | launch_from_platform_shortcut | check_window_created | 
-| WMLC | install_tabbed_no_shortcut | create_shortcuts | launch_from_platform_shortcut | check_tab_created | 
-| WMLC | install_windowed_no_shortcut | create_shortcuts | launch_from_platform_shortcut | check_window_created | 
-| WMLC | install_by_user_windowed | open_in_chrome | check_tab_created | 
-| WMLC | install_by_user_windowed | navigate_pwa_site_a_to(SiteB) | open_in_chrome | check_tab_created |
-| WML | install_windowed | open_app_settings | check_browser_navigation_is_app_settings | 
+| WMLC | install_no_shortcut | create_shortcuts_from_list | check_platform_shortcut_and_icon | 
+| WMLC | install_or_shortcut | delete_profile | check_app_list_empty | 
+| WMLC | install_or_shortcut | delete_profile | check_app_not_in_list | 
+| WMLC | install_or_shortcut_with_shortcut | delete_profile | check_platform_shortcut_not_exists | 
+| WMLC | install_or_shortcut_tabbed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_tab_created | 
+| WMLC | install_or_shortcut_windowed_with_shortcut | delete_platform_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created | 
+| WMLC | install_tabbed_no_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_tab_created | 
+| WMLC | install_windowed_no_shortcut | create_shortcuts_from_list | launch_from_platform_shortcut | check_window_created | 
+| WMLC | install_or_shortcut_by_user_windowed | open_in_chrome | check_tab_created | 
+| WMLC | install_or_shortcut_by_user_windowed | navigate_pwa(Standalone, MinimalUi) | open_in_chrome | check_tab_created |
+| WML | install_or_shortcut_windowed | open_app_settings | check_browser_navigation_is_app_settings | 
 
 ## Sync-initiated install tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WML | install_by_user | switch_profile_clients | install_locally | check_platform_shortcut_and_icon |
-| WML | install_by_user_tabbed | switch_profile_clients | install_locally | check_app_in_list_tabbed |
-| WML | install_by_user_tabbed | switch_profile_clients | install_locally | navigate_browser(SiteA) | check_install_icon_shown | 
-| WML | install_by_user_tabbed | switch_profile_clients | install_locally | navigate_browser(SiteA) | check_launch_icon_not_shown | 
-| WML | install_by_user_windowed | switch_profile_clients | install_locally | check_app_in_list_windowed |
-| WML | install_by_user_windowed | switch_profile_clients | install_locally | navigate_browser(SiteA) | check_install_icon_not_shown | 
-| WML | install_by_user_windowed | switch_profile_clients | install_locally | navigate_browser(SiteA) | check_launch_icon_shown | 
-| WML | install_by_user_tabbed(SiteC) | switch_profile_clients | install_locally(SiteC) | check_app_in_list_tabbed(SiteC) |
-| WML | install_by_user_tabbed(SiteC) | switch_profile_clients | install_locally(SiteC) | navigate_browser(SiteC) | check_launch_icon_not_shown | 
-| WML | install_by_user_windowed(SiteC) | switch_profile_clients | install_locally(SiteC) | check_app_in_list_windowed(SiteC) |
-| WML | install_by_user_windowed(SiteC) | switch_profile_clients | install_locally(SiteC) | navigate_browser(SiteC) | check_install_icon_not_shown | 
-| WML | install_by_user_windowed(SiteC) | switch_profile_clients | install_locally(SiteC) | navigate_browser(SiteC) | check_launch_icon_shown | 
-| WML | install_by_user(SiteC) | switch_profile_clients | install_locally(SiteC) | check_platform_shortcut_and_icon(SiteC) |
-| WML | install_by_user_windowed | switch_profile_clients | install_locally | launch | check_window_created | 
-| WMLC | install_by_user_tabbed | switch_profile_clients | launch_from_shortcut_or_list | check_tab_created |
-| WML | install_by_user_tabbed | switch_profile_clients | install_locally | launch_from_shortcut_or_list | check_tab_created | 
-| WML | install_by_user_windowed | switch_profile_clients | launch_from_shortcut_or_list | check_tab_created |
-| WMLC | install_by_user | switch_profile_clients | uninstall_from_list | check_app_not_in_list |
-| WMLC | install_by_user | switch_profile_clients | uninstall_from_list | switch_profile_clients(Client1) | check_app_not_in_list | 
-| WML | install_by_user | switch_profile_clients | check_app_in_list_not_locally_installed | 
-| C | install_by_user | switch_profile_clients | check_platform_shortcut_and_icon(SiteA) | 
-| WML | install_by_user | switch_profile_clients | check_platform_shortcut_not_exists | 
-| C | install_by_user_tabbed | switch_profile_clients | check_app_in_list_tabbed | 
-| C | install_by_user_windowed | switch_profile_clients | check_app_in_list_windowed | 
-| C | install_by_user_windowed | switch_profile_clients | navigate_browser(SiteA) | check_install_icon_not_shown |
-| WML | install_by_user_windowed | switch_profile_clients | navigate_browser(SiteA) | check_install_icon_shown |
-| WML | install_by_user_windowed | switch_profile_clients | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| C | install_by_user_windowed | switch_profile_clients | navigate_browser(SiteA) | check_launch_icon_shown |
-| WML | install_by_user(SiteC) | switch_profile_clients | check_app_in_list_not_locally_installed(SiteC) | 
-| WML | install_by_user(SiteC) | switch_profile_clients | check_platform_shortcut_not_exists(SiteC) | 
-| WML | sync_turn_off | install_by_user | sync_turn_on | switch_profile_clients | check_app_in_list_not_locally_installed | 
-| WML | sync_turn_off | install_by_user(SiteC) | sync_turn_on | switch_profile_clients | check_app_in_list_not_locally_installed(SiteC) | 
-| WML | install_by_user | switch_profile_clients(Client2) | sync_turn_off | uninstall_not_locally_installed | sync_turn_on | check_app_in_list_not_locally_installed |
-| WML | install_by_user | switch_profile_clients(Client2) | sync_turn_off | uninstall_not_locally_installed | sync_turn_on | check_platform_shortcut_not_exists |
-| C | install_by_user_tabbed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_app_in_list_tabbed |
-| C | install_by_user_tabbed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_platform_shortcut_and_icon |
-| C | install_by_user_windowed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_app_in_list_windowed |
-| C | install_by_user_windowed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_platform_shortcut_and_icon |
+| WML | install_or_shortcut_by_user | switch_profile_clients | install_locally | check_platform_shortcut_and_icon |
+| WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | check_app_in_list_tabbed |
+| WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | navigate_browser(Standalone) | check_install_icon_shown | 
+| WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | navigate_browser(Standalone) | check_launch_icon_not_shown | 
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | check_app_in_list_windowed |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | navigate_browser(Standalone) | check_install_icon_not_shown | 
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | navigate_browser(Standalone) | check_launch_icon_shown | 
+| WML | install_or_shortcut_by_user_tabbed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | check_app_in_list_tabbed(NotPromotable) |
+| WML | install_or_shortcut_by_user_tabbed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_not_shown | 
+| WML | install_or_shortcut_by_user_windowed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | check_app_in_list_windowed(NotPromotable) |
+| WML | install_or_shortcut_by_user_windowed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | navigate_browser(NotPromotable) | check_install_icon_not_shown | 
+| WML | install_or_shortcut_by_user_windowed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_shown | 
+| WML | install_or_shortcut_by_user(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | check_platform_shortcut_and_icon(NotPromotable) |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | launch | check_window_created | 
+| WMLC | install_or_shortcut_by_user_tabbed | switch_profile_clients | launch_from_shortcut_or_list | check_tab_created |
+| WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | launch_from_shortcut_or_list | check_tab_created | 
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | launch_from_shortcut_or_list | check_tab_created |
+| WMLC | install_or_shortcut_by_user | switch_profile_clients | uninstall_from_list | check_app_not_in_list |
+| WMLC | install_or_shortcut_by_user | switch_profile_clients | uninstall_from_list | switch_profile_clients(Client1) | check_app_not_in_list | 
+| WML | install_or_shortcut_by_user | switch_profile_clients | check_app_in_list_not_locally_installed | 
+| C | install_or_shortcut_by_user | switch_profile_clients | check_platform_shortcut_and_icon(Standalone) | 
+| WML | install_or_shortcut_by_user | switch_profile_clients | check_platform_shortcut_not_exists | 
+| C | install_or_shortcut_by_user_tabbed | switch_profile_clients | check_app_in_list_tabbed | 
+| C | install_or_shortcut_by_user_windowed | switch_profile_clients | check_app_in_list_windowed | 
+| C | install_or_shortcut_by_user_windowed | switch_profile_clients | navigate_browser(Standalone) | check_install_icon_not_shown |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | navigate_browser(Standalone) | check_install_icon_shown |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| C | install_or_shortcut_by_user_windowed | switch_profile_clients | navigate_browser(Standalone) | check_launch_icon_shown |
+| WML | install_or_shortcut_by_user(NotPromotable) | switch_profile_clients | check_app_in_list_not_locally_installed(NotPromotable) | 
+| WML | install_or_shortcut_by_user(NotPromotable) | switch_profile_clients | check_platform_shortcut_not_exists(NotPromotable) | 
+| WML | sync_turn_off | install_or_shortcut_by_user | sync_turn_on | switch_profile_clients | check_app_in_list_not_locally_installed | 
+| WML | sync_turn_off | install_or_shortcut_by_user(NotPromotable) | sync_turn_on | switch_profile_clients | check_app_in_list_not_locally_installed(NotPromotable) | 
+| WML | install_or_shortcut_by_user | switch_profile_clients(Client2) | sync_turn_off | uninstall_not_locally_installed | sync_turn_on | check_app_in_list_not_locally_installed |
+| WML | install_or_shortcut_by_user | switch_profile_clients(Client2) | sync_turn_off | uninstall_not_locally_installed | sync_turn_on | check_platform_shortcut_not_exists |
+| C | install_or_shortcut_by_user_tabbed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_app_in_list_tabbed |
+| C | install_or_shortcut_by_user_tabbed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_platform_shortcut_and_icon |
+| C | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_app_in_list_windowed |
+| C | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | sync_turn_off | uninstall_by_user | sync_turn_on | check_platform_shortcut_and_icon |
 
 ## Policy installation and user installation interactions
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_by_user_tabbed | install_policy_app_windowed | check_platform_shortcut_and_icon | 
-| WMLC | install_by_user_windowed | install_policy_app_no_shortcut | check_platform_shortcut_and_icon | 
-| WMLC | install_by_user_windowed | install_policy_app_tabbed | check_app_in_list_windowed | 
-| WMLC | install_by_user_windowed | install_policy_app_tabbed | navigate_browser(SiteA) | check_launch_icon_shown |
-| WMLC | install_by_user_tabbed | install_policy_app_windowed | check_app_in_list_tabbed | 
-| WMLC | install_by_user_tabbed | install_policy_app_windowed | navigate_browser(SiteA) | check_install_icon_shown |
-| WMLC | install_by_user_windowed | install_policy_app_tabbed | launch | check_window_created |
-| WMLC | install_policy_app_tabbed | install_by_user_windowed | check_app_in_list_windowed | 
-| WMLC | install_policy_app_tabbed | install_by_user_windowed | check_platform_shortcut_and_icon | 
-| WMLC | install_policy_app_tabbed | install_by_user_windowed | check_window_created | 
-| WMLC | install_by_user_tabbed | install_policy_app_windowed | launch_from_shortcut_or_list | check_tab_created |
-| WMLC | install_by_user_tabbed | install_policy_app | uninstall_policy_app | check_app_in_list_tabbed |
-| WMLC | install_by_user_tabbed | install_policy_app | uninstall_policy_app | check_platform_shortcut_and_icon |
-| WMLC | install_by_user_windowed | install_policy_app | uninstall_policy_app | check_app_in_list_windowed |
-| WMLC | install_by_user_windowed | install_policy_app | uninstall_policy_app | check_platform_shortcut_and_icon |
-| WMLC | install_policy_app_tabbed | install_by_user_windowed | uninstall_policy_app | check_app_in_list_windowed |
-| WMLC | install_policy_app_tabbed | install_by_user_windowed | uninstall_policy_app | check_platform_shortcut_and_icon |
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed) | check_platform_shortcut_and_icon | 
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, NoShortcut, WindowOptions::All) | check_platform_shortcut_and_icon | 
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser) | check_app_in_list_windowed | 
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser) | navigate_browser(Standalone) | check_launch_icon_shown |
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed) | check_app_in_list_tabbed | 
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed) | navigate_browser(Standalone) | check_install_icon_shown |
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, Browser) | launch | check_window_created |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | install_or_shortcut_by_user_windowed | check_app_in_list_windowed | 
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | install_or_shortcut_by_user_windowed | check_platform_shortcut_and_icon | 
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | install_or_shortcut_by_user_windowed | check_window_created | 
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, Windowed) | launch_from_shortcut_or_list | check_tab_created |
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_app_in_list_tabbed |
+| WMLC | install_or_shortcut_by_user_tabbed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_platform_shortcut_and_icon |
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_app_in_list_windowed |
+| WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All) | uninstall_policy_app | check_platform_shortcut_and_icon |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | install_or_shortcut_by_user_windowed | uninstall_policy_app | check_app_in_list_windowed |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser) | install_or_shortcut_by_user_windowed | uninstall_policy_app | check_platform_shortcut_and_icon |
 
 ## Manifest update tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_colors | launch | check_window_color_correct | 
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_display_browser | launch | check_tab_not_created | 
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_display_browser | launch | check_window_created | 
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_display_browser | launch | check_window_display_minimal | 
-| WMLC | install_by_user_windowed | close_pwa | manifest_update_display_minimal | launch | check_window_display_minimal | 
-| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteARoot) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | manifest_update_scope_site_a_foo_to(SiteARoot) | close_pwa | launch_from_platform_shortcut(SiteAFoo) | close_pwa | navigate_browser(SiteA) | check_launch_icon_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | launch(SiteAFoo) | navigate_pwa_site_a_foo_to(SiteABar) | check_no_toolbar |
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteABar) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteABar) | check_launch_icon_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteAFoo) | check_install_icon_not_shown | 
-| WMLC | install_by_user_windowed(SiteAFoo) | close_pwa | manifest_update_scope_site_a_foo_to(SiteARoot) | navigate_browser(SiteAFoo) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_colors | launch | check_window_color_correct | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_display(Standalone, Browser) | launch | check_tab_not_created | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_display(Standalone, Browser) | launch | check_window_created | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_display(Standalone, Browser) | launch | check_window_display_minimal | 
+| WMLC | install_or_shortcut_by_user_windowed | close_pwa | manifest_update_display(Standalone, MinimalUi) | launch | check_window_display_minimal | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | close_pwa | launch_from_platform_shortcut(StandaloneNestedA) | close_pwa | navigate_browser(Standalone) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | close_pwa | launch_from_platform_shortcut(StandaloneNestedA) | close_pwa | navigate_browser(Standalone) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | close_pwa | manifest_update_scope_to(StandaloneNestedA, Standalone) | launch(StandaloneNestedA) | navigate_pwa(StandaloneNestedA, StandaloneNestedB) | check_no_toolbar |
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | close_pwa | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(StandaloneNestedB) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | close_pwa | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(StandaloneNestedB) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | close_pwa | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_by_user_windowed(StandaloneNestedA) | close_pwa | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown | 
 
 ## Browser UX with edge cases
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | switch_incognito_profile | navigate_browser(SiteA) | check_create_shortcut_not_shown | 
-| WMLC | switch_incognito_profile | navigate_browser(SiteC) | check_create_shortcut_not_shown | 
+| WMLC | switch_incognito_profile | navigate_browser(Standalone) | check_create_shortcut_not_shown | 
+| WMLC | switch_incognito_profile | navigate_browser(NotPromotable) | check_create_shortcut_not_shown | 
 | WMLC | navigate_crashed_url | check_create_shortcut_not_shown |
 | WMLC | navigate_crashed_url | check_install_icon_not_shown |
 | WMLC | navigate_notfound_url | check_create_shortcut_not_shown |
@@ -225,66 +228,66 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 ## Site promotability checking
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | navigate_browser(SiteA) | check_create_shortcut_shown |
-| WMLC | navigate_browser(SiteAFoo) | check_install_icon_shown |
-| WMLC | navigate_browser(SiteC) | check_create_shortcut_shown |
-| WMLC | navigate_browser(SiteC) | check_install_icon_not_shown |
+| WMLC | navigate_browser(Standalone) | check_create_shortcut_shown |
+| WMLC | navigate_browser(StandaloneNestedA) | check_install_icon_shown |
+| WMLC | navigate_browser(NotPromotable) | check_create_shortcut_shown |
+| WMLC | navigate_browser(NotPromotable) | check_install_icon_not_shown |
 
 ## In-Browser UX (install icon, launch icon, etc)
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_windowed(SiteAFoo) | navigate_browser(SiteABar) | check_install_icon_shown | 
-| WMLC | install_windowed(SiteAFoo) | navigate_browser(SiteABar) | check_launch_icon_not_shown | 
-| WMLC | install_windowed | navigate_browser(SiteAFoo) | check_install_icon_not_shown | 
-| WMLC | install_windowed | navigate_browser(SiteAFoo) | check_launch_icon_shown | 
-| WMLC | install_by_user_windowed | navigate_browser(SiteB) | check_install_icon_shown | 
-| WMLC | install_by_user_windowed | navigate_browser(SiteB) | check_launch_icon_not_shown | 
-| WMLC | install_by_user_windowed | navigate_pwa_site_a_to(SiteB) | check_app_title_site_a_is(SiteA) | 
-| WMLC | install_by_user_windowed | switch_incognito_profile | navigate_browser(SiteA) | check_launch_icon_not_shown |
-| WMLC | install_by_user_windowed | set_open_in_tab | check_app_in_list_tabbed | 
-| WMLC | install_by_user_windowed | set_open_in_tab | navigate_browser(SiteA) | check_install_icon_shown |
-| WMLC | install_by_user_tabbed | set_open_in_window | check_app_in_list_windowed | 
-| WMLC | install_by_user_tabbed | set_open_in_window | navigate_browser(SiteA) | check_install_icon_not_shown |
-| WMLC | install_by_user_tabbed | set_open_in_window | navigate_browser(SiteA) | check_launch_icon_shown |
+| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_install_icon_shown | 
+| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_launch_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_launch_icon_shown | 
+| WMLC | install_or_shortcut_by_user_windowed | navigate_browser(MinimalUi) | check_install_icon_shown | 
+| WMLC | install_or_shortcut_by_user_windowed | navigate_browser(MinimalUi) | check_launch_icon_not_shown | 
+| WMLC | install_or_shortcut_by_user_windowed | navigate_pwa(Standalone, MinimalUi) | check_app_title(Standalone, StandaloneOriginal) | 
+| WMLC | install_or_shortcut_by_user_windowed | switch_incognito_profile | navigate_browser(Standalone) | check_launch_icon_not_shown |
+| WMLC | install_or_shortcut_by_user_windowed | set_open_in_tab | check_app_in_list_tabbed | 
+| WMLC | install_or_shortcut_by_user_windowed | set_open_in_tab | navigate_browser(Standalone) | check_install_icon_shown |
+| WMLC | install_or_shortcut_by_user_tabbed | set_open_in_window | check_app_in_list_windowed | 
+| WMLC | install_or_shortcut_by_user_tabbed | set_open_in_window | navigate_browser(Standalone) | check_install_icon_not_shown |
+| WMLC | install_or_shortcut_by_user_tabbed | set_open_in_window | navigate_browser(Standalone) | check_launch_icon_shown |
 
 ## Windows Control Overlay
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_windowed(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) |
-| WMLC | install_windowed(SiteA) | check_window_controls_overlay_toggle(SiteA, NotShown) |
-| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | check_window_controls_overlay(SiteWco, On) | 
-| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
-| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | disable_window_controls_overlay(SiteWco) | check_window_controls_overlay(SiteWco, Off) |
-| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | disable_window_controls_overlay(SiteWco) | check_window_controls_overlay_toggle(SiteWco, Shown) |
-| WMLC | install_windowed(SiteWco) | enable_window_controls_overlay(SiteWco) | launch(SiteWco) | check_window_controls_overlay(SiteWco, On) |
-| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
-| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | check_window_controls_overlay_toggle(SiteWco, Shown) | 
-| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay(SiteB, Off) |
-| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
-| WMLC | install_windowed(SiteB) | manifest_update_display(SiteB, Wco) | await_manifest_update(SiteB) | launch(SiteB) | enable_window_controls_overlay(SiteB) | check_window_controls_overlay_toggle(SiteB, Shown) |
-| WMLC | install_windowed(SiteWco) | manifest_update_display(SiteWco, Standalone) | await_manifest_update(SiteWco) | launch(SiteWco) | check_window_controls_overlay_toggle(SiteWco, NotShown) | 
-| WMLC | install_windowed(SiteWco) | manifest_update_display(SiteWco, Standalone) | await_manifest_update(SiteWco) | launch(SiteWco) | check_window_controls_overlay(SiteWco, Off) | 
+| WMLC | install_or_shortcut_windowed(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_or_shortcut_windowed(Standalone) | check_window_controls_overlay_toggle(Standalone, NotShown) |
+| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, On) | 
+| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) | 
+| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, Off) |
+| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
+| WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | check_window_controls_overlay_toggle(Wco, Shown) | 
+| WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | check_window_controls_overlay_toggle(Wco, Shown) | 
+| WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, Off) |
+| WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| WMLC | install_or_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) | 
+| WMLC | install_or_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | launch(Wco) | check_window_controls_overlay(Wco, Off) | 
 
 ## File Handling
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install(SiteB) | check_site_handles_file(SiteB, Txt) | check_site_handles_file(SiteB, Png) |
+| WMLC | install_or_shortcut(MinimalUi) | check_site_handles_file(MinimalUi, Txt) | check_site_handles_file(MinimalUi, Png) |
 | # Single open & multiple open behavior |
-| WMLC | install(SiteB) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(SiteB, One) | check_files_loaded_in_site(SiteB, OneTextFile) |
-| WMLC | install(SiteB) | launch_file(MultipleTextFiles) | check_file_handling_dialog(Shown)
-| WMLC | install(SiteB) | launch_file(MultipleTextFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(SiteB, One) | check_files_loaded_in_site(SiteB, MultipleTextFiles) |
-| WMLC | install(SiteB) | launch_file(OnePngFile) | check_file_handling_dialog(Shown) |
-| WMLC | install(SiteB) | launch_file(OnePngFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(SiteB, One) | check_files_loaded_in_site(SiteB, OnePngFile) |
-| WMLC | install(SiteB) | launch_file(MultiplePngFiles) | check_file_handling_dialog(Shown) |
-| WMLC | install(SiteB) | launch_file(MultiplePngFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(SiteB, Two) | check_files_loaded_in_site(SiteB, MultiplePngFiles) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OneTextFile) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleTextFiles) | check_file_handling_dialog(Shown)
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultipleTextFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, MultipleTextFiles) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OnePngFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OnePngFile) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, One) | check_files_loaded_in_site(MinimalUi, OnePngFile) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultiplePngFiles) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(MultiplePngFiles) | file_handling_dialog(Allow, AskAgain) | check_pwa_window_created(MinimalUi, Two) | check_files_loaded_in_site(MinimalUi, MultiplePngFiles) |
 | # Dialog options |
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Allow, Remember) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(SiteB, One) | 
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | check_window_not_created | check_site_handles_file(SiteB, Txt) | check_site_handles_file(SiteB, Png) | 
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
-| WMLC | install(SiteB) | launch_file(OneTextFile) | file_handling_dialog(Deny, Remember) | check_window_not_created | check_site_not_handles_file(SiteB, Txt) | check_site_not_handles_file(SiteB, Png) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, Remember) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) | 
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Allow, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | check_window_not_created | check_site_handles_file(MinimalUi, Txt) | check_site_handles_file(MinimalUi, Png) | 
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, AskAgain) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | launch_file(OneTextFile) | file_handling_dialog(Deny, Remember) | check_window_not_created | check_site_not_handles_file(MinimalUi, Txt) | check_site_not_handles_file(MinimalUi, Png) |
 | # Policy approval |
-| WMLC | install(SiteB) | add_file_handling_policy_approval(SiteB) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(SiteB, One) | 
-| WMLC | install(SiteB) | add_file_handling_policy_approval(SiteB) | remove_file_handling_policy_approval(SiteB) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |
+| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(NotShown) | check_pwa_window_created(MinimalUi, One) | 
+| WMLC | install_or_shortcut(MinimalUi) | add_file_handling_policy_approval(MinimalUi) | remove_file_handling_policy_approval(MinimalUi) | launch_file(OneTextFile) | check_file_handling_dialog(Shown) |

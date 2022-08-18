@@ -232,7 +232,7 @@ class CoverageTest:
         platforms: set of platforms this test is run on.
     """
 
-    TEST_ID_PREFIX = "WebAppIntegration_"
+    TEST_ID_PREFIX = "WAI_"
 
     def __init__(self, actions: List[Action], platforms: Set[TestPlatform]):
         assert actions is not None
@@ -252,8 +252,7 @@ class CoverageTest:
         body = ''.join(["  // " + comment + "\n" for comment in comments])
         body += '\n'.join([(f"  helper_.{action.cpp_method};")
                            for action in self.actions])
-        fixture = (f"{test_partition.test_fixture}"
-                   f"{TestPlatform.get_test_fixture_suffix(self.platforms)}")
+        fixture = f"{test_partition.test_fixture}"
         return (f"IN_PROC_BROWSER_TEST_F("
                 f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}) {{\n"
                 f"{body}\n}}")
@@ -313,6 +312,7 @@ TestIdsByPlatform = Dict[TestPlatform, Set[TestId]]
 TestIdsByPlatformSet = Dict[FrozenSet[TestPlatform], Set[TestId]]
 CoverageTestsByPlatformSet = Dict[FrozenSet[TestPlatform], List[CoverageTest]]
 CoverageTestsByPlatform = Dict[TestPlatform, List[CoverageTest]]
+EnumsByType = Dict[str, ArgEnum]
 ActionsByName = Dict[str, Action]
 EnumsByType = Dict[str, ArgEnum]
 PartialAndFullCoverageByBaseName = Dict[

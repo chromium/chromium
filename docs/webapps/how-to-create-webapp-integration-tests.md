@@ -33,7 +33,7 @@ The browsertest files are split into two sections, manual tests and script-gener
 
 See the [example browsertest][regular-browsertests] file to see the manual tests at the top, written by the action authors.
 
-For details about how to implement actions, see [Creating Actions in the `WebAppIntegrationTestDriver`][creating-actions]. Implementing or changing actions is usually done in [`WebAppIntegrationTestDriver`](https://source.chromium.org/search?q=WebAppIntegrationTestDriver&ss=chromium). If the action only works with the sync system, then it may have to be implemented in the `TestDelegate` interface and then in the [`TwoClientWebAppsIntegrationTestBase`](https://source.chromium.org/search?q=TwoClientWebAppsIntegrationTestBase&sq=&ss=chromium). The [dPWA team](#contact-the-team) should have informed you if there was anything specific you need to do here.
+For details about how to implement actions, see [Creating Actions in the `WebAppIntegrationTestDriver`][creating-actions]. Implementing or changing actions is usually done in [`WebAppIntegrationTestDriver`](https://source.chromium.org/search?q=WebAppIntegrationTestDriver&ss=chromium). If the action only works with the sync system, then it may have to be implemented in the `TestDelegate` interface and then in the [`WebAppIntegrationTestBase`](https://source.chromium.org/search?q=WebAppIntegrationTestBase&sq=&ss=chromium). The [dPWA team](#contact-the-team) should have informed you if there was anything specific you need to do here.
 
 Before submitting, make sure to also [run the trybots on mac][running-mac-tests], as these are sometimes disabled on the CQ.
 

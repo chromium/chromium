@@ -1,8 +1,8 @@
 {
-  "name": "Site A",
+  "name": "Site A - Updated name",
   "icons": [
     {
-      "src": "48x48-red.png",
+      "src": "48x48-green.png",
       "sizes": "48x48",
       "type": "image/png"
     },
@@ -22,7 +22,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_a/basic.html",
-  "scope": "/web_apps/site_a/",
+  "start_url": "/web_apps/standalone/basic.html",
+  "scope": "/web_apps/standalone/",
   "display": "standalone"
 }

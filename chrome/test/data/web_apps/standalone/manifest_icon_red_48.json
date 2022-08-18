@@ -2,7 +2,7 @@
   "name": "Site A",
   "icons": [
     {
-      "src": "48x48-green.png",
+      "src": "48x48-red.png",
       "sizes": "48x48",
       "type": "image/png"
     },
@@ -22,10 +22,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_a/basic.html",
-  "scope": "/web_apps/site_a/",
-  "display": "standalone",
-  "display_override": [
-    "window-controls-overlay"
-  ]
+  "start_url": "/web_apps/standalone/basic.html",
+  "scope": "/web_apps/standalone/",
+  "display": "standalone"
 }

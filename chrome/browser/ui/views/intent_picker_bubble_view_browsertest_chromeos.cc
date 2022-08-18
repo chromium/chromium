@@ -314,11 +314,11 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
   GURL InScopeAppUrl() {
-    return embedded_test_server()->GetURL("/web_apps/site_a/basic.html");
+    return embedded_test_server()->GetURL("/web_apps/standalone/basic.html");
   }
 
   GURL OutOfScopeAppUrl() {
-    return embedded_test_server()->GetURL("/web_apps/site_b/basic.html");
+    return embedded_test_server()->GetURL("/web_apps/minimal_ui/basic.html");
   }
 
  private:

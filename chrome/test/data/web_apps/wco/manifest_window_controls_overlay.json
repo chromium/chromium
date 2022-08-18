@@ -12,8 +12,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_wco/basic.html",
-  "scope": "/web_apps/site_wco/",
+  "start_url": "/web_apps/wco/basic.html",
+  "scope": "/web_apps/wco/",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay"

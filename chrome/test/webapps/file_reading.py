@@ -503,7 +503,7 @@ def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
     For reference, this is what a disabled test by a sheriff typically looks
     like:
 
-    TEST_F(WebAppIntegrationTestBase, DISABLED_NavSiteA_InstallIconShown) {
+    TEST_F(WebAppIntegrationTestBase, DISABLED_NavStandalone_InstallIconShown) {
         ...
     }
 
@@ -511,11 +511,12 @@ def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
     This is what a test disabled by a sheriff on a specific platform looks like:
 
     #if BUILDFLAG(IS_WIN)
-    #define MAYBE_NavSiteA_InstallIconShown DISABLED_NavSiteA_InstallIconShown
+    #define MAYBE_NavStandalone_InstallIconShown \
+            DISABLED_NavStandalone_InstallIconShown
     #else
-    #define MAYBE_NavSiteA_InstallIconShown NavSiteA_InstallIconShown
+    #define MAYBE_NavStandalone_InstallIconShown NavStandalone_InstallIconShown
     #endif
-    TEST_F(WebAppIntegrationTestBase, MAYBE_NavSiteA_InstallIconShown) {
+    TEST_F(WebAppIntegrationTestBase, MAYBE_NavStandalone_InstallIconShown) {
         ...
     }
 

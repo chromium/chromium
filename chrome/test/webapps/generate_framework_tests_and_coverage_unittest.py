@@ -39,7 +39,7 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
             action_name_prefixes=set(),
             browsertest_dir=TEST_DATA_DIR,
             test_file_prefix="tests_default",
-            test_fixture="WebAppIntegrationBrowserTest")
+            test_fixture="WebAppIntegrationTest")
 
         with open(actions_filename, "r", encoding="utf-8") as actions_file, \
                 open(supported_actions_filename, "r", encoding="utf-8") \

@@ -1,5 +1,5 @@
 {
-  "name": "Site A Bar",
+  "name": "Site A Foo",
   "icons": [
     {
       "src": "48x48-green.png",
@@ -12,7 +12,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_a/bar/basic.html",
-  "scope" : "/web_apps/site_a/bar/",
+  "start_url": "/web_apps/standalone/foo/basic.html",
+  "scope": "/web_apps/standalone/",
   "display": "standalone"
 }

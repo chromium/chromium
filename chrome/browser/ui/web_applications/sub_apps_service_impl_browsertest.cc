@@ -41,10 +41,10 @@ constexpr const char kDomain[] = "www.foo.bar";
 constexpr const char kSubDomain[] = "baz.foo.bar";
 constexpr const char kDifferentDomain[] = "www.different-domain.com";
 constexpr const char kParentAppPath[] = "/web_apps/basic.html";
-constexpr const char kSubAppPath[] = "/web_apps/site_a/basic.html";
+constexpr const char kSubAppPath[] = "/web_apps/standalone/basic.html";
 constexpr const char kSubAppPathMinimalUi[] =
-    "/web_apps/site_a/basic.html?manifest=manifest_minimal_ui.json";
-constexpr const char kSubAppPath2[] = "/web_apps/site_b/basic.html";
+    "/web_apps/standalone/basic.html?manifest=manifest_minimal_ui.json";
+constexpr const char kSubAppPath2[] = "/web_apps/minimal_ui/basic.html";
 constexpr const char kSubAppPath3[] = "/web_apps/site_d/basic.html";
 constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 

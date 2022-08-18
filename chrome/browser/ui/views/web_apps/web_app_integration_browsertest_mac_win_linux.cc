@@ -8,1826 +8,1935 @@
 namespace web_app::integration_tests {
 namespace {
 
-using WebAppIntegrationBrowserTestMacWinLinux = WebAppIntegrationBrowserTest;
+using WebAppIntegration = WebAppIntegrationTest;
 
 // Manual tests:
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTest,
+    WebAppIntegrationTest,
     WindowModeSettingsIsNotAvailableForIsolatedAppsOnAppSettingsPage) {
-  helper_.InstallMenuOption(InstallableSite::kSiteIsolatedApp);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteIsolatedApp);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteIsolatedApp);
-  helper_.CheckWindowModeIsNotVisibleInAppSettings(Site::kSiteIsolatedApp);
+  helper_.InstallMenuOption(InstallableSite::kIsolated);
+  helper_.OpenAppSettingsFromChromeApps(Site::kIsolated);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kIsolated);
+  helper_.CheckWindowModeIsNotVisibleInAppSettings(Site::kIsolated);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
-                       LaunchFromPlatformShortcut) {
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationTest, LaunchFromPlatformShortcut) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
   helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckPlatformShortcutAndIcon) {
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteB);
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteB);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckPlatformShortcutAndIcon) {
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kMinimalUi);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kMinimalUi);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckPolicyAppUninstallWorks) {
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.UninstallPolicyApp(Site::kSiteA);
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckPolicyAppUninstallWorks) {
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.UninstallPolicyApp(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckDeletePlatformShortcut) {
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckDeletePlatformShortcut) {
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckCreateShortcuts) {
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckCreateShortcuts) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckSiteHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kSiteB);
-  helper_.CheckSiteHandlesFile(Site::kSiteB, "qux");
-  helper_.CheckSiteHandlesFile(Site::kSiteB, "quux");
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckSiteNotHandlesFile) {
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckSiteNotHandlesFile(Site::kSiteA, "qux");
-  helper_.CheckSiteNotHandlesFile(Site::kSiteA, "quux");
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, "qux");
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, "quux");
 }
 
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_33SiteA_7SiteA_11SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_32StandaloneNoShortcutWindowed_7Standalone_11Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_49SiteA_7SiteA_11SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_32StandaloneWithShortcutWindowed_7Standalone_11Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_51SiteA_12SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_51Standalone_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.SetOpenInWindow(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_32SiteA_11SiteA_51SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.SetOpenInWindow(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.SetOpenInWindow(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_51SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_51Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.SetOpenInWindow(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.SetOpenInWindow(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_29SiteC_11SiteC_7SiteC_1SiteC_22) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_51Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteC);
-  helper_.CheckAppInListTabbed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.SetOpenInWindow(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_29NotPromotableBrowser_11NotPromotable_7NotPromotable_1NotPromotable_22) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckTabCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_30SiteC_12SiteC_7SiteC_1SiteC_24) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_1NotPromotable_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteC);
-  helper_.CheckAppInListWindowed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteC_12SiteC_7SiteC_43SiteC_15SiteA) {
+    WebAppIntegration,
+    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_43NotPromotable_15Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteC);
-  helper_.CheckAppInListWindowed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.UninstallFromMenu(Site::kSiteC);
-  helper_.CheckAppNotInList(Site::kSiteA);
+  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.UninstallFromMenu(Site::kNotPromotable);
+  helper_.CheckAppNotInList(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteC_12SiteC_7SiteC_98SiteC_15SiteA) {
+    WebAppIntegration,
+    WAI_29NotPromotableWindowed_12NotPromotable_7NotPromotable_98NotPromotable_15Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteC);
-  helper_.CheckAppInListWindowed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.UninstallFromAppSettings(Site::kSiteC);
-  helper_.CheckAppNotInList(Site::kSiteA);
+  helper_.CreateShortcut(Site::kNotPromotable, WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.UninstallFromAppSettings(Site::kNotPromotable);
+  helper_.CheckAppNotInList(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_33SiteC_12SiteC_1SiteC_24) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32NotPromotableNoShortcutWindowed_12NotPromotable_1NotPromotable_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteC);
-  helper_.CheckAppInListWindowed(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.InstallPolicyApp(Site::kNotPromotable, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_32SiteC_11SiteC_1SiteC_22) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32NotPromotableNoShortcutBrowser_11NotPromotable_1NotPromotable_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteC);
-  helper_.CheckAppInListTabbed(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.InstallPolicyApp(Site::kNotPromotable, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckTabCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_48SiteC_11SiteC_7SiteC_1SiteC_22) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32NotPromotableWithShortcutBrowser_11NotPromotable_7NotPromotable_1NotPromotable_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteC);
-  helper_.CheckAppInListTabbed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.InstallPolicyApp(Site::kNotPromotable, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckTabCreated();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_30SiteB_1SiteB_25) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_29MinimalUiWindowed_1MinimalUi_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteB);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteB);
+  helper_.CreateShortcut(Site::kMinimalUi, WindowOptions::kWindowed);
+  helper_.LaunchFromPlatformShortcut(Site::kMinimalUi);
   helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_31SiteB_1SiteB_25) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_31MinimalUi_1MinimalUi_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteB);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteB);
+  helper_.InstallOmniboxIcon(InstallableSite::kMinimalUi);
+  helper_.LaunchFromPlatformShortcut(Site::kMinimalUi);
   helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_33SiteB_1SiteB_25) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_32MinimalUiNoShortcutWindowed_1MinimalUi_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteB);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteB);
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.LaunchFromPlatformShortcut(Site::kMinimalUi);
   helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_49SiteB_1SiteB_25) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_32MinimalUiWithShortcutWindowed_1MinimalUi_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteB);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteB);
+  helper_.InstallPolicyApp(Site::kMinimalUi, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.LaunchFromPlatformShortcut(Site::kMinimalUi);
   helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_47SiteB_1SiteB_25) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, WAI_47MinimalUi_1MinimalUi_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteB);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteB);
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.LaunchFromPlatformShortcut(Site::kMinimalUi);
   helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_49SiteC_12SiteC_7SiteC_1SiteC_24) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32NotPromotableWithShortcutWindowed_12NotPromotable_7NotPromotable_1NotPromotable_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteC);
-  helper_.CheckAppInListWindowed(Site::kSiteC);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteC);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteC);
+  helper_.InstallPolicyApp(Site::kNotPromotable, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kNotPromotable);
+  helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
+  helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteAFoo_8SiteARoot_28_1SiteAFoo_28_37SiteA_17_20) {
+    WebAppIntegration,
+    WAI_29StandaloneNestedAWindowed_8StandaloneNestedAStandalone_28_1StandaloneNestedA_28_37Standalone_17_20) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteAFoo);
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
+  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
   helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
   helper_.ClosePwa();
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconNotShown();
   helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteAFoo_28_8SiteARoot_1SiteAFoo_9SiteABar_21) {
+    WebAppIntegration,
+    WAI_29StandaloneNestedAWindowed_28_8StandaloneNestedAStandalone_1StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteAFoo);
+  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kWindowed);
   helper_.ClosePwa();
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
-  helper_.NavigatePwaSiteAFooTo(Site::kSiteABar);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
   helper_.CheckNoToolbar();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteAFoo_8SiteARoot_28_1SiteAFoo_28_37SiteA_17_20) {
+    WebAppIntegration,
+    WAI_31StandaloneNestedA_8StandaloneNestedAStandalone_28_1StandaloneNestedA_28_37Standalone_17_20) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteAFoo);
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
   helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
   helper_.ClosePwa();
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconNotShown();
   helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteAFoo_28_8SiteARoot_1SiteAFoo_9SiteABar_21) {
+    WebAppIntegration,
+    WAI_31StandaloneNestedA_28_8StandaloneNestedAStandalone_1StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteAFoo);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
   helper_.ClosePwa();
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
-  helper_.NavigatePwaSiteAFooTo(Site::kSiteABar);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
   helper_.CheckNoToolbar();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteAFoo_8SiteARoot_28_1SiteAFoo_28_37SiteA_17_20) {
+    WebAppIntegration,
+    WAI_47StandaloneNestedA_8StandaloneNestedAStandalone_28_1StandaloneNestedA_28_37Standalone_17_20) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteAFoo);
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
+  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
   helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
   helper_.ClosePwa();
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconNotShown();
   helper_.CheckLaunchIconShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteAFoo_28_8SiteARoot_1SiteAFoo_9SiteABar_21) {
+    WebAppIntegration,
+    WAI_47StandaloneNestedA_28_8StandaloneNestedAStandalone_1StandaloneNestedA_39StandaloneNestedAStandaloneNestedB_21) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteAFoo);
+  helper_.InstallMenuOption(InstallableSite::kStandaloneNestedA);
   helper_.ClosePwa();
-  helper_.ManifestUpdateScopeSiteAFooTo(Scope::kSiteARoot);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteAFoo);
-  helper_.NavigatePwaSiteAFooTo(Site::kSiteABar);
+  helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandaloneNestedA);
+  helper_.NavigatePwa(Site::kStandaloneNestedA, Site::kStandaloneNestedB);
   helper_.CheckNoToolbar();
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       WebAppIntegration_32SiteA_11SiteA_101SiteA_111SiteA) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_32SiteA_11SiteA_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_32SiteA_11SiteA_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_32SiteA_11SiteA_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_70SiteA_1SiteA_94_24_25) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneBrowser_1Standalone_94_24_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayBrowser(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabNotCreated();
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_36SiteA_1SiteA_25) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneMinimalUi_1Standalone_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayMinimal(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kMinimalUi);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_43SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_43Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromMenu(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromMenu(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_98SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_98Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromAppSettings(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromAppSettings(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_1SiteA_24_26) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_1Standalone_24_26) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayStandalone();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_50SiteA_11SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_50Standalone_11Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.SetOpenInTab(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTab(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_96SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_96Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromChromeApps(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_97SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_97Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromAppMenu(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromAppMenu(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_32SiteA_7SiteA_12SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowser_7Standalone_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_48SiteA_12SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_70SiteA_1SiteA_94_24_25) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowser_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneBrowser_1Standalone_94_24_25) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayBrowser(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabNotCreated();
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_36SiteA_1SiteA_25) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneMinimalUi_1Standalone_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayMinimal(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kMinimalUi);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_43SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_43Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromMenu(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromMenu(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_98SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_98Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromAppSettings(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromAppSettings(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_1SiteA_24_26) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_1Standalone_24_26) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayStandalone();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_50SiteA_11SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_50Standalone_11Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.SetOpenInTab(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTab(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_96SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_96Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromChromeApps(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_97SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_97Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromAppMenu(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromAppMenu(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_32SiteA_7SiteA_12SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowser_7Standalone_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_48SiteA_12SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_70SiteA_1SiteA_94_24_25) {
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowser_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneBrowser_1Standalone_94_24_25) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayBrowser(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabNotCreated();
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_28_36SiteA_1SiteA_25) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_28_116StandaloneMinimalUi_1Standalone_25) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
   helper_.ClosePwa();
-  helper_.ManifestUpdateDisplayMinimal(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kMinimalUi);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowDisplayMinimal();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_43SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_43Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromMenu(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromMenu(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_98SiteA_15SiteA_37SiteA_18_19) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_98Standalone_15Standalone_37Standalone_18_19) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.UninstallFromAppSettings(Site::kSiteA);
-  helper_.CheckAppNotInList(Site::kSiteA);
-  helper_.NavigateBrowser(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.UninstallFromAppSettings(Site::kStandalone);
+  helper_.CheckAppNotInList(Site::kStandalone);
+  helper_.NavigateBrowser(Site::kStandalone);
   helper_.CheckInstallIconShown();
   helper_.CheckLaunchIconNotShown();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_1SiteA_24_26) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_1Standalone_24_26) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckWindowDisplayStandalone();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_50SiteA_11SiteA_1SiteA_22) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.SetOpenInTab(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckTabCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_96SiteA_109SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_97SiteA_109SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromAppMenu(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_32SiteA_7SiteA_12SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_48SiteA_12SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_101SiteA_111SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_104SiteA_106SiteA_105SiteA_107SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_1SiteA_24_26) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webapps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayStandalone();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_50SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_50Standalone_11Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.SetOpenInTab(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTab(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_96SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_96Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromChromeApps(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_97SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_97Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromAppMenu(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromAppMenu(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_101SiteA_111SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneNoShortcutBrowser_7Standalone_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_101SiteA_107SiteA_103SiteA_106SiteA) {
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_32StandaloneWithShortcutBrowser_12Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_104SiteA_106SiteA_105SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.EnableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.DisableRunOnOsLogin(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_102SiteA_106SiteA_111SiteA_103SiteA_107SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kSiteA);
-  helper_.CheckRunOnOsLoginEnabled(Site::kSiteA);
-  helper_.CheckUserCannotSetRunOnOsLogin(Site::kSiteA);
-  helper_.RemoveRunOnOsLoginPolicy(Site::kSiteA);
-  helper_.CheckRunOnOsLoginDisabled(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_1SiteA_24_26) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_1Standalone_24_26) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowDisplayStandalone();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_50SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_50Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.SetOpenInTab(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTab(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_96SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_96Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromChromeApps(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromChromeApps(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_97SiteA_109SiteA) {
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_97Standalone_109Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.OpenAppSettingsFromAppMenu(Site::kSiteA);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromAppMenu(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteWco_112SiteWcoShown_114SiteWco_113SiteWcoOn_112SiteWcoShown_1SiteWco_113SiteWcoOn) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_101Standalone_111Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteWco_112SiteWcoShown_114SiteWco_113SiteWcoOn_112SiteWcoShown_1SiteWco_113SiteWcoOn) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_101Standalone_107Standalone_103Standalone_106Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.ApplyRunOnOsLoginPolicyBlocked(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteWco_112SiteWcoShown_114SiteWco_113SiteWcoOn_112SiteWcoShown_1SiteWco_113SiteWcoOn) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_104Standalone_106Standalone_105Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.EnableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.DisableRunOnOsLogin(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteWco_112SiteWcoShown_114SiteWco_113SiteWcoOn_112SiteWcoShown_1SiteWco_113SiteWcoOn) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_102Standalone_106Standalone_111Standalone_103Standalone_107Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed(Site::kStandalone);
+  helper_.CheckRunOnOsLoginEnabled(Site::kStandalone);
+  helper_.CheckUserCannotSetRunOnOsLogin(Site::kStandalone);
+  helper_.RemoveRunOnOsLoginPolicy(Site::kStandalone);
+  helper_.CheckRunOnOsLoginDisabled(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteWco_112SiteWcoShown_114SiteWco_113SiteWcoOn_112SiteWcoShown_1SiteWco_113SiteWcoOn) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_1Standalone_24_26) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteWco);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.EnableWindowControlsOverlay(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteWco, IsShown::kShown);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteWco);
-  helper_.CheckWindowControlsOverlay(Site::kSiteWco, IsOn::kOn);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_33SiteA_12SiteA_112SiteANotShown_72SiteA_7SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webaps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_48SiteA_11SiteA_7SiteA_74SiteA_72SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_50Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webaps/integration-testing-framework` for more info.
+  // `docs/webapps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.SetOpenInTab(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_29SiteA_11SiteA_7SiteA_74SiteA_72SiteA_1SiteA_22) {
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_96Standalone_109Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromChromeApps(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_97Standalone_109Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.OpenAppSettingsFromAppMenu(Site::kStandalone);
+  helper_.CheckBrowserNavigationIsAppSettings(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_29WcoWindowed_112WcoShown_114Wco_113WcoOn_112WcoShown_1Wco_113WcoOn) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.LaunchFromPlatformShortcut(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_31Wco_112WcoShown_114Wco_113WcoOn_112WcoShown_1Wco_113WcoOn) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.LaunchFromPlatformShortcut(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32WcoNoShortcutWindowed_112WcoShown_114Wco_113WcoOn_112WcoShown_1Wco_113WcoOn) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.LaunchFromPlatformShortcut(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32WcoWithShortcutWindowed_112WcoShown_114Wco_113WcoOn_112WcoShown_1Wco_113WcoOn) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kWco, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.LaunchFromPlatformShortcut(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_47Wco_112WcoShown_114Wco_113WcoOn_112WcoShown_1Wco_113WcoOn) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption(InstallableSite::kWco);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.EnableWindowControlsOverlay(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+  helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
+  helper_.LaunchFromPlatformShortcut(Site::kWco);
+  helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutWindowed_12Standalone_112StandaloneNotShown_72Standalone_7Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webaps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutTabbed(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutBrowser_11Standalone_7Standalone_74Standalone_72Standalone_1Standalone_22) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webaps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_30SiteA_24_12SiteA_7SiteA_112SiteANotShown_74SiteA_72SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_29StandaloneBrowser_11Standalone_7Standalone_74Standalone_72Standalone_1Standalone_22) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webaps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_31SiteA_24_12SiteA_7SiteA_112SiteANotShown_74SiteA_72SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webaps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallOmniboxIcon(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_47SiteA_24_12SiteA_7SiteA_112SiteANotShown_74SiteA_72SiteA_1SiteA_24) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webaps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallMenuOption(InstallableSite::kSiteA);
-  helper_.CheckWindowCreated();
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_32SiteA_11SiteA_72SiteA_7SiteA_1SiteA_22) {
-  // Test contents are generated by script. Please do not modify!
-  // See `docs/webapps/why-is-this-test-failing.md` or
-  // `docs/webaps/integration-testing-framework` for more info.
-  // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppTabbedNoShortcut(Site::kSiteA);
-  helper_.CheckAppInListTabbed(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckTabCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationBrowserTestMacWinLinux,
-    WebAppIntegration_49SiteA_12SiteA_7SiteA_112SiteANotShown_74SiteA_72SiteA_1SiteA_24) {
+    WebAppIntegration,
+    WAI_29StandaloneWindowed_24_12Standalone_7Standalone_112StandaloneNotShown_74Standalone_72Standalone_1Standalone_24) {
   // Test contents are generated by script. Please do not modify!
   // See `docs/webapps/why-is-this-test-failing.md` or
   // `docs/webaps/integration-testing-framework` for more info.
   // Sheriffs: Disabling this test is supported.
-  helper_.InstallPolicyAppWindowedShortcut(Site::kSiteA);
-  helper_.CheckAppInListWindowed(Site::kSiteA);
-  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
-  helper_.CheckWindowControlsOverlayToggle(Site::kSiteA, IsShown::kNotShown);
-  helper_.DeletePlatformShortcut(Site::kSiteA);
-  helper_.CreateShortcuts(Site::kSiteA);
-  helper_.LaunchFromPlatformShortcut(Site::kSiteA);
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_31Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_74Standalone_72Standalone_1Standalone_24) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webaps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_47Standalone_24_12Standalone_7Standalone_112StandaloneNotShown_74Standalone_72Standalone_1Standalone_24) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webaps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneNoShortcutBrowser_11Standalone_72Standalone_7Standalone_1Standalone_22) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webaps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kNoShortcut,
+                           WindowOptions::kBrowser);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegration,
+    WAI_32StandaloneWithShortcutWindowed_12Standalone_7Standalone_112StandaloneNotShown_74Standalone_72Standalone_1Standalone_24) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webaps/integration-testing-framework` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
+                                           IsShown::kNotShown);
+  helper_.DeletePlatformShortcut(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 

@@ -18,7 +18,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceInternalsBrowserTest, LoadsWebUiPage) {
   // app visible.
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
-      embedded_test_server()->GetURL("/web_apps/site_a/basic.html");
+      embedded_test_server()->GetURL("/web_apps/standalone/basic.html");
   web_app::InstallWebAppFromPage(browser(), app_url);
 
   content::WebContents* web_contents =

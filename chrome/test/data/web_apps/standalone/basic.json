@@ -7,17 +7,22 @@
       "type": "image/png"
     },
     {
+      "src": "128x128-green.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
       "src": "192x192-green.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "256x256-red.png",
+      "src": "256x256-green.png",
       "sizes": "256x256",
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_a/basic.html",
-  "scope": "/web_apps/site_a/",
+  "start_url": "/web_apps/standalone/basic.html",
+  "scope": "/web_apps/standalone/",
   "display": "standalone"
 }

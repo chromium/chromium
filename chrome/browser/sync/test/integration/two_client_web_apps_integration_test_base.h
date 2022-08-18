@@ -7,7 +7,6 @@
 
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
-#include "content/public/test/browser_test.h"
 
 namespace base {
 class CommandLine;
@@ -21,7 +20,7 @@ class TwoClientWebAppsIntegrationTestBase
  public:
   TwoClientWebAppsIntegrationTestBase();
 
-  // WebAppIntegrationBrowserTestBase::TestDelegate:
+  // WebAppIntegrationTestDriver::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
   void AddBlankTabAndShow(Browser* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;

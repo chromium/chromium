@@ -16,7 +16,7 @@ namespace {
 // TODO(dmurph): Integration tests will go here once all actions are
 // implemented.
 
-using TwoClientWebAppsIntegrationTest = TwoClientWebAppsIntegrationTestBase;
+using WebAppIntegration = TwoClientWebAppsIntegrationTestBase;
 
 }  // namespace
 }  // namespace web_app::integration_tests

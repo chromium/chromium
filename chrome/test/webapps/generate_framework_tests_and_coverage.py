@@ -203,13 +203,13 @@ def main():
             action_name_prefixes={"switch_profile_clients", "sync_"},
             browsertest_dir=sync_tests_location,
             test_file_prefix="two_client_web_apps_integration_test",
-            test_fixture="TwoClientWebAppsIntegrationTest")
+            test_fixture="WebAppIntegration")
     ]
     default_partition = TestPartitionDescription(
         action_name_prefixes=set(),
         browsertest_dir=default_tests_location,
         test_file_prefix="web_app_integration_browsertest",
-        test_fixture="WebAppIntegrationBrowserTest")
+        test_fixture="WebAppIntegration")
 
     graph_output_dir = None
     if options.graphs:

@@ -22,7 +22,10 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_a/basic.html",
-  "scope": "/web_apps/site_a/",
-  "display": "browser"
+  "start_url": "/web_apps/standalone/basic.html",
+  "scope": "/web_apps/standalone/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay"
+  ]
 }

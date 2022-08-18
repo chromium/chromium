@@ -12,8 +12,8 @@
         "type": "image/png"
       }
     ],
-    "start_url": "/web_apps/site_b/basic.html",
-    "scope": "/web_apps/site_b/",
+    "start_url": "/web_apps/minimal_ui/basic.html",
+    "scope": "/web_apps/minimal_ui/",
     "display": "standalone",
     "display_override": [
       "window-controls-overlay"
