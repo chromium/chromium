@@ -180,7 +180,7 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.page_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "Printed page", /*sha256*/ std::string(),
+        profile_, url_, title_, /*sha256*/ std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
         access_point_, /*content_size*/ -1, page_response_, user_justification);
@@ -351,6 +351,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   DCHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
+  title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   result_.text_results.resize(data_.text.size(), false);
   result_.paths_results.resize(data_.paths.size(), false);
   result_.page_result = false;
@@ -461,7 +462,7 @@ void ContentAnalysisDelegate::PageRequestCallback(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "Printed page", /*sha256*/ std::string(),
+      profile_, url_, title_, /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       access_point_, /*content_size*/ -1, result, response,
@@ -550,6 +551,7 @@ void ContentAnalysisDelegate::PreparePageRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(enterprise_connectors::PRINT, request.get());
+    request->set_filename(title_);
     UploadPageForDeepScanning(std::move(request));
   }
 }

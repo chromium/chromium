@@ -289,6 +289,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // The GURL corresponding to the page where the scan triggered.
   GURL url_;
 
+  // The title corresponding to the WebContents triggering the scan.
+  std::string title_;
+
   // Description of the data being scanned and the results of the scan.
   Data data_;
   Result result_;
