@@ -7,16 +7,27 @@ import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 import './cr_radio_button_style.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrRadioButtonBehavior} from './cr_radio_button_behavior.js';
+import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from './cr_radio_button_behavior.js';
 
-Polymer({
-  is: 'cr-radio-button',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrRadioButtonBehaviorInterface}
+ */
+const CrRadioButtonElementBase =
+    mixinBehaviors([CrRadioButtonBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CrRadioButtonElement extends CrRadioButtonElementBase {
+  static get is() {
+    return 'cr-radio-button';
+  }
 
-  behaviors: [
-    CrRadioButtonBehavior,
-  ],
-});
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(CrRadioButtonElement.is, CrRadioButtonElement);

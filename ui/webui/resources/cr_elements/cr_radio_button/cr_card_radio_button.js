@@ -12,18 +12,27 @@ import './cr_radio_button_style.css.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrRadioButtonBehavior} from './cr_radio_button_behavior.js';
+import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from './cr_radio_button_behavior.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrRadioButtonBehaviorInterface}
+ */
+const CrCardRadioButtonElementBase =
+    mixinBehaviors([CrRadioButtonBehavior], PolymerElement);
 
-  is: 'cr-card-radio-button',
+/** @polymer */
+export class CrCardRadioButtonElement extends CrCardRadioButtonElementBase {
+  static get is() {
+    return 'cr-card-radio-button';
+  }
 
-  behaviors: [
-    CrRadioButtonBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
 
-  onFocus_() {},
-});
+customElements.define(CrCardRadioButtonElement.is, CrCardRadioButtonElement);

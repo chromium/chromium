@@ -22,8 +22,8 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.$$('.disc')!).backgroundColor !==
-        'rgba(0, 0, 0, 0)');
+        getComputedStyle(radioButton.shadowRoot!.querySelector('.disc')!)
+            .backgroundColor !== 'rgba(0, 0, 0, 0)');
   }
 
   function assertNotChecked() {
@@ -31,7 +31,8 @@ suite('cr-radio-button', function() {
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
     assertEquals(
         'rgba(0, 0, 0, 0)',
-        getComputedStyle(radioButton.$$('.disc')!).backgroundColor);
+        getComputedStyle(radioButton.shadowRoot!.querySelector('.disc')!)
+            .backgroundColor);
   }
 
   function assertDisabled() {
@@ -68,10 +69,12 @@ suite('cr-radio-button', function() {
 
   test('Ripple', function() {
     assertFalse(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
-    radioButton.fire('focus');
+    radioButton.dispatchEvent(
+        new CustomEvent('focus', {bubbles: true, composed: true}));
     assertTrue(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
     assertTrue(radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
-    radioButton.fire('up');
+    radioButton.dispatchEvent(
+        new CustomEvent('up', {bubbles: true, composed: true}));
     assertFalse(
         radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
   });

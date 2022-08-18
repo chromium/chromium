@@ -23,14 +23,16 @@ suite('cr-card-radio-button', function() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.$$('#checkMark')!).display !== 'none');
+        getComputedStyle(radioButton.shadowRoot!.querySelector('#checkMark')!)
+            .display !== 'none');
   }
 
   function assertNotChecked() {
     assertFalse(radioButton.hasAttribute('checked'));
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.$$('#checkMark')!).display === 'none');
+        getComputedStyle(radioButton.shadowRoot!.querySelector('#checkMark')!)
+            .display === 'none');
   }
 
   function assertDisabled() {
