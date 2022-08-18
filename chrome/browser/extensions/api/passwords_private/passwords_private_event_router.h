@@ -78,6 +78,9 @@ class PasswordsPrivateEventRouter : public KeyedService {
   void OnPasswordCheckStatusChanged(
       const api::passwords_private::PasswordCheckStatus& status);
 
+  // Notifies listeners about the timeout for password manager access.
+  void OnPasswordManagerAuthTimeout();
+
  protected:
   explicit PasswordsPrivateEventRouter(content::BrowserContext* context);
 

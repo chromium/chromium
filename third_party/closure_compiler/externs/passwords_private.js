@@ -472,3 +472,9 @@ chrome.passwordsPrivate.onWeakCredentialsChanged;
  * @type {!ChromeEvent}
  */
 chrome.passwordsPrivate.onPasswordCheckStatusChanged;
+
+/**
+ * Fired when the password manager access timed out.
+ * @type {!ChromeEvent}
+ */
+chrome.passwordsPrivate.onPasswordManagerAuthTimeout;

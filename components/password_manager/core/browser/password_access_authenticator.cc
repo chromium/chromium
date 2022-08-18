@@ -16,12 +16,11 @@ namespace password_manager {
 using metrics_util::LogPasswordSettingsReauthResult;
 using metrics_util::ReauthResult;
 
-// static
-constexpr base::TimeDelta PasswordAccessAuthenticator::kAuthValidityPeriod;
-
 PasswordAccessAuthenticator::PasswordAccessAuthenticator(
-    ReauthCallback os_reauth_call)
-    : os_reauth_call_(std::move(os_reauth_call)) {}
+    ReauthCallback os_reauth_call,
+    TimeoutCallback timeout_call)
+    : os_reauth_call_(std::move(os_reauth_call)),
+      timeout_call_(std::move(timeout_call)) {}
 
 PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
 
@@ -30,11 +29,7 @@ PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
 void PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
     ReauthPurpose purpose,
     AuthResultCallback callback) {
-  // This is to address crbug.com/1317549. If the current time is earlier than the
-  // `last_authentication_time_`, `last_authentication_time_` is invalid.
-  // So need ForceUserReauthentication()
-  if (last_authentication_time_ < base::Time::Now() &&
-      base::Time::Now() <= last_authentication_time_ + kAuthValidityPeriod) {
+  if (auth_timer_.IsRunning()) {
     LogPasswordSettingsReauthResult(ReauthResult::kSkipped);
     std::move(callback).Run(true);
   } else {
@@ -57,9 +52,10 @@ void PasswordAccessAuthenticator::ForceUserReauthentication(
 void PasswordAccessAuthenticator::OnUserReauthenticationResult(
     AuthResultCallback callback,
     bool authenticated) {
-  if (authenticated)
-    last_authentication_time_ = base::Time::Now();
-
+  if (authenticated) {
+    auth_timer_.Start(FROM_HERE, kAuthValidityPeriod,
+                      base::BindRepeating(timeout_call_));
+  }
   LogPasswordSettingsReauthResult(authenticated ? ReauthResult::kSuccess
                                                 : ReauthResult::kFailure);
   std::move(callback).Run(authenticated);

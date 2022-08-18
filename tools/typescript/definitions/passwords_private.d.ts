@@ -210,6 +210,8 @@ declare global {
           ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
       export const onPasswordCheckStatusChanged:
           ChromeEvent<(status: PasswordCheckStatus) => void>;
+      export const onPasswordManagerAuthTimeout:
+          ChromeEvent<() => void>;
     }
   }
 }

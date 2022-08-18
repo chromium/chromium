@@ -30,6 +30,8 @@ using MockAuthResultCallback =
     base::MockCallback<PasswordAccessAuthenticator::AuthResultCallback>;
 using MockReauthCallback =
     base::MockCallback<PasswordAccessAuthenticator::ReauthCallback>;
+using MockTimeoutCallback =
+    base::MockCallback<PasswordAccessAuthenticator::TimeoutCallback>;
 
 constexpr char kHistogramName[] =
     "PasswordManager.ReauthToAccessPasswordInSettings";
@@ -43,6 +45,7 @@ class PasswordAccessAuthenticatorTest : public TestWithParam<ReauthPurpose> {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   MockAuthResultCallback& result_callback() { return result_callback_; }
   MockReauthCallback& os_reauth_callback() { return os_reauth_callback_; }
+  MockTimeoutCallback& timeout_callback() { return timeout_callback_; }
   PasswordAccessAuthenticator& authenticator() { return authenticator_; }
 
  private:
@@ -51,7 +54,9 @@ class PasswordAccessAuthenticatorTest : public TestWithParam<ReauthPurpose> {
   base::HistogramTester histogram_tester_;
   MockAuthResultCallback result_callback_;
   MockReauthCallback os_reauth_callback_;
-  PasswordAccessAuthenticator authenticator_{os_reauth_callback_.Get()};
+  MockTimeoutCallback timeout_callback_;
+  PasswordAccessAuthenticator authenticator_{os_reauth_callback_.Get(),
+                                             timeout_callback_.Get()};
 };
 
 // Check that a passed authentication does not expire before kAuthValidityPeriod
@@ -67,15 +72,17 @@ TEST_P(PasswordAccessAuthenticatorTest, Expiration) {
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
                                        1);
 
-  task_environment().AdvanceClock(
+  task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod - base::Seconds(1));
   EXPECT_CALL(os_reauth_callback(), Run).Times(0);
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
   EXPECT_CALL(result_callback(), Run(true));
   authenticator().EnsureUserIsAuthenticated(purpose(), result_callback().Get());
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSkipped,
                                        1);
 
-  task_environment().AdvanceClock(base::Seconds(2));
+  EXPECT_CALL(timeout_callback(), Run);
+  task_environment().FastForwardBy(base::Seconds(2));
   EXPECT_CALL(os_reauth_callback(), Run(purpose(), _))
       .WillOnce(testing::WithArg<1>(
           [](PasswordAccessAuthenticator::AuthResultCallback callback) {
@@ -125,7 +132,7 @@ TEST_P(PasswordAccessAuthenticatorTest, Failed) {
 
   // Advance just a little bit, so that if |authenticator| starts the grace
   // period, this is still within it.
-  task_environment().AdvanceClock(base::Seconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   EXPECT_CALL(os_reauth_callback(), Run(purpose(), _))
       .WillOnce(testing::WithArg<1>(
           [](PasswordAccessAuthenticator::AuthResultCallback callback) {
@@ -135,6 +142,10 @@ TEST_P(PasswordAccessAuthenticatorTest, Failed) {
   authenticator().EnsureUserIsAuthenticated(purpose(), result_callback().Get());
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kFailure,
                                        2);
+
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
+  task_environment().FastForwardBy(
+      PasswordAccessAuthenticator::kAuthValidityPeriod);
 }
 
 // Check that measurement of time it takes user to authenticate is correct and

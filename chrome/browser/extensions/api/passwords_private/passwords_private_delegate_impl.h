@@ -200,6 +200,9 @@ class PasswordsPrivateDelegateImpl
   // Callback for biometric authentication after authentication check.
   void OnReauthCompleted();
 
+  // Invokes PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout().
+  void OsReauthTimeoutCall();
+
   // Not owned by this class.
   raw_ptr<Profile> profile_;
 

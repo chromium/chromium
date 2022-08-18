@@ -226,7 +226,10 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               base::Unretained(this)))),
       password_access_authenticator_(
           base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthCall,
-                              base::Unretained(this))),
+                              base::Unretained(this)),
+          base::BindRepeating(
+              &PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
+              base::Unretained(this))),
       password_account_storage_settings_watcher_(
           std::make_unique<
               password_manager::PasswordAccountStorageSettingsWatcher>(
@@ -472,6 +475,13 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
 #else
   std::move(callback).Run(true);
 #endif
+}
+
+void PasswordsPrivateDelegateImpl::OsReauthTimeoutCall() {
+  PasswordsPrivateEventRouter* router =
+      PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
+  if (router)
+    router->OnPasswordManagerAuthTimeout();
 }
 
 void PasswordsPrivateDelegateImpl::SetCredentials(

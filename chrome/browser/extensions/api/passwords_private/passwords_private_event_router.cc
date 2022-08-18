@@ -126,6 +126,13 @@ void PasswordsPrivateEventRouter::OnPasswordCheckStatusChanged(
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
+void PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout() {
+  event_router_->BroadcastEvent(std::make_unique<Event>(
+      events::PASSWORDS_PRIVATE_ON_PASSWORD_MANAGER_AUTH_TIMEOUT,
+      api::passwords_private::OnPasswordManagerAuthTimeout::kEventName,
+      api::passwords_private::OnPasswordManagerAuthTimeout::Create()));
+}
+
 PasswordsPrivateEventRouter* PasswordsPrivateEventRouter::Create(
     content::BrowserContext* context) {
   return new PasswordsPrivateEventRouter(context);

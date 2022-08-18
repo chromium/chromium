@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 
 namespace password_manager {
@@ -25,14 +26,17 @@ class PasswordAccessAuthenticator {
   using AuthResultCallback = base::OnceCallback<void(bool)>;
   using ReauthCallback =
       base::RepeatingCallback<void(ReauthPurpose, AuthResultCallback)>;
+  using TimeoutCallback = base::RepeatingCallback<void()>;
 
   // For how long after the last successful authentication a user is considered
   // authenticated without repeating the challenge.
   constexpr static base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
   // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
-  // explanation.
-  explicit PasswordAccessAuthenticator(ReauthCallback os_reauth_call);
+  // explanation. |timeout_call| is passed to |timeout_call_| and will be called
+  // when |auth_timer_| runs out.
+  PasswordAccessAuthenticator(ReauthCallback os_reauth_call,
+                              TimeoutCallback timeout_call);
 
   PasswordAccessAuthenticator(const PasswordAccessAuthenticator&) = delete;
   PasswordAccessAuthenticator& operator=(const PasswordAccessAuthenticator&) =
@@ -65,12 +69,16 @@ class PasswordAccessAuthenticator {
   void OnUserReauthenticationResult(AuthResultCallback callback,
                                     bool authenticated);
 
-  // The last time the user was successfully authenticated.
-  base::Time last_authentication_time_;
-
   // Used to directly present the authentication challenge (such as the login
   // prompt) to the user.
   ReauthCallback os_reauth_call_;
+
+  // Fired after `kAuthValidityPeriod` after successful user authentication.
+  TimeoutCallback timeout_call_;
+
+  // Used to keep track of time once the user passed the auth challenge. Once it
+  // runs out, |timeout_call_| will be run.
+  base::RetainingOneShotTimer auth_timer_;
 };
 
 }  // namespace password_manager
