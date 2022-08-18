@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -285,6 +286,149 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(incognito_tabs,
             incognito_browser->tab_strip_model()->GetTabCount());
   EXPECT_EQ(browser_tabs + 2, browser()->tab_strip_model()->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
+  Browser* regular_browser = browser();
+  BookmarkModel* bookmark_model =
+      WaitForBookmarkModel(regular_browser->profile());
+  const BookmarkNode* const bbar = bookmark_model->bookmark_bar_node();
+  ASSERT_TRUE(bbar->children().empty());
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  BookmarkModel* incognito_model =
+      WaitForBookmarkModel(incognito_browser->profile());
+  const BookmarkNode* const incognito_bbar =
+      incognito_model->bookmark_bar_node();
+
+  auto close_all_tabs_except_first = [](Browser* browser) {
+    int num_tabs = browser->tab_strip_model()->GetTabCount();
+    for (int i = 0; i < num_tabs - 1; ++i) {
+      ASSERT_TRUE(
+          browser->tab_strip_model()->CloseWebContentsAt(num_tabs - 1 - i, 0));
+    }
+  };
+
+  auto open_urls_and_test = [&regular_browser, &incognito_browser, &bbar,
+                             &close_all_tabs_except_first, this]() {
+    // open all in new tab from regular browser
+    {
+      close_all_tabs_except_first(regular_browser);
+      close_all_tabs_except_first(incognito_browser);
+      chrome::OpenAllIfAllowed(regular_browser, {bbar},
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               false);
+      int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
+      int num_tabs_incognito =
+          incognito_browser->tab_strip_model()->GetTabCount();
+      EXPECT_EQ(num_tabs_regular, 5);
+      EXPECT_EQ(num_tabs_incognito, 1);
+    }
+
+    // open all in a new window from regular browser
+    {
+      close_all_tabs_except_first(regular_browser);
+      close_all_tabs_except_first(incognito_browser);
+      chrome::OpenAllIfAllowed(regular_browser, {bbar},
+                               WindowOpenDisposition::NEW_WINDOW, false);
+      Browser* regular_browser2 = nullptr;
+      for (auto* browser_instance : *BrowserList::GetInstance()) {
+        if (browser_instance != incognito_browser &&
+            browser_instance != regular_browser)
+          regular_browser2 = browser_instance;
+      }
+      // new browser needs to be opened
+      EXPECT_NE(regular_browser2, nullptr);
+      int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
+      int num_tabs_regular2 =
+          regular_browser2->tab_strip_model()->GetTabCount();
+      EXPECT_EQ(num_tabs_regular, 1);
+      EXPECT_EQ(num_tabs_regular2, 4);
+      CloseBrowserSynchronously(regular_browser2);
+    }
+
+    // open all in a new incognito window from regular browser
+    {
+      close_all_tabs_except_first(regular_browser);
+      close_all_tabs_except_first(incognito_browser);
+      chrome::OpenAllIfAllowed(regular_browser, {bbar},
+                               WindowOpenDisposition::OFF_THE_RECORD, false);
+      int num_tabs_incognito =
+          incognito_browser->tab_strip_model()->GetTabCount();
+      EXPECT_EQ(num_tabs_incognito, 3);
+    }
+  };
+
+  auto open_urls_from_incognito_and_test = [&regular_browser,
+                                            &incognito_browser, &incognito_bbar,
+                                            &close_all_tabs_except_first,
+                                            this]() {
+    // open all in new tab from incognito
+    {
+      close_all_tabs_except_first(regular_browser);
+      close_all_tabs_except_first(incognito_browser);
+      chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               false);
+      int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
+      int num_tabs_incognito =
+          incognito_browser->tab_strip_model()->GetTabCount();
+      EXPECT_EQ(num_tabs_regular, 3);
+      EXPECT_EQ(num_tabs_incognito, 3);
+    }
+
+    // open all in new window from incognito
+    {
+      close_all_tabs_except_first(regular_browser);
+      close_all_tabs_except_first(incognito_browser);
+      chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
+                               WindowOpenDisposition::NEW_WINDOW, false);
+      Browser* incognito_browser2 = nullptr;
+      for (auto* browser_instance : *BrowserList::GetInstance()) {
+        if (browser_instance != incognito_browser &&
+            browser_instance != regular_browser)
+          incognito_browser2 = browser_instance;
+      }
+      // new browser needs to be opened
+      EXPECT_NE(incognito_browser2, nullptr);
+      int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
+      int num_tabs_incognito =
+          incognito_browser->tab_strip_model()->GetTabCount();
+      int num_tabs_incognito2 =
+          incognito_browser2->tab_strip_model()->GetTabCount();
+      EXPECT_EQ(num_tabs_regular, 3);
+      EXPECT_EQ(num_tabs_incognito, 1);
+      EXPECT_EQ(num_tabs_incognito2, 2);
+      CloseBrowserSynchronously(incognito_browser2);
+    }
+  };
+
+  {
+    // Bookmark 4 pages, with the first and third one not being able to be
+    // opened in incognito mode
+    bookmark_model->AddURL(bbar, 0, u"Settings",
+                           GURL(chrome::kChromeUISettingsURL));
+    bookmark_model->AddURL(bbar, 1, u"Google", GURL("http://www.google.com"));
+    bookmark_model->AddURL(bbar, 2, u"Extensions",
+                           GURL(chrome::kChromeUIExtensionsURL));
+    bookmark_model->AddURL(bbar, 3, u"Gmail", GURL("http://mail.google.com"));
+    open_urls_and_test();
+    open_urls_from_incognito_and_test();
+    bookmark_model->RemoveAllUserBookmarks();
+  }
+  {
+    // Bookmark 4 pages, with the second and fourth one not being able to be
+    // opened in incognito mode
+    bookmark_model->AddURL(bbar, 0, u"Google", GURL("http://www.google.com"));
+    bookmark_model->AddURL(bbar, 1, u"Settings",
+                           GURL(chrome::kChromeUISettingsURL));
+    bookmark_model->AddURL(bbar, 2, u"Gmail", GURL("http://mail.google.com"));
+    bookmark_model->AddURL(bbar, 3, u"Extensions",
+                           GURL(chrome::kChromeUIExtensionsURL));
+    open_urls_and_test();
+    open_urls_from_incognito_and_test();
+    bookmark_model->RemoveAllUserBookmarks();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,

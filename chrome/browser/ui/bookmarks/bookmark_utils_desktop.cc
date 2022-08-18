@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -148,38 +149,95 @@ OpenedWebContentsSet OpenAllHelper(Browser* browser,
                                    WindowOpenDisposition initial_disposition) {
   OpenedWebContentsSet::container_type opened_tabs;
   WindowOpenDisposition disposition = initial_disposition;
-  Profile* profile = nullptr;
+  // We keep track of (potentially) two browsers in addition to the original
+  // browser. This allows us to open the URLs in the correct
+  // browser depending on the URL type and `initial_disposition`.
+  Browser* regular_browser = nullptr;
+  Browser* incognito_browser = nullptr;
   BookmarkNavigationWrapper nav_wrapper;
+  Profile* profile = nullptr;
+  if (browser)
+    profile = browser->profile();
+  bool opening_urls_in_incognito = false;
+  if (profile) {
+    opening_urls_in_incognito =
+        profile->IsIncognitoProfile() ||
+        initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
+  } else {
+    opening_urls_in_incognito =
+        initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
+  }
+
   for (std::vector<UrlAndId>::const_iterator url_and_id_it =
            bookmark_urls.begin();
        url_and_id_it != bookmark_urls.end(); ++url_and_id_it) {
+    bool url_allowed_in_incognito =
+        IsURLAllowedInIncognito(url_and_id_it->url, nullptr);
+
+    // Set the browser from which the URL will be opened. If neither
+    // `incognito_browser` nor `regular_browser` is set we use the original
+    // browser, but `NavigateTo` can create a new browser
+    // depending on the disposition and URL type.
+    Browser* browser_to_use = browser;
+    if (opening_urls_in_incognito && url_allowed_in_incognito) {
+      if (incognito_browser)
+        browser_to_use = incognito_browser;
+    } else {
+      if (regular_browser)
+        browser_to_use = regular_browser;
+    }
+    if (browser_to_use)
+      profile = browser_to_use->profile();
     NavigateParams params(profile, url_and_id_it->url,
                           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     params.disposition = disposition;
-    params.browser = browser;
+    params.browser = browser_to_use;
     base::WeakPtr<content::NavigationHandle> handle =
         nav_wrapper.NavigateTo(&params);
     content::WebContents* opened_tab =
         handle ? handle->GetWebContents() : nullptr;
-    if (handle && url_and_id_it->id != -1) {
+    if (!opened_tab)
+      continue;
+
+    if (url_and_id_it->id != -1) {
       ChromeNavigationUIData* ui_data =
           static_cast<ChromeNavigationUIData*>(handle->GetNavigationUIData());
       if (ui_data)
         ui_data->set_bookmark_id(url_and_id_it->id);
     }
-    if (url_and_id_it == bookmark_urls.begin()) {
-      // We opened the first URL which may have opened a new window or clobbered
-      // the current page, reset the browser instance and assign the profile for
-      // the other navigations.
-      if (opened_tab) {
-        profile = Profile::FromBrowserContext(opened_tab->GetBrowserContext());
-        browser = nullptr;
+
+    bool opening_in_new_window =
+        disposition == WindowOpenDisposition::NEW_WINDOW ||
+        disposition == WindowOpenDisposition::OFF_THE_RECORD;
+    // If we are opening URLs in a new window we set the disposition to
+    // `NEW_BACKGROUND_TAB` so that the rest of the URLs open in a new tab
+    // instead of a new window.
+    // Exception is when we are opening URLs in new incognito window
+    // there is a URL that is not allowed in incognito mode.
+    // In this case we don't set the disposition to `NEW_BACKGROUND_TAB`
+    // until we have opened the first URL that can be opened in incognito.
+    // See crbug.com/1349283.
+    if (opening_in_new_window) {
+      if (!opening_urls_in_incognito || url_allowed_in_incognito) {
+        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       }
-      disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
     }
 
-    if (opened_tab)
-      opened_tabs.push_back(opened_tab);
+    // After we open a URL there can be a new browser created, depending on
+    // the disposition and the URL type.
+    Profile* new_tab_profile =
+        Profile::FromBrowserContext(opened_tab->GetBrowserContext());
+    if (new_tab_profile->IsIncognitoProfile()) {
+      if (!incognito_browser) {
+        incognito_browser = chrome::FindBrowserWithWebContents(opened_tab);
+      }
+    } else {
+      if (!regular_browser) {
+        regular_browser = chrome::FindBrowserWithWebContents(opened_tab);
+      }
+    }
+
+    opened_tabs.push_back(opened_tab);
   }
 
   // Constructing the return value in this way is significantly more efficient.
