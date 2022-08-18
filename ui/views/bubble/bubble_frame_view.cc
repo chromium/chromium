@@ -368,13 +368,33 @@ void BubbleFrameView::UpdateMainImage() {
   if (model.IsEmpty()) {
     main_image_->SetVisible(false);
   } else {
+    // This max increase is the difference between the 448 and 320 snapping
+    // points in ChromeLayoutProvider, but they are not publicly visible in that
+    // API. We set the size of the main image so that the dialog increases in
+    // size exactly one snapping point. At the point of writing this means that
+    // we are using a 112x112px image.
+    // Ideally this would be handled inside the ImageView, but we do cropping
+    // and scaling outside (through ScaleAspectRatioAndCropCenter). We should
+    // consider moving that functionality into ImageView or ImageModel without
+    // having to specify an external size before painting.
+    constexpr int kMainImageDialogWidthIncrease = 128;
+    constexpr int kBorderInsets = 16;
+    constexpr int kMainImageDimension =
+        kMainImageDialogWidthIncrease - kBorderInsets;
+    constexpr int kBorderStrokeThickness = 1;
+
     main_image_->SetImage(ScaleAspectRatioAndCropCenter(
-        gfx::Size(128, 128), model.GetImage().AsImageSkia()));
+        gfx::Size(kMainImageDimension, kMainImageDimension),
+        model.GetImage().AsImageSkia()));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
-        1, 8, gfx::Insets(16),
+        kBorderStrokeThickness,
+        LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh,
+                                                     gfx::Size()),
+        gfx::Insets(kBorderInsets - kBorderStrokeThickness),
         GetColorProvider()
             ? GetColorProvider()->GetColor(ui::kColorBubbleBorder)
             : gfx::kPlaceholderColor));
+
     main_image_->SetVisible(true);
   }
 }
