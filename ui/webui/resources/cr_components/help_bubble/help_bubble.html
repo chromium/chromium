@@ -68,8 +68,8 @@
   }
 
   #topContainer {
-    align-items: flex-start;
     display: flex;
+    flex-direction: row;
   }
 
   #progress {
@@ -79,34 +79,36 @@
 
   #progress div {
     --help-bubble-progress-size: 8px;
+    background-color: var(--help-bubble-text-color);
     border: 1px solid var(--help-bubble-text-color);
     border-radius: 50%;
     display: inline-block;
     height: var(--help-bubble-progress-size);
-    margin-bottom: var(--help-bubble-element-spacing);
     margin-inline-end: var(--help-bubble-element-spacing);
-    margin-top: 4px;
+    margin-top: 5px;
     width: var(--help-bubble-progress-size);
   }
 
-  .total-progress {
-    background-color: var(--help-bubble-text-color);
+  #progress .total-progress {
+    background-color: var(--help-bubble-background);
   }
 
-  div.body {
-    flex: auto;
+  .body {
+    flex: 1;
     font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 20px;
   }
 
-  div.title {
-    flex: auto;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
-
-  div.hidden {
-    display: none;
+  .title {
+    flex: 1;
+    font-family: 'Roboto';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
   }
 
   /* Note: help bubbles have the same color treatment in both light and dark
@@ -119,40 +121,69 @@
     --help-bubble-text-color: var(--google-grey-200);
     background-color: var(--help-bubble-background);
     border-radius: 8px;
+    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
     color: var(--help-bubble-text-color);
-    padding: 12px 16px;
-    width: 362px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 20px;
+    width: 340px;
+  }
+
+  #main {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: var(--help-bubble-element-spacing);
+  }
+
+  #middleRowSpacer {
+    margin-inline-start: 32px;
   }
 
   cr-icon-button {
     --cr-icon-button-fill-color: var(--help-bubble-text-color);
     --cr-icon-button-hover-background-color:
-        rgba(var(--google-blue-300-rgb), .3);
+      rgba(var(--google-blue-300-rgb), .3);
     --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 20px;
+    --cr-icon-button-size: 24px;
     --cr-icon-button-stroke-color: var(--help-bubble-text-color);
+    box-sizing: border-box;
     display: block;
     flex: none;
     float: right;
+    height: var(--cr-icon-button-size);
     margin: 0;
-    margin-inline-end: 4px;
-    margin-inline-start: 12px;
+    margin-inline-start: var(--help-bubble-element-spacing);
     order: 2;
+    width: var(--cr-icon-button-size);
   }
 
   cr-icon-button:focus {
     border: 2px solid var(--help-bubble-text-color);
   }
 
+  #infoIcon {
+    --info-icon-button-size: 24px;
+    height: var(--info-icon-button-size);
+    margin-inline-end: var(--help-bubble-element-spacing);
+    width: var(--info-icon-button-size);
+  }
+
   #buttons {
-    text-align: end;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 24px;
   }
 
   cr-button {
     --text-color: var(--help-bubble-text-color);
     border-color: var(--help-bubble-text-color);
+  }
+
+  cr-button:not(:first-child) {
     margin-inline-start: var(--help-bubble-element-spacing);
-    margin-top: var(--help-bubble-element-spacing);
   }
 
   cr-button:focus {
@@ -169,19 +200,16 @@
     border: 2px solid var(--help-bubble-background);
     box-shadow: 0 0 0 1px var(--help-bubble-text-color);
   }
-
 </style>
 
 <div class="help-bubble">
   <div id="topContainer">
-    <cr-icon-button id="close" iron-icon="cr:close"
-        aria-label$="[[closeText]]" on-click="dismiss_">
-    </cr-icon-button>
     <div id="progress" hidden$="[[!progress]]">
       <template is="dom-repeat" items="[[progressData_]]">
         <div class$="[[getProgressClass_(index)]]"></div>
       </template>
     </div>
+    <div id="infoIcon" hidden$="[[!shouldShowInfoIcon_(progress, infoIcon)]]"></div>
     <div class="title"
          hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
       [[titleText]]
@@ -190,16 +218,14 @@
          hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
       [[bodyText]]
     </div>
+    <cr-icon-button id="close" iron-icon="cr:close"
+      hidden$="[[!shouldShowCloseButton_(buttons, forceCloseButton)]]"
+      aria-label$="[[closeText]]" on-click="dismiss_">
+    </cr-icon-button>
   </div>
-  <div id="main">
-    <div class="title"
-         hidden$="[[!shouldShowTitleInMain_(progress, titleText)]]">
-      [[titleText]]
-    </div>
-    <div class="body"
-         hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
-      [[bodyText]]
-    </div>
+  <div id="main" hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
+    <div id="middleRowSpacer" hidden$="[[!shouldShowInfoIcon_(progress, infoIcon)]]"></div>
+    <div class="body">[[bodyText]]</div>
   </div>
   <div id="buttons" hidden$="[[!buttons.length]]">
     <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">

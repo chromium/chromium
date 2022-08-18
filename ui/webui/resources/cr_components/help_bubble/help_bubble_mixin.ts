@@ -169,6 +169,7 @@ export const HelpBubbleMixin = dedupingMixin(
           bubble.closeText = params.closeButtonAltText;
           bubble.position = params.position;
           bubble.bodyText = params.bodyText;
+          bubble.forceCloseButton = params.forceCloseButton;
           bubble.titleText = params.titleText || '';
           bubble.progress = params.progress || null;
           assert(

@@ -35,13 +35,20 @@ suite('CrComponentsHelpBubbleTest', () => {
     const headerEl =
         helpBubble.$.topContainer.querySelector<HTMLElement>(query);
     const mainEl = helpBubble.$.main.querySelector<HTMLElement>(query);
-    assertTrue(!!headerEl);
-    assertTrue(!!mainEl);
+    assertTrue(
+        !!headerEl,
+        `getMovableElement - ${query} element should exist in header`);
+    assertTrue(
+        !!mainEl, `getMovableElement - ${query} element should exist in main`);
     if (inTopContainer) {
-      assertTrue(mainEl.hidden);
+      assertFalse(
+          isVisible(mainEl),
+          'getMovableElement - element in main should not be visible');
       return headerEl;
     }
-    assertTrue(headerEl.hidden);
+    assertFalse(
+        isVisible(headerEl),
+        'getMovableElement - element in header should not be visible');
     return mainEl;
   }
 
@@ -63,7 +70,9 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('bubble starts closed wth no anchor', () => {
-    assertEquals(null, helpBubble.getAnchorElement());
+    assertEquals(
+        null, helpBubble.getAnchorElement(),
+        'help bubble should have no anchor');
   });
 
   const HELP_BUBBLE_BODY = 'help bubble body';
@@ -77,11 +86,14 @@ suite('CrComponentsHelpBubbleTest', () => {
 
     assertEquals(
         document.querySelector<HTMLElement>('#p1'),
-        helpBubble.getAnchorElement());
+        helpBubble.getAnchorElement(),
+        'help bubble should have correct anchor element');
     const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden);
-    assertEquals(HELP_BUBBLE_BODY, bodyElement.textContent!.trim());
-    assertTrue(isVisible(helpBubble));
+    assertFalse(bodyElement.hidden, 'body should not be hidden');
+    assertEquals(
+        HELP_BUBBLE_BODY, bodyElement.textContent!.trim(),
+        'body content show match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
 
   test('help bubble titles shows', () => {
@@ -91,11 +103,15 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.titleText = HELP_BUBBLE_TITLE;
     helpBubble.show();
 
-    assertTrue(isVisible(helpBubble));
-    const titleElement = getMovableElement('title', true);
-    assertFalse(titleElement.hidden);
-    assertEquals(HELP_BUBBLE_TITLE, titleElement.textContent!.trim());
-    assertTrue(isVisible(titleElement));
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+    const titleElement =
+        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    assertTrue(!!titleElement, 'title element should exist');
+    assertFalse(titleElement.hidden, 'title element should not be hidden');
+    assertEquals(
+        HELP_BUBBLE_TITLE, titleElement.textContent!.trim(),
+        'title content should match');
+    assertTrue(isVisible(titleElement), 'title element should be visible');
   });
 
   test('help bubble titles hides when no title set', () => {
@@ -104,9 +120,11 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
-    assertTrue(isVisible(helpBubble));
-    const titleElement = getMovableElement('title', true);
-    assertTrue(titleElement.hidden);
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+    const titleElement =
+        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    assertTrue(!!titleElement, 'title element should exist');
+    assertTrue(titleElement.hidden, 'title element should be hidden');
   });
 
   test('help bubble closes', () => {
@@ -117,11 +135,14 @@ suite('CrComponentsHelpBubbleTest', () => {
 
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
-        helpBubble.getAnchorElement());
+        helpBubble.getAnchorElement(),
+        'title element should be anchor element');
 
     helpBubble.hide();
-    assertEquals(null, helpBubble.getAnchorElement());
-    assertFalse(isVisible(helpBubble));
+    assertEquals(
+        null, helpBubble.getAnchorElement(),
+        'help bubble should not have anchor');
+    assertFalse(isVisible(helpBubble), 'help bubble should not be visible');
   });
 
   test('help bubble open close open', () => {
@@ -133,24 +154,32 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
-        helpBubble.getAnchorElement());
+        helpBubble.getAnchorElement(),
+        'title element should be anchor element');
     const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden);
-    assertEquals(HELP_BUBBLE_BODY, bodyElement.textContent!.trim());
-    assertTrue(isVisible(helpBubble));
+    assertFalse(bodyElement.hidden, 'body element should not be hidden');
+    assertEquals(
+        HELP_BUBBLE_BODY, bodyElement.textContent!.trim(),
+        'body content should match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
 
   test('help bubble close button has correct alt text', () => {
     const CLOSE_TEXT: string = 'Close button text.';
     helpBubble.closeText = CLOSE_TEXT;
-    assertEquals(CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'));
+    assertEquals(
+        CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'),
+        'close button should have aria-label content');
   });
 
   test('help bubble click close button generates event', async () => {
     let clicked: number = 0;
     const callback = (e: HelpBubbleDismissedEvent) => {
-      assertEquals('title', e.detail.anchorId);
-      assertFalse(e.detail.fromActionButton);
+      assertEquals(
+          'title', e.detail.anchorId, 'dismiss event anchorId should match');
+      assertFalse(
+          e.detail.fromActionButton,
+          'dismiss event should not be from action button');
       ++clicked;
     };
     helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
@@ -160,9 +189,9 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
     const closeButton = helpBubble.$.close;
-    assertEquals(0, clicked);
+    assertEquals(0, clicked, 'close button should not be clicked');
     closeButton.click();
-    assertEquals(1, clicked);
+    assertEquals(1, clicked, 'close button should be clicked once');
   });
 
   test('help bubble adds one button', async () => {
@@ -172,11 +201,15 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.buttons = [{text: 'button1', isDefault: false}];
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
-    assertEquals(1, getNumButtons());
+    assertEquals(1, getNumButtons(), 'there should be one button');
     const button = helpBubble.getButtonForTesting(0);
-    assertTrue(!!button);
-    assertEquals(helpBubble.buttons[0]!.text, button.textContent);
-    assertFalse(button.classList.contains('default-button'));
+    assertTrue(!!button, 'button should exist');
+    assertEquals(
+        helpBubble.buttons[0]!.text, button.textContent,
+        'help bubble button content should match');
+    assertFalse(
+        button.classList.contains('default-button'),
+        'button should not have default class');
   });
 
   test('help bubble adds several buttons', async () => {
@@ -190,12 +223,16 @@ suite('CrComponentsHelpBubbleTest', () => {
     ];
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
-    assertEquals(3, getNumButtons());
+    assertEquals(3, getNumButtons(), 'there should be three buttons');
     for (let i: number = 0; i < 3; ++i) {
       const button = helpBubble.getButtonForTesting(i);
-      assertTrue(!!button);
-      assertEquals(helpBubble.buttons[i]!.text, button.textContent);
-      assertFalse(button.classList.contains('default-button'));
+      assertTrue(!!button, 'button should exist');
+      assertEquals(
+          helpBubble.buttons[i]!.text, button.textContent,
+          'button content should match');
+      assertFalse(
+          button.classList.contains('default-button'),
+          'button should not have default class');
     }
   });
 
@@ -207,8 +244,10 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
     const button = helpBubble.getButtonForTesting(0);
-    assertTrue(!!button);
-    assertTrue(button.classList.contains('default-button'));
+    assertTrue(!!button, 'button should exist');
+    assertTrue(
+        button.classList.contains('default-button'),
+        'button should have default class');
   });
 
   const THREE_BUTTONS_MIDDLE_DEFAULT: HelpBubbleButtonParams[] = [
@@ -224,27 +263,32 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
-    assertEquals(3, getNumButtons());
+    assertEquals(3, getNumButtons(), 'there should be three buttons');
 
     // Make sure all buttons were created as expected, including the default
     // button.
     let defaultButton: CrButtonElement|null = null;
     for (let i: number = 0; i < 3; ++i) {
       const button = helpBubble.getButtonForTesting(i);
-      assertTrue(!!button);
-      assertEquals(helpBubble.buttons[i]!.text, button.textContent);
+      assertTrue(!!button, 'button should exist');
+      assertEquals(
+          helpBubble.buttons[i]!.text, button.textContent,
+          'button content should match');
       const isDefault = helpBubble.buttons[i]!.isDefault;
-      assertEquals(isDefault, button.classList.contains('default-button'));
+      assertEquals(
+          isDefault, button.classList.contains('default-button'),
+          `button should ${isDefault ? '' : 'not '}have have default class`);
       if (isDefault) {
         defaultButton = button;
       }
     }
 
     // Verify that the default button is in the expected position.
-    assertTrue(!!defaultButton);
+    assertTrue(!!defaultButton, 'default button should exist');
     const expectedIndex = HelpBubbleElement.isDefaultButtonLeading() ? 0 : 2;
     assertEquals(
-        defaultButton, helpBubble.$.buttons.children.item(expectedIndex));
+        defaultButton, helpBubble.$.buttons.children.item(expectedIndex),
+        'default button should be at correct index');
   });
 
   test('help bubble click action button generates event', async () => {
@@ -269,10 +313,10 @@ suite('CrComponentsHelpBubbleTest', () => {
       helpBubble.show();
       await waitAfterNextRender(helpBubble);
       const button = helpBubble.getButtonForTesting(i);
-      assertTrue(!!button);
+      assertTrue(!!button, 'button should exist');
       button.click();
-      assertTrue(clicked);
-      assertEquals(i, buttonIndex);
+      assertTrue(clicked, 'button should be clicked');
+      assertEquals(i, buttonIndex, 'button index should match');
       helpBubble.hide();
     }
   });
@@ -286,9 +330,11 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
 
-    assertEquals(0, getProgressIndicators().length);
+    assertEquals(
+        0, getProgressIndicators().length,
+        'there should not be progress indicators');
     const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden);
+    assertFalse(bodyElement.hidden, 'body element should not be hidden');
   });
 
   test(
@@ -303,9 +349,16 @@ suite('CrComponentsHelpBubbleTest', () => {
         helpBubble.show();
         await waitAfterNextRender(helpBubble);
 
-        assertEquals(0, getProgressIndicators().length);
-        assertFalse(getMovableElement('title', true).hidden);
-        assertFalse(getMovableElement('body', false).hidden);
+        assertEquals(
+            0, getProgressIndicators().length,
+            'there should not be progress indicators');
+        const titleElement =
+            helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+        assertTrue(!!titleElement, 'title element should exist');
+        assertFalse(titleElement.hidden, 'title element should not be hidden');
+        assertFalse(
+            getMovableElement('body', false).hidden,
+            'body element should not be hidden');
       });
 
   test('help bubble with progress shows progress', async () => {
@@ -319,10 +372,16 @@ suite('CrComponentsHelpBubbleTest', () => {
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
-    assertEquals(3, elements.length);
-    assertTrue(elements.item(0)!.classList.contains('current-progress'));
-    assertTrue(elements.item(1)!.classList.contains('total-progress'));
-    assertTrue(elements.item(2)!.classList.contains('total-progress'));
+    assertEquals(3, elements.length, 'there should be three elements');
+    assertTrue(
+        elements.item(0)!.classList.contains('current-progress'),
+        'element 0 should have current-progress class');
+    assertTrue(
+        elements.item(1)!.classList.contains('total-progress'),
+        'element 1 should have total-progress class');
+    assertTrue(
+        elements.item(2)!.classList.contains('total-progress'),
+        'element 2 should have total-progress class');
     assertFalse(getMovableElement('body', false).hidden);
   });
 
@@ -338,12 +397,21 @@ suite('CrComponentsHelpBubbleTest', () => {
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
-    assertEquals(2, elements.length);
-    assertTrue(elements.item(0)!.classList.contains('current-progress'));
-    assertTrue(elements.item(1)!.classList.contains('total-progress'));
+    assertEquals(2, elements.length, 'there should be two elements');
+    assertTrue(
+        elements.item(0)!.classList.contains('current-progress'),
+        'element 0 should have current-progress class');
+    assertTrue(
+        elements.item(1)!.classList.contains('total-progress'),
+        'element 1 should have total-progress class');
 
-    assertFalse(getMovableElement('title', false).hidden);
-    assertFalse(getMovableElement('body', false).hidden);
+    const titleElement =
+        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    assertTrue(!!titleElement, 'title element should exist');
+    assertTrue(titleElement.hidden, 'title element should be hidden');
+    assertFalse(
+        getMovableElement('body', false).hidden,
+        'body element should not be hidden');
   });
 
   test('help bubble with full progress', async () => {
@@ -356,9 +424,13 @@ suite('CrComponentsHelpBubbleTest', () => {
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
-    assertEquals(2, elements.length);
-    assertTrue(elements.item(0)!.classList.contains('current-progress'));
-    assertTrue(elements.item(1)!.classList.contains('current-progress'));
+    assertEquals(2, elements.length, 'there should be two elements');
+    assertTrue(
+        elements.item(0)!.classList.contains('current-progress'),
+        'element 0 should have current-progress class');
+    assertTrue(
+        elements.item(1)!.classList.contains('current-progress'),
+        'element 1 should have current-progress class');
   });
 
   test('help bubble with empty progress', async () => {
@@ -371,8 +443,12 @@ suite('CrComponentsHelpBubbleTest', () => {
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
-    assertEquals(2, elements.length);
-    assertTrue(elements.item(0)!.classList.contains('total-progress'));
-    assertTrue(elements.item(1)!.classList.contains('total-progress'));
+    assertEquals(2, elements.length, 'there should be two elements');
+    assertTrue(
+        elements.item(0)!.classList.contains('total-progress'),
+        'element 0 should have total-progress class');
+    assertTrue(
+        elements.item(1)!.classList.contains('total-progress'),
+        'element 1 should have total-progress class');
   });
 });
