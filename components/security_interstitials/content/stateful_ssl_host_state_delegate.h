@@ -135,9 +135,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // GetValidCertDecisionsDict will create a new set of entries within the
   // dictionary if they do not already exist. Otherwise will fail and return if
   // NULL if they do not exist.
-  base::Value* GetValidCertDecisionsDict(
+  base::Value::Dict* GetValidCertDecisionsDict(
       CreateDictionaryEntriesDisposition create_entries,
-      base::Value& dict);
+      base::Value::Dict& dict);
 
   std::unique_ptr<base::Clock> clock_;
   raw_ptr<content::BrowserContext> browser_context_;
