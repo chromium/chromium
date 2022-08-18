@@ -32,6 +32,8 @@ source_set("system_extensions") {
     "system_extensions_registry_manager.h",
     "system_extensions_sandboxed_unpacker.cc",
     "system_extensions_sandboxed_unpacker.h",
+    "system_extensions_service_worker_manager.cc",
+    "system_extensions_service_worker_manager.h",
     "system_extensions_status_or.h",
     "system_extensions_webui_config.cc",
     "system_extensions_webui_config.h",

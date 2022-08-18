@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 
@@ -39,9 +40,12 @@ SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
   persistence_manager_ =
       std::make_unique<SystemExtensionsPersistenceManager>(profile);
   registry_manager_ = std::make_unique<SystemExtensionsRegistryManager>();
+  service_worker_manager_ =
+      std::make_unique<SystemExtensionsServiceWorkerManager>(
+          profile, registry_manager_->registry());
   install_manager_ = std::make_unique<SystemExtensionsInstallManager>(
       profile, *registry_manager_, registry_manager_->registry(),
-      *persistence_manager_);
+      *service_worker_manager_, *persistence_manager_);
 }
 
 SystemExtensionsProvider::~SystemExtensionsProvider() = default;

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -99,14 +100,16 @@ class OneShotEventWrapper {
   base::WeakPtrFactory<OneShotEventWrapper> weak_ptr_factory_{this};
 };
 
-// Class that can be used to wait for SystemExtensionsInstallManager events.
-// If an event is triggered more than once, this class will CHECK.
+// Class that can be used to wait for events triggered during installation. If
+// an event is triggered more than once, this class will CHECK.
 class TestInstallationEventsWaiter
-    : public SystemExtensionsInstallManager::Observer {
+    : public SystemExtensionsInstallManager::Observer,
+      public SystemExtensionsServiceWorkerManager::Observer {
  public:
-  explicit TestInstallationEventsWaiter(SystemExtensionsProvider& provider)
-      : install_manager_(provider.install_manager()) {
-    observation_.Observe(&install_manager_);
+  explicit TestInstallationEventsWaiter(SystemExtensionsProvider& provider) {
+    service_worker_manager_observation_.Observe(
+        &provider.service_worker_manager());
+    install_manager_observation_.Observe(&provider.install_manager());
   }
 
   ~TestInstallationEventsWaiter() override = default;
@@ -119,7 +122,7 @@ class TestInstallationEventsWaiter
     absl::optional<blink::ServiceWorkerStatusCode> status_code;
 
     base::RunLoop run_loop;
-    on_service_worker_registered_.Post(
+    on_register_service_worker_.Post(
         FROM_HERE,
         base::BindLambdaForTesting(
             [&](SystemExtensionId returned_id,
@@ -140,7 +143,7 @@ class TestInstallationEventsWaiter
     absl::optional<bool> succeeded;
 
     base::RunLoop run_loop;
-    on_service_worker_unregistered_.Post(
+    on_unregister_service_worker_.Post(
         FROM_HERE, base::BindLambdaForTesting([&](SystemExtensionId returned_id,
                                                   bool returned_succeeded) {
           id = returned_id;
@@ -171,18 +174,19 @@ class TestInstallationEventsWaiter
     return {id.value(), succeeded.value()};
   }
 
-  // SystemExtensionsInstallManager::Observer
-  void OnServiceWorkerRegistered(
+  // SystemExtensionsServiceWorkerManager::Observer
+  void OnRegisterServiceWorker(
       const SystemExtensionId& id,
       blink::ServiceWorkerStatusCode status_code) override {
-    on_service_worker_registered_.Signal(id, status_code);
+    on_register_service_worker_.Signal(id, status_code);
   }
 
-  void OnServiceWorkerUnregistered(const SystemExtensionId& id,
-                                   bool succeeded) override {
-    on_service_worker_unregistered_.Signal(id, succeeded);
+  void OnUnregisterServiceWorker(const SystemExtensionId& id,
+                                 bool succeeded) override {
+    on_unregister_service_worker_.Signal(id, succeeded);
   }
 
+  // SystemExtensionsInstallManager::Observer
   void OnSystemExtensionAssetsDeleted(const SystemExtensionId& id,
                                       bool succeeded) override {
     on_assets_deleted_.Signal(id, succeeded);
@@ -190,16 +194,17 @@ class TestInstallationEventsWaiter
 
  private:
   OneShotEventWrapper<SystemExtensionId, blink::ServiceWorkerStatusCode>
-      on_service_worker_registered_;
-  OneShotEventWrapper<SystemExtensionId, bool> on_service_worker_unregistered_;
+      on_register_service_worker_;
+  OneShotEventWrapper<SystemExtensionId, bool> on_unregister_service_worker_;
   OneShotEventWrapper<SystemExtensionId, bool> on_assets_deleted_;
+
+  base::ScopedObservation<SystemExtensionsServiceWorkerManager,
+                          SystemExtensionsServiceWorkerManager::Observer>
+      service_worker_manager_observation_{this};
 
   base::ScopedObservation<SystemExtensionsInstallManager,
                           SystemExtensionsInstallManager::Observer>
-      observation_{this};
-
-  // Should be present for the duration of the test.
-  SystemExtensionsInstallManager& install_manager_;
+      install_manager_observation_{this};
 };
 
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {

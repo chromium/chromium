@@ -25,6 +25,7 @@ namespace ash {
 class SystemExtensionsPersistenceManager;
 class SystemExtensionsRegistry;
 class SystemExtensionsRegistryManager;
+class SystemExtensionsServiceWorkerManager;
 
 class SystemExtensionsInstallManager {
  public:
@@ -36,14 +37,6 @@ class SystemExtensionsInstallManager {
   // a System Extension is installed or uninstalled.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnServiceWorkerRegistered(
-        const SystemExtensionId& system_extension_id,
-        blink::ServiceWorkerStatusCode status_code) {}
-
-    virtual void OnServiceWorkerUnregistered(
-        const SystemExtensionId& system_extension_id,
-        bool succeeded) {}
-
     virtual void OnSystemExtensionAssetsDeleted(
         const SystemExtensionId& system_extension_id,
         bool succeeded) {}
@@ -53,6 +46,7 @@ class SystemExtensionsInstallManager {
       Profile* profile,
       SystemExtensionsRegistryManager& registry_manager,
       SystemExtensionsRegistry& registry,
+      SystemExtensionsServiceWorkerManager& service_worker_manager,
       SystemExtensionsPersistenceManager& persistence_manager);
   SystemExtensionsInstallManager(const SystemExtensionsInstallManager&) =
       delete;
@@ -140,6 +134,7 @@ class SystemExtensionsInstallManager {
   // Safe to hold references because the parent class,
   // SystemExtensionsProvider, ensures this class is constructed after and
   // destroyed before the classes below.
+  const raw_ref<SystemExtensionsServiceWorkerManager> service_worker_manager_;
   const raw_ref<SystemExtensionsRegistryManager> registry_manager_;
   const raw_ref<SystemExtensionsRegistry> registry_;
   const raw_ref<SystemExtensionsPersistenceManager> persistence_manager_;

@@ -20,17 +20,13 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_webui_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
-#include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -40,8 +36,10 @@ SystemExtensionsInstallManager::SystemExtensionsInstallManager(
     Profile* profile,
     SystemExtensionsRegistryManager& registry_manager,
     SystemExtensionsRegistry& registry,
+    SystemExtensionsServiceWorkerManager& service_worker_manager,
     SystemExtensionsPersistenceManager& persistence_manager)
     : profile_(profile),
+      service_worker_manager_(service_worker_manager),
       registry_manager_(registry_manager),
       registry_(registry),
       persistence_manager_(persistence_manager) {
@@ -159,7 +157,6 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
 
   SystemExtensionId id = system_extension.id;
   RegisterSystemExtension(std::move(system_extension));
-
   std::move(final_callback).Run(std::move(id));
 }
 
@@ -174,46 +171,8 @@ void SystemExtensionsInstallManager::RegisterSystemExtension(
   SystemExtensionId id = system_extension.id;
   registry_manager_->AddSystemExtension(std::move(system_extension));
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SystemExtensionsInstallManager::RegisterServiceWorker,
-                     weak_ptr_factory_.GetWeakPtr(), id));
-}
-
-void SystemExtensionsInstallManager::RegisterServiceWorker(
-    const SystemExtensionId& system_extension_id) {
-  auto* system_extension = registry_->GetById(system_extension_id);
-  if (!system_extension) {
-    LOG(ERROR) << "Tried to install service worker for non-existent extension";
-    return;
-  }
-
-  blink::mojom::ServiceWorkerRegistrationOptions options(
-      system_extension->base_url, blink::mojom::ScriptType::kClassic,
-      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  blink::StorageKey key(url::Origin::Create(options.scope));
-
   // Installation Step #6: Register a Service Worker for the System Extension.
-  auto* worker_context =
-      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
-  worker_context->RegisterServiceWorker(
-      system_extension->service_worker_url, key, options,
-      base::BindOnce(
-          &SystemExtensionsInstallManager::NotifyServiceWorkerRegistered,
-          weak_ptr_factory_.GetWeakPtr(), system_extension_id));
-}
-
-void SystemExtensionsInstallManager::NotifyServiceWorkerRegistered(
-    const SystemExtensionId& system_extension_id,
-    blink::ServiceWorkerStatusCode status_code) {
-  if (status_code != blink::ServiceWorkerStatusCode::kOk) {
-    LOG(ERROR) << "Failed to register Service Worker: "
-               << blink::ServiceWorkerStatusToString(status_code);
-    return;
-  }
-
-  for (auto& observer : observers_)
-    observer.OnServiceWorkerRegistered(system_extension_id, status_code);
+  service_worker_manager_->RegisterServiceWorker(id);
 }
 
 void SystemExtensionsInstallManager::Uninstall(
@@ -223,18 +182,10 @@ void SystemExtensionsInstallManager::Uninstall(
     return;
   }
 
-  const GURL& scope = system_extension->base_url;
   const url::Origin& origin = url::Origin::Create(system_extension->base_url);
 
   // Uninstallation Step #1: Unregister the Service Worker.
-  auto* worker_context =
-      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
-  blink::StorageKey key(origin);
-  worker_context->UnregisterServiceWorker(
-      scope, key,
-      base::BindOnce(
-          &SystemExtensionsInstallManager::NotifyServiceWorkerUnregistered,
-          weak_ptr_factory_.GetWeakPtr(), system_extension_id));
+  service_worker_manager_->UnregisterServiceWorker(system_extension_id);
 
   // Uninstallation Step #2: Remove the WebUIConfig for the System Extension.
   content::WebUIConfigMap::GetInstance().RemoveConfig(origin);
@@ -251,18 +202,6 @@ void SystemExtensionsInstallManager::Uninstall(
       .Then(base::BindOnce(&SystemExtensionsInstallManager::NotifyAssetsRemoved,
                            weak_ptr_factory_.GetWeakPtr(),
                            system_extension_id));
-}
-
-void SystemExtensionsInstallManager::NotifyServiceWorkerUnregistered(
-    const SystemExtensionId& system_extension_id,
-    bool succeeded) {
-  // TODO(b/238578914): Consider changing UnregisterServiceWorker to pass a
-  // ServiceWorkerStatusCode instead of a bool.
-  if (!succeeded)
-    LOG(ERROR) << "Failed to unregister Service Worker.";
-
-  for (auto& observer : observers_)
-    observer.OnServiceWorkerUnregistered(system_extension_id, succeeded);
 }
 
 void SystemExtensionsInstallManager::NotifyAssetsRemoved(
