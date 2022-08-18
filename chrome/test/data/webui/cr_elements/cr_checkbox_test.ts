@@ -135,7 +135,8 @@ suite('cr-checkbox', function() {
   });
 
   test('LabelDisplay', function() {
-    const labelContainer = checkbox.$['label-container'] as HTMLElement;
+    const labelContainer = checkbox.shadowRoot!.querySelector<HTMLElement>(
+                               '#label-container') as HTMLElement;
     // Test that there's actually a label that's more than just the padding.
     assertTrue(labelContainer.offsetWidth > 20);
 

@@ -133,7 +133,6 @@ if (include_polymer) {
       "action_link_css.m.js",
       "cr_actionable_row_style.m.js",
       "cr_button/cr_button.m.js",
-      "cr_checkbox/cr_checkbox.js",
       "cr_dialog/cr_dialog.js",
       "cr_icon_button/cr_icon_button.js",
       "cr_icons_css.m.js",
@@ -173,7 +172,6 @@ if (include_polymer) {
       # Targets for auto-generated Polymer 3 JS Modules
       ":cr_elements_module_resources",
       "cr_button:closure_compile_module",
-      "cr_checkbox:closure_compile_module",
       "cr_dialog:closure_compile_module",
       "cr_icon_button:closure_compile_module",
       "cr_input:closure_compile_module",
@@ -277,7 +275,6 @@ if (include_polymer) {
       ":shared_style_css_module",
       ":shared_vars_css_module",
       "cr_button:cr_button_module",
-      "cr_checkbox:web_components",
       "cr_dialog:web_components",
       "cr_icon_button:web_components",
       "cr_input:web_components",

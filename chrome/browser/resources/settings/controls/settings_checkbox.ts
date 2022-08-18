@@ -55,7 +55,7 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
   }
 
   private onSubLabelChanged_() {
-    this.$.checkbox.ariaDescription = this.$.subLabel.textContent;
+    this.$.checkbox.ariaDescription = this.$.subLabel.textContent!;
   }
 
   /**

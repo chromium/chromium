@@ -31,7 +31,7 @@ const SyncConsentScreenElementBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   reviewSettingsBox:  CrCheckboxElement,
+ *   reviewSettingsBox:  HTMLElement,
  * }}
  */
 SyncConsentScreenElementBase.$;

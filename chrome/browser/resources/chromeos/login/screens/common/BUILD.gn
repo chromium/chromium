@@ -439,7 +439,6 @@ js_library("oobe_reset.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
     "//ui/webui/resources/js:util.m",
   ]
   extra_deps = [ ":oobe_reset_module" ]
@@ -586,7 +585,6 @@ js_library("sync_consent.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":sync_consent_module" ]
