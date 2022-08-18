@@ -581,6 +581,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) override;
   void OnWebPreferencesChanged() override;
 
+  void DisablePrerender2() override;
+  void ResetPrerender2Disabled() override;
+  // Resets the bit to explicitly disable Prerender2 for this WebContents. Note
+  // that this may not equate to the feature being enabled.
+  bool IsPrerender2Disabled();
+
   // RenderFrameHostDelegate ---------------------------------------------------
   bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                          const IPC::Message& message) override;
@@ -2329,6 +2335,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool pip_lock_aspect_ratio_ = false;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
+
+  bool prerender2_disabled_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

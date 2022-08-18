@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -96,9 +97,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
-    WebContentsDelegate* web_contents_delegate = web_contents.GetDelegate();
-    if (!web_contents_delegate ||
-        !web_contents_delegate->IsPrerender2Supported(web_contents)) {
+    WebContentsImpl* web_contents_impl =
+        static_cast<WebContentsImpl*>(&web_contents);
+    if (web_contents_impl->IsPrerender2Disabled()) {
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
       return RenderFrameHost::kNoFrameTreeNodeId;

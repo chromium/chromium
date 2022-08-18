@@ -9472,6 +9472,18 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   return nullptr;
 }
 
+void WebContentsImpl::DisablePrerender2() {
+  prerender2_disabled_ = true;
+}
+
+void WebContentsImpl::ResetPrerender2Disabled() {
+  prerender2_disabled_ = false;
+}
+
+bool WebContentsImpl::IsPrerender2Disabled() {
+  return prerender2_disabled_ || !GetDelegate()->IsPrerender2Supported(*this);
+}
+
 bool WebContentsImpl::CancelPrerendering(
     FrameTreeNode* frame_tree_node,
     PrerenderHost::FinalStatus final_status) {

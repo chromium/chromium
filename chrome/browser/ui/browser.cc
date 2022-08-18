@@ -1441,14 +1441,7 @@ bool Browser::IsBackForwardCacheSupported() {
 bool Browser::IsPrerender2Supported(content::WebContents& web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  bool disabled =
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      web_contents.GetBrowserContext()->GetUserData(
-          extensions::kIsPrerender2DisabledKey);
-#else
-      false;
-#endif
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) && !disabled;
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(
