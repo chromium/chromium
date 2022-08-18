@@ -4,16 +4,17 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
@@ -23,9 +24,9 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,7 +36,14 @@ namespace {
 
 // Number of times the sign-in promo should be displayed until it is
 // automatically dismissed.
-const int kAutomaticSigninPromoViewDismissCount = 20;
+constexpr int kAutomaticSigninPromoViewDismissCount = 20;
+constexpr int kAutomaticSigninPromoViewDismissCountTopOfFeed = 10;
+// User defaults key to get the last logged impression of the top-of-feed promo.
+NSString* const kLastSigninImpressionTopOfFeedKey =
+    @"last_signin_impression_top_of_feed";
+// The time representing a session to increment the impression count of the
+// top-of-feed promo, in seconds.
+constexpr int kTopOfFeedSessionTimeInterval = 60 * 30;
 
 // Returns true if the sign-in promo is supported for `access_point`.
 bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
@@ -427,22 +435,42 @@ const char* AlreadySeenSigninViewPreferenceKey(
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
                                         prefService:(PrefService*)prefService {
+  // Checks if user can't sign in.
   if (!signin::IsSigninAllowed(prefService)) {
     return NO;
   }
+
+  // Checks if the user has exceeded the max impression count.
+  const int maxDisplayedCount =
+      accessPoint ==
+              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+          ? kAutomaticSigninPromoViewDismissCountTopOfFeed
+          : kAutomaticSigninPromoViewDismissCount;
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(accessPoint);
-  if (displayedCountPreferenceKey &&
-      prefService->GetInteger(displayedCountPreferenceKey) >=
-          kAutomaticSigninPromoViewDismissCount) {
+  const int displayedCount =
+      prefService ? prefService->GetInteger(displayedCountPreferenceKey)
+                  : INT_MAX;
+  if (displayedCount >= maxDisplayedCount) {
     return NO;
   }
+
+  // For the top-of-feed promo, the user must have engaged with a feed first.
+  if (accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
+      ![[NSUserDefaults standardUserDefaults] boolForKey:kEngagedWithFeedKey]) {
+    return NO;
+  }
+
+  // Checks if user has already acknowledged or dismissed the promo.
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(accessPoint);
-  if (alreadySeenSigninViewPreferenceKey &&
+  if (alreadySeenSigninViewPreferenceKey && prefService &&
       prefService->GetBoolean(alreadySeenSigninViewPreferenceKey)) {
     return NO;
   }
+
+  // If no conditions are met, show the promo.
   return YES;
 }
 
@@ -517,21 +545,46 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewIsVisible {
   DCHECK(!self.invalidOrClosed);
-  if (self.signinPromoViewVisible)
+  if (self.signinPromoViewVisible) {
     return;
-  if (self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible)
+  }
+  if (self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible) {
     self.signinPromoViewState = ios::SigninPromoViewState::Unused;
+  }
   self.signinPromoViewVisible = YES;
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       self.accessPoint);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
-  if (!displayedCountPreferenceKey)
+  if (!displayedCountPreferenceKey) {
     return;
+  }
+
   int displayedCount =
       self.prefService->GetInteger(displayedCountPreferenceKey);
-  ++displayedCount;
-  self.prefService->SetInteger(displayedCountPreferenceKey, displayedCount);
+
+  // For the top-of-feed promo, we only record 1 impression per session. For all
+  // other promos, we record 1 impression per view.
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSDate* lastImpressionIncrementedDate =
+        [defaults objectForKey:kLastSigninImpressionTopOfFeedKey];
+
+    // If no impression has been logged, or if the last log was beyond the
+    // session time, log the current time and increment the count.
+    if (!lastImpressionIncrementedDate ||
+        [[NSDate date] timeIntervalSinceDate:lastImpressionIncrementedDate] >=
+            kTopOfFeedSessionTimeInterval) {
+      [defaults setObject:[NSDate date]
+                   forKey:kLastSigninImpressionTopOfFeedKey];
+      ++displayedCount;
+      self.prefService->SetInteger(displayedCountPreferenceKey, displayedCount);
+    }
+  } else {
+    ++displayedCount;
+    self.prefService->SetInteger(displayedCountPreferenceKey, displayedCount);
+  }
 }
 
 - (void)signinPromoViewIsHidden {

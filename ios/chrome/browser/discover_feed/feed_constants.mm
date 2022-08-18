@@ -9,3 +9,4 @@
 #endif
 
 NSString* const kFeedBackgroundRefreshTaskIdentifier = @"chrome.feed.refresh";
+NSString* const kEngagedWithFeedKey = @"engaged_with_feed_key";

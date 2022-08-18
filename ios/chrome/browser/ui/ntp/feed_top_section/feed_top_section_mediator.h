@@ -11,6 +11,7 @@
 
 class ChromeBrowserState;
 @protocol FeedTopSectionConsumer;
+@protocol NewTabPageDelegate;
 @class SigninPromoViewMediator;
 
 // Mediator for the NTP Feed top section, handling the interactions.
@@ -27,6 +28,9 @@ class ChromeBrowserState;
 
 // The mediator handling the interactions of the signin promo.
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoMediator;
+
+// Delegate for NTP related actions.
+@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
 // Initializes the mediator.
 - (void)setUp;

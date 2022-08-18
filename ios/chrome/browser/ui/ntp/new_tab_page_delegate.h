@@ -20,6 +20,9 @@
 // Returns whether Google is the user's default search engine.
 - (BOOL)isGoogleDefaultSearchEngine;
 
+// Returns whether the current NTP is a start surface.
+- (BOOL)isStartSurface;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_

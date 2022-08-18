@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -150,8 +151,9 @@
 - (void)updateShouldShowSigninPromo {
   DCHECK(self.browserState);
   self.shouldShowSigninPromo = NO;
-  // Return early for off the record mode.
-  if (self.browserState->IsOffTheRecord()) {
+  // Don't show the promo for incognito or start surface.
+  if (self.browserState->IsOffTheRecord() ||
+      [self.ntpDelegate isStartSurface]) {
     return;
   }
   if ([SigninPromoViewMediator

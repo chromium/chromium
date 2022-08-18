@@ -9,7 +9,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#include "base/time/time.h"
 #import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -1053,6 +1052,12 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 - (void)recordEngaged {
   // If neither feed has been engaged with, log "AllFeeds" engagement.
   if (!self.engagedReportedDiscover && !self.engagedReportedFollowing) {
+    // If the user has engaged with a feed, we record this as a user default.
+    // This can be used for things which require feed engagement as a condition,
+    // such as the top-of-feed signin promo.
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:YES forKey:kEngagedWithFeedKey];
+
     UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
   }

@@ -55,6 +55,7 @@
                               presenter:self];
   signinPromoViewMediator.consumer = feedTopSectionMediator;
   feedTopSectionMediator.signinPromoMediator = signinPromoViewMediator;
+  feedTopSectionMediator.ntpDelegate = self.ntpDelegate;
   feedTopSectionViewController.signinPromoDelegate = signinPromoViewMediator;
   feedTopSectionViewController.delegate = feedTopSectionMediator;
   feedTopSectionViewController.ntpDelegate = self.ntpDelegate;

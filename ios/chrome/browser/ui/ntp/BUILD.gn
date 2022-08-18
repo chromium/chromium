@@ -70,6 +70,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
