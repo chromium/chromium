@@ -12,6 +12,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/desktop_screenshot_editor_component_installer.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -198,6 +200,14 @@ void SharingHubModel::PopulateFirstPartyActions() {
       &kCopyIcon, true, gfx::ImageSkia(), "SharingHubDesktop.CopyURLSelected");
 
   if (DesktopScreenshotsFeatureEnabled(context_)) {
+    // Request installation of the optional editor component.
+    // This is delay-loaded until this point to save bandwidth for users
+    // who do not use sharing features hub.
+    component_updater::ComponentUpdateService* cus =
+        g_browser_process->component_updater();
+    if (cus)
+      component_updater::RegisterDesktopScreenshotEditorComponent(cus);
+
     first_party_action_list_.emplace_back(
         IDC_SHARING_HUB_SCREENSHOT,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
