@@ -127,6 +127,16 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.DownloadItem.Result"
+    enum="PhoneHubCameraRollDownloadResult" expires_after="2023-08-12">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Logs the result of attempting to download a file from Phone Hub's Camera
+    Roll.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.DownloadItem.TransferRate" units="KB/s"
     expires_after="2023-02-01">
   <owner>jasonsun@chromium.org</owner>

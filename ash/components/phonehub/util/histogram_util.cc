@@ -94,6 +94,11 @@ void LogMessageResult(proto::MessageType message_type,
     base::UmaHistogramEnumeration(histogram_name, result);
 }
 
+void LogCameraRollDownloadResult(CameraRollDownloadResult result) {
+  base::UmaHistogramEnumeration("PhoneHub.CameraRoll.DownloadItem.Result",
+                                result);
+}
+
 void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission) {
   base::UmaHistogramBoolean("PhoneHub.CameraRoll.AndroidHasStoragePermission",
                             has_permission);

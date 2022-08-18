@@ -11,6 +11,7 @@
 #include "ash/components/phonehub/fake_message_receiver.h"
 #include "ash/components/phonehub/fake_message_sender.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
@@ -36,6 +37,9 @@ using BatchDecodeCallback =
                             const std::vector<CameraRollItem>&)>;
 using FeatureState = multidevice_setup::mojom::FeatureState;
 using FileTransferStatus = secure_channel::mojom::FileTransferStatus;
+
+const char kDownloadResultMetricName[] =
+    "PhoneHub.CameraRoll.DownloadItem.Result";
 
 class FakeObserver : public CameraRollManager::Observer {
  public:
@@ -285,6 +289,15 @@ class CameraRollManagerImplTest : public testing::Test {
     EXPECT_EQ(bytes_transferred, latest_update->bytes_transferred);
   }
 
+  void SetCurrentItems(std::vector<std::string> item_keys) {
+    proto::FetchCameraRollItemsResponse response;
+    for (const auto& item_key : item_keys) {
+      PopulateItemProto(response.add_items(), item_key);
+    }
+    fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+    CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  }
+
   CameraRollManager* camera_roll_manager() {
     return camera_roll_manager_.get();
   }
@@ -443,12 +456,7 @@ TEST_F(CameraRollManagerImplTest,
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithExistingItems) {
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key3");
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1", "key2", "key3"});
 
   SendPhoneStatusUpdate(/*has_camera_roll_updates=*/true);
 
@@ -459,24 +467,20 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(3,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
   VerifyMetadataEqual(
-      response.items(0).metadata(),
+      camera_roll_manager()->current_items()[0].metadata(),
       GetSentFetchCameraRollItemsRequest().current_item_metadata(0));
   VerifyMetadataEqual(
-      response.items(1).metadata(),
+      camera_roll_manager()->current_items()[1].metadata(),
       GetSentFetchCameraRollItemsRequest().current_item_metadata(1));
   VerifyMetadataEqual(
-      response.items(2).metadata(),
+      camera_roll_manager()->current_items()[2].metadata(),
       GetSentFetchCameraRollItemsRequest().current_item_metadata(2));
 }
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithCameraRollSettingsDisabled) {
   SetCameraRollFeatureState(FeatureState::kDisabledByUser);
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1", "key2"});
 
   SendPhoneStatusUpdate(/*has_camera_roll_updates=*/true);
 
@@ -489,13 +493,9 @@ TEST_F(CameraRollManagerImplTest,
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithoutStoragePermission) {
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
-
+  SetCurrentItems({"key1", "key2"});
   UngrantAndroidStoragePermission();
+
   SendPhoneStatusUpdate(/*has_camera_roll_updates=*/false);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
@@ -517,11 +517,7 @@ TEST_F(CameraRollManagerImplTest, OnPhoneStatusSnapshotReceived) {
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithCameraRollSettingDisabled) {
   SetCameraRollFeatureState(FeatureState::kDisabledByUser);
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1", "key2"});
 
   SendPhoneStatusSnapshot();
 
@@ -534,13 +530,9 @@ TEST_F(CameraRollManagerImplTest,
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithoutStoragePermission) {
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
-
+  SetCurrentItems({"key1", "key2"});
   UngrantAndroidStoragePermission();
+
   SendPhoneStatusSnapshot();
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
@@ -550,13 +542,9 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
+TEST_F(CameraRollManagerImplTest, OnFeatureStatesChangedToDisabled) {
   SendPhoneStatusSnapshot();
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key2");
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1", "key2"});
 
   SetCameraRollFeatureState(FeatureState::kDisabledByUser);
 
@@ -580,11 +568,7 @@ TEST_F(CameraRollManagerImplTest, FeatureProhibitedByPolicy) {
 }
 
 TEST_F(CameraRollManagerImplTest, DownloadItem) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -619,15 +603,13 @@ TEST_F(CameraRollManagerImplTest, DownloadItem) {
   VerifyFileTransferProgress(/*payload_id=*/1234, FileTransferStatus::kSuccess,
                              /*total_bytes=*/1000,
                              /*bytes_transferred=*/1000);
+  histogram_tester_.ExpectBucketCount(kDownloadResultMetricName,
+                                      util::CameraRollDownloadResult::kSuccess,
+                                      /*expected_count=*/1);
 }
 
 TEST_F(CameraRollManagerImplTest, DownloadItemAndCurrentItemsChanged) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse items_response;
-  PopulateItemProto(items_response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
-      items_response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -639,20 +621,10 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndCurrentItemsChanged) {
       /*payload_id=*/1234);
   SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kInProgress,
                          /*total_bytes=*/1000, /*bytes_transferred=*/200);
-
-  VerifyFileTransferProgress(/*payload_id=*/1234,
-                             FileTransferStatus::kInProgress,
-                             /*total_bytes=*/1000,
-                             /*bytes_transferred=*/200);
-
   // The item being downloaded is no longer in the current item set, but the
   // download should still finish normally.
   SendPhoneStatusUpdate(/*has_camera_roll_updates=*/true);
-  proto::FetchCameraRollItemsResponse new_items_response;
-  PopulateItemProto(new_items_response.add_items(), "key2");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
-      new_items_response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key2"});
   SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kSuccess,
                          /*total_bytes=*/1000, /*bytes_transferred=*/1000);
 
@@ -663,32 +635,26 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndCurrentItemsChanged) {
 
 TEST_F(CameraRollManagerImplTest,
        DownloadItemWhenFileNoLongerAvailableOnPhone) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
   // Request to download the item that was added.
   camera_roll_manager()->DownloadItem(item_to_download.metadata());
-  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
-  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
-
   SendFetchCameraRollItemDataResponse(
       item_to_download.metadata(),
       proto::FetchCameraRollItemDataResponse::NOT_FOUND,
       /*payload_id=*/1234);
+
   EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kFileNotAvailable,
+      /*expected_count=*/1);
 }
 
-TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithGenericError) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithInvalidFileName) {
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -704,14 +670,14 @@ TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithGenericError) {
   EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
   EXPECT_EQ(CameraRollManager::Observer::DownloadErrorType::kGenericError,
             GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kInvalidFileName,
+      /*expected_count=*/1);
 }
 
 TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithInsufficientStorage) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -729,14 +695,61 @@ TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithInsufficientStorage) {
   EXPECT_EQ(
       CameraRollManager::Observer::DownloadErrorType::kInsufficientStorage,
       GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kInsufficientDiskSpace,
+      /*expected_count=*/1);
 }
 
-TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithNetworkError) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithDuplicatedPayloadId) {
+  SetCurrentItems({"key1"});
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  fake_camera_roll_download_manager()->set_expected_create_payload_files_result(
+      CameraRollDownloadManager::CreatePayloadFilesResult::
+          kPayloadAlreadyExists);
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+
+  EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+  EXPECT_EQ(CameraRollManager::Observer::DownloadErrorType::kGenericError,
+            GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kPayloadAlreadyExists,
+      /*expected_count=*/1);
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItemFailedWitDuplicatedFilePath) {
+  SetCurrentItems({"key1"});
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
+  fake_camera_roll_download_manager()->set_expected_create_payload_files_result(
+      CameraRollDownloadManager::CreatePayloadFilesResult::kNotUniqueFilePath);
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+
+  EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+  EXPECT_EQ(CameraRollManager::Observer::DownloadErrorType::kGenericError,
+            GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kNotUniqueFilePath,
+      /*expected_count=*/1);
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItemTransferFailed) {
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -753,28 +766,54 @@ TEST_F(CameraRollManagerImplTest, DownloadItemFailedWithNetworkError) {
 
   EXPECT_EQ(CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
             GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kTransferFailed,
+      /*expected_count=*/1);
 }
 
-TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
-  // Make an item available to CameraRollManager.
-  proto::FetchCameraRollItemsResponse response;
-  PopulateItemProto(response.add_items(), "key1");
-  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+TEST_F(CameraRollManagerImplTest, DownloadItemTransferCanceled) {
+  SetCurrentItems({"key1"});
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
   // Request to download the item that was added.
   camera_roll_manager()->DownloadItem(item_to_download.metadata());
-  EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
-  EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
+  SendFetchCameraRollItemDataResponse(
+      item_to_download.metadata(),
+      proto::FetchCameraRollItemDataResponse::AVAILABLE,
+      /*payload_id=*/1234);
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kInProgress,
+                         /*total_bytes=*/1000, /*bytes_transferred=*/200);
+  SendFileTransferUpdate(/*payload_id=*/1234, FileTransferStatus::kCanceled,
+                         /*total_bytes=*/0, /*bytes_transferred=*/0);
 
+  EXPECT_EQ(CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
+            GetLastDownloadError());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kTransferCanceled,
+      /*expected_count=*/1);
+}
+
+TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
+  SetCurrentItems({"key1"});
+  const CameraRollItem& item_to_download =
+      camera_roll_manager()->current_items().back();
+
+  // Request to download the item that was added.
+  camera_roll_manager()->DownloadItem(item_to_download.metadata());
   fake_connection_manager()->set_register_payload_file_result(false);
   SendFetchCameraRollItemDataResponse(
       item_to_download.metadata(),
       proto::FetchCameraRollItemDataResponse::AVAILABLE,
       /*payload_id=*/1234);
+
   EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+  histogram_tester_.ExpectBucketCount(
+      kDownloadResultMetricName,
+      util::CameraRollDownloadResult::kTargetFileNotAccessible,
+      /*expected_count=*/1);
 }
 
 TEST_F(CameraRollManagerImplTest, ItemsClearedWhenDeviceDisconnected) {

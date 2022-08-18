@@ -33,6 +33,37 @@ enum class CameraRollOptInEntryPoint {
   kMaxValue = kSettings,
 };
 
+// Enumeration of results of attempting to download a file from Phone Hub's
+// Camera Roll. Keep in  sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class CameraRollDownloadResult {
+  // The download was successful.
+  kSuccess = 0,
+  // The download was canceled likely due to connection loss.
+  kTransferCanceled = 1,
+  // Failed to transfer the file from the phone.
+  kTransferFailed = 2,
+  // The file was no longer available on the phone.
+  kFileNotAvailable = 3,
+  // The file could not be downloaded because the file name provided was
+  // invalid.
+  kInvalidFileName = 4,
+  // The file could not be downloaded because it was already being downloaded in
+  // a previous attempt.
+  kPayloadAlreadyExists = 5,
+  // The file could not be downloaded because there was not enough free disk
+  // space for the item requested.
+  kInsufficientDiskSpace = 6,
+  // The file could not be downloaded because a file already exists at the
+  // target path, likely a result of some race conditions.
+  kNotUniqueFilePath = 7,
+  // The file could not be downloaded because the destination path could not be
+  // opened for I/O.
+  kTargetFileNotAccessible = 8,
+  kMaxValue = kTargetFileNotAccessible,
+};
+
 // Enumeration of results of a tethering connection attempt.
 enum class TetherConnectionResult {
   kAttemptConnection = 0,
@@ -112,6 +143,9 @@ void LogMessageResult(proto::MessageType message, PhoneHubMessageResult result);
 // Logs if the Android component has storage access permission. If not, Camera
 // Roll is hidden.
 void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission);
+
+// Logs the result of a file download from Camera Roll.
+void LogCameraRollDownloadResult(CameraRollDownloadResult result);
 
 // Log multidevice permissions setup onboarding promotion in Phonehub tray.
 void LogPermissionOnboardingPromoShown(PermissionsOnboardingSetUpMode mode);

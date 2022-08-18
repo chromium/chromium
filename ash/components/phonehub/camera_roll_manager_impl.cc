@@ -66,6 +66,8 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
     const proto::FetchCameraRollItemDataResponse& response) {
   if (response.file_availability() !=
       proto::FetchCameraRollItemDataResponse::AVAILABLE) {
+    util::LogCameraRollDownloadResult(
+        util::CameraRollDownloadResult::kFileNotAvailable);
     NotifyCameraRollDownloadError(
         CameraRollManager::Observer::DownloadErrorType::kGenericError,
         response.metadata());
@@ -95,15 +97,31 @@ void CameraRollManagerImpl::OnPayloadFilesCreated(
       break;
     case CameraRollDownloadManager::CreatePayloadFilesResult::
         kInsufficientDiskSpace:
-      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
-                      << static_cast<int>(result);
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kInsufficientDiskSpace);
       NotifyCameraRollDownloadError(
           CameraRollManager::Observer::DownloadErrorType::kInsufficientStorage,
           response.metadata());
       break;
-    default:
-      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
-                      << static_cast<int>(result);
+    case CameraRollDownloadManager::CreatePayloadFilesResult::kInvalidFileName:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kInvalidFileName);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kGenericError,
+          response.metadata());
+      break;
+    case CameraRollDownloadManager::CreatePayloadFilesResult::
+        kPayloadAlreadyExists:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kPayloadAlreadyExists);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kGenericError,
+          response.metadata());
+      break;
+    case CameraRollDownloadManager::CreatePayloadFilesResult::
+        kNotUniqueFilePath:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kNotUniqueFilePath);
       NotifyCameraRollDownloadError(
           CameraRollManager::Observer::DownloadErrorType::kGenericError,
           response.metadata());
@@ -117,6 +135,8 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
     bool success) {
   if (!success) {
     camera_roll_download_manager_->DeleteFile(payload_id);
+    util::LogCameraRollDownloadResult(
+        util::CameraRollDownloadResult::kTargetFileNotAccessible);
     NotifyCameraRollDownloadError(
         CameraRollManager::Observer::DownloadErrorType::kGenericError,
         metadata);
@@ -132,12 +152,29 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
 void CameraRollManagerImpl::OnFileTransferUpdate(
     const proto::CameraRollItemMetadata& metadata,
     secure_channel::mojom::FileTransferUpdatePtr update) {
-  if (update->status == secure_channel::mojom::FileTransferStatus::kFailure ||
-      update->status == secure_channel::mojom::FileTransferStatus::kCanceled) {
-    NotifyCameraRollDownloadError(
-        CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
-        metadata);
+  switch (update->status) {
+    case secure_channel::mojom::FileTransferStatus::kInProgress:
+      break;
+    case secure_channel::mojom::FileTransferStatus::kSuccess:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kSuccess);
+      break;
+    case secure_channel::mojom::FileTransferStatus::kFailure:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kTransferFailed);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
+          metadata);
+      break;
+    case secure_channel::mojom::FileTransferStatus::kCanceled:
+      util::LogCameraRollDownloadResult(
+          util::CameraRollDownloadResult::kTransferCanceled);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
+          metadata);
+      break;
   }
+
   camera_roll_download_manager_->UpdateDownloadProgress(std::move(update));
 }
 
