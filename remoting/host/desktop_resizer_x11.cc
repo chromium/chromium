@@ -336,20 +336,14 @@ x11::RandR::Mode DesktopResizerX11::CreateMode(x11::RandR::Output output,
   mode.width = width;
   mode.height = height;
   mode.name_len = name.size();
-  randr_->CreateMode({root_, mode, name.c_str()});
-
-  if (!resources_.Refresh(randr_, root_))
-    return kInvalidMode;
-  x11::RandR::Mode mode_id = resources_.GetIdForMode(name);
-  if (mode_id == kInvalidMode) {
-    LOG(ERROR) << "No ID found for mode: " << name;
-    return kInvalidMode;
+  if (auto reply = randr_->CreateMode({root_, mode, name.c_str()}).Sync()) {
+    randr_->AddOutputMode({
+        output,
+        reply->mode,
+    });
+    return reply->mode;
   }
-  randr_->AddOutputMode({
-      output,
-      mode_id,
-  });
-  return mode_id;
+  return kInvalidMode;
 }
 
 void DesktopResizerX11::DeleteMode(x11::RandR::Output output,
