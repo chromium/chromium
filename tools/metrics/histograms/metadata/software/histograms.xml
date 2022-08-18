@@ -141,6 +141,9 @@ separator. The leading _ keeps the generated histogram names the same.
 
 <histogram name="SoftwareReporter.CreateJobResult{Engine}"
     enum="WinGetLastError" expires_after="2022-08-21">
+  <obsolete>
+    Removed 08-2022 since it only ever logged SUCCESS
+  </obsolete>
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

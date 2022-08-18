@@ -585,9 +585,6 @@ ReporterRunResult LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
       base::SetJobObjectLimitFlags(job.Get(),
                                    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE);
       launch_options.job_handle = job.Get();
-      uma.RecordCreateJobResult(ERROR_SUCCESS);
-    } else {
-      uma.RecordCreateJobResult(::GetLastError());
     }
   }
 

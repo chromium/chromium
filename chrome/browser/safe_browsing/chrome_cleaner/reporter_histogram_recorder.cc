@@ -239,11 +239,6 @@ void ReporterHistogramRecorder::RecordLogsUploadResult() const {
       LogsUploadResultRegistryError::NO_ERROR);
 }
 
-void ReporterHistogramRecorder::RecordCreateJobResult(DWORD result) const {
-  base::UmaHistogramSparse(FullName("SoftwareReporter.CreateJobResult"),
-                           result);
-}
-
 std::string ReporterHistogramRecorder::FullName(const std::string& name) const {
   if (suffix_.empty())
     return name;
