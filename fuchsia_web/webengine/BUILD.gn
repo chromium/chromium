@@ -62,7 +62,7 @@ _disallowed_ppapi_deps = [
   "//ppapi/thunk/*",
 ]
 
-# Although `enable_printing` is true for Fuchsia, no code should be linked.
+# Although `enable_basic_printing` is true on Fuchsia, no code should be linked.
 # "//printing:metafile" is used by //third_party/blink/renderer/core and
 # uses "//printing/common/*".
 # "//printing/mojom/*" is allowed because Blink public APIs use its types.
