@@ -45,7 +45,6 @@ const Color Color::kTransparent = Color(0x00000000);
 
 namespace {
 
-const RGBA32 kLightenedBlack = 0xFF545454;
 const RGBA32 kDarkenedWhite = 0xFFABABAB;
 
 const int kCStartAlpha = 153;     // 60%
@@ -122,11 +121,142 @@ inline const NamedColor* FindNamedColor(const String& name) {
   return FindColor(buffer, length);
 }
 
-}  // namespace
-
 RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
   return ColorFloatToRGBAByte(a) << 24 | ColorFloatToRGBAByte(r) << 16 |
          ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
+}
+
+constexpr RGBA32 MakeRGBA(int r, int g, int b, int a) {
+  return ClampTo(a, 0, 255) << 24 | ClampTo(r, 0, 255) << 16 |
+         ClampTo(g, 0, 255) << 8 | ClampTo(b, 0, 255);
+}
+
+constexpr double CalcHue(double temp1, double temp2, double hue_val) {
+  if (hue_val < 0.0)
+    hue_val += 6.0;
+  else if (hue_val >= 6.0)
+    hue_val -= 6.0;
+  if (hue_val < 1.0)
+    return temp1 + (temp2 - temp1) * hue_val;
+  if (hue_val < 3.0)
+    return temp2;
+  if (hue_val < 4.0)
+    return temp1 + (temp2 - temp1) * (4.0 - hue_val);
+  return temp1;
+}
+
+// Explanation of this algorithm can be found in the CSS Color 4 Module
+// specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
+// further explanation available at http://en.wikipedia.org/wiki/HSL_color_space
+
+// Hue is in the range of 0.0 to 6.0, the remainder are in the range 0.0 to 1.0.
+// Out parameters r, g, and b are also returned in range 0.0 to 1.0.
+constexpr void HSLToRGB(double hue,
+                        double saturation,
+                        double lightness,
+                        double& r,
+                        double& g,
+                        double& b) {
+  if (!saturation) {
+    r = g = b = lightness;
+  } else {
+    double temp2 = lightness <= 0.5
+                       ? lightness * (1.0 + saturation)
+                       : lightness + saturation - lightness * saturation;
+    double temp1 = 2.0 * lightness - temp2;
+
+    r = CalcHue(temp1, temp2, hue + 2.0);
+    g = CalcHue(temp1, temp2, hue);
+    b = CalcHue(temp1, temp2, hue - 2.0);
+  }
+}
+
+// Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
+constexpr RGBA32 MakeRGBAFromHSLA(double hue,
+                                  double saturation,
+                                  double lightness,
+                                  double alpha) {
+  const double scale_factor = 255.0;
+  double r = 0, g = 0, b = 0;
+  HSLToRGB(hue, saturation, lightness, r, g, b);
+
+  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
+                  static_cast<int>(round(g * scale_factor)),
+                  static_cast<int>(round(b * scale_factor)),
+                  static_cast<int>(round(alpha * scale_factor)));
+}
+
+// Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
+constexpr RGBA32 MakeRGBAFromHWBA(double hue,
+                                  double white,
+                                  double black,
+                                  double alpha) {
+  const double scale_factor = 255.0;
+
+  if (white + black >= 1.0) {
+    int gray = static_cast<int>(round(white / (white + black) * scale_factor));
+    return MakeRGBA(gray, gray, gray,
+                    static_cast<int>(round(alpha * scale_factor)));
+  }
+
+  // Leverage HSL to RGB conversion to find HWB to RGB, see
+  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
+  double r = 0, g = 0, b = 0;
+  HSLToRGB(hue, 1.0, 0.5, r, g, b);
+  r += white - (white + black) * r;
+  g += white - (white + black) * g;
+  b += white - (white + black) * b;
+
+  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
+                  static_cast<int>(round(g * scale_factor)),
+                  static_cast<int>(round(b * scale_factor)),
+                  static_cast<int>(round(alpha * scale_factor)));
+}
+
+constexpr int RedChannel(RGBA32 color) {
+  return (color >> 16) & 0xFF;
+}
+
+constexpr int GreenChannel(RGBA32 color) {
+  return (color >> 8) & 0xFF;
+}
+
+constexpr int BlueChannel(RGBA32 color) {
+  return color & 0xFF;
+}
+
+constexpr int AlphaChannel(RGBA32 color) {
+  return (color >> 24) & 0xFF;
+}
+
+}  // namespace
+
+Color::Color(int r, int g, int b) {
+  *this = FromRGB(r, g, b);
+}
+
+Color::Color(int r, int g, int b, int a) {
+  *this = FromRGBA(r, g, b, a);
+}
+
+// static
+Color Color::FromHSLA(double h, double s, double l, double a) {
+  return Color(MakeRGBAFromHSLA(h, s, l, a));
+}
+
+// static
+Color Color::FromHWBA(double h, double w, double b, double a) {
+  return Color(MakeRGBAFromHWBA(h, w, b, a));
+}
+
+// static
+Color Color::FromRGBAFloat(float r, float g, float b, float a) {
+  return Color(MakeRGBA32FromFloats(r, g, b, a));
+}
+
+// static
+Color Color::FromSkColor4f(SkColor4f fc) {
+  return Color(MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA));
 }
 
 SkColor4f Color::toSkColor4f() const {
@@ -135,12 +265,25 @@ SkColor4f Color::toSkColor4f() const {
   return SkColor4f{r, g, b, a};
 }
 
-RGBA32 MakeRGBAFromCMYKA(float c, float m, float y, float k, float a) {
-  double colors = 1 - k;
-  int r = static_cast<int>(nextafter(256, 0) * (colors * (1 - c)));
-  int g = static_cast<int>(nextafter(256, 0) * (colors * (1 - m)));
-  int b = static_cast<int>(nextafter(256, 0) * (colors * (1 - y)));
-  return MakeRGBA(r, g, b, static_cast<float>(nextafter(256, 0) * a));
+bool Color::HasAlpha() const {
+  return Alpha() < 255;
+}
+
+int Color::Red() const {
+  return RedChannel(Rgb());
+}
+int Color::Green() const {
+  return GreenChannel(Rgb());
+}
+int Color::Blue() const {
+  return BlueChannel(Rgb());
+}
+int Color::Alpha() const {
+  return AlphaChannel(Rgb());
+}
+
+RGBA32 Color::Rgb() const {
+  return color_;
 }
 
 bool Color::ParseHexColor(const LChar* name, unsigned length, Color& color) {
@@ -207,7 +350,8 @@ String Color::NameForLayoutTreeAsText() const {
 
 bool Color::SetNamedColor(const String& name) {
   const NamedColor* found_color = FindNamedColor(name);
-  color_ = found_color ? found_color->argb_value : 0;
+  *this =
+      found_color ? Color::FromRGBA32(found_color->argb_value) : kTransparent;
   return found_color;
 }
 
@@ -215,32 +359,9 @@ Color::operator SkColor() const {
   return SkColorSetARGB(Alpha(), Red(), Green(), Blue());
 }
 
-Color Color::Light() const {
-  // Hardcode this common case for speed.
-  if (color_ == kBlack.color_)
-    return Color(kLightenedBlack);
-
-  const float scale_factor = nextafterf(256.0f, 0.0f);
-
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
-
-  float v = std::max(r, std::max(g, b));
-
-  if (v == 0.0f)
-    // Lightened black with alpha.
-    return Color(0x54, 0x54, 0x54, Alpha());
-
-  float multiplier = std::min(1.0f, v + 0.33f) / v;
-
-  return Color(static_cast<int>(multiplier * r * scale_factor),
-               static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor), Alpha());
-}
-
 Color Color::Dark() const {
   // Hardcode this common case for speed.
-  if (color_ == kWhite.color_)
+  if (*this == kWhite)
     return Color(kDarkenedWhite);
 
   const float scale_factor = nextafterf(256.0f, 0.0f);

@@ -457,7 +457,7 @@ class ComplexOutlinePainter {
                            outline_style_ != EBorderStyle::kDouble;
     if (use_alpha_layer) {
       context_.BeginLayer(color_.Alpha() / 255.0);
-      color_.SetRGB(color_.Red(), color_.Green(), color_.Blue());
+      color_ = Color::FromRGB(color_.Red(), color_.Green(), color_.Blue());
     }
 
     SkPath outer_path = right_angle_outer_path_;

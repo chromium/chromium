@@ -538,8 +538,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
 
   // The result should be a blend of red and green.
   SkColor color = bitmap.getColor(kWidth / 2, kHeight / 2);
-  EXPECT_TRUE(RedChannel(color));
-  EXPECT_TRUE(GreenChannel(color));
+  EXPECT_TRUE(SkColorGetR(color));
+  EXPECT_TRUE(SkColorGetG(color));
 }
 
 TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {

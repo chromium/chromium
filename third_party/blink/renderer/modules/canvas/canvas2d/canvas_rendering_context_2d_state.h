@@ -338,7 +338,7 @@ class CanvasRenderingContext2DState final
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return AlphaChannel(shadow_color_) &&
+  return SkColorGetA(shadow_color_) &&
          (shadow_blur_ || !shadow_offset_.IsZero());
 }
 

@@ -113,8 +113,9 @@ void CSSRGB::setAlpha(
 }
 
 Color CSSRGB::ToColor() const {
-  return Color(ComponentToColorInput(r_), ComponentToColorInput(g_),
-               ComponentToColorInput(b_), ComponentToColorInput(alpha_));
+  return Color::FromRGBAFloat(
+      ComponentToColorInput(r_), ComponentToColorInput(g_),
+      ComponentToColorInput(b_), ComponentToColorInput(alpha_));
 }
 
 }  // namespace blink
