@@ -2503,8 +2503,8 @@ source_set("browser") {
       "tracing/cros_tracing_agent.h",
     ]
     deps += [
-      "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/dbus",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//services/data_decoder/public/cpp",
       "//services/data_decoder/public/mojom",

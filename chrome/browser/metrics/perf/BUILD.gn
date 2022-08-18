@@ -12,7 +12,7 @@ test("profile_provider_unittest") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura",

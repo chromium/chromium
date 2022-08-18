@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromeos/ash/components/dbus",
   "+chromeos/lacros",
   "+components/keyed_service/content",
   "+components/metrics",

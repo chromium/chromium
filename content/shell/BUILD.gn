@@ -373,7 +373,7 @@ static_library("content_shell_lib") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/dbus" ]
+    deps += [ "//chromeos/dbus" ]
   }
 
   if (is_chromeos_lacros) {

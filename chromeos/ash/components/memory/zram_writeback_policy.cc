@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::memory {
