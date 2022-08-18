@@ -11,7 +11,7 @@ window.onload = () => {
     const frameSet = document.querySelector('frameset');
     const frames = document.querySelectorAll('frame');
     assert_less_than(frames[0].offsetWidth, frameSet.offsetWidth);
-    assert_greater_than_equal(frames[0].offsetWidth, 0);
+    assert_greater_than(frames[0].offsetWidth, frames[1].offsetWidth);
     assert_greater_than_equal(frames[1].offsetWidth, 0);
   }, 'A large relative value should not produce weird sizes.');
 };

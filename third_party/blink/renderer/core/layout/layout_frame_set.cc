@@ -177,13 +177,13 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
   // NOTE: the relative value of 0* is treated as 1*.
   if (count_relative) {
     int last_relative = 0;
-    int remaining_relative = remaining_len;
+    int64_t remaining_relative = remaining_len;
 
     for (int i = 0; i < grid_len; ++i) {
       if (grid[i].IsRelative()) {
-        grid_layout[i] =
+        grid_layout[i] = ClampTo<int>(
             (ClampTo<int>(max(grid[i].Value(), 1.)) * remaining_relative) /
-            total_relative;
+            total_relative);
         remaining_len -= grid_layout[i];
         DCHECK_GE(remaining_len, 0);
         last_relative = i;
