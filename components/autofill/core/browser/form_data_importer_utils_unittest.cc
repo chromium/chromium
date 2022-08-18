@@ -70,4 +70,16 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
   EXPECT_THAT(queue, testing::ElementsAre(3, 2));
 }
 
+TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
+  AutofillProfile us_profile;
+  us_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  AutofillProfile empty_profile;
+  // Test prioritization: profile > variation service state > app locale
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, "DE", "de-AT", nullptr), "US");
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, "", "de-AT", nullptr), "US");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
+            "DE");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
+}
+
 }  // namespace autofill

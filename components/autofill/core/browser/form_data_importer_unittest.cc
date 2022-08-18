@@ -761,18 +761,6 @@ class FormDataImporterTest
   bool consider_variation_country_code_for_phone_numbers_;
 };
 
-TEST_P(FormDataImporterTest, GetPredictedCountryCode) {
-  const AutofillProfile us_profile =
-      ConstructProfileFromTypeValuePairs({{ADDRESS_HOME_COUNTRY, "US"}});
-  const AutofillProfile empty_profile;
-  // Test prioritization: profile > variation service state > app locale
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "DE", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(us_profile, "", "de-AT", nullptr), "US");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
-            "DE");
-  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
-}
-
 TEST_P(FormDataImporterTest, ComplementCountry) {
   base::test::ScopedFeatureList complement_country_feature;
   complement_country_feature.InitAndEnableFeature(
