@@ -118,15 +118,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
-// Flaky on Windows, Linux and Mac. See https://crbug.com/875908
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_TestAppViewRefusedDataShouldFail \
-  DISABLED_TestAppViewRefusedDataShouldFail
-#else
-#define MAYBE_TestAppViewRefusedDataShouldFail TestAppViewRefusedDataShouldFail
-#endif
-IN_PROC_BROWSER_TEST_F(AppViewTest, MAYBE_TestAppViewRefusedDataShouldFail) {
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
   const extensions::Extension* skeleton_app =
       InstallPlatformApp("app_view/shim/skeleton");
   TestHelper("testAppViewRefusedDataShouldFail",
