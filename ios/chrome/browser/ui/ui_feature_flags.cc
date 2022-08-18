@@ -27,7 +27,7 @@ const base::Feature kModernTabStrip{"ModernTabStrip",
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kIOS3PIntentsInIncognito{"kIOS3pIntentsInIncognito",
+const base::Feature kIOS3PIntentsInIncognito{"IOS3pIntentsInIncognito",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDefaultBrowserFullscreenPromoExperiment{
