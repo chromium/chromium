@@ -57,6 +57,19 @@ class ConfigBase final : public TargetConfig {
                      Semantics semantics,
                      const wchar_t* pattern) override;
   ResultCode AddDllToUnload(const wchar_t* dll_name) override;
+  ResultCode SetIntegrityLevel(IntegrityLevel integrity_level) override;
+  IntegrityLevel GetIntegrityLevel() const override;
+  ResultCode SetDelayedIntegrityLevel(IntegrityLevel integrity_level) override;
+  ResultCode SetLowBox(const wchar_t* sid) override;
+  ResultCode SetProcessMitigations(MitigationFlags flags) override;
+  MitigationFlags GetProcessMitigations() override;
+  ResultCode SetDelayedProcessMitigations(MitigationFlags flags) override;
+  MitigationFlags GetDelayedProcessMitigations() const override;
+  void AddRestrictingRandomSid() override;
+  void SetLockdownDefaultDacl() override;
+  ResultCode AddAppContainerProfile(const wchar_t* package_name,
+                                    bool create_profile) override;
+  scoped_refptr<AppContainer> GetAppContainer() override;
 
  private:
   // Can call Freeze()
@@ -88,6 +101,18 @@ class ConfigBase final : public TargetConfig {
   // Should only be called once the object is configured.
   PolicyGlobal* policy();
   std::vector<std::wstring>& blocklisted_dlls();
+  AppContainerBase* app_container();
+  IntegrityLevel integrity_level() { return integrity_level_; }
+  IntegrityLevel delayed_integrity_level() { return delayed_integrity_level_; }
+  bool add_restricting_random_sid() { return add_restricting_random_sid_; }
+  bool lockdown_default_dacl() { return lockdown_default_dacl_; }
+
+  IntegrityLevel integrity_level_;
+  IntegrityLevel delayed_integrity_level_;
+  MitigationFlags mitigations_;
+  MitigationFlags delayed_mitigations_;
+  bool add_restricting_random_sid_;
+  bool lockdown_default_dacl_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.
@@ -96,6 +121,8 @@ class ConfigBase final : public TargetConfig {
   raw_ptr<PolicyGlobal> policy_;
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
+  // AppContainer to be applied to the target process.
+  scoped_refptr<AppContainerBase> app_container_;
 };
 
 class PolicyBase final : public TargetPolicy {
@@ -118,14 +145,6 @@ class PolicyBase final : public TargetPolicy {
   std::wstring GetAlternateDesktop() const override;
   ResultCode CreateAlternateDesktop(bool alternate_winstation) override;
   void DestroyAlternateDesktop() override;
-  ResultCode SetIntegrityLevel(IntegrityLevel integrity_level) override;
-  IntegrityLevel GetIntegrityLevel() const override;
-  ResultCode SetDelayedIntegrityLevel(IntegrityLevel integrity_level) override;
-  ResultCode SetLowBox(const wchar_t* sid) override;
-  ResultCode SetProcessMitigations(MitigationFlags flags) override;
-  MitigationFlags GetProcessMitigations() override;
-  ResultCode SetDelayedProcessMitigations(MitigationFlags flags) override;
-  MitigationFlags GetDelayedProcessMitigations() const override;
   ResultCode SetDisconnectCsrss() override;
   void SetStrictInterceptions() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
@@ -133,11 +152,6 @@ class PolicyBase final : public TargetPolicy {
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
                                     const wchar_t* handle_name) override;
   void AddHandleToShare(HANDLE handle) override;
-  void SetLockdownDefaultDacl() override;
-  void AddRestrictingRandomSid() override;
-  ResultCode AddAppContainerProfile(const wchar_t* package_name,
-                                    bool create_profile) override;
-  scoped_refptr<AppContainer> GetAppContainer() override;
   void SetEffectiveToken(HANDLE token) override;
   void SetAllowNoSandboxJob() override;
   bool GetAllowNoSandboxJob() override;
@@ -224,18 +238,12 @@ class PolicyBase final : public TargetPolicy {
   bool relaxed_interceptions_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
-  IntegrityLevel integrity_level_;
-  IntegrityLevel delayed_integrity_level_;
-  MitigationFlags mitigations_;
-  MitigationFlags delayed_mitigations_;
   bool is_csrss_connected_;
   // This is a map of handle-types to names that we need to close in the
   // target process. A null set means we need to close all handles of the
   // given type.
   HandleCloser handle_closer_;
   std::unique_ptr<Dispatcher> dispatcher_;
-  bool lockdown_default_dacl_;
-  bool add_restricting_random_sid_;
 
   static HDESK alternate_desktop_handle_;
   static HWINSTA alternate_winstation_handle_;
@@ -248,8 +256,6 @@ class PolicyBase final : public TargetPolicy {
   // This list contains handles other than the stderr/stdout handles which are
   // shared with the target at times.
   base::HandlesToInheritVector handles_to_share_;
-
-  scoped_refptr<AppContainerBase> app_container_;
 
   HANDLE effective_token_;
   bool allow_no_sandbox_job_;

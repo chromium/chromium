@@ -387,6 +387,20 @@ void LogLaunchWarning(ResultCode last_warning, DWORD last_error) {
   base::UmaHistogramSparse("Process.Sandbox.Launch.Warning", last_error);
 }
 
+ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
+  // Prevents the renderers from manipulating low-integrity processes.
+  ResultCode result =
+      config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
+  if (result != SBOX_ALL_OK)
+    return result;
+  result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return result;
+
+  config->SetLockdownDefaultDacl();
+  return SBOX_ALL_OK;
+}
+
 ResultCode AddDefaultPolicyForSandboxedProcess(TargetPolicy* policy) {
   ResultCode result = sandbox::SBOX_ALL_OK;
 
@@ -401,14 +415,6 @@ ResultCode AddDefaultPolicyForSandboxedProcess(TargetPolicy* policy) {
   result = policy->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
   if (result != SBOX_ALL_OK)
     return result;
-  // Prevents the renderers from manipulating low-integrity processes.
-  result = policy->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
-  if (result != SBOX_ALL_OK)
-    return result;
-  result = policy->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  if (result != SBOX_ALL_OK)
-    return result;
-  policy->SetLockdownDefaultDacl();
 
   result = policy->SetAlternateDesktop(true);
   if (result != SBOX_ALL_OK) {
@@ -833,53 +839,55 @@ ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetPolicy* policy) {
 }
 
 // static
-ResultCode SandboxWin::AddAppContainerPolicy(TargetPolicy* policy,
+ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
                                              const wchar_t* sid) {
+  DCHECK(!config->IsConfigured());
   if (IsAppContainerEnabled())
-    return policy->SetLowBox(sid);
+    return config->SetLowBox(sid);
   return SBOX_ALL_OK;
 }
 
 // static
-ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetPolicy* policy) {
+ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
 #if !defined(NACL_WIN64)
   // Win32k Lockdown is supported on Windows 8+.
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return SBOX_ALL_OK;
 
-  MitigationFlags flags = policy->GetProcessMitigations();
+  MitigationFlags flags = config->GetProcessMitigations();
   // Check not enabling twice. Should not happen.
   DCHECK_EQ(0U, flags & MITIGATION_WIN32K_DISABLE);
 
   flags |= MITIGATION_WIN32K_DISABLE;
-  ResultCode result = policy->SetProcessMitigations(flags);
+  ResultCode result = config->SetProcessMitigations(flags);
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (!policy->GetConfig()->IsConfigured()) {
-    return policy->GetConfig()->AddRule(SubSystem::kWin32kLockdown,
-                                        Semantics::kFakeGdiInit, nullptr);
-  }
-#endif  // !defined(NACL_WIN64)
+  return config->AddRule(SubSystem::kWin32kLockdown, Semantics::kFakeGdiInit,
+                         nullptr);
+#else  // !defined(NACL_WIN64)
   return SBOX_ALL_OK;
+#endif
 }
 
 // static
-ResultCode SandboxWin::AddAppContainerProfileToPolicy(
+ResultCode SandboxWin::AddAppContainerProfileToConfig(
     const base::CommandLine& command_line,
     Sandbox sandbox_type,
     const std::string& appcontainer_id,
-    TargetPolicy* policy) {
+    TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return SBOX_ALL_OK;
   std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
   ResultCode result =
-      policy->AddAppContainerProfile(profile_name.c_str(), true);
+      config->AddAppContainerProfile(profile_name.c_str(), true);
   if (result != SBOX_ALL_OK)
     return result;
 
-  scoped_refptr<AppContainer> container = policy->GetAppContainer();
+  scoped_refptr<AppContainer> container = config->GetAppContainer();
   result =
       SetupAppContainerProfile(container.get(), command_line, sandbox_type);
   if (result != SBOX_ALL_OK)
@@ -997,55 +1005,60 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   for (HANDLE handle : handles_to_inherit)
     policy->AddHandleToShare(handle);
 
-  // Pre-startup mitigations.
-  MitigationFlags mitigations =
-      MITIGATION_HEAP_TERMINATE |
-      MITIGATION_BOTTOM_UP_ASLR |
-      MITIGATION_DEP |
-      MITIGATION_DEP_NO_ATL_THUNK |
-      MITIGATION_EXTENSION_POINT_DISABLE |
-      MITIGATION_SEHOP |
-      MITIGATION_NONSYSTEM_FONT_DISABLE |
-      MITIGATION_IMAGE_LOAD_NO_REMOTE |
-      MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
-      MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION;
+  sandbox::TargetConfig* config = policy->GetConfig();
 
-  if (base::FeatureList::IsEnabled(features::kWinSboxDisableKtmComponent))
-    mitigations |= MITIGATION_KTM_COMPONENT;
+  if (!config->IsConfigured()) {
+    // Pre-startup mitigations.
+    MitigationFlags mitigations =
+        MITIGATION_HEAP_TERMINATE | MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DEP |
+        MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
+        MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
+        MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
+        MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION;
 
-  // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
-  // disabled for processes we know are not compatible.
-  if (!delegate->CetCompatible())
-    mitigations |= MITIGATION_CET_DISABLED;
+    if (base::FeatureList::IsEnabled(features::kWinSboxDisableKtmComponent))
+      mitigations |= MITIGATION_KTM_COMPONENT;
 
-  ResultCode result = policy->SetProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
+    // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
+    // disabled for processes we know are not compatible.
+    if (!delegate->CetCompatible())
+      mitigations |= MITIGATION_CET_DISABLED;
 
-  if (process_type == switches::kRendererProcess) {
-    result = AddWin32kLockdownPolicy(policy);
+    ResultCode result = config->SetProcessMitigations(mitigations);
     if (result != SBOX_ALL_OK)
       return result;
+
+    // Post-startup mitigations.
+    mitigations = MITIGATION_DLL_SEARCH_ORDER;
+    if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
+        sandbox_type != Sandbox::kSpeechRecognition &&
+        sandbox_type != Sandbox::kMediaFoundationCdm) {
+      mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
+    }
+
+    if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
+        sandbox_type == Sandbox::kIconReader) {
+      mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
+    }
+
+    result = config->SetDelayedProcessMitigations(mitigations);
+    if (result != SBOX_ALL_OK)
+      return result;
+
+    if (process_type == switches::kRendererProcess) {
+      result = AddWin32kLockdownPolicy(config);
+      if (result != SBOX_ALL_OK)
+        return result;
+    }
+
+    if (!delegate->DisableDefaultPolicy()) {
+      result = AddDefaultConfigForSandboxedProcess(config);
+      if (result != SBOX_ALL_OK)
+        return result;
+    }
   }
 
-  // Post-startup mitigations.
-  mitigations = MITIGATION_DLL_SEARCH_ORDER;
-  if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-      sandbox_type != Sandbox::kSpeechRecognition &&
-      sandbox_type != Sandbox::kMediaFoundationCdm) {
-    mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
-  }
-
-  if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
-      sandbox_type == Sandbox::kIconReader) {
-    mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
-  }
-
-  result = policy->SetDelayedProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
-
-  result = SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, policy);
+  ResultCode result = SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, policy);
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -1055,14 +1068,14 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
       return result;
   }
 
-  if (process_type == switches::kGpuProcess &&
-      base::FeatureList::IsEnabled(
-          {"GpuLockdownDefaultDacl", base::FEATURE_ENABLED_BY_DEFAULT})) {
-    policy->SetLockdownDefaultDacl();
-    policy->AddRestrictingRandomSid();
+  if (!config->IsConfigured()) {
+    if (process_type == switches::kGpuProcess &&
+        base::FeatureList::IsEnabled(
+            {"GpuLockdownDefaultDacl", base::FEATURE_ENABLED_BY_DEFAULT})) {
+      config->SetLockdownDefaultDacl();
+      config->AddRestrictingRandomSid();
+    }
   }
-
-  sandbox::TargetConfig* config = policy->GetConfig();
 
 #if !defined(NACL_WIN64)
   if (!config->IsConfigured()) {
@@ -1083,14 +1096,16 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     }
   }
 
-  std::string appcontainer_id;
-  if (IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
-      delegate->GetAppContainerId(&appcontainer_id)) {
-    result = AddAppContainerProfileToPolicy(cmd_line, sandbox_type,
-                                            appcontainer_id, policy);
-    DCHECK_EQ(result, SBOX_ALL_OK);
-    if (result != SBOX_ALL_OK)
-      return result;
+  if (!config->IsConfigured()) {
+    std::string appcontainer_id;
+    if (IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
+        delegate->GetAppContainerId(&appcontainer_id)) {
+      result = AddAppContainerProfileToConfig(cmd_line, sandbox_type,
+                                              appcontainer_id, config);
+      DCHECK_EQ(result, SBOX_ALL_OK);
+      if (result != SBOX_ALL_OK)
+        return result;
+    }
   }
 
   // Allow the renderer, gpu and utility processes to access the log file.

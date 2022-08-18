@@ -75,26 +75,27 @@ std::vector<base::win::Sid> SandboxFeatureTest::GetExpectedCapabilities() {
 }
 
 void SandboxFeatureTest::ValidateSecurityLevels(TargetPolicy* policy) {
-  EXPECT_EQ(policy->GetIntegrityLevel(), GetExpectedIntegrityLevel());
+  EXPECT_EQ(policy->GetConfig()->GetIntegrityLevel(),
+            GetExpectedIntegrityLevel());
   EXPECT_EQ(policy->GetLockdownTokenLevel(), GetExpectedLockdownTokenLevel());
   EXPECT_EQ(policy->GetInitialTokenLevel(), GetExpectedInitialTokenLevel());
 }
 
-void SandboxFeatureTest::ValidatePolicyFlagSettings(TargetPolicy* policy) {
-  EXPECT_EQ(policy->GetProcessMitigations(), GetExpectedMitigationFlags());
-  EXPECT_EQ(policy->GetDelayedProcessMitigations(),
+void SandboxFeatureTest::ValidatePolicyFlagSettings(TargetConfig* config) {
+  EXPECT_EQ(config->GetProcessMitigations(), GetExpectedMitigationFlags());
+  EXPECT_EQ(config->GetDelayedProcessMitigations(),
             GetExpectedDelayedMitigationFlags());
 }
 
-void SandboxFeatureTest::ValidateAppContainerSettings(TargetPolicy* policy) {
+void SandboxFeatureTest::ValidateAppContainerSettings(TargetConfig* config) {
   if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kLowbox) {
     EXPECT_EQ(GetExpectedAppContainerType(),
-              policy->GetAppContainer()->GetAppContainerType());
+              config->GetAppContainer()->GetAppContainerType());
 
-    EqualSidList(policy->GetAppContainer()->GetCapabilities(),
+    EqualSidList(config->GetAppContainer()->GetCapabilities(),
                  GetExpectedCapabilities());
   } else {
-    EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
+    EXPECT_EQ(config->GetAppContainer().get(), nullptr);
   }
 }
 }  // namespace policy

@@ -76,13 +76,17 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
       << "Failed to apply desktop security";
 #endif
 
+  sandbox::TargetConfig* config = policy->GetConfig();
+  if (config->IsConfigured())
+    return policy;
+
   sandbox_result =
-      policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
+      config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
   // This is all the mitigations from security_level.h, except those that need
   // to be enabled later (set in SetDelayedProcessMitigations below).
-  sandbox_result = policy->SetProcessMitigations(
+  sandbox_result = config->SetProcessMitigations(
       sandbox::MITIGATION_DEP | sandbox::MITIGATION_DEP_NO_ATL_THUNK |
       sandbox::MITIGATION_SEHOP | sandbox::MITIGATION_HEAP_TERMINATE |
       sandbox::MITIGATION_BOTTOM_UP_ASLR |
@@ -99,14 +103,13 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   // SetProcessMitigations above, but they need to be delayed in Debug builds.
   // It's easier to just set them up as delayed for both Debug and Release
   // builds.
-  sandbox_result = policy->SetDelayedProcessMitigations(
+  sandbox_result = config->SetDelayedProcessMitigations(
       sandbox::MITIGATION_RELOCATE_IMAGE |
       sandbox::MITIGATION_RELOCATE_IMAGE_REQUIRED |
       sandbox::MITIGATION_STRICT_HANDLE_CHECKS |
       sandbox::MITIGATION_DLL_SEARCH_ORDER);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
-  sandbox::TargetConfig* config = policy->GetConfig();
   // This rule is needed to allow user32.dll and gdi32.dll to initialize during
   // load, while still blocking other WIN32K calls.
   sandbox_result = config->AddRule(sandbox::SubSystem::kWin32kLockdown,
@@ -127,7 +130,7 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   }
 #endif
 
-  policy->SetLockdownDefaultDacl();
+  config->SetLockdownDefaultDacl();
 
   // Do not include SetDisconnectCsrss because the signature validator uses
   // wincrypt, which uses a garbage-collected connection to csrss.exe that may

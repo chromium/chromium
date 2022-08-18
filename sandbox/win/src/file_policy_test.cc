@@ -729,9 +729,9 @@ TEST(FilePolicyTest, TestCopyFile) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   // Set proper mitigation.
-  EXPECT_EQ(
-      policy->SetDelayedProcessMitigations(MITIGATION_STRICT_HANDLE_CHECKS),
-      SBOX_ALL_OK);
+  EXPECT_EQ(policy->GetConfig()->SetDelayedProcessMitigations(
+                MITIGATION_STRICT_HANDLE_CHECKS),
+            SBOX_ALL_OK);
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"File_CopyFile"));
 }

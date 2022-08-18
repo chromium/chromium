@@ -249,7 +249,7 @@ class DynamicCodeOptOutThread {
 std::unique_ptr<sandbox::TestRunner> RunnerWithMitigation(
     sandbox::MitigationFlags mitigations) {
   auto runner = std::make_unique<sandbox::TestRunner>();
-  runner->GetPolicy()->SetDelayedProcessMitigations(mitigations);
+  runner->GetPolicy()->GetConfig()->SetDelayedProcessMitigations(mitigations);
   return runner;
 }
 
@@ -429,7 +429,8 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
   TestRunner runner;
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_DYNAMIC_CODE_DISABLE),
+  EXPECT_EQ(policy->GetConfig()->SetProcessMitigations(
+                MITIGATION_DYNAMIC_CODE_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 #endif  // defined(NDEBUG)
@@ -439,9 +440,9 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
   TestRunner runner2;
   sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
 
-  EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_DYNAMIC_CODE_DISABLE),
-      SBOX_ALL_OK);
+  EXPECT_EQ(policy2->GetConfig()->SetDelayedProcessMitigations(
+                MITIGATION_DYNAMIC_CODE_DISABLE),
+            SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 #endif
 }
@@ -503,7 +504,7 @@ TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOutPolicySuccess) {
   TestRunner runner;
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  EXPECT_EQ(policy->SetProcessMitigations(
+  EXPECT_EQ(policy->GetConfig()->SetProcessMitigations(
                 MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
@@ -514,7 +515,7 @@ TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOutPolicySuccess) {
   TestRunner runner2;
   sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
 
-  EXPECT_EQ(policy2->SetDelayedProcessMitigations(
+  EXPECT_EQ(policy2->GetConfig()->SetDelayedProcessMitigations(
                 MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));

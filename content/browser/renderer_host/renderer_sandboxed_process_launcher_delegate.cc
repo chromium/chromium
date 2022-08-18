@@ -91,36 +91,39 @@ bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
 
-  ContentBrowserClient::AppContainerFlags ac_flags(
-      ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
-  if (renderer_app_container_disabled_)
-    ac_flags = ContentBrowserClient::AppContainerFlags::
-        kAppContainerFlagDisableAppContainer;
-  const std::wstring& sid =
-      GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-          GetSandboxType(), ac_flags);
-  if (!sid.empty())
-    sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
+  sandbox::TargetConfig* config = policy->GetConfig();
+  if (!config->IsConfigured()) {
+    ContentBrowserClient::AppContainerFlags ac_flags(
+        ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
+    if (renderer_app_container_disabled_) {
+      ac_flags = ContentBrowserClient::AppContainerFlags::
+          kAppContainerFlagDisableAppContainer;
+    }
+    const std::wstring& sid =
+        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
+            GetSandboxType(), ac_flags);
+    if (!sid.empty())
+      sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid.c_str());
+
+    // If the renderer process is protected by code integrity, more
+    // mitigations become available.
+    if (renderer_code_integrity_enabled_ && dynamic_code_can_be_disabled_) {
+      sandbox::MitigationFlags mitigation_flags =
+          config->GetDelayedProcessMitigations();
+      mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+      if (sandbox::SBOX_ALL_OK !=
+          config->SetDelayedProcessMitigations(mitigation_flags)) {
+        return false;
+      }
+    }
+  }
 
   ContentBrowserClient::ChildSpawnFlags flags(
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
   if (renderer_code_integrity_enabled_) {
     flags = ContentBrowserClient::ChildSpawnFlags::
         kChildSpawnFlagRendererCodeIntegrity;
-
-    // If the renderer process is protected by code integrity, more
-    // mitigations become available.
-    if (dynamic_code_can_be_disabled_) {
-      sandbox::MitigationFlags mitigation_flags =
-          policy->GetDelayedProcessMitigations();
-      mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-      if (sandbox::SBOX_ALL_OK !=
-          policy->SetDelayedProcessMitigations(mitigation_flags)) {
-        return false;
-      }
-    }
   }
-
   return GetContentClient()->browser()->PreSpawnChild(
       policy, sandbox::mojom::Sandbox::kRenderer, flags);
 }

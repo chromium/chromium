@@ -4259,20 +4259,21 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
     return true;
 
-  sandbox::MitigationFlags mitigations = policy->GetProcessMitigations();
+  sandbox::TargetConfig* config = policy->GetConfig();
+  if (config->IsConfigured())
+    return true;
+
+  sandbox::MitigationFlags mitigations = config->GetProcessMitigations();
   mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
-  sandbox::ResultCode result = policy->SetProcessMitigations(mitigations);
+  sandbox::ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  if (policy->GetConfig()->IsConfigured())
-    return true;
-
   // Allow loading Chrome's DLLs.
   for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
-    result = policy->GetConfig()->AddRule(sandbox::SubSystem::kSignedBinary,
-                                          sandbox::Semantics::kSignedAllowLoad,
-                                          GetModulePath(dll).value().c_str());
+    result = config->AddRule(sandbox::SubSystem::kSignedBinary,
+                             sandbox::Semantics::kSignedAllowLoad,
+                             GetModulePath(dll).value().c_str());
     if (result != sandbox::SBOX_ALL_OK)
       return false;
   }

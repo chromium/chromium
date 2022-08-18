@@ -29,7 +29,7 @@ ProcessMitigationsWin32KDispatcher::~ProcessMitigationsWin32KDispatcher() {}
 bool ProcessMitigationsWin32KDispatcher::SetupService(
     InterceptionManager* manager,
     IpcTag service) {
-  if (!(policy_base_->GetProcessMitigations() &
+  if (!(policy_base_->GetConfig()->GetProcessMitigations() &
         sandbox::MITIGATION_WIN32K_DISABLE)) {
     return false;
   }

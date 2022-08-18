@@ -425,6 +425,10 @@ class GpuSandboxedProcessLauncherDelegate
           policy);
     }
 
+    sandbox::TargetConfig* config = policy->GetConfig();
+    if (config->IsConfigured())
+      return true;
+
     // Check if we are running on the winlogon desktop and set a delayed
     // integrity in this case. This is needed because a low integrity gpu
     // process will not be allowed to access the winlogon desktop (gpu process
@@ -433,20 +437,17 @@ class GpuSandboxedProcessLauncherDelegate
     // the normal integrity and delay the switch to low integrity until after
     // the gpu process has started and has access to the desktop.
     if (ShouldSetDelayedIntegrity())
-      policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+      config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
     else
-      policy->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-
-    if (policy->GetConfig()->IsConfigured())
-      return true;
+      config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
 
     // Block this DLL even if it is not loaded by the browser process.
-    policy->GetConfig()->AddDllToUnload(L"cmsetac.dll");
+    config->AddDllToUnload(L"cmsetac.dll");
 
     if (cmd_line_.HasSwitch(switches::kEnableLogging)) {
       std::wstring log_file_path = logging::GetLogFileFullPath();
       if (!log_file_path.empty()) {
-        sandbox::ResultCode result = policy->GetConfig()->AddRule(
+        sandbox::ResultCode result = config->AddRule(
             sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowAny,
             log_file_path.c_str());
         if (result != sandbox::SBOX_ALL_OK)

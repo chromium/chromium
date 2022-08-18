@@ -175,13 +175,15 @@ std::wstring GetAppContainerProfileName() {
 // Adds an app container policy similar to network service.
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
-  ResultCode ret = policy->AddAppContainerProfile(profile_name.c_str(), true);
+  ResultCode ret =
+      policy->GetConfig()->AddAppContainerProfile(profile_name.c_str(), true);
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   if (SBOX_ALL_OK != ret)
     return ret;
-  scoped_refptr<AppContainer> app_container = policy->GetAppContainer();
+  scoped_refptr<AppContainer> app_container =
+      policy->GetConfig()->GetAppContainer();
 
   constexpr const wchar_t* kBaseCapsSt[] = {
       L"lpacChromeInstallFiles", L"registryRead", L"lpacIdentityServices",
@@ -281,13 +283,13 @@ class AppContainerTest : public ::testing::Test {
     package_name_ = GenerateRandomPackageName();
     broker_services_ = GetBroker();
     policy_ = broker_services_->CreatePolicy();
-    ASSERT_EQ(SBOX_ALL_OK,
-              policy_->SetProcessMitigations(MITIGATION_HEAP_TERMINATE));
-    ASSERT_EQ(SBOX_ALL_OK,
-              policy_->AddAppContainerProfile(package_name_.c_str(), true));
+    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetProcessMitigations(
+                               MITIGATION_HEAP_TERMINATE));
+    ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
+                               package_name_.c_str(), true));
     // For testing purposes we known the base class so cast directly.
-    container_ =
-        static_cast<AppContainerBase*>(policy_->GetAppContainer().get());
+    container_ = static_cast<AppContainerBase*>(
+        policy_->GetConfig()->GetAppContainer().get());
   }
 
   void TearDown() override {
@@ -481,7 +483,8 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   ASSERT_TRUE(event.IsValid());
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetLowBox(kAppContainerSid));
+  EXPECT_EQ(SBOX_ALL_OK,
+            runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
   std::wstring test_str = L"AppContainerEvent_Open ";
   test_str += kAppContainerSid;
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(test_str.c_str()));
@@ -491,8 +494,9 @@ TEST_F(AppContainerTest, CheckIncompatibleOptions) {
   if (!container_)
     return;
   EXPECT_EQ(SBOX_ERROR_BAD_PARAMS,
-            policy_->SetIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED));
-  EXPECT_EQ(SBOX_ERROR_BAD_PARAMS, policy_->SetLowBox(kAppContainerSid));
+            policy_->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED));
+  EXPECT_EQ(SBOX_ERROR_BAD_PARAMS,
+            policy_->GetConfig()->SetLowBox(kAppContainerSid));
 
   MitigationFlags expected_mitigations = 0;
   MitigationFlags expected_delayed = MITIGATION_HEAP_TERMINATE;
@@ -504,10 +508,12 @@ TEST_F(AppContainerTest, CheckIncompatibleOptions) {
     expected_result = SBOX_ALL_OK;
   }
 
-  EXPECT_EQ(expected_mitigations, policy_->GetProcessMitigations());
-  EXPECT_EQ(expected_delayed, policy_->GetDelayedProcessMitigations());
-  EXPECT_EQ(expected_result,
-            policy_->SetProcessMitigations(MITIGATION_HEAP_TERMINATE));
+  EXPECT_EQ(expected_mitigations,
+            policy_->GetConfig()->GetProcessMitigations());
+  EXPECT_EQ(expected_delayed,
+            policy_->GetConfig()->GetDelayedProcessMitigations());
+  EXPECT_EQ(expected_result, policy_->GetConfig()->SetProcessMitigations(
+                                 MITIGATION_HEAP_TERMINATE));
 }
 
 TEST_F(AppContainerTest, NoCapabilities) {

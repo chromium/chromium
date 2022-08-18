@@ -83,6 +83,61 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // a chance to initialize itself. Typically, dlls that cause the target
   // to crash go here.
   virtual ResultCode AddDllToUnload(const wchar_t* dll_name) = 0;
+
+  // Sets the integrity level of the process in the sandbox. Both the initial
+  // token and the main token will be affected by this. If the integrity level
+  // is set to a level higher than the current level, the sandbox will fail
+  // to start.
+  virtual ResultCode SetIntegrityLevel(IntegrityLevel level) = 0;
+
+  // Returns the initial integrity level used.
+  virtual IntegrityLevel GetIntegrityLevel() const = 0;
+
+  // Sets the integrity level of the process in the sandbox. The integrity level
+  // will not take effect before you call LowerToken. User Interface Privilege
+  // Isolation is not affected by this setting and will remain off for the
+  // process in the sandbox. If the integrity level is set to a level higher
+  // than the current level, the sandbox will fail to start.
+  virtual ResultCode SetDelayedIntegrityLevel(IntegrityLevel level) = 0;
+
+  // Sets the LowBox token for sandboxed process. This is mutually exclusive
+  // with SetAppContainer method.
+  virtual ResultCode SetLowBox(const wchar_t* sid) = 0;
+
+  // Sets the mitigations enabled when the process is created. Most of these
+  // are implemented as attributes passed via STARTUPINFOEX. So they take
+  // effect before any thread in the target executes. The declaration of
+  // MitigationFlags is followed by a detailed description of each flag.
+  virtual ResultCode SetProcessMitigations(MitigationFlags flags) = 0;
+
+  // Returns the currently set mitigation flags.
+  virtual MitigationFlags GetProcessMitigations() = 0;
+
+  // Sets process mitigation flags that don't take effect before the call to
+  // LowerToken().
+  virtual ResultCode SetDelayedProcessMitigations(MitigationFlags flags) = 0;
+
+  // Returns the currently set delayed mitigation flags.
+  virtual MitigationFlags GetDelayedProcessMitigations() const = 0;
+
+  // Adds a restricting random SID to the restricted SIDs list as well as
+  // the default DACL.
+  virtual void AddRestrictingRandomSid() = 0;
+
+  // Locks down the default DACL of the created lockdown and initial tokens
+  // to restrict what other processes are allowed to access a process' kernel
+  // resources.
+  virtual void SetLockdownDefaultDacl() = 0;
+
+  // Configure policy to use an AppContainer profile. |package_name| is the
+  // name of the profile to use. Specifying True for |create_profile| ensures
+  // the profile exists, if set to False process creation will fail if the
+  // profile has not already been created.
+  virtual ResultCode AddAppContainerProfile(const wchar_t* package_name,
+                                            bool create_profile) = 0;
+
+  // Get the configured AppContainer.
+  virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -183,42 +238,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // Destroys the desktop and windows station.
   virtual void DestroyAlternateDesktop() = 0;
 
-  // Sets the integrity level of the process in the sandbox. Both the initial
-  // token and the main token will be affected by this. If the integrity level
-  // is set to a level higher than the current level, the sandbox will fail
-  // to start.
-  virtual ResultCode SetIntegrityLevel(IntegrityLevel level) = 0;
-
-  // Returns the initial integrity level used.
-  virtual IntegrityLevel GetIntegrityLevel() const = 0;
-
-  // Sets the integrity level of the process in the sandbox. The integrity level
-  // will not take effect before you call LowerToken. User Interface Privilege
-  // Isolation is not affected by this setting and will remain off for the
-  // process in the sandbox. If the integrity level is set to a level higher
-  // than the current level, the sandbox will fail to start.
-  virtual ResultCode SetDelayedIntegrityLevel(IntegrityLevel level) = 0;
-
-  // Sets the LowBox token for sandboxed process. This is mutually exclusive
-  // with SetAppContainer method.
-  virtual ResultCode SetLowBox(const wchar_t* sid) = 0;
-
-  // Sets the mitigations enabled when the process is created. Most of these
-  // are implemented as attributes passed via STARTUPINFOEX. So they take
-  // effect before any thread in the target executes. The declaration of
-  // MitigationFlags is followed by a detailed description of each flag.
-  virtual ResultCode SetProcessMitigations(MitigationFlags flags) = 0;
-
-  // Returns the currently set mitigation flags.
-  virtual MitigationFlags GetProcessMitigations() = 0;
-
-  // Sets process mitigation flags that don't take effect before the call to
-  // LowerToken().
-  virtual ResultCode SetDelayedProcessMitigations(MitigationFlags flags) = 0;
-
-  // Returns the currently set delayed mitigation flags.
-  virtual MitigationFlags GetDelayedProcessMitigations() const = 0;
-
   // Disconnect the target from CSRSS when TargetServices::LowerToken() is
   // called inside the target.
   virtual ResultCode SetDisconnectCsrss() = 0;
@@ -247,25 +266,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // Adds a handle that will be shared with the target process. Does not take
   // ownership of the handle.
   virtual void AddHandleToShare(HANDLE handle) = 0;
-
-  // Locks down the default DACL of the created lockdown and initial tokens
-  // to restrict what other processes are allowed to access a process' kernel
-  // resources.
-  virtual void SetLockdownDefaultDacl() = 0;
-
-  // Adds a restricting random SID to the restricted SIDs list as well as
-  // the default DACL.
-  virtual void AddRestrictingRandomSid() = 0;
-
-  // Configure policy to use an AppContainer profile. |package_name| is the
-  // name of the profile to use. Specifying True for |create_profile| ensures
-  // the profile exists, if set to False process creation will fail if the
-  // profile has not already been created.
-  virtual ResultCode AddAppContainerProfile(const wchar_t* package_name,
-                                            bool create_profile) = 0;
-
-  // Get the configured AppContainer.
-  virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
 
   // Set effective token that will be used for creating the initial and
   // lockdown tokens. The token the caller passes must remain valid for the

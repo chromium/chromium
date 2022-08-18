@@ -47,8 +47,8 @@ class SandboxFeatureTest
   virtual std::vector<base::win::Sid> GetExpectedCapabilities();
 
   void ValidateSecurityLevels(TargetPolicy* policy);
-  void ValidatePolicyFlagSettings(TargetPolicy* policy);
-  void ValidateAppContainerSettings(TargetPolicy* policy);
+  void ValidatePolicyFlagSettings(TargetConfig* config);
+  void ValidateAppContainerSettings(TargetConfig* config);
 
   base::test::ScopedFeatureList feature_list_;
 };

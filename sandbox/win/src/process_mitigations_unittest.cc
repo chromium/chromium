@@ -67,7 +67,7 @@ void TestWin10NonSystemFont(bool is_success_test) {
   if (!is_success_test) {
     sandbox::TargetPolicy* policy = runner.GetPolicy();
     // Turn on the non-system font disable mitigation.
-    EXPECT_EQ(policy->SetProcessMitigations(
+    EXPECT_EQ(policy->GetConfig()->SetProcessMitigations(
                   sandbox::MITIGATION_NONSYSTEM_FONT_DISABLE),
               sandbox::SBOX_ALL_OK);
   }
@@ -98,16 +98,16 @@ void TestWin10MsSigned(int expected,
                        bool add_dll_permission,
                        bool add_directory_permission) {
   sandbox::TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   if (enable_mitigation) {
     // Enable the ForceMsSigned mitigation.
     if (delayed) {
-      EXPECT_EQ(policy->SetDelayedProcessMitigations(
+      EXPECT_EQ(config->SetDelayedProcessMitigations(
                     sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
                 sandbox::SBOX_ALL_OK);
     } else {
-      EXPECT_EQ(policy->SetProcessMitigations(
+      EXPECT_EQ(config->SetProcessMitigations(
                     sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
                 sandbox::SBOX_ALL_OK);
     }
@@ -123,16 +123,16 @@ void TestWin10MsSigned(int expected,
     dll_path = dll_path.Append(hooking_dll::g_hook_dll_file);
 
     if (add_dll_permission) {
-      EXPECT_EQ(sandbox::SBOX_ALL_OK, policy->GetConfig()->AddRule(
-                                          sandbox::SubSystem::kSignedBinary,
-                                          sandbox::Semantics::kSignedAllowLoad,
-                                          dll_path.value().c_str()));
+      EXPECT_EQ(sandbox::SBOX_ALL_OK,
+                config->AddRule(sandbox::SubSystem::kSignedBinary,
+                                sandbox::Semantics::kSignedAllowLoad,
+                                dll_path.value().c_str()));
     }
     if (add_directory_permission) {
       base::FilePath exe_path;
       EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
       EXPECT_EQ(sandbox::SBOX_ALL_OK,
-                policy->GetConfig()->AddRule(
+                config->AddRule(
                     sandbox::SubSystem::kSignedBinary,
                     sandbox::Semantics::kSignedAllowLoad,
                     exe_path.DirName().AppendASCII("*.dll").value().c_str()));
@@ -650,9 +650,9 @@ TEST(ProcessMitigationsTest, CheckDepWin7) {
     return;
 
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_DEP |
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_DEP |
                                           MITIGATION_DEP_NO_ATL_THUNK |
                                           MITIGATION_SEHOP),
             SBOX_ALL_OK);
@@ -681,9 +681,9 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_DEP |
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_DEP |
                                           MITIGATION_DEP_NO_ATL_THUNK),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
@@ -692,9 +692,9 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
   // 2) Test setting post-startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy2->SetDelayedProcessMitigations(MITIGATION_DEP |
+  EXPECT_EQ(config2->SetDelayedProcessMitigations(MITIGATION_DEP |
                                                   MITIGATION_DEP_NO_ATL_THUNK),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
@@ -724,9 +724,9 @@ TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
 //---------------------------------------------
 #if defined(NDEBUG)
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(
+  EXPECT_EQ(config->SetProcessMitigations(
                 MITIGATION_RELOCATE_IMAGE | MITIGATION_RELOCATE_IMAGE_REQUIRED |
                 MITIGATION_BOTTOM_UP_ASLR | MITIGATION_HIGH_ENTROPY_ASLR),
             SBOX_ALL_OK);
@@ -751,10 +751,10 @@ TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
   // ** Can only be set post-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy->SetDelayedProcessMitigations(MITIGATION_STRICT_HANDLE_CHECKS),
+      config->SetDelayedProcessMitigations(MITIGATION_STRICT_HANDLE_CHECKS),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }
@@ -777,9 +777,9 @@ TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_NONSYSTEM_FONT_DISABLE),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_NONSYSTEM_FONT_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -787,10 +787,10 @@ TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
   // 2) Test setting post-startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_NONSYSTEM_FONT_DISABLE),
+      config2->SetDelayedProcessMitigations(MITIGATION_NONSYSTEM_FONT_DISABLE),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }
@@ -839,10 +839,10 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccessDelayed) {
 //---------------------------------
 #if !defined(COMPONENT_BUILD)
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+      config2->SetDelayedProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 #endif  // !defined(COMPONENT_BUILD)
@@ -867,9 +867,9 @@ TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
   //   on DLLs that are not signed by MS and they prevent process startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+  EXPECT_EQ(config2->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
             SBOX_ALL_OK);
   // In a component build, the DLLs must be allowed to load.
 #if defined(COMPONENT_BUILD)
@@ -877,7 +877,7 @@ TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   // Allow all *.dll in current directory to load.
   EXPECT_EQ(sandbox::SBOX_ALL_OK,
-            policy->GetConfig()->AddRule(
+            config2->AddRule(
                 sandbox::SubSystem::kSignedBinary,
                 sandbox::Semantics::kSignedAllowLoad,
                 exe_path.DirName().AppendASCII("*.dll").value().c_str()));
@@ -1125,9 +1125,9 @@ TEST(ProcessMitigationsTest,
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(
+  EXPECT_EQ(config->SetProcessMitigations(
                 MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
@@ -1175,9 +1175,9 @@ TEST(ProcessMitigationsTest, CetDisablePolicy) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_CET_DISABLED),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_CET_DISABLED),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -1219,9 +1219,9 @@ TEST(ProcessMitigationsTest, CetAllowDynamicApis) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_CET_ALLOW_DYNAMIC_APIS),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_CET_ALLOW_DYNAMIC_APIS),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -1261,9 +1261,9 @@ TEST(ProcessMitigationsTest, CetStrictMode) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_CET_STRICT_MODE),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_CET_STRICT_MODE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -1283,8 +1283,8 @@ TEST(ProcessMitigationsTest, CheckWin10KernelTransactionManagerMitigation) {
   std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_KTMCOMPONENTFILTER);
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_KTM_COMPONENT),
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_KTM_COMPONENT),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }
@@ -1300,9 +1300,9 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoRemotePolicySuccess) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -1310,10 +1310,10 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoRemotePolicySuccess) {
   // 2) Test setting post-startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
+      config2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }
@@ -1332,9 +1332,9 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoLowLabelPolicySuccess) {
   // 1) Test setting pre-startup.
   //---------------------------------
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
-  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
@@ -1342,10 +1342,10 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoLowLabelPolicySuccess) {
   // 2) Test setting post-startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
+      config2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }
@@ -1376,10 +1376,10 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadPreferSys32PolicySuccess) {
   // 2) Test setting post-startup.
   //---------------------------------
   TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+  sandbox::TargetConfig* config2 = runner2.GetPolicy()->GetConfig();
 
   EXPECT_EQ(
-      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_PREFER_SYS32),
+      config2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_PREFER_SYS32),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }

@@ -378,24 +378,24 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   tag_ = policy->tag_;
 
   // Select the final integrity level.
-  if (policy->delayed_integrity_level_ == INTEGRITY_LEVEL_LAST)
-    desired_integrity_level_ = policy->integrity_level_;
+  if (config->delayed_integrity_level_ == INTEGRITY_LEVEL_LAST)
+    desired_integrity_level_ = config->integrity_level_;
   else
-    desired_integrity_level_ = policy->delayed_integrity_level_;
+    desired_integrity_level_ = config->delayed_integrity_level_;
 
-  desired_mitigations_ = policy->mitigations_ | policy->delayed_mitigations_;
+  desired_mitigations_ = config->mitigations_ | config->delayed_mitigations_;
 
-  if (policy->app_container_) {
-    app_container_sid_.emplace(policy->app_container_->GetPackageSid().Clone());
-    for (const auto& sid : policy->app_container_->GetCapabilities()) {
+  if (config->app_container_) {
+    app_container_sid_.emplace(config->app_container_->GetPackageSid().Clone());
+    for (const auto& sid : config->app_container_->GetCapabilities()) {
       capabilities_.push_back(sid.Clone());
     }
     for (const auto& sid :
-         policy->app_container_->GetImpersonationCapabilities()) {
+         config->app_container_->GetImpersonationCapabilities()) {
       initial_capabilities_.push_back(sid.Clone());
     }
 
-    app_container_type_ = policy->app_container_->GetAppContainerType();
+    app_container_type_ = config->app_container_->GetAppContainerType();
   }
 
   if (config->policy_) {

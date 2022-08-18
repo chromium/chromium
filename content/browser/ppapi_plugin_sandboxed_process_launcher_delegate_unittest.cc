@@ -65,8 +65,8 @@ TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
   ValidateSecurityLevels(policy.get());
-  ValidatePolicyFlagSettings(policy.get());
-  ValidateAppContainerSettings(policy.get());
+  ValidatePolicyFlagSettings(policy->GetConfig());
+  ValidateAppContainerSettings(policy->GetConfig());
 }
 
 INSTANTIATE_TEST_SUITE_P(
