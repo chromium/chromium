@@ -30,10 +30,7 @@ communicates with the Telemetry Extension using message passing.
 This image shows an overview of the architecture.
 <br>
 <br>
-<figure align="center">
-  <img src="images/TelemetryExtensionArchitecture.png" />
-  <figcaption>Fig. 1: Architectural overview of the Telemetry Extension Platform.</figcaption>
-</figure>
+![](images/TelemetryExtensionArchitecture.png)
 
 # Components
 
