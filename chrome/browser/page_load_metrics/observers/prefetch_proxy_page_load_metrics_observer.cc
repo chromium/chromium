@@ -66,6 +66,17 @@ PrefetchProxyPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrefetchProxyPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Prefetch proxy is used for privacy preserrving prefetch, and the feature
+  // and prerendering are exclusive in speculationrules. So, prerendering
+  // doesn't use the proxy, and this class just stops observing here. It's just
+  // interested in primary main page's performance with the prefetch proxy.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrefetchProxyPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   return CONTINUE_OBSERVING;
