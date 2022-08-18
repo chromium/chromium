@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 6
+Version: 7
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -13,7 +13,7 @@ e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Roo
 5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e | CN=Certum Trusted Network CA,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2008-10-22 | 2029-12-31
 b676f2eddae8775cd36cb0f63cd1d4603961f49e6265ba013a2f0307b6d0b804 | CN=Certum Trusted Network CA 2,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2011-10-06 | 2046-10-06
 f356bea244b7a91eb35d53ca9ad7864ace018e2d35d5f8f96ddf68a6f41aa474 | CN=Atos TrustedRoot 2011,O=Atos,C=DE | 2011-07-07 | 2030-12-31
-04048028bf1f2864d48f9ad4d83294366a828856553f3b14303f90147f5d40ef | CN=Autoridad de Certificacion Firmaprofesional CIF A62634068,C=ES | 2009-05-20 | 2030-12-31
+57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a | CN=Autoridad de Certificacion Firmaprofesional CIF A62634068,C=ES | 2014-09-23 | 2036-05-05
 9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48 | CN=Buypass Class 2 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d | CN=Buypass Class 3 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305 | OU=certSIGN ROOT CA G2,O=CERTSIGN SA,C=RO | 2017-02-06 | 2042-02-06
@@ -63,7 +63,7 @@ c3846bf24b9e93ca64274c0ec67c1ecc5e024ffcacd2d74019350e81fe546ae4 | OU=Go Daddy C
 34d8a73ee208d9bcdb0d956520934b4e40e69482596e8b6f73c8426b010a6f48 | CN=GTS Root R3,O=Google Trust Services LLC,C=US | 2016-06-22 | 2036-06-22
 d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf | CN=GTS Root R1,O=Google Trust Services LLC,C=US | 2016-06-22 | 2036-06-22
 349dfa4058c5e263123b398ae795573c4e1313c83fe68f93556cd5e8031b3c7d | CN=GTS Root R4,O=Google Trust Services LLC,C=US | 2016-06-22 | 2036-06-22
-bec94911c2955676db6c0a550986d76e3ba005667c442c9762b4fbb773de228c | CN=GlobalSign,OU=GlobalSign ECC Root CA - R4,O=GlobalSign | 2012-11-13 | 2038-01-19
+b085d70b964f191a73e4af0d54ae7a0e07aafdaf9b71dd0862138ab7325a24a2 | CN=GlobalSign,OU=GlobalSign ECC Root CA - R4,O=GlobalSign | 2012-11-13 | 2038-01-19
 8d25cd97229dbf70356bda4eb3cc734031e24cf00fafcfd32dc76eb5841c7ea8 | CN=GTS Root R2,O=Google Trust Services LLC,C=US | 2016-06-22 | 2036-06-22
 5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6 | CN=Hongkong Post Root CA 3,O=Hongkong Post,L=Hong Kong,ST=Hong Kong,C=HK | 2017-06-03 | 2042-06-03
 f9e67d336c51002ac054c632022d66dda2e7e3fff10ad061ed31d8bbb410cfb2 | CN=Hongkong Post Root CA 1,O=Hongkong Post,C=HK | 2003-05-15 | 2023-05-15
@@ -136,3 +136,11 @@ f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root
 371a00dc0533b3721a7eeb40e8419e70799d2b0a0f2c1d80693165f7cec4ad75 | CN=DigiCert TLS RSA4096 Root G5,O=DigiCert\, Inc.,C=US | 2021-01-15 | 2046-01-14
 b4585f22e4ac756a4e8612a1361c5d9d031a93fd84febb778fa3068b0fc42dc2 | CN=Certainly Root E1,O=Certainly,C=US | 2021-04-01 | 2046-04-01
 77b82cd8644c4305f7acc5cb156b45675004033d51c60c6202a8e0c33467d3a0 | CN=Certainly Root R1,O=Certainly,C=US | 2021-04-01 | 2046-04-01
+554153b13d2cf9ddb753bfbe1a4e0ae08d0aa4187058fe60a2b862b2e4b87bcb | CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS,OU=Ceres,O=FNMT-RCM,C=ES,2.5.4.97=#130f56415445532d51323832363030344a | 2018-12-20 | 2043-12-20
+fb8fec759169b9106b1e511644c618c51304373f6c0643088d8beffd1b997599 | SERIALNUMBER=G63287510,CN=ANF Secure Server Root CA,OU=ANF CA Raiz,O=ANF Autoridad de Certificacion,C=ES | 2019-09-04 | 2039-08-30
+873f4685fa7f563625252e6d36bcd7f16fc24951f264e47e1b954f4908cdca13 | CN=E-Tugra Global Root CA ECC v3,OU=E-Tugra Trust Center,O=E-Tugra EBG A.S.,L=Ankara,C=TR | 2020-03-18 | 2045-03-12
+ef66b0b10a3cdb9f2e3648c76bd2af18ead2bfe6f117655e28c4060da1a3f4c2 | CN=E-Tugra Global Root CA RSA v3,OU=E-Tugra Trust Center,O=E-Tugra EBG A.S.,L=Ankara,C=TR | 2020-03-18 | 2045-03-12
+e74fbda55bd564c473a36b441aa799c8a68e077440e8288b9fa1e50e4bbaca11 | CN=Security Communication ECC RootCA1,O=SECOM Trust Systems CO.\,LTD.,C=JP | 2016-06-16 | 2038-01-18
+2e44102ab58cb85419451c8e19d9acf3662cafbc614b6a53960a30f7d0e2eb41 | CN=TunTrust Root CA,O=Agence Nationale de Certification Electronique,C=TN | 2019-04-26 | 2044-04-26
+30fbba2c32238e2a98547af97931e550428b9b3f1c8eeb6633dcfa86c5b27dd3 | CN=vTrus ECC Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
+8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387 | CN=vTrus Root CA,O=iTrusChina Co.\,Ltd.,C=CN | 2018-07-31 | 2043-07-31
