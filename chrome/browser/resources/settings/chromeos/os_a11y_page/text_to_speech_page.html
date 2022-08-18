@@ -1,19 +1,20 @@
 <style include="settings-shared">
-  h2 {
-    padding-inline-start: var(--cr-section-padding);
+  :root {
+    --cr-section-indent-width: 60px;
   }
 
   .sub-item {
-    margin-inline-start: var(--cr-section-indent-width);
+    padding-inline-start: var(--cr-section-indent-width);
   }
 
-  .settings-box,
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
   settings-toggle-button,
   cr-link-row {
-    margin-inline-end: var(--cr-section-padding);
-    margin-inline-start: var(--cr-section-indent-padding);
-    padding-inline-end: 0;
-    padding-inline-start: 0;
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
   }
 </style>
 <settings-toggle-button
@@ -51,7 +52,7 @@
     <cr-link-row id="selectToSpeakSubpageButton"
         class="settings-box" on-click="onSelectToSpeakSettingsTap_"
         label="$i18n{selectToSpeakOptionsLabel}" external>
-      </cr-link-row>
+    </cr-link-row>
   </div>
 </iron-collapse>
 

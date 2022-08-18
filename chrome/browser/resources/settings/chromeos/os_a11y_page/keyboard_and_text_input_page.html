@@ -1,25 +1,25 @@
 <style include="settings-shared">
-  h2 {
-    padding-inline-start: var(--cr-section-padding);
+  :root {
+    --cr-section-indent-width: 60px;
   }
 
   .sub-item {
-    margin-inline-start: var(--cr-section-indent-width);
+    padding-inline-start: var(--cr-section-indent-width);
   }
 
-  .settings-box,
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
   settings-toggle-button,
   cr-link-row {
-    margin-inline-end: var(--cr-section-padding);
-    margin-inline-start: var(--cr-section-indent-padding);
-    padding-inline-end: 0;
-    padding-inline-start: 0;
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
   }
 
   .settings-box.indented,
   settings-toggle-button.indented {
-    margin-inline-start: calc(var(--cr-section-indent-padding) +
-                              var(--cr-section-indent-width));
+    margin-inline-start: var(--cr-section-indent-width);
   }
 
   #screenMagnifierZoomHintLabel {
@@ -57,7 +57,7 @@
     learn-more-url="[[dictationLearnMoreUrl_]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[prefs.settings.a11y.dictation.value]]">
-  <div class="settings-box continuation indented">
+  <div class="settings-box indented">
     <div class="flex start settings-box-text" id="labelWrapper">
       <div class="label" aria-hidden="true" id="dictationLocaleMenuLabel">
           $i18n{dictationLocaleMenuLabel}
@@ -114,6 +114,7 @@
       opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
     <div class="sub-item">
       <cr-link-row id="switchAccessSubpageButton"
+          class="settings-box"
           label="$i18n{switchAccessOptionsLabel}"
           on-click="onSwitchAccessSettingsTap_"
           role-description="$i18n{subpageArrowRoleDescription}" embedded>
