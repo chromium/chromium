@@ -118,11 +118,11 @@ void MigratePrefs(PrefService* prefs, const std::string& project_id) {
         project_id, prefs->GetString(kActiveRegistrationTokenDeprecated));
   }
 
-  auto* old_subscriptions =
-      prefs->GetDictionary(kTypeSubscribedForInvalidationsDeprecated);
+  const auto& old_subscriptions =
+      prefs->GetValueDict(kTypeSubscribedForInvalidationsDeprecated);
   {
     PerProjectDictionaryPrefUpdate update(prefs, project_id);
-    *update = old_subscriptions->Clone();
+    *update = base::Value(old_subscriptions.Clone());
   }
   prefs->ClearPref(kActiveRegistrationTokenDeprecated);
   prefs->ClearPref(kTypeSubscribedForInvalidationsDeprecated);

@@ -34,13 +34,13 @@ constexpr char kIsPublic[] = "is_public";
 
 // Added in M76.
 void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
-  auto* old_prefs = prefs->GetDictionary(kTopicsToHandlerDeprecated);
-  if (old_prefs->DictEmpty()) {
+  const auto& old_prefs = prefs->GetValueDict(kTopicsToHandlerDeprecated);
+  if (old_prefs.empty()) {
     return;
   }
   {
     DictionaryPrefUpdate update(prefs, kTopicsToHandler);
-    update->SetKey(sender_id, old_prefs->Clone());
+    update->SetKey(sender_id, base::Value(old_prefs.Clone()));
   }
   prefs->ClearPref(kTopicsToHandlerDeprecated);
 }
