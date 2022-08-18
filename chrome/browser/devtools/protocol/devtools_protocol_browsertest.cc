@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   Attach();
-  SendCommand("Security.enable", base::Value::Dict(), false);
+  SendCommandAsync("Security.enable");
   base::Value::Dict params =
       WaitForNotification("Security.visibleSecurityStateChanged", true);
 
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandSync("Page.enable");
   base::Value::Dict params;
   params.Set("url", url.spec());
-  SendCommand("Page.navigate", std::move(params), false);
+  SendCommandAsync("Page.navigate", std::move(params));
   content::NavigationController& navigation_controller =
       web_contents()->GetController();
   content::NavigationEntry* pending_entry =
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   bool page_obsolete_ssl_signature = status & net::OBSOLETE_SSL_MASK_SIGNATURE;
 
   Attach();
-  SendCommand("Security.enable", base::Value::Dict(), false);
+  SendCommandAsync("Security.enable");
   auto has_certificate = [](const base::Value::Dict& params) {
     return params.FindListByDottedPath(
                "visibleSecurityState.certificateSecurityState.certificate") !=
@@ -575,14 +575,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
   std::unique_ptr<base::Value::Dict> params(new base::Value::Dict());
   SetIsTrusted(false);
   Attach();
-  EXPECT_FALSE(
-      SendCommand("HeapProfiler.enable", nullptr, true));  // Implemented in V8
-  EXPECT_FALSE(
-      SendCommand("LayerTree.enable", nullptr, true));  // Implemented in blink
-  EXPECT_FALSE(SendCommand("Memory.prepareForLeakDetection", nullptr,
-                           true));  // Implemented in content
-  EXPECT_FALSE(
-      SendCommand("Cast.enable", nullptr, true));  // Implemented in content
+  EXPECT_FALSE(SendCommandSync("HeapProfiler.enable"));  // Implemented in V8
+  EXPECT_FALSE(SendCommandSync("LayerTree.enable"));     // Implemented in blink
+  EXPECT_FALSE(SendCommandSync(
+      "Memory.prepareForLeakDetection"));        // Implemented in content
+  EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
 }
 
 class ExtensionProtocolTest : public DevToolsProtocolTest {
@@ -655,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
   base::Value::Dict params;
   params.Set("categories", "-*");
   SendCommandSync("Tracing.start", std::move(params));
-  SendCommand("Tracing.end", base::Value::Dict(), false);
+  SendCommandAsync("Tracing.end");
   WaitForNotification("Tracing.tracingComplete", true);
 }
 

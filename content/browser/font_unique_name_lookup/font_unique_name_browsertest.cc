@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
   LoadAndWait("/font_src_local_matching.html");
   Attach();
 
-  ASSERT_TRUE(SendCommand("DOM.enable", nullptr));
-  ASSERT_TRUE(SendCommand("CSS.enable", nullptr));
+  ASSERT_TRUE(SendCommandSync("DOM.enable"));
+  ASSERT_TRUE(SendCommandSync("CSS.enable"));
 
   size_t num_added_nodes =
       static_cast<size_t>(EvalJs(shell(), "addTestNodes()").ExtractInt());

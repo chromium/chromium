@@ -3363,8 +3363,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   int host_id = AddPrerender(kPrerenderingUrl);
   auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
   Attach();
-  SendCommand("Page.enable", nullptr, true);
-  SendCommand("Runtime.enable", nullptr, true);
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
 
   // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
   // interface, and this is expected to cause prerender cancellation because

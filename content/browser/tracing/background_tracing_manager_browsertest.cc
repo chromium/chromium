@@ -1969,7 +1969,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest,
   Attach();
 
   const base::Value::Dict* start_tracing_result =
-      SendCommand("Tracing.start", nullptr, true);
+      SendCommandSync("Tracing.start");
   ASSERT_TRUE(start_tracing_result);
   BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   background_tracing_helper.WaitForScenarioAborted();

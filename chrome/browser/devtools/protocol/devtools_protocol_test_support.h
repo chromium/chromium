@@ -7,7 +7,6 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/test_devtools_protocol_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DevToolsProtocolTestBase : public InProcessBrowserTest,
                                  public content::TestDevToolsProtocolClient {
