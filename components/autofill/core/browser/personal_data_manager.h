@@ -245,6 +245,12 @@ class PersonalDataManager : public KeyedService,
   // Sets a server credit card for test.
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
 
+#if defined(UNIT_TEST)
+  void AddIBANForTest(std::unique_ptr<IBAN> iban) {
+    local_ibans_.push_back(std::move(iban));
+  }
+#endif
+
   // Returns whether server credit cards are stored in account (i.e. ephemeral)
   // storage.
   bool IsUsingAccountStorageForServerDataForTest() const;
@@ -400,8 +406,10 @@ class PersonalDataManager : public KeyedService,
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 
+#if defined(UNIT_TEST)
   // Returns if there are any pending queries to the web database.
-  bool HasPendingQueriesForTesting();
+  bool HasPendingQueriesForTesting() { return HasPendingQueries(); }
+#endif
 
   // This function assumes |credit_card| contains the full PAN. Returns |true|
   // if the card number of |credit_card| is equal to any local card or any

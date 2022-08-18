@@ -1856,10 +1856,6 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_offer_data_query_);
 }
 
-bool PersonalDataManager::HasPendingQueriesForTesting() {
-  return HasPendingQueries();
-}
-
 void PersonalDataManager::LoadPaymentsCustomerData() {
   if (!database_helper_->GetServerDatabase())
     return;
