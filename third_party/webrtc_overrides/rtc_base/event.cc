@@ -28,13 +28,12 @@ void Event::Reset() {
   event_.Reset();
 }
 
-bool Event::Wait(int give_up_after_ms) {
-  if (give_up_after_ms == kForever) {
+bool Event::Wait(webrtc::TimeDelta give_up_after) {
+  if (give_up_after.IsPlusInfinity()) {
     event_.Wait();
     return true;
   }
-
-  return event_.TimedWait(base::Milliseconds(give_up_after_ms));
+  return event_.TimedWait(base::Microseconds(give_up_after.us()));
 }
 
 }  // namespace rtc
