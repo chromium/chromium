@@ -100,6 +100,11 @@ void SystemNudgeController::StartFadeAnimation(bool show) {
   // Clean any pending animation observer.
   hide_nudge_animation_observer_.reset();
 
+  // `nudge_` may not exist if `StartFadeAnimation(false)` has been called
+  // before a new nudge has been created.
+  if (!nudge_)
+    return;
+
   ui::Layer* layer = nudge_->widget()->GetLayer();
   gfx::Rect widget_bounds = layer->bounds();
 
