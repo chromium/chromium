@@ -31,6 +31,7 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable/ic_family_link.xml",
+      "android/java/res/drawable/ic_googleg_32dp.xml",
       "android/java/res/layout/website_approval_bottom_sheet.xml",
       "android/java/res/values/dimens.xml",
     ]

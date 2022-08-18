@@ -31,12 +31,12 @@
         app:srcCompat="@drawable/drag_handlebar" />
 
     <ImageView
-        android:id="@+id/family_link_icon"
+        android:id="@+id/googleg_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center_horizontal"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_family_link" />
+        app:srcCompat="@drawable/ic_googleg_32dp"/>
 
     <!-- The main text including website -->
     <androidx.appcompat.widget.DialogTitle
