@@ -18,13 +18,9 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
-#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -39,7 +35,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "crypto/sha2.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
@@ -426,36 +421,6 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   return policy_json;
 }
 
-void UpdateFirstComplianceSinceSignInTiming(
-    const base::TimeDelta& elapsed_time) {
-  UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstComplianceReportTime.SinceSignIn",
-                             elapsed_time, base::Seconds(1), base::Minutes(10),
-                             50);
-}
-
-void UpdateFirstComplianceSinceStartupTiming(
-    const base::TimeDelta& elapsed_time) {
-  UMA_HISTOGRAM_CUSTOM_TIMES("Arc.FirstComplianceReportTime.SinceStartup",
-                             elapsed_time, base::Seconds(1), base::Minutes(10),
-                             50);
-}
-
-void UpdateComplianceSinceUpdateTiming(const base::TimeDelta& elapsed_time) {
-  UMA_HISTOGRAM_CUSTOM_TIMES("Arc.ComplianceReportSinceUpdateNotificationTime",
-                             elapsed_time, base::Milliseconds(100),
-                             base::Minutes(10), 50);
-}
-
-// Returns the SHA-256 hash of the JSON dump of the ARC policies, in the textual
-// hex dump format.  Note that no specific JSON normalization is performed, as
-// the spurious hash mismatches, even if they occur (which is unlikely), would
-// only result in some UMA metrics not being sent.
-std::string GetPoliciesHash(const std::string& json_policies) {
-  const std::string hash_bits = crypto::SHA256HashString(json_policies);
-  return base::ToLowerASCII(
-      base::HexEncode(hash_bits.c_str(), hash_bits.length()));
-}
-
 // Singleton factory for ArcPolicyBridge.
 class ArcPolicyBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -555,7 +520,6 @@ void ArcPolicyBridge::OnConnectionReady() {
     InitializePolicyService();
   }
   policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
-  initial_policies_hash_ = GetPoliciesHash(GetCurrentJSONPolicies());
 
   if (!on_arc_instance_ready_callback_.is_null()) {
     std::move(on_arc_instance_ready_callback_).Run();
@@ -566,7 +530,6 @@ void ArcPolicyBridge::OnConnectionClosed() {
   VLOG(1) << "ArcPolicyBridge::OnConnectionClosed";
   policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
   policy_service_ = nullptr;
-  initial_policies_hash_.clear();
 }
 
 void ArcPolicyBridge::GetPolicies(GetPoliciesCallback callback) {
@@ -646,13 +609,6 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   if (!instance)
     return;
 
-  const std::string policies_hash = GetPoliciesHash(GetCurrentJSONPolicies());
-  if (policies_hash != update_notification_policies_hash_) {
-    update_notification_policies_hash_ = policies_hash;
-    update_notification_time_ = base::TimeTicks::Now();
-    compliance_since_update_timing_reported_ = false;
-  }
-
   instance->OnPolicyUpdated();
 }
 
@@ -703,60 +659,22 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
 void ArcPolicyBridge::OnReportComplianceParse(
     base::OnceCallback<void(const std::string&)> callback,
     data_decoder::DataDecoder::ValueOrError result) {
+  std::move(callback).Run(kPolicyCompliantJson);
   if (!result.has_value()) {
-    // TODO(poromov@): Report to histogram.
     DLOG(ERROR) << "Can't parse policy compliance report";
-    std::move(callback).Run(kPolicyCompliantJson);
     return;
   }
 
-  // Always returns "compliant".
-  std::move(callback).Run(kPolicyCompliantJson);
   Profile::FromBrowserContext(context_)->GetPrefs()->SetBoolean(
       prefs::kArcPolicyComplianceReported, true);
 
   const base::DictionaryValue* dict = nullptr;
   if (result->GetAsDictionary(&dict)) {
-    UpdateComplianceReportMetrics(dict);
+    JSONStringValueSerializer serializer(&arc_policy_compliance_report_);
+    serializer.Serialize(*dict);
     for (Observer& observer : observers_) {
       observer.OnComplianceReportReceived(&*result);
     }
-  }
-}
-
-void ArcPolicyBridge::UpdateComplianceReportMetrics(
-    const base::DictionaryValue* report) {
-  JSONStringValueSerializer serializer(&arc_policy_compliance_report_);
-  serializer.Serialize(*report);
-  bool is_arc_plus_plus_report_successful =
-      report->FindBoolKey("isArcPlusPlusReportSuccessful").value_or(false);
-  const std::string* reported_policies_hash =
-      report->FindStringKey("policyHash");
-  if (!is_arc_plus_plus_report_successful || !reported_policies_hash ||
-      reported_policies_hash->empty()) {
-    return;
-  }
-
-  const base::TimeTicks now = base::TimeTicks::Now();
-  ArcSessionManager* const session_manager = ArcSessionManager::Get();
-
-  if (*reported_policies_hash == initial_policies_hash_ &&
-      !first_compliance_timing_reported_) {
-    const base::TimeTicks sign_in_start_time =
-        session_manager->sign_in_start_time();
-    if (!sign_in_start_time.is_null()) {
-      UpdateFirstComplianceSinceSignInTiming(now - sign_in_start_time);
-    } else {
-      UpdateFirstComplianceSinceStartupTiming(now -
-                                              session_manager->start_time());
-    }
-    first_compliance_timing_reported_ = true;
-  }
-
-  if (*reported_policies_hash == update_notification_policies_hash_ &&
-      !compliance_since_update_timing_reported_) {
-    UpdateComplianceSinceUpdateTiming(now - update_notification_time_);
-    compliance_since_update_timing_reported_ = true;
   }
 }
 

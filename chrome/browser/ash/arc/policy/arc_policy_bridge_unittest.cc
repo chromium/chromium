@@ -209,11 +209,10 @@ arc::ArcPolicyBridge::GetPoliciesCallback PolicyStringCallback(
 }
 
 arc::ArcPolicyBridge::ReportComplianceCallback PolicyComplianceCallback(
-    base::OnceClosure quit_closure,
-    const std::string& expected) {
+    base::OnceClosure quit_closure) {
   auto was_run = std::make_unique<CheckedBoolean>();
   return base::BindOnce(&ExpectStringWithClosure, std::move(quit_closure),
-                        std::move(was_run), expected);
+                        std::move(was_run), kPolicyCompliantResponse);
 }
 
 }  // namespace
@@ -317,8 +316,7 @@ class ArcPolicyBridgeTestBase {
       EXPECT_CALL(observer_, OnComplianceReportReceived(_)).Times(0);
     }
     policy_bridge()->ReportCompliance(
-        compliance_report, PolicyComplianceCallback(run_loop().QuitClosure(),
-                                                    kPolicyCompliantResponse));
+        compliance_report, PolicyComplianceCallback(run_loop().QuitClosure()));
     run_loop().Run();
     Mock::VerifyAndClearExpectations(&observer_);
 

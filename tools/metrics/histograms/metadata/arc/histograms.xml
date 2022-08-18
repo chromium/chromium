@@ -820,16 +820,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.ComplianceReportSinceUpdateNotificationTime" units="ms"
-    expires_after="M85">
-  <owner>alexchau@google.com</owner>
-  <owner>emaxx@google.com</owner>
-  <summary>
-    Elapsed time from the policy update notification sent to ARC to the
-    corresponding successfully obtained compliance report from CloudDPS.
-  </summary>
-</histogram>
-
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
     expires_after="2022-04-03">
   <owner>elijahtaylor@google.com</owner>
@@ -1094,27 +1084,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Elapsed time from the when UI is shown after login to when the user
     activates first ARC app.
-  </summary>
-</histogram>
-
-<histogram name="Arc.FirstComplianceReportTime.SinceSignIn" units="ms"
-    expires_after="M81">
-  <owner>alexchau@google.com</owner>
-  <owner>emaxx@google.com</owner>
-  <summary>
-    Elapsed time from the signing in process start to a successfully obtained
-    compliance report from CloudDPS.
-  </summary>
-</histogram>
-
-<histogram name="Arc.FirstComplianceReportTime.SinceStartup" units="ms"
-    expires_after="M81">
-  <owner>alexchau@google.com</owner>
-  <owner>emaxx@google.com</owner>
-  <summary>
-    Elapsed time from ARC startup to a successfully obtained compliance report
-    from CloudDPS. This value is not reported during the first startup when
-    signing in happens.
   </summary>
 </histogram>
 

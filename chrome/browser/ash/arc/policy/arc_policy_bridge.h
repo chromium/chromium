@@ -207,20 +207,6 @@ class ArcPolicyBridge : public KeyedService,
   // ensuring that the first policy sent to CloudDPC is considered different
   // from previous policy and a compliance report is sent.
   const std::string instance_guid_;
-  // Hash of the policies that were up to date when ARC started.
-  std::string initial_policies_hash_;
-  // Whether the UMA metric for the first successfully obtained compliance
-  // report was already reported.
-  bool first_compliance_timing_reported_ = false;
-  // Hash of the policies that were up to date when the most recent policy
-  // update notification was sent to ARC.
-  std::string update_notification_policies_hash_;
-  // The time of the policy update notification sent when the policy with hash
-  // equal to |update_notification_policy_hash_| was active.
-  base::TimeTicks update_notification_time_;
-  // Whether the UMA metric for the successfully obtained compliance report
-  // since the most recent policy update notificaton was already reported.
-  bool compliance_since_update_timing_reported_ = false;
 
   base::ObserverList<Observer, true /* check_empty */>::Unchecked observers_;
 
