@@ -3580,13 +3580,13 @@ class ClientHintsBrowserTestWithEmulatedMedia
   }
 
   void EmulatePrefersColorScheme(std::string value) {
-    base::Value feature(base::Value::Type::DICTIONARY);
-    feature.SetKey("name", base::Value("prefers-color-scheme"));
-    feature.SetKey("value", base::Value(value));
-    base::Value features(base::Value::Type::LIST);
+    base::Value::Dict feature;
+    feature.Set("name", "prefers-color-scheme");
+    feature.Set("value", value);
+    base::Value::List features;
     features.Append(std::move(feature));
-    base::Value params(base::Value::Type::DICTIONARY);
-    params.SetKey("features", std::move(features));
+    base::Value::Dict params;
+    params.Set("features", std::move(features));
     SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
   }
 

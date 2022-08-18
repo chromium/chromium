@@ -77,9 +77,9 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
 
     pdf_data_.clear();
     for (;;) {
-      base::Value params(base::Value::Type::DICTIONARY);
-      params.SetStringPath("handle", stream);
-      params.SetIntPath("offset", pdf_data_.size());
+      base::Value::Dict params;
+      params.Set("handle", stream);
+      params.Set("offset", static_cast<int>(pdf_data_.size()));
       const base::Value::Dict* result =
           SendCommandSync("IO.read", std::move(params));
       std::string data = *result->FindString("data");
@@ -97,23 +97,24 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
     ASSERT_GE(pdf_num_pages_, 1);
   }
 
-  void PrintToPdf(base::Value params) {
+  void PrintToPdf(base::Value::Dict params) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultData();
   }
 
-  void PrintToPdfAsStream(base::Value params) {
+  void PrintToPdfAsStream(base::Value::Dict params) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultStream();
   }
 
-  void PrintToPdfAndRenderPage(base::Value params, int page_index) {
+  void PrintToPdfAndRenderPage(base::Value::Dict params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultData();
     RendePdfPage(page_index);
   }
 
-  void PrintToPdfAsStreamAndRenderPage(base::Value params, int page_index) {
+  void PrintToPdfAsStreamAndRenderPage(base::Value::Dict params,
+                                       int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultStream();
     RendePdfPage(page_index);
@@ -176,14 +177,14 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfBackground) {
 
   Attach();
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolPath("printBackground", true);
-  params.SetDoublePath("paperWidth", kPaperWidth);
-  params.SetDoublePath("paperHeight", kPaperHeight);
-  params.SetDoublePath("marginTop", 0);
-  params.SetDoublePath("marginLeft", 0);
-  params.SetDoublePath("marginBottom", 0);
-  params.SetDoublePath("marginRight", 0);
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
 
   PrintToPdfAndRenderPage(std::move(params), 0);
 
@@ -199,14 +200,14 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfMargins) {
 
   Attach();
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolPath("printBackground", true);
-  params.SetDoublePath("paperWidth", kPaperWidth);
-  params.SetDoublePath("paperHeight", kPaperHeight);
-  params.SetDoublePath("marginTop", 1.0);
-  params.SetDoublePath("marginLeft", 1.0);
-  params.SetDoublePath("marginBottom", 0);
-  params.SetDoublePath("marginRight", 0);
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 1.0);
+  params.Set("marginLeft", 1.0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
 
   PrintToPdfAndRenderPage(std::move(params), 0);
 
@@ -228,21 +229,21 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
   constexpr double kHeaderMargin = 1.0;
   constexpr double kFooterMargin = 1.0;
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolPath("printBackground", true);
-  params.SetDoublePath("paperWidth", kPaperWidth);
-  params.SetDoublePath("paperHeight", kPaperHeight);
-  params.SetDoublePath("marginTop", kHeaderMargin);
-  params.SetDoublePath("marginLeft", 0);
-  params.SetDoublePath("marginBottom", kFooterMargin);
-  params.SetDoublePath("marginRight", 0);
-  params.SetBoolPath("displayHeaderFooter", true);
-  params.SetStringPath("headerTemplate",
-                       "<div style='height: 1cm; width: 1cm; background: "
-                       "#00ff00; -webkit-print-color-adjust: exact;'>");
-  params.SetStringPath("footerTemplate",
-                       "<div style='height: 1cm; width: 1cm; background: "
-                       "#0000ff; -webkit-print-color-adjust: exact;'>");
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", kHeaderMargin);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", kFooterMargin);
+  params.Set("marginRight", 0);
+  params.Set("displayHeaderFooter", true);
+  params.Set("headerTemplate",
+             "<div style='height: 1cm; width: 1cm; background: "
+             "#00ff00; -webkit-print-color-adjust: exact;'>");
+  params.Set("footerTemplate",
+             "<div style='height: 1cm; width: 1cm; background: "
+             "#0000ff; -webkit-print-color-adjust: exact;'>");
 
   PrintToPdfAndRenderPage(std::move(params), 0);
 
@@ -266,15 +267,15 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
 class PrintToPdfScaleTest : public PrintToPdfProtocolTest {
  protected:
   int RenderAndReturnRedSquareWidth(double scale) {
-    base::Value params(base::Value::Type::DICTIONARY);
-    params.SetBoolPath("printBackground", true);
-    params.SetDoublePath("paperWidth", kPaperWidth);
-    params.SetDoublePath("paperHeight", kPaperHeight);
-    params.SetDoublePath("marginTop", 0);
-    params.SetDoublePath("marginLeft", 0);
-    params.SetDoublePath("marginBottom", 0);
-    params.SetDoublePath("marginRight", 0);
-    params.SetDoublePath("scale", scale);
+    base::Value::Dict params;
+    params.Set("printBackground", true);
+    params.Set("paperWidth", kPaperWidth);
+    params.Set("paperHeight", kPaperHeight);
+    params.Set("marginTop", 0);
+    params.Set("marginLeft", 0);
+    params.Set("marginBottom", 0);
+    params.Set("marginRight", 0);
+    params.Set("scale", scale);
 
     PrintToPdfAndRenderPage(std::move(params), 0);
 
@@ -318,10 +319,10 @@ class PrintToPdfPaperOrientationTest : public PrintToPdfProtocolTest {
  protected:
   absl::optional<gfx::SizeF> PrintToPdfAndReturnPageSize(
       bool landscape = false) {
-    base::Value params(base::Value::Type::DICTIONARY);
-    params.SetDoublePath("paperWidth", kPaperWidth);
-    params.SetDoublePath("paperHeight", kPaperHeight);
-    params.SetBoolPath("landscape", landscape);
+    base::Value::Dict params;
+    params.Set("paperWidth", kPaperWidth);
+    params.Set("paperHeight", kPaperHeight);
+    params.Set("landscape", landscape);
 
     PrintToPdf(std::move(params));
 
@@ -356,21 +357,21 @@ class PrintToPdfPagesTest : public PrintToPdfProtocolTest {
   void SetDocHeight() {
     std::string height_expression = "document.body.style.height = '" +
                                     base::NumberToString(kDocHeight) + "in'";
-    base::Value params(base::Value::Type::DICTIONARY);
-    params.SetStringPath("expression", height_expression);
+    base::Value::Dict params;
+    params.Set("expression", height_expression);
 
     SendCommandSync("Runtime.evaluate", std::move(params));
   }
 
-  base::Value BuildPrintParams(const std::string& page_ranges) {
-    base::Value params(base::Value::Type::DICTIONARY);
-    params.SetDoublePath("paperWidth", kPaperWidth);
-    params.SetDoublePath("paperHeight", kPaperHeight);
-    params.SetDoublePath("marginTop", 0);
-    params.SetDoublePath("marginLeft", 0);
-    params.SetDoublePath("marginBottom", 0);
-    params.SetDoublePath("marginRight", 0);
-    params.SetStringPath("pageRanges", page_ranges);
+  base::Value::Dict BuildPrintParams(const std::string& page_ranges) {
+    base::Value::Dict params;
+    params.Set("paperWidth", kPaperWidth);
+    params.Set("paperHeight", kPaperHeight);
+    params.Set("marginTop", 0);
+    params.Set("marginLeft", 0);
+    params.Set("marginBottom", 0);
+    params.Set("marginRight", 0);
+    params.Set("pageRanges", page_ranges);
     return params;
   }
 
@@ -416,8 +417,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfPagesTest, PrintToPdfPageRanges) {
   EXPECT_EQ(pdf_num_pages_, kExpectedTotalPages - 1);
 
   // Expect specific error for ranges beyond end of the document.
-  SendCommand("Page.printToPDF",
-              std::move(BuildPrintParams("998-999").GetDict()));
+  SendCommand("Page.printToPDF", BuildPrintParams("998-999"));
 
   EXPECT_THAT(*error()->FindString("message"),
               testing::Eq("Page range exceeds page count"));
@@ -430,10 +430,10 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfPagesTest, PrintToPdfCssPageSize) {
   Attach();
   SetDocHeight();
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetDoublePath("paperWidth", kPaperWidth);
-  params.SetDoublePath("paperHeight", kPaperHeight);
-  params.SetBoolPath("preferCSSPageSize", true);
+  base::Value::Dict params;
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("preferCSSPageSize", true);
 
   PrintToPdf(std::move(params));
 
@@ -448,15 +448,15 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 
   Attach();
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolPath("printBackground", true);
-  params.SetDoublePath("paperWidth", kPaperWidth);
-  params.SetDoublePath("paperHeight", kPaperHeight);
-  params.SetDoublePath("marginTop", 0);
-  params.SetDoublePath("marginLeft", 0);
-  params.SetDoublePath("marginBottom", 0);
-  params.SetDoublePath("marginRight", 0);
-  params.SetStringPath("transferMode", "ReturnAsStream");
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  params.Set("transferMode", "ReturnAsStream");
 
   PrintToPdfAsStreamAndRenderPage(std::move(params), 0);
 
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfOOPIF) {
   params.Set("marginLeft", 0);
   params.Set("marginBottom", 0);
   params.Set("marginRight", 0);
-  PrintToPdfAndRenderPage(base::Value(std::move(params)), 0);
+  PrintToPdfAndRenderPage(std::move(params), 0);
 
   ASSERT_TRUE(printing::IsOopifEnabled());
 

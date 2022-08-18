@@ -1294,11 +1294,11 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   Attach();
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey("width", 400);
-  params.SetIntKey("height", 800);
-  params.SetDoubleKey("deviceScaleFactor", 1.0);
-  params.SetBoolKey("mobile", true);
+  base::Value::Dict params;
+  params.Set("width", 400);
+  params.Set("height", 800);
+  params.Set("deviceScaleFactor", 1.0);
+  params.Set("mobile", true);
   SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
 
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
@@ -1325,11 +1325,11 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   Attach();
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey("width", 400);
-  params.SetIntKey("height", 800);
-  params.SetDoubleKey("deviceScaleFactor", 1.0);
-  params.SetBoolKey("mobile", true);
+  base::Value::Dict params;
+  params.Set("width", 400);
+  params.Set("height", 800);
+  params.Set("deviceScaleFactor", 1.0);
+  params.Set("mobile", true);
   SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
 
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
