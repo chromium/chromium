@@ -319,6 +319,14 @@ LocalNetworkRequestsPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LocalNetworkRequestsPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class will be deprecated in the near future. No need to support.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // Upon page load, we want to determine whether the page loaded was a public
