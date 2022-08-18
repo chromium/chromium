@@ -1354,7 +1354,7 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
   }
 
-  gpu_preferences->gpu_program_cache_size = gpu::GpuDiskCache::CacheSizeBytes();
+  gpu_preferences->gpu_program_cache_size = gpu::GetDefaultGpuDiskCacheSize();
 
   gpu_preferences->texture_target_exception_list =
       gpu::CreateBufferUsageAndFormatExceptionList();

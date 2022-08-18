@@ -7,88 +7,105 @@
 
 #include <dawn/platform/DawnPlatform.h>
 
+#include <map>
 #include <memory>
 
-#include "base/files/file_path.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/memory/ref_counted.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace gpu::webgpu {
 
+class DawnCachingInterfaceFactory;
+
+using RefCountedDiskCacheBackend =
+    base::RefCountedData<std::unique_ptr<disk_cache::Backend>>;
+using ScopedDiskCacheBackend = scoped_refptr<RefCountedDiskCacheBackend>;
+
+// Provides a wrapper class around an in-memory disk_cache::Backend. This class
+// was originally designed to handle both disk and in-memory cache backends, but
+// because it lives on the GPU process and does not have permissions (due to
+// sandbox restrictions) to disk, the disk functionality was removed. Should it
+// become necessary to provide interfaces over a disk level disk_cache::Backend,
+// please refer to the file history for reference. Note that the big difference
+// between in-memory and disk backends are the sync vs async nature of the two
+// respectively. Because we are only handling in-memory backends now, the logic
+// can be simplified to handle everything synchronously.
 class GPU_GLES2_EXPORT DawnCachingInterface
     : public dawn::platform::CachingInterface {
  public:
-  // Default constructor takes a valid cache type (either disk or memory at the
-  // moment), a maximum cache size in bytes (0 can be passed for default), and a
-  // file path to locate the cache files.
-  DawnCachingInterface(net::CacheType cache_type,
-                       int64_t cache_size,
-                       const base::FilePath& path);
-
-  // Factory for backend injection. Note that to inject a backend, we need to
-  // pass a factory to the constructor and not the direct Backend because the
-  // Backend must be created inside the thread owned by the caching interface in
-  // order for it to be usable. By passing a factory, we can post the factory to
-  // the thread. The signal should be signalled once the backend initialization
-  // has completed.
-  using CacheBackendFactory =
-      base::OnceCallback<void(std::unique_ptr<disk_cache::Backend>*,
-                              base::WaitableEvent* signal,
-                              net::Error* error)>;
-  static std::unique_ptr<DawnCachingInterface> CreateForTesting(
-      CacheBackendFactory factory);
-
   ~DawnCachingInterface() override;
 
-  // Returns a non net::OK error code if a failure occurs during initialization.
-  net::Error Init();
-
-  // Synchronously loads from the cache. Blocks for a timeout to wait for the
-  // asynchronous backend, returning early if we were unable to complete the
-  // request. If we return due to a timeout, we always return 0 to indicate no
-  // reading occurred, and nothing should be written to `value_out`.
   size_t LoadData(const void* key,
                   size_t key_size,
                   void* value_out,
                   size_t value_size) override;
 
-  // Posts a task to write out to the cache that may run asynchronously.
   void StoreData(const void* key,
                  size_t key_size,
                  const void* value,
                  size_t value_size) override;
 
  private:
-  static void DefaultCacheBackendFactory(
-      net::CacheType cache_type,
-      int64_t cache_size,
-      const base::FilePath& path,
-      std::unique_ptr<disk_cache::Backend>* backend,
-      base::WaitableEvent* signal,
-      net::Error* error);
+  friend class DawnCachingInterfaceFactory;
 
-  // Factory constructor. Note this is exposed externally for testing via
-  // CreateForTesting.
-  explicit DawnCachingInterface(CacheBackendFactory factory);
+  // Simplified accessor to the backend.
+  disk_cache::Backend* backend() { return backend_->data.get(); }
 
-  // Temporarily saves the factory so that we can use it when we call Init.
-  CacheBackendFactory factory_;
+  // Constructor is private because creation of interfaces should be deferred to
+  // the factory.
+  explicit DawnCachingInterface(ScopedDiskCacheBackend backend);
 
-  // Background thread owned by the caching interface used to post tasks to the
-  // disk_cache::Backend. Note that this additional thread is necessary because
-  // the backends expect the thread they are created on to not block, however we
-  // are blocking to appear synchronous. Without this, we can cause a deadlock
-  // when waiting.
-  scoped_refptr<base::SingleThreadTaskRunner> backend_thread_;
+  // Caching interface owns a reference to the backend.
+  ScopedDiskCacheBackend backend_ = nullptr;
+};
 
-  // Caching interface owns the backend. Note that backends initialized using
-  // the same backing file path will block on one another at initialization.
-  // This means that only one such backend will successfully be created, and
-  // thus users should be careful to avoid creating the same backend arguments
-  // unintentionally.
-  std::unique_ptr<disk_cache::Backend, base::OnTaskRunnerDeleter> backend_;
+// Factory class for producing and managing DawnCachingInterfaces.
+// Creating/using caching interfaces through the factory guarantees that we will
+// not run into issues where backends are being initialized with the same
+// parameters leading to blockage.
+class GPU_GLES2_EXPORT DawnCachingInterfaceFactory {
+ public:
+  // Factory for backend creation, especially for testing.
+  using BackendFactory = base::RepeatingCallback<ScopedDiskCacheBackend()>;
+
+  explicit DawnCachingInterfaceFactory(BackendFactory factory);
+  DawnCachingInterfaceFactory();
+  ~DawnCachingInterfaceFactory();
+
+  // Returns a pointer to a DawnCachingInterface, creating a backend for it if
+  // necessary. For handle based instances, the factory keeps a reference to the
+  // backend until ReleaseHandle below is called.
+  std::unique_ptr<DawnCachingInterface> CreateInstance(
+      const gpu::GpuDiskCacheHandle& handle);
+
+  // Returns a pointer to a DawnCachingInterface that owns the in memory
+  // backend. This is used for incognito cases where the cache should not be
+  // persisted to disk.
+  std::unique_ptr<DawnCachingInterface> CreateInstance();
+
+  // Releases the factory held reference of the handle's backend. Generally this
+  // is the last reference which means that the in-memory disk cache will be
+  // destroyed and the resources reclaimed. The factory needs to hold an extra
+  // reference in order to avoid potential races where the browser may be about
+  // to reuse the same handle, but the last reference on the GPU side has just
+  // been released causing us to clear the in-memory disk cache too early. When
+  // that happens, the disk cache entries are not re-sent over to the GPU
+  // process. To avoid this, when the browser's last reference goes away, it
+  // notifies the GPU process, and the last reference held by the factory is
+  // released.
+  void ReleaseHandle(const gpu::GpuDiskCacheHandle& handle);
+
+ private:
+  // Creates a scoped disk cache backend for assignment.
+  static ScopedDiskCacheBackend CreateDefaultInMemoryBackend();
+
+  // Factory to create backends.
+  BackendFactory backend_factory_;
+
+  // Map that holds existing backends.
+  std::map<gpu::GpuDiskCacheHandle, ScopedDiskCacheBackend> backends_;
 };
 
 }  // namespace gpu::webgpu

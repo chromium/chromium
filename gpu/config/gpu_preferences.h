@@ -29,6 +29,8 @@ const size_t kDefaultMaxProgramCacheMemoryBytes = 2 * 1024 * 1024;
 const size_t kLowEndMaxProgramCacheMemoryBytes = 128 * 1024;
 #endif
 
+GPU_EXPORT size_t GetDefaultGpuDiskCacheSize();
+
 enum class VulkanImplementationName : uint32_t {
   kNone = 0,
   kNative = 1,

@@ -4,13 +4,15 @@
 
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/config/gpu_switches.h"
 
-namespace gpu {
-namespace webgpu {
+namespace gpu::webgpu {
 
 namespace {
 
@@ -78,7 +80,9 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
 
 }  // anonymous namespace
 
-DawnPlatform::DawnPlatform() = default;
+DawnPlatform::DawnPlatform(
+    std::unique_ptr<DawnCachingInterface> dawn_caching_interface)
+    : dawn_caching_interface_(std::move(dawn_caching_interface)) {}
 
 DawnPlatform::~DawnPlatform() = default;
 
@@ -125,10 +129,17 @@ uint64_t DawnPlatform::AddTraceEvent(
   return result;
 }
 
+dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeWebGPU)) {
+    return dawn_caching_interface_.get();
+  }
+  return nullptr;
+}
+
 std::unique_ptr<dawn::platform::WorkerTaskPool>
 DawnPlatform::CreateWorkerTaskPool() {
   return std::make_unique<AsyncWorkerTaskPool>();
 }
 
-}  // namespace webgpu
-}  // namespace gpu
+}  // namespace gpu::webgpu

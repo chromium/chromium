@@ -65,9 +65,6 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   // been written to the cache.
   int SetCacheCompleteCallback(net::CompletionOnceCallback callback);
 
-  // Returns the size which should be used for the gpu disk cache.
-  static size_t CacheSizeBytes();
-
  private:
   friend class base::RefCounted<GpuDiskCache>;
   friend class GpuDiskCacheEntry;

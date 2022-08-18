@@ -5,14 +5,18 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 
+#include <memory>
+
 #include <dawn/platform/DawnPlatform.h>
 
-namespace gpu {
-namespace webgpu {
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
+
+namespace gpu::webgpu {
 
 class DawnPlatform : public dawn::platform::Platform {
  public:
-  DawnPlatform();
+  explicit DawnPlatform(
+      std::unique_ptr<DawnCachingInterface> dawn_caching_interface = nullptr);
   ~DawnPlatform() override;
 
   const unsigned char* GetTraceCategoryEnabledFlag(
@@ -31,11 +35,14 @@ class DawnPlatform : public dawn::platform::Platform {
                          const uint64_t* arg_values,
                          unsigned char flags) override;
 
+  dawn::platform::CachingInterface* GetCachingInterface() override;
+
   std::unique_ptr<dawn::platform::WorkerTaskPool> CreateWorkerTaskPool()
       override;
+
+  std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
 };
 
-}  // namespace webgpu
-}  // namespace gpu
+}  // namespace gpu::webgpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
