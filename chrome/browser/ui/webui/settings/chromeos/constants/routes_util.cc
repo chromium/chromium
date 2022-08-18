@@ -61,7 +61,6 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       // Personalization section.
       chromeos::settings::mojom::kPersonalizationSectionPath,
       chromeos::settings::mojom::kChangePictureSubpagePath,
-      chromeos::settings::mojom::kAmbientModeSubpagePath,
 
       // Search and Assistant section.
       chromeos::settings::mojom::kSearchAndAssistantSectionPath,

@@ -41,10 +41,6 @@ class PersonalizationSection : public OsSettingsSection {
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
-  // ash::AmbientModeService::Observer:
-  void OnAmbientModeEnabledStateChanged();
-
-  PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

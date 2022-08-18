@@ -2903,8 +2903,6 @@ static_library("ui") {
       "webui/settings/chromeos/accessibility_section.h",
       "webui/settings/chromeos/account_manager_handler.cc",
       "webui/settings/chromeos/account_manager_handler.h",
-      "webui/settings/chromeos/ambient_mode_handler.cc",
-      "webui/settings/chromeos/ambient_mode_handler.h",
       "webui/settings/chromeos/android_apps_handler.cc",
       "webui/settings/chromeos/android_apps_handler.h",
       "webui/settings/chromeos/apps_section.cc",

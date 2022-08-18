@@ -5,29 +5,19 @@
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_section.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/ambient/ambient_client.h"
-#include "ash/public/cpp/ambient/ambient_prefs.h"
-#include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/chromeos/ambient_mode_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/change_picture_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/wallpaper_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "url/gurl.h"
 
 namespace chromeos {
 namespace settings {
@@ -66,87 +56,13 @@ const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetAmbientModeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE,
-       mojom::kAmbientModeSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAmbientMode}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetAmbientModeOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_CHOOSE_SOURCE,
-       mojom::kAmbientModeSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAmbientModeSource}},
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_TURN_OFF,
-       mojom::kAmbientModeSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAmbientModeOnOff},
-       {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_TURN_OFF_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_GOOGLE_PHOTOS_ALBUM,
-       mojom::kAmbientModeGooglePhotosAlbumSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAmbientModeGooglePhotosAlbum}},
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_ART_GALLERY_ALBUM,
-       mojom::kAmbientModeArtGalleryAlbumSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAmbientModeArtGalleryAlbum}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetAmbientModeOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_TURN_ON,
-       mojom::kAmbientModeSubpagePath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAmbientModeOnOff},
-       {IDS_OS_SETTINGS_TAG_AMBIENT_MODE_TURN_ON_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
-  return *tags;
-}
-
-bool IsAmbientModeAllowed() {
-  // TODO(b/172029925): Set up to test this code.
-  return chromeos::features::IsAmbientModeEnabled() &&
-         ash::AmbientClient::Get() &&
-         ash::AmbientClient::Get()->IsAmbientModeAllowed();
-}
-
-bool IsAmbientModePhotoPreviewAllowed() {
-  return chromeos::features::IsAmbientModePhotoPreviewEnabled();
-}
-
-GURL GetGooglePhotosURL() {
-  return GURL(chrome::kGooglePhotosURL);
-}
-
 }  // namespace
 
 PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
-    : OsSettingsSection(profile, search_tag_registry),
-      pref_service_(pref_service) {
+    : OsSettingsSection(profile, search_tag_registry) {
   // Personalization search tags are not added in guest mode.
   if (features::IsGuestModeActive())
     return;
@@ -159,17 +75,6 @@ PersonalizationSection::PersonalizationSection(
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPersonalizationSearchConcepts());
-
-  if (IsAmbientModeAllowed()) {
-    updater.AddSearchTags(GetAmbientModeSearchConcepts());
-    pref_change_registrar_.Init(pref_service_);
-    pref_change_registrar_.Add(
-        ash::ambient::prefs::kAmbientModeEnabled,
-        base::BindRepeating(
-            &PersonalizationSection::OnAmbientModeEnabledStateChanged,
-            base::Unretained(this)));
-    OnAmbientModeEnabledStateChanged();
-  }
 }
 
 PersonalizationSection::~PersonalizationSection() = default;
@@ -177,44 +82,6 @@ PersonalizationSection::~PersonalizationSection() = default;
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"ambientModeTitle", IDS_OS_SETTINGS_AMBIENT_MODE_TITLE},
-      {"ambientModeEnabled", IDS_OS_SETTINGS_AMBIENT_MODE_ENABLED},
-      {"ambientModeDisabled", IDS_OS_SETTINGS_AMBIENT_MODE_DISABLED},
-      {"ambientModePageDescription",
-       IDS_OS_SETTINGS_AMBIENT_MODE_PAGE_DESCRIPTION},
-      {"ambientModeOn", IDS_OS_SETTINGS_AMBIENT_MODE_ON},
-      {"ambientModeOff", IDS_OS_SETTINGS_AMBIENT_MODE_OFF},
-      {"ambientModeTopicSourceTitle",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
-      {"ambientModeTopicSourceGooglePhotos",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS},
-      {"ambientModeTopicSourceGooglePhotosDescription",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC},
-      {"ambientModeTopicSourceGooglePhotosDescriptionNoAlbum",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC_NO_ALBUM},
-      {"ambientModeTopicSourceArtGallery",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY},
-      {"ambientModeTopicSourceArtGalleryDescription",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION},
-      {"ambientModeTopicSourceSelectedRow",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW},
-      {"ambientModeTopicSourceUnselectedRow",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW},
-      {"ambientModeTopicSourceSubpage",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_SUBPAGE},
-      {"ambientModeWeatherTitle", IDS_OS_SETTINGS_AMBIENT_MODE_WEATHER_TITLE},
-      {"ambientModeTemperatureUnitFahrenheit",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TEMPERATURE_UNIT_FAHRENHEIT},
-      {"ambientModeTemperatureUnitCelsius",
-       IDS_OS_SETTINGS_AMBIENT_MODE_TEMPERATURE_UNIT_CELSIUS},
-      {"ambientModeAlbumsSubpageAlbumSelected",
-       IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_SELECTED},
-      {"ambientModeAlbumsSubpageAlbumUnselected",
-       IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_UNSELECTED},
-      {"ambientModeLastArtAlbumMessage",
-       IDS_OS_SETTINGS_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE},
-      {"ambientModeArtAlbumDialogCloseButtonLabel",
-       IDS_OS_SETTINGS_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL},
       {"changePictureTitle", IDS_OS_SETTINGS_CHANGE_PICTURE_TITLE},
       {"openWallpaperApp", IDS_OS_SETTINGS_OPEN_WALLPAPER_APP},
       {"personalizationPageTitle", IDS_OS_SETTINGS_PERSONALIZATION},
@@ -246,19 +113,6 @@ void PersonalizationSection::AddLoadTimeData(
   html_source->AddBoolean(
       "changePictureVideoModeEnabled",
       base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
-  html_source->AddBoolean("isAmbientModeEnabled", IsAmbientModeAllowed());
-  html_source->AddBoolean("isAmbientModePhotoPreviewEnabled",
-                          IsAmbientModePhotoPreviewAllowed());
-  html_source->AddString(
-      "ambientModeAlbumsSubpageGooglePhotosTitle",
-      l10n_util::GetStringFUTF16(
-          IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_TITLE,
-          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
-  html_source->AddString(
-      "ambientModeAlbumsSubpageGooglePhotosNoAlbum",
-      l10n_util::GetStringFUTF16(
-          IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
-          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
@@ -269,13 +123,6 @@ void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   if (ash::features::IsPersonalizationHubEnabled()) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::settings::PersonalizationHubHandler>());
-  }
-
-  if (!profile()->IsGuestSession() &&
-      chromeos::features::IsAmbientModeEnabled()) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::AmbientModeHandler>(
-            pref_service_));
   }
 }
 
@@ -312,42 +159,6 @@ void PersonalizationSection::RegisterHierarchy(
       mojom::kChangePictureSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kChangeDeviceAccountImage,
                                    mojom::Subpage::kChangePicture);
-
-  // Ambient mode.
-  generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_AMBIENT_MODE_TITLE, mojom::Subpage::kAmbientMode,
-      mojom::SearchResultIcon::kWallpaper,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kAmbientModeSubpagePath);
-  static constexpr mojom::Setting kAmbientModeSettings[] = {
-      mojom::Setting::kAmbientModeOnOff,
-      mojom::Setting::kAmbientModeSource,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kAmbientMode, kAmbientModeSettings,
-                            generator);
-  generator->RegisterNestedSubpage(
-      IDS_OS_SETTINGS_AMBIENT_MODE_TITLE,
-      mojom::Subpage::kAmbientModeGooglePhotosAlbum,
-      mojom::Subpage::kAmbientMode, mojom::SearchResultIcon::kWallpaper,
-      mojom::SearchResultDefaultRank::kMedium,
-      mojom::kAmbientModeGooglePhotosAlbumSubpagePath);
-  generator->RegisterNestedSubpage(
-      IDS_OS_SETTINGS_AMBIENT_MODE_TITLE,
-      mojom::Subpage::kAmbientModeArtGalleryAlbum, mojom::Subpage::kAmbientMode,
-      mojom::SearchResultIcon::kWallpaper,
-      mojom::SearchResultDefaultRank::kMedium,
-      mojom::kAmbientModeArtGalleryAlbumSubpagePath);
-}
-
-void PersonalizationSection::OnAmbientModeEnabledStateChanged() {
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-
-  if (pref_service_->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled)) {
-    updater.AddSearchTags(GetAmbientModeOnSearchConcepts());
-    updater.RemoveSearchTags(GetAmbientModeOffSearchConcepts());
-  } else {
-    updater.RemoveSearchTags(GetAmbientModeOnSearchConcepts());
-    updater.AddSearchTags(GetAmbientModeOffSearchConcepts());
-  }
 }
 
 }  // namespace settings

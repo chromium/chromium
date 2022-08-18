@@ -165,15 +165,6 @@ function createOSSettingsRoutes() {
       r.CHANGE_PICTURE = createSubpage(
           r.PERSONALIZATION, routesMojomWebui.CHANGE_PICTURE_SUBPAGE_PATH,
           Subpage.kChangePicture);
-      r.AMBIENT_MODE = createSubpage(
-          r.PERSONALIZATION, routesMojomWebui.AMBIENT_MODE_SUBPAGE_PATH,
-          Subpage.kAmbientMode);
-      // Note: AMBIENT_MODE_PHOTOS is a special case because it includes several
-      // subpages, one per topic source. Default to
-      // kAmbientModeGooglePhotosAlbum subpage.
-      r.AMBIENT_MODE_PHOTOS = createSubpage(
-          r.AMBIENT_MODE, 'ambientMode/photos',
-          Subpage.kAmbientModeGooglePhotosAlbum);
     }
   }
 
