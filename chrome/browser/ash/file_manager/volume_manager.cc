@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -16,7 +18,6 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -148,7 +149,7 @@ VolumeType MountTypeToVolumeType(ash::MountType type) {
 }
 
 // Returns a string representation of the given volume type.
-std::string VolumeTypeToString(VolumeType type) {
+base::StringPiece VolumeTypeToString(const VolumeType type) {
   switch (type) {
     case VOLUME_TYPE_GOOGLE_DRIVE:
       return "drive";
@@ -181,7 +182,9 @@ std::string VolumeTypeToString(VolumeType type) {
     case NUM_VOLUME_TYPE:
       break;
   }
-  NOTREACHED();
+
+  NOTREACHED() << "Unexpected VolumeType value "
+               << static_cast<std::underlying_type_t<VolumeType>>(type);
   return "";
 }
 
@@ -189,8 +192,8 @@ std::string VolumeTypeToString(VolumeType type) {
 std::string GenerateVolumeId(const Volume& volume) {
   // For the same volume type, base names are unique, as mount points are
   // flat for the same volume type.
-  return (VolumeTypeToString(volume.type()) + ":" +
-          volume.mount_path().BaseName().AsUTF8Unsafe());
+  return base::StrCat({VolumeTypeToString(volume.type()), ":",
+                       volume.mount_path().BaseName().AsUTF8Unsafe()});
 }
 
 std::string FuseBoxMTPSubdir(const std::string& device_id) {
@@ -264,6 +267,10 @@ std::string MediaViewDocumentIdToLabel(std::string root_document_id) {
 }
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& out, const VolumeType type) {
+  return out << VolumeTypeToString(type);
+}
 
 Volume::Volume()
     : source_(SOURCE_FILE),
@@ -415,8 +422,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
   volume->icon_set_ = file_system_info.icon_set();
 
   // "fusebox" prefix the original FSP volume id.
-  volume->volume_id_ = util::kFuseBox;
-  volume->volume_id_.append(GenerateVolumeId(*volume));
+  volume->volume_id_ =
+      base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
   return volume;
 }
 
@@ -452,8 +459,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
   volume->is_parent_ = true;
   volume->is_read_only_ = read_only;
   // "fusebox" prefix the original MTP volume id.
-  volume->volume_id_ = util::kFuseBox;
-  volume->volume_id_.append(kMtpVolumeIdPrefix + label);
+  volume->volume_id_ =
+      base::StrCat({util::kFuseBox, kMtpVolumeIdPrefix, label});
   volume->volume_label_ = label;
   if (ash::features::IsFileManagerFuseBoxDebugEnabled())
     volume->volume_label_.insert(0, "fusebox ");

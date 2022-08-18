@@ -55,28 +55,29 @@ class SnapshotManager;
 class VolumeManagerObserver;
 
 // Identifiers for volume types managed by Chrome OS file manager.
+// The enum values must be kept in sync with FileManagerVolumeType defined in
+// tools/metrics/histograms/enums.xml.
 enum VolumeType {
   VOLUME_TYPE_TESTING = -1,  // Used only in tests.
   VOLUME_TYPE_GOOGLE_DRIVE = 0,
-  VOLUME_TYPE_DOWNLOADS_DIRECTORY,
-  VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-  VOLUME_TYPE_MOUNTED_ARCHIVE_FILE,
-  VOLUME_TYPE_PROVIDED,  // File system provided by the FileSystemProvider API.
-  VOLUME_TYPE_MTP,
-  VOLUME_TYPE_MEDIA_VIEW,
-  VOLUME_TYPE_CROSTINI,
-  VOLUME_TYPE_ANDROID_FILES,
-  VOLUME_TYPE_DOCUMENTS_PROVIDER,
-  VOLUME_TYPE_SMB,
-  VOLUME_TYPE_SYSTEM_INTERNAL,  // Internal volume which is never exposed to
-                                // users.
-  VOLUME_TYPE_GUEST_OS,         // Guest OS volumes (Crostini, Bruschetta, etc)
-  // The enum values must be kept in sync with FileManagerVolumeType in
-  // tools/metrics/histograms/enums.xml. Since enums for histograms are
-  // append-only (for keeping the number consistent across versions), new values
-  // for this enum also has to be always appended at the end (i.e., here).
+  VOLUME_TYPE_DOWNLOADS_DIRECTORY = 1,
+  VOLUME_TYPE_REMOVABLE_DISK_PARTITION = 2,
+  VOLUME_TYPE_MOUNTED_ARCHIVE_FILE = 3,
+  VOLUME_TYPE_PROVIDED = 4,  // File system provided by FileSystemProvider API.
+  VOLUME_TYPE_MTP = 5,
+  VOLUME_TYPE_MEDIA_VIEW = 6,
+  VOLUME_TYPE_CROSTINI = 7,
+  VOLUME_TYPE_ANDROID_FILES = 8,
+  VOLUME_TYPE_DOCUMENTS_PROVIDER = 9,
+  VOLUME_TYPE_SMB = 10,
+  VOLUME_TYPE_SYSTEM_INTERNAL = 11,  // Internal volume never exposed to users.
+  VOLUME_TYPE_GUEST_OS = 12,  // Guest OS volumes (Crostini, Bruschetta, etc)
+  // Append new values here.
   NUM_VOLUME_TYPE,
 };
+
+// Output operator for logging.
+std::ostream& operator<<(std::ostream& out, VolumeType type);
 
 // Says how was the mount performed, whether due to user interaction, or
 // automatic. User interaction includes both hardware (pluggins a USB stick)
