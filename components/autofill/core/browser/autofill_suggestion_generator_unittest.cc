@@ -572,48 +572,42 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
-  std::vector<IBAN*> ibans;
-
-  IBAN iban0(base::GenerateGUID());
-  iban0.set_value(u"CH56 0483 5012 3456 7800 9");
-  iban0.set_nickname(u"My doctor's IBAN");
-  ibans.push_back(&iban0);
-
-  IBAN iban1(base::GenerateGUID());
-  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
-  iban1.set_nickname(u"My brother's IBAN");
-  ibans.push_back(&iban1);
-
-  IBAN iban2(base::GenerateGUID());
-  iban2.set_value(u"GR96 0810 0010 0000 0123 4567 890");
-  iban2.set_nickname(u"My teacher's IBAN");
-  ibans.push_back(&iban2);
-
-  IBAN iban3(base::GenerateGUID());
-  iban3.set_value(u"PK70 BANK 0000 1234 5678 9000");
-  ibans.push_back(&iban3);
+  auto MakeIBAN = [](const std::u16string& value,
+                     const std::u16string& nickname) {
+    IBAN iban(base::GenerateGUID());
+    iban.set_value(value);
+    if (!nickname.empty())
+      iban.set_nickname(nickname);
+    return iban;
+  };
+  IBAN iban0 = MakeIBAN(u"CH56 0483 5012 3456 7800 9", u"My doctor's IBAN");
+  IBAN iban1 = MakeIBAN(u"DE91 1000 0000 0123 4567 89", u"My brother's IBAN");
+  IBAN iban2 =
+      MakeIBAN(u"GR96 0810 0010 0000 0123 4567 890", u"My teacher's IBAN");
+  IBAN iban3 = MakeIBAN(u"PK70 BANK 0000 1234 5678 9000", u"");
 
   std::vector<Suggestion> iban_suggestions =
-      AutofillSuggestionGenerator::GetSuggestionsForIBANs(ibans);
+      AutofillSuggestionGenerator::GetSuggestionsForIBANs(
+          {&iban0, &iban1, &iban2, &iban3});
   EXPECT_TRUE(iban_suggestions.size() == 4);
 
   EXPECT_EQ(iban_suggestions[0].main_text.value,
-            u"CH" + iban0.RepeatEllipsisForTesting(4) + u"9");
+            iban0.GetIdentifierStringForAutofillDisplay());
   EXPECT_EQ(iban_suggestions[0].label, u"My doctor's IBAN");
   EXPECT_EQ(iban_suggestions[0].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[1].main_text.value,
-            u"DE" + iban1.RepeatEllipsisForTesting(4) + u"89");
+            iban1.GetIdentifierStringForAutofillDisplay());
   EXPECT_EQ(iban_suggestions[1].label, u"My brother's IBAN");
   EXPECT_EQ(iban_suggestions[1].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[2].main_text.value,
-            u"GR" + iban2.RepeatEllipsisForTesting(5) + u"890");
+            iban2.GetIdentifierStringForAutofillDisplay());
   EXPECT_EQ(iban_suggestions[2].label, u"My teacher's IBAN");
   EXPECT_EQ(iban_suggestions[2].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[3].main_text.value,
-            u"PK" + iban3.RepeatEllipsisForTesting(4) + u"9000");
+            iban3.GetIdentifierStringForAutofillDisplay());
   EXPECT_EQ(iban_suggestions[3].label, u"");
   EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 }

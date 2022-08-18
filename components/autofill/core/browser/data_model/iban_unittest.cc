@@ -13,6 +13,43 @@
 
 namespace autofill {
 
+constexpr char16_t kEllipsisOneDot[] = u"\u2022";
+constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
+constexpr char16_t kEllipsisFourDotsAndOneSpace[] =
+    u"\u2022\u2022\u2022\u2022\u2006";
+
+// A helper function which constructs a string with |numberOfDots| of dots,
+// followed by |revealingDigits|, and a trailing space if |addTrailingSpace|
+// is true.
+std::u16string AppendDotsAndRevealingDigits(
+    int numberOfDots,
+    const std::u16string& revealingDigits,
+    bool addTrailingSpace) {
+  std::u16string value;
+  for (int i = 0; i < numberOfDots; ++i) {
+    value.append(kEllipsisOneDot);
+  }
+  value.append(revealingDigits);
+
+  if (addTrailingSpace)
+    value.append(kEllipsisOneSpace);
+  return value;
+}
+
+// A helper function to construct a string with
+// |number_of_fully_obfuscated_groups| groups of '**** '.
+std::u16string RepeatEllipsis(size_t number_of_fully_obfuscated_groups) {
+  std::u16string ellipsis_value;
+  ellipsis_value.reserve(sizeof(kEllipsisOneSpace) +
+                         number_of_fully_obfuscated_groups *
+                             sizeof(kEllipsisFourDotsAndOneSpace));
+  ellipsis_value.append(kEllipsisOneSpace);
+  for (size_t i = 0; i < number_of_fully_obfuscated_groups; ++i)
+    ellipsis_value.append(kEllipsisFourDotsAndOneSpace);
+
+  return ellipsis_value;
+}
+
 TEST(IBANTest, AssignmentOperator) {
   // Creates two IBANs with different parameters.
   std::string guid = base::GenerateGUID();
@@ -110,38 +147,39 @@ TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
   IBAN iban(base::GenerateGUID());
 
   iban.set_value(u"CH56 0483 5012 3456 7800 9");
-  std::u16string leading_digits = u"CH";
-  std::u16string trailing_digits = u"9";
-  // Obfuscated value is: CH** **** **** **** **** 9
+  std::u16string leading_digits = u"CH56";
+  std::u16string trailing_digits =
+      AppendDotsAndRevealingDigits(/*numberOfDots=*/1, u"800", true) + u"9";
+  // Obfuscated value is: CH56 **** **** **** *800 9
   std::u16string expected =
-      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+      leading_digits + RepeatEllipsis(3) + trailing_digits;
 
   EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
 
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
-  leading_digits = u"DE";
-  trailing_digits = u"89";
-  // Obfuscated value is: DE** **** **** **** **** 89
-  expected =
-      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+  leading_digits = u"DE91";
+  trailing_digits =
+      AppendDotsAndRevealingDigits(/*numberOfDots=*/2, u"67", true) + u"89";
+  // Obfuscated value is: DE91 **** **** **** **67 89
+  expected = leading_digits + RepeatEllipsis(3) + trailing_digits;
 
   EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
 
   iban.set_value(u"GR96 0810 0010 0000 0123 4567 890");
-  leading_digits = u"GR";
-  trailing_digits = u"890";
-  // Obfuscated value is: GR** **** **** **** **** **** 890
-  expected =
-      leading_digits + iban.RepeatEllipsisForTesting(5) + trailing_digits;
+  leading_digits = u"GR96";
+  trailing_digits =
+      AppendDotsAndRevealingDigits(/*numberOfDots=*/3, u"7", true) + u"890";
+  // Obfuscated value is: GR96 **** **** **** **** ***7 890
+  expected = leading_digits + RepeatEllipsis(4) + trailing_digits;
 
   EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
 
   iban.set_value(u"PK70 BANK 0000 1234 5678 9000");
-  leading_digits = u"PK";
-  trailing_digits = u"9000";
-  // Obfuscated value is: PK** **** **** **** **** 9000
-  expected =
-      leading_digits + iban.RepeatEllipsisForTesting(4) + trailing_digits;
+  leading_digits = u"PK70";
+  trailing_digits =
+      AppendDotsAndRevealingDigits(/*numberOfDots=*/0, u"9000", false);
+  // Obfuscated value is: PK70 **** **** **** **** 9000
+  expected = leading_digits + RepeatEllipsis(4) + trailing_digits;
 
   EXPECT_EQ(expected, iban.GetIdentifierStringForAutofillDisplay());
 }

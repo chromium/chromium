@@ -82,40 +82,23 @@ class IBAN : public AutofillDataModel {
   // trim leading/trailing whitespaces).
   void set_nickname(const std::u16string& nickname);
 
-  // Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partial masked
-  // text formatted by the following steps:
-  // 1. Reveal the first two characters, containing the country code.
-  // 2. Obfuscate the following two check digits.
-  // 3. Arrange the remaining digits in groups of four and obfuscate them,
-  //    adding a space between each group.
-  //    Note: If the number of remaining digits is a multiple of four, reveal
-  //    the last four digits.
-  // 4. Reveal any leftover digits not in a group of four.
+  // Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partially
+  // masked text formatted by the following rules:
+  // 1. Reveal the first and the last four characters.
+  // 2. Mask the remaining digits.
+  // 3. The identifier string will be arranged in groups of four with a space
+  //    between each group.
   //
   // Here are some examples:
-  // BE71 0961 2345 6769 will be shown as: BE** **** **** 6769.
-  // CH56 0483 5012 3456 7800 9 will be shown as: CH** **** **** **** **** 9.
-  // DE91 1000 0000 0123 4567 89 will be show as: DE** **** **** **** **** 89.
+  // BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
+  // CH56 0483 5012 3456 7800 9 will be shown as: CH56 **** **** **** *800 9.
+  // DE91 1000 0000 0123 4567 89 will be shown as: DE91 **** **** **** **67 89.
   std::u16string GetIdentifierStringForAutofillDisplay() const;
-
-#if defined(UNIT_TEST)
-  // Call RepeatEllipsis for testing purposes.
-  std::u16string RepeatEllipsisForTesting(size_t number_of_groups) const {
-    return RepeatEllipsis(number_of_groups);
-  }
-#endif
 
  private:
   // Returns a version of |value_| which does not have any separator characters
   // (e.g., '-' and ' ').
   std::u16string GetStrippedValue() const;
-
-  // This method does the following steps:
-  // 1. Adds two bullets and a space which represent the two characters after
-  //    the country code.
-  // 2. Adds |number_of_groups| groups of "**** " to obfuscate the value of
-  //    IBAN.
-  std::u16string RepeatEllipsis(size_t number_of_groups) const;
 
   // This is the ID assigned by the server to uniquely identify this IBAN.
   // Note: server_id is empty for now as only local IBAN is supported.

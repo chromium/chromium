@@ -16,9 +16,8 @@ namespace autofill {
 // Unicode characters used in IBAN value obfuscation:
 //  - \u2022 - Bullet.
 //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
-constexpr char16_t kMidlineEllipsisFourDotsAndOneSpace[] =
-    u"\u2022\u2022\u2022\u2022\u2006";
-constexpr char16_t kMidlineEllipsisTwoDotsAndOneSpace[] = u"\u2022\u2022\u2006";
+constexpr char16_t kEllipsisOneDot[] = u"\u2022";
+constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 
 IBAN::IBAN(const std::string& guid)
     : AutofillDataModel(guid, /*origin=*/std::string()),
@@ -120,41 +119,30 @@ std::u16string IBAN::GetIdentifierStringForAutofillDisplay() const {
   const std::u16string stripped_value = GetStrippedValue();
   size_t value_length = stripped_value.size();
   // Directly return an empty string if the length of IBAN value is invalid.
-  if (value_length < 5 || value_length > 34)
+  if (value_length < 9 || value_length > 34)
     return std::u16string();
 
-  std::u16string value_to_display = stripped_value.substr(0, 2);
+  auto ShouldObfuscate = [&](size_t i) {
+    // The first 2-letter country code and 2 IBAN check digits will stay
+    // unmasked, the last four digits will be shown as-is too.
+    return 4 <= i && i < value_length - 4;
+  };
 
-  // Get the number of groups of four characters to be obfuscated.
-  size_t number_of_groups = value_length % 4 == 0 ? (value_length - 4) / 4 - 1
-                                                  : (value_length - 4) / 4;
-  // Get the position of rest of characters to be revealed.
-  size_t first_revealed_digit_pos = value_length % 4 == 0
-                                        ? value_length - 4
-                                        : value_length - (value_length % 4);
-
-  value_to_display.append(RepeatEllipsis(number_of_groups));
-
-  value_to_display.append(stripped_value.substr(first_revealed_digit_pos));
-  return value_to_display;
+  std::u16string output;
+  output.reserve(stripped_value.size() + (stripped_value.size() - 1) / 4);
+  for (size_t i = 0; i < stripped_value.size(); ++i) {
+    if (i % 4 == 0 && i > 0)
+      output.append(kEllipsisOneSpace);
+    output.append(ShouldObfuscate(i) ? kEllipsisOneDot
+                                     : stripped_value.substr(i, 1));
+  }
+  return output;
 }
 
 std::u16string IBAN::GetStrippedValue() const {
   std::u16string stripped_value;
   base::RemoveChars(value_, u"- ", &stripped_value);
   return stripped_value;
-}
-
-std::u16string IBAN::RepeatEllipsis(size_t number_of_groups) const {
-  std::u16string ellipsis_value;
-  ellipsis_value.reserve(sizeof(kMidlineEllipsisTwoDotsAndOneSpace) +
-                         number_of_groups *
-                             sizeof(kMidlineEllipsisFourDotsAndOneSpace));
-  ellipsis_value.append(kMidlineEllipsisTwoDotsAndOneSpace);
-  for (size_t i = 0; i < number_of_groups; ++i)
-    ellipsis_value.append(kMidlineEllipsisFourDotsAndOneSpace);
-
-  return ellipsis_value;
 }
 
 }  // namespace autofill
