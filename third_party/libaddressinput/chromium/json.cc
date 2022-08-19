@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace i18n {
 namespace addressinput {
@@ -19,23 +20,18 @@ namespace {
 
 // Returns |json| parsed into a JSON dictionary. Sets |parser_error| to true if
 // parsing failed.
-::std::unique_ptr<const base::DictionaryValue> Parse(const std::string& json,
-                                                     bool* parser_error) {
+base::Value::Dict Parse(const std::string& json, bool* parser_error) {
   DCHECK(parser_error);
-  ::std::unique_ptr<const base::DictionaryValue> result;
 
   // |json| is converted to a |c_str()| here because rapidjson and other parts
   // of the standalone library use char* rather than std::string.
-  ::std::unique_ptr<const base::Value> parsed(
-      base::JSONReader::ReadDeprecated(json.c_str()));
+  absl::optional<base::Value> parsed(base::JSONReader::Read(json.c_str()));
   *parser_error = !parsed || !parsed->is_dict();
 
   if (*parser_error)
-    result.reset(new base::DictionaryValue);
+    return base::Value::Dict();
   else
-    result.reset(static_cast<const base::DictionaryValue*>(parsed.release()));
-
-  return result;
+    return std::move(parsed->GetDict());
 }
 
 }  // namespace
@@ -45,8 +41,7 @@ namespace {
 class Json::JsonImpl {
  public:
   explicit JsonImpl(const std::string& json)
-      : owned_(Parse(json, &parser_error_)),
-        dict_(*owned_) {}
+      : owned_(Parse(json, &parser_error_)), dict_(owned_) {}
 
   JsonImpl(const JsonImpl&) = delete;
   JsonImpl& operator=(const JsonImpl&) = delete;
@@ -57,13 +52,10 @@ class Json::JsonImpl {
 
   const std::vector<const Json*>& GetSubDictionaries() {
     if (sub_dicts_.empty()) {
-      for (base::DictionaryValue::Iterator it(dict_); !it.IsAtEnd();
-           it.Advance()) {
-        if (it.value().is_dict()) {
-          const base::DictionaryValue* sub_dict = NULL;
-          it.value().GetAsDictionary(&sub_dict);
+      for (auto kv : dict_) {
+        if (kv.second.is_dict()) {
           owned_sub_dicts_.push_back(
-              base::WrapUnique(new Json(new JsonImpl(*sub_dict))));
+              base::WrapUnique(new Json(new JsonImpl(kv.second.GetDict()))));
           sub_dicts_.push_back(owned_sub_dicts_.back().get());
         }
       }
@@ -72,7 +64,7 @@ class Json::JsonImpl {
   }
 
   bool GetStringValueForKey(const std::string& key, std::string* value) const {
-    const std::string* value_str = dict_.FindStringKey(key);
+    const std::string* value_str = dict_.FindString(key);
     if (!value_str)
       return false;
 
@@ -82,12 +74,12 @@ class Json::JsonImpl {
   }
 
  private:
-  explicit JsonImpl(const base::DictionaryValue& dict)
+  explicit JsonImpl(const base::Value::Dict& dict)
       : parser_error_(false), dict_(dict) {}
 
-  const ::std::unique_ptr<const base::DictionaryValue> owned_;
+  base::Value::Dict owned_;
   bool parser_error_;
-  const base::DictionaryValue& dict_;
+  const base::Value::Dict& dict_;
   std::vector<const Json*> sub_dicts_;
   std::vector<std::unique_ptr<Json>> owned_sub_dicts_;
 };
