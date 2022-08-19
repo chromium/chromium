@@ -565,7 +565,8 @@ void GpuServiceImpl::InitializeWithHost(
     // When using real buffers for testing overlay configurations, we need
     // access to SharedImageManager on the viz thread to obtain the buffer
     // corresponding to a mailbox.
-    const bool display_context_on_another_thread = features::IsDrDcEnabled();
+    const bool display_context_on_another_thread =
+        features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
     bool thread_safe_manager = display_context_on_another_thread;
     // Raw draw needs to access shared image backing on the compositor thread.
     thread_safe_manager |= features::IsUsingRawDraw();

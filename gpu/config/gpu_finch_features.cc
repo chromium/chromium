@@ -472,6 +472,10 @@ bool IsUsingThreadSafeMediaForWebView() {
 #endif
 }
 
+// Note that DrDc is also disabled on some of the gpus (crbug.com/1354201).
+// Thread safe media will still be used on those gpus which should be fine for
+// now as the lock shouldn't have much overhead and is limited to only few gpus.
+// This should be fixed/updated later to account for disabled gpus.
 bool NeedThreadSafeAndroidMedia() {
   return IsDrDcEnabled() || IsUsingThreadSafeMediaForWebView();
 }
