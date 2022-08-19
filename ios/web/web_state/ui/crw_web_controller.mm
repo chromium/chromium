@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "ios/web/annotations/annotations_text_manager.h"
 #import "ios/web/browsing_data/browsing_data_remover.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -294,6 +295,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         initWithBrowserState:browserState];
     web::FindInPageManagerImpl::CreateForWebState(_webStateImpl);
     web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
+
+    if (base::FeatureList::IsEnabled(
+            web::features::kEnableWebPageAnnotations)) {
+      web::AnnotationsTextManager::CreateForWebState(_webStateImpl);
+    }
 
     _navigationHandler = [[CRWWKNavigationHandler alloc] initWithDelegate:self];
 

@@ -18,6 +18,7 @@ source_set("ui") {
     "//ios/net",
     "//ios/third_party/webkit",
     "//ios/web:core",
+    "//ios/web/annotations",
     "//ios/web/browsing_data",
     "//ios/web/common",
     "//ios/web/common:uikit",

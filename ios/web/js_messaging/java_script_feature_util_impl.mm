@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/annotations/annotations_java_script_feature.h"
+#import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
@@ -140,6 +142,10 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
   // TODO(crbug.com/1218221): Remove feature once app is iOS 14.5+.
   if (!base::ios::IsRunningOnOrLater(14, 5, 0)) {
     features.push_back(GetPluginPlaceholderJavaScriptFeature());
+  }
+
+  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
+    features.push_back(AnnotationsJavaScriptFeature::GetInstance());
   }
 
   return features;
