@@ -608,8 +608,6 @@ mediaImport.ImportTaskImpl = class extends taskQueue.BaseTaskImpl {
           /** @type {!importer.Disposition} */ (disposition)];
       totalDeduped += count;
     }, this);
-
-    metrics.recordMediumCount('MediaImport.Duplicates', totalDeduped);
   }
 };
 
