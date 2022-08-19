@@ -32,7 +32,7 @@ import org.chromium.mojo_base.mojom.String16;
  */
 class DirectWritingServiceCallback
         extends android.widget.directwriting.IDirectWritingServiceCallback.Stub {
-    public static final String BUNDLE_KEY_SHOW_KEYBOARD = "showKeyboard";
+    static final String BUNDLE_KEY_SHOW_KEYBOARD = "showKeyboard";
     private static final String TAG = "DWCallbackImpl";
 
     // The following GESTURE_ and ACTION_ constants are defined as per the bundle data sent by the
