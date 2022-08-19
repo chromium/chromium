@@ -6,13 +6,16 @@
 #define CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PRIVATE_CPP_DATA_COLLECTOR_H_
 
 #include "chromeos/ash/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
+#include "chromeos/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 namespace cros_healthd {
 namespace internal {
 
-class DataCollector : public mojom::ChromiumDataCollector {
+class DataCollector : public mojom::ChromiumDataCollector,
+                      public mojo_service_manager::mojom::ServiceProvider {
  public:
   // Delegate class to be replaced for testing.
   class Delegate {
@@ -38,10 +41,17 @@ class DataCollector : public mojom::ChromiumDataCollector {
   void GetTouchscreenDevices(GetTouchscreenDevicesCallback callback) override;
   void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
 
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(mojo_service_manager::mojom::ProcessIdentityPtr identity,
+               mojo::ScopedMessagePipeHandle receiver) override;
+
   // Pointer to the delegate.
   Delegate* const delegate_;
-  // The mojo receiver.
-  mojo::Receiver<mojom::ChromiumDataCollector> receiver_{this};
+  // The mojo receiver of service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
+  // The mojo receiver set of data collector.
+  mojo::ReceiverSet<mojom::ChromiumDataCollector> receiver_set_;
 };
 
 }  // namespace internal
