@@ -22,6 +22,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
@@ -147,14 +148,16 @@ bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
   EXPECT_TRUE(request);
   EXPECT_TRUE(is_blocking_request_for_session);
 
-  AddressList address_list;
-  EXPECT_THAT(ParseAddressList(ip_address_list, &address_list.endpoints()),
-              IsOk());
-  address_list = AddressList::CopyWithPort(address_list, 443);
+  std::vector<IPEndPoint> ip_endpoints;
+  EXPECT_THAT(ParseAddressList(ip_address_list, &ip_endpoints), IsOk());
+  HostResolverEndpointResult endpoint;
+  for (auto& ip_endpoint : ip_endpoints) {
+    endpoint.ip_endpoints.emplace_back(ip_endpoint.address(), 443);
+  }
 
   // Simulate a host resolution completing.
-  OnHostResolutionCallbackResult result =
-      pool->OnHostResolutionComplete(key, is_websocket, address_list);
+  OnHostResolutionCallbackResult result = pool->OnHostResolutionComplete(
+      key, is_websocket, {endpoint}, /*aliases=*/{});
 
   // Spin the message loop and see if it creates an H2 session.
   base::RunLoop().RunUntilIdle();

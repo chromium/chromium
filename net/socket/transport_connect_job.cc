@@ -297,12 +297,10 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
   // only continue after a PostTask.
   next_state_ = STATE_RESOLVE_HOST_CALLBACK_COMPLETE;
   if (!params_->host_resolution_callback().is_null()) {
-    // TODO(https://crbug.com/1287240): Switch `OnHostResolutionCallbackResult`
-    // to `request_->GetEndpointResults()` and `request_->GetDnsAliasResults()`.
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
             ToLegacyDestinationEndpoint(params_->destination()),
-            *request_->GetAddressResults());
+            *request_->GetEndpointResults(), *request_->GetDnsAliasResults());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,

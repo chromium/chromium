@@ -15,11 +15,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "net/base/address_list.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
@@ -115,7 +115,8 @@ enum class OnHostResolutionCallbackResult {
 using OnHostResolutionCallback =
     base::RepeatingCallback<OnHostResolutionCallbackResult(
         const HostPortPair& host_port_pair,
-        const AddressList& address_list)>;
+        const std::vector<HostResolverEndpointResult>& endpoint_results,
+        const std::set<std::string>& aliases)>;
 
 // ConnectJob provides an abstract interface for "connecting" a socket.
 // The connection may involve host resolution, tcp connection, ssl connection,

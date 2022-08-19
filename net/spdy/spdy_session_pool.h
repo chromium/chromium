@@ -24,6 +24,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_server.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/log/net_log_source.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/socket/connect_job.h"
@@ -248,7 +249,8 @@ class NET_EXPORT SpdySessionPool
   OnHostResolutionCallbackResult OnHostResolutionComplete(
       const SpdySessionKey& key,
       bool is_websocket,
-      const AddressList& addresses);
+      const std::vector<HostResolverEndpointResult>& endpoint_results,
+      const std::set<std::string>& aliases);
 
   // Remove all mappings and aliases for the given session, which must
   // still be available. Except for in tests, this must be called by

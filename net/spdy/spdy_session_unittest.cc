@@ -35,6 +35,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_data_stream.h"
 #include "net/cert/ct_policy_status.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
 #include "net/http/transport_security_state_test_util.h"
@@ -3803,11 +3804,13 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
       &request_delegate, &request, &is_blocking_request_for_session));
   EXPECT_TRUE(request);
 
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(IPAddress(192, 168, 0, 2), 80)};
   // Simulate DNS resolution completing, which should set up an alias.
   EXPECT_EQ(OnHostResolutionCallbackResult::kMayBeDeletedAsync,
             spdy_session_pool_->OnHostResolutionComplete(
-                key2, /* is_websocket = */ false,
-                AddressList(IPEndPoint(IPAddress(192, 168, 0, 2), 80))));
+                key2, /* is_websocket = */ false, {endpoint},
+                /*aliases=*/{}));
 
   // Get a session for |key2|, which should return the session created earlier.
   base::WeakPtr<SpdySession> session2 =

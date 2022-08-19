@@ -464,6 +464,16 @@ AddressList HostResolver::EndpointResultToAddressList(
   return list;
 }
 
+// static
+std::vector<IPEndPoint> HostResolver::GetNonProtocolEndpoints(
+    const std::vector<HostResolverEndpointResult>& endpoints) {
+  auto non_protocol_endpoint =
+      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
+  if (non_protocol_endpoint == endpoints.end())
+    return std::vector<IPEndPoint>();
+  return non_protocol_endpoint->ip_endpoints;
+}
+
 HostResolver::HostResolver() = default;
 
 // static

@@ -46,14 +46,15 @@ OnHostResolutionCallbackResult OnHostResolution(
     const SpdySessionKey& spdy_session_key,
     bool is_for_websockets,
     const HostPortPair& host_port_pair,
-    const AddressList& addresses) {
+    const std::vector<HostResolverEndpointResult>& endpoint_results,
+    const std::set<std::string>& aliases) {
   DCHECK(host_port_pair == spdy_session_key.host_port_pair());
 
   // It is OK to dereference spdy_session_pool, because the
   // ClientSocketPoolManager will be destroyed in the same callback that
   // destroys the SpdySessionPool.
   return spdy_session_pool->OnHostResolutionComplete(
-      spdy_session_key, is_for_websockets, addresses);
+      spdy_session_key, is_for_websockets, endpoint_results, aliases);
 }
 
 }  // namespace

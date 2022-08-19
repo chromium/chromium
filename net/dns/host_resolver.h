@@ -500,6 +500,10 @@ class NET_EXPORT HostResolver {
       const std::vector<HostResolverEndpointResult>& endpoints,
       const std::set<std::string>& aliases);
 
+  // Utility to get the non protocol endpoints.
+  static std::vector<IPEndPoint> GetNonProtocolEndpoints(
+      const std::vector<HostResolverEndpointResult>& endpoints);
+
  protected:
   HostResolver();
 
