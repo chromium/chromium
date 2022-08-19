@@ -274,6 +274,14 @@ void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
 }
 
 void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
+                                         bool locked) {
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->SetResizeLocked(app_id, locked);
+  }
+}
+
+void AppServiceProxyAsh::SetResizeLocked(const std::string& app_id,
                                          apps::mojom::OptionalBool locked) {
   if (app_service_.is_connected()) {
     auto app_type = app_registry_cache_.GetAppType(app_id);

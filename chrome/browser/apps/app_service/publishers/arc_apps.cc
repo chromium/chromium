@@ -1048,6 +1048,16 @@ void ArcApps::OnPreferredAppSet(
                      arc_service_manager, prefs);
 }
 
+void ArcApps::SetResizeLocked(const std::string& app_id, bool locked) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+  prefs->SetResizeLockState(app_id, locked
+                                        ? arc::mojom::ArcResizeLockState::ON
+                                        : arc::mojom::ArcResizeLockState::OFF);
+}
+
 void ArcApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

@@ -107,6 +107,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void UnpauseApps(const std::set<std::string>& app_ids);
 
   // Set whether resize lock is enabled for the app identified by |app_id|.
+  void SetResizeLocked(const std::string& app_id, bool locked);
+
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked);
 

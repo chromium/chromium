@@ -97,6 +97,10 @@ void AppPublisher::OpenNativeSettings(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::SetResizeLocked(const std::string& app_id, bool locked) {
+  NOTIMPLEMENTED();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {

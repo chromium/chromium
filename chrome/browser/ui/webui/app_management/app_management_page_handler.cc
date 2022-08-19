@@ -283,9 +283,14 @@ void AppManagementPageHandler::SetPermission(const std::string& app_id,
 void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
                                                bool locked) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-      app_id, locked ? apps::mojom::OptionalBool::kTrue
-                     : apps::mojom::OptionalBool::kFalse);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
+        app_id, locked);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
+        app_id, locked ? apps::mojom::OptionalBool::kTrue
+                       : apps::mojom::OptionalBool::kFalse);
+  }
 #else
   NOTREACHED();
 #endif

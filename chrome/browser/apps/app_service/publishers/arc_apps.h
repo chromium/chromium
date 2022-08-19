@@ -134,6 +134,7 @@ class ArcApps : public KeyedService,
       IntentFilterPtr intent_filter,
       IntentPtr intent,
       ReplacedAppPreferences replaced_app_preferences) override;
+  void SetResizeLocked(const std::string& app_id, bool locked) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

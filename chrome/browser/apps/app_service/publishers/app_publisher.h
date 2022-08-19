@@ -155,6 +155,8 @@ class AppPublisher {
   virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                  bool open_in_app) {}
 
+  virtual void SetResizeLocked(const std::string& app_id, bool locked);
+
  protected:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Publish one `app` to AppServiceProxy. Should be called whenever the app
