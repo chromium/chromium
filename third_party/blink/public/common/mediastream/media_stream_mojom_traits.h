@@ -108,6 +108,11 @@ struct BLINK_COMMON_EXPORT
     return controls.exclude_system_audio;
   }
 
+  static bool exclude_self_browser_surface(
+      const blink::StreamControls& controls) {
+    return controls.exclude_self_browser_surface;
+  }
+
   static bool request_pan_tilt_zoom_permission(
       const blink::StreamControls& controls) {
     return controls.request_pan_tilt_zoom_permission;

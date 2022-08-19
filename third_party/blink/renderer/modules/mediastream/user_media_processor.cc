@@ -813,7 +813,9 @@ void UserMediaProcessor::SetupVideoInput() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
 
-  if (!current_request_info_->request()->Video()) {
+  UserMediaRequest* const request = current_request_info_->request();
+
+  if (!request->Video()) {
     absl::optional<base::UnguessableToken> audio_session_id =
         DetermineExistingAudioSessionId();
     GenerateStreamForCurrentRequestInfo(
@@ -822,40 +824,35 @@ void UserMediaProcessor::SetupVideoInput() {
                               : StreamSelectionStrategy::FORCE_NEW_STREAM);
     return;
   }
-  SendLogMessage(
-      base::StringPrintf("SetupVideoInput. request_id=%d, video constraints=%s",
-                         current_request_info_->request_id(),
-                         current_request_info_->request()
-                             ->VideoConstraints()
-                             .ToString()
-                             .Utf8()
-                             .c_str()));
+  SendLogMessage(base::StringPrintf(
+      "SetupVideoInput. request_id=%d, video constraints=%s",
+      current_request_info_->request_id(),
+      request->VideoConstraints().ToString().Utf8().c_str()));
 
   auto& video_controls = current_request_info_->stream_controls()->video;
-  InitializeVideoTrackControls(current_request_info_->request(),
-                               &video_controls);
+  InitializeVideoTrackControls(request, &video_controls);
 
-  current_request_info_->stream_controls()->request_pan_tilt_zoom_permission =
-      IsPanTiltZoomPermissionRequested(
-          current_request_info_->request()->VideoConstraints());
+  StreamControls* const stream_controls =
+      current_request_info_->stream_controls();
+
+  stream_controls->request_pan_tilt_zoom_permission =
+      IsPanTiltZoomPermissionRequested(request->VideoConstraints());
 
   // TODO(crbug.com/1337788): Clean up naming inconsistency with
   // auto_select_all_screens.
-  current_request_info_->stream_controls()->request_all_screens =
-      current_request_info_->request()->auto_select_all_screens();
+  stream_controls->request_all_screens = request->auto_select_all_screens();
+
+  stream_controls->exclude_self_browser_surface =
+      request->exclude_self_browser_surface();
 
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
         WTF::Bind(&UserMediaProcessor::SelectVideoDeviceSettings,
-                  WrapWeakPersistent(this),
-                  WrapPersistent(current_request_info_->request())));
+                  WrapWeakPersistent(this), WrapPersistent(request)));
   } else {
     if (!blink::IsVideoInputMediaType(video_controls.stream_type)) {
-      String failed_constraint_name =
-          String(current_request_info_->request()
-                     ->VideoConstraints()
-                     .Basic()
-                     .media_stream_source.GetName());
+      String failed_constraint_name = String(
+          request->VideoConstraints().Basic().media_stream_source.GetName());
       MediaStreamRequestResult result =
           MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED;
       GetUserMediaRequestFailed(result, failed_constraint_name);

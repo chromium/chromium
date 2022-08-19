@@ -105,6 +105,7 @@ FakeDesktopMediaPickerFactory::CreateMediaList(
     content::WebContents* web_contents,
     DesktopMediaList::WebContentsFilter includable_web_contents_filter) {
   EXPECT_LE(current_test_, tests_count_);
+  is_web_contents_excluded_ = !includable_web_contents_filter.Run(web_contents);
   std::vector<std::unique_ptr<DesktopMediaList>> media_lists;
   for (auto source_type : types)
     media_lists.emplace_back(new FakeDesktopMediaList(source_type));

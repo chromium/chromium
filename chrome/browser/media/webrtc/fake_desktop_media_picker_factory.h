@@ -46,6 +46,7 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   //  |test_flags| are expected to outlive the factory.
   void SetTestFlags(TestFlags* test_flags, int tests_count);
   FakeDesktopMediaPicker* picker() const { return picker_; }
+  bool IsWebContentsExcluded() const { return is_web_contents_excluded_; }
   // DesktopMediaPickerFactory implementation
   std::unique_ptr<DesktopMediaPicker> CreatePicker() override;
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
@@ -59,6 +60,7 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   raw_ptr<TestFlags> test_flags_;
   int tests_count_;
   int current_test_;
+  bool is_web_contents_excluded_ = false;
 };
 
 class FakeDesktopMediaPicker : public DesktopMediaPicker {

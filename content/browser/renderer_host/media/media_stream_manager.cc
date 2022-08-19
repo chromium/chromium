@@ -771,6 +771,8 @@ class MediaStreamManager::DeviceRequest {
         video_type_, controls.disable_local_echo,
         controls.request_pan_tilt_zoom_permission);
     ui_request_->exclude_system_audio = controls.exclude_system_audio;
+    ui_request_->exclude_self_browser_surface =
+        controls.exclude_self_browser_surface;
   }
 
   // Creates a tab capture specific MediaStreamRequest object that is used by

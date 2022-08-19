@@ -86,6 +86,10 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // system-audio should nevertheless not be offered to the user.
   bool exclude_system_audio = false;
 
+  // Flag to indicate that the current tab should be excluded from the list of
+  // tabs offered to the user.
+  bool exclude_self_browser_surface = false;
+
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
 };

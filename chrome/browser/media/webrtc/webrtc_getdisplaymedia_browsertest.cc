@@ -51,6 +51,7 @@ static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
 // TODO(https://crbug.com/1215089): Enable on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+static const char kMainHtmlTitle[] = "WebRTC Automated Test";
 // The captured tab is identified by its title.
 static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
 static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
@@ -464,7 +465,7 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
-        switches::kAutoSelectTabCaptureSourceByTitle, "WebRTC Automated Test");
+        switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
   }
 
   bool PreferCurrentTab() const override {
@@ -1036,6 +1037,53 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+
+#endif
+
+// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class GetDisplayMediaSelfBrowserSurfaceBrowserTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(
+        switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
+  }
+
+  bool IsSelfBrowserSurfaceInclude() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+                       SelfBrowserSurfaceChangesCapturedTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  const std::string constraints =
+      base::StringPrintf("{video: true, selfBrowserSurface: \"%s\"}",
+                         IsSelfBrowserSurfaceInclude() ? "include" : "exclude");
+  RunGetDisplayMedia(capturing_tab, constraints, /*is_fake_ui=*/false,
+                     /*expect_success=*/true, /*is_tab_capture=*/true);
+
+  EXPECT_EQ(IsSelfBrowserSurfaceInclude(), capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(!IsSelfBrowserSurfaceInclude(), other_tab->IsBeingCaptured());
 }
 
 #endif

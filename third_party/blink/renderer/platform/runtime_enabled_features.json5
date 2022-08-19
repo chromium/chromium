@@ -2036,6 +2036,15 @@
       origin_trial_allows_third_party: true
     },
     {
+      // When a Web application calls getDisplayMedia() and asks for video,
+      // allow a hint to be provided as to whether the current tab should be
+      // excluded from the list of tabs offered to the user.
+      //
+      // https://github.com/w3c/mediacapture-screen-share/pull/216/files
+      name: "SelfBrowserSurfaceConstraint",
+      status: "stable",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       status: "stable",
     },

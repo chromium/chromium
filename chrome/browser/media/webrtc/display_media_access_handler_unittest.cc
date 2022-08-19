@@ -90,6 +90,13 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     return request;
   }
 
+  content::MediaStreamRequest MakeExcludeSelfBrowserSurfaceRequest(
+      bool exclude_self_browser_surface) {
+    content::MediaStreamRequest request = MakeRequest(/*request_audio=*/false);
+    request.exclude_self_browser_surface = exclude_self_browser_surface;
+    return request;
+  }
+
   content::MediaResponseCallback MakeCallback(
       base::RunLoop* wait_loop,
       blink::mojom::MediaStreamRequestResult* request_result,
@@ -170,6 +177,10 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void NotifyWebContentsDestroyed() {
     access_handler_->WebContentsDestroyed(web_contents());
+  }
+
+  bool IsWebContentsExcluded() const {
+    return picker_factory_->IsWebContentsExcluded();
   }
 
   DesktopMediaPicker::Params GetParams() {
@@ -739,5 +750,37 @@ TEST_F(DisplayMediaAccessHandlerTest,
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, results[0]);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_STATE, results[1]);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, results[2]);
+  access_handler_.reset();
+}
+
+class DisplayMediaAccessHandlerTestWithSelfBrowserSurface
+    : public DisplayMediaAccessHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DisplayMediaAccessHandlerTestWithSelfBrowserSurface()
+      : exclude_self_browser_surface_(GetParam()) {}
+
+  ~DisplayMediaAccessHandlerTestWithSelfBrowserSurface() override = default;
+
+ protected:
+  const bool exclude_self_browser_surface_;
+};
+
+INSTANTIATE_TEST_SUITE_P(_,
+                         DisplayMediaAccessHandlerTestWithSelfBrowserSurface,
+                         ::testing::Bool());
+
+TEST_P(DisplayMediaAccessHandlerTestWithSelfBrowserSurface,
+       CheckIsWebContentsExcluded) {
+  SetTestFlags({{MakePickerTestFlags(/*request_audio=*/false)}});
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  base::RunLoop wait_loop;
+
+  HandleRequest(
+      MakeExcludeSelfBrowserSurfaceRequest(exclude_self_browser_surface_),
+      &wait_loop, &result, devices);
+  wait_loop.Run();
+  EXPECT_EQ(exclude_self_browser_surface_, IsWebContentsExcluded());
   access_handler_.reset();
 }

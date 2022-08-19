@@ -412,6 +412,12 @@ UserMediaRequest* UserMediaRequest::Create(
       options->systemAudio().AsEnum() ==
           V8SystemAudioPreferenceEnum::Enum::kExclude);
 
+  // The default is to include.
+  result->set_exclude_self_browser_surface(
+      options->hasSelfBrowserSurface() &&
+      options->selfBrowserSurface().AsEnum() ==
+          V8SelfCapturePreferenceEnum::Enum::kExclude);
+
   return result;
 }
 
