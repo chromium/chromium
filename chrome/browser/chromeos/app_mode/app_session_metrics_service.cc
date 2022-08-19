@@ -7,8 +7,13 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
+#include "base/process/process_metrics.h"
+#include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -41,6 +46,18 @@ bool IsRestoredSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void ReportUsedPercentage(const char* histogram_name,
+                          int64_t available,
+                          int64_t total) {
+  int percents;
+  if (total <= 0 || available < 0 || total < available) {
+    percents = 100;
+  } else {
+    percents = (total - available) * 100 / total;
+  }
+  base::UmaHistogramPercentage(histogram_name, percents);
+}
+
 }  // namespace
 
 const char kKioskSessionStateHistogram[] = "Kiosk.SessionState";
@@ -53,14 +70,57 @@ const char kKioskSessionDurationCrashedHistogram[] =
     "Kiosk.SessionDuration.Crashed";
 const char kKioskSessionDurationInDaysCrashedHistogram[] =
     "Kiosk.SessionDurationInDays.Crashed";
+const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
+const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
+const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
 const char kKioskSessionLastDayList[] = "last-day-sessions";
 const char kKioskSessionStartTime[] = "session-start-time";
 
 const int kKioskHistogramBucketCount = 100;
 const base::TimeDelta kKioskSessionDurationHistogramLimit = base::Days(1);
+const base::TimeDelta kPeriodicMetricsInterval = base::Hours(1);
+
+// This class is calculating amount of available and total disk space and
+// reports the percentage of available disk space to the histogram. Since the
+// calculation contains a blocking call, this is done asynchronously.
+class DiskSpaceCalculator {
+ public:
+  struct DiskSpaceInfo {
+    int64_t free_bytes;
+    int64_t total_bytes;
+  };
+  void StartCalculation() {
+    base::FilePath path;
+    if (!base::PathService::Get(base::DIR_HOME, &path)) {
+      return;
+    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DiskSpaceCalculator::GetDiskSpaceBlocking, path),
+        base::BindOnce(&DiskSpaceCalculator::OnReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  static DiskSpaceInfo GetDiskSpaceBlocking(const base::FilePath& mount_path) {
+    int64_t free_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+    int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+    return DiskSpaceInfo{free_bytes, total_bytes};
+  }
+
+ private:
+  void OnReceived(const DiskSpaceInfo& disk_info) {
+    ReportUsedPercentage(kKioskDiskUsagePercentageHistogram,
+                         disk_info.free_bytes, disk_info.total_bytes);
+  }
+
+  base::WeakPtrFactory<DiskSpaceCalculator> weak_ptr_factory_{this};
+};
 
 AppSessionMetricsService::AppSessionMetricsService(PrefService* prefs)
-    : prefs_(prefs) {}
+    : prefs_(prefs),
+      disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()) {}
+
+AppSessionMetricsService::~AppSessionMetricsService() = default;
 
 void AppSessionMetricsService::RecordKioskSessionStarted() {
   RecordKioskSessionStarted(KioskSessionState::kStarted);
@@ -111,6 +171,41 @@ void AppSessionMetricsService::RecordKioskSessionStarted(
     RecordKioskSessionState(started_state);
   }
   RecordKioskSessionCountPerDay();
+  StartMetricsTimer();
+}
+
+void AppSessionMetricsService::StartMetricsTimer() {
+  metrics_timer_.Start(FROM_HERE, kPeriodicMetricsInterval, this,
+                       &AppSessionMetricsService::RecordPeriodicMetrics);
+}
+
+void AppSessionMetricsService::RecordPeriodicMetrics() {
+  RecordRamUsage();
+  RecordSwapUsage();
+  RecordDiskSpaceUsage();
+}
+
+void AppSessionMetricsService::RecordRamUsage() const {
+  int64_t available_ram = base::SysInfo::AmountOfAvailablePhysicalMemory();
+  int64_t total_ram = base::SysInfo::AmountOfPhysicalMemory();
+  ReportUsedPercentage(kKioskRamUsagePercentageHistogram, available_ram,
+                       total_ram);
+}
+
+void AppSessionMetricsService::RecordSwapUsage() const {
+  base::SystemMemoryInfoKB memory;
+  if (!base::GetSystemMemoryInfo(&memory)) {
+    return;
+  }
+  int64_t swap_free = memory.swap_free;
+  int64_t swap_total = memory.swap_total;
+  ReportUsedPercentage(kKioskSwapUsagePercentageHistogram, swap_free,
+                       swap_total);
+}
+
+void AppSessionMetricsService::RecordDiskSpaceUsage() const {
+  DCHECK(disk_space_calculator_);
+  disk_space_calculator_->StartCalculation();
 }
 
 void AppSessionMetricsService::RecordKioskSessionState(

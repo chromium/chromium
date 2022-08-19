@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -19,10 +20,16 @@ extern const char kKioskSessionDurationNormalHistogram[];
 extern const char kKioskSessionDurationInDaysNormalHistogram[];
 extern const char kKioskSessionDurationCrashedHistogram[];
 extern const char kKioskSessionDurationInDaysCrashedHistogram[];
+extern const char kKioskRamUsagePercentageHistogram[];
+extern const char kKioskSwapUsagePercentageHistogram[];
+extern const char kKioskDiskUsagePercentageHistogram[];
 extern const char kKioskSessionLastDayList[];
 extern const char kKioskSessionStartTime[];
 
 extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
+extern const base::TimeDelta kPeriodicMetricsInterval;
+
+class DiskSpaceCalculator;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -46,7 +53,7 @@ class AppSessionMetricsService {
   explicit AppSessionMetricsService(PrefService* prefs);
   AppSessionMetricsService(AppSessionMetricsService&) = delete;
   AppSessionMetricsService& operator=(const AppSessionMetricsService&) = delete;
-  ~AppSessionMetricsService() = default;
+  ~AppSessionMetricsService();
 
   void RecordKioskSessionStarted();
   void RecordKioskSessionWebStarted();
@@ -59,6 +66,16 @@ class AppSessionMetricsService {
   bool IsKioskSessionRunning() const;
 
   void RecordKioskSessionStarted(KioskSessionState started_state);
+
+  void StartMetricsTimer();
+
+  void RecordPeriodicMetrics();
+
+  void RecordRamUsage() const;
+
+  void RecordSwapUsage() const;
+
+  void RecordDiskSpaceUsage() const;
 
   void RecordKioskSessionState(KioskSessionState state) const;
 
@@ -81,6 +98,12 @@ class AppSessionMetricsService {
   // either the session is successfully finished or crashed or on the next
   // session startup.
   base::Time start_time_;
+
+  // Invokes callback to record continuously monitored metrics. Starts when
+  // the kiosk session is started.
+  base::RepeatingTimer metrics_timer_;
+
+  const std::unique_ptr<DiskSpaceCalculator> disk_space_calculator_;
 };
 
 }  // namespace chromeos

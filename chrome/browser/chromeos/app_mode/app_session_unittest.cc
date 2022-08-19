@@ -49,8 +49,10 @@ constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 
 class AppSessionTest : public testing::Test {
  public:
-  AppSessionTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
+  explicit AppSessionTest(base::test::TaskEnvironment::TimeSource time_source =
+                              base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_{time_source},
+        local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())) {}
 
   AppSessionTest(const AppSessionTest&) = delete;
@@ -58,8 +60,18 @@ class AppSessionTest : public testing::Test {
 
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
+  base::HistogramTester* histogram() { return &histogram_; }
+
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
   void TearDown() override {
     local_state()->RemoveUserPref(prefs::kKioskMetrics);
+  }
+
+  std::unique_ptr<Browser> CreateBrowserWithTestWindow(
+      TestingProfile* profile) {
+    Browser::CreateParams params(profile, true);
+    return CreateBrowserWithTestWindowForParams(params);
   }
 
   void WebKioskTracksBrowserCreationTest() {
@@ -68,13 +80,11 @@ class AppSessionTest : public testing::Test {
     auto app_session =
         std::make_unique<AppSession>(base::DoNothing(), local_state());
 
-    Browser::CreateParams params(&profile, true);
-    auto app_browser = CreateBrowserWithTestWindowForParams(params);
+    auto app_browser = CreateBrowserWithTestWindow(&profile);
 
     app_session->InitForWebKiosk(app_browser.get());
 
-    Browser::CreateParams another_params(&profile, true);
-    auto another_browser = CreateBrowserWithTestWindowForParams(another_params);
+    auto another_browser = CreateBrowserWithTestWindow(&profile);
 
     base::RunLoop loop;
     static_cast<TestBrowserWindow*>(another_browser->window())
@@ -93,11 +103,16 @@ class AppSessionTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
+  base::HistogramTester histogram_;
+};
+
+class AppSessionTestMockTime : public AppSessionTest {
+ public:
+  AppSessionTestMockTime()
+      : AppSessionTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
-  base::HistogramTester histogram;
-
   WebKioskTracksBrowserCreationTest();
 
   const base::Value::Dict& dict =
@@ -107,26 +122,25 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   ASSERT_TRUE(sessions_list);
   EXPECT_EQ(1, sessions_list->size());
 
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kWebStarted, 1);
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kStopped, 1);
-  EXPECT_EQ(2, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kWebStarted, 1);
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kStopped, 1);
+  EXPECT_EQ(2, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
-  histogram.ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
-  histogram.ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
-  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
-  histogram.ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                              KioskBrowserWindowType::kOther, 1);
-  histogram.ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                              KioskBrowserWindowType::kSettingsPage, 0);
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOther, 1);
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kSettingsPage, 0);
 }
 
 // Check that sessions list in local_state contains only sessions within the
 // last 24h.
 TEST_F(AppSessionTest, WebKioskLastDaySessions) {
-  base::HistogramTester histogram;
   // Setup local_state with 5 more kiosk sessions happened prior to the current
   // one: {now, 2,3,4,5 days ago}
   {
@@ -166,21 +180,45 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
               base::Days(1));
   }
 
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kRestored, 1);
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kCrashed, 1);
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kStopped, 1);
-  EXPECT_EQ(3, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kRestored, 1);
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kCrashed, 1);
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kStopped, 1);
+  EXPECT_EQ(3, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
-  histogram.ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
-  histogram.ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
 
-  histogram.ExpectTotalCount(kKioskSessionDurationInDaysCrashedHistogram, 1);
-  histogram.ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysCrashedHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
 
-  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+}
+
+TEST_F(AppSessionTestMockTime, PeriodicMetrics) {
+  const char* const kPeriodicMetrics[] = {kKioskRamUsagePercentageHistogram,
+                                          kKioskSwapUsagePercentageHistogram,
+                                          kKioskDiskUsagePercentageHistogram};
+
+  auto app_session =
+      std::make_unique<AppSession>(base::DoNothing(), local_state());
+
+  TestingProfile profile;
+  auto app_browser = CreateBrowserWithTestWindow(&profile);
+
+  app_session->InitForWebKiosk(app_browser.get());
+
+  task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);
+  for (const char* metric : kPeriodicMetrics) {
+    histogram()->ExpectTotalCount(metric, 0);
+  }
+
+  task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);
+  for (const char* metric : kPeriodicMetrics) {
+    histogram()->ExpectTotalCount(metric, 1);
+  }
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -241,7 +279,6 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
 }
 
 TEST_F(AppSessionTest, OnPluginCrashed) {
-  base::HistogramTester histogram;
   AppSession app_session;
   KioskSessionPluginHandlerDelegate* delegate =
       app_session.GetPluginHandlerDelegateForTesting();
@@ -254,15 +291,14 @@ TEST_F(AppSessionTest, OnPluginCrashed) {
   delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
   EXPECT_EQ(client.num_request_restart_calls(), 1);
 
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kPluginCrashed, 1);
-  EXPECT_EQ(1, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kPluginCrashed, 1);
+  EXPECT_EQ(1, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
-  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }
 
 TEST_F(AppSessionTest, OnPluginHung) {
-  base::HistogramTester histogram;
   AppSession app_session;
   KioskSessionPluginHandlerDelegate* delegate =
       app_session.GetPluginHandlerDelegateForTesting();
@@ -272,11 +308,11 @@ TEST_F(AppSessionTest, OnPluginHung) {
 
   // Only verify if this method can be called without error.
   delegate->OnPluginHung(std::set<int>());
-  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kPluginHung, 1);
-  EXPECT_EQ(1, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kPluginHung, 1);
+  EXPECT_EQ(1, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
-  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
