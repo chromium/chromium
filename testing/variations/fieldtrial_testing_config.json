@@ -6719,7 +6719,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerenderDUIAndDSE_20220419",
+                    "name": "EnabledPrerenderDUIAndDSE_20220802",
+                    "params": {
+                        "implementation_type": "use_prefetch"
+                    },
                     "enable_features": [
                         "OmniboxTriggerForPrerender2",
                         "SupportSearchSuggestionForPrerender2"
@@ -6729,7 +6732,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDUI_20220419",
+                    "name": "EnabledPrerenderDUI_20220802",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2"
                     ],
@@ -6739,7 +6742,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrefetchDUIControl_20220419",
+                    "name": "EnabledPrefetchDUIControl_20220802",
                     "enable_features": [
                         "OmniboxTriggerForNoStatePrefetch"
                     ],
@@ -6749,7 +6752,7 @@
                     ]
                 },
                 {
-                    "name": "DisabledDUI_20220419",
+                    "name": "DisabledDUI_20220802",
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
                         "OmniboxTriggerForPrerender2",
@@ -6757,7 +6760,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDSE_20220419",
+                    "name": "EnabledPrerenderDSE_20220802",
+                    "params": {
+                        "implementation_type": "use_prefetch"
+                    },
                     "enable_features": [
                         "SupportSearchSuggestionForPrerender2"
                     ],
