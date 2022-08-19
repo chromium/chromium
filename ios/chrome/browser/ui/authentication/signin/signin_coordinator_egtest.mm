@@ -1162,8 +1162,7 @@ void ExpectSyncConsentHistogram(
                             grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
   // Open other device tab.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];

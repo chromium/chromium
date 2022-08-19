@@ -164,8 +164,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Check that both tabs are opened (and that we switched tab and not just
   // navigated.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(

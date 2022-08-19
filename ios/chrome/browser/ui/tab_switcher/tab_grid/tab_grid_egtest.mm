@@ -446,8 +446,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::ShowTabsButton()];
   [ChromeEarlGreyUI openTabGrid];
   // Undo is no longer available.
   [[EarlGrey
@@ -1389,7 +1387,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests entering and exit of the tab grid search mode.
 - (void)testEnterExitSearch {
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1411,7 +1409,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that exiting search mode reset the tabs count to the original number.
 - (void)testTabGridResetAfterExitingSearch {
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode & search with a query that produce no results.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1432,7 +1430,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // search mode.
 - (void)testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1467,7 +1465,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // and exits search mode.
 - (void)testTapOnSearchScrimExitsSearchMode {
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1490,7 +1488,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // correctly.
 - (void)testSearchRegularOpenTabs {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   [self verifyVisibleTabsCount:4];
 
@@ -1539,7 +1537,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // on the search bar.
 - (void)testOpenTabsHeaderVisibleInSearchModeWhenSearchBarIsNotEmpty {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Verify that the header doesn't exist in normal mode.
   [[EarlGrey selectElementWithMatcher:SearchOpenTabsSectionHeader()]
@@ -1580,7 +1578,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // in the normal tabs search mode.
 - (void)testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Verify that the suggested actions section doesn't exist in normal mode.
   [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSectionHeader()]
@@ -1650,7 +1648,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // incognito page.
 - (void)testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
   [self loadTestURLsInNewIncognitoTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1678,7 +1676,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // regular grid.
 - (void)testSearchSuggestedActionsSectionContentInRegularGrid {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode and enter a search query.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1713,7 +1711,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // TODO(crbug.com/1352109): Re-enable.
 - (void)DISABLED_testSearchSuggestedActionsSectionContentInRecentTabs {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
 
@@ -1749,7 +1747,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount {
   [ChromeEarlGrey clearBrowsingHistory];
   [self loadTestURLs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1786,7 +1784,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)testRecentTabsSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount {
   [ChromeEarlGrey clearBrowsingHistory];
   [self loadTestURLs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
 
@@ -1828,7 +1826,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // correctly open the expected tab.
 - (void)testSearchRegularOpenTabsSelectResult {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1854,7 +1852,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // correctly open the expected tab.
 - (void)testSearchIncognitoOpenTabsSelectResult {
   [self loadTestURLsInNewIncognitoTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1880,7 +1878,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // on search results.
 - (void)testSearchOpenTabsContextMenuShare {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1899,7 +1897,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // context menu on search results.
 - (void)testSearchOpenTabsContextMenuAddToReadingList {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1919,7 +1917,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // context menu on search results.
 - (void)testSearchOpenTabsContextMenuAddToBookmarks {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1951,7 +1949,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // menu on search results.
 - (void)testSearchOpenTabsContextMenuCloseTab {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1974,7 +1972,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 - (void)testSearchOpenTabsContextMenuSelectTabsUnavailable {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1998,7 +1996,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // the tab grid page correctly while staying in the search mode.
 - (void)testSearchSuggestedActionsPageSwitch {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   // Enter search mode & perform a seach.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
@@ -2050,7 +2048,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // opens the history modal and dismissing it returns to the search mode.
 - (void)testHistorySuggestedActionInRegularTabsSearch {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   // Enter search mode & perform a search.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
@@ -2084,7 +2082,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that tapping on search history action in the recent tabs search mode
 // opens the history modal and dismissing it returns to the search mode.
 - (void)testHistorySuggestedActionInRecentTabsSearch {
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
 
@@ -2132,7 +2130,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
 
   // Enter tab grid search mode & perform a search.
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
   const std::string searchQuery("queryfromtabsearch");
@@ -2154,7 +2152,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForWebStateContainingText:searchQuery];
 
   // Re-enter the tab grid and ensure search mode was exited.
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -2173,7 +2171,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
 
   // Enter tab grid search mode & perform a search.
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2196,7 +2194,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForWebStateContainingText:searchQuery];
 
   // Re-enter the tab grid and ensure search mode was exited.
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -2207,7 +2205,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2229,7 +2227,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that closing a tab works successfully in search results.
 - (void)testSearchResultCloseTab {
   [self loadTestURLsInNewTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2256,7 +2254,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that closing a tab works successfully in incognito search results.
 - (void)testSearchResultCloseTabInIncognito {
   [self loadTestURLsInNewIncognitoTabs];
-  [ChromeEarlGrey showTabSwitcher];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2460,8 +2458,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                           tabIndex)] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:text
                              inWindowWithNumber:windowNumber];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::ShowTabsButton()];
   [ChromeEarlGreyUI openTabGrid];
 }
 

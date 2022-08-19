@@ -83,9 +83,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
 
-  // Enter the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   // Leave the tab grid.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
@@ -112,9 +110,7 @@ const char kPDFPath[] = "/complex_document.pdf";
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
 
-  // Enter the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 

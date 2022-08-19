@@ -383,8 +383,7 @@ BOOL WaitForHistoryToDisappear() {
   [self setNTPPolicyValue:expectedURL.spec()];
 
   // Open tab via the UI.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
 

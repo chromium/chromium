@@ -151,6 +151,8 @@ id<GREYMatcher> ShareButton();
 id<GREYMatcher> TabShareButton();
 
 // Returns a matcher for show tabs button.
+// DO NOT use this matcher to open the tab grid. Instead use one of the helpers:
+// `[ChromeEarlGrey  showTabSwitcher]` or `[ChromeEarlGreyUI openTabGrid]`.
 id<GREYMatcher> ShowTabsButton();
 
 // Returns a matcher for Add to reading list button.

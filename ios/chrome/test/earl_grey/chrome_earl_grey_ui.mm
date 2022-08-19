@@ -365,6 +365,20 @@ class ScopedDisableTimerTracking {
 }
 
 - (void)openTabGrid {
+  // Wait until the button is visible because other UI may still be animating
+  // and EarlGrey synchronization is disabled below which would prevent waiting.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool tabGridButtonVisible = base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForUIElementTimeout, condition);
+  EG_TEST_HELPER_ASSERT_TRUE(tabGridButtonVisible,
+                             @"Show tab grid button was not visible.");
+
   // TODO(crbug.com/933953) For an unknown reason synchronization doesn't work
   // well with tapping on the tabgrid button, and instead triggers the long
   // press gesture recognizer.  Disable this here so the test can be re-enabled.

@@ -98,8 +98,7 @@ id<GREYMatcher> DefaultSiteViewTip() {
 
 // Opens the TabGrid and then opens a new tab.
 void OpenTabGridAndOpenTab() {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
@@ -107,8 +106,7 @@ void OpenTabGridAndOpenTab() {
 
 // Opens and closes the tab switcher.
 void OpenAndCloseTabSwitcher() {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
