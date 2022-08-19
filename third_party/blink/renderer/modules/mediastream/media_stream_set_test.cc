@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 using testing::_;
@@ -57,11 +58,12 @@ TEST_F(MediaStreamSetTest, SingleMediaStreamInitialized) {
           "test_source_1", MediaStreamSource::StreamType::kTypeVideo,
           "test_source_1", false,
           std::make_unique<MockLocalMediaStreamVideoSource>());
-  MediaStreamSourceVector audio_source_vector = {};
-  MediaStreamSourceVector video_source_vector = {test_video_source};
+  MediaStreamComponentVector audio_component_vector = {};
+  MediaStreamComponentVector video_component_vector = {
+      MakeGarbageCollected<MediaStreamComponentImpl>(test_video_source)};
   Member<MediaStreamDescriptor> descriptor =
-      MakeGarbageCollected<MediaStreamDescriptor>(audio_source_vector,
-                                                  video_source_vector);
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
+                                                  video_component_vector);
   MediaStreamDescriptorVector descriptors = {descriptor};
   base::RunLoop run_loop;
   Member<MediaStreamSet> media_stream_set =
@@ -82,11 +84,12 @@ TEST_F(MediaStreamSetTest, MultipleMediaStreamsInitialized) {
           "test_source_1", MediaStreamSource::StreamType::kTypeVideo,
           "test_source_1", false,
           std::make_unique<MockLocalMediaStreamVideoSource>());
-  MediaStreamSourceVector audio_source_vector = {};
-  MediaStreamSourceVector video_source_vector = {test_video_source};
+  MediaStreamComponentVector audio_component_vector = {};
+  MediaStreamComponentVector video_component_vector = {
+      MakeGarbageCollected<MediaStreamComponentImpl>(test_video_source)};
   Member<MediaStreamDescriptor> descriptor =
-      MakeGarbageCollected<MediaStreamDescriptor>(audio_source_vector,
-                                                  video_source_vector);
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
+                                                  video_component_vector);
   MediaStreamDescriptorVector descriptors = {descriptor, descriptor, descriptor,
                                              descriptor};
   base::RunLoop run_loop;
@@ -103,11 +106,11 @@ TEST_F(MediaStreamSetTest, MultipleMediaStreamsInitialized) {
 
 TEST_F(MediaStreamSetTest, NoTracksInStream) {
   V8TestingScope v8_scope;
-  MediaStreamSourceVector audio_source_vector = {};
-  MediaStreamSourceVector video_source_vector = {};
+  MediaStreamComponentVector audio_component_vector = {};
+  MediaStreamComponentVector video_component_vector = {};
   Member<MediaStreamDescriptor> descriptor =
-      MakeGarbageCollected<MediaStreamDescriptor>(audio_source_vector,
-                                                  video_source_vector);
+      MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
+                                                  video_component_vector);
   MediaStreamDescriptorVector descriptors = {descriptor};
   base::RunLoop run_loop;
   Member<MediaStreamSet> media_stream_set =
@@ -125,8 +128,6 @@ TEST_F(MediaStreamSetTest, NoTracksInStream) {
 
 TEST_F(MediaStreamSetTest, NoMediaStreamInitialized) {
   V8TestingScope v8_scope;
-  MediaStreamSourceVector audio_source_vector = {};
-  MediaStreamSourceVector video_source_vector = {};
   MediaStreamDescriptorVector descriptors;
   base::RunLoop run_loop;
   Member<MediaStreamSet> media_stream_set =

@@ -132,30 +132,6 @@ void MediaStreamDescriptor::RemoveObserver(WebMediaStreamObserver* observer) {
 }
 
 MediaStreamDescriptor::MediaStreamDescriptor(
-    const MediaStreamSourceVector& audio_sources,
-    const MediaStreamSourceVector& video_sources)
-    : MediaStreamDescriptor(WTF::CreateCanonicalUUIDString(),
-                            audio_sources,
-                            video_sources) {}
-
-MediaStreamDescriptor::MediaStreamDescriptor(
-    const String& id,
-    const MediaStreamSourceVector& audio_sources,
-    const MediaStreamSourceVector& video_sources)
-    : client_(nullptr), id_(id), unique_id_(GenerateUniqueId()), active_(true) {
-  DCHECK(id_.length());
-  for (MediaStreamSource* source : audio_sources) {
-    audio_components_.push_back(
-        MakeGarbageCollected<MediaStreamComponentImpl>(source));
-  }
-
-  for (MediaStreamSource* source : video_sources) {
-    video_components_.push_back(
-        MakeGarbageCollected<MediaStreamComponentImpl>(source));
-  }
-}
-
-MediaStreamDescriptor::MediaStreamDescriptor(
     const MediaStreamComponentVector& audio_components,
     const MediaStreamComponentVector& video_components)
     : MediaStreamDescriptor(WTF::CreateCanonicalUUIDString(),

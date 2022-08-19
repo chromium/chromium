@@ -154,7 +154,7 @@ class WebRtcAudioRendererTest : public testing::Test {
                                                   /*policy_container=*/nullptr))
 #endif
   {
-    MediaStreamSourceVector dummy_components;
+    MediaStreamComponentVector dummy_components;
     stream_descriptor_ = MakeGarbageCollected<MediaStreamDescriptor>(
         String::FromUTF8("new stream"), dummy_components, dummy_components);
   }
