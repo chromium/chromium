@@ -130,21 +130,20 @@ namespace extensions {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodConfigFunction::Run() {
-  std::unique_ptr<base::DictionaryValue> output(new base::DictionaryValue());
-  output->SetBoolKey("isPhysicalKeyboardAutocorrectEnabled", true);
-  output->SetBoolKey("isImeMenuActivated",
-                     Profile::FromBrowserContext(browser_context())
-                         ->GetPrefs()
-                         ->GetBoolean(prefs::kLanguageImeMenuActivated));
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
+  base::Value::Dict output;
+  output.Set("isPhysicalKeyboardAutocorrectEnabled", true);
+  output.Set("isImeMenuActivated",
+             Profile::FromBrowserContext(browser_context())
+                 ->GetPrefs()
+                 ->GetBoolean(prefs::kLanguageImeMenuActivated));
+  return RespondNow(WithArguments(std::move(output)));
 }
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetCurrentInputMethodFunction::Run() {
   auto* manager = ash::input_method::InputMethodManager::Get();
-  return RespondNow(OneArgument(
-      base::Value(manager->GetActiveIMEState()->GetCurrentInputMethod().id())));
+  return RespondNow(WithArguments(
+      manager->GetActiveIMEState()->GetCurrentInputMethod().id()));
 }
 
 ExtensionFunction::ResponseAction
@@ -196,7 +195,7 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
     val.Set("indicator", input_method.GetIndicator());
     output.Append(std::move(val));
   }
-  return RespondNow(OneArgument(base::Value(std::move(output))));
+  return RespondNow(WithArguments(std::move(output)));
 }
 
 ExtensionFunction::ResponseAction
@@ -214,12 +213,11 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
   }
 
   const std::set<std::string>& words = dictionary->GetWords();
-  std::unique_ptr<base::ListValue> output(new base::ListValue());
-  for (auto it = words.begin(); it != words.end(); ++it) {
-    output->Append(*it);
+  base::Value::List output;
+  for (const auto& word : words) {
+    output.Append(word);
   }
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
+  return RespondNow(WithArguments(std::move(output)));
 }
 
 ExtensionFunction::ResponseAction
@@ -260,10 +258,8 @@ InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
   if (!sync_service)
     return RespondNow(Error(
         InformativeError(kErrorSyncServiceNotReady, static_function_name())));
-  std::unique_ptr<base::Value> ret(new base::Value(
+  return RespondNow(WithArguments(
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()));
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
 
 ExtensionFunction::ResponseAction
@@ -350,9 +346,9 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 
   ui::SurroundingTextInfo info = input_context->GetSurroundingTextInfo();
   if (!info.selection_range.IsValid())
-    return RespondNow(OneArgument(base::Value()));
+    return RespondNow(WithArguments(base::Value()));
 
-  auto ret = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict ret;
   uint32_t selection_start = info.selection_range.start();
   uint32_t selection_end = info.selection_range.end();
   // Makes sure |selection_start| is less or equals to |selection_end|.
@@ -369,18 +365,15 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
           ? text_after_start + param_after_length
           : info.surrounding_text.length();
 
-  ret->SetStringKey(
-      "before", info.surrounding_text.substr(
-                    text_before_start, text_before_end - text_before_start));
-  ret->SetStringKey("selected",
-                    info.surrounding_text.substr(
-                        text_before_end, text_after_start - text_before_end));
-  ret->SetStringKey(
-      "after", info.surrounding_text.substr(text_after_start,
-                                            text_after_end - text_after_start));
+  ret.Set("before",
+          info.surrounding_text.substr(text_before_start,
+                                       text_before_end - text_before_start));
+  ret.Set("selected", info.surrounding_text.substr(
+                          text_before_end, text_after_start - text_before_end));
+  ret.Set("after", info.surrounding_text.substr(
+                       text_after_start, text_after_end - text_after_start));
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
@@ -396,7 +389,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   base::Value result;
   if (engine_result)
     result = engine_result->Clone();
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
@@ -463,7 +456,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
           segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(base::Value(true)));
 }
 
 ExtensionFunction::ResponseAction
@@ -520,11 +513,10 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   const auto& params = parent_params->parameters;
   const gfx::Range range =
       engine->InputMethodEngine::GetAutocorrectRange(params.context_id, &error);
-  auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetIntKey("start", range.is_empty() ? 0 : range.start());
-  ret->SetIntKey("end", range.is_empty() ? 0 : range.end());
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+  base::Value::Dict ret;
+  ret.Set("start", static_cast<int>(range.is_empty() ? 0 : range.start()));
+  ret.Set("end", static_cast<int>(range.is_empty() ? 0 : range.end()));
+  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction
@@ -544,13 +536,12 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetIntKey("x", rect.x());
-  ret->SetIntKey("y", rect.y());
-  ret->SetIntKey("width", rect.width());
-  ret->SetIntKey("height", rect.height());
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+  base::Value::Dict ret;
+  ret.Set("x", rect.x());
+  ret.Set("y", rect.y());
+  ret.Set("width", rect.width());
+  ret.Set("height", rect.height());
+  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction
@@ -568,13 +559,12 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetIntKey("x", rect.x());
-  ret->SetIntKey("y", rect.y());
-  ret->SetIntKey("width", rect.width());
-  ret->SetIntKey("height", rect.height());
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+  base::Value::Dict ret;
+  ret.Set("x", rect.x());
+  ret.Set("y", rect.y());
+  ret.Set("width", rect.width());
+  ret.Set("height", rect.height());
+  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction
@@ -616,7 +606,7 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {

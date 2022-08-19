@@ -76,7 +76,7 @@ void LoginScreenStorageExtensionFunction::OnDataRetrieved(
       Respond(Error(result->get_error_message()));
       return;
     case Result::Tag::kData:
-      Respond(OneArgument(base::Value(result->get_data())));
+      Respond(WithArguments(result->get_data()));
       return;
   }
 }

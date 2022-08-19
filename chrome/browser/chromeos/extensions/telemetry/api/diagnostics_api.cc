@@ -150,7 +150,7 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
   api::os_diagnostics::RunRoutineResponse result;
   result.id = ptr->id;
   result.status = converters::ConvertRoutineStatus(ptr->status);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+  Respond(WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
 // OsDiagnosticsRunAcPowerRoutineFunction ------------------------------

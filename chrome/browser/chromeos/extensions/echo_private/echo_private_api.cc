@@ -129,7 +129,7 @@ EchoPrivateGetRegistrationCodeFunction::Run() {
 
 void EchoPrivateGetRegistrationCodeFunction::RespondWithResult(
     const std::string& result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}
@@ -163,12 +163,11 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
 
   const std::string& service_id = params->id;
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value& offer_infos =
-      local_state->GetValue(prefs::kEchoCheckedOffers);
-  DCHECK(offer_infos.is_dict());
+  const base::Value::Dict& offer_infos =
+      local_state->GetValueDict(prefs::kEchoCheckedOffers);
 
-  const base::Value* offer_info = offer_infos.FindDictKey("echo." + service_id);
-  if (!offer_info) {
+  const base::Value* offer_info = offer_infos.Find("echo." + service_id);
+  if (!offer_info || !offer_info->is_dict()) {
     return RespondNow(Error("Not found"));
   }
 
@@ -209,7 +208,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
 
 void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
     const std::string& timestamp) {
-  Respond(OneArgument(base::Value(timestamp)));
+  Respond(WithArguments(timestamp));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =
@@ -283,5 +282,5 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
 }
 
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {
-  Respond(OneArgument(base::Value(consent)));
+  Respond(WithArguments(consent));
 }

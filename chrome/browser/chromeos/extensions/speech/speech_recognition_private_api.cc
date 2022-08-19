@@ -51,8 +51,8 @@ void SpeechRecognitionPrivateStartFunction::OnStart(
     return;
   }
 
-  Respond(OneArgument(base::Value(api::speech_recognition_private::ToString(
-      speech::SpeechRecognitionTypeToApiType(type)))));
+  Respond(WithArguments(api::speech_recognition_private::ToString(
+      speech::SpeechRecognitionTypeToApiType(type))));
 }
 
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {

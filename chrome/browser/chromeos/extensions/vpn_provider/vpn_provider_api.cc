@@ -106,45 +106,42 @@ void ConvertParameters(const api_vpn::Parameters& parameters,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   CHECK_EQ(2u, cidr_parts.size());
 
-  parameter_value->Set(shill::kAddressParameterThirdPartyVpn,
-                       base::Value(cidr_parts[0]));
+  parameter_value->Set(shill::kAddressParameterThirdPartyVpn, cidr_parts[0]);
 
   parameter_value->Set(shill::kSubnetPrefixParameterThirdPartyVpn,
-                       base::Value(cidr_parts[1]));
+                       cidr_parts[1]);
 
   std::string ip_delimiter(1, shill::kIPDelimiter);
   parameter_value->Set(
       shill::kExclusionListParameterThirdPartyVpn,
-      base::Value(base::JoinString(parameters.exclusion_list, ip_delimiter)));
+      base::JoinString(parameters.exclusion_list, ip_delimiter));
 
   parameter_value->Set(
       shill::kInclusionListParameterThirdPartyVpn,
-      base::Value(base::JoinString(parameters.inclusion_list, ip_delimiter)));
+      base::JoinString(parameters.inclusion_list, ip_delimiter));
 
   if (parameters.mtu) {
-    parameter_value->Set(shill::kMtuParameterThirdPartyVpn,
-                         base::Value(*parameters.mtu));
+    parameter_value->Set(shill::kMtuParameterThirdPartyVpn, *parameters.mtu);
   }
 
   if (parameters.broadcast_address) {
     parameter_value->Set(shill::kBroadcastAddressParameterThirdPartyVpn,
-                         base::Value(*parameters.broadcast_address));
+                         *parameters.broadcast_address);
   }
 
   std::string non_ip_delimiter(1, shill::kNonIPDelimiter);
   if (parameters.domain_search) {
-    parameter_value->Set(shill::kDomainSearchParameterThirdPartyVpn,
-                         base::Value(base::JoinString(*parameters.domain_search,
-                                                      non_ip_delimiter)));
+    parameter_value->Set(
+        shill::kDomainSearchParameterThirdPartyVpn,
+        base::JoinString(*parameters.domain_search, non_ip_delimiter));
   }
 
-  parameter_value->Set(
-      shill::kDnsServersParameterThirdPartyVpn,
-      base::Value(base::JoinString(parameters.dns_servers, ip_delimiter)));
+  parameter_value->Set(shill::kDnsServersParameterThirdPartyVpn,
+                       base::JoinString(parameters.dns_servers, ip_delimiter));
 
   if (parameters.reconnect) {
     parameter_value->Set(shill::kReconnectParameterThirdPartyVpn,
-                         base::Value(*parameters.reconnect));
+                         *parameters.reconnect);
   }
 
   return;
@@ -160,7 +157,7 @@ void VpnThreadExtensionFunction::SignalCallCompletionSuccess() {
 
 void VpnThreadExtensionFunction::SignalCallCompletionSuccessWithId(
     const std::string& configuration_name) {
-  Respond(OneArgument(base::Value(configuration_name)));
+  Respond(WithArguments(configuration_name));
 }
 
 void VpnThreadExtensionFunction::SignalCallCompletionFailure(

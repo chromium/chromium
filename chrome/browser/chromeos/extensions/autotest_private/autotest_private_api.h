@@ -667,7 +667,7 @@ class AutotestPrivateGetPrinterListFunction
   // ash::CupsPrintersManager::Observer
   void OnEnterprisePrintersInitialized() override;
 
-  std::unique_ptr<base::Value> results_;
+  base::Value::List results_;
   std::unique_ptr<ash::CupsPrintersManager> printers_manager_;
   base::OneShotTimer timeout_timer_;
 };

@@ -86,7 +86,7 @@ ExtensionFunctionWithStringResult::~ExtensionFunctionWithStringResult() =
     default;
 
 void ExtensionFunctionWithStringResult::OnResult(const std::string& result) {
-  Respond(OneArgument(base::Value(result)));
+  Respond(WithArguments(result));
 }
 
 ExtensionFunctionWithVoidResult::~ExtensionFunctionWithVoidResult() = default;

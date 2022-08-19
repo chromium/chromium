@@ -214,7 +214,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
 void WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh(
     const std::vector<uint8_t>& thumbnail_data) {
   Respond(params_->details.thumbnail
-              ? OneArgument(Value(std::move(thumbnail_data)))
+              ? WithArguments(Value(std::move(thumbnail_data)))
               : NoArguments());
 }
 

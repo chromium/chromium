@@ -65,5 +65,5 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
     command_list.Append(CreateCommandValue(iter->second, active));
   }
 
-  return RespondNow(OneArgument(base::Value(std::move(command_list))));
+  return RespondNow(WithArguments(std::move(command_list)));
 }

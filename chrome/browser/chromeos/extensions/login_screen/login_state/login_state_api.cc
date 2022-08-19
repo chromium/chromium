@@ -86,8 +86,7 @@ ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
       is_signin_profile
           ? api::login_state::ProfileType::PROFILE_TYPE_SIGNIN_PROFILE
           : api::login_state::ProfileType::PROFILE_TYPE_USER_PROFILE;
-  return RespondNow(
-      OneArgument(base::Value(api::login_state::ToString(profile_type))));
+  return RespondNow(WithArguments(api::login_state::ToString(profile_type)));
 }
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
@@ -115,8 +114,7 @@ void LoginStateGetSessionStateFunction::OnResult(
     case Result::Tag::kSessionState:
       api::login_state::SessionState session_state =
           ToApiEnum(result->get_session_state());
-      Respond(
-          OneArgument(base::Value(api::login_state::ToString(session_state))));
+      Respond(WithArguments(api::login_state::ToString(session_state)));
       return;
   }
 }
