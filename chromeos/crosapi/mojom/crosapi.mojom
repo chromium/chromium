@@ -892,8 +892,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known after
 // the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 53
-// Next id: 53
+// Next version: 54
+// Next id: 54
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1222,6 +1222,22 @@ struct BrowserInitParams {
   // True if this is a device with cloud gaming features enabled.
   [MinVersion=52]
   bool is_cloud_gaming_device@52;
+
+  [Stable, Extensible]
+  enum GpuSandboxStartMode {
+    [Default] kUnspecified,
+    // Start the GPU process sandbox as if --gpu-sandbox-start-early was
+    // supplied.
+    kEarly,
+    // Start the GPU process sandbox at the default time.
+    kNormal,
+  };
+
+  // When to start the GPU process sandbox in lacros-chrome if
+  // --gpu-sandbox-start-early is not supplied. If --gpu-sandbox-start-early is
+  // supplied, this field is irrelevant.
+  [MinVersion=53]
+  GpuSandboxStartMode gpu_sandbox_start_mode@53;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
