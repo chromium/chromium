@@ -53,7 +53,8 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
 
     const submit = dialog.$.submit;
@@ -76,13 +77,15 @@ suite('RuntimeHostsDialog', function() {
     // Simulate user input of invalid text.
     const invalidSite = 'foobar';
     input.value = invalidSite;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
 
     // Entering valid text should clear the error and enable the submit button.
     input.value = 'http://www.example.com';
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
   });
@@ -94,7 +97,8 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://....a';
     input.value = site;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
 
     const submit = dialog.$.submit;
@@ -113,7 +117,8 @@ suite('RuntimeHostsDialog', function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newPattern;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     const submit = dialog.$.submit;
 
     submit.click();
@@ -158,7 +163,8 @@ suite('RuntimeHostsDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
 
     const submit = dialog.$.submit;
@@ -229,13 +235,15 @@ suite('RuntimeHostsDialog', function() {
     const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     input.value = 'http://www.nomatch.com';
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
     assertFalse(isVisible(dialog.shadowRoot!.querySelector(
         '.matching-restricted-sites-warning')));
 
     input.value = 'http://*.restricted.com';
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
     assertTrue(isVisible(dialog.shadowRoot!.querySelector(
         '.matching-restricted-sites-warning')));

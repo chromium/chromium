@@ -7,6 +7,7 @@ import 'chrome://nearby/strings.m.js';
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {NearbyOnboardingOnePageElement} from 'chrome://nearby/shared/nearby_onboarding_one_page.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -84,7 +85,8 @@ suite('nearby-onboarding-one-page', function() {
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     // Allow the validation promise to resolve.
     await waitAfterNextRender(/** @type {!HTMLElement} */ (input));
     assertTrue(input.invalid);
@@ -92,7 +94,8 @@ suite('nearby-onboarding-one-page', function() {
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kValid);
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     await waitAfterNextRender(/** @type {!HTMLElement} */ (input));
     assertFalse(input.invalid);
     assertFalse(pageTemplate.actionDisabled);

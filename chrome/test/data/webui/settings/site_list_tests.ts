@@ -1032,7 +1032,8 @@ suite('EditExceptionDialog', function() {
 
     // Simulate user input of whitespace only text.
     input!.value = '  ';
-    input!.fire('input');
+    input!.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
     assertTrue(actionButton.disabled);
     assertTrue(input!.invalid);
@@ -1041,7 +1042,8 @@ suite('EditExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = '*';
     input!.value = expectedPattern;
-    input!.fire('input');
+    input!.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
 
     return browserProxy.whenCalled('isPatternValidForType').then(function([
       pattern,
@@ -1133,7 +1135,8 @@ suite('AddExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = 'foobarbaz';
     input!.value = expectedPattern;
-    input!.fire('input');
+    input!.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
 
     return browserProxy.whenCalled('isPatternValidForType').then(function([
       pattern,

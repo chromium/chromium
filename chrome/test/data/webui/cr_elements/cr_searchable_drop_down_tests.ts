@@ -37,14 +37,16 @@ suite('cr-searchable-drop-down', function() {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot!.querySelector('cr-input')!);
     input.value = searchTerm;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
   }
 
   function blur() {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot!.querySelector('cr-input')!);
-    input.fire('blur');
+    input.dispatchEvent(
+        new CustomEvent('blur', {bubbles: true, composed: true}));
     flush();
   }
 

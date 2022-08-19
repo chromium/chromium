@@ -272,7 +272,8 @@ suite('NearbyShare', function() {
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     // Allow the validation promise to resolve.
     await waitAfterNextRender();
     flush();
@@ -281,7 +282,8 @@ suite('NearbyShare', function() {
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kValid);
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     await waitAfterNextRender();
     flush();
     assertFalse(input.invalid);

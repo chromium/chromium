@@ -149,7 +149,8 @@ suite('ManageProfileTests', function() {
     assertEquals('Initial Fake Name', nameField.value);
 
     nameField.value = 'New Name';
-    nameField.fire('change');
+    nameField.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
 
     const args = await browserProxy.whenCalled('setProfileName');
     assertEquals('New Name', args[0]);

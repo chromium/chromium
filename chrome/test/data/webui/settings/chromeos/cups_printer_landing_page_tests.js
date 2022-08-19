@@ -394,7 +394,8 @@ suite('CupsSavedPrintersTests', function() {
               editDialog.shadowRoot.querySelector('.printer-name-input');
           assertTrue(!!nameField);
           nameField.value = expectedName;
-          nameField.fire('input');
+          nameField.dispatchEvent(
+              new CustomEvent('input', {bubbles: true, composed: true}));
 
           flush();
 
@@ -449,13 +450,15 @@ suite('CupsSavedPrintersTests', function() {
               editDialog.shadowRoot.querySelector('.printer-name-input');
           assertTrue(!!nameField);
           nameField.value = expectedName;
-          nameField.fire('input');
+          nameField.dispatchEvent(
+              new CustomEvent('input', {bubbles: true, composed: true}));
 
           const addressField =
               editDialog.shadowRoot.querySelector('#printerAddress');
           assertTrue(!!addressField);
           addressField.value = expectedAddress;
-          addressField.fire('input');
+          addressField.dispatchEvent(
+              new CustomEvent('input', {bubbles: true, composed: true}));
 
           assertFalse(
               editDialog.shadowRoot.querySelector('.cancel-button').hidden);

@@ -248,7 +248,9 @@ polymer_modulizer("enable_debugging") {
   js_file = "enable_debugging.js"
   html_file = "enable_debugging.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports =
+      oobe_auto_imports +
+      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -307,7 +309,9 @@ polymer_modulizer("welcome") {
   js_file = "welcome.js"
   html_file = "welcome.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports =
+      oobe_auto_imports +
+      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }

@@ -18,7 +18,8 @@ import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofi
  */
 function typeInNickname(nicknameInput: CrInputElement, nickname: string) {
   nicknameInput.value = nickname;
-  nicknameInput.fire('input');
+  nicknameInput.dispatchEvent(
+      new CustomEvent('input', {bubbles: true, composed: true}));
 }
 
 suite('PaymentsSectionCreditCardEditDialogTest', function() {

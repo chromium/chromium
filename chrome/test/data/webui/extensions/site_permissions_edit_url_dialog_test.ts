@@ -30,7 +30,8 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
 
     const submit = element.$.submit;
@@ -54,19 +55,22 @@ suite('SitePermissionsEditUrlDialog', function() {
     // Simulate user input of invalid text.
     const invalidSite = 'foobar';
     input.value = invalidSite;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
 
     // Entering valid text should clear the error and enable the submit button.
     input.value = 'http://www.example.com';
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
 
     // Wildcard scheme is considered invalid input.
     input.value = '*://www.example.com';
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
   });
@@ -79,7 +83,8 @@ suite('SitePermissionsEditUrlDialog', function() {
     const input = element.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newSite;
-    input.fire('input');
+    input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
     assertFalse(input.invalid);
 
     const whenClosed = eventToPromise('close', element);

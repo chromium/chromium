@@ -153,7 +153,9 @@ polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports =
+      oobe_auto_imports +
+      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -162,7 +164,9 @@ polymer_modulizer("gaia_password_changed") {
   js_file = "gaia_password_changed.js"
   html_file = "gaia_password_changed.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports =
+      oobe_auto_imports +
+      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -187,7 +191,10 @@ polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports + [ "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html|CrDialogElement" ]
+  auto_imports = oobe_auto_imports + [
+                   "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html|CrDialogElement",
+                   "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement",
+                 ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -209,7 +216,5 @@ polymer_modulizer("checking_downloading_update") {
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "encryption_migration.js",
-  ]
+  js_files = [ "encryption_migration.js" ]
 }

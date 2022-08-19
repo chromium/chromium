@@ -331,7 +331,8 @@ suite('HomeUrlInput', function() {
 
     homeUrlInput.value = '@@@';
     appearanceBrowserProxy.setValidStartupPageResponse(false);
-    homeUrlInput.$.input.fire('input');
+    homeUrlInput.$.input.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
 
     const url = await appearanceBrowserProxy.whenCalled('validateStartupPage');
 
@@ -341,7 +342,8 @@ suite('HomeUrlInput', function() {
     assertTrue(homeUrlInput.invalid);
 
     // Should reset to default value on change event.
-    homeUrlInput.$.input.fire('change');
+    homeUrlInput.$.input.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
     flush();
     assertEquals(homeUrlInput.value, 'test');
   });
