@@ -82,6 +82,12 @@ class ProfilePickerSignedInFlowController
   // version of it, if `loading` is true).
   GURL GetSyncConfirmationURL(bool loading);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Added for bug investigation purposes.
+  // TODO(crbug.com/1340791): Remove this once the source of the bug is found.
+  virtual void PreShowScreenForDebug() {}
+#endif
+
   ProfilePickerWebContentsHost* host() const { return host_; }
   Profile* profile() const { return profile_; }
   content::WebContents* contents() const { return contents_.get(); }
