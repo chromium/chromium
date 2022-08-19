@@ -85,8 +85,9 @@ void JsFlowAction::OnNativeActionFinished(
                             std::unique_ptr<base::Value> result_value)>
         finished_callback,
     std::unique_ptr<ProcessedActionProto> processed_action) {
-  VLOG(2) << "Native action finished with status "
-          << processed_action->status();
+  // Intentionally left empty to make output more readable in combination with
+  // the start message above.
+  VLOG(2) << "                       " << processed_action->status();
 
   current_native_action_.reset();
 
