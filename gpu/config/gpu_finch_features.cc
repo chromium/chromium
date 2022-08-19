@@ -279,7 +279,9 @@ const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
 // Blocklists meant for DrDc.
 // crbug.com/1294648
 const base::FeatureParam<std::string> kDrDcBlockListByDevice{
-    &kEnableDrDc, "BlockListByDevice", "LF9810_2GB"};
+    &kEnableDrDc, "BlockListByDevice",
+    "LF9810_2GB|amber|chopin|secret|a03|SO-51B|on7xelte|j7xelte|F41B|doha|"
+    "rk322x_box|a20s"};
 
 // crbug.com/1340059, crbug.com/1340064
 const base::FeatureParam<std::string> kDrDcBlockListByModel{
