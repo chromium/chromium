@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fusebox_mounter.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
@@ -819,8 +818,8 @@ std::vector<base::WeakPtr<Volume>> VolumeManager::GetVolumeList() {
 
   std::vector<base::WeakPtr<Volume>> result;
   result.reserve(mounted_volumes_.size());
-  for (const auto& pair : mounted_volumes_) {
-    result.push_back(pair.second->AsWeakPtr());
+  for (const auto& volume : mounted_volumes_) {
+    result.push_back(volume->AsWeakPtr());
   }
   return result;
 }
@@ -831,17 +830,17 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeById(
 
   const auto it = mounted_volumes_.find(volume_id);
   if (it != mounted_volumes_.end())
-    return it->second->AsWeakPtr();
+    return it->get()->AsWeakPtr();
   return base::WeakPtr<Volume>();
 }
 
 base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (const auto& pair : mounted_volumes_) {
-    base::FilePath volume_mount_path = pair.second->mount_path();
+  for (const auto& volume : mounted_volumes_) {
+    base::FilePath volume_mount_path = volume->mount_path();
     if (path == volume_mount_path || volume_mount_path.IsParent(path)) {
-      return pair.second->AsWeakPtr();
+      return volume->AsWeakPtr();
     }
   }
   return nullptr;
@@ -854,8 +853,9 @@ void VolumeManager::AddSshfsCrostiniVolume(
   std::unique_ptr<Volume> volume =
       Volume::CreateForSshfsCrostini(sshfs_mount_path, remote_mount_path);
   // Ignore if volume already exists.
-  if (mounted_volumes_.find(volume->volume_id()) != mounted_volumes_.end())
+  if (mounted_volumes_.count(volume->volume_id()) != 0)
     return;
+
   DoMountEvent(ash::MountError::kNone, std::move(volume));
 
   // Listen for crostini container shutdown and remove volume.
@@ -879,7 +879,7 @@ void VolumeManager::AddSftpGuestOsVolume(
   std::unique_ptr<Volume> volume = Volume::CreateForSftpGuestOs(
       display_name, sftp_mount_path, remote_mount_path, vm_type);
   // Ignore if volume already exists.
-  if (mounted_volumes_.find(volume->volume_id()) != mounted_volumes_.end())
+  if (mounted_volumes_.count(volume->volume_id()) != 0)
     return;
   DoMountEvent(ash::MountError::kNone, std::move(volume));
 }
@@ -1564,7 +1564,7 @@ void VolumeManager::DoAttachMtpStorage(
 
   // Assign a fresh volume ID based on the volume name.
   std::string label = base_name;
-  for (int i = 2; mounted_volumes_.count(kMtpVolumeIdPrefix + label); ++i)
+  for (int i = 2; mounted_volumes_.count(kMtpVolumeIdPrefix + label) != 0; ++i)
     label = base_name + base::StringPrintf(" (%d)", i);
 
   // Register the MTP storage device with chrome::storage.
@@ -1636,12 +1636,12 @@ void VolumeManager::OnRemovableStorageDetached(
     return;
 
   for (const auto& mounted_volume : mounted_volumes_) {
-    if (mounted_volume.second->source_path().value() != info.location())
+    if (mounted_volume->source_path().value() != info.location())
       continue;
 
     // Unmount the MTP storage device in files app.
-    const std::string volume_id = mounted_volume.second->volume_id();
-    DoUnmountEvent(ash::MountError::kNone, *mounted_volume.second.get());
+    const std::string volume_id = mounted_volume->volume_id();
+    DoUnmountEvent(ash::MountError::kNone, *mounted_volume);
 
     // Remove the MTP storage device from chrome::storage.
     const std::string fsid = GetMountPointNameForMediaStorage(info);
@@ -1788,17 +1788,20 @@ void VolumeManager::OnStorageMonitorInitialized() {
 }
 
 void VolumeManager::DoMountEvent(ash::MountError error_code,
-                                 std::unique_ptr<Volume> volume) {
+                                 std::unique_ptr<Volume> volume_ptr) {
+  DCHECK(volume_ptr);
+  const Volume& volume = *volume_ptr;
+
   // Archive files are mounted globally in system. We however don't want to show
   // archives from profile-specific folders (Drive/Downloads) of other users in
   // multi-profile session. To this end, we filter out archives not on the
   // volumes already mounted on this VolumeManager instance.
-  if (volume->type() == VOLUME_TYPE_MOUNTED_ARCHIVE_FILE) {
+  if (volume.type() == VOLUME_TYPE_MOUNTED_ARCHIVE_FILE) {
     // Source may be in Drive cache folder under the current profile directory.
     bool from_current_profile =
-        profile_->GetPath().IsParent(volume->source_path());
+        profile_->GetPath().IsParent(volume.source_path());
     for (const auto& mounted_volume : mounted_volumes_) {
-      if (mounted_volume.second->mount_path().IsParent(volume->source_path())) {
+      if (mounted_volume->mount_path().IsParent(volume.source_path())) {
         from_current_profile = true;
         break;
       }
@@ -1808,36 +1811,71 @@ void VolumeManager::DoMountEvent(ash::MountError error_code,
   }
 
   // Filter out removable disks if forbidden by policy for this profile.
-  if (volume->type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
+  if (volume.type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
       profile_->GetPrefs()->GetBoolean(
           disks::prefs::kExternalStorageDisabled)) {
     return;
   }
 
-  Volume* raw_volume = volume.get();
   if (error_code == ash::MountError::kNone ||
-      volume->mount_condition() != ash::disks::MountCondition::kNone) {
-    mounted_volumes_[volume->volume_id()] = std::move(volume);
-    UMA_HISTOGRAM_ENUMERATION("FileBrowser.VolumeType", raw_volume->type(),
+      volume.mount_condition() != ash::disks::MountCondition::kNone) {
+    const auto [it, ok] = mounted_volumes_.insert(std::move(volume_ptr));
+    if (!ok) {
+      LOG(WARNING) << "crbug.com/1354029: Volume '" << volume.volume_id()
+                   << "' is already registered";
+      DCHECK(volume_ptr);
+      DCHECK_EQ((*it)->volume_id(), volume.volume_id());
+
+      // TODO(crbug.com/1354029) Is it possible for a Volume object with
+      // different properties to be inserted here?
+      DCHECK_EQ((*it)->configurable(), volume.configurable());
+      DCHECK_EQ((*it)->device_type(), volume.device_type());
+      DCHECK_EQ((*it)->drive_label(), volume.drive_label());
+      DCHECK_EQ((*it)->file_system_id(), volume.file_system_id());
+      DCHECK_EQ((*it)->file_system_type(), volume.file_system_type());
+      DCHECK_EQ((*it)->has_media(), volume.has_media());
+      DCHECK_EQ((*it)->hidden(), volume.hidden());
+      DCHECK_EQ((*it)->is_parent(), volume.is_parent());
+      DCHECK_EQ((*it)->is_read_only_removable_device(),
+                volume.is_read_only_removable_device());
+      DCHECK_EQ((*it)->is_read_only(), volume.is_read_only());
+      DCHECK_EQ((*it)->mount_condition(), volume.mount_condition());
+      DCHECK_EQ((*it)->mount_context(), volume.mount_context());
+      DCHECK_EQ((*it)->mount_path(), volume.mount_path());
+      DCHECK_EQ((*it)->remote_mount_path(), volume.remote_mount_path());
+      DCHECK_EQ((*it)->source_path(), volume.source_path());
+      DCHECK_EQ((*it)->source(), volume.source());
+      DCHECK_EQ((*it)->storage_device_path(), volume.storage_device_path());
+      DCHECK_EQ((*it)->type(), volume.type());
+      DCHECK_EQ((*it)->volume_label(), volume.volume_label());
+      DCHECK_EQ((*it)->watchable(), volume.watchable());
+
+      // Replace the Volume in |mounted_volumes_|.
+      const_cast<std::unique_ptr<Volume>&>(*it) = std::move(volume_ptr);
+    }
+
+    DCHECK_EQ(&volume, it->get());
+    UMA_HISTOGRAM_ENUMERATION("FileBrowser.VolumeType", volume.type(),
                               NUM_VOLUME_TYPE);
   }
 
   for (auto& observer : observers_)
-    observer.OnVolumeMounted(error_code, *raw_volume);
+    observer.OnVolumeMounted(error_code, volume);
 }
 
 void VolumeManager::DoUnmountEvent(ash::MountError error_code,
                                    const Volume& volume) {
-  auto iter = mounted_volumes_.find(volume.volume_id());
-  if (iter == mounted_volumes_.end())
+  const Volumes::const_iterator it = mounted_volumes_.find(volume.volume_id());
+  if (it == mounted_volumes_.end())
     return;
-  std::unique_ptr<Volume> volume_ref;
-  if (error_code == ash::MountError::kNone) {
-    // It is important to hold a reference to the removed Volume from
-    // |mounted_volumes_|, because OnVolumeMounted() will access it.
-    volume_ref = std::move(iter->second);
-    mounted_volumes_.erase(iter);
-  }
+
+  DCHECK_EQ(volume.volume_id(), it->get()->volume_id());
+
+  // Hold a reference to the removed Volume from |mounted_volumes_|, because
+  // OnVolumeMounted() will access it.
+  Volumes::node_type node_to_delete;
+  if (error_code == ash::MountError::kNone)
+    node_to_delete = mounted_volumes_.extract(it);
 
   for (auto& observer : observers_)
     observer.OnVolumeUnmounted(error_code, volume);

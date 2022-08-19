@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -560,6 +560,26 @@ class VolumeManager : public KeyedService,
   }
 
  private:
+  // Comparator sorting Volume objects by volume ID .
+  struct SortByVolumeId {
+    using is_transparent = void;
+
+    template <typename A, typename B>
+    bool operator()(const A& a, const B& b) const {
+      return GetKey(a) < GetKey(b);
+    }
+
+    static base::StringPiece GetKey(const base::StringPiece a) { return a; }
+
+    static base::StringPiece GetKey(const std::unique_ptr<Volume>& volume) {
+      DCHECK(volume);
+      return volume->volume_id();
+    }
+  };
+
+  // Set of Volume objects indexed by volume ID.
+  using Volumes = std::set<std::unique_ptr<Volume>, SortByVolumeId>;
+
   void RestoreProvidedFileSystems();
   void OnDiskMountManagerRefreshed(bool success);
   void OnStorageMonitorInitialized();
@@ -592,7 +612,7 @@ class VolumeManager : public KeyedService,
   ash::file_system_provider::Service*
       file_system_provider_service_;  // Not owned by this class.
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
-  std::map<std::string, std::unique_ptr<Volume>> mounted_volumes_;
+  Volumes mounted_volumes_;
   std::unique_ptr<FuseBoxMounter> fusebox_mounter_;
   std::unique_ptr<SnapshotManager> snapshot_manager_;
   std::unique_ptr<DocumentsProviderRootManager>
