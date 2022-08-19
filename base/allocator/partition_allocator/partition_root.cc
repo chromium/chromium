@@ -279,9 +279,9 @@ void PartitionAllocMallocHookOnAfterForkInChild() {
 namespace internal {
 
 namespace {
-constexpr size_t kMaxPurgeableSlotsPerSystemPage = 2;
+constexpr size_t kMaxPurgeableSlotsPerSystemPage = 64;
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
-MaxPurgeableSlotSize() {
+MinPurgeableSlotSize() {
   return SystemPageSize() / kMaxPurgeableSlotsPerSystemPage;
 }
 }  // namespace
@@ -297,7 +297,7 @@ static size_t PartitionPurgeSlotSpan(
   // We will do nothing if slot_size is smaller than SystemPageSize() / 2
   // because |kMaxSlotCount| will be too large in that case, which leads to
   // |slot_usage| using up too much memory.
-  if (slot_size < MaxPurgeableSlotSize() || !slot_span->num_allocated_slots)
+  if (slot_size < MinPurgeableSlotSize() || !slot_span->num_allocated_slots)
     return 0;
 
   size_t bucket_num_slots = bucket->get_slots_per_span();
@@ -320,7 +320,7 @@ static size_t PartitionPurgeSlotSpan(
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
   constexpr size_t kMaxSlotCount =
       (PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) /
-      MaxPurgeableSlotSize();
+      MinPurgeableSlotSize();
 #elif BUILDFLAG(IS_APPLE) || (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
   // It's better for slot_usage to be stack-allocated and fixed-size, which
   // demands that its size be constexpr. On IS_APPLE and Linux on arm64,
@@ -332,7 +332,7 @@ static size_t PartitionPurgeSlotSpan(
       internal::kMaxPartitionPagesPerRegularSlotSpan;
   PA_CHECK(kMaxSlotCount == (PartitionPageSize() *
                              internal::kMaxPartitionPagesPerRegularSlotSpan) /
-                                MaxPurgeableSlotSize());
+                                MinPurgeableSlotSize());
 #endif
   PA_DCHECK(bucket_num_slots <= kMaxSlotCount);
   PA_DCHECK(slot_span->num_unprovisioned_slots < bucket_num_slots);
@@ -384,15 +384,15 @@ static size_t PartitionPurgeSlotSpan(
     // The slots that do not contain discarded pages should not be included to
     // |truncated_slots|. Detects those slots and fixes |truncated_slots| and
     // |num_slots| accordingly.
-    uintptr_t rounded_up_begin_addr = RoundUpToSystemPage(begin_addr);
-    for (size_t i = 0; i < kMaxPurgeableSlotsPerSystemPage; ++i) {
+    uintptr_t rounded_up_truncatation_begin_addr =
+        RoundUpToSystemPage(begin_addr);
+    while (begin_addr + slot_size <= rounded_up_truncatation_begin_addr) {
       begin_addr += slot_size;
-      if (RoundUpToSystemPage(begin_addr) != rounded_up_begin_addr)
-        break;
+      PA_DCHECK(truncated_slots);
       --truncated_slots;
       ++num_slots;
     }
-    begin_addr = rounded_up_begin_addr;
+    begin_addr = rounded_up_truncatation_begin_addr;
 
     // We round the end address here up and not down because we're at the end of
     // a slot span, so we "own" all the way up the page boundary.
@@ -442,6 +442,8 @@ static size_t PartitionPurgeSlotSpan(
   }
 
   if (slot_size < SystemPageSize()) {
+    // Returns here because implementing the following steps for smaller slot
+    // size will need a complicated logic and make the code messy.
     return discardable_bytes;
   }
 
@@ -1145,7 +1147,7 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
         if (bucket.slot_size == internal::kInvalidBucketSize)
           continue;
 
-        if (bucket.slot_size >= internal::MaxPurgeableSlotSize())
+        if (bucket.slot_size >= internal::MinPurgeableSlotSize())
           internal::PartitionPurgeBucket(&bucket);
         else
           bucket.SortSlotSpanFreelists();
