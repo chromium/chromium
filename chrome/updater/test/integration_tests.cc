@@ -745,14 +745,7 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
 #endif
 #endif
 
-// TODO(crbug.com/1336591) - enable test after investigating crbug.com/1336591
-// or open a new crbug for debugging this test if it is the culprit.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
-#else
-#define MAYBE_UpdateServiceStress UpdateServiceStress
-#endif
-TEST_F(IntegrationTest, MAYBE_UpdateServiceStress) {
+TEST_F(IntegrationTest, UpdateServiceStress) {
   Install();
   ExpectInstalled();
   StressUpdateService();
