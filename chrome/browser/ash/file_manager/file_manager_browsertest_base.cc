@@ -1169,7 +1169,7 @@ class RemovableTestVolume : public FakeTestVolume {
     // Expose the mount point with the given volume and device type.
     VolumeManager::Get(profile)->AddVolumeForTesting(
         root_path(), volume_type_, device_type_, read_only_, device_path_,
-        drive_label_, file_system_type_);
+        drive_label_, file_system_type_, /*hidden=*/false, /*watchable=*/true);
     base::RunLoop().RunUntilIdle();
     return true;
   }

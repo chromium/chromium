@@ -220,6 +220,43 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
 };
 
 /**
+ * Tests that refresh button is shown for non-watchable volumes.
+ */
+testcase.toolbarRefreshButtonShownForNonWatchableVolume = async () => {
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Add files to the DocumentsProvider volume (which is non-watchable)
+  await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Wait for the DocumentsProvider volume to mount.
+  const documentsProviderVolumeQuery =
+      '[volume-type-icon="documents_provider"]';
+  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/DocumentsProvider');
+
+  // Check that refresh button is visible.
+  await remoteCall.waitForElement(appId, '#refresh-button:not([hidden])');
+};
+
+/**
+ * Tests that refresh button is hidden for watchable volumes.
+ */
+testcase.toolbarRefreshButtonHiddenForWatchableVolume = async () => {
+  // Open Files app on local Downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+
+  // It should start in Downloads.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My files/Downloads');
+
+  // Check that the button should be hidden.
+  await remoteCall.waitForElement(appId, '#refresh-button[hidden]');
+};
+
+/**
  * Tests that command Alt+A focus the toolbar.
  */
 testcase.toolbarAltACommand = async () => {

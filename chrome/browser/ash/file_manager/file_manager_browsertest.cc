@@ -753,6 +753,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("toolbarAltACommand"),
+        TestCase("toolbarAltACommand").FilesSwa(),
         TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
         TestCase("toolbarDeleteWithMenuItemNoEntrySelected").FilesSwa(),
         TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
@@ -765,17 +767,22 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarDeleteEntry").InGuestMode().FilesSwa(),
         TestCase("toolbarDeleteEntry").EnableTrash(),
         TestCase("toolbarDeleteEntry").EnableTrash().FilesSwa(),
+        TestCase("toolbarMultiMenuFollowsButton"),
+        TestCase("toolbarMultiMenuFollowsButton").FilesSwa(),
+        TestCase("toolbarRefreshButtonHiddenInRecents"),
+        TestCase("toolbarRefreshButtonHiddenInRecents").FilesSwa(),
+        TestCase("toolbarRefreshButtonHiddenForWatchableVolume"),
+        TestCase("toolbarRefreshButtonHiddenForWatchableVolume").FilesSwa(),
+        TestCase("toolbarRefreshButtonShownForNonWatchableVolume")
+            .EnableGenericDocumentsProvider(),
+        TestCase("toolbarRefreshButtonShownForNonWatchableVolume")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("toolbarRefreshButtonWithSelection")
             .EnableGenericDocumentsProvider(),
         TestCase("toolbarRefreshButtonWithSelection")
             .EnableGenericDocumentsProvider()
             .FilesSwa(),
-        TestCase("toolbarAltACommand"),
-        TestCase("toolbarAltACommand").FilesSwa(),
-        TestCase("toolbarRefreshButtonHiddenInRecents"),
-        TestCase("toolbarRefreshButtonHiddenInRecents").FilesSwa(),
-        TestCase("toolbarMultiMenuFollowsButton"),
-        TestCase("toolbarMultiMenuFollowsButton").FilesSwa(),
         TestCase("toolbarSharesheetButtonWithSelection"),
         TestCase("toolbarSharesheetButtonWithSelection").FilesSwa(),
         TestCase("toolbarSharesheetContextMenuWithSelection"),

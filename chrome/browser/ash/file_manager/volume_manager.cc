@@ -424,6 +424,12 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
   // "fusebox" prefix the original FSP volume id.
   volume->volume_id_ =
       base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
+
+  // Even though the underlying FSP may support watchers, fusebox needs
+  // to implement watchers in order to match the capability of the FSP.
+  // TODO(crbug.com/1353673): Add watcher support to fusebox.
+  volume->watchable_ = false;
+
   return volume;
 }
 
@@ -441,6 +447,11 @@ std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
   volume->source_path_ = mount_path;
   volume->source_ = SOURCE_DEVICE;
   volume->device_type_ = ash::DeviceType::kMobile;
+
+  // MTP does have watcher support via WatcherManager but it doesn't
+  // seem to work (perhaps something missing in mtpd).
+  volume->watchable_ = false;
+
   return volume;
 }
 
@@ -464,6 +475,12 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
   volume->volume_label_ = label;
   if (ash::features::IsFileManagerFuseBoxDebugEnabled())
     volume->volume_label_.insert(0, "fusebox ");
+
+  // MTP does have watcher support via WatcherManager but it doesn't
+  // seem to work. Therefore the fusebox version also doesn't allow
+  // watching.
+  volume->watchable_ = false;
+
   return volume;
 }
 
@@ -498,7 +515,7 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
-  volume->watchable_ = false;
+  volume->watchable_ = true;
   return volume;
 }
 
@@ -518,7 +535,7 @@ std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
   volume->remote_mount_path_ = remote_mount_path;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = display_name;
-  volume->watchable_ = false;
+  volume->watchable_ = true;
   volume->vm_type_ = vm_type;
   return volume;
 }
@@ -613,7 +630,8 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
     const base::FilePath& device_path,
     const std::string& drive_label,
     const std::string& file_system_type,
-    bool hidden) {
+    bool hidden,
+    bool watchable) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = volume_type;
   volume->device_type_ = device_type;
@@ -628,6 +646,7 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
     volume->file_system_type_ = file_system_type;
   }
   volume->hidden_ = hidden;
+  volume->watchable_ = watchable;
   return volume;
 }
 
@@ -992,12 +1011,13 @@ void VolumeManager::AddVolumeForTesting(const base::FilePath& path,
                                         const base::FilePath& device_path,
                                         const std::string& drive_label,
                                         const std::string& file_system_type,
-                                        bool hidden) {
+                                        bool hidden,
+                                        bool watchable) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DoMountEvent(ash::MountError::kNone,
                Volume::CreateForTesting(path, volume_type, device_type,
                                         read_only, device_path, drive_label,
-                                        file_system_type, hidden));
+                                        file_system_type, hidden, watchable));
 }
 
 void VolumeManager::AddVolumeForTesting(std::unique_ptr<Volume> volume) {

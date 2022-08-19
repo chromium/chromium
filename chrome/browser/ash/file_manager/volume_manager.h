@@ -158,7 +158,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       const base::FilePath& device_path,
       const std::string& drive_label,
       const std::string& file_system_type = "",
-      bool hidden = false);
+      bool hidden = false,
+      bool watchable = false);
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& device_path,
       const base::FilePath& mount_path);
@@ -289,7 +290,11 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   bool configurable_;
 
   // True if the volume notifies about changes via file/directory watchers.
-  bool watchable_;
+  //
+  // Requests to add file watchers for paths on the volume will fail when
+  // set to false and Files app will add a "Refresh" icon to the toolbar
+  // so that the directory contents can be manually refreshed.
+  bool watchable_ = false;
 
   // Identifier for the file system type
   std::string file_system_type_;
@@ -436,7 +441,8 @@ class VolumeManager : public KeyedService,
                            const base::FilePath& device_path = base::FilePath(),
                            const std::string& drive_label = "",
                            const std::string& file_system_type = "",
-                           bool hidden = false);
+                           bool hidden = false,
+                           bool watchable = false);
 
   // For testing purposes, adds the volume info to the volume manager.
   void AddVolumeForTesting(std::unique_ptr<Volume> volume);
