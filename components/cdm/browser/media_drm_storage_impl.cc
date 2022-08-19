@@ -81,17 +81,15 @@ const char kMimeType[] = "mime_type";
 const char kKeyType[] = "key_type";
 const char kOriginId[] = "origin_id";
 
-bool GetMediaDrmKeyTypeFromDict(const base::Value& dict,
+bool GetMediaDrmKeyTypeFromDict(const base::Value::Dict& dict,
                                 media::MediaDrmKeyType* value_out) {
-  DCHECK(dict.is_dict());
   DCHECK(value_out);
 
-  const base::Value* value =
-      dict.FindKeyOfType(kKeyType, base::Value::Type::INTEGER);
+  const absl::optional<int> value = dict.FindInt(kKeyType);
   if (!value)
     return false;
 
-  int key_type = value->GetInt();
+  int key_type = *value;
   if (key_type < static_cast<int>(media::MediaDrmKeyType::UNKNOWN) ||
       key_type > static_cast<int>(media::MediaDrmKeyType::MAX)) {
     DVLOG(1) << "Corrupted key type.";
@@ -102,32 +100,29 @@ bool GetMediaDrmKeyTypeFromDict(const base::Value& dict,
   return true;
 }
 
-bool GetStringFromDict(const base::Value& dict,
+bool GetStringFromDict(const base::Value::Dict& dict,
                        const std::string& key,
                        std::string* value_out) {
-  DCHECK(dict.is_dict());
   DCHECK(value_out);
 
-  const base::Value* value = dict.FindKeyOfType(key, base::Value::Type::STRING);
+  const std::string* value = dict.FindString(key);
   if (!value)
     return false;
 
-  *value_out = value->GetString();
+  *value_out = *value;
   return true;
 }
 
 // Extract base::Time from |dict| with key kCreationTime. Returns true if |dict|
 // contains a valid time value.
-bool GetCreationTimeFromDict(const base::Value& dict, base::Time* time) {
-  DCHECK(dict.is_dict());
+bool GetCreationTimeFromDict(const base::Value::Dict& dict, base::Time* time) {
   DCHECK(time);
 
-  const base::Value* time_value =
-      dict.FindKeyOfType(kCreationTime, base::Value::Type::DOUBLE);
+  const absl::optional<double> time_value = dict.FindDouble(kCreationTime);
   if (!time_value)
     return false;
 
-  base::Time time_maybe_null = base::Time::FromDoubleT(time_value->GetDouble());
+  base::Time time_maybe_null = base::Time::FromDoubleT(*time_value);
   if (time_maybe_null.is_null())
     return false;
 
@@ -147,11 +142,11 @@ class OriginData {
 
   base::Time provision_time() const { return provision_time_; }
 
-  base::Value ToDictValue() const {
-    base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict ToDictValue() const {
+    base::Value::Dict dict;
 
-    dict.SetKey(kOriginId, base::UnguessableTokenToValue(origin_id_));
-    dict.SetKey(kCreationTime, base::Value(provision_time_.ToDoubleT()));
+    dict.Set(kOriginId, base::UnguessableTokenToValue(origin_id_));
+    dict.Set(kCreationTime, base::Value(provision_time_.ToDoubleT()));
 
     return dict;
   }
@@ -160,12 +155,9 @@ class OriginData {
   // related to origin provision. Return nullptr if |origin_dict| has any
   // corruption, e.g. format error, missing fields, invalid value.
   static std::unique_ptr<OriginData> FromDictValue(
-      const base::Value& origin_dict) {
-    DCHECK(origin_dict.is_dict());
-
-    const base::Value* origin_id_value =
-        origin_dict.FindKeyOfType(kOriginId, base::Value::Type::STRING);
-    if (!origin_id_value)
+      const base::Value::Dict& origin_dict) {
+    const base::Value* origin_id_value = origin_dict.Find(kOriginId);
+    if (!origin_id_value || !origin_id_value->is_string())
       return nullptr;
 
     absl::optional<base::UnguessableToken> origin_id =
@@ -198,16 +190,15 @@ class SessionData {
 
   base::Time creation_time() const { return creation_time_; }
 
-  base::Value ToDictValue() const {
-    base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict ToDictValue() const {
+    base::Value::Dict dict;
 
-    dict.SetKey(kKeySetId,
-                base::Value(std::string(
-                    reinterpret_cast<const char*>(key_set_id_.data()),
-                    key_set_id_.size())));
-    dict.SetKey(kMimeType, base::Value(mime_type_));
-    dict.SetKey(kKeyType, base::Value(static_cast<int>(key_type_)));
-    dict.SetKey(kCreationTime, base::Value(creation_time_.ToDoubleT()));
+    dict.Set(kKeySetId, base::Value(std::string(
+                            reinterpret_cast<const char*>(key_set_id_.data()),
+                            key_set_id_.size())));
+    dict.Set(kMimeType, base::Value(mime_type_));
+    dict.Set(kKeyType, base::Value(static_cast<int>(key_type_)));
+    dict.Set(kCreationTime, base::Value(creation_time_.ToDoubleT()));
 
     return dict;
   }
@@ -220,9 +211,7 @@ class SessionData {
   // for an offline license session. Return nullptr if |session_dict| has any
   // corruption, e.g. format error, missing fields, invalid data.
   static std::unique_ptr<SessionData> FromDictValue(
-      const base::Value& session_dict) {
-    DCHECK(session_dict.is_dict());
-
+      const base::Value::Dict& session_dict) {
     std::string key_set_id_string;
     if (!GetStringFromDict(session_dict, kKeySetId, &key_set_id_string))
       return nullptr;
@@ -265,25 +254,16 @@ class SessionData {
 
 // Get sessions dict for |origin_string| in |storage_dict|. This is a helper
 // function that works for both const and non const access.
-template <typename DictValue>
-DictValue* GetSessionsDictFromStorageDict(DictValue* storage_dict,
-                                          const std::string& origin_string) {
-  if (storage_dict == nullptr) {
-    DVLOG(1) << __func__ << ": No storage dict for origin " << origin_string;
-    return nullptr;
-  }
-
-  DCHECK(storage_dict->is_dict());
-
-  DictValue* origin_dict =
-      storage_dict->FindKeyOfType(origin_string, base::Value::Type::DICTIONARY);
+template <typename Dict>
+Dict* GetSessionsDictFromStorageDict(Dict& storage_dict,
+                                     const std::string& origin_string) {
+  Dict* origin_dict = storage_dict.FindDict(origin_string);
   if (!origin_dict) {
     DVLOG(1) << __func__ << ": No entry for origin " << origin_string;
     return nullptr;
   }
 
-  DictValue* sessions_dict =
-      origin_dict->FindKeyOfType(kSessions, base::Value::Type::DICTIONARY);
+  Dict* sessions_dict = origin_dict->FindDict(kSessions);
   if (!sessions_dict) {
     DVLOG(1) << __func__ << ": No sessions entry for origin " << origin_string;
     return nullptr;
@@ -295,29 +275,26 @@ DictValue* GetSessionsDictFromStorageDict(DictValue* storage_dict,
 // Create origin dict with |origin_id|, current time as creation time, and empty
 // sessions dict. It returns the sessions dict for caller to write session
 // information. Note that this clears any existing session information.
-base::Value* CreateOriginDictAndReturnSessionsDict(
-    base::Value* storage_dict,
+base::Value::Dict& CreateOriginDictAndReturnSessionsDict(
+    base::Value::Dict& storage_dict,
     const url::Origin& origin,
     const base::UnguessableToken& origin_id) {
-  DCHECK(storage_dict);
-  DCHECK(storage_dict->is_dict());
-
   return storage_dict
-      ->SetKey(origin.Serialize(), OriginData(origin_id).ToDictValue())
-      ->SetKey(kSessions, base::Value(base::Value::Type::DICTIONARY));
+      .Set(origin.Serialize(), OriginData(origin_id).ToDictValue())
+      ->GetDict()
+      .Set(kSessions, base::Value::Dict())
+      ->GetDict();
 }
 
 #if BUILDFLAG(IS_ANDROID)
 // Clear sessions whose creation time falls in [start, end] from
 // |sessions_dict|. This function also cleans corruption data and should never
 // fail.
-void ClearSessionDataForTimePeriod(base::Value* sessions_dict,
+void ClearSessionDataForTimePeriod(base::Value::Dict& sessions_dict,
                                    base::Time start,
                                    base::Time end) {
-  DCHECK(sessions_dict->is_dict());
-
   std::vector<std::string> sessions_to_clear;
-  for (const auto key_value : sessions_dict->DictItems()) {
+  for (const auto key_value : sessions_dict) {
     const std::string& session_id = key_value.first;
 
     base::Value* session_dict = &key_value.second;
@@ -329,7 +306,7 @@ void ClearSessionDataForTimePeriod(base::Value* sessions_dict,
     }
 
     std::unique_ptr<SessionData> session_data =
-        SessionData::FromDictValue(*session_dict);
+        SessionData::FromDictValue(session_dict->GetDict());
     if (!session_data) {
       DLOG(WARNING) << "Session data for " << session_id
                     << " is corrupted, removing.";
@@ -346,7 +323,7 @@ void ClearSessionDataForTimePeriod(base::Value* sessions_dict,
 
   // Remove session data.
   for (const auto& session_id : sessions_to_clear)
-    sessions_dict->RemoveKey(session_id);
+    sessions_dict.Remove(session_id);
 }
 
 // 1. Removes the session data from origin dict if the session's creation time
@@ -376,7 +353,7 @@ std::vector<base::UnguessableToken> ClearMatchingLicenseData(
     }
 
     std::unique_ptr<OriginData> origin_data =
-        OriginData::FromDictValue(*origin_dict);
+        OriginData::FromDictValue(origin_dict->GetDict());
     if (!origin_data) {
       DLOG(WARNING) << "Origin data for " << origin_str
                     << " is corrupted, removing.";
@@ -387,8 +364,7 @@ std::vector<base::UnguessableToken> ClearMatchingLicenseData(
     if (origin_data->provision_time() > end)
       continue;
 
-    base::Value* sessions =
-        origin_dict->FindKeyOfType(kSessions, base::Value::Type::DICTIONARY);
+    base::Value::Dict* sessions = origin_dict->GetDict().FindDict(kSessions);
     if (!sessions) {
       // The origin is provisioned, but no persistent license is installed.
       origins_to_delete.push_back(origin_str);
@@ -396,9 +372,9 @@ std::vector<base::UnguessableToken> ClearMatchingLicenseData(
       continue;
     }
 
-    ClearSessionDataForTimePeriod(sessions, start, end);
+    ClearSessionDataForTimePeriod(*sessions, start, end);
 
-    if (sessions->DictEmpty()) {
+    if (sessions->empty()) {
       // Session data will be removed when removing origin data.
       origins_to_delete.push_back(origin_str);
       origin_ids_to_unprovision.push_back(origin_data->origin_id());
@@ -437,17 +413,16 @@ void ClearMediaDrmLicensesBlocking(
 // Returns true if any session in |sessions_dict| has been modified more
 // recently than |start| and before |end|, and otherwise
 // returns false.
-bool SessionsModifiedBetween(const base::Value* sessions_dict,
+bool SessionsModifiedBetween(const base::Value::Dict& sessions_dict,
                              base::Time start,
                              base::Time end) {
-  DCHECK(sessions_dict->is_dict());
-  for (const auto key_value : sessions_dict->DictItems()) {
+  for (const auto key_value : sessions_dict) {
     const base::Value* session_dict = &key_value.second;
     if (!session_dict->is_dict())
       continue;
 
     std::unique_ptr<SessionData> session_data =
-        SessionData::FromDictValue(*session_dict);
+        SessionData::FromDictValue(session_dict->GetDict());
     if (!session_data)
       continue;
 
@@ -461,12 +436,11 @@ bool SessionsModifiedBetween(const base::Value* sessions_dict,
 
 // Returns the origin ID for |origin|, if it exists. Will return an empty value
 // if the origin ID can not be found in |storage_dict|.
-base::UnguessableToken GetOriginIdForOrigin(const base::Value* storage_dict,
-                                            const url::Origin& origin) {
-  DCHECK(storage_dict);
-
-  const base::Value* origin_dict = storage_dict->FindKeyOfType(
-      origin.Serialize(), base::Value::Type::DICTIONARY);
+base::UnguessableToken GetOriginIdForOrigin(
+    const base::Value::Dict& storage_dict,
+    const url::Origin& origin) {
+  const base::Value::Dict* origin_dict =
+      storage_dict.FindDict(origin.Serialize());
   if (!origin_dict)
     return base::UnguessableToken::Null();
 
@@ -525,8 +499,8 @@ class InitializationSerializer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     // Check if the preference has an existing origin ID.
-    const base::Value* storage_dict =
-        pref_service->GetDictionary(prefs::kMediaDrmStorage);
+    const base::Value::Dict& storage_dict =
+        pref_service->GetValueDict(prefs::kMediaDrmStorage);
     base::UnguessableToken origin_id =
         GetOriginIdForOrigin(storage_dict, origin);
     if (origin_id) {
@@ -574,7 +548,7 @@ class InitializationSerializer {
     // Save the origin ID in the preference as long as it is not null.
     if (origin_id) {
       DictionaryPrefUpdate update(pref_service, prefs::kMediaDrmStorage);
-      CreateOriginDictAndReturnSessionsDict(update.Get(), origin,
+      CreateOriginDictAndReturnSessionsDict(update->GetDict(), origin,
                                             origin_id.value());
     }
 
@@ -611,13 +585,11 @@ std::set<GURL> MediaDrmStorageImpl::GetAllOrigins(
     const PrefService* pref_service) {
   DCHECK(pref_service);
 
-  const base::Value* storage_dict =
-      pref_service->GetDictionary(prefs::kMediaDrmStorage);
-  if (!storage_dict)
-    return std::set<GURL>();
+  const base::Value::Dict& storage_dict =
+      pref_service->GetValueDict(prefs::kMediaDrmStorage);
 
   std::set<GURL> origin_set;
-  for (const auto key_value : storage_dict->DictItems()) {
+  for (const auto key_value : storage_dict) {
     GURL origin(key_value.first);
     if (origin.is_valid())
       origin_set.insert(origin);
@@ -633,16 +605,14 @@ std::vector<GURL> MediaDrmStorageImpl::GetOriginsModifiedBetween(
     base::Time end) {
   DCHECK(pref_service);
 
-  const base::Value* storage_dict =
-      pref_service->GetDictionary(prefs::kMediaDrmStorage);
-  if (!storage_dict)
-    return {};
+  const base::Value::Dict& storage_dict =
+      pref_service->GetValueDict(prefs::kMediaDrmStorage);
 
   // Check each origin to see if it has been modified after |start| and
   // before |end|. If there are any errors in prefs::kMediaDrmStorage,
   // ignore them.
   std::vector<GURL> matching_origins;
-  for (const auto key_value : storage_dict->DictItems()) {
+  for (const auto key_value : storage_dict) {
     GURL origin(key_value.first);
     if (!origin.is_valid())
       continue;
@@ -652,7 +622,7 @@ std::vector<GURL> MediaDrmStorageImpl::GetOriginsModifiedBetween(
       continue;
 
     std::unique_ptr<OriginData> origin_data =
-        OriginData::FromDictValue(*origin_dict);
+        OriginData::FromDictValue(origin_dict->GetDict());
     if (!origin_data)
       continue;
 
@@ -660,13 +630,13 @@ std::vector<GURL> MediaDrmStorageImpl::GetOriginsModifiedBetween(
     // after |start|.
     if (origin_data->provision_time() < start) {
       // See if any session created recently.
-      const base::Value* sessions =
-          origin_dict->FindKeyOfType(kSessions, base::Value::Type::DICTIONARY);
+      const base::Value::Dict* sessions =
+          origin_dict->GetDict().FindDict(kSessions);
       if (!sessions)
         continue;
 
       // If no sessions modified recently, move on to the next origin.
-      if (!SessionsModifiedBetween(sessions, start, end))
+      if (!SessionsModifiedBetween(*sessions, start, end))
         continue;
     }
 
@@ -815,8 +785,7 @@ void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {
   }
 
   DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
-  base::Value* storage_dict = update.Get();
-  DCHECK(storage_dict);
+  base::Value::Dict& storage_dict = update->GetDict();
 
   // Update origin dict once origin provisioning completes. There may be
   // orphaned session info from a previous provisioning. Clear them by
@@ -847,11 +816,10 @@ void MediaDrmStorageImpl::SavePersistentSession(
   }
 
   DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
-  base::Value* storage_dict = update.Get();
-  DCHECK(storage_dict);
+  base::Value::Dict& storage_dict = update->GetDict();
 
-  base::Value* sessions_dict = GetSessionsDictFromStorageDict<base::Value>(
-      storage_dict, origin().Serialize());
+  base::Value::Dict* sessions_dict =
+      GetSessionsDictFromStorageDict(storage_dict, origin().Serialize());
 
   // This could happen if the profile is removed, but the device is still
   // provisioned for the origin. In this case, just create a new entry.
@@ -859,12 +827,12 @@ void MediaDrmStorageImpl::SavePersistentSession(
   // branch. Deleting the profile causes reprovisioning of the origin.
   if (!sessions_dict) {
     DVLOG(1) << __func__ << ": No entry for origin " << origin();
-    sessions_dict = CreateOriginDictAndReturnSessionsDict(
+    sessions_dict = &CreateOriginDictAndReturnSessionsDict(
         storage_dict, origin(), origin_id_.value());
     DCHECK(sessions_dict);
   }
 
-  DVLOG_IF(1, sessions_dict->FindKey(session_id))
+  DVLOG_IF(1, sessions_dict->contains(session_id))
       << __func__ << ": Session ID already exists and will be replaced.";
 
   // The key type of the session should be valid. MediaDrmKeyType::MIN/UNKNOWN
@@ -872,7 +840,7 @@ void MediaDrmStorageImpl::SavePersistentSession(
   DCHECK_GT(session_data->key_type, media::MediaDrmKeyType::MIN);
   DCHECK_LE(session_data->key_type, media::MediaDrmKeyType::MAX);
 
-  sessions_dict->SetKey(
+  sessions_dict->Set(
       session_id, SessionData(session_data->key_set_id, session_data->mime_type,
                               session_data->key_type)
                       .ToDictValue());
@@ -899,17 +867,15 @@ void MediaDrmStorageImpl::LoadPersistentSession(
     return;
   }
 
-  const base::Value* sessions_dict =
-      GetSessionsDictFromStorageDict<const base::Value>(
-          pref_service_->GetDictionary(prefs::kMediaDrmStorage),
-          origin().Serialize());
+  const base::Value::Dict* sessions_dict = GetSessionsDictFromStorageDict(
+      pref_service_->GetValueDict(prefs::kMediaDrmStorage),
+      origin().Serialize());
   if (!sessions_dict) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  const base::Value* session_dict =
-      sessions_dict->FindKeyOfType(session_id, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* session_dict = sessions_dict->FindDict(session_id);
   if (!session_dict) {
     DVLOG(1) << __func__ << ": No session " << session_id << " for origin "
              << origin();
@@ -949,15 +915,15 @@ void MediaDrmStorageImpl::RemovePersistentSession(
 
   DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
 
-  base::Value* sessions_dict = GetSessionsDictFromStorageDict<base::Value>(
-      update.Get(), origin().Serialize());
+  base::Value::Dict* sessions_dict =
+      GetSessionsDictFromStorageDict(update->GetDict(), origin().Serialize());
 
   if (!sessions_dict) {
     std::move(callback).Run(true);
     return;
   }
 
-  sessions_dict->RemoveKey(session_id);
+  sessions_dict->Remove(session_id);
   std::move(callback).Run(true);
 }
 
