@@ -15,7 +15,6 @@ namespace blink {
 
 class ColdModeSpellCheckRequester;
 class Document;
-class Element;
 class LocalDOMWindow;
 class SpellCheckRequester;
 
@@ -53,9 +52,6 @@ class CORE_EXPORT IdleSpellCheckController final
   // Cleans everything up and makes the callback inactive. Should be called when
   // document is detached or spellchecking is globally disabled.
   void Deactivate();
-
-  // Called when spellchecking is disabled on the specific element.
-  void SetSpellCheckingDisabled(const Element&);
 
   // Exposed for testing only.
   SpellCheckRequester& GetSpellCheckRequester() const;

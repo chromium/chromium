@@ -44,10 +44,6 @@ class ColdModeSpellCheckRequester
 
   bool FullyChecked() const;
 
-  void RemoveFromFullyChecked(const Element& element) {
-    fully_checked_root_editables_.erase(&element);
-  }
-
   void Trace(Visitor*) const;
 
  private:

@@ -266,9 +266,4 @@ void IdleSpellCheckController::SetNeedsMoreColdModeInvocationForTesting() {
   cold_mode_requester_->SetNeedsMoreInvocationForTesting();
 }
 
-void IdleSpellCheckController::SetSpellCheckingDisabled(
-    const Element& element) {
-  cold_mode_requester_->RemoveFromFullyChecked(element);
-}
-
 }  // namespace blink
