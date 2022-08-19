@@ -144,8 +144,7 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
 
 }  // namespace
 
-// static
-void UnwindPrerequisites::RequestInstallation() {
+void RequestUnwindPrerequisitesInstallation() {
   CHECK_EQ(metrics::CallStackProfileParams::Process::kBrowser,
            GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -155,8 +154,7 @@ void UnwindPrerequisites::RequestInstallation() {
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 }
 
-// static
-bool UnwindPrerequisites::Available() {
+bool AreUnwindPrerequisitesAvailable() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   return stack_unwinder::Module::IsInstalled();
 #else
@@ -165,7 +163,7 @@ bool UnwindPrerequisites::Available() {
 }
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
-  if (!UnwindPrerequisites::Available()) {
+  if (!AreUnwindPrerequisitesAvailable()) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)

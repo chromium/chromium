@@ -198,7 +198,7 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   if (!platform_configuration.IsSupported(release_channel))
     return absl::nullopt;
 
-  if (!UnwindPrerequisites::Available()) {
+  if (!AreUnwindPrerequisitesAvailable()) {
     return kProfileDisabledModuleNotInstalled;
   }
 

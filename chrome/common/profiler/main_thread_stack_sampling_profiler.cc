@@ -47,11 +47,11 @@ MainThreadStackSamplingProfiler::MainThreadStackSamplingProfiler() {
 // those users.
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (process == metrics::CallStackProfileParams::Process::kBrowser &&
-      !UnwindPrerequisites::Available()) {
+      !AreUnwindPrerequisitesAvailable()) {
     const version_info::Channel channel = chrome::GetChannel();
     if (channel == version_info::Channel::CANARY ||
         channel == version_info::Channel::DEV) {
-      UnwindPrerequisites::RequestInstallation();
+      RequestUnwindPrerequisitesInstallation();
     }
   }
 #endif

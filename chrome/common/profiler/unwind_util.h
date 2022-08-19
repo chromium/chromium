@@ -7,24 +7,22 @@
 
 #include "base/profiler/stack_sampling_profiler.h"
 
-// A helper class to encapsulate some functionality related to stack unwinding.
-class UnwindPrerequisites {
- public:
-  // Request the installation of any prerequisites needed for unwinding.
-  // Android, in particular, requires use of a dynamic feature module to provide
-  // the native unwinder.
-  //
-  // Note that installation of some prerequisites can occur asynchronously.
-  // Therefore, it's not guaranteed that Available() will return true
-  // immediately after calling RequestInstallation().
-  //
-  // RequestInstallation() can only be called from the browser process.
-  static void RequestInstallation();
+// Request the installation of any prerequisites needed for unwinding.
+// Android, in particular, requires use of a dynamic feature module to provide
+// the native unwinder.
+//
+// Note that installation of some prerequisites can occur asynchronously.
+// Therefore, it's not guaranteed that AreUnwindPrerequisitesAvailable() will
+// return true immediately after calling
+// RequestUnwindPrerequisitesInstallation().
+//
+// RequestUnwindPrerequisitesInstallation() can only be called from the browser
+// process.
+void RequestUnwindPrerequisitesInstallation();
 
-  // Are the prerequisites required for unwinding available in the current
-  // context?
-  static bool Available();
-};
+// Are the prerequisites required for unwinding available in the current
+// context?
+bool AreUnwindPrerequisitesAvailable();
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
 
