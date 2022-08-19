@@ -597,7 +597,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   if (renderer_type() == viz::RendererType::kSkiaVk) {
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(false);
   }
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
 #if BUILDFLAG(IS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
@@ -608,7 +608,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
   int large_error_allowed = 1;
