@@ -14,7 +14,6 @@ extern const base::Feature kNearbySharingBackgroundScanning;
 extern const base::Feature kNearbySharingChildAccounts;
 extern const base::Feature kNearbySharingDeviceContacts;
 extern const base::Feature kNearbySharingOnePageOnboarding;
-extern const base::Feature kNearbySharingReceiveWifiCredentials;
 extern const base::Feature kNearbySharingSelfShareAutoAccept;
 extern const base::Feature kNearbySharingSelfShareUI;
 extern const base::Feature kNearbySharingVisibilityReminder;

@@ -8,8 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -67,10 +65,6 @@ class PayloadTrackerTest : public testing::Test {
 
       share_target_.text_attachments.push_back(std::move(text));
     }
-
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kNearbySharingReceiveWifiCredentials);
 
     WifiCredentialsAttachment wifi_credentials_ok(
         kWifiCredentialsIdOk, kWifiSecurityType, kWifiSsidOk);

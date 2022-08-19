@@ -222,9 +222,7 @@ std::u16string FormatNotificationTitle(const ShareTarget& share_target,
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
 
-  if (!share_target.wifi_credentials_attachments.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kNearbySharingReceiveWifiCredentials)) {
+  if (!share_target.wifi_credentials_attachments.empty()) {
     std::u16string network_name =
         base::UTF8ToUTF16(share_target.wifi_credentials_attachments[0].ssid());
     return base::ReplaceStringPlaceholders(
@@ -238,9 +236,7 @@ std::u16string FormatNotificationTitle(const ShareTarget& share_target,
 }
 
 std::u16string GetProgressNotificationTitle(const ShareTarget& share_target) {
-  if (!share_target.wifi_credentials_attachments.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kNearbySharingReceiveWifiCredentials)) {
+  if (!share_target.wifi_credentials_attachments.empty()) {
     return FormatNotificationTitle(
         share_target,
         IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE_WIFI_CREDENTIALS,
@@ -256,9 +252,7 @@ std::u16string GetProgressNotificationTitle(const ShareTarget& share_target) {
 }
 
 std::u16string GetSuccessNotificationTitle(const ShareTarget& share_target) {
-  if (!share_target.wifi_credentials_attachments.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kNearbySharingReceiveWifiCredentials)) {
+  if (!share_target.wifi_credentials_attachments.empty()) {
     return FormatNotificationTitle(
         share_target,
         IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE_WIFI_CREDENTIALS,
@@ -273,9 +267,7 @@ std::u16string GetSuccessNotificationTitle(const ShareTarget& share_target) {
 }
 
 std::u16string GetFailureNotificationTitle(const ShareTarget& share_target) {
-  if (!share_target.wifi_credentials_attachments.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kNearbySharingReceiveWifiCredentials)) {
+  if (!share_target.wifi_credentials_attachments.empty()) {
     return FormatNotificationTitle(
         share_target,
         IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE_WIFI_CREDENTIALS,
@@ -313,9 +305,7 @@ std::u16string GetConnectionRequestNotificationMessage(
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
   std::u16string message;
-  if (!share_target.wifi_credentials_attachments.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kNearbySharingReceiveWifiCredentials)) {
+  if (!share_target.wifi_credentials_attachments.empty()) {
     message = base::ReplaceStringPlaceholders(
         l10n_util::GetStringUTF16(
             IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE_WIFI_CREDENTIALS),

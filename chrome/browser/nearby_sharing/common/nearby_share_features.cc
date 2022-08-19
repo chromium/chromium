@@ -32,10 +32,6 @@ const base::Feature kNearbySharingDeviceContacts{
 const base::Feature kNearbySharingOnePageOnboarding{
     "NearbySharingOnePageOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables receiving WiFi networks using Nearby Share.
-const base::Feature kNearbySharingReceiveWifiCredentials{
-    "NearbySharingReceiveWifiCredentials", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables auto-accept functionality when sharing between a user's own devices.
 const base::Feature kNearbySharingSelfShareAutoAccept{
     "NearbySharingSelfShareAutoAccept", base::FEATURE_DISABLED_BY_DEFAULT};
