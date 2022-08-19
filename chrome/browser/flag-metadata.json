@@ -895,7 +895,7 @@
   {
     "name": "chrome-sharing-hub-launch-adjacent",
     "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 109
   },
   {
     "name": "chrome-tips-in-main-menu",
@@ -5696,7 +5696,7 @@
   {
     "name": "send-tab-to-self-v2",
     "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 100
+    "expiry_milestone": 109
   },
   {
     "name": "set-market-url-for-testing",
