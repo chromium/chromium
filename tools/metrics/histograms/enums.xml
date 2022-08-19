@@ -10741,6 +10741,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="281" label="MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN"/>
   <int value="282" label="RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN"/>
   <int value="283" label="RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN"/>
+  <int value="284" label="FF_FROZEN_SANDBOX_FLAGS_CHANGED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
