@@ -4,9 +4,9 @@
 
 #import "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"

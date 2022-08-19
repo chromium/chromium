@@ -14,27 +14,10 @@
 #include "components/signin/ios/browser/features.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #include "ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/channel_info.h"
-
-const char kIOSMICeAndDefaultBrowserTrialName[] =
-    "IOSTrialMICeAndDefaultBrowser";
-
-// Parameters for new Default Browser Promo FRE.
-const char kFREDefaultBrowserPromoParam[] = "variant_default_browser";
-const char kFREDefaultBrowserPromoDefaultDelayParam[] =
-    "variant_default_delay_enabled";
-const char kFREDefaultBrowserPromoFirstRunOnlyParam[] =
-    "variant_fre_only_enabled";
-const char kFREDefaultBrowserPromoShortDelayParam[] =
-    "variant_short_delay_enabled";
-
-// Parameters for new Mobile Identity Consistency FRE.
-const char kNewMobileIdentityConsistencyFREParam[] = "variant_new_mice_fre";
-const char kNewMobileIdentityConsistencyFREParamUMADialog[] = "umadialog";
-const char kNewMobileIdentityConsistencyFREParamThreeSteps[] = "3steps";
-const char kNewMobileIdentityConsistencyFREParamTwoSteps[] = "2steps";
 
 namespace {
 

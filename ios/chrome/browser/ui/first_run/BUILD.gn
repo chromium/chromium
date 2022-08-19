@@ -13,6 +13,7 @@ source_set("field_trial") {
     "trending_queries_field_trial.h",
   ]
   deps = [
+    ":field_trial_constants",
     "//base",
     "//components/prefs",
     "//components/signin/ios/browser:features",
@@ -22,6 +23,14 @@ source_set("field_trial") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/common",
+  ]
+}
+
+source_set("field_trial_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "field_trial_constants.cc",
+    "field_trial_constants.h",
   ]
 }
 
@@ -197,6 +206,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":field_trial",
+    ":field_trial_constants",
     ":first_run",
     ":utils",
     "//base",
@@ -240,7 +250,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     ":eg_test_support+eg2",
-    ":field_trial",
+    ":field_trial_constants",
     "//base",
     "//base/test:test_support",
     "//components/enterprise",

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/string_util.h"

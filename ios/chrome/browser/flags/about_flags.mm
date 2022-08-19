@@ -78,7 +78,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
-#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"

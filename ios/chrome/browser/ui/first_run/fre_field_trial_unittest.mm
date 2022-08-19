@@ -10,6 +10,7 @@
 #import "base/test/mock_entropy_provider.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/variations/variations_associated_data.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "testing/platform_test.h"
 
