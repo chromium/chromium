@@ -148,8 +148,11 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   BrowserContext& browser_context_;
   StoragePartition& storage_partition_;
   const int frame_tree_node_id_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
+  // This needs to be declared last because it holds a pointer on
+  // `loader_factory`, and thus needs to be destroyed before factory gets
+  // destroyed.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
   const url::Origin origin_;
   const net::IsolationInfo isolation_info_;
 

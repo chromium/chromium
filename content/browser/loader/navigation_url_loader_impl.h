@@ -243,7 +243,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::unique_ptr<NavigationUIData> navigation_ui_data_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
-  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   // Caches the modified request headers provided by clients during redirect,
   // will be consumed by next `url_loader_->FollowRedirect()`.
@@ -319,6 +318,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // calls like WillCreateURLLoaderFactory are already called)
   std::map<std::string, mojo::Remote<network::mojom::URLLoaderFactory>>
       non_network_url_loader_factory_remotes_;
+
+  // This needs to be declared here because the underlying object might take a
+  // reference on a URLLoaderFactory stored in
+  // `non_network_url_loader_factory_remotes_`.
+  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
