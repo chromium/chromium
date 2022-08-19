@@ -1493,6 +1493,40 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 }
 
+// Ensure that destroying a <webview> with a pending mouse lock request doesn't
+// leave a stale mouse lock widget pointer in the embedder WebContents. See
+// https://crbug.com/1346245.
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
+                       DestroyGuestWithPendingPointerLock) {
+  LoadAndLaunchPlatformApp("web_view/pointer_lock_pending",
+                           "WebViewTest.LAUNCHED");
+
+  content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
+  content::WebContents* guest_web_contents =
+      GetGuestViewManager()->WaitForSingleGuestCreated();
+
+  // The embedder is configured to remove the <webview> as soon as it receives
+  // the pointer lock permission request from the guest, without responding to
+  // it.  Hence, have the guest request pointer lock and wait for its
+  // destruction.
+  content::RenderFrameDeletedObserver observer(
+      guest_web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(content::ExecuteScript(
+      guest_web_contents, 
+      "document.querySelector('div').requestPointerLock()"));
+  observer.WaitUntilDeleted();
+
+  // The embedder WebContents shouldn't have a mouse lock widget.
+  EXPECT_FALSE(GetMouseLockWidget(embedder_web_contents));
+
+  // Close the embedder app and ensure that this doesn't crash, which used to
+  // be the case if the mouse lock widget (now destroyed) hadn't been cleared
+  // in the embedder.
+  content::WebContentsDestroyedWatcher destroyed_watcher(embedder_web_contents);
+  CloseAppWindow(GetFirstAppWindow());
+  destroyed_watcher.Wait();
+}
+
 #if BUILDFLAG(IS_MAC)
 // This test verifies that replacement range for IME works with <webview>s. To
 // verify this, a <webview> with an <input> inside is loaded. Then the <input>
