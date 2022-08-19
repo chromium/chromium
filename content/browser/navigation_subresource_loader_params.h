@@ -38,7 +38,6 @@ struct CONTENT_EXPORT SubresourceLoaderParams {
   blink::mojom::ControllerServiceWorkerInfoPtr controller_service_worker_info;
   base::WeakPtr<ServiceWorkerObjectHost> controller_service_worker_object_host;
 
-  // For SignedExchangeSubresourcePrefetch.
   // When signed exchanges were prefetched in the previous page and were stored
   // to the PrefetchedSignedExchangeCache, and the main resource for the
   // navigation was served from the cache, |prefetched_signed_exchanges|

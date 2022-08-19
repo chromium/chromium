@@ -220,7 +220,6 @@ CONTENT_EXPORT extern const base::Feature kSharedArrayBuffer;
 CONTENT_EXPORT extern const base::Feature kSharedArrayBufferOnDesktop;
 CONTENT_EXPORT extern const base::Feature
     kSignedExchangeReportingForDistributors;
-CONTENT_EXPORT extern const base::Feature kSignedExchangeSubresourcePrefetch;
 CONTENT_EXPORT extern const base::Feature kSignedHTTPExchange;
 CONTENT_EXPORT extern const base::Feature kSignedHTTPExchangePingValidity;
 CONTENT_EXPORT extern const base::Feature

@@ -356,7 +356,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // `RenderFrameImpl::SynchronouslyConmmitAboutBlankForBug778318`.
   bool is_synchronous_commit_for_bug_778318 = false;
 
-  // Used for SignedExchangeSubresourcePrefetch.
   // This struct keeps the information about a prefetched signed exchange.
   struct BLINK_EXPORT PrefetchedSignedExchange {
     PrefetchedSignedExchange();

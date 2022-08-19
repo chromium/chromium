@@ -499,15 +499,15 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const WebVector<network::mojom::WebClientHintsType>&
           enabled_client_hints);
 
-  // For SignedExchangeSubresourcePrefetch feature. If the page was loaded from
-  // a signed exchage which has "allowed-alt-sxg" link headers in the inner
-  // response and PrefetchedSignedExchanges were passed from the previous page,
-  // initializes a PrefetchedSignedExchangeManager which will hold the
-  // subresource signed exchange related headers ("alternate" link header in the
-  // outer response and "allowed-alt-sxg" link header in the inner response of
-  // the page's signed exchange), and the passed PrefetchedSignedExchanges.
-  // The created PrefetchedSignedExchangeManager will be used to load the
-  // prefetched signed exchanges for matching requests.
+  // If the page was loaded from a signed exchange which has "allowed-alt-sxg"
+  // link headers in the inner response and PrefetchedSignedExchanges were
+  // passed from the previous page, initializes a
+  // PrefetchedSignedExchangeManager which will hold the subresource signed
+  // exchange related headers ("alternate" link header in the outer response and
+  // "allowed-alt-sxg" link header in the inner response of the page's signed
+  // exchange), and the passed PrefetchedSignedExchanges. The created
+  // PrefetchedSignedExchangeManager will be used to load the prefetched signed
+  // exchanges for matching requests.
   void InitializePrefetchedSignedExchangeManager();
 
   bool IsJavaScriptURLOrXSLTCommit() const {

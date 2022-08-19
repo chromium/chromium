@@ -73,8 +73,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     resource_request_.headers.SetHeader(
         net::HttpRequestHeaders::kAccept,
         kSignedExchangeEnabledAcceptHeaderForPrefetch);
-    if (prefetched_signed_exchange_cache &&
-        resource_request.is_signed_exchange_prefetch_cache_enabled) {
+    if (prefetched_signed_exchange_cache) {
       prefetched_signed_exchange_cache_adapter_ =
           std::make_unique<PrefetchedSignedExchangeCacheAdapter>(
               std::move(prefetched_signed_exchange_cache),

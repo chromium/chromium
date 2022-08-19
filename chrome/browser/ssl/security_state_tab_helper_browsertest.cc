@@ -1437,10 +1437,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
       false /* expect cert status error */);
 }
 
-class SignedExchangeSecurityStateTest
-    : public CertVerifierBrowserTest,
-      public testing::WithParamInterface<
-          bool /* sxg_subresource_prefetch_enabled */> {
+class SignedExchangeSecurityStateTest : public CertVerifierBrowserTest {
  public:
   SignedExchangeSecurityStateTest() = default;
   ~SignedExchangeSecurityStateTest() override = default;
@@ -1459,16 +1456,6 @@ class SignedExchangeSecurityStateTest
 
  private:
   void SetUp() override {
-    const bool sxg_subresource_prefetch_enabled = GetParam();
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-    if (sxg_subresource_prefetch_enabled) {
-      enabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    } else {
-      disabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
     sxg_test_helper_.SetUp();
 
     CertVerifierBrowserTest::SetUp();
@@ -1480,10 +1467,9 @@ class SignedExchangeSecurityStateTest
   }
 
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
+IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1508,7 +1494,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
       false /* expect_ran_mixed_content */, false /* expect_cert_error */);
 }
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
+IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest,
                        SecurityLevelIsSecureAfterPrefetch) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1521,9 +1507,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
       embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
 
   // prefetch.html prefetches the signed exchange. And the signed exchange will
-  // be served from HTTPCache (when SignedExchangePrefetchCacheForNavigations is
-  // not enabled), or from PrefetchedSignedExchangeCache (when
-  // SignedExchangePrefetchCacheForNavigations is enabled).
+  // be served from PrefetchedSignedExchangeCache.
   const GURL prefetch_html_url = embedded_test_server()->GetURL(
       std::string("/sxg/prefetch.html#") + sxg_url.spec());
   {
@@ -1553,8 +1537,6 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
       false /* expect_displayed_mixed_content */,
       false /* expect_ran_mixed_content */, false /* expect_cert_error */);
 }
-
-INSTANTIATE_TEST_SUITE_P(, SignedExchangeSecurityStateTest, testing::Bool());
 
 class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
  public:

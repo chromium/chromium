@@ -252,22 +252,10 @@ class SignedExchangeRequestHandlerBrowserTestBase
 };
 
 class SignedExchangeRequestHandlerBrowserTest
-    : public testing::WithParamInterface<
-          std::tuple<bool /* use_prefetch */,
-                     bool /* sxg_subresource_prefetch_enabled */>>,
+    : public testing::WithParamInterface<bool>,
       public SignedExchangeRequestHandlerBrowserTestBase {
  public:
-  SignedExchangeRequestHandlerBrowserTest() {
-    std::tie(use_prefetch_, sxg_subresource_prefetch_enabled_) = GetParam();
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
-    if (sxg_subresource_prefetch_enabled_) {
-      enable_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    } else {
-      disabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
-    }
-    feature_list_.InitWithFeatures(enable_features, disabled_features);
-  }
+  SignedExchangeRequestHandlerBrowserTest() { use_prefetch_ = GetParam(); }
 
   SignedExchangeRequestHandlerBrowserTest(
       const SignedExchangeRequestHandlerBrowserTest&) = delete;
@@ -278,9 +266,6 @@ class SignedExchangeRequestHandlerBrowserTest
 
  protected:
   bool UsePrefetch() const { return use_prefetch_; }
-  bool SXGPrefetchCacheIsEnabled() const {
-    return sxg_subresource_prefetch_enabled_;
-  }
 
   void MaybeTriggerPrefetchSXG(const GURL& url, bool expect_success) {
     if (!UsePrefetch())
@@ -293,7 +278,7 @@ class SignedExchangeRequestHandlerBrowserTest
     EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-    if (SXGPrefetchCacheIsEnabled() && expect_success)
+    if (expect_success)
       WaitUntilSXGIsCached(url);
   }
 
@@ -337,8 +322,6 @@ class SignedExchangeRequestHandlerBrowserTest
   }
 
   bool use_prefetch_ = false;
-  bool sxg_subresource_prefetch_enabled_ = false;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
@@ -395,24 +378,15 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
   // Wait for the previous page's RFH to be deleted (if it changed) so that the
   // histograms will get updated.
   inactive_rfh_deletion_observer_->Wait();
-  histogram_tester_.ExpectUniqueSample(
-      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
-      "SignedExchange.Time.CertificateFetch.Success",
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+      "SignedExchange.Time.CertificateFetch.Success", 1);
   if (UsePrefetch()) {
     histogram_tester_.ExpectUniqueSample(kPrefetchResultHistogram,
                                          SignedExchangeLoadResult::kSuccess, 1);
-    if (SXGPrefetchCacheIsEnabled()) {
-      histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
-                                         1);
-    } else {
-      histogram_tester_.ExpectUniqueSample(
-          "SignedExchange.Prefetch.Recall.30Seconds", true, 1);
-      histogram_tester_.ExpectUniqueSample(
-          "SignedExchange.Prefetch.Precision.30Seconds", true, 1);
-    }
+    histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
+                                       1);
   } else {
     histogram_tester_.ExpectUniqueSample(
         "SignedExchange.Prefetch.Recall.30Seconds", false, 1);
@@ -452,10 +426,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
   // Wait for the previous page's RFH to be deleted (if it changed) so that the
   // histograms will get updated.
   inactive_rfh_deletion_observer_->Wait();
-  histogram_tester_.ExpectUniqueSample(
-      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
-  if ((UsePrefetch() && SXGPrefetchCacheIsEnabled())) {
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
+  if (UsePrefetch()) {
     histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
                                        1);
   }
@@ -720,9 +693,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
              base::StringPrintf("location.href = '%s';", url.spec().c_str())));
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 
-  histogram_tester_.ExpectUniqueSample(
-      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
-      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+  histogram_tester_.ExpectUniqueSample(kLoadResultHistogram,
+                                       SignedExchangeLoadResult::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
@@ -779,8 +751,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeRequestHandlerBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 class SignedExchangeRequestHandlerDownloadBrowserTest
     : public SignedExchangeRequestHandlerBrowserTestBase {
@@ -1686,8 +1657,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeExpectCTReportBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_REPORTING)
 
@@ -1835,8 +1805,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeReportingBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
@@ -1946,9 +1915,6 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePKPBrowserTest, PKPViolation) {
       UsePrefetch() ? 2 : 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SignedExchangePKPBrowserTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SignedExchangePKPBrowserTest, ::testing::Bool());
 
 }  // namespace content

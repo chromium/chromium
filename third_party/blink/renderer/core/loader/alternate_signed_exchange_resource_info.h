@@ -50,9 +50,6 @@ enum class ResourceType : uint8_t;
 // Note: When a valid "allowed-alt-sxg" link header exists in the inner response
 // but there is no matching "alternate" link header in the outer response, this
 // class keep the information with an invalid |alternative_url|.
-//
-// AlternateSignedExchangeResourceInfo is used only when
-// SignedExchangeSubresourcePrefetch is enabled.
 class CORE_EXPORT AlternateSignedExchangeResourceInfo {
  public:
   class CORE_EXPORT Entry {

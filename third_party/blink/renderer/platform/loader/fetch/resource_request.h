@@ -478,13 +478,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     is_from_origin_dirty_style_sheet_ = dirty;
   }
 
-  bool IsSignedExchangePrefetchCacheEnabled() const {
-    return is_signed_exchange_prefetch_cache_enabled_;
-  }
-  void SetSignedExchangePrefetchCacheEnabled(bool enabled) {
-    is_signed_exchange_prefetch_cache_enabled_ = enabled;
-  }
-
   bool IsFetchLikeAPI() const { return is_fetch_like_api_; }
 
   void SetFetchLikeAPI(bool enabled) { is_fetch_like_api_ = enabled; }
@@ -620,8 +613,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   uint64_t inspector_id_ = 0;
 
   bool is_from_origin_dirty_style_sheet_ = false;
-
-  bool is_signed_exchange_prefetch_cache_enabled_ = false;
 
   bool is_fetch_like_api_ = false;
 

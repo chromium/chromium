@@ -275,8 +275,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSharedArrayBufferOnDesktop,
      features::kSharedArrayBufferOnDesktop},
     {wf::EnableSharedAutofill, autofill::features::kAutofillSharedAutofill},
-    {wf::EnableSignedExchangeSubresourcePrefetch,
-     features::kSignedExchangeSubresourcePrefetch},
     {wf::EnableSkipTouchEventFilter, blink::features::kSkipTouchEventFilter},
     {wf::EnableSpeculationRulesPrefetchProxy,
      blink::features::kSpeculationRulesPrefetchProxy, kSetOnlyIfOverridden},

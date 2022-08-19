@@ -244,8 +244,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
              request.custom_proxy_post_cache_headers.ToString() &&
          fetch_window_id == request.fetch_window_id &&
          devtools_request_id == request.devtools_request_id &&
-         is_signed_exchange_prefetch_cache_enabled ==
-             request.is_signed_exchange_prefetch_cache_enabled &&
          is_fetch_like_api == request.is_fetch_like_api &&
          is_favicon == request.is_favicon &&
          recursive_prefetch_token == request.recursive_prefetch_token &&

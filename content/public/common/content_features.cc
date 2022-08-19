@@ -885,11 +885,6 @@ const base::Feature kSharedArrayBufferOnDesktop{
 const base::Feature kSignedExchangeReportingForDistributors{
     "SignedExchangeReportingForDistributors", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Subresource prefetching+loading via Signed HTTP Exchange
-// https://www.chromestatus.com/feature/5126805474246656
-const base::Feature kSignedExchangeSubresourcePrefetch{
-    "SignedExchangeSubresourcePrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Origin-Signed HTTP Exchanges (for WebPackage Loading)
 // https://www.chromestatus.com/feature/5745285984681984
 const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",

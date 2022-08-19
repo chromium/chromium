@@ -515,10 +515,6 @@ bool WebURLRequest::IsFromOriginDirtyStyleSheet() const {
   return resource_request_->IsFromOriginDirtyStyleSheet();
 }
 
-bool WebURLRequest::IsSignedExchangePrefetchCacheEnabled() const {
-  return resource_request_->IsSignedExchangePrefetchCacheEnabled();
-}
-
 absl::optional<base::UnguessableToken> WebURLRequest::RecursivePrefetchToken()
     const {
   return resource_request_->RecursivePrefetchToken();

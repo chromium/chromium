@@ -212,8 +212,6 @@ bool StructTraits<
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();
-  out->is_signed_exchange_prefetch_cache_enabled =
-      data.is_signed_exchange_prefetch_cache_enabled();
   out->is_fetch_like_api = data.is_fetch_like_api();
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();

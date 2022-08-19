@@ -2092,11 +2092,6 @@
       status: "experimental",
     },
     {
-      name: "SignedExchangeSubresourcePrefetch",
-      origin_trial_feature_name: "SignedExchangeSubresourcePrefetch",
-      status: "experimental",
-    },
-    {
       name: "SiteInitiatedMirroring",
       status: "experimental",
     },

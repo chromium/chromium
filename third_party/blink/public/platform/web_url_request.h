@@ -302,8 +302,6 @@ class WebURLRequest {
 
   BLINK_PLATFORM_EXPORT bool IsFromOriginDirtyStyleSheet() const;
 
-  BLINK_PLATFORM_EXPORT bool IsSignedExchangePrefetchCacheEnabled() const;
-
   BLINK_PLATFORM_EXPORT absl::optional<base::UnguessableToken>
   RecursivePrefetchToken() const;
 

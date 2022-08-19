@@ -302,10 +302,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.devtools_stack_id;
   }
-  static bool is_signed_exchange_prefetch_cache_enabled(
-      const network::ResourceRequest& request) {
-    return request.is_signed_exchange_prefetch_cache_enabled;
-  }
   static bool is_fetch_like_api(const network::ResourceRequest& request) {
     return request.is_fetch_like_api;
   }

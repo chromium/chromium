@@ -149,8 +149,8 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
   scoped_refptr<SignedExchangePrefetchMetricRecorder>
       signed_exchange_prefetch_metric_recorder_;
 
-  // Used when SignedExchangeSubresourcePrefetch is enabled to store the
-  // prefetched signed exchanges to a PrefetchedSignedExchangeCache.
+  // Used to store the prefetched signed exchanges to a
+  // PrefetchedSignedExchangeCache.
   std::unique_ptr<PrefetchedSignedExchangeCacheAdapter>
       prefetched_signed_exchange_cache_adapter_;
 

@@ -376,8 +376,7 @@ struct CommitNavigationParams {
   // same-document browser-initiated navigations are properly handled as well.
   mojo_base.mojom.UnguessableToken navigation_token;
 
-  // Prefetched signed exchanges. Used when SignedExchangeSubresourcePrefetch
-  // feature is enabled.
+  // Prefetched signed exchanges.
   array<blink.mojom.PrefetchedSignedExchangeInfo> prefetched_signed_exchanges;
 
   // The real content of the data: URL. Only used in Android WebView for

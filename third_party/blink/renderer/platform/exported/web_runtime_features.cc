@@ -567,10 +567,6 @@ void WebRuntimeFeatures::EnableGetDisplayMedia(bool enable) {
   RuntimeEnabledFeatures::SetGetDisplayMediaEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableSignedExchangeSubresourcePrefetch(bool enable) {
-  RuntimeEnabledFeatures::SetSignedExchangeSubresourcePrefetchEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSubresourceWebBundles(bool enable) {
   RuntimeEnabledFeatures::SetSubresourceWebBundlesEnabled(enable);
 }

@@ -1792,12 +1792,12 @@ class CONTENT_EXPORT NavigationRequest
   // prior (most likely <a download>) download attempt.
   bool from_download_cross_origin_redirect_ = false;
 
-  // Used when SignedExchangeSubresourcePrefetch is enabled to hold the
-  // prefetched signed exchanges. This is shared with the navigation initiator's
-  // RenderFrameHostImpl. This also means that only the navigations that were
-  // directly initiated by the frame that made the prefetches could use the
-  // prefetched resources, which is a different behavior from regular prefetches
-  // (where all prefetched resources are stored and shared in http cache).
+  // Used to hold prefetched signed exchanges. This is shared with the
+  // navigation initiator's RenderFrameHostImpl. This also means that only the
+  // navigations that were directly initiated by the frame that made the
+  // prefetches could use the prefetched resources, which is a different
+  // behavior from regular prefetches (where all prefetched resources are
+  // stored and shared in http cache).
   scoped_refptr<PrefetchedSignedExchangeCache>
       prefetched_signed_exchange_cache_;
 

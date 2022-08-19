@@ -14,7 +14,6 @@ struct SHA256HashValue {
   mojo_base.mojom.ByteString data;
 };
 
-// Used for SignedExchangeSubresourcePrefetch.
 // This struct keeps the information about a prefetched signed exchange. It is
 // used in CommitNavigationParams to be passed from the browser process to the
 // renderer process in CommitNavigation IPC.

@@ -360,12 +360,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->devtools_stack_id = src.GetDevToolsStackId().value().Ascii();
   }
 
-  if (src.IsSignedExchangePrefetchCacheEnabled()) {
-    DCHECK_EQ(src.GetRequestContext(),
-              mojom::blink::RequestContextType::PREFETCH);
-    dest->is_signed_exchange_prefetch_cache_enabled = true;
-  }
-
   dest->is_fetch_like_api = src.IsFetchLikeAPI();
 
   dest->is_favicon = src.IsFavicon();
