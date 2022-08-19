@@ -36,7 +36,7 @@ content::WebUIDataSource* CreateHelpAppUntrustedDataSource(
   source->AddResourcePaths(base::make_span(
       kChromeosHelpAppBundleResources, kChromeosHelpAppBundleResourcesSize));
 
-  MaybeConfigureTestableDataSource(source);
+  MaybeConfigureTestableDataSource(source, "help_app/untrusted");
 
   // Add device and feature flags.
   populate_load_time_data_callback.Run(source);

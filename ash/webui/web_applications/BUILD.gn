@@ -12,6 +12,7 @@ static_library("web_applications") {
     "webui_test_prod_util.h",
   ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//content/public/browser",

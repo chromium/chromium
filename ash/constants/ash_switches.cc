@@ -877,6 +877,15 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 const char kWaitForInitialPolicyFetchForTest[] =
     "wait-for-initial-policy-fetch-for-test";
 
+// If provided, any webui will be loaded from <flag value>/<handler_name>, where
+// handler_name is the name passed to MaybeConfigureTestableDataSource, if the
+// file exists.
+// For example, if the flag is /tmp/resource_overrides, attempting to load
+// js/app_main.js from the data source named "help_app/untrusted" will first
+// attempt to load from /tmp/resource_overrides/help_app/untrusted/js/main.js.
+const char kWebUiDataSourcePathForTesting[] =
+    "web-ui-data-source-path-for-testing";
+
 // Used to determine if and how on-device handwriting recognition is supported
 // (e.g. via rootfs or downloadable content).
 const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";

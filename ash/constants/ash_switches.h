@@ -283,6 +283,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUnfilteredBluetoothDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWaitForInitialPolicyFetchForTest[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOndeviceHandwritingSwitch[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
 
