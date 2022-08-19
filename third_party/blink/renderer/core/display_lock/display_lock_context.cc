@@ -998,6 +998,9 @@ bool DisplayLockContext::ForceUnlockIfNeeded() {
               layout_invalidation_reason::kDisplayLock);
         }
       }
+      // If we forced unlock, then we need to prevent subsequent calls to
+      // Lock() until the next frame.
+      SetRequestedState(EContentVisibility::kVisible);
     }
     return true;
   }
