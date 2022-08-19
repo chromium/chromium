@@ -114,10 +114,10 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
 }
 
 bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
-  auto* blocked_topics =
-      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
+  const auto& blocked_topics =
+      pref_service_->GetValueList(prefs::kPrivacySandboxBlockedTopics);
 
-  for (const auto& item : blocked_topics->GetList()) {
+  for (const auto& item : blocked_topics) {
     auto blocked_topic =
         CanonicalTopic::FromValue(*item.GetDict().Find(kBlockedTopicsTopicKey));
     if (!blocked_topic)
