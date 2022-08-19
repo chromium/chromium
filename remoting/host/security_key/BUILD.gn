@@ -66,6 +66,7 @@ source_set("main") {
     ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
+    "//remoting/base:breakpad",
     "//remoting/host:common",
     "//remoting/host/base",
   ]

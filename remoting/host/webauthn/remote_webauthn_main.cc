@@ -18,11 +18,13 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/webauthn/remote_webauthn_caller_security_utils.h"
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
@@ -40,6 +42,12 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
+
+#if defined(REMOTING_ENABLE_BREAKPAD)
+  if (IsUsageStatsAllowed()) {
+    InitializeCrashReporting();
+  }
+#endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
   if (!IsLaunchedByTrustedProcess()) {
     LOG(ERROR) << "Current process is not launched by a trusted process.";

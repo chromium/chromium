@@ -13,12 +13,14 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "remoting/base/breakpad.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 #include "remoting/host/resources.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
@@ -34,6 +36,12 @@ int RemoteOpenUrlMain(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
+
+#if defined(REMOTING_ENABLE_BREAKPAD)
+  if (IsUsageStatsAllowed()) {
+    InitializeCrashReporting();
+  }
+#endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
   if (!ChromotingHostServicesClient::Initialize()) {
     return kInitializationFailed;

@@ -19,10 +19,12 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
+#include "remoting/host/usage_stats_consent.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
@@ -145,6 +147,12 @@ int StartHostMain(int argc, char** argv) {
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
+
+#if defined(REMOTING_ENABLE_BREAKPAD)
+  if (IsUsageStatsAllowed()) {
+    InitializeCrashReporting();
+  }
+#endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "RemotingHostSetup");

@@ -101,6 +101,7 @@ source_set("common_headers") {
     "input_injector.h",
     "input_injector_metadata.h",
     "sas_injector.h",
+    "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
   ]
   if (!is_chromeos_ash) {
@@ -368,7 +369,6 @@ static_library("common") {
     "token_validator_base.h",
     "token_validator_factory_impl.cc",
     "token_validator_factory_impl.h",
-    "usage_stats_consent.h",
     "xmpp_register_support_host_request.cc",
     "xmpp_register_support_host_request.h",
     "xsession_chooser_ui.inc",

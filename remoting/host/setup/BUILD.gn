@@ -103,6 +103,7 @@ source_set("start_host_main") {
     "//mojo/core/embedder",
     "//net",
     "//remoting/base:base",
+    "//remoting/base:breakpad",
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
