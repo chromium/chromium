@@ -95,6 +95,9 @@ bool TabGroup::IsCustomized() const {
 }
 
 bool TabGroup::IsSaved() const {
+  // TODO(dljames): Retrieving the service factory each time we want to check
+  // the saved status of a tab group is expensive computationally. Find a way to
+  // simplify this.
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
   return backend && backend->model() && backend->model()->Contains(id());
