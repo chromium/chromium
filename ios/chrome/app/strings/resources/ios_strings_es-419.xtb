@@ -449,7 +449,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4805759445554688327">El número de la tarjeta no es válido</translation>
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4818522717893377262">Agregar idioma…</translation>
-<translation id="481968316161811770">Cookies, datos del sitio</translation>
+<translation id="481968316161811770">Cookies, datos de sitios</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
 <translation id="4826218269716039351">Bloquear cookies de terceros</translation>
 <translation id="4826726074642088322">Compartir texto destacado</translation>

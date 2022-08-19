@@ -1495,7 +1495,7 @@
 <translation id="237828693408258535">Осы бетті аудару керек пе?</translation>
 <translation id="2378982052244864789">Кеңейтім каталогін таңдаңыз.</translation>
 <translation id="2379281330731083556">Жүйелік диалогтік терезені пайдаланып басып шығару… <ph name="SHORTCUT_KEY" /></translation>
-<translation id="2381499968174336913">Бөліскен қойындыны алдын ала қарау</translation>
+<translation id="2381499968174336913">Бөліскен қойындыны алдын ала көру</translation>
 <translation id="2381756643783702095">Жіберуден бұрын сұрау (ұсынылған)</translation>
 <translation id="2386202302581016807">Құрылғыда қолжетімді жад реттеуді аяқтау үшін тым аз</translation>
 <translation id="2387052489799050037">Негізгі экранға өту</translation>
@@ -2430,7 +2430,7 @@
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> жеңілдік</translation>
 <translation id="3305389145870741612">Пішімдеу процесі бір-екі секундты алуы мүмкін. Күтіңіз.</translation>
-<translation id="3305661444342691068">PDF файлын алдын ала қарау қолданбасында ашу</translation>
+<translation id="3305661444342691068">PDF файлын алдын ала көру қолданбасында ашу</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> жеңілдігін алу</translation>
 <translation id="3308116878371095290">Бұл бетке cookie файлдарын орнатуға тыйым салынды.</translation>
 <translation id="3308134619352333507">Түймені жасыру</translation>
@@ -2725,7 +2725,7 @@
 <translation id="3599221874935822507">Көтеріңкі</translation>
 <translation id="3600051066689725006">Веб-сұрау туралы ақпарат</translation>
 <translation id="360180734785106144">Жаңа функцияларды бірден ұсыну</translation>
-<translation id="3602290021589620013">Алдын ала қарау</translation>
+<translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3602870520245633055">Басып шығару және сканерлеу</translation>
 <translation id="3603622770190368340">Желі сертификатын алу</translation>
 <translation id="3604713164406837697">Тұсқағазды өзгерту</translation>
@@ -6026,7 +6026,7 @@
 <translation id="688312408602122936">Steam арқылы орнатылған барлық ойын мен қолданба да осы құрылғыдан өшіріледі.</translation>
 <translation id="6883319974225028188">Қап! Жүйе құрылғы конфигурациясын сақтай алмады.</translation>
 <translation id="6884474387073389421">Таңдалған кіру деректерін шынымен жойғыңыз келе ме?</translation>
-<translation id="6885771755599377173">Жүйе ақпаратын алдын ала қарау</translation>
+<translation id="6885771755599377173">Жүйе ақпаратын алдын ала көру</translation>
 <translation id="6886380424988777998">Linux жүйесін жаңарту мүмкін емес</translation>
 <translation id="6886871292305414135">Сілтемені жаңа &amp;қойындыда ашу</translation>
 <translation id="6889957081990109136">Ауыстырғыш әлі тағайындалған жоқ.</translation>
@@ -6191,7 +6191,7 @@
 <translation id="7033616203784997570">62 таңбадан аспауы керек.</translation>
 <translation id="7034692021407794547">Төлемдерді басқару құқығы бар әкімші, алдымен Әкімші консолінің "Google Meet жабдығы" бөлімінде Google Meet жабдығының Қызмет көрсету шарттарын қабылдауы керек.</translation>
 <translation id="7036706669646341689">Linux үшін <ph name="DISK_SIZE" /> орын қажет. Орын босату үшін құрылғыдан файлдарды жойыңыз.</translation>
-<translation id="7037509989619051237">Мәтінді алдын ала қарау</translation>
+<translation id="7037509989619051237">Мәтінді алдын ала көру</translation>
 <translation id="7038632520572155338">Switch Access</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> үшін басқа Google аккаунтын қосу</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> жеткізушісінің USB құрылғыларына кіру</translation>

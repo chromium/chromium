@@ -106,14 +106,14 @@
 <translation id="1768959921651994223">အထောက်အထားစိစစ်မှု အမျိုးအစား</translation>
 <translation id="1782199038061388045">ဘာသာပြန်ခြင်း</translation>
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
-<translation id="1801418420130173017">မှောင်သည့် အပြင်အဆင် ပိတ်ရန်</translation>
+<translation id="1801418420130173017">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
 <translation id="1840835860961531162">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်ခြင်း</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
-<translation id="1871569928317311284">မှောင်သည့် အပြင်အဆင် ပိတ်ရန်</translation>
+<translation id="1871569928317311284">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
@@ -474,7 +474,7 @@
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
-<translation id="5227902338748591677">မှောင်သည့် အပြင်အဆင် အချိန်ဇယား</translation>
+<translation id="5227902338748591677">အမှောင်နောက်ခံ အချိန်ဇယား</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5252456968953390977">ရွမ်မင်း</translation>
 <translation id="5257811368506016604">အလင်းမုဒ် ဖွင့်ရန်</translation>
@@ -595,13 +595,13 @@
 <translation id="6275224645089671689">ညာညွှန်မြား</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
-<translation id="6284632978374966585">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
+<translation id="6284632978374966585">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="6295178529664209245">ပြင်၍မရဘူးလား။</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="6321407676395378991">ဖန်သားပြင်နားချိန် ဖွင့်ရန်</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
-<translation id="6331191339300272798">အလိုအလျောက် မှောင်သည့် အပြင်အဆင်</translation>
+<translation id="6331191339300272798">အလိုအလျောက် အမှောင်နောက်ခံ</translation>
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="6348738456043757611">အသုံးပြုသူအမည်နှင့် စကားဝှက်</translation>
 <translation id="6359706544163531585">လင်းသည့် အပြင်အဆင် ပိတ်ရန်</translation>
@@ -860,7 +860,7 @@
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
 <translation id="8855781559874488009">HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="885701979325669005">သိုလှောင်ခန်း</translation>
-<translation id="8863170912498892583">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
+<translation id="8863170912498892583">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="8863888432376731307">“<ph name="QUERY" />” စသည်တို့အတွက် <ph name="INTENT" /> ရယူပါ</translation>
 <translation id="8864415976656252616">အကြံပြုထားသောအကြောင်းအရာ မရှိပါ။ ထိပ်တန်းအကူအညီ အကြောင်းအရာကို ကြည့်ပါ။</translation>
 <translation id="8868741746785112895">GUID</translation>
