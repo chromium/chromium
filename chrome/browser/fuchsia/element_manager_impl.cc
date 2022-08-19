@@ -11,11 +11,21 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
+
 bool HaveBrowser() {
   return !BrowserList::GetInstance()->empty();
 }
+
+bool IsChromeBrowserUrl(const GURL& url) {
+  return url.SchemeIs("fuchsia-pkg") &&
+         base::EndsWith(url.path_piece(), "/chrome") &&
+         url.ref_piece() == "meta/chrome.cm";
+}
+
 }  // namespace
 
 bool ElementManagerImpl::AnnotationKeyCompare::operator()(
@@ -28,8 +38,9 @@ bool ElementManagerImpl::AnnotationKeyCompare::operator()(
 ElementManagerImpl::ElementManagerImpl(
     sys::OutgoingDirectory* outgoing_directory,
     NewProposalCallback callback)
-    : binding_(outgoing_directory, this), callback_(std::move(callback)) {
-  DCHECK(callback_);
+    : binding_(outgoing_directory, this),
+      new_proposal_callback_(std::move(callback)) {
+  DCHECK(new_proposal_callback_);
   BrowserList::AddObserver(this);
 }
 
@@ -49,15 +60,41 @@ void ElementManagerImpl::ProposeElement(
     fuchsia::element::Spec spec,
     fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
     ProposeElementCallback callback) {
-  if (!spec.has_component_url() ||
-      !base::EndsWith(spec.component_url(), "/chrome#meta/chrome.cm")) {
+  if (!spec.has_component_url()) {
     callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
         fuchsia::element::ProposeElementError::INVALID_ARGS));
     return;
   }
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  if (!callback_.Run(command_line)) {
+
+  // component_url must either specify a web resource to open in a new tab,
+  // or refer to Chrome's own component manifest.
+  GURL url(spec.component_url());
+  if (!url.is_valid()) {
+    callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
+        fuchsia::element::ProposeElementError::INVALID_ARGS));
+    return;
+  }
+
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    command_line.AppendArg(spec.component_url());
+  } else if (!IsChromeBrowserUrl(url)) {
+    callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
+        fuchsia::element::ProposeElementError::INVALID_ARGS));
+    return;
+  }
+
+  // Store the annotations to be used for all subsequent window-creation
+  // actions.
+  annotations_.clear();
+  for (auto& annotation : *spec.mutable_annotations()) {
+    auto key = fidl::Clone(annotation.key);
+    annotations_.insert_or_assign(std::move(key), std::move(annotation));
+  }
+
+  // Request that the caller act on the request, e.g. by opening a new tab.
+  if (!new_proposal_callback_.Run(command_line)) {
     callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
         fuchsia::element::ProposeElementError::INVALID_ARGS));
   }
@@ -65,11 +102,7 @@ void ElementManagerImpl::ProposeElement(
   if (element_controller) {
     controller_bindings_.AddBinding(this, std::move(element_controller));
   }
-  annotations_.clear();
-  for (auto& annotation : *spec.mutable_annotations()) {
-    auto key = fidl::Clone(annotation.key);
-    annotations_.insert_or_assign(std::move(key), std::move(annotation));
-  }
+
   callback(fuchsia::element::Manager_ProposeElement_Result::WithResponse({}));
 }
 

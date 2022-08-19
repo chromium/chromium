@@ -96,12 +96,14 @@ class TestElementManagerImpl : public testing::Test {
   int browser_count_ = 0;
 };
 
-TEST_F(TestElementManagerImpl, TestCorrectSpec) {
+TEST_F(TestElementManagerImpl, CorrectSpec) {
   auto element_manager = GetElementManagerPtr();
   for (const char* url : {
            "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm",
            "fuchsia-pkg://chromium.org/chrome#meta/chrome.cm",
            "fuchsia-pkg://chrome.com/chrome#meta/chrome.cm",
+           "http://www.example.com",
+           "https://www.example.com",
        }) {
     fuchsia::element::Spec spec;
     spec.set_component_url(url);
@@ -122,7 +124,7 @@ TEST_F(TestElementManagerImpl, TestCorrectSpec) {
   }
 }
 
-TEST_F(TestElementManagerImpl, TestIncorrectSpec) {
+TEST_F(TestElementManagerImpl, IncorrectSpec) {
   auto element_manager = GetElementManagerPtr();
   for (const char* url : {
            "foobar",
@@ -152,7 +154,7 @@ TEST_F(TestElementManagerImpl, TestIncorrectSpec) {
   }
 }
 
-TEST_F(TestElementManagerImpl, TestController) {
+TEST_F(TestElementManagerImpl, ElementControllerClosedOnInvalidSpec) {
   auto element_manager = GetElementManagerPtr();
 
   fuchsia::element::ControllerPtr controller;
@@ -246,7 +248,7 @@ TEST_F(TestElementManagerImpl, Annotations) {
   }
 }
 
-TEST_F(TestElementManagerImpl, ControllerLifeCycle) {
+TEST_F(TestElementManagerImpl, ElementControllerAndBrowserLifeCycle) {
   auto element_manager = GetElementManagerPtr();
 
   fuchsia::element::ControllerPtr controller;
