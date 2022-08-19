@@ -23,6 +23,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
@@ -319,6 +320,8 @@ public class TranslateCompactInfoBar
     // is set to allow the app to be drawn outside the screen. Returns {@code null} if not
     // necessary.
     private Rect getAppRectInWindow() {
+        if (ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) return null;
+
         View view = getView().getRootView().findViewById(R.id.coordinator);
         if (!view.isAttachedToWindow()) return null;
         WindowManager.LayoutParams attrs = ((Activity) getContext()).getWindow().getAttributes();

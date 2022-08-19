@@ -285,6 +285,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected Supplier<Integer> getBaseHeightProvider() {
+        if (mIntentDataProvider.get().isPartialHeightCustomTab()
+                && !ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) {
+            return () -> mActivity.findViewById(R.id.coordinator).getHeight();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     protected boolean canDrawOutsideScreen() {
         return mCustomTabHeightStrategy.canDrawOutsideScreen();
     }

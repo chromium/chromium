@@ -52,6 +52,7 @@ extern const base::Feature kCCTResizable90MaximumHeight;
 extern const base::Feature kCCTResizableAllowResizeByUserGesture;
 extern const base::Feature kCCTResizableForFirstParties;
 extern const base::Feature kCCTResizableForThirdParties;
+extern const base::Feature kCCTResizableWindowAboveNavbar;
 extern const base::Feature kCCTResourcePrefetch;
 extern const base::Feature kCCTRetainingState;
 extern const base::Feature kCCTToolbarCustomizations;

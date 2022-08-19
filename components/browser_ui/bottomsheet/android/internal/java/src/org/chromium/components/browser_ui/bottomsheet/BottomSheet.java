@@ -1097,7 +1097,7 @@ class BottomSheet extends FrameLayout
 
         // Resizing is necessary if we have non-zero translation on Window Y, which can change
         // throughout the lifecycle. Ensure sheet content's bottom is aligned with the base layout.
-        if (mWindow.getAttributes().y != 0
+        if (mBaseHeightProvider != null && mWindow.getAttributes().y != 0
                 && (mCurrentState == SheetState.PEEK || mCurrentState == SheetState.HALF
                         || mCurrentState == SheetState.FULL)) {
             BottomSheetContent content = mSheetContent;

@@ -201,6 +201,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableAllowResizeByUserGesture,
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
+    &kCCTResizableWindowAboveNavbar,
     &kCCTRetainingState,
     &kCCTResourcePrefetch,
     &kCCTToolbarCustomizations,
@@ -562,6 +563,9 @@ const base::Feature kCCTResizableForFirstParties{
 
 const base::Feature kCCTResizableForThirdParties{
     "CCTResizableForThirdParties", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCCTResizableWindowAboveNavbar{
+    "CCTResizableWindowAboveNavbar", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

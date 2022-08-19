@@ -61,6 +61,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.COMMERCE_COUPONS, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
                     .put(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS, true)
+                    .put(ChromeFeatureList.CCT_RESIZABLE_WINDOW_ABOVE_NAVBAR, true)
                     .put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false)
                     .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false)
                     .put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false)

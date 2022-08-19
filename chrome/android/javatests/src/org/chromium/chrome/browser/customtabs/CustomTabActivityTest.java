@@ -1792,7 +1792,19 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    public void testLaunchPartialCustomTabActivity() throws Exception {
+    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_WINDOW_ABOVE_NAVBAR})
+    public void testLaunchPartialCustomTabActivity_fixedWindow() throws Exception {
+        testLaunchPartialCustomTabActivity();
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    public void testLaunchPartialCustomTabActivity_dynamicWindow() throws Exception {
+        testLaunchPartialCustomTabActivity();
+    }
+
+    private void testLaunchPartialCustomTabActivity() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1801,8 +1813,13 @@ public class CustomTabActivityTest {
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
-        assertNotEquals("The window should have non-zero y offset", 0, attributes.y);
+        if (ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) {
+            // A Normal CCT height is set to MATCH_PARENT while Partial CCT has non-zero value.
+            int fullHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+            WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+            assertNotEquals("The window should have non-full height", fullHeight, attrs.height);
+            return;
+        }
 
         // Verify the hierarchy of the enclosing layouts that PCCT relies on for its operation.
         CallbackHelper eventHelper = new CallbackHelper();
@@ -1814,6 +1831,8 @@ public class CustomTabActivityTest {
                         cvh.getParent() instanceof CoordinatorLayoutForPointer);
                 assertTrue("ContentFrameLayout should be the parent of CoodinatorLayoutForPointer",
                         cvh.getParent().getParent() instanceof ContentFrameLayout);
+                WindowManager.LayoutParams attrs = getActivity().getWindow().getAttributes();
+                assertNotEquals("The window should have non-zero y", 0, attrs.y);
                 eventHelper.notifyCalled();
             });
         });

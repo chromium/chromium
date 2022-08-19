@@ -21,6 +21,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Looper;
@@ -39,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,13 +50,17 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,10 +69,12 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /** Tests for {@link PartialCustomTabHandleStrategy}. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
         ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE})
@@ -81,6 +89,18 @@ public class PartialCustomTabHeightStrategyTest {
 
     private static final int NAVBAR_HEIGHT = 160;
     private static final int MAX_INIT_POS = DEVICE_HEIGHT / 2;
+    private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
+    private static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {{true}, {false}});
+    }
+
+    // Parameterize the internal implementation. 'Fixed window' type does not resize the Window
+    // but the WebContents, while 'Window above navbar' type dynamically resizes the Window.
+    @Parameter(0)
+    public boolean mWindowAboveNavbar;
 
     @Mock
     private Activity mActivity;
@@ -125,7 +145,10 @@ public class PartialCustomTabHeightStrategyTest {
     private ViewGroup mCoordinatorLayout;
     @Mock
     private View mDragBar;
+    @Mock
+    private CommandLine mCommandLine;
 
+    private Context mContext;
     private List<WindowManager.LayoutParams> mAttributeResults;
     private DisplayMetrics mRealMetrics;
     private Callback<Integer> mBottomInsetCallback = inset -> {};
@@ -187,6 +210,9 @@ public class PartialCustomTabHeightStrategyTest {
         })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
+        mContext = ApplicationProvider.getApplicationContext();
+        ContextUtils.initApplicationContextForTests(mContext);
+        CommandLine.setInstanceForTesting(mCommandLine);
     }
 
     @After
@@ -198,6 +224,7 @@ public class PartialCustomTabHeightStrategyTest {
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx) {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mActivity, heightPx, null, null, mOnResizedCallback, mActivityLifecycleDispatcher);
+        pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
         return pcct;
@@ -209,7 +236,7 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
     }
 
     @Test
@@ -218,7 +245,7 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(0, mAttributeResults.get(0).y);
+        assertTabIsFullHeight(mAttributeResults.get(0));
     }
 
     @Test
@@ -227,7 +254,7 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(0, mAttributeResults.get(0).y);
+        assertTabIsFullHeight(mAttributeResults.get(0));
     }
 
     @Test
@@ -264,9 +291,10 @@ public class PartialCustomTabHeightStrategyTest {
      * Simulate dragging the tab and lifting the finger at the end.
      * @param handleStrategy {@link PartialCustomTabHandleStrategy} object.
      * @param ypos Series of y positions simulating the events.
-     * @return Y position of the tab after the dragging finishes.
+     * @return Window attributes after the dragging finishes.
      */
-    private int dragTab(PartialCustomTabHandleStrategy handleStrategy, int... ypos) {
+    private WindowManager.LayoutParams dragTab(
+            PartialCustomTabHandleStrategy handleStrategy, int... ypos) {
         int npos = ypos.length;
         assert npos >= 2;
         long timestamp = SystemClock.uptimeMillis();
@@ -281,12 +309,28 @@ public class PartialCustomTabHeightStrategyTest {
 
         int length = mAttributeResults.size();
         assertTrue(length > 1);
-        return mAttributeResults.get(length - 1).y;
+        return mAttributeResults.get(length - 1);
     }
 
     private void assertMotionEventIgnored(PartialCustomTabHandleStrategy handleStrategy) {
         assertFalse(handleStrategy.onInterceptTouchEvent(
                 event(SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 1500)));
+    }
+
+    private void assertTabIsAtInitialPos(WindowManager.LayoutParams attrs) {
+        if (mWindowAboveNavbar) {
+            assertEquals(INITIAL_HEIGHT, attrs.height);
+        } else {
+            assertEquals(MAX_INIT_POS, attrs.y);
+        }
+    }
+
+    private void assertTabIsFullHeight(WindowManager.LayoutParams attrs) {
+        if (mWindowAboveNavbar) {
+            assertEquals(FULL_HEIGHT, attrs.height);
+        } else {
+            assertEquals(0, attrs.y);
+        }
     }
 
     private void disableSpinnerAnimation() {
@@ -307,7 +351,7 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         // Pass null because we have a mock Activity and we don't depend on the GestureDetector
         // inside as we test MotionEvents directly.
@@ -315,13 +359,13 @@ public class PartialCustomTabHeightStrategyTest {
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         // Drag to the top.
-        assertEquals(0, dragTab(handleStrategy, 1500, 1000, 500));
+        assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 500));
 
         // Drag down a little -> slide back to the top.
-        assertEquals(0, dragTab(handleStrategy, 50, 100, 150));
+        assertTabIsFullHeight(dragTab(handleStrategy, 50, 100, 150));
 
         // Drag down enough -> slide to the initial position.
-        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 50, 650, 1300));
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 50, 650, 1300));
     }
 
     @Test
@@ -330,16 +374,17 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         // Drag up slightly -> slide back to the initial height.
-        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1450, 1400));
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1400));
 
         // Drag down slightly -> slide back to the initial height.
-        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1550, 1600));
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1550, 1600));
     }
 
     @Test
@@ -350,13 +395,13 @@ public class PartialCustomTabHeightStrategyTest {
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         // Shake the tab from the initial position slightly -> back to the initial height.
-        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1450, 1600));
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1600));
     }
 
     @Test
@@ -395,6 +440,9 @@ public class PartialCustomTabHeightStrategyTest {
 
     @Test
     public void rotateToLandescapeHideCustomNavbar() {
+        // Custom navigation bar is drawn only on 'Fixed Window'-type implementation.
+        if (mWindowAboveNavbar) return;
+
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
@@ -447,14 +495,14 @@ public class PartialCustomTabHeightStrategyTest {
         verifyWindowFlagsSet();
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
         final boolean[] closed = {false};
         handleStrategy.setCloseClickHandler(() -> closed[0] = true);
 
-        dragTab(handleStrategy, MAX_INIT_POS, DEVICE_HEIGHT - 400);
+        dragTab(handleStrategy, INITIAL_HEIGHT, DEVICE_HEIGHT - 400);
         assertTrue("Close click handler should be called.", closed[0]);
     }
 
@@ -466,7 +514,7 @@ public class PartialCustomTabHeightStrategyTest {
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
@@ -505,7 +553,7 @@ public class PartialCustomTabHeightStrategyTest {
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
@@ -540,7 +588,7 @@ public class PartialCustomTabHeightStrategyTest {
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
@@ -548,8 +596,8 @@ public class PartialCustomTabHeightStrategyTest {
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         long timestamp = SystemClock.uptimeMillis();
-        actionDown(handleStrategy, timestamp, 1500);
-        actionMove(handleStrategy, timestamp, 1450);
+        actionDown(handleStrategy, timestamp, INITIAL_HEIGHT - 100);
+        actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 150);
 
         // Verify the spinner is visible.
         verify(mSpinnerView).setVisibility(View.VISIBLE);
@@ -557,7 +605,7 @@ public class PartialCustomTabHeightStrategyTest {
         clearInvocations(mSpinnerView);
 
         // Drag below the initial height.
-        actionMove(handleStrategy, timestamp, MAX_INIT_POS + 100);
+        actionMove(handleStrategy, timestamp, INITIAL_HEIGHT + 100);
 
         // Verify the spinner goes invisible.
         verify(mSpinnerView).setVisibility(View.GONE);
@@ -567,7 +615,7 @@ public class PartialCustomTabHeightStrategyTest {
     public void expandToFullHeightOnShowingKeyboard() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
         assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
 
         strategy.onShowSoftInput();
         shadowOf(Looper.getMainLooper()).idle();
@@ -576,7 +624,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTrue(length > 1);
 
         // Verify that the tab expands to full height.
-        assertEquals(0, mAttributeResults.get(length - 1).y);
+        assertTabIsFullHeight(mAttributeResults.get(length - 1));
     }
 
     private void verifyWindowFlagsSet() {
