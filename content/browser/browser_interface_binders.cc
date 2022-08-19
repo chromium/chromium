@@ -13,6 +13,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
+#include "content/browser/aggregation_service/aggregation_service_internals_ui.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
@@ -1044,6 +1046,9 @@ void PopulateBinderMapWithContext(
   map->Add<device::mojom::VRService>(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
+  RegisterWebUIControllerInterfaceBinder<
+      aggregation_service_internals::mojom::Handler,
+      AggregationServiceInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Handler,
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<mojom::PrerenderInternalsHandler,

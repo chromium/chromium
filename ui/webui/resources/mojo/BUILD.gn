@@ -16,6 +16,7 @@ ts_library("library") {
   in_files = [
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",
     "mojo/public/mojom/base/file_path.mojom-webui.js",
+    "mojo/public/mojom/base/int128.mojom-webui.js",
     "mojo/public/mojom/base/process_id.mojom-webui.js",
     "mojo/public/mojom/base/safe_base_name.mojom-webui.js",
     "mojo/public/mojom/base/string16.mojom-webui.js",

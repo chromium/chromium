@@ -15,6 +15,13 @@ files that belong there instead.
   <translations />
   <release seq="1">
     <includes>
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_HTML" file="browser/resources/aggregation_service/aggregation_service_internals.html" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/aggregation_service/tsc/aggregation_service_internals.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_TABLE_MODEL_JS" file="${root_gen_dir}/content/browser/resources/aggregation_service/tsc/table_model.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_TABLE_JS" file="${root_gen_dir}/content/browser/resources/aggregation_service/tsc/aggregation_service_internals_table.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_TABLE_HTML_JS" file="${root_gen_dir}/content/browser/resources/aggregation_service/tsc/aggregation_service_internals_table.html.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_CSS" file="browser/resources/aggregation_service/aggregation_service_internals.css" type="BINDATA" />
+      <include name="IDR_AGGREGATION_SERVICE_INTERNALS_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/browser/aggregation_service/aggregation_service_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_HTML" file="browser/resources/attribution_reporting/attribution_internals.html" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/attribution_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_TABLE_MODEL_JS" file="${root_gen_dir}/content/browser/resources/attribution_reporting/tsc/table_model.js" use_base_dir="false" type="BINDATA" />
