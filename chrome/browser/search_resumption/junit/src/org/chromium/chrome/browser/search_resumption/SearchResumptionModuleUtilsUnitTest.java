@@ -168,8 +168,7 @@ public class SearchResumptionModuleUtilsUnitTest {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID));
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        Assert.assertFalse(
-                SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
+        Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
@@ -178,8 +177,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(false);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
-        Assert.assertFalse(
-                SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
+        Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
@@ -188,8 +186,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
-        Assert.assertFalse(
-                SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
+        Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,

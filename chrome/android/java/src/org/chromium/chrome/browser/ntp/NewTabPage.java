@@ -1018,6 +1018,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     private void mayCreateSearchResumptionModule(Profile profile) {
+        // The module is disabled on tablets.
+        if (mIsTablet) return;
+
         mSearchResumptionModuleCoordinator =
                 SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
                         mTabModelSelector.getCurrentModel(), mTab, profile,

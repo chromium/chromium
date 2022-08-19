@@ -97,7 +97,7 @@ public class SearchResumptionModuleUtils {
     public static SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
             ViewGroup parent, TabModel tabModel, Tab currentTab, Profile profile,
             int moduleContainerStubId) {
-        if (!shouldShowSearchResumptionModule(profile, currentTab)) return null;
+        if (!shouldShowSearchResumptionModule(profile)) return null;
 
         Tab tabToTrack = TabModelUtils.getMostRecentTab(tabModel, currentTab.getId());
         if (tabToTrack == null) {
@@ -118,10 +118,10 @@ public class SearchResumptionModuleUtils {
      *    both enabled;
      * 2) The default search engine is Google;
      * 3) The user has signed in;
-     * 4) The current Tab isn't shown due to such as tapping the back button.
+     * 4) The user has turned on sync.
      */
     @VisibleForTesting
-    static boolean shouldShowSearchResumptionModule(Profile profile, Tab currentTab) {
+    static boolean shouldShowSearchResumptionModule(Profile profile) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)) {
             recordModuleNotShownReason(ModuleNotShownReason.FEATURE_DISABLED);
             return false;
