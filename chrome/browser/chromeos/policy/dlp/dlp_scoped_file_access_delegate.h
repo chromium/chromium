@@ -38,6 +38,9 @@ class DlpScopedFileAccessDelegate {
   // Deletes the singleton instance.
   static void DeleteInstance();
 
+  // Checks if the singleton is initialized
+  static bool HasInstance();
+
   // Requests access to |files| in order to be sent to |destination_url|.
   // |continuation_callback| is called with a token that should be hold until
   // `open()` operation on the files finished.

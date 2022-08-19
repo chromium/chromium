@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
 #include <sys/stat.h>
+#include <cstddef>
 
 #include "base/process/process_handle.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -26,6 +27,11 @@ ino_t GetInodeValue(const base::FilePath& path) {
 
 // static
 DlpScopedFileAccessDelegate* DlpScopedFileAccessDelegate::Get() {
+  return g_delegate;
+}
+
+// static
+bool DlpScopedFileAccessDelegate::HasInstance() {
   return g_delegate;
 }
 
