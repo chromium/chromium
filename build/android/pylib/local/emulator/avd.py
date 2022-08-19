@@ -16,6 +16,7 @@ import threading
 
 from google.protobuf import text_format  # pylint: disable=import-error
 
+from devil.android import apk_helper
 from devil.android import device_utils
 from devil.android import settings
 from devil.android.sdk import adb_wrapper
@@ -120,9 +121,13 @@ def _FindMinSdkFile(apk_dir, min_sdk):
         curr_min_sdk_version = entry['min_sdk']
 
     if not min_sdk_found:
-      logging.error('No suitable apk file found that suits the minimum sdk.')
+      logging.error('No suitable apk file found that suits the minimum sdk %d.',
+                    min_sdk)
       return None
 
+    logging.info('Found apk file for mininum sdk %d: %r with version %r',
+                 min_sdk, min_sdk_found['file_name'],
+                 min_sdk_found['version_name'])
     return os.path.join(apk_dir, min_sdk_found['file_name'])
 
 
@@ -378,11 +383,14 @@ class AvdConfig:
 
       if not additional_apks:
         additional_apks = []
-      for apk_package in self._config.additional_apk:
-        apk_dir = os.path.join(COMMON_CIPD_ROOT, apk_package.dest_path)
-        for f in os.listdir(apk_dir):
-          if os.path.isfile(f) and f.endswith('.apk'):
-            additional_apks.append(os.path.join(apk_dir, f))
+      for pkg in self._config.additional_apk:
+        apk_dir = os.path.join(COMMON_CIPD_ROOT, pkg.dest_path)
+        apk_file = _FindMinSdkFile(apk_dir, self._config.min_sdk)
+        # Some of these files come from chrome internal, so may not be
+        # available to non-internal permissioned users.
+        if os.path.exists(apk_file):
+          logging.info('Adding additional apk for install: %s', apk_file)
+          additional_apks.append(apk_file)
 
       if not privileged_apk_tuples:
         privileged_apk_tuples = []
@@ -422,9 +430,18 @@ class AvdConfig:
       if additional_apks:
         for apk in additional_apks:
           instance.device.Install(apk, allow_downgrade=True, reinstall=True)
+          package_name = apk_helper.GetPackageName(apk)
+          package_version = instance.device.GetApplicationVersion(package_name)
+          logging.info('The version for package %r on the device is %r',
+                       package_name, package_version)
 
       if privileged_apk_tuples:
         system_app.InstallPrivilegedApps(instance.device, privileged_apk_tuples)
+        for apk, _ in privileged_apk_tuples:
+          package_name = apk_helper.GetPackageName(apk)
+          package_version = instance.device.GetApplicationVersion(package_name)
+          logging.info('The version for package %r on the device is %r',
+                       package_name, package_version)
 
       # Always disable the network to prevent built-in system apps from
       # updating themselves, which could take over package manager and
