@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -179,6 +180,7 @@ AutoEnrollmentController::AutoEnrollmentController() {
   // Create the PSM (private set membership) RLWE client factory depending on
   // whether switches::kEnterpriseUseFakePsmRlweClient is set.
   if (ShouldUseFakePsmRlweClient()) {
+    CHECK_IS_TEST();
     psm_rlwe_client_factory_ = std::make_unique<
         policy::FakePrivateMembershipRlweClient::FactoryImpl>();
   } else {
@@ -285,6 +287,7 @@ AutoEnrollmentController::RegisterProgressCallback(
 
 void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
     policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory) {
+  CHECK_IS_TEST();
   testing_auto_enrollment_client_factory_ = auto_enrollment_client_factory;
 }
 
