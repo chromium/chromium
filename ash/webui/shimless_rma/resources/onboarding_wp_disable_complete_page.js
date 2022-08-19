@@ -93,6 +93,17 @@ export class OnboardingWpDisableCompletePage extends
   onNextButtonClick() {
     return this.shimlessRmaService_.confirmManualWpDisableComplete();
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getVerificationIcon_() {
+    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
+        '' :
+        'shimless-icon:check';
+  }
 }
 
 customElements.define(

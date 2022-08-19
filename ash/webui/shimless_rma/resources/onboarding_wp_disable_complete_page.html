@@ -5,7 +5,7 @@
   <div slot="left-pane">
     <h1>[[i18n('wpDisableCompletePageTitleText')]]</h1>
     <div id="writeProtectAction" class="icon-message">
-      <iron-icon id="verificationIcon" icon="shimless-icon:check"
+      <iron-icon id="verificationIcon" icon="[[getVerificationIcon_(action_)]]"
           class="small-icon">
       </iron-icon>
       <span id="writeProtectAction" class="instructions">
@@ -14,8 +14,9 @@
     </div>
   </div>
   <div slot="right-pane">
-    <!-- TODO(gavindodd): Replace with correct graphic -->
-    <iron-icon icon="shimless:shimless-placeholder"
-        class="large-icon"></iron-icon>
+    <div class="illustration-wrapper">
+      <img class="illustration" src="illustrations/success.svg"
+          alt="[[i18n('successAltText')]]">
+    </div>
   </div>
 </base-page>
