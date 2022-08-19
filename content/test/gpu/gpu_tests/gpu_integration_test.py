@@ -850,6 +850,8 @@ class GpuIntegrationTest(
          'llvm-10.0.0)-(0x0000c0de)))'),
         ('google-vulkan-1.1.0-(swiftshader-device-('
          'llvm-10.0.0)-(0x0000c0de))'),
+        'google-0xc0de',
+        'chromium-os',  # ChromeOS
         'cros-chrome',  # ChromeOS
         'web-engine-shell',  # Fuchsia
         'cast-streaming-shell',  # Syonymous with cast_streaming suite

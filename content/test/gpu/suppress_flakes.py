@@ -26,9 +26,6 @@ from flake_suppressor import results as results_module
 
 
 def ParseArgs():
-  # TODO(crbug.com/1192733): Add flaky and failure thresholds, likely in the
-  # form of % of failures out of the total runs for a (test, tags) combination.
-  # <1% can be ignored, > 50% can be treated as a failure instead of a flake.
   parser = argparse.ArgumentParser(
       description=('Script for automatically suppressing flaky/failing GPU '
                    'Telemetry-based tests.'))

@@ -31,6 +31,12 @@ EXPECTATION_FILE_OVERRIDE = {
     'info_collection_test': 'info_collection',
     'trace': 'trace_test',
 }
+# For whatever reason, these suites are not supported and will be skipped over
+# when trying to modify expectations. However, the collected data will still be
+# available in the generated results.
+UNSUPPORTED_SUITES = {
+    'webgpu_cts_integration_test',  # Expectation file in Dawn, not Chromium.
+}
 GITILES_URL = 'https://chromium.googlesource.com/chromium/src/+/refs/heads/main'
 TEXT_FORMAT_ARG = '?format=TEXT'
 
@@ -64,6 +70,8 @@ def IterateThroughResultsForUser(result_map: ct.AggregatedResultsType,
   """
   typ_tag_ordered_result_map = _ReorderMapByTypTags(result_map)
   for suite, test_map in result_map.items():
+    if suite in UNSUPPORTED_SUITES:
+      continue
     for test, tag_map in test_map.items():
       for typ_tags, build_url_list in tag_map.items():
 
@@ -124,6 +132,8 @@ def IterateThroughResultsWithThresholds(result_map: ct.AggregatedResultsType,
   assert isinstance(ignore_threshold, float)
   assert isinstance(flaky_threshold, float)
   for suite, test_map in result_map.items():
+    if suite in UNSUPPORTED_SUITES:
+      continue
     for test, tag_map in test_map.items():
       for typ_tags, build_url_list in tag_map.items():
         failure_count = len(build_url_list)

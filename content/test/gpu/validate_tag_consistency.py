@@ -14,7 +14,7 @@ import sys
 TAG_HEADER = """\
 # OS
 # tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-pie android-r android-s
+#             android-pie android-r android-s android-t
 #         chromeos
 #         fuchsia
 #         linux ubuntu
@@ -43,6 +43,8 @@ TAG_HEADER = """\
 #               intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
+# Architecture
+# tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # ANGLE Backend
