@@ -897,6 +897,11 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
     "HoldingSpaceInProgressNotificationSuppression",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables holding space icon to be permanently displayed with extended file
+// expiration to increase predictability of the feature.
+const base::Feature kHoldingSpacePredictability{
+    "HoldingSpacePredictability", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables rebranding of holding space to convey the relationship with
 // Files to simplify feature comprehension.
 const base::Feature kHoldingSpaceRebrand{"HoldingSpaceRebrand",
@@ -2058,6 +2063,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsNotificationSuppression);
+}
+
+bool IsHoldingSpacePredictabilityEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpacePredictability);
 }
 
 bool IsHoldingSpaceRebrandEnabled() {
