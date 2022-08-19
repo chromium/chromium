@@ -28,6 +28,7 @@ const char kWebShareValidLinkUrl[] = "/share_link.html";
 const char kWebShareFileUrl[] = "/share_file.html";
 const char kWebShareRelativeLinkUrl[] = "/share_relative_link.html";
 const char kWebShareRelativeFilenameFileUrl[] = "/share_filename_file.html";
+const char kWebShareUrlObjectUrl[] = "/share_url_object.html";
 
 const char kWebSharePageContents[] =
     "<html>"
@@ -36,8 +37,8 @@ const char kWebSharePageContents[] =
     "async function tryUrl() {"
     "  document.getElementById(\"result\").innerHTML = '';"
     "  try {"
-    "    var opts = {url: \"%s\"};"
-    "    navigator.share(opts);"
+    "    var opts = {url: %s};"
+    "    await navigator.share(opts);"
     "    document.getElementById(\"result\").innerHTML = 'success';"
     "  } catch {"
     "    document.getElementById(\"result\").innerHTML = 'failure';"
@@ -57,19 +58,23 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (request.relative_url == kWebShareValidLinkUrl) {
     std::string content =
-        base::StringPrintf(kWebSharePageContents, "https://example.com");
+        base::StringPrintf(kWebSharePageContents, "\"https://example.com\"");
     http_response->set_content(content);
   } else if (request.relative_url == kWebShareFileUrl) {
     std::string content =
-        base::StringPrintf(kWebSharePageContents, "file:///Users/u/data");
+        base::StringPrintf(kWebSharePageContents, "\"file:///Users/u/data\"");
     http_response->set_content(content);
   } else if (request.relative_url == kWebShareRelativeLinkUrl) {
     std::string content =
-        base::StringPrintf(kWebSharePageContents, "/something.png");
+        base::StringPrintf(kWebSharePageContents, "\"/something.png\"");
     http_response->set_content(content);
   } else if (request.relative_url == kWebShareRelativeFilenameFileUrl) {
     std::string content =
-        base::StringPrintf(kWebSharePageContents, "filename.zip");
+        base::StringPrintf(kWebSharePageContents, "\"filename.zip\"");
+    http_response->set_content(content);
+  } else if (request.relative_url == kWebShareUrlObjectUrl) {
+    std::string content =
+        base::StringPrintf(kWebSharePageContents, "window.location");
     http_response->set_content(content);
   } else {
     return nullptr;
@@ -143,6 +148,19 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Share sheet should not display.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Copy")]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that an url object can be shared.
+- (void)testShareUrlObject {
+  const GURL pageURL = self.testServer->GetURL(kWebShareUrlObjectUrl);
+  [ChromeEarlGrey loadURL:pageURL];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kWebShareButtonId)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Copy")]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kWebShareStatusSuccess];
 }
 
 @end
