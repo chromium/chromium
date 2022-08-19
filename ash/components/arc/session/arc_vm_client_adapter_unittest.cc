@@ -1569,8 +1569,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_FlagDisabled) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(arc::kEnableVirtioBlkForData,
-                                                  {{"use_lvm", "false"}});
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
 
   // CreateDiskImage() returns an empty response.
   GetTestConciergeClient()->set_create_disk_image_response(absl::nullopt);
@@ -1584,8 +1583,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusFailed) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(arc::kEnableVirtioBlkForData,
-                                                  {{"use_lvm", "false"}});
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
 
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_FAILED));
@@ -1599,8 +1597,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusFailed) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusCreated) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(arc::kEnableVirtioBlkForData,
-                                                  {{"use_lvm", "false"}});
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
 
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
@@ -1619,8 +1616,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusCreated) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(arc::kEnableVirtioBlkForData,
-                                                  {{"use_lvm", "false"}});
+  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
 
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_EXISTS));
@@ -1639,8 +1635,10 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_UseLvm) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(arc::kEnableVirtioBlkForData,
-                                                  {{"use_lvm", "true"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{arc::kEnableVirtioBlkForData, {{}}},
+       {arc::kVirtioBlkDataConfigOverride, {{"use_lvm", "true"}}}},
+      {});
 
   StartMiniArcWithParams(true, GetPopulatedStartParams());
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);

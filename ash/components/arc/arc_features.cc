@@ -69,10 +69,14 @@ const base::Feature kEnableUsap{"ArcEnableUsap",
 const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Used for overriding config params for the virtio-blk feature above.
+const base::Feature kVirtioBlkDataConfigOverride{
+    "ArcVirtioBlkDataConfigOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to use the LVM-provided disk as the backend device for
 // Android /data instead of using the concierge-provided disk.
-const base::FeatureParam<bool> kEnableVirtioBlkForDataUseLvm{
-    &kEnableVirtioBlkForData, "use_lvm", false};
+const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm{
+    &kVirtioBlkDataConfigOverride, "use_lvm", false};
 
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
