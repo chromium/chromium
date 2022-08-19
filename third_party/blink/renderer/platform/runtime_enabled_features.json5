@@ -39,9 +39,10 @@
     // "implied_by" or "depends_on" specifies relationship to other features:
     // * implied_by: ["feature1","feature2",...]
     //   The feature is automatically enabled if any implied_by features is
-    //   enabled;
+    //   enabled. To effectively disable the feature, you must disable the
+    //   feature and all the implied_by features.
     // * depends_on: ["feature1","feature2",...]
-    //   The feature is enabled only if all depends_on features are enabled.
+    //   The feature can be enabled only if all depends_on features are enabled.
     // Only one of "implied_by" and "depends_on" can be specified.
     implied_by: {
       default: [],

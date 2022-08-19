@@ -1500,7 +1500,6 @@ interface Document : Node
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
-    getter onprerenderingchange
     getter onprogress
     getter onratechange
     getter onreadystatechange
@@ -1543,7 +1542,6 @@ interface Document : Node
     getter pictureInPictureEnabled
     getter plugins
     getter pointerLockElement
-    getter prerendering
     getter readyState
     getter referrer
     getter rootElement
@@ -1705,7 +1703,6 @@ interface Document : Node
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
-    setter onprerenderingchange
     setter onprogress
     setter onratechange
     setter onreadystatechange
@@ -1841,7 +1838,6 @@ interface Element : Node
     getter clientLeft
     getter clientTop
     getter clientWidth
-    getter defaultOpen
     getter elementTiming
     getter firstElementChild
     getter id
@@ -1860,10 +1856,6 @@ interface Element : Node
     getter onwebkitfullscreenerror
     getter outerHTML
     getter part
-    getter popUp
-    getter popUpHideTarget
-    getter popUpShowTarget
-    getter popUpToggleTarget
     getter prefix
     getter previousElementSibling
     getter role
@@ -1899,7 +1891,6 @@ interface Element : Node
     method hasAttributeNS
     method hasAttributes
     method hasPointerCapture
-    method hidePopUp
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
@@ -1927,7 +1918,6 @@ interface Element : Node
     method setAttributeNodeNS
     method setHTML
     method setPointerCapture
-    method showPopUp
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -1973,7 +1963,6 @@ interface Element : Node
     setter ariaValueText
     setter classList
     setter className
-    setter defaultOpen
     setter elementTiming
     setter id
     setter innerHTML
@@ -1987,10 +1976,6 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
-    setter popUp
-    setter popUpHideTarget
-    setter popUpShowTarget
-    setter popUpToggleTarget
     setter role
     setter scrollLeft
     setter scrollTop
@@ -5556,7 +5541,6 @@ interface PerformanceNavigation
     method toJSON
 interface PerformanceNavigationTiming : PerformanceResourceTiming
     attribute @@toStringTag
-    getter activationStart
     getter domComplete
     getter domContentLoadedEventEnd
     getter domContentLoadedEventStart

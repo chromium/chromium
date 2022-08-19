@@ -287,8 +287,6 @@ All changes to this list should go through Blink's feature review process: http:
     perspective
     perspective-origin
     pointer-events
-    pop-up-hide-delay
-    pop-up-show-delay
     position
     quotes
     r
