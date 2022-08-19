@@ -153,7 +153,8 @@ class RmadClientTest : public testing::Test {
 
   // Passes a provisioning progress signal to |client_|.
   void EmitProvisioningProgressSignal(rmad::ProvisionStatus::Status status,
-                                      double progress) {
+                                      double progress,
+                                      rmad::ProvisionStatus::Error error) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kProvisioningProgressSignal);
     dbus::MessageWriter writer(&signal);
@@ -161,6 +162,7 @@ class RmadClientTest : public testing::Test {
     writer.OpenStruct(&struct_writer);
     struct_writer.AppendInt32(static_cast<int32_t>(status));
     struct_writer.AppendDouble(progress);
+    struct_writer.AppendInt32(static_cast<int32_t>(error));
     writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
@@ -869,11 +871,29 @@ TEST_F(RmadClientTest, ProvisioningProgress) {
   TestObserver observer_1(client_);
 
   EmitProvisioningProgressSignal(
-      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25,
+      rmad::ProvisionStatus::RMAD_PROVISION_ERROR_UNKNOWN);
   EXPECT_EQ(observer_1.num_provisioning_progress(), 1);
   EXPECT_EQ(observer_1.last_provisioning_status().status(),
             rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS);
   EXPECT_EQ(observer_1.last_provisioning_status().progress(), 0.25);
+  EXPECT_EQ(observer_1.last_provisioning_status().error(),
+            rmad::ProvisionStatus::RMAD_PROVISION_ERROR_UNKNOWN);
+}
+
+// Tests that synchronous observers are notified about provisioning errors.
+TEST_F(RmadClientTest, ProvisioningErrors) {
+  TestObserver observer_1(client_);
+
+  EmitProvisioningProgressSignal(
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING, 0.25,
+      rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CR50);
+  EXPECT_EQ(observer_1.num_provisioning_progress(), 1);
+  EXPECT_EQ(observer_1.last_provisioning_status().status(),
+            rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING);
+  EXPECT_EQ(observer_1.last_provisioning_status().progress(), 0.25);
+  EXPECT_EQ(observer_1.last_provisioning_status().error(),
+            rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CR50);
 }
 
 // Tests that synchronous observers are notified about provisioning progress.
