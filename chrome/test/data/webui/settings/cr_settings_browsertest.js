@@ -637,6 +637,10 @@ TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
 
+TEST_F('CrSettingsCookiesPageTest', 'FirstPartySetsUIEnabled', function() {
+  runMochaSuite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled');
+});
+
 // Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
 GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
 GEN('#define MAYBE_ConsolidatedControlsEnabled DISABLED_ConsolidatedControlsEnabled');

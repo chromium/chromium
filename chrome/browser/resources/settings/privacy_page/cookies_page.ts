@@ -150,6 +150,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: Object,
         observer: 'focusConfigChanged_',
       },
+
+      enableFirstPartySetsUI_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
+      },
     };
   }
 
@@ -315,6 +320,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot!.querySelector<HTMLAnchorElement>(
                         '#privacySandboxLink')!.click();
+  }
+
+  private firstPartySetsToggleDisabled_() {
+    return this.getPref('generated.cookie_primary_setting').value !==
+        CookiePrimarySetting.BLOCK_THIRD_PARTY;
   }
 }
 

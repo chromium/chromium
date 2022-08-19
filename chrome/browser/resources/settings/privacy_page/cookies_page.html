@@ -108,6 +108,18 @@
               <iron-icon icon="settings:block"></iron-icon>
               <div class="secondary">$i18n{cookiePageBlockThirdBulTwo}</div>
             </div>
+            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+              <settings-toggle-button
+                  id="firstPartySetsToggle"
+                  pref="{{
+                      prefs.privacy_sandbox.first_party_sets_data_access_allowed
+                      }}"
+                  label="$i18n{cookiePageFpsLabel}"
+                  sub-label="$i18n{cookiePageFpsSubLabel}"
+                  disabled="[[firstPartySetsToggleDisabled_(
+                      prefs.generated.cookie_primary_setting.value)]]">
+              </settings-toggle-button>
+            </template>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="blockAll"
