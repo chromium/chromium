@@ -235,11 +235,8 @@ void MaybeAppendManagePasswordsEntry(
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = "settingsIcon";
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    // The UI code will pick up an icon from the resources based on the string.
-    suggestion.trailing_icon = "googlePasswordManager";
-  }
+  // The UI code will pick up an icon from the resources based on the string.
+  suggestion.trailing_icon = "googlePasswordManager";
   suggestions->push_back(std::move(suggestion));
 }
 
