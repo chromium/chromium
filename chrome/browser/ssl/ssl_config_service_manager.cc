@@ -49,10 +49,11 @@ const char* kVariationsRestrictionsByPolicy =
 
 // Converts a ListValue of StringValues into a vector of strings. Any Values
 // which cannot be converted will be skipped.
-std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
+std::vector<std::string> ValueListToStringVector(
+    const base::Value::List& list) {
   std::vector<std::string> results;
-  results.reserve(value->GetListDeprecated().size());
-  for (const auto& entry : value->GetListDeprecated()) {
+  results.reserve(list.size());
+  for (const auto& entry : list) {
     const std::string* s = entry.GetIfString();
     if (s)
       results.push_back(*s);
@@ -246,9 +247,9 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 
 void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
-  const base::ListValue* value = &base::Value::AsListValue(
-      *local_state->GetList(prefs::kCipherSuiteBlacklist));
-  disabled_cipher_suites_ = ParseCipherSuites(ListValueToStringVector(value));
+  const base::Value::List& list =
+      local_state->GetValueList(prefs::kCipherSuiteBlacklist);
+  disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
 }
 
 void SSLConfigServiceManager::CacheVariationsPolicy(PrefService* local_state) {
