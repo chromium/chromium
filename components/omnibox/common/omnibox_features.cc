@@ -152,7 +152,7 @@ const base::Feature kZeroSuggestOnNTPForSignedOutUsers{
 
 // Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
-                                            enabled_by_default_desktop_only};
+                                            enabled_by_default_desktop_android};
 
 // Enables prefetching of the zero prefix suggestions for eligible users on SRP.
 const base::Feature kZeroSuggestPrefetchingOnSRP{

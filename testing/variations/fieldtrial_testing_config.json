@@ -6717,8 +6717,7 @@
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
                         "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "ZeroSuggestPrefetching"
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
                     ],
                     "disable_features": [
                         "UseSharedInstanceForZeroSuggestPrefetching"
