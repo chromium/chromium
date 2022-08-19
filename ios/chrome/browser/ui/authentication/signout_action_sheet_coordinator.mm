@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -156,8 +158,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       if (IsForceSignInEnabled()) {
         title = l10n_util::GetNSString(
             IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE);
-        break;
+      } else if (self.showUnavailableFeatureDialogHeader) {
+        DCHECK(base::FeatureList::IsEnabled(switches::kEnableCbdSignOut));
+        title = l10n_util::GetNSString(
+            IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNCING_ACCOUNT);
       }
+      break;
     }
   }
 

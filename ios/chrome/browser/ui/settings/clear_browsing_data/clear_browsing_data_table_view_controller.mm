@@ -524,6 +524,7 @@
                             rect:itemView.frame
                             view:itemView
                       withSource:signout_source_metric];
+  _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
   _signoutCoordinator.completion = ^(BOOL success) {
     [weakSelf handleAuthenticationOperationDidFinish];
