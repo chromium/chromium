@@ -132,13 +132,13 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
       quic::QuicConnectionIdLength connection_id_length,
       quic::QuicPacketNumberLength packet_number_length,
       quic::QuicStreamOffset offset) {
-    quiche::QuicheVariableLengthIntegerLength retry_token_length_length =
-        quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
-    quiche::QuicheVariableLengthIntegerLength length_length =
+    quic::QuicVariableLengthIntegerLength retry_token_length_length =
+        quic::VARIABLE_LENGTH_INTEGER_LENGTH_0;
+    quic::QuicVariableLengthIntegerLength length_length =
         quic::QuicVersionHasLongHeaderLengths(version.transport_version) &&
                 include_version
-            ? quiche::VARIABLE_LENGTH_INTEGER_LENGTH_2
-            : quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
+            ? quic::VARIABLE_LENGTH_INTEGER_LENGTH_2
+            : quic::VARIABLE_LENGTH_INTEGER_LENGTH_0;
     size_t min_data_length = 1;
     size_t min_packet_length =
         quic::NullEncrypter(quic::Perspective::IS_CLIENT)

@@ -135,10 +135,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       return first_early_hints_time_;
     }
 
-    base::TimeTicks headers_received_start_time() const {
-      return headers_received_start_time_;
-    }
-
     // TODO(rch): Move these test-only methods to a peer, or else remove.
     void OnPromiseHeaderList(quic::QuicStreamId promised_id,
                              size_t frame_len,
@@ -216,8 +212,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     // The time at which the first 103 Early Hints response is received.
     base::TimeTicks first_early_hints_time_;
-
-    base::TimeTicks headers_received_start_time_;
 
     base::WeakPtrFactory<Handle> weak_factory_{this};
   };
