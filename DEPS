@@ -634,7 +634,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': 'jGg_naPD5ghuLToPE3ClG72iDs9GqSPF6M1LM2OhVAwC',
+          'version': 'rQHDgHxj-eszT9vptAg6-jI6iiOgaGtGRF-SpwJO4WkC',
         },
       ],
   },
@@ -645,7 +645,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'SEYmLOH4UqiO4plPuX52Olw1fYjReimhu8AGkSu0o6YC',
+          'version': 'r2k1hwZRGxw0kkzxiMYumBsmljb_NV_Lf5y5Ty9MtMgC',
         },
       ],
   },
@@ -656,7 +656,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': 'DlaEyhCmLI4fzB57R1aWxX9QkHXpbYK4ooGqiNLPX5AC',
+          'version': '-9SSaWaYHfGamvipeRkIZKiCxZIeejT0T9kFNMeRxz4C',
         },
       ],
   },
@@ -668,7 +668,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': 'ekvYgaz0Q8adDlksn73Gh-sUisY5m76_4lr_0c1woM0C',
+          'version': 'aky9DQ7bmk6pudL3GwnY__L9unj4fGSUrcgXMOg3_bcC',
         },
       ],
   },
@@ -680,7 +680,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': 'UEHK7zslk3sVEEqwqnRp9i3kNWbv1PiHuTanLbEU64wC',
+          'version': 'LGyRJoWS0jSpjayf1NKc3XRuW-WkKW25rXH-AjeKVzsC',
         },
       ],
   },
@@ -691,7 +691,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': 'cotzeTxkTmIASM9Gv4ZgbdXS8yJTvhEm8foupSnIEdkC',
+          'version': 'yWdUuSpJUTx6yIgmnEI5hW9R8UlhrRD5lPFb3plAf9wC',
         },
       ],
   },
@@ -702,7 +702,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 'esNCd2d4_kSQlID8kAeNQDJgiTaXuVJ3oiky_Ma2mFUC',
+          'version': '66SzuIwWFpvvSWHTgjrTcdm19E9ZAqd0p1wFqwuGB1IC',
         },
       ],
   },
