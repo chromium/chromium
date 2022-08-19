@@ -503,6 +503,11 @@ const base::Feature kStopInBackground {
 #endif
 };
 
+// Enable an experimental extension to the StorageAccessAPI.
+// https://crbug.com/1351540
+const base::Feature kStorageAccessAPIForSiteExtension{
+    "StorageAccessAPIForSiteExtension", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable text snippets in URL fragments. https://crbug.com/919204.
 const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

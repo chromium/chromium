@@ -1990,6 +1990,7 @@ interface Document : Node
     method releaseEvents
     method replaceChildren
     method requestStorageAccess
+    method requestStorageAccessForSite
     method webkitCancelFullScreen
     method webkitExitFullscreen
     method write

@@ -41132,6 +41132,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4329" label="ReplacedElementPaintedWithLargeOverflow"/>
   <int value="4330" label="FlexboxAbsPosJustifyContent"/>
   <int value="4331" label="MultipleFetchHandlersInServiceWorker"/>
+  <int value="4332"
+      label="StorageAccessAPI_requestStorageAccessForSite_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

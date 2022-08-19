@@ -60,21 +60,33 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         permission_grants_unpartitioned_storage_(
             permission_grants_unpartitioned_storage),
-        is_storage_partitioned_(is_storage_partitioned) {
+        is_storage_partitioned_(is_storage_partitioned) {}
+
+  void SetUp() override {
+    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                            GetDisabledFeatures());
+    InProcessBrowserTest::SetUp();
+  }
+
+  virtual std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+  GetEnabledFeatures() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled({
         {net::features::kStorageAccessAPI,
          {{"storage-access-api-grants-unpartitioned-storage",
-           BoolToString(permission_grants_unpartitioned_storage)}}},
+           BoolToString(permission_grants_unpartitioned_storage_)}}},
     });
-    std::vector<base::Feature> disabled;
-
-    if (is_storage_partitioned) {
+    if (is_storage_partitioned_) {
       enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
-    } else {
+    }
+    return enabled;
+  }
+
+  virtual std::vector<base::Feature> GetDisabledFeatures() {
+    std::vector<base::Feature> disabled;
+    if (!is_storage_partitioned_) {
       disabled.push_back(net::features::kThirdPartyStoragePartitioning);
     }
-
-    features_.InitWithFeaturesAndParameters(enabled, disabled);
+    return disabled;
   }
 
   void SetUpOnMainThread() override {
@@ -505,6 +517,16 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_EQ(ReadCookiesViaJS(GetNestedFrame()), "thirdparty=c");
 }
 
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       RsaForSiteDisabledByDefault) {
+  NavigateToPageWithFrame("a.com");
+  // Ensure that the proposed extension is not available unless explicitly
+  // enabled.
+  EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
+                     "\"requestStorageAccessForSite\" in document === false")
+                  .ExtractBool());
+}
+
 INSTANTIATE_TEST_CASE_P(/* no prefix */,
                         StorageAccessAPIBrowserTest,
                         testing::Combine(testing::Bool(), testing::Bool()));
@@ -648,5 +670,97 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                                                           TestType::kWorker),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class StorageAccessAPIForSiteExtensionBrowserTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  StorageAccessAPIForSiteExtensionBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(std::get<0>(GetParam()),
+                                        std::get<1>(GetParam())) {}
+
+ protected:
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+  GetEnabledFeatures() override {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled =
+        StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+    enabled.push_back({blink::features::kStorageAccessAPIForSiteExtension, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIForSiteExtensionBrowserTest,
+                       OnlySameOriginGrantedByDefault) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame("a.com");
+
+  // Asserting very basic behavior while the extension is being implemented.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForSite(
+      GetFrame(), "https://asdf.example"));
+  EXPECT_FALSE(
+      storage::test::RequestStorageAccessForSite(GetFrame(), "mattwashere"));
+  EXPECT_TRUE(storage::test::RequestStorageAccessForSite(GetPrimaryMainFrame(),
+                                                         "https://a.com"));
+  EXPECT_FALSE(
+      storage::test::RequestStorageAccessForSite(GetFrame(), "https://a.com"));
+}
+
+INSTANTIATE_TEST_CASE_P(/* no prefix */,
+                        StorageAccessAPIForSiteExtensionBrowserTest,
+                        testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests to validate that, when the rsaForSite extension is explicitly disabled,
+// or if the larger Storage Access API is disabled, it does not leak onto the
+// document object.
+class StorageAccessAPIForSiteExtensionExplicitlyDisabledBrowserTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  StorageAccessAPIForSiteExtensionExplicitlyDisabledBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(true, true),
+        enable_standard_storage_access_api_(GetParam()) {}
+
+ protected:
+  std::vector<base::Feature> GetDisabledFeatures() override {
+    // The test should validate that either flag alone disables the API.
+    // Note that enabling the extension and not the standard API means both are
+    // disabled.
+    if (enable_standard_storage_access_api_) {
+      return {blink::features::kStorageAccessAPIForSiteExtension};
+    }
+    return {net::features::kStorageAccessAPI};
+  }
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+  GetEnabledFeatures() override {
+    // When the standard API is enabled, return the parent class's enabled
+    // feature list. Otherwise, enable only the extension; this should not take
+    // effect.
+    if (enable_standard_storage_access_api_) {
+      return StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+    }
+    return {{blink::features::kStorageAccessAPIForSiteExtension, {}}};
+  }
+
+ private:
+  bool enable_standard_storage_access_api_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIForSiteExtensionExplicitlyDisabledBrowserTest,
+    RsaForSiteNotPresentOnDocumentWhenExplicitlyDisabled) {
+  NavigateToPageWithFrame("a.com");
+  // Ensure that the proposed extension is not available unless explicitly
+  // enabled.
+  EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
+                     "\"requestStorageAccessForSite\" in document === false")
+                  .ExtractBool());
+}
+
+INSTANTIATE_TEST_CASE_P(
+    /* no prefix */,
+    StorageAccessAPIForSiteExtensionExplicitlyDisabledBrowserTest,
+    testing::Bool());
 
 }  // namespace

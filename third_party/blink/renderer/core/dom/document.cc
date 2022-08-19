@@ -6074,6 +6074,94 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   return promise;
 }
 
+ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
+                                                    const AtomicString& site) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  // Access the promise first to ensure it is created so that the proper state
+  // can be changed when it is resolved or rejected.
+  ScriptPromise promise = resolver->Promise();
+
+  if (!GetFrame()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Must not be called from a detached "
+        "frame."));
+
+    resolver->Reject();
+    return promise;
+  }
+
+  const bool has_user_gesture =
+      LocalFrame::HasTransientUserActivation(GetFrame());
+  if (!has_user_gesture) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Must be handling a user gesture to "
+        "use."));
+
+    resolver->Reject();
+    return promise;
+  }
+
+  if (!IsInOutermostMainFrame()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Only supported in primary top-level "
+        "browsing contexts."));
+    resolver->Reject();
+    return promise;
+  }
+
+  if (dom_window_->GetSecurityOrigin()->IsOpaque()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Cannot be used by opaque origins."));
+
+    resolver->Reject();
+    return promise;
+  }
+
+  KURL site_as_kurl{site};
+  if (!site_as_kurl.IsValid()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Invalid site parameter."));
+    resolver->Reject();
+    return promise;
+  }
+
+  scoped_refptr<SecurityOrigin> supplied_origin =
+      SecurityOrigin::Create(site_as_kurl);
+  if (supplied_origin->IsOpaque()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForSite: Invalid site parameter."));
+    resolver->Reject();
+    return promise;
+  }
+
+  if (dom_window_->GetSecurityOrigin()->IsSameSiteWith(supplied_origin.get())) {
+    // Access is not actually disabled, so accept the request.
+    resolver->Resolve();
+    return promise;
+  }
+
+  resolver->Reject();
+  AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kSecurity,
+      mojom::blink::ConsoleMessageLevel::kError,
+      "requestStorageAccessForSite: Rejecting experimental API request."));
+  return promise;
+}
+
 ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
   DCHECK(GetFrame());
   ScriptPromiseResolver* resolver =

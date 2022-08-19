@@ -1197,6 +1197,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // may otherwise be blocked.
   ScriptPromise hasStorageAccess(ScriptState* script_state);
   ScriptPromise requestStorageAccess(ScriptState* script_state);
+  ScriptPromise requestStorageAccessForSite(ScriptState* script_state,
+                                            const AtomicString& site);
 
   // Fragment directive API, currently used to feature detect text-fragments.
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability

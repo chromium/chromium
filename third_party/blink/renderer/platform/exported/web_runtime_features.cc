@@ -369,6 +369,14 @@ void WebRuntimeFeatures::EnableSharedWorker(bool enable) {
   RuntimeEnabledFeatures::SetSharedWorkerEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableStorageAccessAPIForSiteExtension(bool enable) {
+  RuntimeEnabledFeatures::SetStorageAccessAPIForSiteExtensionEnabled(enable);
+}
+
+bool WebRuntimeFeatures::IsStorageAccessAPIForSiteExtensionEnabled() {
+  return RuntimeEnabledFeatures::StorageAccessAPIForSiteExtensionEnabled();
+}
+
 void WebRuntimeFeatures::EnableTextFragmentAnchor(bool enable) {
   RuntimeEnabledFeatures::SetTextFragmentIdentifiersEnabled(enable);
 }

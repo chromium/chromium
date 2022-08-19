@@ -735,6 +735,12 @@
     "args": [ "--enable-features=StorageAccessAPI" ]
   },
   {
+    "prefix": "storage-access-api-for-site-extension",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "wpt_internal/storage-access-api" ],
+    "args": [ "--enable-features=StorageAccessAPI,StorageAccessAPIForSiteExtension" ]
+  },
+  {
     "prefix": "web-bluetooth-new-permissions-backend",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],

@@ -162,6 +162,9 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableSharedAutofill(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedStorageAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedWorker(bool);
+  BLINK_PLATFORM_EXPORT static void EnableStorageAccessAPIForSiteExtension(
+      bool);
+  BLINK_PLATFORM_EXPORT static bool IsStorageAccessAPIForSiteExtensionEnabled();
   BLINK_PLATFORM_EXPORT static void EnableTextFragmentAnchor(bool);
   BLINK_PLATFORM_EXPORT static void EnableCSSSelectorFragmentAnchor(bool);
   BLINK_PLATFORM_EXPORT static void EnableTopicsAPI(bool);

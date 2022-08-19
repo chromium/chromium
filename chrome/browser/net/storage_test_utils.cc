@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/storage_test_utils.h"
 
+#include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace storage::test {
@@ -26,6 +27,12 @@ const std::vector<std::string> kCrossTabCommunicationTypes{
 
 constexpr char kRequestStorageAccess[] =
     "document.requestStorageAccess().then("
+    "  () => { window.domAutomationController.send(true); },"
+    "  () => { window.domAutomationController.send(false); },"
+    ");";
+
+constexpr char kRequestStorageAccessForSite[] =
+    "document.requestStorageAccessForSite('%s').then("
     "  () => { window.domAutomationController.send(true); },"
     "  () => { window.domAutomationController.send(false); },"
     ");";
@@ -147,6 +154,15 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
 bool RequestStorageAccessForFrame(content::RenderFrameHost* frame) {
   return content::EvalJs(frame, kRequestStorageAccess,
                          content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractBool();
+}
+
+bool RequestStorageAccessForSite(content::RenderFrameHost* frame,
+                                 const std::string& site) {
+  return content::EvalJs(
+             frame,
+             base::StringPrintf(kRequestStorageAccessForSite, site.c_str()),
+             content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
       .ExtractBool();
 }
 

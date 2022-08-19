@@ -2158,6 +2158,11 @@
       status: "test",
     },
     {
+      // Enabled when blink::features::kStorageAccessAPIForSiteExtension is enabled.
+      name: "StorageAccessAPIForSiteExtension",
+      status: "test",
+    },
+    {
       name: "StorageBuckets",
       status: "experimental",
     },
