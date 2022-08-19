@@ -197,6 +197,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 //
 // Remove these as we update our sites.
 
+#define SK_LEGACY_LAYER_BOUNDS_EXPANSION  // skbug.com/12083, skbug.com/12303
+
 // Workaround for poor anisotropic mipmap quality,
 // pending Skia ripmap support.
 // (https://bugs.chromium.org/p/skia/issues/detail?id=4863)
