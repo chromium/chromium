@@ -520,12 +520,23 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
 
   // Start dragging |surface|'s window.
   extended_drag_source_->Drag(surface.get(), gfx::Vector2d());
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  EXPECT_EQ(window, extended_drag_source_->GetDraggedWindowForTesting());
+  aura::Window* dragged_window = shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(dragged_window,
+            extended_drag_source_->GetDraggedWindowForTesting());
 
-  // Make sure extended drag source gracefully handles window destruction during
-  // while the drag session is still alive.
+  // Create, show |source_window| and start an (extended-)drag-and-drop
+  // session with it as the source window.
+  auto source_window = CreateToplevelTestWindow({10, 10, 200, 100});
+  extended_drag_source_->OnToplevelWindowDragStarted(
+      {50.0, 50.0}, ui::mojom::DragEventSource::kMouse, source_window.get());
+  EXPECT_EQ(extended_drag_source_->GetDragSourceWindowForTesting(),
+            source_window.get());
+
+  // Make sure extended drag source gracefully handles |dragged_window|
+  // visibility change (calls into dragged_window->Hide()) during while the drag
+  // session is still alive.
   shell_surface.reset();
+  EXPECT_EQ(extended_drag_source_->GetDraggedWindowForTesting(), nullptr);
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
 
   ui::test::EventGenerator generator(GetContext());
