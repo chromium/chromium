@@ -252,7 +252,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletUsageSpecifics& proto) {
   VISIT(guid);
-  VISIT_ENUM(virtual_card_usage_data);
+  VISIT(virtual_card_usage_data);
   VISIT_REP(retrieval_time_unix_epoch_micros);
 }
 
