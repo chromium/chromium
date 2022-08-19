@@ -166,46 +166,44 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   ResolveJavascriptCallback(callback_id, GetInterceptionParametersValue());
 }
 
-base::Value DiceWebSigninInterceptHandler::GetAccountInfoValue(
+base::Value::Dict DiceWebSigninInterceptHandler::GetAccountInfoValue(
     const AccountInfo& info) {
   std::string picture_url_to_load =
       info.account_image.IsEmpty()
           ? profiles::GetPlaceholderAvatarIconUrl()
           : webui::GetBitmapDataUrl(info.account_image.AsBitmap());
-  base::Value account_info_value(base::Value::Type::DICTIONARY);
-  account_info_value.SetBoolKey("isManaged", IsManaged(info));
-  account_info_value.SetStringKey("pictureUrl", picture_url_to_load);
+  base::Value::Dict account_info_value;
+  account_info_value.Set("isManaged", IsManaged(info));
+  account_info_value.Set("pictureUrl", picture_url_to_load);
   return account_info_value;
 }
 
-base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
-  base::Value parameters(base::Value::Type::DICTIONARY);
-  parameters.SetStringKey("headerText", GetHeaderText());
-  parameters.SetStringKey("bodyTitle", GetBodyTitle());
-  parameters.SetStringKey("bodyText", GetBodyText());
-  parameters.SetStringKey("confirmButtonLabel", GetConfirmButtonLabel());
-  parameters.SetStringKey("cancelButtonLabel", GetCancelButtonLabel());
-  parameters.SetStringKey("managedDisclaimerText", GetManagedDisclaimerText());
-  parameters.SetBoolKey("showGuestOption",
-                        bubble_parameters_.show_guest_option);
-  parameters.SetKey("interceptedAccount",
-                    GetAccountInfoValue(intercepted_account()));
-  parameters.SetKey("primaryAccount", GetAccountInfoValue(primary_account()));
-  parameters.SetStringKey("interceptedProfileColor",
-                          color_utils::SkColorToRgbaString(
-                              bubble_parameters_.profile_highlight_color));
-  parameters.SetStringKey(
-      "primaryProfileColor",
-      color_utils::SkColorToRgbaString(
-          GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
-  parameters.SetBoolKey("useV2Design", GetShouldUseV2Design());
-  parameters.SetBoolKey("showManagedDisclaimer",
-                        bubble_parameters_.show_managed_disclaimer);
+base::Value::Dict
+DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
+  base::Value::Dict parameters;
+  parameters.Set("headerText", GetHeaderText());
+  parameters.Set("bodyTitle", GetBodyTitle());
+  parameters.Set("bodyText", GetBodyText());
+  parameters.Set("confirmButtonLabel", GetConfirmButtonLabel());
+  parameters.Set("cancelButtonLabel", GetCancelButtonLabel());
+  parameters.Set("managedDisclaimerText", GetManagedDisclaimerText());
+  parameters.Set("showGuestOption", bubble_parameters_.show_guest_option);
+  parameters.Set("interceptedAccount",
+                 GetAccountInfoValue(intercepted_account()));
+  parameters.Set("primaryAccount", GetAccountInfoValue(primary_account()));
+  parameters.Set("interceptedProfileColor",
+                 color_utils::SkColorToRgbaString(
+                     bubble_parameters_.profile_highlight_color));
+  parameters.Set("primaryProfileColor",
+                 color_utils::SkColorToRgbaString(
+                     GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
+  parameters.Set("useV2Design", GetShouldUseV2Design());
+  parameters.Set("showManagedDisclaimer",
+                 bubble_parameters_.show_managed_disclaimer);
 
-  parameters.SetStringKey(
-      "headerTextColor",
-      color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
-          bubble_parameters_.profile_highlight_color)));
+  parameters.Set("headerTextColor",
+                 color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
+                     bubble_parameters_.profile_highlight_color)));
   return parameters;
 }
 

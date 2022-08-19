@@ -158,7 +158,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   params.Set("readOnlyEmail", !read_only_email.empty());
 
   SetExtraInitParams(params);
-  FireWebUIListener("load-auth-extension", base::Value(std::move(params)));
+  FireWebUIListener("load-auth-extension", params);
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(

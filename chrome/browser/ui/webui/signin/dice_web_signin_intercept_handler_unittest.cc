@@ -204,7 +204,7 @@ class DiceWebSigninInterceptHandlerTest
   DiceWebSigninInterceptHandlerTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-  base::Value GetInterceptionParameters() {
+  base::Value::Dict GetInterceptionParameters() {
     Profile* profile = profile_manager_.CreateTestingProfile("Primary Profile");
     // Resetting the platform authority to NONE, as not all platforms have the
     // same value in browser tests. See https://crbug.com/1324377.
@@ -230,17 +230,15 @@ class DiceWebSigninInterceptHandlerTest
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
  protected:
-  void ExpectStringsMatch(const base::Value& parameters,
+  void ExpectStringsMatch(const base::Value::Dict& parameters,
                           const BubbleStrings& expected_strings) {
-    EXPECT_EQ(*parameters.FindStringKey("headerText"),
+    EXPECT_EQ(*parameters.FindString("headerText"),
               expected_strings.header_text);
-    EXPECT_EQ(*parameters.FindStringKey("bodyTitle"),
-              expected_strings.body_title);
-    EXPECT_EQ(*parameters.FindStringKey("bodyText"),
-              expected_strings.body_text);
-    EXPECT_EQ(*parameters.FindStringKey("confirmButtonLabel"),
+    EXPECT_EQ(*parameters.FindString("bodyTitle"), expected_strings.body_title);
+    EXPECT_EQ(*parameters.FindString("bodyText"), expected_strings.body_text);
+    EXPECT_EQ(*parameters.FindString("confirmButtonLabel"),
               expected_strings.confirm_button_label);
-    EXPECT_EQ(*parameters.FindStringKey("cancelButtonLabel"),
+    EXPECT_EQ(*parameters.FindString("cancelButtonLabel"),
               expected_strings.cancel_button_label);
   }
 
@@ -252,17 +250,17 @@ class DiceWebSigninInterceptHandlerTest
 };
 
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
-  base::Value parameters = GetInterceptionParameters();
+  base::Value::Dict parameters = GetInterceptionParameters();
 
-  EXPECT_FALSE(*parameters.FindBoolKey("useV2Design"));
+  EXPECT_FALSE(*parameters.FindBool("useV2Design"));
   ExpectStringsMatch(parameters, GetParam().expected_strings.Run());
 }
 
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings_V2) {
   base::test::ScopedFeatureList feature_list{kSigninInterceptBubbleV2};
-  base::Value parameters = GetInterceptionParameters();
+  base::Value::Dict parameters = GetInterceptionParameters();
 
-  EXPECT_TRUE(*parameters.FindBoolKey("useV2Design"));
+  EXPECT_TRUE(*parameters.FindBool("useV2Design"));
   ExpectStringsMatch(parameters, GetParam().expected_strings_v2.Run());
 }
 

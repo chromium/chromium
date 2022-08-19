@@ -52,8 +52,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   void HandlePageLoaded(const base::Value::List& args);
 
   // Gets the values sent to javascript.
-  base::Value GetAccountInfoValue(const AccountInfo& info);
-  base::Value GetInterceptionParametersValue();
+  base::Value::Dict GetAccountInfoValue(const AccountInfo& info);
+  base::Value::Dict GetInterceptionParametersValue();
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.

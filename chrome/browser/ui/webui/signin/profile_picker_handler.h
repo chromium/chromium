@@ -112,7 +112,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                 bool create_shortcut,
                                 Profile* profile);
   void PushProfilesList();
-  base::Value GetProfilesList();
+  base::Value::List GetProfilesList();
   // Adds a profile with `profile_path` to `profiles_order_`.
   void AddProfileToList(const base::FilePath& profile_path);
   // Removes a profile with `profile_path` from `profiles_order_`. Returns

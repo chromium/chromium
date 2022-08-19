@@ -256,11 +256,11 @@ void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 
-base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("backgroundColor", color_utils::SkColorToRgbaString(
-                                           GetHighlightColor(profile_color_)));
-  dict.SetStringKey("pictureUrl", GetPictureUrl());
+base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
+  base::Value::Dict dict;
+  dict.Set("backgroundColor",
+           color_utils::SkColorToRgbaString(GetHighlightColor(profile_color_)));
+  dict.Set("pictureUrl", GetPictureUrl());
 
   std::string title =
       l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
@@ -271,54 +271,51 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
 
   switch (type_) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
-      dict.SetBoolKey("showEnterpriseBadge", true);
+      dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
-      dict.SetStringKey(
-          "proceedLabel",
-          l10n_util::GetStringUTF8(IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL));
+      dict.Set("proceedLabel", l10n_util::GetStringUTF8(
+                                   IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
-      dict.SetBoolKey("showEnterpriseBadge", true);
+      dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util ::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC);
-      dict.SetStringKey("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
+      dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled:
-      dict.SetBoolKey("showEnterpriseBadge", false);
+      dict.Set("showEnterpriseBadge", false);
       subtitle = GetManagedDeviceTitle();
       enterprise_info =
           l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
-      dict.SetStringKey("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
+      dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
               : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
-      dict.SetBoolKey("showEnterpriseBadge", false);
+      dict.Set("showEnterpriseBadge", false);
       subtitle = GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
-      dict.SetStringKey(
-          "proceedLabel",
-          l10n_util::GetStringUTF8(
-              profile_creation_required_by_policy_
-                  ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
-                  : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+      dict.Set("proceedLabel",
+               l10n_util::GetStringUTF8(
+                   profile_creation_required_by_policy_
+                       ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
+                       : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
 #if !BUILDFLAG(IS_CHROMEOS)
-      dict.SetBoolKey(
-          "checkLinkDataCheckboxByDefault",
-          show_link_data_option_ &&
-              g_browser_process->local_state()->GetBoolean(
-                  prefs::kEnterpriseProfileCreationKeepBrowsingData));
+      dict.Set("checkLinkDataCheckboxByDefault",
+               show_link_data_option_ &&
+                   g_browser_process->local_state()->GetBoolean(
+                       prefs::kEnterpriseProfileCreationKeepBrowsingData));
 #endif
       break;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:
-      dict.SetBoolKey("showEnterpriseBadge", true);
+      dict.Set("showEnterpriseBadge", true);
       enterprise_info =
           GetLacrosFirstRunManagedAccountInfo(entry, domain_name_);
       [[fallthrough]];
@@ -326,18 +323,18 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       title = GetLacrosWelcomeTitle();
       subtitle = l10n_util::GetStringFUTF8(
           IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE, email_);
-      dict.SetStringKey("proceedLabel",
-                        l10n_util::GetStringUTF8(
-                            IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL));
+      dict.Set("proceedLabel",
+               l10n_util::GetStringUTF8(
+                   IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL));
       show_cancel_button = false;
       break;
 #endif
   }
 
-  dict.SetStringKey("title", title);
-  dict.SetStringKey("subtitle", subtitle);
-  dict.SetStringKey("enterpriseInfo", enterprise_info);
-  dict.SetBoolKey("showCancelButton", show_cancel_button);
+  dict.Set("title", title);
+  dict.Set("subtitle", subtitle);
+  dict.Set("enterpriseInfo", enterprise_info);
+  dict.Set("showCancelButton", show_cancel_button);
 
   return dict;
 }

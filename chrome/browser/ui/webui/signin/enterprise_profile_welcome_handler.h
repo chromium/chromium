@@ -92,7 +92,7 @@ class EnterpriseProfileWelcomeHandler
   void UpdateProfileInfo(const base::FilePath& profile_path);
 
   // Computes the profile info (avatar and colors) to be sent to the WebUI.
-  base::Value GetProfileInfoValue();
+  base::Value::Dict GetProfileInfoValue();
 
   // Returns the ProfilesAttributesEntry associated with the current profile.
   ProfileAttributesEntry* GetProfileEntry() const;

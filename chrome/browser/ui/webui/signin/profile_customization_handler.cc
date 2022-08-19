@@ -123,27 +123,24 @@ void ProfileCustomizationHandler::UpdateProfileInfo(
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 
-base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
+base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
   ProfileAttributesEntry* entry = GetProfileEntry();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(
-      "backgroundColor",
-      color_utils::SkColorToRgbaString(
-          entry->GetProfileThemeColors().profile_highlight_color));
+  base::Value::Dict dict;
+  dict.Set("backgroundColor",
+           color_utils::SkColorToRgbaString(
+               entry->GetProfileThemeColors().profile_highlight_color));
   const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
   gfx::Image icon =
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
-  dict.SetStringKey("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
-  dict.SetBoolKey("isManaged",
-                  AccountInfo::IsManaged(entry->GetHostedDomain()));
+  dict.Set("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
+  dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
   if (gaia_name.empty())
     gaia_name = entry->GetLocalProfileName();
-  dict.SetStringKey(
-      "welcomeTitle",
-      l10n_util::GetStringFUTF8(IDS_PROFILE_CUSTOMIZATION_WELCOME, gaia_name));
+  dict.Set("welcomeTitle", l10n_util::GetStringFUTF8(
+                               IDS_PROFILE_CUSTOMIZATION_WELCOME, gaia_name));
   return dict;
 }
 
