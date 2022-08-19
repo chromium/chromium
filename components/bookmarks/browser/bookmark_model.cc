@@ -671,7 +671,7 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const BookmarkNode::MetaInfoMap* meta_info) {
   metrics::RecordBookmarkAdded();
   return AddURL(parent, index, title, url, meta_info, absl::nullopt,
-                absl::nullopt);
+                absl::nullopt, true);
 }
 
 const BookmarkNode* BookmarkModel::AddURL(
@@ -681,7 +681,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info,
     absl::optional<base::Time> creation_time,
-    absl::optional<base::GUID> guid) {
+    absl::optional<base::GUID> guid,
+    bool added_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(url.is_valid());
@@ -706,7 +707,7 @@ const BookmarkNode* BookmarkModel::AddURL(
   if (meta_info)
     new_node->SetMetaInfoMap(*meta_info);
 
-  return AddNode(AsMutable(parent), index, std::move(new_node));
+  return AddNode(AsMutable(parent), index, std::move(new_node), added_by_user);
 }
 
 void BookmarkModel::SortChildren(const BookmarkNode* parent) {
@@ -824,7 +825,7 @@ void BookmarkModel::NotifyNodeAddedForAllDescendants(const BookmarkNode* node) {
 
   for (size_t i = 0; i < node->children().size(); ++i) {
     for (BookmarkModelObserver& observer : observers_)
-      observer.BookmarkNodeAdded(this, node, i);
+      observer.BookmarkNodeAdded(this, node, i, false);
     NotifyNodeAddedForAllDescendants(node->children()[i].get());
   }
 }
@@ -898,7 +899,8 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
 
 BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
                                      size_t index,
-                                     std::unique_ptr<BookmarkNode> node) {
+                                     std::unique_ptr<BookmarkNode> node,
+                                     bool added_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BookmarkNode* node_ptr = node.get();
@@ -910,7 +912,7 @@ BookmarkNode* BookmarkModel::AddNode(BookmarkNode* parent,
   AddNodeToIndexRecursive(node_ptr);
 
   for (BookmarkModelObserver& observer : observers_)
-    observer.BookmarkNodeAdded(this, parent, index);
+    observer.BookmarkNodeAdded(this, parent, index, added_by_user);
 
   return node_ptr;
 }

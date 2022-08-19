@@ -148,7 +148,8 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
 void BookmarkModelObserverImpl::BookmarkNodeAdded(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
-    size_t index) {
+    size_t index,
+    bool added_by_user) {
   const bookmarks::BookmarkNode* node = parent->children()[index].get();
   if (!model->client()->CanSyncNode(node)) {
     return;

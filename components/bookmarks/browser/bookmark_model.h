@@ -235,7 +235,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   // (i.e. nullopt), then a random one will be generated. If a GUID is
   // provided, it must be valid. Used for bookmarks not being added from
   // direct user actions (e.g. created via sync, locally modified bookmark
-  // or pre-existing bookmark).
+  // or pre-existing bookmark). `added_by_user` is true when a new bookmark was
+  // added by the user and false when a node is added by sync or duplicated.
   const BookmarkNode* AddURL(
       const BookmarkNode* parent,
       size_t index,
@@ -243,7 +244,8 @@ class BookmarkModel : public BookmarkUndoProvider,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
       absl::optional<base::Time> creation_time = absl::nullopt,
-      absl::optional<base::GUID> guid = absl::nullopt);
+      absl::optional<base::GUID> guid = absl::nullopt,
+      bool added_by_user = false);
 
   // Sorts the children of |parent|, notifying observers by way of the
   // BookmarkNodeChildrenReordered method.
@@ -356,11 +358,13 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Called when done loading. Updates internal state and notifies observers.
   void DoneLoading(std::unique_ptr<BookmarkLoadDetails> details);
 
-  // Adds the |node| at |parent| in the specified |index| and notifies its
-  // observers.
+  // Adds the `node` at `parent` in the specified `index` and notifies its
+  // observers. `added_by_user` is true when a new bookmark was added by the
+  // user and false when a node is added by sync or duplicated.
   BookmarkNode* AddNode(BookmarkNode* parent,
                         size_t index,
-                        std::unique_ptr<BookmarkNode> node);
+                        std::unique_ptr<BookmarkNode> node,
+                        bool added_by_user = false);
 
   // Adds |node| to |index_| and recursively invokes this for all children.
   void AddNodeToIndexRecursive(const BookmarkNode* node);

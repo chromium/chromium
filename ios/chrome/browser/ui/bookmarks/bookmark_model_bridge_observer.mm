@@ -53,7 +53,8 @@ void BookmarkModelBridge::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkModelBridge::BookmarkNodeAdded(BookmarkModel* model,
                                             const BookmarkNode* parent,
-                                            size_t index) {
+                                            size_t index,
+                                            bool added_by_user) {
   [observer_ bookmarkNodeChildrenChanged:parent];
 }
 

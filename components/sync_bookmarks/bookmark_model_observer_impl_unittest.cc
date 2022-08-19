@@ -725,11 +725,11 @@ TEST_F(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
 
   // Now simulate calling the observer as if the nodes are added in that order.
   // 4,0,2,3,1.
-  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 4);
-  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 0);
-  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 2);
-  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 3);
-  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 1);
+  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 4, false);
+  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 0, false);
+  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 2, false);
+  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 3, false);
+  observer.BookmarkNodeAdded(bookmark_model(), bookmark_bar_node, 1, false);
 
   ASSERT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 6U);
 

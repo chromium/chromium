@@ -52,7 +52,8 @@ void DataObserver::BookmarkNodeMoved(BookmarkModel* model,
 
 void DataObserver::BookmarkNodeAdded(BookmarkModel* model,
                                      const BookmarkNode* parent,
-                                     size_t index) {
+                                     size_t index,
+                                     bool added_by_user) {
   delta_file_service_->PageAdded(parent->children()[index]->url());
   data_changed_callback_.Run();
 }

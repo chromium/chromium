@@ -105,7 +105,8 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         size_t index) override {
+                         size_t index,
+                         bool added_by_user) override {
     [owner_ refreshNodeInIndex:parent->children()[index].get() initial:NO];
   }
 

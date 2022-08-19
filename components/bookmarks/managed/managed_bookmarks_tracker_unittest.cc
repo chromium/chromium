@@ -251,7 +251,7 @@ TEST_F(ManagedBookmarksTrackerTest, CreateNewNodes) {
   base::Value::List updated;
   updated.Append(CreateFolder("Container", CreateTestTree()));
 
-  EXPECT_CALL(observer_, BookmarkNodeAdded(model_.get(), _, _)).Times(5);
+  EXPECT_CALL(observer_, BookmarkNodeAdded(model_.get(), _, _, _)).Times(5);
   // The remaining nodes have been pushed to positions 1 and 2; they'll both be
   // removed when at position 1.
   const BookmarkNode* parent = managed_node();
@@ -308,10 +308,10 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveAllUserBookmarksDoesntRemoveManaged) {
   CreateModel();
   EXPECT_EQ(2u, managed_node()->children().size());
 
-  EXPECT_CALL(observer_,
-              BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 0));
-  EXPECT_CALL(observer_,
-              BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 1));
+  EXPECT_CALL(observer_, BookmarkNodeAdded(model_.get(),
+                                           model_->bookmark_bar_node(), 0, _));
+  EXPECT_CALL(observer_, BookmarkNodeAdded(model_.get(),
+                                           model_->bookmark_bar_node(), 1, _));
   model_->AddURL(model_->bookmark_bar_node(), 0, u"Test",
                  GURL("http://google.com/"));
   model_->AddFolder(model_->bookmark_bar_node(), 1, u"Test Folder");

@@ -284,7 +284,8 @@ void BookmarkEventRouter::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkEventRouter::BookmarkNodeAdded(BookmarkModel* model,
                                             const BookmarkNode* parent,
-                                            size_t index) {
+                                            size_t index,
+                                            bool added_by_user) {
   const BookmarkNode* node = parent->children()[index].get();
   BookmarkTreeNode tree_node =
       bookmark_api_helpers::GetBookmarkTreeNode(managed_, node, false, false);

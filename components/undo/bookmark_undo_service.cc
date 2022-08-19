@@ -378,7 +378,8 @@ void BookmarkUndoService::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkUndoService::BookmarkNodeAdded(BookmarkModel* model,
                                             const BookmarkNode* parent,
-                                            size_t index) {
+                                            size_t index,
+                                            bool added_by_user) {
   std::unique_ptr<UndoOperation> op(
       new BookmarkAddOperation(model, parent, index));
   undo_manager()->AddUndoOperation(std::move(op));

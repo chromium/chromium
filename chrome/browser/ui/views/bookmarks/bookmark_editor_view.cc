@@ -215,7 +215,8 @@ void BookmarkEditorView::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkEditorView::BookmarkNodeAdded(BookmarkModel* model,
                                            const BookmarkNode* parent,
-                                           size_t index) {
+                                           size_t index,
+                                           bool added_by_user) {
   Reset();
 }
 

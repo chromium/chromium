@@ -219,7 +219,8 @@ void DeclarativeContentIsBookmarkedConditionTracker::BookmarkModelChanged() {}
 void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeAdded(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
-    size_t index) {
+    size_t index,
+    bool added_by_user) {
   if (!extensive_bookmark_changes_in_progress_) {
     for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
       web_contents_tracker_pair.second->BookmarkAddedForUrl(

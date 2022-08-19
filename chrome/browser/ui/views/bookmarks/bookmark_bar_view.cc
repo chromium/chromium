@@ -1189,7 +1189,8 @@ void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
 
 void BookmarkBarView::BookmarkNodeAdded(BookmarkModel* model,
                                         const BookmarkNode* parent,
-                                        size_t index) {
+                                        size_t index,
+                                        bool added_by_user) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
   if (BookmarkNodeAddedImpl(model, parent, index))

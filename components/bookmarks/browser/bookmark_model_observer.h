@@ -37,10 +37,13 @@ class BookmarkModelObserver {
                                  const BookmarkNode* new_parent,
                                  size_t new_index) = 0;
 
-  // Invoked when a node has been added.
+  // Invoked when a node has been added. `added_by_user` is true when a new
+  // bookmark was added by the user and false when a node is added by sync
+  // or duplicated.
   virtual void BookmarkNodeAdded(BookmarkModel* model,
                                  const BookmarkNode* parent,
-                                 size_t index) = 0;
+                                 size_t index,
+                                 bool added_by_user) = 0;
 
   // Invoked prior to removing a node from the model. When a node is removed
   // it's descendants are implicitly removed from the model as
