@@ -55,6 +55,7 @@ class ShareServiceImpl
              std::vector<blink::mojom::SharedFilePtr> files,
              ShareCallback callback) override;
 
+ private:
   void OnSafeBrowsingResultReceived(
       const std::string& title,
       const std::string& text,
@@ -63,7 +64,6 @@ class ShareServiceImpl
       ShareCallback callback,
       bool is_safe);
 
- private:
   ShareServiceImpl(content::RenderFrameHost& render_frame_host,
                    mojo::PendingReceiver<blink::mojom::ShareService> receiver);
   ~ShareServiceImpl() override;
