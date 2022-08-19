@@ -619,6 +619,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return mNativeInitializationPromise;
     }
 
+    @Override
+    public boolean canUseLandscapeLayout() {
+        return true;
+    }
+
     @VisibleForTesting
     boolean hasPages() {
         return mPagerAdapter != null && mPagerAdapter.getItemCount() > 0;
