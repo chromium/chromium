@@ -1173,6 +1173,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"
+    expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Number of Chrome portal detection attempts per network connection on
+    ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="Network.NetworkPortalDetectorType" enum="NetworkTechnology"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
