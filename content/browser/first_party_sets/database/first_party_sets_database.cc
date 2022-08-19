@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -148,7 +149,8 @@ bool FirstPartySetsDatabase::InsertBrowserContextCleared(
 bool FirstPartySetsDatabase::InsertPolicyModifications(
     const std::string& browser_context_id,
     const base::flat_map<net::SchemefulSite,
-                         absl::optional<net::SchemefulSite>>& modificatons) {
+                         absl::optional<net::FirstPartySetEntry>>&
+        modificatons) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit())
@@ -175,7 +177,7 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
     statement.BindString(0, browser_context_id);
     statement.BindString(1, site.Serialize());
     if (owner.has_value()) {
-      statement.BindString(2, owner.value().Serialize());
+      statement.BindString(2, owner.value().primary().Serialize());
     } else {
       statement.BindNull(2);
     }
@@ -263,7 +265,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
   return results;
 }
 
-base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>
+base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
 FirstPartySetsDatabase::FetchPolicyModifications(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -271,7 +273,7 @@ FirstPartySetsDatabase::FetchPolicyModifications(
   if (!LazyInit())
     return {};
 
-  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>
+  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
       results;
   static constexpr char kSelectSql[] =
       // clang-format off
@@ -294,8 +296,19 @@ FirstPartySetsDatabase::FetchPolicyModifications(
 
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
-    if (site.has_value())
-      results.emplace(std::move(site.value()), maybe_site_owner);
+    if (site.has_value()) {
+      results.emplace(
+          std::move(site.value()),
+          maybe_site_owner.has_value()
+              ? absl::make_optional(net::FirstPartySetEntry(
+                    maybe_site_owner.value(),
+                    // TODO(https://crbug.com/1219656): May change to use the
+                    // real site_type and site_index in the future, depending on
+                    // the design details. Use kAssociated as default site type
+                    // and null site index for now.
+                    net::SiteType::kAssociated, absl::nullopt))
+              : absl::nullopt);
+    }
   }
   return results;
 }

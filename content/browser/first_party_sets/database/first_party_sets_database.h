@@ -19,6 +19,7 @@
 
 namespace net {
 class SchemefulSite;
+class FirstPartySetEntry;
 }  // namespace net
 
 namespace sql {
@@ -80,7 +81,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertPolicyModifications(
       const std::string& browser_context_id,
       const base::flat_map<net::SchemefulSite,
-                           absl::optional<net::SchemefulSite>>& modificatons);
+                           absl::optional<net::FirstPartySetEntry>>&
+          modificatons);
 
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
@@ -95,7 +97,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // Gets the previously-stored policy modifications for the
   // `browser_context_id`.
   [[nodiscard]] base::flat_map<net::SchemefulSite,
-                               absl::optional<net::SchemefulSite>>
+                               absl::optional<net::FirstPartySetEntry>>
   FetchPolicyModifications(const std::string& browser_context_id);
 
  private:

@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/first_party_set_entry.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -393,10 +394,12 @@ TEST_F(FirstPartySetsDatabaseTest, InsertPolicymodifications_NoPreExistingDB) {
   const std::string site_member1 = "https://member1.test";
   const std::string site_member2 = "https://member2.test";
 
-  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>> input =
-      {{net::SchemefulSite(GURL(site_member1)),
-        net::SchemefulSite(GURL(site_owner))},
-       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
+  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+      input = {
+          {net::SchemefulSite(GURL(site_member1)),
+           net::FirstPartySetEntry(net::SchemefulSite(GURL(site_owner)),
+                                   net::SiteType::kAssociated, absl::nullopt)},
+          {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -456,10 +459,12 @@ TEST_F(FirstPartySetsDatabaseTest, InsertPolicymodifications_PreExistingDB) {
   const std::string site_member1 = "https://member3.test";
   const std::string site_member2 = "https://member4.test";
 
-  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>> input =
-      {{net::SchemefulSite(GURL(site_member1)),
-        net::SchemefulSite(GURL(site_owner))},
-       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
+  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+      input = {
+          {net::SchemefulSite(GURL(site_member1)),
+           net::FirstPartySetEntry(net::SchemefulSite(GURL(site_owner)),
+                                   net::SiteType::kAssociated, absl::nullopt)},
+          {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -632,11 +637,14 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
     EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
   }
-  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>> res = {
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::SchemefulSite(GURL("https://example.test"))}},
-      {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-  };
+  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+      res = {
+          {net::SchemefulSite(GURL("https://member1.test")),
+           net::FirstPartySetEntry(
+               {net::SchemefulSite(GURL("https://example.test"))},
+               net::SiteType::kAssociated, absl::nullopt)},
+          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
+      };
   OpenDatabase();
   EXPECT_THAT(db()->FetchPolicyModifications("b2"), res);
 }
