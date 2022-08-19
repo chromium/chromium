@@ -69,6 +69,7 @@
 namespace file_manager {
 namespace {
 
+using l10n_util::GetStringUTF8;
 const uint32_t kAccessCapabilityReadWrite = 0;
 const uint32_t kFilesystemTypeGenericHierarchical = 2;
 const char kFileManagerMTPMountNamePrefix[] = "fileman-mtp-";
@@ -248,21 +249,20 @@ void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
 }
 
 // Returns the localized label for a given media view.
-std::string MediaViewDocumentIdToLabel(std::string root_document_id) {
-  if (root_document_id == arc::kAudioRootDocumentId) {
-    return l10n_util::GetStringUTF8(
-        IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
-  } else if (root_document_id == arc::kImagesRootDocumentId) {
-    return l10n_util::GetStringUTF8(
-        IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL);
-  } else if (root_document_id == arc::kVideosRootDocumentId) {
-    return l10n_util::GetStringUTF8(
-        IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
-  } else if (root_document_id == arc::kDocumentsRootDocumentId) {
-    return l10n_util::GetStringUTF8(
-        IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
-  }
-  NOTREACHED();
+std::string MediaViewDocumentIdToLabel(const base::StringPiece id) {
+  if (id == arc::kAudioRootDocumentId)
+    return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
+
+  if (id == arc::kImagesRootDocumentId)
+    return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL);
+
+  if (id == arc::kVideosRootDocumentId)
+    return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
+
+  if (id == arc::kDocumentsRootDocumentId)
+    return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
+
+  NOTREACHED() << "Unexpected root document ID: " << id;
   return "";
 }
 
@@ -272,30 +272,16 @@ std::ostream& operator<<(std::ostream& out, const VolumeType type) {
   return out << VolumeTypeToString(type);
 }
 
-Volume::Volume()
-    : source_(SOURCE_FILE),
-      type_(VOLUME_TYPE_GOOGLE_DRIVE),
-      mount_condition_(ash::disks::MountCondition::kNone),
-      mount_context_(MOUNT_CONTEXT_UNKNOWN),
-      is_parent_(false),
-      is_read_only_(false),
-      is_read_only_removable_device_(false),
-      has_media_(false),
-      configurable_(false),
-      watchable_(false),
-      hidden_(false) {}
-
+Volume::Volume() = default;
 Volume::~Volume() = default;
 
 // static
-std::unique_ptr<Volume> Volume::CreateForDrive(
-    const base::FilePath& drive_path) {
+std::unique_ptr<Volume> Volume::CreateForDrive(base::FilePath drive_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_GOOGLE_DRIVE;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   volume->source_path_ = drive_path;
   volume->source_ = SOURCE_NETWORK;
-  volume->mount_path_ = drive_path;
+  volume->mount_path_ = std::move(drive_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
@@ -305,13 +291,12 @@ std::unique_ptr<Volume> Volume::CreateForDrive(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForDownloads(
-    const base::FilePath& downloads_path) {
+    base::FilePath downloads_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOWNLOADS_DIRECTORY;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ = downloads_path;
+  volume->mount_path_ = std::move(downloads_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
@@ -343,7 +328,6 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
     volume->drive_label_ = disk->drive_label();
   } else {
     volume->volume_label_ = volume->mount_path().BaseName().AsUTF8Unsafe();
-    volume->device_type_ = ash::DeviceType::kUnknown;
     volume->is_read_only_ =
         (mount_point.mount_type == ash::MountType::kArchive);
   }
@@ -390,7 +374,7 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
-    const base::FilePath& mount_path,
+    base::FilePath mount_path,
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     MountContext mount_context) {
   std::unique_ptr<Volume> volume(new Volume());
@@ -413,7 +397,7 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 
   volume->type_ = VOLUME_TYPE_PROVIDED;
   volume->file_system_type_ = util::kFuseBox;
-  volume->mount_path_ = mount_path;
+  volume->mount_path_ = std::move(mount_path);
   volume->mount_context_ = mount_context;
 
   volume->is_parent_ = true;
@@ -434,17 +418,17 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
-                                             const std::string& label,
+std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
+                                             std::string label,
                                              bool read_only) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->mount_path_ = mount_path;
   volume->is_parent_ = true;
   volume->is_read_only_ = read_only;
-  volume->volume_id_ = kMtpVolumeIdPrefix + label;
-  volume->volume_label_ = label;
-  volume->source_path_ = mount_path;
+  volume->volume_id_ = base::StrCat({kMtpVolumeIdPrefix, label});
+  volume->volume_label_ = std::move(label);
+  volume->source_path_ = std::move(mount_path);
   volume->source_ = SOURCE_DEVICE;
   volume->device_type_ = ash::DeviceType::kMobile;
 
@@ -456,23 +440,22 @@ std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
-    const base::FilePath& mount_path,
-    const std::string& label,
-    bool read_only) {
+std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(base::FilePath mount_path,
+                                                    std::string label,
+                                                    bool read_only) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->file_system_type_ = util::kFuseBox;
   volume->device_type_ = ash::DeviceType::kMobile;
   volume->source_path_ = mount_path;
   volume->source_ = SOURCE_DEVICE;
-  volume->mount_path_ = mount_path;
+  volume->mount_path_ = std::move(mount_path);
   volume->is_parent_ = true;
   volume->is_read_only_ = read_only;
   // "fusebox" prefix the original MTP volume id.
   volume->volume_id_ =
       base::StrCat({util::kFuseBox, kMtpVolumeIdPrefix, label});
-  volume->volume_label_ = label;
+  volume->volume_label_ = std::move(label);
   if (ash::features::IsFileManagerFuseBoxDebugEnabled())
     volume->volume_label_.insert(0, "fusebox ");
 
@@ -489,7 +472,6 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
     const std::string& root_document_id) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MEDIA_VIEW;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
@@ -503,15 +485,14 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
-    const base::FilePath& sshfs_mount_path,
-    const base::FilePath& remote_mount_path) {
+    base::FilePath sshfs_mount_path,
+    base::FilePath remote_mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_CROSTINI;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ = sshfs_mount_path;
-  volume->remote_mount_path_ = remote_mount_path;
+  volume->mount_path_ = std::move(sshfs_mount_path);
+  volume->remote_mount_path_ = std::move(remote_mount_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
@@ -521,20 +502,19 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
-    const std::string display_name,
-    const base::FilePath& sftp_mount_path,
-    const base::FilePath& remote_mount_path,
+    std::string display_name,
+    base::FilePath sftp_mount_path,
+    base::FilePath remote_mount_path,
     const guest_os::VmType vm_type) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = vm_type == guest_os::VmType::ARCVM ? VOLUME_TYPE_ANDROID_FILES
                                                      : VOLUME_TYPE_GUEST_OS;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ = sftp_mount_path;
-  volume->remote_mount_path_ = remote_mount_path;
+  volume->mount_path_ = std::move(sftp_mount_path);
+  volume->remote_mount_path_ = std::move(remote_mount_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
-  volume->volume_label_ = display_name;
+  volume->volume_label_ = std::move(display_name);
   volume->watchable_ = true;
   volume->vm_type_ = vm_type;
   return volume;
@@ -542,16 +522,15 @@ std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
-    const base::FilePath& mount_path) {
+    base::FilePath mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_ANDROID_FILES;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ = mount_path;
+  volume->mount_path_ = std::move(mount_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
-      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
+      GetStringUTF8(IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -567,7 +546,6 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     bool read_only) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOCUMENTS_PROVIDER;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ =
@@ -586,16 +564,15 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForSmb(const base::FilePath& mount_point,
-                                             const std::string display_name) {
+std::unique_ptr<Volume> Volume::CreateForSmb(base::FilePath mount_point,
+                                             std::string display_name) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_SMB;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_NETWORK;
-  volume->mount_path_ = mount_point;
+  volume->mount_path_ = std::move(mount_point);
   volume->volume_id_ = GenerateVolumeId(*volume);
-  volume->volume_label_ = display_name;
+  volume->volume_label_ = std::move(display_name);
   volume->watchable_ = false;
   volume->is_read_only_ = false;
   return volume;
@@ -606,14 +583,12 @@ std::unique_ptr<Volume> Volume::CreateForSmb(const base::FilePath& mount_point,
 // through ImageLoader, which needs a Volume present to be able to read from the
 // directory.
 // static
-std::unique_ptr<Volume> Volume::CreateForShareCache(
-    const base::FilePath& mount_path) {
+std::unique_ptr<Volume> Volume::CreateForShareCache(base::FilePath mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_SYSTEM_INTERNAL;
-  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ = mount_path;
+  volume->mount_path_ = std::move(mount_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = false;
   volume->is_read_only_ = true;
@@ -622,57 +597,52 @@ std::unique_ptr<Volume> Volume::CreateForShareCache(
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForTesting(
-    const base::FilePath& path,
-    VolumeType volume_type,
-    ash::DeviceType device_type,
-    bool read_only,
-    const base::FilePath& device_path,
-    const std::string& drive_label,
-    const std::string& file_system_type,
-    bool hidden,
-    bool watchable) {
+std::unique_ptr<Volume> Volume::CreateForTesting(base::FilePath path,
+                                                 VolumeType volume_type,
+                                                 ash::DeviceType device_type,
+                                                 bool read_only,
+                                                 base::FilePath device_path,
+                                                 std::string drive_label,
+                                                 std::string file_system_type,
+                                                 bool hidden,
+                                                 bool watchable) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = volume_type;
   volume->device_type_ = device_type;
   // Keep source_path empty.
   volume->source_ = SOURCE_DEVICE;
-  volume->mount_path_ = path;
-  volume->storage_device_path_ = device_path;
+  volume->mount_path_ = std::move(path);
+  volume->storage_device_path_ = std::move(device_path);
   volume->is_read_only_ = read_only;
   volume->volume_id_ = GenerateVolumeId(*volume);
-  volume->drive_label_ = drive_label;
-  if (volume_type == VOLUME_TYPE_REMOVABLE_DISK_PARTITION) {
-    volume->file_system_type_ = file_system_type;
-  }
+  volume->drive_label_ = std::move(drive_label);
+  volume->file_system_type_ = std::move(file_system_type);
   volume->hidden_ = hidden;
   volume->watchable_ = watchable;
   return volume;
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForTesting(
-    const base::FilePath& device_path,
-    const base::FilePath& mount_path) {
+std::unique_ptr<Volume> Volume::CreateForTesting(base::FilePath device_path,
+                                                 base::FilePath mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
-  volume->storage_device_path_ = device_path;
-  volume->mount_path_ = mount_path;
+  volume->storage_device_path_ = std::move(device_path);
+  volume->mount_path_ = std::move(mount_path);
   return volume;
 }
 
 // static
 std::unique_ptr<Volume> Volume::CreateForTesting(
-    const base::FilePath& path,
+    base::FilePath path,
     VolumeType volume_type,
     absl::optional<guest_os::VmType> vm_type,
-    absl::optional<base::FilePath> source_path) {
+    base::FilePath source_path) {
   std::unique_ptr<Volume> volume(new Volume());
-  volume->mount_path_ = path;
+  volume->mount_path_ = std::move(path);
   volume->type_ = volume_type;
   volume->vm_type_ = vm_type;
   volume->volume_id_ = GenerateVolumeId(*volume);
-  if (source_path.has_value())
-    volume->source_path_ = std::move(source_path.value());
+  volume->source_path_ = std::move(source_path);
   return volume;
 }
 
@@ -1004,20 +974,19 @@ bool VolumeManager::RegisterCrostiniDirectoryForTesting(
   return true;
 }
 
-void VolumeManager::AddVolumeForTesting(const base::FilePath& path,
+void VolumeManager::AddVolumeForTesting(base::FilePath path,
                                         VolumeType volume_type,
                                         ash::DeviceType device_type,
                                         bool read_only,
-                                        const base::FilePath& device_path,
-                                        const std::string& drive_label,
-                                        const std::string& file_system_type,
+                                        base::FilePath device_path,
+                                        std::string drive_label,
+                                        std::string file_system_type,
                                         bool hidden,
                                         bool watchable) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoMountEvent(ash::MountError::kNone,
-               Volume::CreateForTesting(path, volume_type, device_type,
-                                        read_only, device_path, drive_label,
-                                        file_system_type, hidden, watchable));
+  AddVolumeForTesting(Volume::CreateForTesting(
+      std::move(path), volume_type, device_type, read_only,
+      std::move(device_path), std::move(drive_label),
+      std::move(file_system_type), hidden, watchable));
 }
 
 void VolumeManager::AddVolumeForTesting(std::unique_ptr<Volume> volume) {
