@@ -8,6 +8,8 @@
 
 namespace promos_manager {
 
+const int kLastSeenDayPromoNotFound = -1;
+
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 Promo PromoForName(std::string promo) {

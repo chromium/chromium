@@ -6,9 +6,11 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+#import <vector>
 
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 
 // Centralized promos manager for coordinating and scheduling the display of
@@ -38,6 +40,20 @@ class PromosManager {
 
   // Impression limits that count against any given promo.
   NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits();
+
+  // Returns the most recent day (int) that `promo` was seen by the user.
+  //
+  // A day (int) is represented as the number of days since the Unix epoch
+  // (running from UTC midnight to UTC midnight).
+  //
+  // Assumes that `sorted_impressions` is sorted by day (most recent -> least
+  // recent).
+  //
+  // Returns promos_manager::kLastSeenDayPromoNotFound if `promo` isn't
+  // found in the impressions list.
+  int LastSeenDay(
+      promos_manager::Promo promo,
+      std::vector<promos_manager::Impression>& sorted_impressions) const;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
