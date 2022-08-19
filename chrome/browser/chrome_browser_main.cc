@@ -256,11 +256,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(port): several win-only methods have been pulled out of this, but
-// BrowserMain() as a whole needs to be broken apart so that it's usable by
-// other platforms. For now, it's just a stub. This is a serious work in
-// progress and should not be taken as an indication of a real refactoring.
-
 #if BUILDFLAG(IS_WIN)
 #include "base/trace_event/trace_event_etw_export_win.h"
 #include "base/win/win_util.h"
