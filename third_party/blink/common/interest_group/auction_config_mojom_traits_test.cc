@@ -26,11 +26,13 @@ bool operator==(const AuctionConfig::NonSharedParams& a,
   return std::tie(a.interest_group_buyers, a.auction_signals, a.seller_signals,
                   a.seller_timeout, a.per_buyer_signals, a.per_buyer_timeouts,
                   a.all_buyers_timeout, a.per_buyer_group_limits,
-                  a.all_buyers_group_limit, a.component_auctions) ==
+                  a.all_buyers_group_limit, a.per_buyer_priority_signals,
+                  a.all_buyers_priority_signals, a.component_auctions) ==
          std::tie(b.interest_group_buyers, b.auction_signals, b.seller_signals,
                   b.seller_timeout, b.per_buyer_signals, b.per_buyer_timeouts,
                   b.all_buyers_timeout, b.per_buyer_group_limits,
-                  b.all_buyers_group_limit, b.component_auctions);
+                  b.all_buyers_group_limit, b.per_buyer_priority_signals,
+                  b.all_buyers_priority_signals, b.component_auctions);
 }
 
 bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
@@ -82,6 +84,11 @@ AuctionConfig CreateFullConfig() {
   non_shared_params.all_buyers_timeout = base::Seconds(9);
   non_shared_params.per_buyer_group_limits[buyer] = 10;
   non_shared_params.all_buyers_group_limit = 11;
+  non_shared_params.per_buyer_priority_signals.emplace();
+  (*non_shared_params.per_buyer_priority_signals)[buyer] = {
+      {"hats", 1.5}, {"for", 0}, {"sale", -2}};
+  non_shared_params.all_buyers_priority_signals = {
+      {"goats", -1.5}, {"for", 5}, {"sale", 0}};
 
   return auction_config;
 }
@@ -154,6 +161,28 @@ TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
 TEST(AuctionConfigMojomTraitsTest, FullConfig) {
   AuctionConfig auction_config = CreateFullConfig();
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+}
+
+TEST(AuctionConfigMojomTraitsTest,
+     perBuyerPrioritySignalsCannotOverrideBrowserSignals) {
+  const url::Origin kBuyer = url::Origin::Create(GURL("https://buyer.test"));
+
+  AuctionConfig auction_config = CreateBasicConfig();
+  auction_config.non_shared_params.interest_group_buyers.emplace();
+  auction_config.non_shared_params.interest_group_buyers->push_back(kBuyer);
+  auction_config.non_shared_params.per_buyer_priority_signals.emplace();
+  (*auction_config.non_shared_params.per_buyer_priority_signals)[kBuyer] = {
+      {"browserSignals.hats", 1}};
+
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
+TEST(AuctionConfigMojomTraitsTest,
+     allBuyersPrioritySignalsCannotOverrideBrowserSignals) {
+  AuctionConfig auction_config = CreateBasicConfig();
+  auction_config.non_shared_params.all_buyers_priority_signals = {
+      {"browserSignals.goats", 2}};
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, BuyerNotHttps) {

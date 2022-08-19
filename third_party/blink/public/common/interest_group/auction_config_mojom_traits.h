@@ -67,6 +67,19 @@ struct BLINK_COMMON_EXPORT
     return params.all_buyers_group_limit;
   }
 
+  static const absl::optional<
+      base::flat_map<url::Origin, base::flat_map<std::string, double>>>&
+  per_buyer_priority_signals(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_priority_signals;
+  }
+
+  static const absl::optional<base::flat_map<std::string, double>>&
+  all_buyers_priority_signals(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.all_buyers_priority_signals;
+  }
+
   static const std::vector<blink::AuctionConfig>& component_auctions(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.component_auctions;

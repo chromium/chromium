@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +49,23 @@ namespace auction_worklet {
 
 namespace {
 
+bool InsertPrioritySignals(
+    AuctionV8Helper* v8_helper,
+    base::StringPiece key,
+    const base::flat_map<std::string, double>& priority_signals,
+    v8::Local<v8::Object> object) {
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Object> v8_priority_signals = v8::Object::New(isolate);
+  for (const auto& signal : priority_signals) {
+    if (!v8_helper->InsertValue(signal.first,
+                                v8::Number::New(isolate, signal.second),
+                                v8_priority_signals)) {
+      return false;
+    }
+  }
+  return v8_helper->InsertValue(key, v8_priority_signals, object);
+}
+
 // Converts `auction_config` back to JSON format, and appends to args.
 // Returns true if conversion succeeded.
 //
@@ -67,8 +85,12 @@ namespace {
 //                       'https://www.another-buyer.com': 200,
 //                       '*': 150,
 //                       ...},
+//  'perBuyerPrioritySignals': {'https://www.example-dsp.com': {...},
+//                              'https://www.another-buyer.com': {...},
+//                              '*': {...},
+//                              ...},
 // }
-bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
+bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          v8::Local<v8::Context> context,
                          const GURL& decision_logic_url,
                          const absl::optional<GURL>& trusted_coding_signals_url,
@@ -165,6 +187,30 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   }
   if (!per_buyer_timeouts.IsEmpty())
     auction_config_dict.Set("perBuyerTimeouts", per_buyer_timeouts);
+
+  if (auction_ad_config_non_shared_params.per_buyer_priority_signals ||
+      auction_ad_config_non_shared_params.all_buyers_priority_signals) {
+    v8::Local<v8::Object> per_buyer_priority_signals = v8::Object::New(isolate);
+    if (auction_ad_config_non_shared_params.per_buyer_priority_signals) {
+      for (const auto& kv :
+           *auction_ad_config_non_shared_params.per_buyer_priority_signals) {
+        if (!InsertPrioritySignals(v8_helper, kv.first.Serialize(), kv.second,
+                                   per_buyer_priority_signals)) {
+          return false;
+        }
+      }
+    }
+    if (auction_ad_config_non_shared_params.all_buyers_priority_signals) {
+      if (!InsertPrioritySignals(
+              v8_helper, "*",
+              *auction_ad_config_non_shared_params.all_buyers_priority_signals,
+              per_buyer_priority_signals)) {
+        return false;
+      }
+    }
+    auction_config_dict.Set("perBuyerPrioritySignals",
+                            per_buyer_priority_signals);
+  }
 
   const auto& component_auctions =
       auction_ad_config_non_shared_params.component_auctions;

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -506,7 +508,16 @@ class SellerWorkletTest : public testing::Test {
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
                const std::vector<std::string>& errors) {
-              EXPECT_EQ(expected_signals_for_winner, signals_for_winner);
+              if (signals_for_winner && expected_signals_for_winner) {
+                // If neither is null, used fancy base::Value comparison, which
+                // removes dependencies on JSON serialization order and format,
+                // and has better error output.
+                EXPECT_THAT(base::test::ParseJson(*signals_for_winner),
+                            base::test::IsJson(*expected_signals_for_winner));
+              } else {
+                // Otherwise, just compare the optional strings directly.
+                EXPECT_EQ(expected_signals_for_winner, signals_for_winner);
+              }
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_pa_requests, pa_requests);
@@ -2201,6 +2212,11 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   auction_ad_config_non_shared_params_.all_buyers_timeout =
       base::Milliseconds(150);
 
+  auction_ad_config_non_shared_params_.per_buyer_priority_signals = {
+      {url::Origin::Create(GURL("https://a.com")), {{"signals_c", 0.5}}}};
+  auction_ad_config_non_shared_params_.all_buyers_priority_signals = {
+      {"signals_d", 0}};
+
   // Add and populate two component auctions, each with one the mandatory
   // `seller` and `decision_logic_url` fields filled in, one one extra field:
   // One that's directly a member of the AuctionAdConfig, and one that's in the
@@ -2226,22 +2242,27 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       GURL("https://component2.com/signals.json");
 
   const char kExpectedJson[] =
-      R"({"seller":"https://example.com",)"
-      R"("decisionLogicUrl":"https://example.com/auction.js",)"
-      R"("trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",)"
-      R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"],)"
-      R"("auctionSignals":{"is_auction_signals":true},)"
-      R"("sellerSignals":{"is_seller_signals":true},)"
-      R"("sellerTimeout":200,)"
-      R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
-      R"("https://b.com":{"signals_b":"B"}},)"
-      R"("perBuyerTimeouts":{"https://a.com":100,"*":150},)"
-      R"("componentAuctions":[{"seller":"https://component1.com",)"
-      R"("decisionLogicUrl":"https://component1.com/script.js",)"
-      R"("sellerTimeout":111},)"
-      R"({"seller":"https://component2.com",)"
-      R"("decisionLogicUrl":"https://component2.com/script.js",)"
-      R"("trustedScoringSignalsUrl":"https://component2.com/signals.json"}]})";
+      R"({"seller":"https://example.com",
+          "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
+          "interestGroupBuyers":["https://buyer1.com",
+                                 "https://another-buyer.com"],
+          "auctionSignals":{"is_auction_signals":true},
+          "sellerSignals":{"is_seller_signals":true},
+          "sellerTimeout":200,
+          "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
+                             "https://b.com":{"signals_b":"B"}},
+          "perBuyerTimeouts":{"https://a.com":100,"*":150},
+          "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
+                                     "*":            {"signals_d":0}},
+          "componentAuctions":[
+              {"seller":"https://component1.com",
+               "decisionLogicUrl":"https://component1.com/script.js",
+               "sellerTimeout":111},
+              {"seller":"https://component2.com",
+               "decisionLogicUrl":"https://component2.com/script.js",
+               "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
+          ]})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson,
       /*expected_report_url=*/absl::nullopt);

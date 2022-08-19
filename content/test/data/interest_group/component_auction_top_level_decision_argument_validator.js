@@ -37,6 +37,11 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
+  if (Object.keys(auctionConfig).length !== 10) {
+    throw 'Wrong number of auctionConfig fields ' +
+        JSON.stringify(auctionConfig);
+  }
+
   if (!auctionConfig.seller.includes('b.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
 
@@ -66,16 +71,26 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
   if (auctionConfig.sellerTimeout !== 300)
     throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
+
   const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
   if (!perBuyerSignalsJson.includes('a.test') ||
       !perBuyerSignalsJson.includes('["top-level buyer signals"]')) {
     throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
   }
+
   const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
   if (!perBuyerTimeoutsJson.includes('a.test') ||
       !perBuyerTimeoutsJson.includes('110') ||
       auctionConfig.perBuyerTimeouts['*'] != 150) {
     throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+  }
+
+  const perBuyerPrioritySignalsJson =
+      JSON.stringify(auctionConfig.perBuyerPrioritySignals);
+  if (Object.keys(auctionConfig.perBuyerPrioritySignals).length !== 1 ||
+      JSON.stringify(auctionConfig.perBuyerPrioritySignals['*']) !==
+          '{"foo":3}') {
+    throw 'Wrong perBuyerTimeouts ' + perBuyerPrioritySignalsJson;
   }
 
   // Check componentAuctions. Don't check all fields of the expected component

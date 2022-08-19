@@ -786,6 +786,61 @@ bool CopyPerBuyerGroupLimitsFromIdlToMojo(
   return true;
 }
 
+bool ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    const Vector<std::pair<WTF::String, double>>& priority_signals_in,
+    WTF::HashMap<WTF::String, double>& priority_signals_out) {
+  for (const auto& key_value_pair : priority_signals_in) {
+    if (key_value_pair.first.StartsWith("browserSignals.")) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerPrioritySignals key", key_value_pair.first,
+          "must not start with reserved \"browserSignals.\" prefix."));
+      return false;
+    }
+    priority_signals_out.insert(key_value_pair.first, key_value_pair.second);
+  }
+  return true;
+}
+
+bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerPrioritySignals())
+    return true;
+
+  output.auction_ad_config_non_shared_params->per_buyer_priority_signals
+      .emplace();
+  for (const auto& per_buyer_priority_signals :
+       input.perBuyerPrioritySignals()) {
+    WTF::HashMap<WTF::String, double> signals;
+    if (!ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
+            exception_state, input, per_buyer_priority_signals.second,
+            signals)) {
+      return false;
+    }
+    if (per_buyer_priority_signals.first == "*") {
+      output.auction_ad_config_non_shared_params->all_buyers_priority_signals =
+          std::move(signals);
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_priority_signals.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerPrioritySignals buyer",
+          per_buyer_priority_signals.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->per_buyer_priority_signals
+        ->insert(buyer, std::move(signals));
+  }
+
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure.
@@ -816,7 +871,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
                                               config, *mojo_config) ||
       !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
-                                            config, *mojo_config)) {
+                                            config, *mojo_config) ||
+      !CopyPerBuyerPrioritySignalsFromIdlToMojo(exception_state, config,
+                                                *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

@@ -4,6 +4,10 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -24,6 +28,17 @@ bool IsHttpsAndMatchesOrigin(const GURL& seller_url,
          url::Origin::Create(seller_url) == seller_origin;
 }
 
+// Validates no key in `buyer_priority_signals` starts with "browserSignals.",
+// which are reserved for values set by the browser.
+bool AreBuyerPrioritySignalsValid(
+    const base::flat_map<std::string, double>& buyer_priority_signals) {
+  for (const auto& priority_signal : buyer_priority_signals) {
+    if (base::StartsWith(priority_signal.first, "browserSignals."))
+      return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
@@ -38,6 +53,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadPerBuyerTimeouts(&out->per_buyer_timeouts) ||
       !data.ReadAllBuyersTimeout(&out->all_buyers_timeout) ||
       !data.ReadPerBuyerGroupLimits(&out->per_buyer_group_limits) ||
+      !data.ReadPerBuyerPrioritySignals(&out->per_buyer_priority_signals) ||
+      !data.ReadAllBuyersPrioritySignals(&out->all_buyers_priority_signals) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }
@@ -52,11 +69,22 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     }
   }
 
+  if (out->per_buyer_priority_signals) {
+    for (const auto& per_buyer_priority_signals :
+         *out->per_buyer_priority_signals) {
+      if (!AreBuyerPrioritySignalsValid(per_buyer_priority_signals.second))
+        return false;
+    }
+  }
+  if (out->all_buyers_priority_signals &&
+      !AreBuyerPrioritySignalsValid(*out->all_buyers_priority_signals)) {
+    return false;
+  }
+
   for (const auto& component_auction : out->component_auctions) {
     // Component auctions may not have their own nested component auctions.
-    if (!component_auction.non_shared_params.component_auctions.empty()) {
+    if (!component_auction.non_shared_params.component_auctions.empty())
       return false;
-    }
   }
 
   return true;

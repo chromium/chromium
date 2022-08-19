@@ -26,6 +26,11 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
+  if (Object.keys(auctionConfig).length !== 10) {
+    throw 'Wrong number of auctionConfig fields ' +
+        JSON.stringify(auctionConfig);
+  }
+
   if (!auctionConfig.seller.includes('b.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
 
@@ -47,8 +52,13 @@ function validateAuctionConfig(auctionConfig) {
   if (auctionConfig.interestGroupBuyers.length !== 2 ||
       !auctionConfig.interestGroupBuyers[0].startsWith('https://a.test') ||
       !auctionConfig.interestGroupBuyers[1].startsWith('https://d.test')) {
-    throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
+    throw 'Wrong interestGroupBuyers ' +
+        JSON.stringify(auctionConfig.interestGroupBuyers);
   }
+
+  const buyerAOrigin = auctionConfig.interestGroupBuyers[0];
+  const buyerBOrigin = auctionConfig.interestGroupBuyers[1];
+
   // If auctionSignals is passed as a JSON string instead of an object,
   // stringify() will wrap it in another layer of quotes, causing the test to
   // fail. The order of properties produced by stringify() isn't guaranteed by
@@ -62,18 +72,28 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
   if (auctionConfig.sellerTimeout !== 200)
     throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
-  const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
-  if (!perBuyerSignalsJson.includes('a.test') ||
-      !perBuyerSignalsJson.includes('{"signalsForBuyer":1}')) {
-    throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
+
+  if (JSON.stringify(auctionConfig.perBuyerSignals[buyerAOrigin]) !==
+          '{"signalsForBuyer":1}') {
+    throw 'Wrong perBuyerSignals ' +
+        JSON.stringify(auctionConfig.perBuyerSignals);
   }
-  const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
-  if (!perBuyerTimeoutsJson.includes('a.test') ||
-      !perBuyerTimeoutsJson.includes('110') ||
-      !perBuyerTimeoutsJson.includes('d.test') ||
-      !perBuyerTimeoutsJson.includes('120') ||
-      auctionConfig.perBuyerTimeouts['*'] != 150) {
-    throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+
+  if (auctionConfig.perBuyerTimeouts[buyerAOrigin] !== 110 ||
+      auctionConfig.perBuyerTimeouts[buyerBOrigin] !== 120 ||
+      auctionConfig.perBuyerTimeouts['*'] !== 150) {
+    throw 'Wrong perBuyerTimeouts ' +
+        JSON.stringify(auctionConfig.perBuyerTimeouts);
+  }
+
+  const perBuyerPrioritySignals = auctionConfig.perBuyerPrioritySignals;
+  if (Object.keys(perBuyerPrioritySignals).length !== 2 ||
+      JSON.stringify(perBuyerPrioritySignals[buyerAOrigin]) !==
+         '{"foo":1}' ||
+      JSON.stringify(perBuyerPrioritySignals['*']) !==
+         '{"BaR":-2}') {
+    throw 'Wrong perBuyerPrioritySignals ' +
+        JSON.stringify(perBuyerPrioritySignals);
   }
 
   if ('componentAuctions' in auctionConfig) {

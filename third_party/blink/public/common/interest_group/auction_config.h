@@ -75,6 +75,19 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     std::uint16_t all_buyers_group_limit =
         std::numeric_limits<std::uint16_t>::max();
 
+    // Per-buyer sparse vector that, along with a similar per-interest group
+    // sparse vector, has its dot product taken to calculate interest group
+    // priorities.
+    absl::optional<
+        base::flat_map<url::Origin, base::flat_map<std::string, double>>>
+        per_buyer_priority_signals;
+
+    // Merged with `per_buyer_priority_signals` before calculating
+    // per-interest group priorities. In the case both have entries with the
+    // same key, the entry in `per_buyer_priority_signals` takes precedence.
+    absl::optional<base::flat_map<std::string, double>>
+        all_buyers_priority_signals;
+
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.
     std::vector<AuctionConfig> component_auctions;

@@ -36,6 +36,11 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
+  if (Object.keys(auctionConfig).length !== 10) {
+    throw 'Wrong number of auctionConfig fields ' +
+        JSON.stringify(auctionConfig);
+  }
+
   if (!auctionConfig.seller.includes('d.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
 
@@ -55,6 +60,8 @@ function validateAuctionConfig(auctionConfig) {
       !auctionConfig.interestGroupBuyers[0].startsWith('https://a.test')) {
     throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
   }
+  const buyerOrigin = auctionConfig.interestGroupBuyers[0];
+
   // If auctionSignals is passed as a JSON string instead of an object,
   // stringify() will wrap it in another layer of quotes, causing the test to
   // fail.
@@ -66,15 +73,26 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJson;
   if (auctionConfig.sellerTimeout !== 200)
     throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
-  const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
-  if (!perBuyerSignalsJson.includes('a.test') ||
-      !perBuyerSignalsJson.includes('["component buyer signals"]')) {
-    throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
+
+  if (JSON.stringify(auctionConfig.perBuyerSignals[buyerOrigin]) !==
+          '["component buyer signals"]') {
+    throw 'Wrong perBuyerSignals ' +
+        JSON.stringify(auctionConfig.perBuyerSignals);
   }
-  const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
-  if (!perBuyerTimeoutsJson.includes('a.test') ||
-      !perBuyerTimeoutsJson.includes('200')) {
-    throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+
+  if (auctionConfig.perBuyerTimeouts[buyerOrigin] !== 200) {
+    throw 'Wrong perBuyerTimeouts ' +
+        JSON.stringify(auctionConfig.perBuyerTimeouts);
+  }
+
+  const perBuyerPrioritySignals = auctionConfig.perBuyerPrioritySignals;
+  if (Object.keys(perBuyerPrioritySignals).length !== 2 ||
+      JSON.stringify(perBuyerPrioritySignals[buyerOrigin]) !==
+         '{"bar":1}' ||
+      JSON.stringify(perBuyerPrioritySignals['*']) !==
+         '{"BaZ":-2}') {
+    throw 'Wrong perBuyerPrioritySignals ' +
+        JSON.stringify(perBuyerPrioritySignals);
   }
 
   if ('componentAuctions' in auctionConfig) {

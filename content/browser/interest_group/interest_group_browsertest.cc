@@ -2771,6 +2771,38 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidPerBuyerPrioritySignals) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'perBuyerPrioritySignals' property from 'AuctionAdConfig': The "
+      "provided double value is non-finite.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerPrioritySignals: {
+          'https://foo.com/':{"key": "Values must be numbers"}
+      }
+  })"));
+  WaitForAccessObserved({});
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "perBuyerPrioritySignals key 'browserSignals.thisPrefixIsReserved' for "
+      "AuctionAdConfig with seller 'https://test.com' must not start with "
+      "reserved \"browserSignals.\" prefix.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerPrioritySignals: {
+          'https://foo.com/':{"browserSignals.thisPrefixIsReserved": 1}
+      }
+  })"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidComponentAuctionsArray) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
 
@@ -5925,7 +5957,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     sellerSignals: {signals: 'from', the: ['seller']},
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
-    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150}
+    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
                       url::Origin::Create(seller_script_url), seller_script_url,
@@ -6002,7 +6035,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerSignals: {signals: 'from', the: ['seller']},
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
-    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150}
+    perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
                       url::Origin::Create(seller_script_url), seller_script_url,
@@ -6093,6 +6127,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerTimeout: 300,
     perBuyerSignals: {$7: ["top-level buyer signals"]},
     perBuyerTimeouts: {$7: 110, '*': 150},
+    perBuyerPrioritySignals: {'*': {foo: 3}},
     componentAuctions: [{
       seller: $4,
       decisionLogicUrl: $5,
@@ -6103,6 +6138,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       sellerTimeout: 200,
       perBuyerSignals: {$7: ["component buyer signals"]},
       perBuyerTimeouts: {$7: 200},
+      perBuyerPrioritySignals: {$7: {bar: 1}, '*': {BaZ: -2}},
     }],
   });
 })())",

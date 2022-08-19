@@ -107,6 +107,22 @@ struct AuctionAdConfigNonSharedParams {
   // that can participate in an auction. Values must be greater than 0.
   map<url.mojom.Origin, uint16> per_buyer_group_limits;
 
+  // Per-buyer sparse vector that, along with a similar per-interest group
+  // sparse vector, has its dot product taken to calculate interest group
+  // priorities.
+  //
+  // No signals key start with "browserSignals.", which is reserved for
+  // values coming from the browser.
+  map<url.mojom.Origin, map<string, double>>? per_buyer_priority_signals;
+
+  // Merged with `per_buyer_priority_signals` before calculating
+  // per-interest group priorities. In the case both have entries with the
+  // same key, the entry in `per_buyer_priority_signals` takes precedence.
+  //
+  // No signals key start with "browserSignals.", which is reserved for
+  // values coming from the browser.
+  map<string, double>? all_buyers_priority_signals;
+
   // Limit on the number of bidding interest groups for any buyer. Must be
   // greater than 0. Defaults to the largest uint16 value, which is fine
   // in our case since the backend storage applies a lower limit.
