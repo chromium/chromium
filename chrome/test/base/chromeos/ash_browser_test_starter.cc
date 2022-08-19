@@ -41,7 +41,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary},
+      {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary,
+       chromeos::features::kLacrosOnly},
       {});
   command_line->AppendSwitch("enable-wayland-server");
   command_line->AppendSwitch("no-startup-window");
