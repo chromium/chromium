@@ -5333,7 +5333,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5704,7 +5704,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -5816,7 +5816,7 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6605,7 +6605,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -6717,7 +6717,7 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7516,7 +7516,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7626,7 +7626,7 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -8419,7 +8419,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -8529,7 +8529,7 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--retry-limit=3",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {

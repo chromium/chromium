@@ -1215,7 +1215,7 @@
       'args': [
         '--extra-browser-args=--force_high_performance_gpu',
         '--retry-limit=3',
-        '--jobs=4',
+        '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
       ],
       'linux_args': [
         '--extra-browser-args=--enable-features=Vulkan',
