@@ -12,10 +12,8 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -28,7 +26,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -71,12 +68,10 @@ bool SpellingServiceClient::RequestTextCheck(
   DCHECK(pref);
 
   std::string dictionary;
-  const base::Value* dicts_list =
-      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  DCHECK(dicts_list->is_list());
-  base::Value::ConstListView dicts_lists_view = dicts_list->GetListDeprecated();
-  if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
-    dictionary = dicts_lists_view[0].GetString();
+  const base::Value::List& dicts_list =
+      pref->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+  if (0u < dicts_list.size() && dicts_list[0].is_string())
+    dictionary = dicts_list[0].GetString();
 
   std::string language_code;
   std::string country_code;
@@ -180,12 +175,10 @@ bool SpellingServiceClient::IsAvailable(content::BrowserContext* context,
   // If the locale for spelling has not been set, the user has not decided to
   // use spellcheck so we don't do anything remote (suggest or spelling).
   std::string locale;
-  const base::Value* dicts_list =
-      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  DCHECK(dicts_list->is_list());
-  base::Value::ConstListView dicts_lists_view = dicts_list->GetListDeprecated();
-  if (0u < dicts_lists_view.size() && dicts_lists_view[0].is_string())
-    locale = dicts_lists_view[0].GetString();
+  const auto& dicts_list =
+      pref->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+  if (0u < dicts_list.size() && dicts_list[0].is_string())
+    locale = dicts_list[0].GetString();
 
   if (locale.empty())
     return false;
