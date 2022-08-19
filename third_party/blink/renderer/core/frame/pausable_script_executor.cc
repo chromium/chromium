@@ -143,35 +143,21 @@ void PromiseAggregator::OnAllSettled(v8::Isolate* isolate) {
 
 class WebScriptExecutor : public PausableScriptExecutor::Executor {
  public:
-  WebScriptExecutor(Vector<WebScriptSource>,
-                    int32_t world_id,
-                    mojom::blink::UserActivationOption);
+  WebScriptExecutor(Vector<WebScriptSource>, int32_t world_id);
 
   Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
  private:
   Vector<WebScriptSource> sources_;
   int32_t world_id_;
-  mojom::blink::UserActivationOption user_gesture_;
 };
 
-WebScriptExecutor::WebScriptExecutor(
-    Vector<WebScriptSource> sources,
-    int32_t world_id,
-    mojom::blink::UserActivationOption user_gesture)
-    : sources_(std::move(sources)),
-      world_id_(world_id),
-      user_gesture_(user_gesture) {}
+WebScriptExecutor::WebScriptExecutor(Vector<WebScriptSource> sources,
+                                     int32_t world_id)
+    : sources_(std::move(sources)), world_id_(world_id) {}
 
 Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
     LocalDOMWindow* window) {
-  if (user_gesture_ == mojom::blink::UserActivationOption::kActivate) {
-    // TODO(mustaq): Need to make sure this is safe. https://crbug.com/1082273
-    LocalFrame::NotifyUserActivation(
-        window->GetFrame(),
-        mojom::blink::UserActivationNotificationType::kWebScriptExec);
-  }
-
   Vector<v8::Local<v8::Value>> results;
   for (const auto& source : sources_) {
     // Note: An error event in an isolated world will never be dispatched to
@@ -265,10 +251,40 @@ void PausableScriptExecutor::CreateAndRun(
   }
   PausableScriptExecutor* executor =
       MakeGarbageCollected<PausableScriptExecutor>(
-          window, script_state, want_result_option, std::move(callback),
+          window, script_state,
+          mojom::blink::UserActivationOption::kDoNotActivate,
+          mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+          want_result_option, mojom::blink::PromiseResultOption::kDoNotWait,
+          std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(
               window->GetIsolate(), function, receiver, argc, argv));
   executor->Run();
+}
+
+void PausableScriptExecutor::CreateAndRun(
+    LocalDOMWindow* window,
+    scoped_refptr<DOMWrapperWorld> world,
+    Vector<WebScriptSource> sources,
+    mojom::blink::UserActivationOption user_activation_option,
+    mojom::blink::EvaluationTiming evaluation_timing,
+    mojom::blink::LoadEventBlockingOption blocking_option,
+    mojom::blink::WantResultOption want_result_option,
+    mojom::blink::PromiseResultOption promise_result_option,
+    WebScriptExecutionCallback callback) {
+  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
+      window, ToScriptState(window, *world), user_activation_option,
+      blocking_option, want_result_option, promise_result_option,
+      std::move(callback),
+      MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
+                                              world->GetWorldId()));
+  switch (evaluation_timing) {
+    case mojom::blink::EvaluationTiming::kAsynchronous:
+      executor->RunAsync();
+      break;
+    case mojom::blink::EvaluationTiming::kSynchronous:
+      executor->Run();
+      break;
+  }
 }
 
 void PausableScriptExecutor::ContextDestroyed() {
@@ -285,34 +301,25 @@ void PausableScriptExecutor::ContextDestroyed() {
 
 PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
-    scoped_refptr<DOMWrapperWorld> world,
-    Vector<WebScriptSource> sources,
-    mojom::blink::UserActivationOption user_gesture,
-    mojom::blink::WantResultOption want_result_option,
-    WebScriptExecutionCallback callback)
-    : PausableScriptExecutor(
-          window,
-          ToScriptState(window, *world),
-          want_result_option,
-          std::move(callback),
-          MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
-                                                  world->GetWorldId(),
-                                                  user_gesture)) {}
-
-PausableScriptExecutor::PausableScriptExecutor(
-    LocalDOMWindow* window,
     ScriptState* script_state,
+    mojom::blink::UserActivationOption user_activation_option,
+    mojom::blink::LoadEventBlockingOption blocking_option,
     mojom::blink::WantResultOption want_result_option,
+    mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback,
     Executor* executor)
     : ExecutionContextLifecycleObserver(window),
       script_state_(script_state),
       callback_(std::move(callback)),
-      blocking_option_(mojom::blink::LoadEventBlockingOption::kDoNotBlock),
+      user_activation_option_(user_activation_option),
+      blocking_option_(blocking_option),
       want_result_option_(want_result_option),
+      wait_for_promise_(promise_result_option),
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
+  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
+    window->document()->IncrementLoadEventDelayCount();
 }
 
 PausableScriptExecutor::~PausableScriptExecutor() = default;
@@ -327,14 +334,9 @@ void PausableScriptExecutor::Run() {
   PostExecuteAndDestroySelf(context);
 }
 
-void PausableScriptExecutor::RunAsync(
-    mojom::blink::LoadEventBlockingOption blocking) {
+void PausableScriptExecutor::RunAsync() {
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
-  blocking_option_ = blocking;
-  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
-    To<LocalDOMWindow>(context)->document()->IncrementLoadEventDelayCount();
-
   PostExecuteAndDestroySelf(context);
 }
 
@@ -353,6 +355,15 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
 
   auto* window = To<LocalDOMWindow>(GetExecutionContext());
   ScriptState::Scope script_scope(script_state_);
+
+  if (user_activation_option_ ==
+      mojom::blink::UserActivationOption::kActivate) {
+    // TODO(mustaq): Need to make sure this is safe. https://crbug.com/1082273
+    LocalFrame::NotifyUserActivation(
+        window->GetFrame(),
+        mojom::blink::UserActivationNotificationType::kWebScriptExec);
+  }
+
   Vector<v8::Local<v8::Value>> results = executor_->Execute(window);
 
   // The script may have removed the frame, in which case contextDestroyed()

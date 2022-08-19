@@ -2579,18 +2579,11 @@ void LocalFrame::RequestExecuteScript(
   Vector<WebScriptSource> script_sources;
   script_sources.Append(sources.data(),
                         base::checked_cast<wtf_size_t>(sources.size()));
-  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
+
+  PausableScriptExecutor::CreateAndRun(
       DomWindow(), std::move(world), std::move(script_sources), user_gesture,
-      want_result_option, std::move(callback));
-  executor->set_wait_for_promise(promise_behavior);
-  switch (evaluation_timing) {
-    case mojom::blink::EvaluationTiming::kAsynchronous:
-      executor->RunAsync(blocking_option);
-      break;
-    case mojom::blink::EvaluationTiming::kSynchronous:
-      executor->Run();
-      break;
-  }
+      evaluation_timing, blocking_option, want_result_option, promise_behavior,
+      std::move(callback));
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
