@@ -86,4 +86,7 @@ builder(
     auto_builder_dimension = False,
     # TODO(crbug/1346396) Figure out what machines the runnner should run on
     pool = ci.DEFAULT_POOL,
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
