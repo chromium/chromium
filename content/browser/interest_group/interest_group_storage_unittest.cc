@@ -739,6 +739,9 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup full(
       /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
       /*name=*/"full", /*priority=*/1.0,
+      /*enable_bidding_signals_prioritization=*/false,
+      /*priority_vector=*/absl::nullopt,
+      /*priority_signals_overrides=*/absl::nullopt,
       /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
       /*bidding_url=*/GURL("https://full.example.com/bid"),
       /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),

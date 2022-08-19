@@ -36,6 +36,14 @@ bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
   return IsUrlAllowedForRenderUrls(url) && !url.HasFragmentIdentifier();
 }
 
+size_t EstimateHashMapSize(const HashMap<String, double>& hash_map) {
+  size_t result = 0;
+  for (const auto& pair : hash_map) {
+    result += pair.key.length() + sizeof(pair.value);
+  }
+  return result;
+}
+
 }  // namespace
 
 // The logic in this method must be kept in sync with
@@ -47,6 +55,12 @@ size_t EstimateBlinkInterestGroupSize(
   size += group.name.length();
   size += sizeof(group.priority);
   size += sizeof(group.execution_mode);
+  size += sizeof(group.enable_bidding_signals_prioritization);
+
+  if (group.priority_vector)
+    size += EstimateHashMapSize(*group.priority_vector);
+  if (group.priority_signals_overrides)
+    size += EstimateHashMapSize(*group.priority_signals_overrides);
 
   if (group.bidding_url)
     size += group.bidding_url->GetString().length();

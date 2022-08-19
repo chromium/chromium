@@ -1775,6 +1775,9 @@ class AuctionRunnerTest : public testing::Test,
     StorageInterestGroup storage_group;
     storage_group.interest_group = blink::InterestGroup(
         base::Time::Max(), std::move(owner), std::move(name), /*priority=*/1.0,
+        /*enable_bidding_signals_prioritization=*/false,
+        /*priority_vector=*/absl::nullopt,
+        /*priority_signals_overrides=*/absl::nullopt,
         /*execution_mode=*/
         blink::InterestGroup::ExecutionMode::kCompatibilityMode,
         std::move(bidding_url),

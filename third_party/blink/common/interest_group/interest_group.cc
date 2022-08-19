@@ -43,6 +43,15 @@ bool IsUrlAllowed(const GURL& url, const InterestGroup& group) {
   return IsUrlAllowedForRenderUrls(url) && !url.has_ref();
 }
 
+size_t EstimateFlatMapSize(
+    const base::flat_map<std::string, double>& flat_map) {
+  size_t result = 0;
+  for (const auto& pair : flat_map) {
+    result += pair.first.length() + sizeof(pair.second);
+  }
+  return result;
+}
+
 }  // namespace
 
 InterestGroup::Ad::Ad() = default;
@@ -71,6 +80,10 @@ InterestGroup::InterestGroup(
     url::Origin owner,
     std::string name,
     double priority,
+    bool enable_bidding_signals_prioritization,
+    absl::optional<base::flat_map<std::string, double>> priority_vector,
+    absl::optional<base::flat_map<std::string, double>>
+        priority_signals_overrides,
     blink::mojom::InterestGroup::ExecutionMode execution_mode,
     absl::optional<GURL> bidding_url,
     absl::optional<GURL> bidding_wasm_helper_url,
@@ -84,6 +97,10 @@ InterestGroup::InterestGroup(
       owner(std::move(owner)),
       name(std::move(name)),
       priority(priority),
+      enable_bidding_signals_prioritization(
+          enable_bidding_signals_prioritization),
+      priority_vector(std::move(priority_vector)),
+      priority_signals_overrides(std::move(priority_signals_overrides)),
       execution_mode(execution_mode),
       bidding_url(std::move(bidding_url)),
       bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
@@ -158,7 +175,12 @@ size_t InterestGroup::EstimateSize() const {
 
   size += sizeof(priority);
   size += sizeof(execution_mode);
+  size += sizeof(enable_bidding_signals_prioritization);
 
+  if (priority_vector)
+    size += EstimateFlatMapSize(*priority_vector);
+  if (priority_signals_overrides)
+    size += EstimateFlatMapSize(*priority_signals_overrides);
   if (bidding_url)
     size += bidding_url->spec().length();
   if (bidding_wasm_helper_url)
@@ -185,11 +207,15 @@ size_t InterestGroup::EstimateSize() const {
 }
 
 bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
-  return std::tie(expiry, owner, name, priority, execution_mode, bidding_url,
+  return std::tie(expiry, owner, name, priority,
+                  enable_bidding_signals_prioritization, priority_vector,
+                  priority_signals_overrides, execution_mode, bidding_url,
                   bidding_wasm_helper_url, daily_update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components) ==
          std::tie(other.expiry, other.owner, other.name, other.priority,
+                  other.enable_bidding_signals_prioritization,
+                  other.priority_vector, other.priority_signals_overrides,
                   other.execution_mode, other.bidding_url,
                   other.bidding_wasm_helper_url, other.daily_update_url,
                   other.trusted_bidding_signals_url,

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -175,6 +176,18 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
 
   output.owner = std::move(owner);
   return true;
+}
+
+// Converts a sparse vector used in `priority_vector` and
+// `priority_signals_overrides` to a WTF::HashMap, as is used in mojom structs.
+// Has no failure cases.
+WTF::HashMap<WTF::String, double> ConvertSparseVectorIdlToMojo(
+    const Vector<std::pair<WTF::String, double>>& priority_signals_in) {
+  WTF::HashMap<WTF::String, double> priority_signals_out;
+  for (const auto& key_value_pair : priority_signals_in) {
+    priority_signals_out.insert(key_value_pair.first, key_value_pair.second);
+  }
+  return priority_signals_out;
 }
 
 bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
@@ -1024,6 +1037,20 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
     return ScriptPromise();
   mojo_group->name = group->name();
   mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
+
+  mojo_group->enable_bidding_signals_prioritization =
+      group->hasEnableBiddingSignalsPrioritization()
+          ? group->enableBiddingSignalsPrioritization()
+          : false;
+  if (group->hasPriorityVector()) {
+    mojo_group->priority_vector =
+        ConvertSparseVectorIdlToMojo(group->priorityVector());
+  }
+  if (group->hasPrioritySignalsOverrides()) {
+    mojo_group->priority_signals_overrides =
+        ConvertSparseVectorIdlToMojo(group->prioritySignalsOverrides());
+  }
+
   if (!CopyExecutionModeFromIdlToMojo(*context, exception_state, *group,
                                       *mojo_group)) {
     return ScriptPromise();

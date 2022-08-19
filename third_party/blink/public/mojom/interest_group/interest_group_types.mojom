@@ -53,8 +53,22 @@ struct InterestGroup {
   // `owner` must match the current frame URL's origin.
   url.mojom.Origin owner;
   string name;
+
   // `priority` of the interest group.
   double priority = 0.0;
+
+  // True if the interest group priority should be calculated using
+  // vectors from bidding signals fetch.
+  bool enable_bidding_signals_prioritization;
+
+  // Sparse vector whose dot product with the AuctionConfig's priority signals
+  // will be used in place of `priority`, if set.
+  map<string, double>? priority_vector;
+
+  // Sparse vector whose values override the AuctionConfig's corresponding
+  // priority signals.
+  map<string, double>? priority_signals_overrides;
+
   // `execution_mode` of the interest group.
   ExecutionMode execution_mode = kCompatibilityMode;
   // `bidding_url` must match the current frame URL's origin.

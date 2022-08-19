@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -60,6 +61,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       url::Origin owner,
       std::string name,
       double priority,
+      bool enable_bidding_signals_prioritization,
+      absl::optional<base::flat_map<std::string, double>> priority_vector,
+      absl::optional<base::flat_map<std::string, double>>
+          priority_signals_overrides,
       ExecutionMode execution_mode,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
@@ -85,7 +90,13 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   base::Time expiry;
   url::Origin owner;
   std::string name;
+
   double priority = 0;
+  bool enable_bidding_signals_prioritization = false;
+  absl::optional<base::flat_map<std::string, double>> priority_vector;
+  absl::optional<base::flat_map<std::string, double>>
+      priority_signals_overrides;
+
   ExecutionMode execution_mode = ExecutionMode::kCompatibilityMode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
@@ -95,7 +106,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
 
-  static_assert(__LINE__ == 98, R"(
+  static_assert(__LINE__ == 109, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

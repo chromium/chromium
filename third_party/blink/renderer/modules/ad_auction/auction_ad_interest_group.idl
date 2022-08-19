@@ -14,7 +14,12 @@ enum WorkletExecutionMode {
 dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;
+
   double priority;
+  boolean enableBiddingSignalsPrioritization;
+  record<USVString, double> priorityVector;
+  record<USVString, double> prioritySignalsOverrides;
+
   WorkletExecutionMode executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
