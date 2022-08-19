@@ -306,9 +306,6 @@ void TestAllOSSettingPages(const GURL& base_url) {
       base_url.Resolve(
           chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
   TestOpenOSSettingsChromePage(
-      ChromePage::CHANGEPICTURE,
-      base_url.Resolve(chromeos::settings::mojom::kChangePictureSubpagePath));
-  TestOpenOSSettingsChromePage(
       ChromePage::CUPSPRINTERS,
       base_url.Resolve(chromeos::settings::mojom::kPrintingDetailsSubpagePath));
   TestOpenOSSettingsChromePage(
