@@ -857,6 +857,14 @@ BLINK_COMMON_EXPORT extern const base::Feature kScrollUpdateOptimizations;
 // it is only applicable to HTML format. See crbug.com/1268679.
 BLINK_COMMON_EXPORT extern const base::Feature kClipboardUnsanitizedContent;
 
+// If set, HTMLTokenizer is run on a background thread.
+BLINK_COMMON_EXPORT extern const base::Feature kThreadedHtmlTokenizer;
+
+// The maximum number of tokens the background thread will generate before
+// NextParseResults() is called.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kThreadedHtmlTokenizerTokenMaxCount;
+
 // If enabled, the WebRTC_* threads in peerconnection module will use
 // kResourceEfficient thread type.
 BLINK_COMMON_EXPORT extern const base::Feature

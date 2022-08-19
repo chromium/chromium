@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
+#include "third_party/blink/renderer/core/html/parser/html_token_producer.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/tag_parsing_group.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -213,7 +214,8 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool include_shadow_roots)
+                                 bool include_shadow_roots,
+                                 HTMLTokenProducer* token_producer)
     : frameset_ok_(true),
       tree_(parser->ReentryPermit(), document, parser_content_policy),
       insertion_mode_(kInitialMode),
@@ -222,19 +224,24 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
       include_shadow_roots_(include_shadow_roots),
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
-      options_(options) {}
+      options_(options),
+      token_producer_(token_producer) {
+  DCHECK(token_producer);
+}
 
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  DocumentFragment* fragment,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool include_shadow_roots)
+                                 bool include_shadow_roots,
+                                 HTMLTokenProducer* token_producer)
     : HTMLTreeBuilder(parser,
                       fragment->GetDocument(),
                       parser_content_policy,
                       options,
-                      include_shadow_roots) {
+                      include_shadow_roots,
+                      token_producer) {
   DCHECK(IsMainThread());
   DCHECK(context_element);
   tree_.InitFragmentParsing(fragment, context_element);
@@ -320,9 +327,9 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
         !HTMLElementStack::IsMathMLTextIntegrationPoint(adjusted_current_node);
   }
 
-  parser_->Tokenizer()->SetForceNullCharacterReplacement(
+  token_producer_->SetForceNullCharacterReplacement(
       insertion_mode_ == kTextMode || in_foreign_content);
-  parser_->Tokenizer()->SetShouldAllowCDATA(in_foreign_content);
+  token_producer_->SetShouldAllowCDATA(in_foreign_content);
 
   tree_.ExecuteQueuedTasks();
   // We might be detached now.
@@ -677,7 +684,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case TagParsingGroup::kPlaintextTag:
       ProcessFakePEndTagIfPInButtonScope();
       tree_.InsertHTMLElement(token);
-      parser_->Tokenizer()->SetState(HTMLTokenizer::kPLAINTEXTState);
+      token_producer_->SetTokenizerState(HTMLTokenizer::kPLAINTEXTState);
       break;
     case TagParsingGroup::kATag: {
       Element* active_a_tag =
@@ -751,7 +758,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case TagParsingGroup::kTextareaTag:
       tree_.InsertHTMLElement(token);
       should_skip_leading_newline_ = true;
-      parser_->Tokenizer()->SetState(HTMLTokenizer::kRCDATAState);
+      token_producer_->SetTokenizerState(HTMLTokenizer::kRCDATAState);
       original_insertion_mode_ = insertion_mode_;
       frameset_ok_ = false;
       SetInsertionMode(kTextMode);
@@ -2165,7 +2172,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
 
         // We must set the tokenizer's state to DataState explicitly if the
         // tokenizer didn't have a chance to.
-        parser_->Tokenizer()->SetState(HTMLTokenizer::kDataState);
+        token_producer_->SetTokenizerState(HTMLTokenizer::kDataState);
         return;
       }
       tree_.OpenElements()->Pop();
@@ -2698,7 +2705,7 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessGenericRCDATAStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertHTMLElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kRCDATAState);
+  token_producer_->SetTokenizerState(HTMLTokenizer::kRCDATAState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
 }
@@ -2706,7 +2713,7 @@ void HTMLTreeBuilder::ProcessGenericRCDATAStartTag(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessGenericRawTextStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertHTMLElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kRAWTEXTState);
+  token_producer_->SetTokenizerState(HTMLTokenizer::kRAWTEXTState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
 }
@@ -2714,7 +2721,7 @@ void HTMLTreeBuilder::ProcessGenericRawTextStartTag(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessScriptStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertScriptElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kScriptDataState);
+  token_producer_->SetTokenizerState(HTMLTokenizer::kScriptDataState);
   original_insertion_mode_ = insertion_mode_;
 
   TextPosition position = parser_->GetTextPosition();

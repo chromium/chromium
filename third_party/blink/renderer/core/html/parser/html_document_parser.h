@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_reentry_permit.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
-#include "third_party/blink/renderer/core/html/parser/html_token.h"
+#include "third_party/blink/renderer/core/html/parser/html_token_producer.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
@@ -54,6 +54,7 @@
 
 namespace blink {
 
+class AtomicHTMLToken;
 class BackgroundHTMLScanner;
 class Document;
 class DocumentFragment;
@@ -109,7 +110,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // Exposed so that tests can check that the parser's exited in a good state.
   bool HasPendingWorkScheduledForTesting() const;
 
-  HTMLTokenizer* Tokenizer() const { return tokenizer_.get(); }
+  bool DidPumpTokenizerForTesting() const { return did_pump_tokenizer_; }
 
   TextPosition GetTextPosition() const final;
   OrdinalNumber LineNumber() const final;
@@ -121,6 +122,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void SetDecoder(std::unique_ptr<TextResourceDecoder>) final;
 
  protected:
+  HTMLDocumentParser(HTMLDocument&,
+                     ParserSynchronizationPolicy,
+                     ParserPrefetchPolicy prefetch_policy,
+                     bool can_use_background_token_producer);
+
   void insert(const String&) final;
   void Append(const String&) override;
   void Finish() final;
@@ -128,6 +134,10 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   HTMLTreeBuilder* TreeBuilder() const { return tree_builder_.Get(); }
 
   void ForcePlaintextForTextDocument();
+
+  void SetTokenizerState(HTMLTokenizer::State state) {
+    token_producer_->SetTokenizerState(state);
+  }
 
  private:
   HTMLDocumentParser(Document&,
@@ -170,7 +180,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void DeferredPumpTokenizerIfPossible();
   void SchedulePumpTokenizer();
   void ScheduleEndIfDelayed();
-  void ConstructTreeFromHTMLToken();
+  void ConstructTreeFromToken(AtomicHTMLToken& atomic_token);
 
   void RunScriptsForPausedTreeBuilder();
   void ResumeParsingAfterPause();
@@ -212,15 +222,16 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
     return !pending_preload_data_.IsEmpty();
   }
 
-  HTMLToken& Token() { return *token_; }
+  void CreateTokenProducer(
+      bool can_use_background_token_producer = true,
+      HTMLTokenizer::State initial_state = HTMLTokenizer::kDataState);
 
   const HTMLParserOptions options_;
   HTMLInputStream input_;
   Member<HTMLParserReentryPermit> reentry_permit_ =
       MakeGarbageCollected<HTMLParserReentryPermit>();
 
-  std::unique_ptr<HTMLToken> token_;
-  std::unique_ptr<HTMLTokenizer> tokenizer_;
+  std::unique_ptr<HTMLTokenProducer> token_producer_;
   Member<HTMLParserScriptRunner> script_runner_;
   Member<HTMLTreeBuilder> tree_builder_;
 
@@ -249,6 +260,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       GUARDED_BY(pending_preload_lock_);
 
   ThreadScheduler* scheduler_;
+
+  // Set to true if PumpTokenizer() was called at least once.
+  bool did_pump_tokenizer_ = false;
 
   // Handle the ref counting of nested batch fetches. Usually the batching is
   // handled by a scope-lock for the duration of the batch (and can be nested

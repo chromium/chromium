@@ -36,8 +36,11 @@
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+struct HTMLTokenizerSnapshot;
 
 class CORE_EXPORT HTMLTokenizer {
   USING_FAST_MALLOC(HTMLTokenizer);
@@ -127,6 +130,9 @@ class CORE_EXPORT HTMLTokenizer {
     kCDATASectionEndState,
   };
 
+  void GetSnapshot(HTMLTokenizerSnapshot& snapshot) const;
+  void RestoreSnapshot(const HTMLTokenizerSnapshot& snapshot);
+
   // This function returns true if it emits a token. Otherwise, callers
   // must provide the same (in progress) token on the next call (unless
   // they call reset() first).
@@ -177,7 +183,7 @@ class CORE_EXPORT HTMLTokenizer {
   bool ShouldAllowCDATA() const { return should_allow_cdata_; }
   void SetShouldAllowCDATA(bool value) { should_allow_cdata_ = value; }
 
-  State GetState() const { return state_; }
+  ALWAYS_INLINE State GetState() const { return state_; }
   void SetState(State state) { state_ = state; }
 
   inline bool ShouldSkipNullCharacters() const {
@@ -204,6 +210,8 @@ class CORE_EXPORT HTMLTokenizer {
   }
 
  private:
+  friend class HTMLTokenizerTest;
+
   inline bool ProcessEntity(SegmentedString&);
 
   // Returns true if it has skipped all the whitespaces and we still have
@@ -294,6 +302,19 @@ class CORE_EXPORT HTMLTokenizer {
   LCharLiteralBuffer<32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
+};
+
+// Snapshot of the tokenizers state. Used by HTMLTokenProducer when it switches
+// from producing tokens in the background thread to the main thread.
+struct CORE_EXPORT HTMLTokenizerSnapshot {
+  USING_FAST_MALLOC(HTMLTokenizerSnapshot);
+
+ public:
+  HTMLTokenizer::State state;
+  String appropriate_end_tag_name;
+  String buffered_end_tag_name;
+  // NOTE: This does not include `force_null_character_replacement` and
+  // `should_allow_cdata` as they are never changed in the background tokenizer.
 };
 
 }  // namespace blink

@@ -13,6 +13,7 @@ include_rules = [
     "+base/strings/stringprintf.h",
     "+base/substring_set_matcher/substring_set_matcher.h",
     "+base/task/sequence_manager/task_time_observer.h",
+    "+base/task/task_traits.h",
     "+base/test/bind.h",
     "+base/test/simple_test_tick_clock.h",
     "+base/threading/thread_restrictions.h",

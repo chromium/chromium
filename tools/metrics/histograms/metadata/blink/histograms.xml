@@ -156,6 +156,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.BackgroundTokenizer.AverageTokensAvailablePerCall"
+    units="Average number of tokens" expires_after="2023-01-01">
+  <owner>sky@chromium.org</owner>
+  <owner>swarm-team@chromium.org</owner>
+  <summary>
+    Records the average number of tokens available to the main thread when
+    BackgroundHTMLTokenProducer::NextParseResults() is called and the background
+    parser did not reach the end of the input. This is recorded for main frame
+    document parsing when the feature kThreadedHtmlTokenizer is enabled. This is
+    recorded when html document parsing completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.BackgroundTokenizer.AverageTokensAvailablePerCallWhenEndOfInputReached"
+    units="Average number of tokens" expires_after="2023-01-01">
+  <owner>sky@chromium.org</owner>
+  <owner>swarm-team@chromium.org</owner>
+  <summary>
+    Records the average number of tokens available to the main thread when
+    BackgroundHTMLTokenProducer::NextParseResults() is called and the background
+    parser reached the end of the input. This is recorded for main frame
+    document parsing when the feature kThreadedHtmlTokenizer is enabled. This is
+    recorded when html document parsing completes.
+  </summary>
+</histogram>
+
+<histogram name="Blink.BackgroundTokenizer.DidCompleteSuccessfully"
+    units="Boolean" expires_after="2023-01-01">
+  <owner>sky@chromium.org</owner>
+  <owner>swarm-team@chromium.org</owner>
+  <summary>
+    Records whether background html token production completed successfully.
+    This is recorded when html document parsing completes. This is only recorded
+    if the feature kThreadedHtmlTokenizer is enabled and the main frame document
+    is being parsed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.2DLayerBridge.WillReadFrequently"
     enum="BooleanWillReadFrequently" expires_after="2023-04-01">
   <owner>aaronhk@chromium.org</owner>

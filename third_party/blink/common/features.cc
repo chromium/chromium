@@ -1607,6 +1607,12 @@ const base::Feature kScrollUpdateOptimizations{
 const base::Feature kClipboardUnsanitizedContent{
     "ClipboardUnsanitizedContent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kThreadedHtmlTokenizer{"ThreadedHtmlTokenizer",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kThreadedHtmlTokenizerTokenMaxCount{
+    &kThreadedHtmlTokenizer, "max-count", 2048};
+
 const base::Feature kWebRtcThreadsUseResourceEfficientType{
     "WebRtcThreadsUseResourceEfficientType", base::FEATURE_DISABLED_BY_DEFAULT};
 

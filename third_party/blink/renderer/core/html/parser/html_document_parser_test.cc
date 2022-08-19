@@ -70,6 +70,21 @@ class HTMLDocumentParserTest
   bool original_force_synchronous_parsing_for_testing_;
 };
 
+// Calls DocumentParser::Detach() in the destructor. Used to ensure detach is
+// called, as otherwise some assertions may be triggered.
+class ScopedParserDetacher {
+ public:
+  explicit ScopedParserDetacher(DocumentParser* parser) : parser_(parser) {}
+
+  explicit ScopedParserDetacher(HTMLDocumentParser* parser)
+      : ScopedParserDetacher(static_cast<DocumentParser*>(parser)) {}
+
+  ~ScopedParserDetacher() { parser_->Detach(); }
+
+ private:
+  UntracedMember<DocumentParser> parser_;
+};
+
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserTest,
@@ -80,6 +95,7 @@ INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserTest,
 TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
   auto& document = To<HTMLDocument>(GetDocument());
   DocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
   const char kBytes[] = "<html>";
   parser->AppendBytes(kBytes, sizeof(kBytes));
   // These methods are not supposed to be called one after the other, but in
@@ -92,6 +108,7 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsing) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   DocumentParser* control_parser = static_cast<DocumentParser*>(parser);
+  ScopedParserDetacher detacher(control_parser);
   const char kBytes[] = "<html>";
   control_parser->AppendBytes(kBytes, sizeof(kBytes));
   control_parser->StopParsing();
@@ -102,6 +119,7 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsingThenAppend) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   DocumentParser* control_parser = static_cast<DocumentParser*>(parser);
+  ScopedParserDetacher detacher(control_parser);
   const char kBytes1[] = "<html>";
   control_parser->AppendBytes(kBytes1, sizeof(kBytes1));
   control_parser->StopParsing();
@@ -127,6 +145,7 @@ TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
                                *document.GetPage(), true));
   EXPECT_TRUE(document.IsPrefetchOnly());
   HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
 
   const char kBytes[] = "<httttttt";
   parser->AppendBytes(kBytes, sizeof(kBytes));
@@ -134,14 +153,14 @@ TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
   HTMLParserScriptRunnerHost* script_runner_host =
       parser->AsHTMLParserScriptRunnerHostForTesting();
   EXPECT_TRUE(script_runner_host->HasPreloadScanner());
-  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer()->GetState());
   // Finishing should not cause parsing to start (verified via an internal
   // DCHECK).
+  EXPECT_FALSE(parser->DidPumpTokenizerForTesting());
   static_cast<DocumentParser*>(parser)->Finish();
-  EXPECT_EQ(HTMLTokenizer::kDataState, parser->Tokenizer()->GetState());
+  EXPECT_FALSE(parser->DidPumpTokenizerForTesting());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
-  (static_cast<DocumentParser*>(parser))->StopParsing();
+  static_cast<DocumentParser*>(parser)->StopParsing();
 }
 
 TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
@@ -149,6 +168,7 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   EXPECT_FALSE(document.IsPrefetchOnly());
   // Use ForceSynchronousParsing to allow calling append().
   HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
 
   const char kBytes[] = "<htttttt";
   parser->AppendBytes(kBytes, sizeof(kBytes));
@@ -158,10 +178,10 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
       parser->AsHTMLParserScriptRunnerHostForTesting();
   EXPECT_EQ(script_runner_host->HasPreloadScanner(),
             GetParam() == kAllowDeferredParsing);
-  EXPECT_EQ(HTMLTokenizer::kTagNameState, parser->Tokenizer()->GetState());
+  EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
-  (static_cast<DocumentParser*>(parser))->StopParsing();
+  static_cast<DocumentParser*>(parser)->StopParsing();
 }
 
 }  // namespace blink
