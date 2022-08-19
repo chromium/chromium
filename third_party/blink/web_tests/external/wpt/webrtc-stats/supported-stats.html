@@ -53,10 +53,24 @@ async function getAllStats(t, pc) {
   for (let i = 0; i < 20; i++) {
     stats = await pc.getStats();
     const values = [...stats.values()];
-    const [audio, video] = ["audio", "video"].map(kind =>
-      values.find(s => s.type == "remote-inbound-rtp" && s.kind == kind));
-    if (audio && "roundTripTime" in audio &&
-        video && "roundTripTime" in video) {
+    const [remoteInboundAudio, remoteInboundVideo] =
+        ["audio", "video"].map(kind =>
+            values.find(s => s.type == "remote-inbound-rtp" && s.kind == kind));
+    const [remoteOutboundAudio, remoteOutboundVideo] =
+        ["audio", "video"].map(kind =>
+            values.find(s => s.type == "remote-outbound-rtp" && s.kind == kind));
+    // We expect both audio and video remote-inbound-rtp RTT.
+    const hasRemoteInbound =
+        remoteInboundAudio && "roundTripTime" in remoteInboundAudio &&
+        remoteInboundVideo && "roundTripTime" in remoteInboundVideo;
+    // Due to current implementation limitations, we don't put as hard
+    // requirements on remote-outbound-rtp as remote-inbound-rtp. It's enough if
+    // it is available for either kind and `roundTripTime` is not required. In
+    // Chromium, remote-outbound-rtp is only implemented for audio and
+    // `roundTripTime` is missing in this test, but awaiting for any
+    // remote-outbound-rtp avoids flaky failures.
+    const hasRemoteOutbound = remoteOutboundAudio || remoteOutboundVideo;
+    if (hasRemoteInbound && hasRemoteOutbound) {
       return stats;
     }
     await new Promise(r => t.step_timeout(r, 1000));
