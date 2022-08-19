@@ -350,4 +350,26 @@ IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
   EXPECT_EQ(1, results.number_of_matches);
 }
 
+// Regression test for crbug.com/1352097.
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, SingleResultFindNext) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  LoadAndWait("/find_in_pdf_page.pdf");
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
+
+  auto options = blink::mojom::FindOptions::New();
+  Find("pdf", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+
+  options->new_session = false;
+  Find("pdf", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(1, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+}
+
 }  // namespace content

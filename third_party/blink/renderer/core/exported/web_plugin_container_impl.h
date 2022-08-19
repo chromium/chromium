@@ -137,7 +137,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   void ReportFindInPageMatchCount(int identifier,
                                   int total,
                                   bool final_update) override;
-  void ReportFindInPageSelection(int identifier, int index) override;
+  void ReportFindInPageSelection(int identifier,
+                                 int index,
+                                 bool final_update) override;
   float PageScaleFactor() override;
   float PageZoomFactor() override;
   void SetCcLayer(cc::Layer*) override;
@@ -234,10 +236,6 @@ class CORE_EXPORT WebPluginContainerImpl final
   cc::Layer* layer_ = nullptr;
   TouchEventRequestType touch_event_request_type_ = kTouchEventRequestTypeNone;
   bool wants_wheel_events_ = false;
-
-  // Whether the most recent `ReportFindInPageMatchCount()` call was the final
-  // update or not.
-  bool final_find_update_ = false;
 };
 
 template <>

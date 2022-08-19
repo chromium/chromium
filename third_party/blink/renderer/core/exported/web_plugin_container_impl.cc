@@ -320,19 +320,20 @@ void WebPluginContainerImpl::ReportFindInPageMatchCount(int identifier,
   if (!frame)
     return;
 
-  final_find_update_ = final_update;
   frame->GetFindInPage()->ReportFindInPageMatchCount(identifier, total,
                                                      final_update);
 }
 
 void WebPluginContainerImpl::ReportFindInPageSelection(int identifier,
-                                                       int index) {
+                                                       int index,
+                                                       bool final_update) {
   WebLocalFrameImpl* frame =
       WebLocalFrameImpl::FromFrame(element_->GetDocument().GetFrame());
   if (!frame)
     return;
-  frame->GetFindInPage()->ReportFindInPageSelection(
-      identifier, index, gfx::Rect(), final_find_update_);
+
+  frame->GetFindInPage()->ReportFindInPageSelection(identifier, index,
+                                                    gfx::Rect(), final_update);
 }
 
 float WebPluginContainerImpl::PageScaleFactor() {
