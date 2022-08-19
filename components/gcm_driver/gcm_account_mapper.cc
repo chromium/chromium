@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
 #include "google_apis/gcm/engine/gcm_store.h"
 
@@ -105,6 +106,10 @@ void GCMAccountMapper::SetAccountTokens(
       account_mapping->email = token_iter->email;
       account_mapping->access_token = token_iter->access_token;
     }
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGCMReportAccountTokenChanges)) {
+    return;
   }
 
   // Decide what to do with each account (either start mapping, or start
