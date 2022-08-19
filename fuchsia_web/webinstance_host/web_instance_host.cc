@@ -370,12 +370,13 @@ std::vector<std::string> GetRequiredServicesForConfig(
   // at:
   //   https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams.service_directory
   std::vector<std::string> services{
-      "fuchsia.buildinfo.Provider",      "fuchsia.device.NameProvider",
-      "fuchsia.fonts.Provider",          "fuchsia.hwinfo.Product",
-      "fuchsia.intl.PropertyProvider",   "fuchsia.logger.LogSink",
-      "fuchsia.memorypressure.Provider", "fuchsia.process.Launcher",
+      "fuchsia.buildinfo.Provider",    "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",        "fuchsia.hwinfo.Product",
+      "fuchsia.intl.PropertyProvider", "fuchsia.kernel.VmexResource",
+      "fuchsia.logger.LogSink",        "fuchsia.memorypressure.Provider",
+      "fuchsia.process.Launcher",
       "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
-      "fuchsia.sysmem.Allocator",        "fuchsia.ui.scenic.Scenic"};
+      "fuchsia.sysmem.Allocator",      "fuchsia.ui.scenic.Scenic"};
 
   // TODO(crbug.com/1209031): Provide these conditionally, once corresponding
   // ContextFeatureFlags have been defined.

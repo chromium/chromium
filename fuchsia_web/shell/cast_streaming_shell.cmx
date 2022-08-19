@@ -16,6 +16,7 @@
       "fuchsia.feedback.CrashReportingProductRegister",
       "fuchsia.fonts.Provider",
       "fuchsia.intl.PropertyProvider",
+      "fuchsia.kernel.VmexResource",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
       "fuchsia.media.AudioDeviceEnumerator",

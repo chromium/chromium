@@ -44,6 +44,7 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",

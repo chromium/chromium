@@ -19,6 +19,7 @@
       "fuchsia.hwinfo.Product",
       "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
+      "fuchsia.kernel.VmexResource",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
       "fuchsia.media.AudioDeviceEnumerator",

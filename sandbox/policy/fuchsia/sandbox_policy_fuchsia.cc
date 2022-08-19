@@ -14,6 +14,7 @@
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/hwinfo/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
+#include <fuchsia/kernel/cpp/fidl.h>
 #include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl.h>
@@ -122,6 +123,7 @@ constexpr SandboxConfig kNetworkConfig = {
 constexpr SandboxConfig kRendererConfig = {
     base::make_span((const char* const[]){
         fuchsia::fonts::Provider::Name_,
+        fuchsia::kernel::VmexResource::Name_,
         // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::memorypressure::Provider::Name_,
@@ -140,7 +142,8 @@ constexpr SandboxConfig kVideoCaptureConfig = {
 };
 
 constexpr SandboxConfig kServiceWithJitConfig = {
-    base::span<const char* const>(),
+    base::make_span(
+        (const char* const[]){fuchsia::kernel::VmexResource::Name_}),
     kAmbientMarkVmoAsExecutable,
 };
 

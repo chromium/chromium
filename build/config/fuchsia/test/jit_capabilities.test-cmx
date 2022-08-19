@@ -2,6 +2,9 @@
   "sandbox": {
     "features": [
       "deprecated-ambient-replace-as-executable"
+    ],
+    "services": [
+      "fuchsia.kernel.VmexResource"
     ]
   }
 }
