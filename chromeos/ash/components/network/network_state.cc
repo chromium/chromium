@@ -34,10 +34,6 @@ namespace {
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
 
-// TODO(b/169939319): Use shill constant once it lands.
-const char kPortalDetectionFailedStatusCodeProperty[] =
-    "PortalDetectionFailedStatusCode";
-
 // |dict| may be an empty value, in which case return an empty string.
 std::string GetStringFromDictionary(const base::Value& dict, const char* key) {
   const std::string* stringp =
@@ -646,7 +642,7 @@ bool NetworkState::UpdateName(const base::Value& properties) {
 
 void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
   int status_code =
-      properties.FindIntKey(kPortalDetectionFailedStatusCodeProperty)
+      properties.FindIntKey(shill::kPortalDetectionFailedStatusCodeProperty)
           .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
     shill_portal_state_ = PortalState::kNoInternet;

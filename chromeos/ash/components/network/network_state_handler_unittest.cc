@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -39,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+using testing::ElementsAre;
 
 namespace ash {
 
@@ -1963,9 +1966,13 @@ TEST_F(NetworkStateHandlerTest, DefaultServiceChanged) {
 TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
   RemoveEthernet();
 
+  base::HistogramTester histogram_tester;
   service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
                                     shill::kStateProperty,
                                     base::Value(shill::kStatePortalSuspected));
+  service_test_->SetServiceProperty(
+      kShillManagerClientStubDefaultWifi,
+      shill::kPortalDetectionFailedStatusCodeProperty, base::Value(300));
   base::RunLoop().RunUntilIdle();
 
   const NetworkState* network = network_state_handler_->GetNetworkState(
@@ -1989,10 +1996,17 @@ TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
       kShillManagerClientStubDefaultWifi);
   EXPECT_EQ(NetworkState::PortalState::kPortalSuspected,
             network->GetPortalState());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Network.CaptivePortalResult"),
+              ElementsAre(base::Bucket(
+                  NetworkState::PortalState::kPortalSuspected, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Network.CaptivePortalStatusCode"),
+              ElementsAre(base::Bucket(300, 1)));
 }
 
 TEST_F(NetworkStateHandlerTest, PortalStateChanged) {
   RemoveEthernet();
+  test_observer_->reset_change_counts();
 
   // Set wifi1 to portal-suspected and ensure observer is triggered.
   service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
@@ -2028,6 +2042,62 @@ TEST_F(NetworkStateHandlerTest, PortalStateChanged) {
   EXPECT_EQ(test_observer_->default_network_portal_state(),
             NetworkState::PortalState::kUnknown);
   EXPECT_EQ(test_observer_->portal_state_change_count(), 4u);
+}
+
+TEST_F(NetworkStateHandlerTest, PortalToOnline) {
+  RemoveEthernet();
+  test_observer_->reset_change_counts();
+  base::HistogramTester histogram_tester;
+
+  // Set wifi1 to redirect-found and ensure observer is triggered.
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStateRedirectFound));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(test_observer_->default_network_portal_state(),
+            NetworkState::PortalState::kPortal);
+  EXPECT_EQ(test_observer_->portal_state_change_count(), 1u);
+
+  // Set wifi1 to online and ensure observer is triggered.
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(test_observer_->default_network_portal_state(),
+            NetworkState::PortalState::kOnline);
+  EXPECT_EQ(test_observer_->portal_state_change_count(), 2u);
+
+  // redirect-found -> online should update RedirectFoundToOnlineTime.
+  histogram_tester.ExpectTotalCount("Network.RedirectFoundToOnlineTime", 1);
+  histogram_tester.ExpectTotalCount("Network.PortalSuspectedToOnlineTime", 0);
+}
+
+TEST_F(NetworkStateHandlerTest, PortalSuspectedToOnline) {
+  RemoveEthernet();
+  test_observer_->reset_change_counts();
+  base::HistogramTester histogram_tester;
+
+  // Set wifi1 to portal-suspected and ensure observer is triggered.
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStatePortalSuspected));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(test_observer_->default_network_portal_state(),
+            NetworkState::PortalState::kPortalSuspected);
+  EXPECT_EQ(test_observer_->portal_state_change_count(), 1u);
+
+  // Set wifi1 to online and ensure observer is triggered.
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(test_observer_->default_network_portal_state(),
+            NetworkState::PortalState::kOnline);
+  EXPECT_EQ(test_observer_->portal_state_change_count(), 2u);
+
+  // portal-suspected -> online should update PortalSuspectedToOnlineTime.
+  histogram_tester.ExpectTotalCount("Network.RedirectFoundToOnlineTime", 0);
+  histogram_tester.ExpectTotalCount("Network.PortalSuspectedToOnlineTime", 1);
 }
 
 TEST_F(NetworkStateHandlerTest, RequestUpdate) {

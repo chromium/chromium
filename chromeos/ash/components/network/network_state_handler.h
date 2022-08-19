@@ -15,12 +15,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -616,6 +618,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // NotifyDefaultNetworkChanged.
   void OnNetworkConnectionStateChanged(NetworkState* network);
 
+  // Updates the cached portal state for the default network, sends portal
+  // timer metrics, and notifies observers of portal state changes.
+  void UpdatePortalStateAndNotify(const NetworkState* default_network);
+
+  // Send metrics for elapsed time from a redirect-found or portal-suspected
+  // to an online or non portal state. If the new state is not online then
+  // |elapsed| should be 0 to indicate a failure to transition to online.
+  void SendPortalHistogramTimes(base::TimeDelta elapsed);
+
   // Verifies the connection state of the default network. Returns false
   // if the connection state change should be ignored.
   bool VerifyDefaultNetworkConnectionStateChange(NetworkState* network);
@@ -750,6 +761,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Tracks the default network portal state for triggering PortalStateChanged.
   NetworkState::PortalState default_network_portal_state_ =
       NetworkState::PortalState::kUnknown;
+
+  // Tracks the time spent in a Portal or PortalSuspected state.
+  absl::optional<base::ElapsedTimer> time_in_portal_;
 
   // Tracks the default network proxy config for triggering PortalStateChanged.
   base::Value default_network_proxy_config_;
