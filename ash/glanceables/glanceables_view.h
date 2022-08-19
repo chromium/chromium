@@ -32,10 +32,6 @@ class ASH_EXPORT GlanceablesView : public views::View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
 
-  GlanceablesWelcomeLabel* welcome_label_for_test() { return welcome_label_; }
-  GlanceablesWeatherView* weather_view_for_test() { return weather_view_; }
-  GlanceablesUpNextView* up_next_view_for_test() { return up_next_view_; }
-
  private:
   friend class GlanceablesTest;
 

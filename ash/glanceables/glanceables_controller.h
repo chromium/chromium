@@ -39,9 +39,6 @@ class ASH_EXPORT GlanceablesController {
   // Triggers a session restore.
   void RestoreSession();
 
-  views::Widget* widget_for_test() { return widget_.get(); }
-  GlanceablesView* view_for_test() { return view_; }
-
  private:
   friend class GlanceablesTest;
 

@@ -47,8 +47,7 @@ std::u16string GlanceablesWelcomeLabel::GetUserGivenName() const {
 
   const auto account_id = session_controller->GetActiveAccountId();
   if (account_id.empty()) {
-    // Prevents failures in `GlanceablesViewTest` and
-    // `GlanceablesControllerTest`.
+    // Prevents failures in `GlanceablesTest`.
     // TODO(crbug.com/1353119): Remove this after switching to `AshTestBase`.
     return u"";
   }
