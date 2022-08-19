@@ -1725,12 +1725,17 @@ void ServiceWorkerVersion::OnSimpleEventFinished(
 void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
   if (!used_features_.insert(feature).second)
     return;
+
+  // TODO(crbug.com/1253581 crbug.com/1021718): Speculative bug fix code.
+  // Take snapshot of the `controllee_map_` instead of iterating on it directly.
+  // This is to rule out the possibility of `controllee_map_` being modified
+  // while we call `CountFeature`.
+  std::vector<base::WeakPtr<ServiceWorkerContainerHost>> hosts_snapshot;
+  hosts_snapshot.reserve(controllee_map_.size());
   for (auto container_host_by_uuid : controllee_map_) {
-    const base::WeakPtr<ServiceWorkerContainerHost>& container_host =
-        container_host_by_uuid.second;
-    // TODO(crbug.com/1253581 crbug.com/1021718): controllee_map_ should be only
-    // containing live container hosts. The below "if" check is a workaround for
-    // unmatched AddControllee / RemoveControllee calls.
+    hosts_snapshot.push_back(container_host_by_uuid.second);
+  }
+  for (auto container_host : hosts_snapshot) {
     if (container_host)
       container_host->CountFeature(feature);
   }
