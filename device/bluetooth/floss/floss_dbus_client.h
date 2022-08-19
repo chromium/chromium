@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/types/expected.h"
 #include "dbus/bus.h"
@@ -372,6 +373,84 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
                                 T* first,
                                 Args*... args) {
     return ReadDBusParam(reader, first) && ReadAllDBusParams(reader, args...);
+  }
+
+  template <typename T>
+  using FieldReader = std::function<bool(dbus::MessageReader*, T* data)>;
+
+  // Useful to generate D-Bus reader of a struct. Example usage:
+  //
+  // template <>
+  // bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+  //                                     ScanResult* scan_result) {
+  //   static StructReader<ScanResult> struct_reader({
+  //       {"address", CreateFieldReader(&ScanResult::address)},
+  //       {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
+  //       <just define more fields here>
+  //   });
+  //   return struct_reader.ReadDBusParam(reader, scan_result);
+  // }
+  template <typename T>
+  class StructReader {
+   private:
+    std::unordered_map<std::string, FieldReader<T>> fields_;
+
+   public:
+    explicit StructReader(
+        std::vector<std::pair<std::string, FieldReader<T>>> fields) {
+      for (auto const& kv : fields) {
+        fields_.insert(kv);
+      }
+    };
+
+    bool ReadDBusParam(dbus::MessageReader* reader, T* data) {
+      // Keep track of parsed fields to detect missing and duplicate fields.
+      std::unordered_set<std::string> parsed_fields;
+
+      dbus::MessageReader array_reader(nullptr);
+      if (!reader->PopArray(&array_reader))
+        return false;
+
+      // For each dictionary entry
+      while (array_reader.HasMoreData()) {
+        dbus::MessageReader entry_reader(nullptr);
+        if (!array_reader.PopDictEntry(&entry_reader))
+          return false;
+
+        std::string key;
+        if (!entry_reader.PopString(&key))
+          return false;
+
+        if (base::Contains(fields_, key)) {
+          dbus::MessageReader variant_reader(nullptr);
+          entry_reader.PopVariant(&variant_reader);
+
+          if (!fields_[key](&variant_reader, data))
+            return false;
+
+          if (base::Contains(parsed_fields, key))
+            return false;
+
+          parsed_fields.insert(key);
+        } else {
+          DBusTypeInfo type_info = GetDBusTypeInfo<T>();
+          VLOG(3) << "Does not know how to read field " << type_info.type_name
+                  << "." << key;
+        }
+      }
+
+      // All defined fields are required.
+      return parsed_fields.size() == fields_.size();
+    }
+  };
+
+  // S is the type of the container struct.
+  // T is the type of the field.
+  template <typename S, typename T>
+  static FieldReader<S> CreateFieldReader(T S::*field) {
+    return [field](dbus::MessageReader* reader, S* container) -> bool {
+      return FlossDBusClient::ReadDBusParam(reader, &(container->*field));
+    };
   }
 
   template <typename R, typename... Args>

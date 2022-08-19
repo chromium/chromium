@@ -423,39 +423,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     FlossDeviceId* device) {
-  // Parse a FlossDeviceId from a message.
-  //
-  // The format:
-  // array (
-  //  dict_entry (
-  //    key "name"
-  //    variant string("")
-  //  )
-  //  dict entry (
-  //    key "address"
-  //    variant string("")
-  //  )
-  // )
+  static StructReader<FlossDeviceId> struct_reader({
+      {"address", CreateFieldReader(&FlossDeviceId::address)},
+      {"name", CreateFieldReader(&FlossDeviceId::name)},
+  });
 
-  dbus::MessageReader array(nullptr);
-  dbus::MessageReader dict(nullptr);
-  bool found_name = false;
-  bool found_address = false;
-
-  if (reader->PopArray(&array)) {
-    while (array.PopDictEntry(&dict)) {
-      std::string key;
-      dict.PopString(&key);
-
-      if (key == kDeviceIdNameKey) {
-        found_name = dict.PopVariantOfString(&device->name);
-      } else if (key == kDeviceIdAddressKey) {
-        found_address = dict.PopVariantOfString(&device->address);
-      }
-    }
-  }
-
-  return found_name && found_address;
+  return struct_reader.ReadDBusParam(reader, device);
 }
 
 template <>
