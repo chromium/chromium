@@ -53,7 +53,7 @@ _SIZEDIFF_FILENAME = 'supersize_diff.sizediff'
 _HTML_REPORT_URL = (
     'https://chrome-supersize.firebaseapp.com/viewer.html?load_url={{' +
     _SIZEDIFF_FILENAME + '}}')
-_MAX_DEX_METHOD_COUNT_INCREASE = 50
+_MAX_DEX_METHOD_COUNT_INCREASE = 200
 _MAX_NORMALIZED_INCREASE = 16 * 1024
 _MAX_PAK_INCREASE = 1024
 
