@@ -824,6 +824,13 @@
       ]
      ],
      "table": {
+      "break-before-repeated-footer-instead-of-border-crash.html": [
+       "b277001f4d8f6ca574b6bb16f0d630cd059ebcbc",
+       [
+        null,
+        {}
+       ]
+      ],
       "caption-bottom-margin-at-boundary-crash.html": [
        "edca6635675eef7f2d29e5b535832cb35e455b41",
        [
@@ -870,6 +877,13 @@
       ],
       "table-row-end-padding-crash.html": [
        "2fd7feb15dee1af0ca5ae077ad408b30eb138bb0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "zero-height-repeated-footer-crash.html": [
+       "4feca8344b75f5702e398a2d2b00ce9d94a8bd9b",
        [
         null,
         {}
@@ -233865,7 +233879,7 @@
          ]
         ],
         "layers-alpha.html": [
-         "7be5bdb0bb89faf078520d10b3362a277ce9e801",
+         "5e78de6925cc221f9260e7bd395ef0c2cbc7bbdc",
          [
           null,
           [
@@ -233874,7 +233888,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               7850
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "layers-endlayer-noop.html": [
@@ -334994,7 +335024,7 @@
       []
      ],
      "webperftestharness.js": [
-      "2fbd0210de906dc530598b23fd0cb9594cb38372",
+      "9627e18a03e49b9152c540eabf5eaa08962c49b8",
       []
      ],
      "webperftestharnessextension.js": [
@@ -337385,7 +337415,7 @@
      []
     ],
     "OWNERS": [
-     "e6ed2ffc906bb65b2656aaa4c26667d5454a98ca",
+     "f72f9b25ab611cf3cd7036cb1348883bd5a0550d",
      []
     ],
     "README.md": [
@@ -337604,6 +337634,10 @@
    "webrtc-stats": {
     "META.yml": [
      "10bcf856eb9258e0845f2fdcb6e08c43ebcdf78a",
+     []
+    ],
+    "OWNERS": [
+     "7b578a1dc29cfa214dfdb22c21094af0ded1a333",
      []
     ],
     "README.md": [
@@ -377680,6 +377714,13 @@
         {}
        ]
       ],
+      "container-size-shadow-invalidation.html": [
+       "0ee67701a2327614c25c5bb1fd849f72fa27f85d",
+       [
+        null,
+        {}
+       ]
+      ],
       "container-type-computed.html": [
        "0b5e033a0f302e904414447e2a7eb9be8eadfb39",
        [
@@ -399417,7 +399458,7 @@
      ],
      "animations": {
       "calc-interpolation.html": [
-       "f671dbe90711fcc1a96c5ca7a7eb0c10042fe4a7",
+       "40379a13fb2736ed5839e55a58c7cba581155e77",
        [
         null,
         {}
@@ -399474,7 +399515,7 @@
       ]
      ],
      "calc-infinity-nan-computed.html": [
-      "81998c46ae0e73cf7df389a4b4386a97225f5a6f",
+      "f4d66a40f030337e2320a74ca5479a8301e4ae6a",
       [
        null,
        {}
@@ -441462,7 +441503,7 @@
       ]
      ],
      "local-storage.tentative.https.window.js": [
-      "4ccb4c2eb12bb9e485d5a5b6e92bb130ec208756",
+      "2734f12d9e683943aa782aeedff8bbab1b59da0b",
       [
        "html/anonymous-iframe/local-storage.tentative.https.window.html",
        {
@@ -441520,7 +441561,7 @@
       ]
      ],
      "session-storage.tentative.https.window.js": [
-      "5af2dc2b3bdf1957ef5cfafb25c8c54d66c425a2",
+      "94fbd842ac6729684931b92c43bf9efacff94828",
       [
        "html/anonymous-iframe/session-storage.tentative.https.window.html",
        {
@@ -446113,7 +446154,7 @@
        ]
       ],
       "window-properties.https.html": [
-       "980db277597d51bd13b7c9f23d511c9c620c6c97",
+       "c61fb04ae24ab8ec4c9c385dc99e25f35891b756",
        [
         null,
         {}
@@ -472852,14 +472893,14 @@
       },
       "the-frameset-and-frame-elements": {
        "large-cols-relsize.html": [
-        "16cf9a416ba405de3f3d31ad91f60d0fea30a850",
+        "f056aa7e30b8754d19f5b597fd954aaba588b049",
         [
          null,
          {}
         ]
        ],
        "large-rows-relsize.html": [
-        "24f34f51c12bf7a73f7f75a4e011c53cf05d3bd2",
+        "c33cd44adf62089d6c289c1a4e9d5043c778e5ec",
         [
          null,
          {}
@@ -479312,7 +479353,7 @@
         ]
        ],
        "input-untrusted-key-event.html": [
-        "607b0c51ef6ec49242fc0da77750e8886bc5068e",
+        "eb96b6fd956464351be17851a0b7c770c58ea934",
         [
          null,
          {}
@@ -497167,6 +497208,15 @@
       ]
      }
     }
+   },
+   "mediacapture-extensions": {
+    "GUM-backgroundBlur.https.html": [
+     "605a4e0831914834ac4a5587bbdb7e87cde74e59",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "mediacapture-fromelement": {
     "HTMLCanvasElement-getImageData-noframe.html": [
@@ -526104,7 +526154,7 @@
       ]
      ],
      "progress-based-animation-timeline.html": [
-      "bd7d797fffa8689ce7518b3328e6b077485bda1e",
+      "96339db2ed5c3b1ec886fce5bf4ab0d37a41bf86",
       [
        null,
        {}
@@ -526132,21 +526182,21 @@
       ]
      ],
      "scroll-timeline-name-computed.tentative.html": [
-      "6b1fccd90ce45335123e4d3707f8e14ea6b129f3",
+      "1acb964ef7455ab30c4c627c24f12b9c186753d0",
       [
        null,
        {}
       ]
      ],
      "scroll-timeline-name-parsing.tentative.html": [
-      "19e674db22cb62c683f1cee8c1738e5136a35ada",
+      "866363de3363733dc687de7ac306b13f91e15f07",
       [
        null,
        {}
       ]
      ],
      "scroll-timeline-shorthand.tentative.html": [
-      "b332652c75afc94b9f1740ce366b1d3ded427ba7",
+      "b340ff34ffe4e2ba0d93014ce114656ec3fb5373",
       [
        null,
        {}
@@ -557438,7 +557488,7 @@
      ]
     },
     "event.data.sub.htm": [
-     "97584c4a390222fe6e1bf3656decc36914ed635d",
+     "6858ef4c690b901ef421e84938eb78250d982ddc",
      [
       null,
       {}
@@ -557758,7 +557808,7 @@
      ]
     ],
     "postMessage_asterisk_xorigin.sub.htm": [
-     "532f28251cb36159946ef3d0e99ce9b4ccbe92e2",
+     "2fab9431ef408cc34fb3929f91c5e5aaedd3caff",
      [
       null,
       {}
@@ -559940,6 +559990,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "outbound-rtp.https.html": [
+     "b7f4b06411671fa11e19d7dd297a2ae2a1c30ba1",
+     [
+      null,
+      {}
      ]
     ],
     "rtp-stats-creation.html": [
