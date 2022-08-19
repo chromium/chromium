@@ -223,6 +223,7 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
 void RunReadDirCallback(
     Server::ReadDirCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    bool read_only,
     uint64_t cookie,
     base::File::Error error_code,
     storage::AsyncFileUtil::EntryList entry_list,
@@ -231,10 +232,11 @@ void RunReadDirCallback(
 
   fusebox::DirEntryListProto protos;
   for (const auto& entry : entry_list) {
+    bool is_directory = entry.type == filesystem::mojom::FsFileType::DIRECTORY;
     auto* proto = protos.add_entries();
-    proto->set_is_directory(entry.type ==
-                            filesystem::mojom::FsFileType::DIRECTORY);
+    proto->set_is_directory(is_directory);
     proto->set_name(entry.name.value());
+    proto->set_mode_bits(Server::MakeModeBits(is_directory, read_only));
   }
 
   callback.Run(cookie, FileErrorToErrno(error_code), std::move(protos),
@@ -263,6 +265,13 @@ Server* Server::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return g_server_instance;
+}
+
+// static
+uint32_t Server::MakeModeBits(bool is_directory, bool read_only) {
+  uint32_t mode_bits = is_directory ? S_IFDIR : S_IFREG;
+  mode_bits |= read_only ? 0550 : 0770;  // "r-xr-x---" versus "rwxrwx---".
+  return mode_bits;
 }
 
 Server::Server(Delegate* delegate) : delegate_(delegate) {
@@ -378,10 +387,10 @@ void Server::ReadDir(std::string fs_url_as_string,
     return;
   }
 
-  auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                         base::BindRepeating(&RunReadDirCallback, callback,
-                                             common.fs_context, cookie));
+  auto outer_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindRepeating(&RunReadDirCallback, callback, common.fs_context,
+                          common.read_only, cookie));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

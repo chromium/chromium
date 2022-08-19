@@ -27,6 +27,9 @@ class Server {
   // Returns a pointer to the global Server instance.
   static Server* GetInstance();
 
+  // Returns POSIX style (S_IFREG | rwxr-x---) bits.
+  static uint32_t MakeModeBits(bool is_directory, bool read_only);
+
   // The delegate should live longer than the server.
   explicit Server(Delegate* delegate);
   Server(const Server&) = delete;

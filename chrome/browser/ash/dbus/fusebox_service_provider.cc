@@ -121,11 +121,13 @@ void ReplyToStat(dbus::MethodCall* method_call,
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  int32_t mode_bits = info.is_directory ? S_IFDIR : S_IFREG;
-  mode_bits |= read_only ? 0550 : 0770;  // "r-xr-x---" versus "rwxrwx---".
-
   writer.AppendInt32(posix_error_code);
-  writer.AppendInt32(mode_bits);
+  // For historical reasons, the D-Bus protocol uses a *signed* int32_t, even
+  // though /usr/include/x86_64-linux-gnu/bits/typesizes.h says "#define
+  // __MODE_T_TYPE __U32_TYPE" (and hence MakeModeBits returns an *unsigned*
+  // uint32_t). We use a static_cast to convert between them.
+  writer.AppendInt32(static_cast<int32_t>(
+      fusebox::Server::MakeModeBits(info.is_directory, read_only)));
   writer.AppendInt64(info.size);
   writer.AppendDouble(info.last_accessed.ToDoubleT());
   writer.AppendDouble(info.last_modified.ToDoubleT());
