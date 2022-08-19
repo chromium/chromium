@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service_observer.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -71,6 +71,29 @@ CoreAccountId GetAccountId(ChromeIdentity* identity) {
 }
 
 }  // namespace
+
+class AuthenticationServiceObserverTest : public AuthenticationServiceObserver {
+ public:
+  void OnPrimaryAccountRestricted() override {
+    ++on_primary_account_restricted_counter_;
+  }
+
+  int GetOnPrimaryAccountRestrictedCounter() {
+    return on_primary_account_restricted_counter_;
+  }
+
+  void OnServiceStatusChanged() override {
+    ++on_service_status_changed_counter_;
+  }
+
+  int GetOnServiceStatusChangedCounter() {
+    return on_service_status_changed_counter_;
+  }
+
+ private:
+  int on_primary_account_restricted_counter_ = 0;
+  int on_service_status_changed_counter_ = 0;
+};
 
 class AuthenticationServiceTest : public PlatformTest {
  protected:
@@ -713,13 +736,9 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
 // Tests that reauth prompt is not set if the primary identity is restricted and
 // |OnPrimaryAccountRestricted| is forwarded.
 TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
-  id<AuthenticationServiceObserving> observer_delegate =
-      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
-  AuthenticationServiceObserverBridge observer_bridge(authentication_service(),
-                                                      observer_delegate);
-
+  AuthenticationServiceObserverTest observer_test;
+  authentication_service()->AddObserver(&observer_test);
   // Sign in.
-  OCMExpect([observer_delegate onPrimaryAccountRestricted]);
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0), nil);
   authentication_service()->GrantSyncConsent(identity(0));
@@ -739,31 +758,27 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
-  EXPECT_OCMOCK_VERIFY(observer_delegate);
+  EXPECT_EQ(1, observer_test.GetOnPrimaryAccountRestrictedCounter());
+  authentication_service()->RemoveObserver(&observer_test);
 }
 
 // Tests AuthenticationService::GetServiceStatus() using
 // prefs::kBrowserSigninPolicy.
 TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
-  id<AuthenticationServiceObserving> observer_delegate =
-      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
-  AuthenticationServiceObserverBridge observer_bridge(authentication_service(),
-                                                      observer_delegate);
+  AuthenticationServiceObserverTest observer_test;
+  authentication_service()->AddObserver(&observer_test);
 
   // Expect sign-in allowed by default.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninAllowed,
             authentication_service()->GetServiceStatus());
 
-  // Expect onServiceStatus notification called.
-  OCMExpect([observer_delegate onServiceStatusChanged]);
   browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Expect sign-in disabled by user.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByUser,
             authentication_service()->GetServiceStatus());
-
   // Expect onServiceStatus notification called.
-  OCMExpect([observer_delegate onServiceStatusChanged]);
+  EXPECT_EQ(1, observer_test.GetOnServiceStatusChangedCounter());
+
   // Set sign-in disabled by policy.
   local_state_.Get()->SetInteger(
       prefs::kBrowserSigninPolicy,
@@ -771,22 +786,23 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   // Expect sign-in to be disabled by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninDisabledByPolicy,
             authentication_service()->GetServiceStatus());
-
   // Expect onServiceStatus notification called.
-  OCMExpect([observer_delegate onServiceStatusChanged]);
+  EXPECT_EQ(2, observer_test.GetOnServiceStatusChangedCounter());
+
   // Set sign-in forced by policy.
   local_state_.Get()->SetInteger(prefs::kBrowserSigninPolicy,
                                  static_cast<int>(BrowserSigninMode::kForced));
   // Expect sign-in to be forced by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
             authentication_service()->GetServiceStatus());
-
   // Expect onServiceStatus notification called.
-  OCMExpect([observer_delegate onServiceStatusChanged]);
+  EXPECT_EQ(3, observer_test.GetOnServiceStatusChangedCounter());
+
   browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
   // Expect sign-in to be still forced by policy.
   EXPECT_EQ(AuthenticationService::ServiceStatus::SigninForcedByPolicy,
             authentication_service()->GetServiceStatus());
-
-  EXPECT_OCMOCK_VERIFY(observer_delegate);
+  // Expect onServiceStatus notification called.
+  EXPECT_EQ(4, observer_test.GetOnServiceStatusChangedCounter());
+  authentication_service()->RemoveObserver(&observer_test);
 }
