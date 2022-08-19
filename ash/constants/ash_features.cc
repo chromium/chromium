@@ -697,6 +697,11 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExperimentalRgbKeyboardPatterns{
     "ExperimentalRgbKeyboardPatterns", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the System Web App (SWA) of Face ML.
+// This app needs both CrOS and hardware support (Face Auth Camera and System
+// Face Auth Service), therefore we only enable it on these eligible devices.
+const base::Feature kFaceMlApp{"FaceMlApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",

@@ -78,6 +78,10 @@ gfx::Rect FacialMLSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return bounds;
 }
 
+bool FacialMLSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(ash::features::kFaceMlApp);
+}
+
 bool FacialMLSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
