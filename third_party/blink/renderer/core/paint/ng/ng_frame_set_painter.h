@@ -7,10 +7,16 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
+class Color;
 class DisplayItemClient;
 class NGPhysicalBoxFragment;
+struct AutoDarkMode;
 struct PaintInfo;
 struct PhysicalOffset;
 
@@ -28,9 +34,17 @@ class NGFrameSetPainter {
   void PaintChildren(const PaintInfo& paint_info);
   void PaintBorders(const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset);
+  void PaintRowBorder(const PaintInfo& paint_info,
+                      const gfx::Rect& border_rect,
+                      const Color& fill_color,
+                      const AutoDarkMode& auto_dark_mode);
+  void PaintColumnBorder(const PaintInfo& paint_info,
+                         const gfx::Rect& border_rect,
+                         const Color& fill_color,
+                         const AutoDarkMode& auto_dark_mode);
 
   const NGPhysicalBoxFragment& box_fragment_;
-  [[maybe_unused]] const DisplayItemClient& display_item_client_;
+  const DisplayItemClient& display_item_client_;
 };
 
 }  // namespace blink

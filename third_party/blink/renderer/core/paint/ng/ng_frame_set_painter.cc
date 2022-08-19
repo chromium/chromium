@@ -4,10 +4,25 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_frame_set_painter.h"
 
+#include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 
 namespace blink {
+
+namespace {
+
+constexpr Color kBorderFillColor = Color::FromRGB(208, 208, 208);
+
+bool ShouldPaintBorderAfter(const Vector<bool>& allow_border,
+                            wtf_size_t index) {
+  // Should not paint a border after the last frame along the axis.
+  return index + 1 < allow_border.size() - 1 && allow_border[index + 1];
+}
+
+}  // namespace
 
 void NGFrameSetPainter::PaintObject(const PaintInfo& paint_info,
                                     const PhysicalOffset& paint_offset) {
@@ -45,6 +60,65 @@ void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
 }
 
 void NGFrameSetPainter::PaintBorders(const PaintInfo& paint_info,
-                                     const PhysicalOffset& paint_offset) {}
+                                     const PhysicalOffset& paint_offset) {
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, display_item_client_, paint_info.phase))
+    return;
+
+  DrawingRecorder recorder(
+      paint_info.context, display_item_client_, paint_info.phase,
+      BoxPainter(*To<LayoutBox>(box_fragment_.GetLayoutObject()))
+          .VisualRect(paint_offset));
+
+  const FrameSetLayoutData* layout_data = box_fragment_.GetFrameSetLayoutData();
+  const LayoutUnit border_thickness = LayoutUnit(layout_data->border_thickness);
+  if (border_thickness <= 0)
+    return;
+
+  const ComputedStyle& style = box_fragment_.Style();
+  Color border_fill_color =
+      layout_data->has_border_color
+          ? style.VisitedDependentColor(GetCSSPropertyBorderLeftColor())
+          : kBorderFillColor;
+  auto auto_dark_mode = BorderPaintAutoDarkMode(style, border_fill_color);
+
+  size_t children_count = box_fragment_.Children().size();
+  const Vector<LayoutUnit>& row_sizes = layout_data->row_sizes;
+  const Vector<LayoutUnit>& col_sizes = layout_data->col_sizes;
+  LayoutUnit y;
+  for (wtf_size_t row = 0; row < row_sizes.size(); ++row) {
+    LayoutUnit x;
+    for (wtf_size_t col = 0; col < col_sizes.size(); ++col) {
+      x += col_sizes[col];
+      if (ShouldPaintBorderAfter(layout_data->col_allow_border, col)) {
+        gfx::Rect rect = ToPixelSnappedRect(
+            PhysicalRect(paint_offset.left + x, paint_offset.top + y,
+                         border_thickness, box_fragment_.Size().height - y));
+        PaintColumnBorder(paint_info, rect, border_fill_color, auto_dark_mode);
+        x += border_thickness;
+      }
+      if (--children_count == 0)
+        return;
+    }
+    y += row_sizes[row];
+    if (ShouldPaintBorderAfter(layout_data->row_allow_border, row)) {
+      gfx::Rect rect = ToPixelSnappedRect(
+          PhysicalRect(paint_offset.left, paint_offset.top + y,
+                       box_fragment_.Size().width, border_thickness));
+      PaintRowBorder(paint_info, rect, border_fill_color, auto_dark_mode);
+      y += border_thickness;
+    }
+  }
+}
+
+void NGFrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
+                                       const gfx::Rect& border_rect,
+                                       const Color& fill_color,
+                                       const AutoDarkMode& auto_dark_mode) {}
+
+void NGFrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
+                                          const gfx::Rect& border_rect,
+                                          const Color& fill_color,
+                                          const AutoDarkMode& auto_dark_mode) {}
 
 }  // namespace blink
