@@ -175,12 +175,12 @@ PASS Window replaceable attribute: devicePixelRatio
 PASS constructor
 PASS Window readonly getter: window
 PASS Window readonly getter in iframe: window
-FAIL Window readonly getter in detached iframe: window assert_equals: expected object "[object Window]" but got null
+FAIL Window readonly getter in detached iframe: window _eval is not a function
 PASS Window readonly getter: self
 PASS Window readonly getter in iframe: self
-FAIL Window readonly getter in detached iframe: self assert_equals: expected object "[object Window]" but got null
+FAIL Window readonly getter in detached iframe: self _eval is not a function
 PASS Window readonly getter: frames
 PASS Window readonly getter in iframe: frames
-FAIL Window readonly getter in detached iframe: frames assert_equals: expected object "[object Window]" but got null
+FAIL Window readonly getter in detached iframe: frames _eval is not a function
 Harness: the test ran to completion.
 
