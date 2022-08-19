@@ -74,23 +74,20 @@ bool IsForCurrentPlatform(const std::string& key) {
 
 // Merge |suggested_key_prefs| into the saved preferences for the extension. We
 // merge rather than overwrite to preserve existing was_assigned preferences.
-void MergeSuggestedKeyPrefs(
-    const std::string& extension_id,
-    ExtensionPrefs* extension_prefs,
-    std::unique_ptr<base::DictionaryValue> suggested_key_prefs) {
-  const base::DictionaryValue* current_prefs;
-  if (extension_prefs->ReadPrefAsDictionary(extension_id,
-                                            kCommands,
-                                            &current_prefs)) {
-    std::unique_ptr<base::DictionaryValue> new_prefs =
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(current_prefs->Clone()));
-    new_prefs->MergeDictionary(suggested_key_prefs.get());
+void MergeSuggestedKeyPrefs(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs,
+                            base::Value::Dict suggested_key_prefs) {
+  const base::Value::Dict* current_prefs =
+      extension_prefs->ReadPrefAsDict(extension_id, kCommands);
+  if (current_prefs) {
+    base::Value::Dict new_prefs = current_prefs->Clone();
+    new_prefs.Merge(std::move(suggested_key_prefs));
     suggested_key_prefs = std::move(new_prefs);
   }
 
-  extension_prefs->UpdateExtensionPref(extension_id, kCommands,
-                                       std::move(suggested_key_prefs));
+  extension_prefs->UpdateExtensionPref(
+      extension_id, kCommands,
+      std::make_unique<base::Value>(std::move(suggested_key_prefs)));
 }
 
 }  // namespace
@@ -223,12 +220,10 @@ bool CommandService::AddKeybindingPref(
   bindings->SetKey(key, std::move(keybinding));
 
   // Set the was_assigned pref for the suggested key.
-  std::unique_ptr<base::DictionaryValue> command_keys(
-      new base::DictionaryValue);
-  command_keys->SetBoolKey(kSuggestedKeyWasAssigned, true);
-  std::unique_ptr<base::DictionaryValue> suggested_key_prefs(
-      new base::DictionaryValue);
-  suggested_key_prefs->Set(command_name, std::move(command_keys));
+  base::Value::Dict command_keys;
+  command_keys.Set(kSuggestedKeyWasAssigned, true);
+  base::Value::Dict suggested_key_prefs;
+  suggested_key_prefs.Set(command_name, base::Value(std::move(command_keys)));
   MergeSuggestedKeyPrefs(extension_id, ExtensionPrefs::Get(profile_),
                          std::move(suggested_key_prefs));
 
@@ -503,18 +498,16 @@ bool CommandService::CanAutoAssign(const Command &command,
 
 void CommandService::UpdateExtensionSuggestedCommandPrefs(
     const Extension* extension) {
-  std::unique_ptr<base::DictionaryValue> suggested_key_prefs(
-      new base::DictionaryValue);
+  base::Value::Dict suggested_key_prefs;
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (commands) {
     for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
       const Command command = iter->second;
-      std::unique_ptr<base::DictionaryValue> command_keys(
-          new base::DictionaryValue);
-      command_keys->SetStringKey(
-          kSuggestedKey, Command::AcceleratorToString(command.accelerator()));
-      suggested_key_prefs->Set(command.command_name(), std::move(command_keys));
+      base::Value::Dict command_keys;
+      command_keys.Set(kSuggestedKey,
+                       Command::AcceleratorToString(command.accelerator()));
+      suggested_key_prefs.Set(command.command_name(), std::move(command_keys));
     }
   }
 
@@ -525,25 +518,21 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
   // declared. See CommandsHandler::MaybeSetBrowserActionDefault.
   if (browser_action_command &&
       browser_action_command->accelerator().key_code() != ui::VKEY_UNKNOWN) {
-    std::unique_ptr<base::DictionaryValue> command_keys(
-        new base::DictionaryValue);
-    command_keys->SetStringKey(
-        kSuggestedKey,
-        Command::AcceleratorToString(browser_action_command->accelerator()));
-    suggested_key_prefs->Set(browser_action_command->command_name(),
-                             std::move(command_keys));
+    base::Value::Dict command_keys;
+    command_keys.Set(kSuggestedKey, Command::AcceleratorToString(
+                                        browser_action_command->accelerator()));
+    suggested_key_prefs.Set(browser_action_command->command_name(),
+                            std::move(command_keys));
   }
 
   const Command* page_action_command =
       CommandsInfo::GetPageActionCommand(extension);
   if (page_action_command) {
-    std::unique_ptr<base::DictionaryValue> command_keys(
-        new base::DictionaryValue);
-    command_keys->SetStringKey(
-        kSuggestedKey,
-        Command::AcceleratorToString(page_action_command->accelerator()));
-    suggested_key_prefs->Set(page_action_command->command_name(),
-                             std::move(command_keys));
+    base::Value::Dict command_keys;
+    command_keys.Set(kSuggestedKey, Command::AcceleratorToString(
+                                        page_action_command->accelerator()));
+    suggested_key_prefs.Set(page_action_command->command_name(),
+                            std::move(command_keys));
   }
 
   // Merge into current prefs, if present.
