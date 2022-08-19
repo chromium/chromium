@@ -767,7 +767,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =
         guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
-            crostini::DefaultContainerId());
+            container_id);
     if (info) {
       container_info_value.Set(kIpv4Key, info->ipv4_address);
     }
