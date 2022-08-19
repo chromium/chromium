@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -294,8 +293,7 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
       base::BindOnce(&MoveToAccountStoreBubbleController::RejectMove,
                      base::Unretained(&controller_)));
 
-  SetShowIcon(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop));
+  SetShowIcon(true);
 
   // The request is cancelled when the |controller_| is destructed.
   // |controller_| has the same life time as |this| and hence it's safe to use
@@ -309,12 +307,7 @@ MoveToAccountStoreBubbleView::~MoveToAccountStoreBubbleView() = default;
 void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    SetBubbleHeader(IDR_SAVE_PASSWORD_V2, IDR_SAVE_PASSWORD_V2_DARK);
-  } else {
-    SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
-  }
+  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
 }
 
 MoveToAccountStoreBubbleController*
@@ -328,10 +321,6 @@ MoveToAccountStoreBubbleView::GetController() const {
 }
 
 ui::ImageModel MoveToAccountStoreBubbleView::GetWindowIcon() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    return ui::ImageModel();
-  }
   return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
                                         ui::kColorIcon);
 }

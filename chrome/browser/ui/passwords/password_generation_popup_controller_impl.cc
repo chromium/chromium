@@ -31,7 +31,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_handle.h"
@@ -389,13 +388,8 @@ const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
 }
 
 std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() {
-  if (state_ == kOfferGeneration) {
-    return l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(
-            password_manager::features::kUnifiedPasswordManagerDesktop)
-            ? IDS_PASSWORD_GENERATION_SUGGESTION_GPM
-            : IDS_PASSWORD_GENERATION_SUGGESTION);
-  }
+  if (state_ == kOfferGeneration)
+    return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
 
   return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_EDITING_SUGGESTION);
 }

@@ -10,7 +10,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace metrics_util = password_manager::metrics_util;
@@ -55,8 +54,5 @@ void SaveUnsyncedCredentialsLocallyBubbleController::ReportInteractions() {
 std::u16string SaveUnsyncedCredentialsLocallyBubbleController::GetTitle()
     const {
   return l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)
-          ? IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE_GPM
-          : IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE);
+      IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE_GPM);
 }

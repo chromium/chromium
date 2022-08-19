@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -50,8 +49,7 @@ PostSaveCompromisedBubbleView::PostSaveCompromisedBubbleView(
   SetAcceptCallback(
       base::BindOnce(&PostSaveCompromisedBubbleController::OnAccepted,
                      base::Unretained(&controller_)));
-  SetShowIcon(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop));
+  SetShowIcon(true);
 }
 
 PostSaveCompromisedBubbleView::~PostSaveCompromisedBubbleView() = default;
@@ -67,10 +65,6 @@ PostSaveCompromisedBubbleView::GetController() const {
 }
 
 ui::ImageModel PostSaveCompromisedBubbleView::GetWindowIcon() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    return ui::ImageModel();
-  }
   return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
                                         ui::kColorIcon);
 }

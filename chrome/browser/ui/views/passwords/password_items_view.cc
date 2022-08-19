@@ -24,7 +24,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -275,10 +274,7 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON)));
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    SetFootnoteView(CreateFooterView());
-  }
+  SetFootnoteView(CreateFooterView());
 
   auto& local_credentials = controller_.local_credentials();
 
@@ -299,8 +295,7 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
     RecreateLayout();
   }
 
-  SetShowIcon(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop));
+  SetShowIcon(true);
 }
 
 PasswordItemsView::~PasswordItemsView() = default;
@@ -349,9 +344,6 @@ void PasswordItemsView::RecreateLayout() {
 }
 
 std::unique_ptr<views::View> PasswordItemsView::CreateFooterView() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop));
-
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
       [](PasswordItemsView* dialog) {
         dialog->controller_.OnGooglePasswordManagerLinkClicked();

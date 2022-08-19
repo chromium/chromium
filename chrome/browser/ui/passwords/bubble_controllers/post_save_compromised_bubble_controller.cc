@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -39,28 +38,20 @@ PostSaveCompromisedBubbleController::~PostSaveCompromisedBubbleController() {
 }
 
 std::u16string PostSaveCompromisedBubbleController::GetBody() {
-  bool is_gpm = base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop);
   switch (type_) {
     case BubbleType::kPasswordUpdatedSafeState: {
       std::u16string link = l10n_util::GetStringUTF16(
-          is_gpm
-              ? IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT
-              : IDS_PASSWORD_MANAGER_SAFE_STATE_SETTINGS);
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT);
       size_t offset = 0;
       std::u16string body = l10n_util::GetStringFUTF16(
-          is_gpm
-              ? IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER
-              : IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE,
+          IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER,
           link, &offset);
       link_range_ = gfx::Range(offset, offset + link.size());
       return body;
     }
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       return l10n_util::GetPluralStringFUTF16(
-          is_gpm
-              ? IDS_PASSWORD_MANAGER_MORE_TO_FIX_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER
-              : IDS_PASSWORD_MANAGER_MORE_TO_FIX_BODY_MESSAGE,
+          IDS_PASSWORD_MANAGER_MORE_TO_FIX_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER,
           delegate_->GetTotalNumberCompromisedPasswords());
   }
 }
