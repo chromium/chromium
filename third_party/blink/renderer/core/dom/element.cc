@@ -5406,8 +5406,8 @@ void Element::FinishParsingChildren() {
                               nullptr);
   GetDocument()
       .GetStyleEngine()
-      .ScheduleInvalidationsForHasPseudoAffectedByInsertion(parentElement(),
-                                                            lastChild(), *this);
+      .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
+          parentElement(), previousSibling(), *this);
 }
 
 AttrNodeList* Element::GetAttrNodeList() {

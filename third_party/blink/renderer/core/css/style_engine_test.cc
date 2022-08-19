@@ -6011,6 +6011,93 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
   EXPECT_TRUE(ConsoleMessages().Contains(CQLegacyWarningText()));
 }
 
+TEST_F(StyleEngineSimTest,
+       ShouldInvalidateSubjectPseudoHasAfterChildrenParsingFinished) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Write(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      .a { color: black }
+      .a:not(:has(+ div)) { color: red }
+    </style>
+    <div id="first" class="a"> First </div>
+    <div id="second" class="a"> Second
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  Element* first = GetDocument().getElementById("first");
+  EXPECT_TRUE(first);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  Element* second = GetDocument().getElementById("second");
+  EXPECT_TRUE(second);
+  EXPECT_EQ(
+      Color::FromRGB(255, 0, 0),
+      second->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  main_resource.Write(R"HTML(
+    </div>
+    <div id="third" class="a"> Third
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  first = GetDocument().getElementById("first");
+  EXPECT_TRUE(first);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  second = GetDocument().getElementById("second");
+  EXPECT_TRUE(second);
+  EXPECT_EQ(
+      Color::FromRGB(255, 0, 0),
+      second->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  Element* third = GetDocument().getElementById("third");
+  EXPECT_TRUE(third);
+  EXPECT_EQ(
+      Color::FromRGB(255, 0, 0),
+      third->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  main_resource.Complete(R"HTML(
+    </div>
+    <div id="fourth"> Fourth </div>
+  )HTML");
+
+  first = GetDocument().getElementById("first");
+  EXPECT_TRUE(first);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      first->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  second = GetDocument().getElementById("second");
+  EXPECT_TRUE(second);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      second->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  third = GetDocument().getElementById("third");
+  EXPECT_TRUE(third);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      third->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  Element* fourth = GetDocument().getElementById("fourth");
+  EXPECT_TRUE(fourth);
+  EXPECT_EQ(
+      Color::FromRGB(0, 0, 0),
+      fourth->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, UsesCachedTokenizer) {
   // Make sure the parser exists.
   GetDocument().write("<body></body>");
