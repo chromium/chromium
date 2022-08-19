@@ -260,15 +260,16 @@ public class ShareDelegateImpl implements ShareDelegate {
                 Supplier<Profile> profileSupplier, Callback<Tab> printCallback,
                 @ShareOrigin int shareOrigin, long shareStartTime, boolean sharingHubEnabled) {
             Profile profile = profileSupplier.get();
-            // In some cases, ProfileSupplier.get() will return null or will not be initialized in
-            // Native. See https://crbug.com/1346710 and https://crbug.com/1353138 for context.
-            if (profile == null || !profile.isNativeInitialized()) {
+            // In some cases, ProfileSupplier.get() will return null. See https://crbug.com/1346710
+            // and https://crbug.com/1353138 for context.
+            if (profile == null) {
                 profile = Profile.getLastUsedRegularProfile();
             }
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
             } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()
                     && profile != null) {
+                profile.ensureNativeInitialized();
                 // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
                 // Re-enable it when tab group sharing is supported by sharing hub.
                 RecordHistogram.recordEnumeratedHistogram(

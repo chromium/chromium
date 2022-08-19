@@ -184,9 +184,19 @@ public class Profile implements BrowserContextHandle {
     /**
      * @return Whether or not the native side profile exists.
      */
-    // @VisibleForTesting (Temporarily allow calling this to debug https://crbug.com/1346710).
+    @VisibleForTesting
     public boolean isNativeInitialized() {
         return mNativeProfileAndroid != 0;
+    }
+
+    /**
+     * When called, raises an exception if the native pointer is not initialized. This is useful to
+     * get a more debuggable stacktrace than failing on native-side when dereferencing.
+     */
+    public void ensureNativeInitialized() {
+        if (mNativeProfileAndroid == 0) {
+            throw new RuntimeException("Native profile pointer not initialized.");
+        }
     }
 
     @Override
