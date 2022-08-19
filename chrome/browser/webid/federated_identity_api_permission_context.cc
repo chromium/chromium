@@ -32,7 +32,7 @@ FederatedIdentityApiPermissionContext::
 
 content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
 FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
-    const url::Origin& rp_origin) {
+    const url::Origin& relying_party_embedder) {
   if (!base::FeatureList::IsEnabled(features::kFedCm))
     return PermissionStatus::BLOCKED_VARIATIONS;
 
@@ -42,9 +42,10 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
   if (cookie_settings_->ShouldBlockThirdPartyCookies())
     return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
 
-  const GURL rp_url = rp_origin.GetURL();
+  const GURL rp_embedder_url = relying_party_embedder.GetURL();
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
+      rp_embedder_url, rp_embedder_url,
+      ContentSettingsType::FEDERATED_IDENTITY_API);
   switch (setting) {
     case CONTENT_SETTING_ALLOW:
       break;
@@ -56,32 +57,34 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
   }
 
   if (permission_autoblocker_->IsEmbargoed(
-          rp_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
+          rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
     return PermissionStatus::BLOCKED_EMBARGO;
   }
   return PermissionStatus::GRANTED;
 }
 
 void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
-    const url::Origin& rp_origin) {
-  const GURL rp_url = rp_origin.GetURL();
-  // If content setting is allowed for `rp_url`, reset it.
+    const url::Origin& relying_party_embedder) {
+  const GURL rp_embedder_url = relying_party_embedder.GetURL();
+  // If content setting is allowed for `rp_embedder_url`, reset it.
   // See crbug.com/1340127 for why the resetting is not conditional on the
   // default content setting state.
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
+      rp_embedder_url, rp_embedder_url,
+      ContentSettingsType::FEDERATED_IDENTITY_API);
   if (setting == CONTENT_SETTING_ALLOW) {
     host_content_settings_map_->SetContentSettingDefaultScope(
-        rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API,
-        CONTENT_SETTING_DEFAULT);
+        rp_embedder_url, rp_embedder_url,
+        ContentSettingsType::FEDERATED_IDENTITY_API, CONTENT_SETTING_DEFAULT);
   }
   permission_autoblocker_->RecordDismissAndEmbargo(
-      rp_url, ContentSettingsType::FEDERATED_IDENTITY_API,
+      rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API,
       false /* dismissed_prompt_was_quiet */);
 }
 
 void FederatedIdentityApiPermissionContext::RemoveEmbargoAndResetCounts(
-    const url::Origin& rp_origin) {
+    const url::Origin& relying_party_embedder) {
   permission_autoblocker_->RemoveEmbargoAndResetCounts(
-      rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API);
+      relying_party_embedder.GetURL(),
+      ContentSettingsType::FEDERATED_IDENTITY_API);
 }

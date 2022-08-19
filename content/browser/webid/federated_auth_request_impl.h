@@ -166,6 +166,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const blink::mojom::IdentityProvider& identity_provider,
       IdpNetworkRequestManager::AccountList& accounts);
 
+  url::Origin GetEmbeddingOrigin() const;
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 

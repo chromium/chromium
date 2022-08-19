@@ -16,59 +16,63 @@ ShellFederatedPermissionContext::~ShellFederatedPermissionContext() = default;
 
 content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
 ShellFederatedPermissionContext::GetApiPermissionStatus(
-    const url::Origin& rp_origin) {
+    const url::Origin& relying_party_embedder) {
   return base::FeatureList::IsEnabled(features::kFedCm)
              ? PermissionStatus::GRANTED
              : PermissionStatus::BLOCKED_VARIATIONS;
 }
 
 void ShellFederatedPermissionContext::RecordDismissAndEmbargo(
-    const url::Origin& rp_origin) {}
+    const url::Origin& relying_party_embedder) {}
 
 void ShellFederatedPermissionContext::RemoveEmbargoAndResetCounts(
-    const url::Origin& rp_origin) {}
+    const url::Origin& relying_party_embedder) {}
 
 bool ShellFederatedPermissionContext::HasSharingPermission(
-    const url::Origin& relying_party,
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
     const std::string& account_id) {
   return sharing_permissions_.find(std::tuple(
-             relying_party.Serialize(), identity_provider.Serialize(),
+             relying_party_requester.Serialize(),
+             relying_party_embedder.Serialize(), identity_provider.Serialize(),
              account_id)) != sharing_permissions_.end();
 }
 
 void ShellFederatedPermissionContext::GrantSharingPermission(
-    const url::Origin& relying_party,
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
     const std::string& account_id) {
   sharing_permissions_.insert(std::tuple(
-      relying_party.Serialize(), identity_provider.Serialize(), account_id));
+      relying_party_requester.Serialize(), relying_party_embedder.Serialize(),
+      identity_provider.Serialize(), account_id));
 }
 
 // FederatedIdentityActiveSessionPermissionContextDelegate
 bool ShellFederatedPermissionContext::HasActiveSession(
-    const url::Origin& relying_party,
+    const url::Origin& relying_party_requester,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
   return active_sessions_.find(std::tuple(
-             relying_party.Serialize(), identity_provider.Serialize(),
+             relying_party_requester.Serialize(), identity_provider.Serialize(),
              account_identifier)) != active_sessions_.end();
 }
 
 void ShellFederatedPermissionContext::GrantActiveSession(
-    const url::Origin& relying_party,
+    const url::Origin& relying_party_requester,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  active_sessions_.insert(std::tuple(relying_party.Serialize(),
+  active_sessions_.insert(std::tuple(relying_party_requester.Serialize(),
                                      identity_provider.Serialize(),
                                      account_identifier));
 }
 
 void ShellFederatedPermissionContext::RevokeActiveSession(
-    const url::Origin& relying_party,
+    const url::Origin& relying_party_requester,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  active_sessions_.erase(std::tuple(relying_party.Serialize(),
+  active_sessions_.erase(std::tuple(relying_party_requester.Serialize(),
                                     identity_provider.Serialize(),
                                     account_identifier));
 }

@@ -28,38 +28,42 @@ class ShellFederatedPermissionContext
 
   // FederatedIdentityApiPermissionContextDelegate
   content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
-  GetApiPermissionStatus(const url::Origin& rp_origin) override;
-  void RecordDismissAndEmbargo(const url::Origin& rp_origin) override;
-  void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
+  GetApiPermissionStatus(const url::Origin& relying_party_embedder) override;
+  void RecordDismissAndEmbargo(
+      const url::Origin& relying_party_embedder) override;
+  void RemoveEmbargoAndResetCounts(
+      const url::Origin& relying_party_embedder) override;
 
   // FederatedIdentitySharingPermissionContextDelegate
-  bool HasSharingPermission(const url::Origin& relying_party,
+  bool HasSharingPermission(const url::Origin& relying_party_requester,
+                            const url::Origin& relying_party_embedder,
                             const url::Origin& identity_provider,
                             const std::string& account_id) override;
-  void GrantSharingPermission(const url::Origin& relying_party,
+  void GrantSharingPermission(const url::Origin& relying_party_requester,
+                              const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
 
   // FederatedIdentityActiveSessionPermissionContextDelegate
-  bool HasActiveSession(const url::Origin& relying_party,
+  bool HasActiveSession(const url::Origin& relying_party_requester,
                         const url::Origin& identity_provider,
                         const std::string& account_identifier) override;
-  void GrantActiveSession(const url::Origin& relying_party,
+  void GrantActiveSession(const url::Origin& relying_party_requester,
                           const url::Origin& identity_provider,
                           const std::string& account_identifier) override;
-  void RevokeActiveSession(const url::Origin& relying_party,
+  void RevokeActiveSession(const url::Origin& relying_party_requester,
                            const url::Origin& identity_provider,
                            const std::string& account_identifier) override;
 
   bool ShouldCompleteRequestImmediately() const override;
 
  private:
-  // Pairs of <RP, IDP>
+  // Pairs of <RP embedder, IDP>
   std::set<std::pair<std::string, std::string>> request_permissions_;
-  // Tuples of <RP, IDP, Account>
-  std::set<std::tuple<std::string, std::string, std::string>>
+  // Tuples of <RP requester, RP embedder, IDP, Account>
+  std::set<std::tuple<std::string, std::string, std::string, std::string>>
       sharing_permissions_;
-  // Tuples of <RP, IDP, Account>
+  // Tuples of <RP requester, IDP, Account>
   std::set<std::tuple<std::string, std::string, std::string>> active_sessions_;
 };
 

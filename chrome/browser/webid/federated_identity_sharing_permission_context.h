@@ -32,10 +32,12 @@ class FederatedIdentitySharingPermissionContext
       const FederatedIdentitySharingPermissionContext&) = delete;
 
   // content::FederatedIdentitySharingPermissionContextDelegate:
-  bool HasSharingPermission(const url::Origin& relying_party,
+  bool HasSharingPermission(const url::Origin& relying_party_requester,
+                            const url::Origin& relying_party_embedder,
                             const url::Origin& identity_provider,
                             const std::string& account_id) override;
-  void GrantSharingPermission(const url::Origin& relying_party,
+  void GrantSharingPermission(const url::Origin& relying_party_requester,
+                              const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
 };

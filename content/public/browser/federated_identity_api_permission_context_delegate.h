@@ -28,18 +28,21 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
   FederatedIdentityApiPermissionContextDelegate() = default;
   virtual ~FederatedIdentityApiPermissionContextDelegate() = default;
 
-  // Returns the status of the FedCM API for the passed-in |rp_origin|.
+  // Returns the status of the FedCM API for the passed-in
+  // |relying_party_embedder|.
   virtual PermissionStatus GetApiPermissionStatus(
-      const url::Origin& rp_origin) = 0;
+      const url::Origin& relying_party_embedder) = 0;
 
   // Records that the FedCM prompt was explicitly dismissed and places the
-  // permission under embargo for the passed-in |rp_origin|.
-  virtual void RecordDismissAndEmbargo(const url::Origin& rp_origin) = 0;
+  // permission under embargo for the passed-in |relying_party_embedder|.
+  virtual void RecordDismissAndEmbargo(
+      const url::Origin& relying_party_embedder) = 0;
 
-  // Clears any existing embargo status for |url| for the FEDERATED_IDENTITY_API
-  // permission for the passed-in |rp_origin|. Clears the dismiss and ignore
-  // counts.
-  virtual void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) = 0;
+  // Clears any existing embargo status for the FEDERATED_IDENTITY_API
+  // permission for the passed-in |relying_party_embedder|. Clears the dismiss
+  // and ignore counts.
+  virtual void RemoveEmbargoAndResetCounts(
+      const url::Origin& relying_party_embedder) = 0;
 
   // This function is so we can avoid the delay in tests. It does not really
   // belong on this delegate but we don't have a better one and it seems

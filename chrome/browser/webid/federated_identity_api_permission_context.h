@@ -39,9 +39,11 @@ class FederatedIdentityApiPermissionContext
 
   // content::FederatedIdentityApiPermissionContextDelegate:
   content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
-  GetApiPermissionStatus(const url::Origin& rp_origin) override;
-  void RecordDismissAndEmbargo(const url::Origin& rp_origin) override;
-  void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
+  GetApiPermissionStatus(const url::Origin& relying_party_embedder) override;
+  void RecordDismissAndEmbargo(
+      const url::Origin& relying_party_embedder) override;
+  void RemoveEmbargoAndResetCounts(
+      const url::Origin& relying_party_embedder) override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
