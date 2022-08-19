@@ -38,7 +38,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
-#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
@@ -662,8 +661,14 @@ void QuicStreamFactory::Job::OnResolveHostComplete(int rv) {
       resolve_host_request_ = std::move(fresh_resolve_host_request_);
       io_state_ = STATE_RESOLVE_HOST_COMPLETE;
     } else if (factory_->HasMatchingIpSession(
-                   key_, *fresh_resolve_host_request_->GetAddressResults(),
+                   key_,
+                   HostResolver::GetNonProtocolEndpoints(
+                       *fresh_resolve_host_request_->GetEndpointResults()),
+                   *fresh_resolve_host_request_->GetDnsAliasResults(),
                    use_dns_aliases_)) {
+      // TODO(crbug.com/1264933): Consider dealing with the other
+      // endpoints with protocol metadata.
+
       // Session with resolved IP has already existed, so close racing
       // connection, run callback, and return.
       LogRacingStatus(ConnectionStateAfterDNS::kIpPooled);
@@ -828,9 +833,13 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
 
   // Inform the factory of this resolution, which will set up
   // a session alias, if possible.
+  // TODO(crbug.com/1264933): Consider dealing with the other endpoints
+  // with protocol metadata.
   if (factory_->HasMatchingIpSession(
-          key_, *resolve_host_request_->GetAddressResults(),
-          use_dns_aliases_)) {
+          key_,
+          HostResolver::GetNonProtocolEndpoints(
+              *resolve_host_request_->GetEndpointResults()),
+          *resolve_host_request_->GetDnsAliasResults(), use_dns_aliases_)) {
     LogConnectionIpPooling(true);
     return OK;
   }
@@ -1005,8 +1014,9 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
   DCHECK(!factory_->HasActiveSession(key_.session_key()));
   // There may well now be an active session for this IP.  If so, use the
   // existing session instead.
-  AddressList address(ToIPEndPoint(session_->connection()->peer_address()));
-  if (factory_->HasMatchingIpSession(key_, address, use_dns_aliases_)) {
+  if (factory_->HasMatchingIpSession(
+          key_, {ToIPEndPoint(session_->connection()->peer_address())},
+          /*aliases=*/{}, use_dns_aliases_)) {
     LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,
@@ -1734,12 +1744,14 @@ const std::set<std::string>& QuicStreamFactory::GetDnsAliasesForSessionKey(
   return it->second;
 }
 
-bool QuicStreamFactory::HasMatchingIpSession(const QuicSessionAliasKey& key,
-                                             const AddressList& address_list,
-                                             bool use_dns_aliases) {
+bool QuicStreamFactory::HasMatchingIpSession(
+    const QuicSessionAliasKey& key,
+    const std::vector<IPEndPoint>& ip_endpoints,
+    const std::set<std::string>& aliases,
+    bool use_dns_aliases) {
   const quic::QuicServerId& server_id(key.server_id());
   DCHECK(!HasActiveSession(key.session_key()));
-  for (const IPEndPoint& address : address_list) {
+  for (const auto& address : ip_endpoints) {
     if (!base::Contains(ip_aliases_, address))
       continue;
 
@@ -1751,9 +1763,7 @@ bool QuicStreamFactory::HasMatchingIpSession(const QuicSessionAliasKey& key,
 
       std::set<std::string> dns_aliases;
       if (use_dns_aliases) {
-        base::ranges::copy(address_list.dns_aliases(),
-                           std::inserter(dns_aliases, dns_aliases.end()));
-        dns_aliases = dns_alias_utility::FixUpDnsAliases(dns_aliases);
+        dns_aliases = aliases;
       }
 
       MapSessionToAliasKey(session, key, std::move(dns_aliases));

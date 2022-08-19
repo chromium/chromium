@@ -23,6 +23,7 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
@@ -405,7 +406,8 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
 
   bool HasMatchingIpSession(const QuicSessionAliasKey& key,
-                            const AddressList& address_list,
+                            const std::vector<IPEndPoint>& ip_endpoints,
+                            const std::set<std::string>& aliases,
                             bool use_dns_aliases);
   void OnJobComplete(Job* job, int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
