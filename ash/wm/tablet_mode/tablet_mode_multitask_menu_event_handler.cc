@@ -49,7 +49,8 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window || active_window != event->target() ||
+  if (!active_window ||
+      !active_window->Contains(static_cast<aura::Window*>(event->target())) ||
       !WindowState::Get(active_window)->CanResize()) {
     return;
   }
