@@ -305,7 +305,7 @@ TEST_F(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
   WebElement iframe3 = GetElementById(GetMainFrame()->GetDocument(), "frame3");
 
   auto GetSize = [](const WebElement& element) {
-    gfx::Rect bounds = element.BoundsInViewport();
+    gfx::Rect bounds = element.BoundsInWidget();
     return bounds.width() * bounds.height();
   };
 

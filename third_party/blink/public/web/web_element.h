@@ -105,7 +105,7 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the bounds of the element in Visual Viewport. The bounds
   // have been adjusted to include any transformations, including page scale.
   // This function will update the layout if required.
-  gfx::Rect BoundsInViewport() const;
+  gfx::Rect BoundsInWidget() const;
 
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.

@@ -5761,7 +5761,7 @@ static gfx::Point BottomRightMinusOne(const gfx::Rect& rect) {
 }
 
 static gfx::Rect ElementBounds(WebLocalFrame* frame, const WebString& id) {
-  return gfx::Rect(frame->GetDocument().GetElementById(id).BoundsInViewport());
+  return gfx::Rect(frame->GetDocument().GetElementById(id).BoundsInWidget());
 }
 
 static std::string SelectionAsString(WebFrame* frame) {

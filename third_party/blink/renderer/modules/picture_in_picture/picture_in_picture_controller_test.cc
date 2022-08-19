@@ -429,7 +429,7 @@ TEST_F(PictureInPictureControllerTest, PerformMediaPlayerAction) {
       MakeGarbageCollected<HTMLVideoElement>(*document);
   document->body()->AppendChild(video);
 
-  gfx::Point bounds = video->BoundsInViewport().CenterPoint();
+  gfx::Point bounds = video->BoundsInWidget().CenterPoint();
 
   // Performs the specified media player action on the media element at the
   // given location.
@@ -462,7 +462,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
 }
 
 TEST_F(PictureInPictureControllerTest,
-       EnterPictureInPictureProvideSourceBoundsSetToBoundsInViewport) {
+       EnterPictureInPictureProvideSourceBoundsSetToBoundsInWidget) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -479,8 +479,8 @@ TEST_F(PictureInPictureControllerTest,
 
   // We expect that the video element has some nontrivial rect, else this won't
   // really test anything.
-  ASSERT_NE(Video()->BoundsInViewport(), gfx::Rect());
-  EXPECT_EQ(Service().source_bounds(), Video()->BoundsInViewport());
+  ASSERT_NE(Video()->BoundsInWidget(), gfx::Rect());
+  EXPECT_EQ(Service().source_bounds(), Video()->BoundsInWidget());
 }
 
 TEST_F(PictureInPictureControllerTest,
@@ -533,7 +533,7 @@ TEST_F(PictureInPictureControllerTest,
 
   // Source bounds are expected to match the poster image size, not the bounds
   // of the video element.
-  EXPECT_EQ(Video()->BoundsInViewport(), gfx::Rect(33, 33, 300, 300));
+  EXPECT_EQ(Video()->BoundsInWidget(), gfx::Rect(33, 33, 300, 300));
   EXPECT_EQ(Service().source_bounds(), gfx::Rect(173, 173, 20, 20));
 }
 

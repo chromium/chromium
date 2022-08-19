@@ -5102,10 +5102,10 @@ void Document::SendFocusNotification(Element* new_focused_element,
 
     if (new_focused_element->IsSVGElement()) {
       // Convert to window coordinate system (this will be in DIPs).
-      bounds_in_viewport = new_focused_element->BoundsInViewport();
+      bounds_in_viewport = new_focused_element->BoundsInWidget();
     } else {
       Vector<gfx::Rect> outline_rects =
-          new_focused_element->OutlineRectsInVisualViewport(
+          new_focused_element->OutlineRectsInWidget(
               DocumentUpdateReason::kFocus);
       for (auto& outline_rect : outline_rects)
         bounds_in_viewport.Union(outline_rect);

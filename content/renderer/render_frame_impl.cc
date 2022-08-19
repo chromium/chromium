@@ -6108,7 +6108,7 @@ base::WeakPtr<media::DecoderFactory> RenderFrameImpl::GetMediaDecoderFactory() {
 gfx::RectF RenderFrameImpl::ElementBoundsInWindow(
     const blink::WebElement& element) {
   return gfx::RectF(GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
-      element.BoundsInViewport()));
+      element.BoundsInWidget()));
 }
 
 void RenderFrameImpl::ConvertViewportToWindow(gfx::Rect* rect) {

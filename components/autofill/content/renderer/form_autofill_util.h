@@ -195,20 +195,20 @@ bool IsWebElementFocusable(const blink::WebElement& element);
 // A heuristic visibility detection. See crbug.com/1335257 for an overview of
 // relevant aspects.
 //
-// Note that WebElement::BoundsInViewport(), WebElement::GetClientSize(), and
-// WebElement::GetScrollSize() include the padding but do not include the border
-// and margin. BoundsInViewport() additionally scales the dimensions according
-// to the zoom factor.
+// Note that WebElement::BoundsInWidget(), WebElement::GetClientSize(),
+// and WebElement::GetScrollSize() include the padding but do not include the
+// border and margin. BoundsInWidget() additionally scales the
+// dimensions according to the zoom factor.
 //
 // It seems that invisible fields on websites typically have dimensions between
 // 0 and 10 pixels, before the zoom factor. Therefore choosing `kMinPixelSize`
 // is easier without including the zoom factor. For that reason, this function
-// prefers GetClientSize() over BoundsInViewport().
+// prefers GetClientSize() over BoundsInWidget().
 //
 // This function does not check the position in the viewport because fields in
 // iframes commonly are visible despite the body having height zero. Therefore,
-// `e.GetDocument().Body().BoundsInViewport().Intersects(e.BoundsInViewport())`
-// yields false negatives.
+// `e.GetDocument().Body().BoundsInWidget().Intersects(
+//      e.BoundsInWidget())` yields false negatives.
 //
 // Exposed for testing purposes.
 //

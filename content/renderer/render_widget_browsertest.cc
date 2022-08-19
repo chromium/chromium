@@ -47,7 +47,7 @@ class RenderWidgetTest : public RenderViewTest {
 
   gfx::PointF GetCenterPointOfElement(const blink::WebString& id) {
     auto rect =
-        GetMainFrame()->GetDocument().GetElementById(id).BoundsInViewport();
+        GetMainFrame()->GetDocument().GetElementById(id).BoundsInWidget();
     return gfx::PointF(rect.x() + rect.width() / 2,
                        rect.y() + rect.height() / 2);
   }

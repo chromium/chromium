@@ -2242,8 +2242,7 @@ gfx::Rect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
   // not within the element. Intersect the clipped rect with the first
   // outline rect to ensure that the selection rect only includes visible
   // points within the focused element.
-  Vector<gfx::Rect> outline_rects =
-      focused_element->OutlineRectsInVisualViewport();
+  Vector<gfx::Rect> outline_rects = focused_element->OutlineRectsInWidget();
   if (outline_rects.size() > 1)
     clipped_rect.Intersect(outline_rects[0]);
   return clipped_rect;

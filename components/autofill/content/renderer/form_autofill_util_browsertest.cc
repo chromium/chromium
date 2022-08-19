@@ -1020,7 +1020,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
 
   auto RunTestCases = [](const std::vector<WebElement>& iframes) {
     for (WebElement iframe : iframes) {
-      gfx::Rect bounds = iframe.BoundsInViewport();
+      gfx::Rect bounds = iframe.BoundsInWidget();
       bool expectation = iframe.HasAttribute("data-visible");
       SCOPED_TRACE(
           testing::Message()
@@ -1139,7 +1139,7 @@ TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
 
   auto RunTestCases = [](const std::vector<WebElement>& inputs) {
     for (WebElement input : inputs) {
-      gfx::Rect bounds = input.BoundsInViewport();
+      gfx::Rect bounds = input.BoundsInWidget();
       bool expectation = input.HasAttribute("data-visible");
       SCOPED_TRACE(
           testing::Message()

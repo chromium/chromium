@@ -1974,7 +1974,7 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
                             scroll_behavior);
 }
 
-gfx::Rect Element::BoundsInViewport() const {
+gfx::Rect Element::BoundsInWidget() const {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kUnknown);
 
@@ -2015,7 +2015,7 @@ gfx::Rect Element::BoundsInViewport() const {
   return view->FrameToViewport(gfx::ToEnclosingRect(result));
 }
 
-Vector<gfx::Rect> Element::OutlineRectsInVisualViewport(
+Vector<gfx::Rect> Element::OutlineRectsInWidget(
     DocumentUpdateReason reason) const {
   Vector<gfx::Rect> rects;
 

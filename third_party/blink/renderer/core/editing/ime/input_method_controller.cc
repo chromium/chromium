@@ -1541,7 +1541,7 @@ void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
   // Selection bounds are currently populated only for EditContext.
   // For editable elements we use GetCompositionCharacterBounds to fetch the
   // selection bounds.
-  *control_bounds = element->BoundsInViewport();
+  *control_bounds = element->BoundsInWidget();
 }
 
 void InputMethodController::DidChangeVisibility(

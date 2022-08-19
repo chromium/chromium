@@ -397,14 +397,23 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollTo(const ScrollToOptions*);
   LayoutBox* GetLayoutBoxForScrolling() const override;
 
-  gfx::Rect BoundsInViewport() const;
+  // Returns the bounds of this Element, unclipped, in the coordinate space of
+  // the local root's widget. That is, in the outermost main frame, this will
+  // scale and transform the bounds by the visual viewport transform (i.e.
+  // pinch-zoom). In a local root that isn't main (i.e. a remote frame), the
+  // returned bounds are unscaled by the visual viewport and are relative to
+  // the local root frame.
+  gfx::Rect BoundsInWidget() const;
+
+  // Same as above but for outline rects.
+  Vector<gfx::Rect> OutlineRectsInWidget(
+      DocumentUpdateReason reason = DocumentUpdateReason::kUnknown) const;
+
   // Returns an intersection rectangle of the bounds rectangle and the visual
   // viewport's rectangle in the visual viewport's coordinate space.
   // Applies ancestors' frames' clipping, but does not (yet) apply (overflow)
   // element clipping (crbug.com/889840).
   gfx::Rect VisibleBoundsInVisualViewport() const;
-  Vector<gfx::Rect> OutlineRectsInVisualViewport(
-      DocumentUpdateReason reason = DocumentUpdateReason::kUnknown) const;
 
   DOMRectList* getClientRects();
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;

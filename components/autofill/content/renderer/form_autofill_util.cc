@@ -1675,7 +1675,7 @@ bool IsVisibleIframe(const WebElement& element) {
   // It is common for not-humanly-visible elements to have very small yet
   // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
   constexpr int kMinPixelSize = 10;
-  gfx::Rect bounds = element.BoundsInViewport();
+  gfx::Rect bounds = element.BoundsInWidget();
   return element.IsFocusable() && bounds.width() > kMinPixelSize &&
          bounds.height() > kMinPixelSize;
 }

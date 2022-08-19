@@ -166,7 +166,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     video_bounds = video_element->GetDocument().View()->FrameToViewport(
         ToEnclosingRect(layout_video->LocalToAbsoluteRect(content_rect)));
   } else {
-    video_bounds = video_element->BoundsInViewport();
+    video_bounds = video_element->BoundsInWidget();
   }
 
   picture_in_picture_service_->StartSession(

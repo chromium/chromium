@@ -315,7 +315,7 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
     testing::InSequence s;
     EXPECT_CALL(*event_handler, Invoke(_, _)).Times(1);
 
-    const auto& elem_bounds = element.BoundsInViewport();
+    const auto& elem_bounds = element.BoundsInWidget();
     const int click_count = double_click_event ? 2 : 1;
     EmulateMouseClick(elem_bounds.CenterPoint(), WebMouseEvent::Button::kLeft,
                       0, click_count);

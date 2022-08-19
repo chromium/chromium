@@ -544,7 +544,7 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   // the focused element is editable to continue writing.
   if (IsElementNotNullAndEditable(focused_element)) {
     std::move(callback).Run(
-        focused_element->BoundsInViewport(),
+        focused_element->BoundsInWidget(),
         frame->View()->FrameToViewport(GetAbsoluteCaretBounds()));
     return;
   }

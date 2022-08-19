@@ -1671,7 +1671,7 @@ TEST_P(VisualViewportTest, ResizeVisualViewportStaysWithinOuterViewport) {
   EXPECT_EQ(0, visual_viewport.GetScrollOffset().y());
 }
 
-TEST_P(VisualViewportTest, ElementBoundsInViewportSpaceAccountsForViewport) {
+TEST_P(VisualViewportTest, ElementBoundsInWidgetSpaceAccountsForViewport) {
   InitializeWithAndroidSettings();
 
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(500, 800));
@@ -1690,7 +1690,7 @@ TEST_P(VisualViewportTest, ElementBoundsInViewportSpaceAccountsForViewport) {
   visual_viewport.SetScale(2);
   visual_viewport.SetLocation(gfx::PointAtOffsetFromOrigin(scroll_delta));
 
-  const gfx::Rect bounds_in_viewport = input_element->BoundsInViewport();
+  const gfx::Rect bounds_in_viewport = input_element->BoundsInWidget();
   gfx::Rect expected_bounds = gfx::ScaleToRoundedRect(bounds, 2.f);
   gfx::Vector2dF expected_scroll_delta = scroll_delta;
   expected_scroll_delta.Scale(2.f, 2.f);

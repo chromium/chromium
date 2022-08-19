@@ -728,7 +728,7 @@ TEST_F(WebPluginContainerTest, GestureLongPressReachesPlugin) {
 
   // Next, send an event that does hit the plugin, and verify it does receive
   // it.
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(
       gfx::PointF(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2));
 
@@ -762,7 +762,7 @@ TEST_F(WebPluginContainerTest, MouseEventButtons) {
       gfx::Point(30, 30),
       WebInputEvent::kMiddleButtonDown | WebInputEvent::kShiftKey);
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -797,7 +797,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventTranslated) {
                            WebInputEvent::kNoModifiers,
                            WebInputEvent::GetStaticTimeStampForTests());
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -833,7 +833,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolled) {
                           ->Plugin();
   EventTestPlugin* test_plugin = static_cast<EventTestPlugin*>(plugin);
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   WebPointerEvent event(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
@@ -878,7 +878,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
   EventTestPlugin* test_plugin = static_cast<EventTestPlugin*>(plugin);
 
   {
-    gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+    gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
     WebPointerEvent event(
         WebInputEvent::Type::kPointerDown,
         WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
@@ -904,7 +904,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
   }
 
   {
-    gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+    gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
     WebPointerEvent event1(
         WebInputEvent::Type::kPointerMove,
         WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
@@ -978,7 +978,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventScrolled) {
                            WebInputEvent::kNoModifiers,
                            WebInputEvent::GetStaticTimeStampForTests());
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -1018,7 +1018,7 @@ TEST_F(WebPluginContainerTest, MouseEventScrolled) {
                       WebInputEvent::kNoModifiers,
                       WebInputEvent::GetStaticTimeStampForTests());
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -1061,7 +1061,7 @@ TEST_F(WebPluginContainerTest, MouseEventZoomed) {
                       WebInputEvent::kNoModifiers,
                       WebInputEvent::GetStaticTimeStampForTests());
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -1106,7 +1106,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventZoomed) {
                            WebInputEvent::kNoModifiers,
                            WebInputEvent::GetStaticTimeStampForTests());
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   event.SetPositionInWidget(rect.x() + rect.width() / 2,
                             rect.y() + rect.height() / 2);
 
@@ -1147,7 +1147,7 @@ TEST_F(WebPluginContainerTest, TouchEventZoomed) {
                           ->Plugin();
   EventTestPlugin* test_plugin = static_cast<EventTestPlugin*>(plugin);
 
-  gfx::Rect rect = plugin_container_one_element.BoundsInViewport();
+  gfx::Rect rect = plugin_container_one_element.BoundsInWidget();
   WebPointerEvent event(
       WebInputEvent::Type::kPointerDown,
       WebPointerProperties(1, WebPointerProperties::PointerType::kTouch,
@@ -1186,7 +1186,7 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTest) {
           web_view, WebString::FromUTF8("translated-plugin")));
   plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
 
-  gfx::Rect rect = plugin_container_impl->GetElement().BoundsInViewport();
+  gfx::Rect rect = plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(plugin_container_impl->IsRectTopmost(rect));
 
   // Cause the plugin's frame to be detached.
@@ -1209,14 +1209,14 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTestWithOddAndEvenDimensions) {
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("translated-plugin")));
   even_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
-  auto even_rect = even_plugin_container_impl->GetElement().BoundsInViewport();
+  auto even_rect = even_plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(even_plugin_container_impl->IsRectTopmost(even_rect));
 
   auto* odd_plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("odd-dimensions-plugin")));
   odd_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
-  auto odd_rect = odd_plugin_container_impl->GetElement().BoundsInViewport();
+  auto odd_rect = odd_plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(odd_plugin_container_impl->IsRectTopmost(odd_rect));
 }
 

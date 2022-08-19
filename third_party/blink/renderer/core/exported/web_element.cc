@@ -179,8 +179,8 @@ WebNode WebElement::OpenOrClosedShadowRoot() {
   return WebNode(root);
 }
 
-gfx::Rect WebElement::BoundsInViewport() const {
-  return ConstUnwrap<Element>()->BoundsInViewport();
+gfx::Rect WebElement::BoundsInWidget() const {
+  return ConstUnwrap<Element>()->BoundsInWidget();
 }
 
 SkBitmap WebElement::ImageContents() {
