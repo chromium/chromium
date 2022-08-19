@@ -15,8 +15,8 @@ namespace prefs {
 std::set<std::string> ReadDismissedIDsFromPrefs(const PrefService& pref_service,
                                                 const std::string& pref_name) {
   std::set<std::string> dismissed_ids;
-  const base::Value* list = pref_service.GetList(pref_name);
-  for (const base::Value& value : list->GetListDeprecated()) {
+  const base::Value::List& list = pref_service.GetValueList(pref_name);
+  for (const base::Value& value : list) {
     DCHECK(value.is_string())
         << "Failed to parse dismissed id from prefs param " << pref_name
         << " into string.";
