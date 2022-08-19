@@ -128,20 +128,6 @@ bool CalculateQuadSpaceDamageRect(
   return true;
 }
 
-gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
-    const CompositorRenderPassDrawQuad* rpdq,
-    const CompositorRenderPass& child_render_pass) {
-  const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
-  float max_pixel_movement = child_render_pass.filters.MaximumPixelMovement();
-  gfx::RectF rect(rpdq->rect);
-  rect.Inset(-max_pixel_movement);
-  gfx::Rect expanded_rect = gfx::ToEnclosingRect(rect);
-
-  // expanded_rect in the target space
-  return cc::MathUtil::MapEnclosingClippedRect(
-      shared_quad_state->quad_to_target_transform, expanded_rect);
-}
-
 // Create a clip rect for an aggregated quad from the original clip rect and
 // the clip rect from the surface it's on.
 absl::optional<gfx::Rect> CalculateClipRect(
@@ -347,8 +333,8 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
     // The size of pixel-moving foreground filter is allowed to expand.
     // No intersecting shared_quad_state->clip_rect for the expanded rect.
     damage_rect_in_target_space =
-        GetExpandedRectWithPixelMovingForegroundFilter(render_pass_quad,
-                                                       child_render_pass);
+        GetExpandedRectWithPixelMovingForegroundFilter(
+            *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     const auto* shared_quad_state = render_pass_quad->shared_quad_state;
     damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
@@ -1686,8 +1672,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // has pixel-moving foreground filter.
       if (child_render_pass.filters.HasFilterThatMovesPixels()) {
         gfx::Rect expanded_rect_in_target_space =
-            GetExpandedRectWithPixelMovingForegroundFilter(render_pass_quad,
-                                                           child_render_pass);
+            GetExpandedRectWithPixelMovingForegroundFilter(
+                *render_pass_quad, child_render_pass.filters);
 
         if (expanded_rect_in_target_space.Intersects(damage_rect) ||
             expanded_rect_in_target_space.Intersects(damage_from_parent) ||

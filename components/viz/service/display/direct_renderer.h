@@ -331,6 +331,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   base::flat_map<AggregatedRenderPassId, gfx::Rect>
       backdrop_filter_output_rects_;
 
+  // Whether a render pass with foreground filters that move pixels is found in
+  // this frame.
+  bool has_pixel_moving_foreground_filters_ = false;
+
   bool visible_ = false;
   bool disable_color_checks_for_testing_ = false;
 

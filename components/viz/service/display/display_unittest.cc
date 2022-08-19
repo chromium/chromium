@@ -59,6 +59,7 @@
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_surface_id_allocator.h"
 #include "components/viz/test/viz_test_suite.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4329,6 +4330,121 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
 
     // Expect there is no pending
     EXPECT_EQ(pending_presentation_group_timings_size(), 0u);
+  }
+}
+
+TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
+  RendererSettings settings;
+  settings.partial_swap_enabled = true;
+  id_allocator_.GenerateId();
+  const LocalSurfaceId local_surface_id(
+      id_allocator_.GetCurrentLocalSurfaceId());
+
+  // Set up first display.
+  SetUpSoftwareDisplay(settings);
+  StubDisplayClient client;
+  display_->Initialize(&client, manager_.surface_manager());
+  display_->SetLocalSurfaceId(local_surface_id, 1.f);
+
+  // Create frame sink for a sub surface.
+  TestSurfaceIdAllocator sub_surface_id1(kAnotherFrameSinkId);
+  auto sub_support1 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kAnotherFrameSinkId, /*is_root=*/false);
+
+  // Create frame sink for another sub surface.
+  TestSurfaceIdAllocator sub_surface_id2(kAnotherFrameSinkId2);
+  auto sub_support2 = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kAnotherFrameSinkId2, /*is_root=*/false);
+
+  // Main surface M, damage D, sub-surface B with foreground filter.
+  //   +-----------+
+  //   | +----+   M|
+  //   | |B +-|-+  |
+  //   | +--|-+ |  |
+  //   |    |  D|  |
+  //   |    +---+  |
+  //   +-----------+
+  const gfx::Size display_size(100, 100);
+  const gfx::Rect damage_rect(20, 20, 40, 40);
+  display_->Resize(display_size);
+  const gfx::Rect sub_surface_rect(5, 5, 25, 25);
+  const gfx::Rect no_damage;
+
+  CompositorRenderPassId::Generator render_pass_id_generator;
+  for (size_t frame_num = 1; frame_num <= 2; ++frame_num) {
+    bool first_frame = frame_num == 1;
+    ResetDamageForTest();
+    {
+      // Sub-surface with pixel-moving foreground filter - drop shadow filter
+      CompositorRenderPassList pass_list;
+      auto bd_pass = CompositorRenderPass::Create();
+      cc::FilterOperations foreground_filters;
+      foreground_filters.Append(cc::FilterOperation::CreateDropShadowFilter(
+          gfx::Point(5, 10), 2.f, SkColors::kTransparent));
+      bd_pass->SetAll(
+          render_pass_id_generator.GenerateNextId(), sub_surface_rect,
+          no_damage, gfx::Transform(), foreground_filters,
+          cc::FilterOperations(), gfx::RRectF(gfx::RectF(sub_surface_rect), 0),
+          SubtreeCaptureId(), sub_surface_rect.size(),
+          SharedElementResourceId(), false, false, false, false, false);
+      pass_list.push_back(std::move(bd_pass));
+
+      CompositorFrame frame = CompositorFrameBuilder()
+                                  .SetRenderPassList(std::move(pass_list))
+                                  .Build();
+      sub_support1->SubmitCompositorFrame(sub_surface_id1.local_surface_id(),
+                                          std::move(frame));
+    }
+
+    {
+      // Sub-surface with damage.
+      CompositorRenderPassList pass_list;
+      auto other_pass = CompositorRenderPass::Create();
+      other_pass->output_rect = gfx::Rect(display_size);
+      other_pass->damage_rect = damage_rect;
+      other_pass->id = render_pass_id_generator.GenerateNextId();
+      pass_list.push_back(std::move(other_pass));
+
+      CompositorFrame frame = CompositorFrameBuilder()
+                                  .SetRenderPassList(std::move(pass_list))
+                                  .Build();
+      sub_support2->SubmitCompositorFrame(sub_surface_id2.local_surface_id(),
+                                          std::move(frame));
+    }
+
+    {
+      auto frame = CompositorFrameBuilder()
+                       .AddRenderPass(
+                           RenderPassBuilder(display_size)
+                               .AddSurfaceQuad(
+                                   sub_surface_rect,
+                                   SurfaceRange(absl::nullopt, sub_surface_id1),
+                                   {.allow_merge = false})
+                               .AddSurfaceQuad(
+                                   gfx::Rect(display_size),
+                                   SurfaceRange(absl::nullopt, sub_surface_id2),
+                                   {.allow_merge = false})
+                               .SetDamageRect(damage_rect))
+                       .Build();
+      support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+
+      scheduler_->reset_swapped_for_test();
+      display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
+      EXPECT_TRUE(scheduler_->swapped());
+      EXPECT_EQ(frame_num, output_surface_->num_sent_frames());
+      EXPECT_EQ(display_size, software_output_device_->viewport_pixel_size());
+
+      auto expected_damage =
+          first_frame ? gfx::Rect(display_size) : damage_rect;
+      EXPECT_EQ(expected_damage, software_output_device_->damage_rect());
+      // The scissor rect is expanded by direct_renderer to include the
+      // overlapping pixel-moving foreground filter surface.
+      auto expected_scissor_rect =
+          first_frame ? gfx::Rect(display_size) : gfx::Rect(0, 0, 60, 60);
+      EXPECT_EQ(
+          expected_scissor_rect,
+          display_->renderer_for_testing()->GetLastRootScissorRectForTesting());
+    }
   }
 }
 

@@ -27,6 +27,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
@@ -249,8 +250,11 @@ void DirectRenderer::DrawFrame(
   // RenderPass owns filters, backdrop_filters, etc., and will outlive this
   // function call. So it is safe to store pointers in these maps.
   for (const auto& pass : *render_passes_in_draw_order) {
-    if (!pass->filters.IsEmpty())
+    if (!pass->filters.IsEmpty()) {
       render_pass_filters_[pass->id] = &pass->filters;
+      if (pass->filters.HasFilterThatMovesPixels())
+        has_pixel_moving_foreground_filters_ = true;
+    }
     if (!pass->backdrop_filters.IsEmpty()) {
       render_pass_backdrop_filters_[pass->id] = &pass->backdrop_filters;
       render_pass_backdrop_filter_bounds_[pass->id] =
@@ -406,6 +410,7 @@ void DirectRenderer::DrawFrame(
   render_pass_backdrop_filter_bounds_.clear();
   render_pass_bypass_quads_.clear();
   backdrop_filter_output_rects_.clear();
+  has_pixel_moving_foreground_filters_ = false;
 
   current_frame_valid_ = false;
 }
@@ -792,27 +797,43 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       root_damage_rect.Union(frame_buffer_damage);
 
       // If the root damage rect intersects any child render pass that has a
-      // pixel-moving backdrop-filter, expand the damage to include the entire
+      // pixel-moving backdrop filter, expand the damage to include the entire
       // child pass. See crbug.com/986206 for context.
-      if (!backdrop_filter_output_rects_.empty() &&
+      if ((!backdrop_filter_output_rects_.empty() ||
+           has_pixel_moving_foreground_filters_) &&
           !root_damage_rect.IsEmpty()) {
-        for (auto* quad : render_pass->quad_list) {
+        for (auto* quad : root_render_pass->quad_list) {
           // Sanity check: we should not have a Compositor
           // CompositorRenderPassDrawQuad here.
           DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
           if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
-            auto iter = backdrop_filter_output_rects_.find(
-                AggregatedRenderPassDrawQuad::MaterialCast(quad)
-                    ->render_pass_id);
-            if (iter != backdrop_filter_output_rects_.end()) {
-              gfx::Rect this_output_rect = iter->second;
-              if (root_damage_rect.Intersects(this_output_rect))
-                root_damage_rect.Union(this_output_rect);
+            const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
+
+            // For render pass with pixel moving backdrop filters.
+            if (!backdrop_filter_output_rects_.empty()) {
+              auto iter =
+                  backdrop_filter_output_rects_.find(rpdq->render_pass_id);
+              if (iter != backdrop_filter_output_rects_.end()) {
+                gfx::Rect this_output_rect = iter->second;
+                if (root_damage_rect.Intersects(this_output_rect))
+                  root_damage_rect.Union(this_output_rect);
+              }
+            }
+
+            // For render pass with pixel moving foreground filters.
+            const cc::FilterOperations* foreground_filters =
+                FiltersForPass(rpdq->render_pass_id);
+            if (foreground_filters &&
+                foreground_filters->HasFilterThatMovesPixels()) {
+              gfx::Rect expanded_rect =
+                  GetExpandedRectWithPixelMovingForegroundFilter(
+                      *rpdq, *foreground_filters);
+              if (root_damage_rect.Intersects(expanded_rect))
+                root_damage_rect.Union(expanded_rect);
             }
           }
         }
       }
-
       // Total damage after all adjustments.
       base::CheckedNumeric<int64_t> total_damage_area =
           root_damage_rect.size().GetCheckedArea();
