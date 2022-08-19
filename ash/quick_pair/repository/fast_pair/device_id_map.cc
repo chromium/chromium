@@ -24,10 +24,8 @@ void DeviceIdMap::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDeviceIdMapPref);
 }
 
-DeviceIdMap::DeviceIdMap() {
-  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &DeviceIdMap::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
-}
+DeviceIdMap::DeviceIdMap(scoped_refptr<device::BluetoothAdapter> adapter)
+    : bluetooth_adapter_(adapter) {}
 
 DeviceIdMap::~DeviceIdMap() = default;
 
@@ -180,11 +178,6 @@ void DeviceIdMap::LoadPersistedRecordsFromPrefs() {
        device_id_map_dict) {
     device_id_to_model_id_[record.first] = record.second.GetString();
   }
-}
-
-void DeviceIdMap::OnGetAdapter(
-    scoped_refptr<device::BluetoothAdapter> adapter) {
-  bluetooth_adapter_ = adapter;
 }
 
 absl::optional<const std::string> DeviceIdMap::GetDeviceIdForAddress(

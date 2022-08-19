@@ -41,9 +41,8 @@ constexpr char kValidModelId[] = "abc";
 constexpr char kInvalidModelId[] = "666";
 constexpr char kTestModelId[] = "test_model_id";
 constexpr char kTestDeviceId[] = "test_ble_device_id";
-constexpr char kTestBLEAddress[] = "test_ble_address";
-constexpr char kTestClassicAddress[] = "test_classic_address";
-constexpr char kFirstSavedMacAddress[] = "00:11:22:33:44";
+constexpr char kTestBLEAddress[] = "00:11:22:33:45";
+constexpr char kTestClassicAddress[] = "00:11:22:33:44";
 const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                         0xCC, 0xDD, 0xEE, 0xFF};
@@ -85,6 +84,11 @@ class FastPairRepositoryImplTest : public AshTestBase {
         .WillByDefault(Return(kTestDeviceId));
     ON_CALL(classic_bluetooth_device_, GetIdentifier)
         .WillByDefault(Return(kTestDeviceId));
+    ON_CALL(ble_bluetooth_device_, IsPaired)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(classic_bluetooth_device_, IsPaired)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*adapter_, GetDevices).WillByDefault(testing::Return(device_list_));
     ON_CALL(*adapter_, GetDevice(kTestBLEAddress))
         .WillByDefault(Return(&ble_bluetooth_device_));
     ON_CALL(*adapter_, GetDevice(kTestClassicAddress))
@@ -114,14 +118,15 @@ class FastPairRepositoryImplTest : public AshTestBase {
     ON_CALL(*image_decoder_, DecodeImage(_, _, _))
         .WillByDefault(RunOnceCallback<2>(test_image_));
 
-    auto device_id_map = std::make_unique<DeviceIdMap>();
+    auto device_id_map = std::make_unique<DeviceIdMap>(adapter_.get());
     device_id_map_ = device_id_map.get();
 
     auto device_image_store =
         std::make_unique<DeviceImageStore>(image_decoder_);
     device_image_store_ = device_image_store.get();
 
-    auto saved_device_registry = std::make_unique<SavedDeviceRegistry>();
+    auto saved_device_registry =
+        std::make_unique<SavedDeviceRegistry>(adapter_.get());
     saved_device_registry_ = saved_device_registry.get();
 
     fast_pair_repository_ = std::make_unique<FastPairRepositoryImpl>(
@@ -180,6 +185,8 @@ class FastPairRepositoryImplTest : public AshTestBase {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   testing::NiceMock<device::MockBluetoothDevice> ble_bluetooth_device_;
   testing::NiceMock<device::MockBluetoothDevice> classic_bluetooth_device_;
+  device::BluetoothAdapter::ConstDeviceList device_list_{
+      &ble_bluetooth_device_, &classic_bluetooth_device_};
   scoped_refptr<Device> device_;
   gfx::Image test_image_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -594,7 +601,7 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
 }
 
 TEST_F(FastPairRepositoryImplTest, IsAccountKeyPairedLocally) {
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
+  saved_device_registry_->SaveAccountKey(kTestClassicAddress, kAccountKey1);
   EXPECT_TRUE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey1));
   EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
 }

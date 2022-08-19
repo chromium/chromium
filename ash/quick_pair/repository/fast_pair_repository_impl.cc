@@ -22,21 +22,30 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
 namespace quick_pair {
 
 FastPairRepositoryImpl::FastPairRepositoryImpl()
-    : FastPairRepository(),
-      device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
+    : device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
       footprints_fetcher_(std::make_unique<FootprintsFetcherImpl>()),
       image_decoder_(std::make_unique<FastPairImageDecoderImpl>()),
-      device_id_map_(std::make_unique<DeviceIdMap>()),
       device_image_store_(
           std::make_unique<DeviceImageStore>(image_decoder_.get())),
-      saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
-      footprints_last_updated_(base::Time::UnixEpoch()) {}
+      footprints_last_updated_(base::Time::UnixEpoch()) {
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &FastPairRepositoryImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairRepositoryImpl::OnGetAdapter(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  adapter_ = adapter;
+  device_id_map_ = std::make_unique<DeviceIdMap>(adapter_);
+  saved_device_registry_ = std::make_unique<SavedDeviceRegistry>(adapter_);
+}
 
 FastPairRepositoryImpl::FastPairRepositoryImpl(
     std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,

@@ -10,6 +10,7 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,6 +21,7 @@ class DeviceImageInfo;
 }  // namespace chromeos
 
 namespace device {
+class BluetoothAdapter;
 class BluetoothDevice;
 }  // namespace device
 
@@ -131,6 +133,12 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void OnGetSavedDevices(
       GetSavedDevicesCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+
+  // Internal method called by BluetoothAdapterFactory to provide the adapter
+  // object.
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
+  scoped_refptr<device::BluetoothAdapter> adapter_;
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;

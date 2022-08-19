@@ -64,7 +64,7 @@ class DeviceIdMapTest : public AshTestBase {
     device_ = base::MakeRefCounted<Device>(kTestModelId, kTestBLEAddress,
                                            Protocol::kFastPairInitial);
     device_->set_classic_address(kTestClassicAddress);
-    device_id_map_ = std::make_unique<DeviceIdMap>();
+    device_id_map_ = std::make_unique<DeviceIdMap>(adapter_);
   }
 
  protected:
@@ -286,7 +286,7 @@ TEST_F(DeviceIdMapTest, LoadPersistedIdRecordFromPrefs) {
 
   // A new/restarted DeviceIdMap instance should load persisted ID records
   // from prefs.
-  DeviceIdMap new_device_id_map;
+  DeviceIdMap new_device_id_map(adapter_);
   absl::optional<const std::string> model_id =
       new_device_id_map.GetModelIdForDeviceId(kTestBLEDeviceId);
   EXPECT_TRUE(model_id);

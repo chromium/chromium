@@ -32,7 +32,7 @@ class DeviceIdMap {
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  DeviceIdMap();
+  explicit DeviceIdMap(scoped_refptr<device::BluetoothAdapter> adapter);
   DeviceIdMap(const DeviceIdMap&) = delete;
   DeviceIdMap& operator=(const DeviceIdMap&) = delete;
   ~DeviceIdMap();
@@ -74,7 +74,6 @@ class DeviceIdMap {
   // Loads device ID -> model ID records persisted in prefs to
   // device_id_to_model_id_.
   void LoadPersistedRecordsFromPrefs();
-  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   // Used to lazily load saved records from prefs.
   bool loaded_records_from_prefs_ = false;
