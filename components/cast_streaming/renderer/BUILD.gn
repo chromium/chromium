@@ -109,12 +109,15 @@ source_set("playback_command_forwarding_renderer") {
 source_set("web_codecs") {
   sources = [
     "public/web_codecs/decoder_buffer_provider.h",
+    "web_codecs/buffer_requester.h",
     "web_codecs/decoder_buffer_provider_impl.h",
     "web_codecs/delegating_decoder_buffer_provider.h",
   ]
   public_deps = [
     ":decoder_buffer_reader",
     "//base",
+    "//components/cast_streaming/public:demuxer_stream_traits",
+    "//components/cast_streaming/public/mojom",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
@@ -128,6 +131,7 @@ source_set("unit_tests") {
     "decoder_buffer_reader_unittest.cc",
     "playback_command_forwarding_renderer_factory_unittest.cc",
     "playback_command_forwarding_renderer_unittest.cc",
+    "web_codecs/buffer_requester_unittest.cc",
     "web_codecs/decoder_buffer_provider_impl_unittest.cc",
     "web_codecs/delegating_decoder_buffer_provider_unittest.cc",
   ]
