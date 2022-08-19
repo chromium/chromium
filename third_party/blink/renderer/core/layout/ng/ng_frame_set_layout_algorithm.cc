@@ -23,6 +23,17 @@ LayoutUnit IntLayoutUnit(double value) {
   return LayoutUnit(floor(value));
 }
 
+// Adjusts proportionally the size with remaining size.
+LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
+                                     LayoutUnit remaining,
+                                     int64_t total) {
+  // Performs the math operations step by step to avoid the overflow.
+  base::CheckedNumeric<int64_t> temp_product = current.ToInt();
+  temp_product *= remaining.ToInt();
+  temp_product /= total;
+  return LayoutUnit(base::checked_cast<int>(temp_product.ValueOrDie()));
+}
+
 }  // namespace
 
 NGFrameSetLayoutAlgorithm::NGFrameSetLayoutAlgorithm(
@@ -76,45 +87,100 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
     return sizes;
   }
 
-  [[maybe_unused]] int64_t total_relative = 0;
-  [[maybe_unused]] int64_t total_fixed = 0;
-  [[maybe_unused]] int64_t total_percent = 0;
-  [[maybe_unused]] wtf_size_t count_relative = 0;
-  [[maybe_unused]] wtf_size_t count_fixed = 0;
-  [[maybe_unused]] wtf_size_t count_percent = 0;
+  // First we need to investigate how many columns of each type we have and
+  // how much space these columns are going to require.
+
+  Vector<wtf_size_t, 4> fixed_indices;
+  Vector<wtf_size_t, 4> percent_indices;
+  Vector<wtf_size_t, 4> relative_indices;
+  for (wtf_size_t i = 0; i < count; ++i) {
+    if (grid[i].IsAbsolute())
+      fixed_indices.push_back(i);
+    else if (grid[i].IsPercentage())
+      percent_indices.push_back(i);
+    else if (grid[i].IsRelative())
+      relative_indices.push_back(i);
+  }
+
+  int64_t total_relative = 0;
+  int64_t total_fixed = 0;
+  int64_t total_percent = 0;
 
   const float effective_zoom = Node().Style().EffectiveZoom();
 
-  // First we need to investigate how many columns of each type we have and
-  // how much space these columns are going to require.
-  for (wtf_size_t i = 0; i < count; ++i) {
-    // Count the total length of all of the fixed columns/rows -> total_fixed.
-    // Count the number of columns/rows which are fixed -> count_fixed.
-    if (grid[i].IsAbsolute()) {
+  // Count the total length of all of the fixed columns/rows.
+  for (auto i : fixed_indices) {
+    sizes[i] =
+        IntLayoutUnit(grid[i].Value() * effective_zoom).ClampNegativeToZero();
+    DCHECK(IsIntegerValue(sizes[i]));
+    total_fixed += sizes[i].ToInt();
+  }
+
+  // Count the total percentage of all of the percentage columns/rows.
+  for (auto i : percent_indices) {
+    sizes[i] = IntLayoutUnit(grid[i].Value() * available_length / 100.0)
+                   .ClampNegativeToZero();
+    DCHECK(IsIntegerValue(sizes[i])) << sizes[i];
+    total_percent += sizes[i].ToInt();
+  }
+
+  // Count the total relative of all the relative columns/rows.
+  for (auto i : relative_indices)
+    total_relative += ClampTo<int>(std::max(grid[i].Value(), 1.0));
+
+  LayoutUnit remaining_length = available_length;
+
+  // Fixed columns/rows are our first priority. If there is not enough space to
+  // fit all fixed columns/rows we need to proportionally adjust their size.
+  if (total_fixed > remaining_length.ToInt()) {
+    LayoutUnit remaining_fixed = remaining_length;
+    for (auto i : fixed_indices) {
       sizes[i] =
-          IntLayoutUnit(grid[i].Value() * effective_zoom).ClampNegativeToZero();
-      DCHECK(IsIntegerValue(sizes[i]));
-      total_fixed += sizes[i].ToInt();
-      ++count_fixed;
+          AdjustSizeToRemainingSize(sizes[i], remaining_fixed, total_fixed);
+      remaining_length -= sizes[i];
+    }
+  } else {
+    remaining_length -= total_fixed;
+  }
+
+  // Percentage columns/rows are our second priority. Divide the remaining space
+  // proportionally over all percentage columns/rows.
+  // NOTE: the size of each column/row is not relative to 100%, but to the total
+  // percentage. For example, if there are three columns, each of 75%, and the
+  // available space is 300px, each column will become 100px in width.
+  if (total_percent > remaining_length.ToInt()) {
+    LayoutUnit remaining_percent = remaining_length;
+    for (auto i : percent_indices) {
+      sizes[i] =
+          AdjustSizeToRemainingSize(sizes[i], remaining_percent, total_percent);
+      remaining_length -= sizes[i];
+    }
+  } else {
+    remaining_length -= total_percent;
+  }
+
+  // Relative columns/rows are our last priority. Divide the remaining space
+  // proportionally over all relative columns/rows.
+  // NOTE: the relative value of 0* is treated as 1*.
+  if (!relative_indices.IsEmpty()) {
+    wtf_size_t last_relative_index = WTF::kNotFound;
+    int64_t remaining_relative = remaining_length.ToInt();
+    for (auto i : relative_indices) {
+      sizes[i] = IntLayoutUnit(
+          (ClampTo<int>(std::max(grid[i].Value(), 1.)) * remaining_relative) /
+          total_relative);
+      remaining_length -= sizes[i];
+      last_relative_index = i;
     }
 
-    // Count the total percentage of all of the percentage columns/rows ->
-    // total_percent. Count the number of columns/rows which are percentages ->
-    // count_percent.
-    if (grid[i].IsPercentage()) {
-      sizes[i] = IntLayoutUnit(grid[i].Value() * available_length / 100.0)
-                     .ClampNegativeToZero();
-      DCHECK(IsIntegerValue(sizes[i])) << sizes[i];
-      total_percent += sizes[i].ToInt();
-      ++count_percent;
-    }
-
-    // Count the total relative of all the relative columns/rows ->
-    // total_relative. Count the number of columns/rows which are relative ->
-    // count_relative.
-    if (grid[i].IsRelative()) {
-      total_relative += ClampTo<int>(std::max(grid[i].Value(), 1.0));
-      ++count_relative;
+    // If we could not evenly distribute the available space of all of the
+    // relative columns/rows, the remainder will be added to the last column/
+    // row. For example: if we have a space of 100px and three columns (*,*,*),
+    // the remainder will be 1px and will be added to the last column: 33px,
+    // 33px, 34px.
+    if (remaining_length) {
+      sizes[last_relative_index] += remaining_length;
+      remaining_length = LayoutUnit();
     }
   }
 
