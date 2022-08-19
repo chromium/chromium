@@ -99,4 +99,10 @@ public interface FirstRunPageDelegate {
      * {@link Promise#isFulfilled()} to check whether the native has already been initialized.
      */
     Promise<Void> getNativeInitializationPromise();
+
+    /**
+     * Whether FRE pages can use layouts optimized for landscape orientation. Returns false if the
+     * FRE is shown in a dialog.
+     */
+    boolean canUseLandscapeLayout();
 }
