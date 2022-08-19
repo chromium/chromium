@@ -247,7 +247,7 @@ TEST_F(AutocorrectManagerTest, FewKeyPressesDoesNotClearAutocorrectRange) {
       !mock_ime_input_context_handler_.GetAutocorrectRange().is_empty());
 }
 
-TEST_F(AutocorrectManagerTest, EnoughKeyPressesClearsAutcorrectRange) {
+TEST_F(AutocorrectManagerTest, EnoughKeyPressesClearsAutocorrectRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   const ui::KeyEvent key_event =
@@ -258,6 +258,153 @@ TEST_F(AutocorrectManagerTest, EnoughKeyPressesClearsAutcorrectRange) {
   EXPECT_FALSE(manager_.OnKeyEvent(key_event));
 
   EXPECT_TRUE(mock_ime_input_context_handler_.GetAutocorrectRange().is_empty());
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingFewCharsAfterRangeDoesNotClearAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the a", 5, 5);
+  manager_.OnSurroundingTextChanged(u"the ab", 6, 6);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(0, 3));
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingEnoughCharsAfterRangeClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the a", 5, 5);
+  manager_.OnSurroundingTextChanged(u"the ab", 6, 6);
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingFewCharsBeforeRangeDoesNotClearAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+
+  // Move cursor to position 0.
+  manager_.OnSurroundingTextChanged(u" the ", 0, 0);
+  // Add two chars and move the ranges accordingly.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(2, 5));
+  manager_.OnSurroundingTextChanged(u"a the ", 1, 1);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(3, 6));
+  manager_.OnSurroundingTextChanged(u"ab the ", 2, 2);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(3, 6));
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingEnoughCharsBeforeRangeClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+
+  // Move cursor to position 0.
+  manager_.OnSurroundingTextChanged(u" the ", 0, 0);
+  // Add three chars and move the range accordingly.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(2, 5));
+  manager_.OnSurroundingTextChanged(u"a the ", 1, 1);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(3, 6));
+  manager_.OnSurroundingTextChanged(u"ab the ", 2, 2);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(4, 7));
+  manager_.OnSurroundingTextChanged(u"abc the ", 3, 3);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingFewCharsBeforeAndAfterRangeDoesNotClearAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+  manager_.OnSurroundingTextChanged(u" the a", 6, 6);
+  manager_.OnSurroundingTextChanged(u" the a", 0, 0);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(2, 5));
+  manager_.OnSurroundingTextChanged(u"b the a", 1, 1);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(2, 5));
+}
+
+TEST_F(AutocorrectManagerTest,
+       TypingEnoughCharsAfterAndBeforeRangeClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+  manager_.OnSurroundingTextChanged(u" the a", 6, 6);
+  manager_.OnSurroundingTextChanged(u" the a", 0, 0);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(2, 5));
+  manager_.OnSurroundingTextChanged(u"b the a", 1, 1);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(3, 6));
+  manager_.OnSurroundingTextChanged(u"bc the a", 2, 2);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
+TEST_F(AutocorrectManagerTest,
+       RemovingCharsCloseToRangeDoesNotClearAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Add characters.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the ab", 6, 6);
+  // Now remove them.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(0, 3));
+}
+
+TEST_F(AutocorrectManagerTest,
+       PastingEnoughCharsAndRemovingFewStillClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Add characters.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the ab", 6, 6);
+  // Now removing them should not be counted.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  // Now addition of a new character must trigger the clearance process,
+  // to ensure backspaced does not impact the output.
+  manager_.OnSurroundingTextChanged(u"the a", 5, 5);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
+TEST_F(AutocorrectManagerTest,
+       PastingFewCharsBeforeRangeDoesNotClearAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+  manager_.OnSurroundingTextChanged(u" the ", 0, 0);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(3, 6));
+  manager_.OnSurroundingTextChanged(u"ab the ", 2, 2);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(3, 6));
+}
+
+TEST_F(AutocorrectManagerTest,
+       PastingEnoughCharsBeforeRangeClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u" the ", 5, 5);
+  manager_.OnSurroundingTextChanged(u" the ", 0, 0);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(4, 7));
+  manager_.OnSurroundingTextChanged(u"abc the ", 3, 3);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
 }
 
 TEST_F(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
@@ -363,6 +510,106 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"abc the def", 10, 10);
   EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
             gfx::Range(4, 7));
+}
+
+TEST_F(AutocorrectManagerTest,
+       InsertingFewCharsDoesNotRecordMetricsForPendingAutocorrect) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  // Add characters.
+  manager_.OnSurroundingTextChanged(u" the b", 6, 6);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       InsertingEnoughCharsRecordsMetricWhenAcceptingAutocorrect) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Add characters.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"c the b", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       RemovingCharsDoesNotRecordMetricsForPendingAutocorrect) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Add characters.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the ab", 6, 6);
+  // Now remove them.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       InsertingCharsRecordsMetricsWhenClearingAutocorrect) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the a", 5, 5);
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
+  manager_.OnSurroundingTextChanged(u" the b", 6, 6);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       FirstOnSurroundingCallDoesNotRecordMetricsForEmptyAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
+  // First call might has current stale autocorrect range.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       SecondOnSurroundingCallRecordsMetricsWhenClearingAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
+  // First call might has current stale autocorrect range.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  // Second call does not get stale autocorrect range, so can now remove it.
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnSurroundingRecordsMetricsCorrectlyForNullInputContext) {
+  // Create a pending autocorrect range.
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Make Input context null.
+  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  // Null input context invalidates the previous range even if rules are
+  // triggered to accept the range.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -654,6 +901,50 @@ TEST_F(AutocorrectManagerTest,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/1,
                               /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       InsertingCharsDoesNotRecordMetricsForStaleAndAcceptedRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0);
+
+  // Set stale autocorrect range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(0, 3));
+
+  // Adding extra character should not double count.
+  manager_.OnSurroundingTextChanged(u"the abcd", 8, 8);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       InsertingCharsDoesNotRecordMetricsForStaleAndClearedRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
+
+  // Set stale cleared range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(0, 3));
+
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
 }
 
 TEST_F(AutocorrectManagerTest,

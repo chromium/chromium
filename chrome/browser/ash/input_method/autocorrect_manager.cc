@@ -81,7 +81,6 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
                                                       current_text);
 
   original_text_ = original_text;
-  key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
 
   if (autocorrect_pending_) {
     AcceptOrClearPendingAutocorrect();
@@ -93,7 +92,10 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
     return;
   }
 
+  ResetStateVars(); // Ensure all state variables are reset.
   autocorrect_pending_ = true;
+  key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
+
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
   autocorrect_time_ = base::TimeTicks::Now();
@@ -163,26 +165,65 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   if (!autocorrect_pending_) {
     return;
   }
+
   std::string error;
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
+
+  // Null input context invalidates the range so consider the pending
+  // range as implicitly rejected/cleared.
+  if (!input_context) {
+    AcceptOrClearPendingAutocorrect();
+    return;
+  }
+
   const gfx::Range range = input_context->GetAutocorrectRange();
-  const uint32_t cursor_pos_unsigned = base::checked_cast<uint32_t>(cursor_pos);
+  const uint32_t cursor_pos_unsigned
+      = base::checked_cast<uint32_t>(cursor_pos);
+
+  // If autocorrect range is not cleared and cursor distance to the pending
+  // autocorrect range is farther than the threshold, then accept the range.
   if (!range.is_empty() &&
       (cursor_pos_unsigned + kDistanceUntilUnderlineHides < range.start() ||
        cursor_pos_unsigned > range.end() + kDistanceUntilUnderlineHides)) {
     AcceptOrClearPendingAutocorrect();
+    return;
   }
-  // Explanation of checks:
-  // 1) Check there is an autocorrect range
-  // 2) Check cursor is in range
-  // 3) Ensure there is no selection (selection UI clashes with autocorrect
-  //    UI).
-  if (!range.is_empty() && cursor_pos_unsigned >= range.start() &&
+
+  // If it is the first call of the event after handling autocorrect range,
+  // initialize the variables and do not process the empty range as it is
+  // potentially stale.
+  if (num_inserted_chars_ < 0) {
+    num_inserted_chars_ = 0;
+  } else if (range.is_empty()) {
+    // If it is not the first call and the range is empty, then it means the
+    // user interaction has cleared the range.
+    AcceptOrClearPendingAutocorrect();
+    return;
+  } else if (text.length() > text_length_) {
+    // TODO(b/161490813): Fix double counting of emojis and some CJK chars.
+
+    // Count characters added between two calls of the event.
+    num_inserted_chars_ += text.length() - text_length_;
+  }
+  text_length_ = text.length();
+
+  // If the number of added characters after setting the pending range is above
+  // the threshold, then accept the pending range.
+  if (num_inserted_chars_ >= kDistanceUntilUnderlineHides) {
+    AcceptOrClearPendingAutocorrect();
+    return;
+  }
+
+  // If cursor is inside autocorrect range (inclusive), show undo window and
+  // record relevant metrics.
+  if (cursor_pos_unsigned >= range.start() &&
       cursor_pos_unsigned <= range.end() && cursor_pos == anchor_pos) {
     ShowUndoWindow(range, text);
     key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
   } else {
+    // Ensure undo window is hidden when cursor is not inside the autocorrect
+    // range.
     HideUndoWindow();
   }
 }
@@ -198,8 +239,7 @@ void AutocorrectManager::OnFocus(int context_id) {
     // TODO(b/149796494): move this to onblur()
     LogAssistiveAutocorrectAction(
         AutocorrectActions::kUserExitedTextFieldWithUnderline);
-    autocorrect_pending_ = false;
-    key_presses_until_underline_hide_ = -1;
+    ResetStateVars(); // Unset pending state and related variables
   }
   context_id_ = context_id;
 }
@@ -239,7 +279,8 @@ void AutocorrectManager::UndoAutocorrect() {
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
-  autocorrect_pending_ = false;
+  ResetStateVars(); // Unset pending state
+
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
@@ -321,8 +362,16 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserActionClearedUnderline);
   }
+  ResetStateVars(); // Unset pending state
+}
+
+void AutocorrectManager::ResetStateVars() {
+  // Ensure undo window is hidden.
   HideUndoWindow();
   autocorrect_pending_ = false;
+  num_inserted_chars_ = -1;
+  text_length_ = -1;
+  key_presses_until_underline_hide_ = -1;
 }
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(

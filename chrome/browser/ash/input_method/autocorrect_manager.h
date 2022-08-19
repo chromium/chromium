@@ -96,6 +96,9 @@ class AutocorrectManager {
   // Highlights undo button of undo window if it is visible.
   void HighlightUndoButton();
 
+  // Resets all state variables to their default (no pending range) situation.
+  void ResetStateVars();
+
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
   int key_presses_until_underline_hide_ = 0;
@@ -108,6 +111,17 @@ class AutocorrectManager {
   // suggestion. The state is kept to avoid issue where InputContext returns
   // stale autocorrect range.
   bool autocorrect_pending_ = false;
+
+  // Number of characters inserted anytime after setting a pending autocorrect
+  // range. Negative means no autocorrect range is pending or a range has just
+  // been set to pending with no OnSurroundingTextChanged called yet.
+  int num_inserted_chars_ = -1;
+
+  // Last known text length from OnSurroundingTextChanged after setting
+  // a pending autocorrect range. Negative means no autocorrect range is
+  // pending or a range has just been set to pending with no
+  // OnSurroundingTextChanged called yet.
+  int text_length_ = -1;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
