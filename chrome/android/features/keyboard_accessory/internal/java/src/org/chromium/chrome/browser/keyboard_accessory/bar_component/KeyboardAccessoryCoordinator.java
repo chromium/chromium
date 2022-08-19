@@ -14,6 +14,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
@@ -225,7 +226,9 @@ public class KeyboardAccessoryCoordinator {
      * Triggers the accessory to be shown.
      */
     public void show() {
+        TraceEvent.begin("KeyboardAccessoryCoordinator#show");
         mMediator.show();
+        TraceEvent.end("KeyboardAccessoryCoordinator#show");
     }
 
     /** Next time the accessory is closed, don't delay the closing animation. */

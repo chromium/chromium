@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.DeferredViewStubInflationProvider;
 import org.chromium.ui.ViewProvider;
@@ -120,7 +121,9 @@ public class AccessorySheetCoordinator {
      * Shows the Accessory Sheet.
      */
     public void show() {
+        TraceEvent.begin("AccessorySheetCoordinator#show");
         mMediator.show();
+        TraceEvent.end("AccessorySheetCoordinator#show");
     }
 
     /**

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -56,7 +57,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
 
     @Override
     public void onItemAvailable(int typeId, AccessorySheetData accessorySheetData) {
+        TraceEvent.begin("AccessorySheetTabMediator#onItemAvailable");
         mModel.set(splitIntoDataPieces(accessorySheetData));
+        TraceEvent.end("AccessorySheetTabMediator#onItemAvailable");
     }
 
     AccessorySheetTabMediator(AccessorySheetTabModel model, @AccessoryTabType int tabType,
