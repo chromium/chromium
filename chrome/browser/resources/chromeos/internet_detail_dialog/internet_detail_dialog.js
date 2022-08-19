@@ -124,6 +124,10 @@ Polymer({
   created() {
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+    window.CrPolicyStrings = {
+      controlledSettingPolicy:
+          loadTimeData.getString('controlledSettingPolicy'),
+    };
   },
 
   /** @override */
