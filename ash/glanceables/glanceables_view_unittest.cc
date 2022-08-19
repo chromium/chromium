@@ -35,6 +35,9 @@ TEST_F(GlanceablesViewTest, Basics) {
   GlanceablesWelcomeLabel* welcome_label = view->welcome_label_for_test();
   ASSERT_TRUE(welcome_label);
   EXPECT_FALSE(welcome_label->GetText().empty());
+
+  // "Up next" widget was created.
+  EXPECT_TRUE(view->up_next_view_for_test());
 }
 
 }  // namespace

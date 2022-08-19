@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/glanceables/glanceables_restore_view.h"
+#include "ash/glanceables/glanceables_up_next_view.h"
 #include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -61,8 +62,8 @@ GlanceablesView::GlanceablesView() {
   up_next_label_ = left_column->AddChildView(std::make_unique<views::Label>());
   SetupSectionLabel(up_next_label_);
   up_next_label_->SetText(l10n_util::GetStringUTF16(IDS_GLANCEABLES_UP_NEXT));
-
-  // TODO(crbug.com/1353119): Add calendar events.
+  up_next_view_ =
+      left_column->AddChildView(std::make_unique<GlanceablesUpNextView>());
 
   // Container for the views on the right.
   auto* right_column = container->AddChildView(std::make_unique<views::View>());
