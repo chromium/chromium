@@ -63,7 +63,7 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
     /**
-     * Receiver responsible for observing hardware write protection state.
+     * Receiver responsible for observing finalization progress and state.
      * @private {?FinalizationObserverReceiver}
      */
     this.finalizationObserverReceiver_ = new FinalizationObserverReceiver(

@@ -181,7 +181,8 @@ class RmadClientTest : public testing::Test {
 
   // Passes a finalization status signal to |client_|.
   void EmitFinalizationProgressSignal(rmad::FinalizeStatus::Status status,
-                                      double progress) {
+                                      double progress,
+                                      rmad::FinalizeStatus::Error error) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kFinalizeProgressSignal);
     dbus::MessageWriter writer(&signal);
@@ -189,6 +190,7 @@ class RmadClientTest : public testing::Test {
     writer.OpenStruct(&struct_writer);
     struct_writer.AppendInt32(static_cast<int32_t>(status));
     struct_writer.AppendDouble(progress);
+    struct_writer.AppendInt32(static_cast<int32_t>(error));
     writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
@@ -917,24 +919,40 @@ TEST_F(RmadClientTest, HardwareVerificationResult) {
   EXPECT_EQ(observer_1.last_hardware_verification_result().error_str(), "ok");
 }
 
-// Tests that synchronous observers are notified about hardware verification
-// status.
+// Tests that synchronous observers are notified about finalization status.
 TEST_F(RmadClientTest, FinalizationProgress) {
   TestObserver observer_1(client_);
 
   EmitFinalizationProgressSignal(
-      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5,
+      rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_UNKNOWN);
   EXPECT_EQ(observer_1.num_finalization_progress(), 1);
   EXPECT_EQ(observer_1.last_finalization_progress().status(),
             rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS);
   EXPECT_EQ(observer_1.last_finalization_progress().progress(), 0.5);
 
   EmitFinalizationProgressSignal(
-      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE, 1.0);
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE, 1.0,
+      rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_UNKNOWN);
   EXPECT_EQ(observer_1.num_finalization_progress(), 2);
   EXPECT_EQ(observer_1.last_finalization_progress().status(),
             rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE);
   EXPECT_EQ(observer_1.last_finalization_progress().progress(), 1.0);
+}
+
+// Tests that synchronous observers are notified about finalization errors.
+TEST_F(RmadClientTest, FinalizationErrors) {
+  TestObserver observer_1(client_);
+
+  EmitFinalizationProgressSignal(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING, 0.5,
+      rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CR50);
+  EXPECT_EQ(observer_1.num_finalization_progress(), 1);
+  EXPECT_EQ(observer_1.last_finalization_progress().status(),
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING);
+  EXPECT_EQ(observer_1.last_finalization_progress().progress(), 0.5);
+  EXPECT_EQ(observer_1.last_finalization_progress().error(),
+            rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CR50);
 }
 
 TEST_F(RmadClientTest, RoFirmwareUpdateProgress) {

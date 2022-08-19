@@ -296,6 +296,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Used to validate mojo only states such as kConfigureNetwork
   mojom::State mojo_state_;
 
+  // These variables are used to save the most recent values of the
+  // corresponding variables, in case if the rmad client has already sent them,
+  // but the front end observer isn't connected yet. The value will be passed to
+  // the front end observer when it connects.
   absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
   absl::optional<rmad::CalibrationOverallStatus>
       last_calibration_overall_progress_;

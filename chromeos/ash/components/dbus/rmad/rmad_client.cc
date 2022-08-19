@@ -362,13 +362,16 @@ void RmadClientImpl::FinalizationProgressReceived(dbus::Signal* signal) {
   DCHECK(!reader.HasMoreData());
   int32_t status;
   double progress;
-  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress)) {
+  int32_t error;
+  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress) ||
+      !sub_reader.PopInt32(&error)) {
     LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
   rmad::FinalizeStatus signal_proto;
   signal_proto.set_status(static_cast<rmad::FinalizeStatus::Status>(status));
   signal_proto.set_progress(progress);
+  signal_proto.set_error(static_cast<rmad::FinalizeStatus::Error>(error));
   for (auto& observer : observers_) {
     observer.FinalizationProgress(signal_proto);
   }
