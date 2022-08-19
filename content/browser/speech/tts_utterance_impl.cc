@@ -48,9 +48,10 @@ std::unique_ptr<TtsUtterance> TtsUtterance::Create(WebContents* web_contents) {
 
 // static
 std::unique_ptr<TtsUtterance> TtsUtterance::Create(
-    BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  return std::make_unique<TtsUtteranceImpl>(browser_context, nullptr);
+    BrowserContext* browser_context,
+    bool should_always_be_spoken) {
+  return std::make_unique<TtsUtteranceImpl>(browser_context,
+                                            should_always_be_spoken);
 }
 
 // static
@@ -70,6 +71,12 @@ TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
   if (web_contents) {
     web_contents_ = web_contents->GetWeakPtr();
   }
+}
+
+TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
+                                   bool should_always_be_spoken)
+    : TtsUtteranceImpl(browser_context, nullptr) {
+  should_always_be_spoken_ = should_always_be_spoken;
 }
 
 TtsUtteranceImpl::~TtsUtteranceImpl() {
@@ -220,6 +227,10 @@ bool TtsUtteranceImpl::IsFinished() {
 
 WebContents* TtsUtteranceImpl::GetWebContents() {
   return web_contents_.get();
+}
+
+bool TtsUtteranceImpl::ShouldAlwaysBeSpoken() {
+  return should_always_be_spoken_;
 }
 
 }  // namespace content

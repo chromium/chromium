@@ -7059,6 +7059,7 @@ test("unit_tests") {
       "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
+      "../browser/speech/tts_crosapi_util_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "chromeos/printing/fake_local_printer_chromeos.cc",
       "chromeos/printing/fake_local_printer_chromeos.h",

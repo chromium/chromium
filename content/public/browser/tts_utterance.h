@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
@@ -63,7 +64,10 @@ class CONTENT_EXPORT TtsUtterance {
   // Before speaking this utterance, its other parameters like text, rate,
   // pitch, etc. should all be set.
   static std::unique_ptr<TtsUtterance> Create(WebContents* web_contents);
-  static std::unique_ptr<TtsUtterance> Create(BrowserContext* browser_context);
+  // |should_always_be_spoken|: See comment for ShouldAlwaysBeSpoken().
+  static std::unique_ptr<TtsUtterance> Create(
+      BrowserContext* browser_context,
+      bool should_always_be_spoken = false);
   static std::unique_ptr<TtsUtterance> Create();
 
   virtual ~TtsUtterance() = default;
@@ -126,6 +130,14 @@ class CONTENT_EXPORT TtsUtterance {
   virtual void ClearBrowserContext() = 0;
   virtual int GetId() = 0;
   virtual bool IsFinished() = 0;
+  virtual WebContents* GetWebContents() = 0;
+
+  // An utterance could become invalid (for example, its associated WebContents
+  // has been destroyed) and therefore should not be spoken when it is
+  // processed by TtsController from the utterance queue. If this function
+  // returns true, it guarantees that the utterance must be a valid one and
+  // should be spoken.
+  virtual bool ShouldAlwaysBeSpoken() = 0;
 };
 
 }  // namespace content
