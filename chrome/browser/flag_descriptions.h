@@ -1617,9 +1617,6 @@ extern const char kUnifiedSidePanelDescription[];
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 
-extern const char kUnifiedPasswordManagerDesktopName[];
-extern const char kUnifiedPasswordManagerDesktopDescription[];
-
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 

@@ -78,7 +78,6 @@ extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerErrorMessages;
 extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
 #endif
-extern const base::Feature kUnifiedPasswordManagerDesktop;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.

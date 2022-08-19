@@ -238,10 +238,6 @@ const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// TODO(crbug.com/1310270): Remove after full launch and cleaning up the code.
-const base::Feature kUnifiedPasswordManagerDesktop = {
-    "UnifiedPasswordManagerDesktop", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables support of sending additional votes on username first flow. The votes
 // are sent on single password forms and contain information about preceding
 // single username forms.

@@ -2868,11 +2868,6 @@ const char kUnifiedPasswordManagerAndroidDescription[] =
     "Warning: Highly experimental. May lead to loss of passwords and "
     "impact performance.";
 
-const char kUnifiedPasswordManagerDesktopName[] =
-    "Unified Password Manager for Desktop";
-const char kUnifiedPasswordManagerDesktopDescription[] =
-    "Branding, string, and visual updates to the Password Manager on Desktop.";
-
 const char kUnsafeWebGPUName[] = "Unsafe WebGPU";
 const char kUnsafeWebGPUDescription[] =
     "Enables access to the experimental WebGPU API. Warning: As GPU sandboxing "
