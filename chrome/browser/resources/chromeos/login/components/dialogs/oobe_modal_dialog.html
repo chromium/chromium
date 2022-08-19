@@ -76,10 +76,11 @@ The dialog provides two properties that can be set directly from HTML.
       </div>
       <!-- Close Button -->
       <div id="buttonContainer" slot="button-container"
+          hidden="[[shouldHideCloseButton]]"
           class="layout horizontal">
         <slot name="buttons">
           <oobe-text-button inverse id="closeButton" on-click="hideDialog"
-            text-key="oobeModalDialogClose">
+              text-key="oobeModalDialogClose">
           </oobe-text-button>
         </slot>
       </div>

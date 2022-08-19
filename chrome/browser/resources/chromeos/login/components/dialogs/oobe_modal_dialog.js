@@ -20,6 +20,15 @@ Polymer({
     contentKey: {
       type: String,
     },
+
+    /**
+     * True if close button should be hidden.
+     * @type {boolean}
+     */
+    shouldHideCloseButton: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   get open() {

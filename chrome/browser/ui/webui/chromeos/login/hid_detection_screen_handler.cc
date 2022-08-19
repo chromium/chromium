@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -134,6 +135,18 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
   builder->Add("oobeModalDialogClose", IDS_CHROMEOS_OOBE_CLOSE_DIALOG);
   builder->Add("hidDetectionTouchscreenDetected",
                IDS_HID_DETECTION_DETECTED_TOUCHSCREEN);
+  builder->Add("bluetoothPairingEnterKeys", IDS_BLUETOOTH_PAIRING_ENTER_KEYS);
+  builder->Add("bluetoothEnterKey", IDS_BLUETOOTH_PAIRING_ENTER_KEY);
+  builder->Add("bluetoothPairNewDevice",
+               IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
+  builder->Add("bluetoothPair", IDS_BLUETOOTH_PAIRING_PAIR);
+}
+
+void HIDDetectionScreenHandler::GetAdditionalParameters(
+    base::Value::Dict* dict) {
+  dict->Set("enableOobeHidDetectionRevamp",
+            base::FeatureList::IsEnabled(features::kOobeHidDetectionRevamp));
+  BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
 void HIDDetectionScreenHandler::DeclareJSCallbacks() {

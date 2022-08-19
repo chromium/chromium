@@ -61,7 +61,7 @@
       <dom-repeat items="[[keys_]]">
         <template>
           <span class$="center key [[getKeyClass_(index, numKeysEntered)]]">
-            [[getKeyAt_(index)]]
+            [[getKeyAt_(index, keys_)]]
           </span>
         </template>
       </dom-repeat>

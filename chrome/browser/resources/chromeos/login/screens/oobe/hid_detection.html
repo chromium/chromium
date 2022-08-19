@@ -2,6 +2,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 
 <link rel="import" href="../../components/hd_iron_icon.html">
 <link rel="import" href="../../components/oobe_icons.html">
@@ -137,26 +139,44 @@
     </oobe-adaptive-dialog>
 
     <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
-    <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
-      <h1 slot="title">[[pinDialogTitle]]</h1>
-      <div slot="content" class="content-padding">
-        <div>
-          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCode')]]
+    <template  is="dom-if" if="[[!isOobeHidDetectionRevampEnabled_]]">
+      <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
+        <h1 slot="title">[[pinDialogTitle]]</h1>
+        <div slot="content" class="content-padding">
+          <div>
+            [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCode')]]
+          </div>
+          <div id="hid-keyboard-pincode"
+              class="layout horizontal center-justified pin-code-style">
+            <div id="hid-pincode-sym-1"></div>
+            <div id="hid-pincode-sym-2"></div>
+            <div id="hid-pincode-sym-3"></div>
+            <div id="hid-pincode-sym-4"></div>
+            <div id="hid-pincode-sym-5"></div>
+            <div id="hid-pincode-sym-6"></div>
+          </div>
+          <div>
+            [[i18nDynamic(locale,
+                'hidDetectionBluetoothPairingCodeExplanation')]]
+          </div>
         </div>
-        <div id="hid-keyboard-pincode"
-            class="layout horizontal center-justified pin-code-style">
-          <div id="hid-pincode-sym-1"></div>
-          <div id="hid-pincode-sym-2"></div>
-          <div id="hid-pincode-sym-3"></div>
-          <div id="hid-pincode-sym-4"></div>
-          <div id="hid-pincode-sym-5"></div>
-          <div id="hid-pincode-sym-6"></div>
+      </oobe-modal-dialog>
+    </template>
+    <template is="dom-if" if="[[isOobeHidDetectionRevampEnabled_]]">
+      <oobe-modal-dialog id="hid-pin-popup" should-hide-close-button>
+        <div slot="content" class="content-padding">
+            <!-- TODO(b/232024471): Remove white space above
+                 "Pair new device" text. -->
+          <bluetooth-pairing-enter-code-page
+              id="hid-pairing-enter-code"
+              code="[[pinCode]]"
+              num-keys-entered="[[numKeysEnteredPinCode]]"
+              device-name="[[keyboardDeviceName]]"
+              on-cancel="onCancel_">
+          </bluetooth-pairing-enter-code-page>
         </div>
-        <div>
-          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCodeExplanation')]]
-        </div>
-      </div>
-    </oobe-modal-dialog>
+      </oobe-modal-dialog>
+    </template>
   </template>
   <script src="hid_detection.js"></script>
 </dom-module>

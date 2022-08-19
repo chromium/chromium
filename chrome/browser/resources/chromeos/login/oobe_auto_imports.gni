@@ -104,4 +104,5 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_radio_button/cr_card_radio_button.html",
   "ui/webui/resources/cr_elements/cr_radio_group/cr_radio_group.html",
   "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
+  "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.html",
 ]

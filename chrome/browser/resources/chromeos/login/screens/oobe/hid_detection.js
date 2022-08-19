@@ -31,6 +31,7 @@ const CONNECTION = {
   [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
   Polymer.Element);
 
+/** @polymer */
 class HidDetectionScreen extends HidDetectionScreenBase {
   static get is() {
     return 'hid-detection-element';
@@ -40,118 +41,134 @@ class HidDetectionScreen extends HidDetectionScreenBase {
 
   static get properties() {
     return {
-      /** "Continue" button is disabled until HID devices are paired. */
+      /**
+       * "Continue" button is disabled until HID devices are paired.
+       * @type {boolean}
+       */
       continueButtonEnabled: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * The keyboard device name
+       * @type {string}
        */
       keyboardDeviceName: {
         type: String,
+        value: '',
       },
 
       /**
        * The pointing device name
+       * @type {string}
        */
       pointingDeviceName: {
         type: String,
+        value: '',
       },
 
       /**
        * State of touchscreen detection
-       * @private
+       * @private {boolean}
        */
       touchscreenDetected_: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * Current state in mouse pairing process.
-       * @private
+       * @private {string}
        */
       mouseState_: {
         type: String,
+        value: CONNECTION.SEARCHING,
       },
 
       /**
        * Current state in keyboard pairing process.
-       * @private
+       * @private {string}
        */
       keyboardState_: {
         type: String,
+        value: CONNECTION.SEARCHING,
       },
 
       /**
        * Controls the visibility of the PIN dialog.
-       * @private
+       * @private {boolean}
        */
       pinDialogVisible_: {
         type: Boolean,
+        value: false,
         observer: 'onPinDialogVisibilityChanged_',
       },
 
       /**
        * The PIN code to be typed by the user
+       * @type {string}
        */
       pinCode: {
         type: String,
+        value: '000000',
         observer: 'onPinParametersChanged_',
       },
 
       /**
        * The number of keys that the user already entered for this PIN.
        * This helps the user to see what's the next key to be pressed.
+       * @type {number}
        */
       numKeysEnteredPinCode: {
         type: Number,
+        value: 0,
         observer: 'onPinParametersChanged_',
       },
 
       /**
        *  Whether the dialog for PIN input is being shown.
        *  Internal use only. Used for preventing multiple openings.
+       * @private {boolean}
        */
       pinDialogIsOpen_: {
         type: Boolean,
+        value: false,
       },
 
       /**
        * The title that is displayed on the PIN dialog
+       * @type {string}
        */
       pinDialogTitle: {
         type: String,
         computed: 'getPinDialogTitle_(locale, keyboardDeviceName)',
       },
+
+      /**
+       * True when kOobeHidDetectionRevamp is enabled.
+       * @private
+       * @type {boolean}
+       */
+      isOobeHidDetectionRevampEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableOobeHidDetectionRevamp'),
+      },
     };
   }
 
-  constructor() {
-    super();
-    this.continueButtonEnabled = false;
-    this.keyboardDeviceName = '';
-    this.pointingDeviceName = '';
-    this.touchscreenDetected_ = false;
-    this.mouseState_ = CONNECTION.SEARCHING;
-    this.keyboardState_ = CONNECTION.SEARCHING;
-    this.pinDialogVisible_ = false;
-    this.pinCode = '000000';
-    this.numKeysEnteredPinCode = 0;
-    this.pinDialogIsOpen_ = false;
-  }
-
-
   get EXTERNAL_API() {
-    return ['setKeyboardState',
-            'setMouseState',
-            'setKeyboardPinCode',
-            'setPinDialogVisible',
-            'setNumKeysEnteredPinCode',
-            'setPointingDeviceName',
-            'setKeyboardDeviceName',
-            'setTouchscreenDetectedState',
-            'setContinueButtonEnabled'];
+    return [
+      'setKeyboardState',
+      'setMouseState',
+      'setKeyboardPinCode',
+      'setPinDialogVisible',
+      'setNumKeysEnteredPinCode',
+      'setPointingDeviceName',
+      'setKeyboardDeviceName',
+      'setTouchscreenDetectedState',
+      'setContinueButtonEnabled',
+    ];
   }
 
   /** @override */
@@ -238,13 +255,21 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    * @private
    */
   onPinDialogVisibilityChanged_() {
+    const dialog = this.shadowRoot.querySelector('#hid-pin-popup');
+
+    // Return early if element is not yet attached to the page.
+    if (!dialog) {
+      return;
+    }
+
     if (this.pinDialogVisible_) {
       if (!this.pinDialogIsOpen_) {
-        this.$['hid-pin-popup'].showDialog();
+        dialog.showDialog();
         this.pinDialogIsOpen_ = true;
+        this.onPinParametersChanged_();
       }
     } else {
-      this.$['hid-pin-popup'].hideDialog();
+      dialog.hideDialog();
       this.pinDialogIsOpen_ = false;
     }
   }
@@ -261,9 +286,14 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    *  Also marks the current number to be entered with the class 'key-next'.
    */
   onPinParametersChanged_() {
+    if (this.isOobeHidDetectionRevampEnabled_ || !this.pinDialogVisible_) {
+      return;
+    }
+
     const keysEntered = this.numKeysEnteredPinCode;
     for (let i = 0; i < PINCODE_LENGTH; i++) {
-      const pincodeSymbol = this.$['hid-pincode-sym-' + (i + 1)];
+      const pincodeSymbol =
+          this.shadowRoot.querySelector('#hid-pincode-sym-' + (i + 1));
       pincodeSymbol.classList.toggle('key-next', i == keysEntered);
       if (i < PINCODE_LENGTH) {
         pincodeSymbol.textContent = this.pinCode[i] ? this.pinCode[i] : '';
@@ -277,6 +307,17 @@ class HidDetectionScreen extends HidDetectionScreenBase {
    */
   onPinDialogClosed_() {
     this.pinDialogIsOpen_ = false;
+  }
+
+  /**
+   * Action to be taken when the user closes the PIN dialog before finishing
+   * the pairing process.
+   * @param {!Event} event
+   * @private
+   */
+  onCancel_(event) {
+    event.stopPropagation();
+    this.shadowRoot.querySelector('#hid-pin-popup').hideDialog();
   }
 
   /**

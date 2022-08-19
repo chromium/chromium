@@ -5,12 +5,9 @@
 import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
-import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
-
-import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 
 suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
   /** @type {?SettingsBluetoothPairingEnterCodeElement} */
@@ -81,5 +78,29 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
     assertEquals(keys[1].className, typedKeyClass);
     assertEquals(keys[5].className, typedKeyClass);
     assertEquals(getEnter().className, nextEnterClass);
+  });
+
+  test('Changing PinCode', async function() {
+    const getKeys = () =>
+        bluetoothPairingEnterCodePage.shadowRoot.querySelectorAll('.key');
+
+    const deviceName = 'BeatsX';
+    bluetoothPairingEnterCodePage.deviceName = deviceName;
+    bluetoothPairingEnterCodePage.code = '123456';
+    bluetoothPairingEnterCodePage.numKeysEntered = 0;
+    await flushAsync();
+
+    let keys = getKeys();
+    assertEquals(keys[0].textContent.trim(), '1');
+    assertEquals(keys[1].textContent.trim(), '2');
+    assertEquals(keys[5].textContent.trim(), '6');
+
+    bluetoothPairingEnterCodePage.code = '987654';
+    await flushAsync();
+
+    keys = getKeys();
+    assertEquals(keys[0].textContent.trim(), '9');
+    assertEquals(keys[1].textContent.trim(), '8');
+    assertEquals(keys[5].textContent.trim(), '4');
   });
 });

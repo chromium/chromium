@@ -62,6 +62,8 @@ const test::UIPath kHidTouchscreenEntry = {"hid-detection",
 const test::UIPath kHidMouseTick = {"hid-detection", "mouse-tick"};
 const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
 const test::UIPath kHidPairingDialog = {"hid-detection", "hid-pin-popup"};
+const test::UIPath kHidPairingDialogEnterCodePage = {"hid-detection",
+                                                     "hid-pairing-enter-code"};
 
 InputState GetHidInputState(
     device::mojom::InputDeviceType connected_hid_device_type) {
@@ -530,6 +532,14 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
             handler()->num_keys_entered_pin_code_for_test());
   EXPECT_EQ(kTestPinCode, handler()->keyboard_pin_code_for_test());
   test::OobeJS().ExpectDialogOpen(kHidPairingDialog);
+  EXPECT_EQ(kTestPinCode, test::OobeJS().GetAttributeString(
+                              "code", kHidPairingDialogEnterCodePage));
+  EXPECT_EQ(kTestKeyboardName,
+            test::OobeJS().GetAttributeString("deviceName",
+                                              kHidPairingDialogEnterCodePage));
+  EXPECT_EQ(strlen(kTestPinCode),
+            test::OobeJS().GetAttributeInt("numKeysEntered",
+                                           kHidPairingDialogEnterCodePage));
 
   SimulatePairingCodeNotRequired();
   EXPECT_EQ("pairing", handler()->keyboard_state_for_test());

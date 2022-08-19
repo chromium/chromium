@@ -74,6 +74,7 @@ class HIDDetectionScreenHandler
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void InitializeDeprecated() override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
   void HandleEmulateDevicesConnectedForTesting();
