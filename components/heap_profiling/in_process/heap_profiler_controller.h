@@ -98,8 +98,7 @@ class HeapProfilerController {
     SnapshotParams(base::TimeDelta mean_interval,
                    bool use_random_interval,
                    scoped_refptr<StoppedFlag> stopped,
-                   ProcessType process_type,
-                   base::TimeTicks profiler_creation_time);
+                   ProcessType process_type);
     ~SnapshotParams();
 
     // Move-only.
@@ -120,9 +119,6 @@ class HeapProfilerController {
 
     // Process being sampled.
     ProcessType process_type = ProcessType::kUnknown;
-
-    // Time the profiler was created.
-    base::TimeTicks profiler_creation_time;
   };
 
   static void ScheduleNextSnapshot(SnapshotParams params);
@@ -133,17 +129,9 @@ class HeapProfilerController {
   static void TakeSnapshot(SnapshotParams params,
                            base::TimeDelta previous_interval);
 
-  static void RetrieveAndSendSnapshot(
-      ProcessType process_type,
-      base::TimeDelta time_since_profiler_creation);
+  static void RetrieveAndSendSnapshot(ProcessType process_type);
 
   const ProcessType process_type_;
-
-  // Stores the time the HeapProfilerController was created, which will be close
-  // to the process creation time. This is used instead of
-  // base::Process::CreationTime() to get a TimeTicks value which won't be
-  // affected by clock skew.
-  const base::TimeTicks creation_time_ = base::TimeTicks::Now();
 
   // This flag is set when the HeapProfilerController is torn down, to stop
   // profiling. It is the only member that should be referenced by the static
