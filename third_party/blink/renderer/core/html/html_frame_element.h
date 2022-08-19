@@ -38,7 +38,7 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
  public:
   explicit HTMLFrameElement(Document&);
 
-  bool HasFrameBorder() const { return frame_border_; }
+  bool HasFrameBorder() const;
   bool NoResize() const;
   FrameEdgeInfo EdgeInfo() const;
 
@@ -49,8 +49,6 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
   }
 
  private:
-  void AttachLayoutTree(AttachContext&) override;
-
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 

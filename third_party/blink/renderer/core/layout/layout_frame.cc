@@ -53,10 +53,4 @@ void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   }
 }
 
-void LayoutFrame::UpdateFromElement() {
-  NOT_DESTROYED();
-  if (Parent() && Parent()->IsFrameSet())
-    To<LayoutFrameSet>(Parent())->NotifyFrameEdgeInfoChanged();
-}
-
 }  // namespace blink

@@ -112,6 +112,7 @@ void HTMLFrameSetElement::ParseAttribute(
       if (GetLayoutObject() && TotalRows() != resize_rows_.deltas_.size())
         ResizeChildrenData();
     }
+    DirtyEdgeInfo();
   } else if (name == html_names::kColsAttr) {
     if (!value.IsNull()) {
       col_lengths_ = ParseListOfDimensions(value.GetString());
@@ -120,6 +121,7 @@ void HTMLFrameSetElement::ParseAttribute(
       if (GetLayoutObject() && TotalCols() != resize_cols_.deltas_.size())
         ResizeChildrenData();
     }
+    DirtyEdgeInfo();
   } else if (name == html_names::kFrameborderAttr) {
     if (!value.IsNull()) {
       if (EqualIgnoringASCIICase(value, "no") ||
@@ -134,8 +136,10 @@ void HTMLFrameSetElement::ParseAttribute(
       frameborder_ = false;
       frameborder_set_ = false;
     }
+    DirtyEdgeInfoAndFullPaintInvalidation();
   } else if (name == html_names::kNoresizeAttr) {
     noresize_ = true;
+    DirtyEdgeInfo();
   } else if (name == html_names::kBorderAttr) {
     if (!value.IsNull()) {
       border_ = value.ToInt();
@@ -267,6 +271,7 @@ int HTMLFrameSetElement::Border(const ComputedStyle& style) const {
 }
 
 FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
+  const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();
   FrameEdgeInfo result(NoResize(), true);
 
   wtf_size_t rows_count = TotalRows();
@@ -308,7 +313,10 @@ void HTMLFrameSetElement::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
     resize_rows_.prevent_resize_[r + 1] = true;
 }
 
-void HTMLFrameSetElement::CollectEdgeInfo() {
+void HTMLFrameSetElement::CollectEdgeInfoIfDirty() {
+  if (!is_edge_info_dirty_)
+    return;
+  is_edge_info_dirty_ = false;
   resize_cols_.prevent_resize_.Fill(NoResize());
   allow_border_cols_.Fill(false);
   resize_rows_.prevent_resize_.Fill(NoResize());
@@ -332,6 +340,31 @@ void HTMLFrameSetElement::CollectEdgeInfo() {
         return;
     }
   }
+}
+
+void HTMLFrameSetElement::DirtyEdgeInfo() {
+  is_edge_info_dirty_ = true;
+  if (auto* parent_frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
+    parent_frame_set->DirtyEdgeInfo();
+}
+
+void HTMLFrameSetElement::DirtyEdgeInfoAndFullPaintInvalidation() {
+  is_edge_info_dirty_ = true;
+  if (auto* box = GetLayoutBox()) {
+    box->SetNeedsLayoutAndFullPaintInvalidation(
+        layout_invalidation_reason::kAttributeChanged);
+  }
+  if (auto* parent_frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
+    parent_frame_set->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
+const Vector<bool>& HTMLFrameSetElement::AllowBorderRows() const {
+  const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();
+  return allow_border_rows_;
+}
+const Vector<bool>& HTMLFrameSetElement::AllowBorderColumns() const {
+  const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();
+  return allow_border_cols_;
 }
 
 bool HTMLFrameSetElement::LayoutObjectIsNeeded(
@@ -446,6 +479,7 @@ void HTMLFrameSetElement::StartResizing(const Vector<LayoutUnit>& sizes,
                                         int position,
                                         ResizeAxis& resize_axis) {
   int split = HitTestSplit(sizes, position);
+  CollectEdgeInfoIfDirty();
   if (!resize_axis.CanResizeSplitAt(split)) {
     resize_axis.split_being_resized_ = ResizeAxis::kNoSplit;
     return;
@@ -500,11 +534,13 @@ int HTMLFrameSetElement::SplitPosition(const Vector<LayoutUnit>& sizes,
 }
 
 bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
+  const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();
   return resize_rows_.CanResizeSplitAt(
       HitTestSplit(RowSizes(*GetLayoutBox()), p.y()));
 }
 
 bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
+  const_cast<HTMLFrameSetElement*>(this)->CollectEdgeInfoIfDirty();
   return resize_cols_.CanResizeSplitAt(
       HitTestSplit(ColumnSizes(*GetLayoutBox()), p.x()));
 }

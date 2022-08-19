@@ -30,6 +30,19 @@ bool LayoutNGFrameSet::IsChildAllowed(LayoutObject* child,
   return child->IsFrame() || child->IsLayoutNGFrameSet();
 }
 
+void LayoutNGFrameSet::AddChild(LayoutObject* new_child,
+                                LayoutObject* before_child) {
+  LayoutNGBlock::AddChild(new_child, before_child);
+  To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
+void LayoutNGFrameSet::RemoveChild(LayoutObject* child) {
+  LayoutNGBlock::RemoveChild(child);
+  if (DocumentBeingDestroyed())
+    return;
+  To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
 void LayoutNGFrameSet::UpdateBlockLayout(bool relayout_children) {
   if (IsOutOfFlowPositioned())
     UpdateOutOfFlowBlockLayout();

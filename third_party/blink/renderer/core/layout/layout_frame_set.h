@@ -61,7 +61,6 @@ class LayoutFrameSet final : public LayoutBox {
     return &children_;
   }
 
-  void NotifyFrameEdgeInfoChanged();
   HTMLFrameSetElement* FrameSet() const;
 
   class GridAxis {
@@ -125,6 +124,8 @@ class LayoutFrameSet final : public LayoutBox {
   }
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
+  void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
+  void RemoveChild(LayoutObject* child) override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const override;
 
   void LayOutAxis(GridAxis&,

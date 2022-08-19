@@ -54,7 +54,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   }
   int Border(const ComputedStyle& style) const;
   FrameEdgeInfo EdgeInfo() const;
-  void CollectEdgeInfo();
+  void DirtyEdgeInfo();
+  void DirtyEdgeInfoAndFullPaintInvalidation();
 
   bool HasBorderColor() const { return border_color_set_; }
 
@@ -62,8 +63,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   const Vector<HTMLDimension>& ColLengths() const { return col_lengths_; }
   const Vector<int>& RowDeltas() const { return resize_rows_.deltas_; }
   const Vector<int>& ColDeltas() const { return resize_cols_.deltas_; }
-  const Vector<bool>& AllowBorderRows() const { return allow_border_rows_; }
-  const Vector<bool>& AllowBorderColumns() const { return allow_border_cols_; }
+  const Vector<bool>& AllowBorderRows() const;
+  const Vector<bool>& AllowBorderColumns() const;
 
   bool HasNonInBodyInsertionMode() const override { return true; }
 
@@ -130,6 +131,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   int SplitPosition(const Vector<LayoutUnit>& sizes, int split) const;
   int HitTestSplit(const Vector<LayoutUnit>& sizes, int position) const;
 
+  void CollectEdgeInfoIfDirty();
   void FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
                         wtf_size_t r,
                         wtf_size_t c);
@@ -149,7 +151,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   bool frameborder_;
   bool frameborder_set_;
   bool noresize_;
-
+  bool is_edge_info_dirty_ = true;
   bool is_resizing_ = false;
 };
 

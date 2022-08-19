@@ -290,18 +290,6 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     axis.sizes_[i] = LayoutUnit(grid_layout[i]);
 }
 
-void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return;
-  // FIXME: We should only recompute the edge info with respect to the frame
-  // that changed and its adjacent frame(s) instead of recomputing the edge info
-  // for the entire frameset.
-  FrameSet()->CollectEdgeInfo();
-  cols_.allow_border_ = FrameSet()->AllowBorderColumns();
-  rows_.allow_border_ = FrameSet()->AllowBorderRows();
-}
-
 void LayoutFrameSet::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
@@ -331,7 +319,6 @@ void LayoutFrameSet::UpdateLayout() {
 
   LayoutBox::UpdateLayout();
 
-  FrameSet()->CollectEdgeInfo();
   cols_.allow_border_ = FrameSet()->AllowBorderColumns();
   rows_.allow_border_ = FrameSet()->AllowBorderRows();
 
@@ -397,6 +384,18 @@ bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsFrame() || child->IsFrameSet();
+}
+
+void LayoutFrameSet::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
+  LayoutBox::AddChild(new_child, before_child);
+  FrameSet()->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
+void LayoutFrameSet::RemoveChild(LayoutObject* child) {
+  LayoutBox::RemoveChild(child);
+  if (!DocumentBeingDestroyed())
+    FrameSet()->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
 CursorDirective LayoutFrameSet::GetCursor(const PhysicalOffset& point,
