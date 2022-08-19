@@ -81,6 +81,7 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
     : node_(node),
       writing_direction_(writing_direction),
       is_scroll_container_(is_css_box && node_.IsScrollContainer()),
+      is_view_(is_css_box && node_.IsView()),
       has_left_overflow_(is_css_box && node_.HasLeftOverflow()),
       has_top_overflow_(is_css_box && node_.HasTopOverflow()),
       has_non_visible_overflow_(is_css_box && node_.HasNonVisibleOverflow()),
