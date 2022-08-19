@@ -319,6 +319,15 @@ void ExtensionActionViewController::UpdateState() {
   view_delegate_->UpdateState();
 }
 
+void ExtensionActionViewController::UpdateHoverCard(
+    ToolbarActionView* action_view,
+    ToolbarActionHoverCardUpdateType update_type) {
+  if (!ExtensionIsValid())
+    return;
+
+  extensions_container_->UpdateToolbarActionHoverCard(action_view, update_type);
+}
+
 void ExtensionActionViewController::RegisterCommand() {
   if (!ExtensionIsValid())
     return;

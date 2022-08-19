@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
@@ -54,12 +55,16 @@ class ToolbarActionView : public views::MenuButton,
   ToolbarActionView& operator=(const ToolbarActionView&) = delete;
   ~ToolbarActionView() override;
 
+  void MaybeUpdateHoverCardStatus(const ui::MouseEvent& event);
+
   // views::MenuButton:
   gfx::Rect GetAnchorBoundsInScreen() const override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
 
   // ToolbarActionViewDelegateViews:
   content::WebContents* GetCurrentWebContents() const override;
@@ -76,6 +81,8 @@ class ToolbarActionView : public views::MenuButton,
   int GetDragOperationsForTest(const gfx::Point& point);
 
  private:
+  friend class ToolbarActionHoverCardBubbleViewUITest;
+
   // views::MenuButton:
   gfx::Size CalculatePreferredSize() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -109,7 +116,6 @@ class ToolbarActionView : public views::MenuButton,
   // In this case, the next click should not trigger an action, so the popup
   // doesn't hide on mouse press and immediately reshow on mouse release.
   bool suppress_next_release_ = false;
-
 
   // This controller is responsible for showing the context menu for an
   // extension.

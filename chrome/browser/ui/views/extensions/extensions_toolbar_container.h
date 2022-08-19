@@ -132,6 +132,8 @@ class ExtensionsToolbarContainer
   void OnDragExited() override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
 
   // ExtensionsContainer:
   ToolbarActionViewController* GetActionForId(
@@ -155,6 +157,9 @@ class ExtensionsToolbarContainer
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
+  void UpdateToolbarActionHoverCard(
+      ToolbarActionView* action_view,
+      ToolbarActionHoverCardUpdateType update_type) override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;
@@ -170,6 +175,8 @@ class ExtensionsToolbarContainer
                            const gfx::Point& p) override;
 
  private:
+  friend class ToolbarActionHoverCardBubbleViewUITest;
+
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
@@ -298,6 +305,10 @@ class ExtensionsToolbarContainer
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;
   const raw_ptr<ExtensionsToolbarControls> extensions_controls_;
   DisplayMode display_mode_;
+
+  // Controller for showing the toolbar action hover card.
+  std::unique_ptr<ToolbarActionHoverCardController>
+      action_hover_card_controller_;
 
   // TODO(pbos): Create actions and icons only for pinned pinned / popped out
   // actions (lazily). Currently code expects GetActionForId() to return

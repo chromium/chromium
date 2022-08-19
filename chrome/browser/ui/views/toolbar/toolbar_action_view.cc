@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -19,10 +20,12 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_source.h"
+#include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -126,6 +129,26 @@ bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
   return MenuButton::OnKeyPressed(event);
 }
 
+// Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+// an enter event and fail to hover the button. This is effectively a no-op if
+// the button is already showing the hover card (crbug.com/1326272).
+void ToolbarActionView::OnMouseMoved(const ui::MouseEvent& event) {
+  MaybeUpdateHoverCardStatus(event);
+}
+
+void ToolbarActionView::OnMouseEntered(const ui::MouseEvent& event) {
+  MaybeUpdateHoverCardStatus(event);
+}
+
+void ToolbarActionView::MaybeUpdateHoverCardStatus(
+    const ui::MouseEvent& event) {
+  if (!GetWidget()->IsMouseEventsEnabled())
+    return;
+
+  view_controller_->UpdateHoverCard(this,
+                                    ToolbarActionHoverCardUpdateType::kHover);
+}
+
 content::WebContents* ToolbarActionView::GetCurrentWebContents() const {
   return delegate_->GetCurrentWebContents();
 }
@@ -144,7 +167,10 @@ void ToolbarActionView::UpdateState() {
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromImageSkia(icon));
 
-  SetTooltipText(view_controller_->GetTooltip(web_contents));
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    SetTooltipText(view_controller_->GetTooltip(web_contents));
+  }
 
   Layout();  // We need to layout since we may have added an icon as a result.
   SchedulePaint();
@@ -163,6 +189,8 @@ gfx::Size ToolbarActionView::CalculatePreferredSize() const {
 }
 
 bool ToolbarActionView::OnMousePressed(const ui::MouseEvent& event) {
+  view_controller_->UpdateHoverCard(nullptr,
+                                    ToolbarActionHoverCardUpdateType::kEvent);
   if (event.IsOnlyLeftMouseButton()) {
     if (view_controller()->IsShowingPopup()) {
       // Left-clicking the button should always hide the popup.  In most cases,

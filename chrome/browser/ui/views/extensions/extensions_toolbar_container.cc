@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
-#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "extensions/common/extension_features.h"
@@ -106,9 +106,16 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                         extensions_tabbed_menu_coordinator_.get()),
                     std::make_unique<ExtensionsRequestAccessButton>(browser_))
               : nullptr),
-      display_mode_(display_mode) {
+      display_mode_(display_mode),
+      action_hover_card_controller_(
+          std::make_unique<ToolbarActionHoverCardController>(this)) {
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
+
+  // So we only get enter/exit messages when the mouse enters/exits the whole
+  // container, even if it is entering/exiting a specific toolbar action view,
+  // too.
+  SetNotifyEnterExitOnChild(true);
 
   model_observation_.Observe(model_.get());
   permissions_manager_observation_.Observe(
@@ -158,6 +165,10 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
 }
 
 ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
+  // Eliminate the hover card first to avoid order-of-operation issues (e.g.
+  // avoid events during teardown).
+  action_hover_card_controller_.reset();
+
   // The child views hold pointers to the |actions_|, and thus need to be
   // destroyed before them.
   RemoveAllChildViews();
@@ -885,6 +896,29 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
           ->GetUserSiteSetting(
               web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   extensions_controls_->UpdateControls(actions_, site_setting, web_contents);
+}
+
+void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
+    ToolbarActionView* action_view,
+    ToolbarActionHoverCardUpdateType update_type) {
+  action_hover_card_controller_->UpdateHoverCard(action_view, update_type);
+}
+
+void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateToolbarActionHoverCard(nullptr,
+                               ToolbarActionHoverCardUpdateType::kHover);
+}
+
+void ExtensionsToolbarContainer::OnMouseMoved(const ui::MouseEvent& event) {
+  // Since we set the container's "notify enter exit on child" to true, we can
+  // get notified when the mouse enters a child view only if it originates from
+  // outside the container. This means that we a) can know when the mouse enters
+  // a toolbar action view (which is handled in such class) and b) cannot
+  // know when the mouse leaves a toolbar action view and enters a toolbar
+  // control. Therefore, listening for on mouse moved in the container reflects
+  // moving the mouse from toolbar action view to toolbar controls.
+  UpdateToolbarActionHoverCard(nullptr,
+                               ToolbarActionHoverCardUpdateType::kHover);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

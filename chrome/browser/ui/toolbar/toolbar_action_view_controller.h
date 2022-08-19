@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -25,6 +26,7 @@ class MenuModel;
 }
 
 class ToolbarActionViewDelegate;
+class ToolbarActionView;
 
 // The basic controller class for an action that is shown on the toolbar -
 // an extension action (like browser actions) or a component action (like
@@ -127,6 +129,10 @@ class ToolbarActionViewController {
 
   // Updates the current state of the action.
   virtual void UpdateState() = 0;
+
+  // Updates the hover card for `action_view` based on `update_type`.
+  virtual void UpdateHoverCard(ToolbarActionView* action_view,
+                               ToolbarActionHoverCardUpdateType update_type) {}
 
   // Registers an accelerator. Called when the view is added to a widget.
   virtual void RegisterCommand() {}

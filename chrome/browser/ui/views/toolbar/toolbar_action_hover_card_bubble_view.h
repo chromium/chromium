@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
+
+#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
+class ToolbarActionView;
+
+// Dialog that displays a hover card with extensions information.
+class ToolbarActionHoverCardBubbleView
+    : public views::BubbleDialogDelegateView {
+ public:
+  METADATA_HEADER(ToolbarActionHoverCardBubbleView);
+  explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view);
+  ToolbarActionHoverCardBubbleView(const ToolbarActionHoverCardBubbleView&) =
+      delete;
+  ToolbarActionHoverCardBubbleView& operator=(
+      const ToolbarActionHoverCardBubbleView&) = delete;
+  ~ToolbarActionHoverCardBubbleView() override;
+
+  // Updates the hover card content.
+  // TODO(crbug.com/1351778): Update content based on a given `action_view`.
+  void UpdateCardContent();
+
+  // Update the text fade to the given percent, which should be between 0 and 1.
+  void SetTextFade(double percent);
+
+ private:
+  class FadeLabel;
+
+  bool using_rounded_corners() const { return corner_radius_.has_value(); }
+
+  // views::BubbleDialogDelegateView:
+  void OnThemeChanged() override;
+
+  raw_ptr<FadeLabel> title_label_ = nullptr;
+
+  absl::optional<int> corner_radius_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
