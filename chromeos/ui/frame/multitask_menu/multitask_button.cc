@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/focus_ring.h"
@@ -81,5 +82,8 @@ void MultitaskBaseButton::OnThemeChanged() {
   // TODO(shidi): Implement the theme change after dark/light mode integration.
   views::Button::OnThemeChanged();
 }
+
+BEGIN_METADATA(MultitaskBaseButton, views::Button)
+END_METADATA
 
 }  // namespace chromeos

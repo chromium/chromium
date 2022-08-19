@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -25,6 +26,8 @@ constexpr int kBetweenButtonSpacing = 16;
 // The contents view of the multitask menu.
 class TabletModeMultitaskMenuView : public views::View {
  public:
+  METADATA_HEADER(TabletModeMultitaskMenuView);
+
   TabletModeMultitaskMenuView(aura::Window* window,
                               base::RepeatingClosure hide_menu) {
     SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
@@ -49,6 +52,9 @@ class TabletModeMultitaskMenuView : public views::View {
 
   ~TabletModeMultitaskMenuView() override = default;
 };
+
+BEGIN_METADATA(TabletModeMultitaskMenuView, View)
+END_METADATA
 
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(aura::Window* window)
     : window_(window) {

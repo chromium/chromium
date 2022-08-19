@@ -7,6 +7,7 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -16,6 +17,7 @@ namespace chromeos {
 // A button used for SplitButtonView to trigger primary/secondary split.
 class SplitButton : public views::Button {
  public:
+  METADATA_HEADER(SplitButton);
   enum class SplitButtonType {
     kHalfButtons,
     kPartialButtons,
@@ -49,6 +51,8 @@ class SplitButton : public views::Button {
 // A button view with 2 divided buttons, primary and secondary.
 class SplitButtonView : public views::BoxLayoutView {
  public:
+  METADATA_HEADER(SplitButtonView);
+
   SplitButtonView(SplitButton::SplitButtonType type,
                   views::Button::PressedCallback primary_callback,
                   views::Button::PressedCallback secondary_callback);

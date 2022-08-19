@@ -13,6 +13,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -127,5 +128,8 @@ void MultitaskMenuView::FloatButtonPressed() {
   FloatControllerBase::Get()->ToggleFloat(window_);
   on_any_button_pressed_.Run();
 }
+
+BEGIN_METADATA(MultitaskMenuView, View)
+END_METADATA
 
 }  // namespace chromeos

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -23,6 +24,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
     : public views::BubbleDialogDelegateView,
       public views::WidgetObserver {
  public:
+  METADATA_HEADER(MultitaskMenu);
+
   MultitaskMenu(views::View* anchor, aura::Window* parent_window);
 
   MultitaskMenu(const MultitaskMenu&) = delete;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -60,6 +61,9 @@ void SplitButton::OnPaintBackground(gfx::Canvas* canvas) {
   pattern_bounds.Inset(insets_);
   canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
 }
+
+BEGIN_METADATA(SplitButton, views::Button)
+END_METADATA
 
 SplitButtonView::SplitButtonView(
     SplitButton::SplitButtonType type,
@@ -134,5 +138,8 @@ void SplitButtonView::OnThemeChanged() {
   // TODO(shidi): Implement the theme change after dark/light mode integration.
   views::View::OnThemeChanged();
 }
+
+BEGIN_METADATA(SplitButtonView, View)
+END_METADATA
 
 }  // namespace chromeos

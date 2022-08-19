@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_BUTTON_H_
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_BUTTON_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace chromeos {
@@ -12,6 +13,8 @@ namespace chromeos {
 // The base button for multitask menu to create Full Screen and Float buttons.
 class MultitaskBaseButton : public views::Button {
  public:
+  METADATA_HEADER(MultitaskBaseButton);
+
   // The types of single operated multitask button.
   enum class Type {
     kFull,   // The button that turn the window to full screen mode.

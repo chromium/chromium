@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -22,6 +23,8 @@ class MultitaskBaseButton;
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     : public views::View {
  public:
+  METADATA_HEADER(MultitaskMenuView);
+
   MultitaskMenuView(aura::Window* window,
                     base::RepeatingClosure on_any_button_pressed);
 

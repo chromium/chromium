@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace chromeos {
@@ -34,8 +35,6 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
   set_close_on_deactivate(true);
   SetPreferredSize(gfx::Size(KMultitaskMenuWidth, kMultitaskMenuHeight));
   SetUseDefaultFillLayout(true);
-  // TODO(sammiequon/sophiewen): Check that `CalculatePreferredSize` gets the
-  // size based on the child button sizes.
 
   // Must be initialized after setting bounds.
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
@@ -93,4 +92,8 @@ void MultitaskMenu::HideBubble() {
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
 }
+
+BEGIN_METADATA(MultitaskMenu, views::BubbleDialogDelegateView)
+END_METADATA
+
 }  // namespace chromeos
