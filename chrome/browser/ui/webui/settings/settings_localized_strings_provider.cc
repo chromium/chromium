@@ -63,7 +63,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -959,6 +958,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"upiIdExpirationNever", IDS_SETTINGS_UPI_ID_EXPIRATION_NEVER},
     {"canMakePaymentToggleLabel", IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL},
     {"autofillDetail", IDS_SETTINGS_AUTOFILL_DETAIL},
+    {"passwords", IDS_SETTINGS_PASSWORD_MANAGER},
     {"passwordsSavePasswordsLabel",
      IDS_SETTINGS_PASSWORDS_SAVE_PASSWORDS_TOGGLE_LABEL},
     {"passwordsAutosigninLabel",
@@ -1156,23 +1156,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 #endif
   };
 
-  bool unifiedPasswordManagerEnabled = base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop);
-  html_source->AddBoolean("unifiedPasswordManagerEnabled",
-                          unifiedPasswordManagerEnabled);
-  html_source->AddString(
-      "passwords", l10n_util::GetStringUTF16(unifiedPasswordManagerEnabled
-                                                 ? IDS_SETTINGS_PASSWORD_MANAGER
-                                                 : IDS_SETTINGS_PASSWORDS));
-
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
 
-  html_source->AddString(
-      "managePasswordsLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PASSWORDS_MANAGE_PASSWORDS,
-          base::UTF8ToUTF16(google_password_manager_url.spec())));
   html_source->AddString(
       "optInAccountStorageBody",
       l10n_util::GetStringFUTF16(

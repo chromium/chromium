@@ -418,9 +418,6 @@
   <message name="IDS_SETTINGS_UPI_ID_EXPIRATION_NEVER" desc="Appears in a different column next to UPI IDs, under the column Expiration Date, when they are listed as stored payment info. It lets the user know that UPI IDs do not expire. UPI is a system for payments in India. A UPI ID is an email-like string.">
     Never
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS" desc="Name for the password section and settings entry used for managing passwords.">
-    Passwords
-  </message>
   <message name="IDS_SETTINGS_PASSWORD_MANAGER" desc="Name for the Password Manager section and settings entry used for managing passwords.">
     Password Manager
   </message>
@@ -755,9 +752,6 @@
   </message>
   <message name="IDS_SETTINGS_DEVICE_PASSWORDS_LINK_LABEL" desc="The label for the link on settings leading to the 'device passwords' page.">
     See and manage passwords saved on this device
-  </message>
-  <message name="IDS_SETTINGS_PASSWORDS_MANAGE_PASSWORDS" desc="Shown in the passwords section of settings. Descriptive text to inform that passwords can be accessed online. Has a link.">
-    View and manage saved passwords in your <ph name="BEGIN_LINK">&lt;a is="action-link" href="$1" target="_blank"&gt;</ph>Google Account<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_MANAGE_PASSWORDS_PLAINTEXT" desc="Shown in the passwords section of settings. Descriptive text to inform that passwords can be accessed online.">
     View and manage saved passwords in your Google Account

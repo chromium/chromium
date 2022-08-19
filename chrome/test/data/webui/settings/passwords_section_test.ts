@@ -247,7 +247,6 @@ suite('PasswordsSection', function() {
     loadTimeData.overrideValues({
       enableAutomaticPasswordChangeInSettings: false,
       enablePasswordViewPage: false,
-      unifiedPasswordManagerEnabled: false,
     });
   });
 
@@ -1250,44 +1249,6 @@ suite('PasswordsSection', function() {
       assertEquals(chrome.passwordsPrivate.PasswordStoreSet.DEVICE, fromStores);
     });
   }
-
-  test('hideLinkToPasswordManagerWhenEncrypted', function() {
-    const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager, [], []);
-    const syncPrefs = getSyncAllPrefs();
-    syncPrefs.encryptAllData = true;
-    webUIListenerCallback('sync-prefs-changed', syncPrefs);
-    simulateSyncStatus({signedIn: true, statusAction: StatusAction.NO_ACTION});
-    flush();
-    assertTrue(passwordsSection.$.manageLink.hidden);
-  });
-
-  test('showLinkToPasswordManagerWhenNotEncrypted', function() {
-    const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager, [], []);
-    const syncPrefs = getSyncAllPrefs();
-    syncPrefs.encryptAllData = false;
-    webUIListenerCallback('sync-prefs-changed', syncPrefs);
-    flush();
-    assertFalse(passwordsSection.$.manageLink.hidden);
-  });
-
-  test('hideLinkToPasswordManagerWhenUnifiedPasswordManagerEnabled', () => {
-    loadTimeData.overrideValues({unifiedPasswordManagerEnabled: true});
-    const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager, [], []);
-    assertTrue(passwordsSection.$.manageLink.hidden);
-  });
-
-  test('showLinkToPasswordManagerWhenNotSignedIn', function() {
-    const passwordsSection =
-        elementFactory.createPasswordsSection(passwordManager, [], []);
-    const syncPrefs = getSyncAllPrefs();
-    simulateSyncStatus({signedIn: false, statusAction: StatusAction.NO_ACTION});
-    webUIListenerCallback('sync-prefs-changed', syncPrefs);
-    flush();
-    assertFalse(passwordsSection.$.manageLink.hidden);
-  });
 
   test(
       'showPasswordCheckBannerWhenNotCheckedBeforeAndSignedInAndHavePasswords',

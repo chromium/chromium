@@ -221,12 +221,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: false,
       },
 
-      hidePasswordsLink_: {
-        type: Boolean,
-        computed: 'computeHidePasswordsLink_(syncPrefs, syncStatus, ' +
-            'eligibleForAccountStorage, isUnifiedPasswordManagerEnabled_)',
-      },
-
       isAutomaticPasswordChangeEnabled_: {
         type: Boolean,
         value() {
@@ -241,13 +235,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
           return loadTimeData.getBoolean('enablePasswordViewPage');
         },
         reflectToAttribute: true,
-      },
-
-      isUnifiedPasswordManagerEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('unifiedPasswordManagerEnabled');
-        },
       },
 
       showImportPasswords_: {
@@ -292,12 +279,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shouldShowBanner_: boolean;
   private isAutomaticPasswordChangeEnabled_: boolean;
   private isPasswordViewPageEnabled_: boolean;
-  private isUnifiedPasswordManagerEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
   private hasLeakedCredentials_: boolean;
   private hasPasskeys_: boolean;
-  private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
 
   private showPasswordsExportDialog_: boolean;
@@ -417,29 +402,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         (this.numberOfDevicePasswords_ > 0);
   }
 
-  /**
-   * hide the link to the user's Google Account if:
-   *  a) the link is embedded in the account storage message OR
-   *  b) the user is signed out (or signed-in but has encrypted passwords) OR
-   *  c) unified password manager for desktop is enabled.
-   */
-  private computeHidePasswordsLink_(): boolean {
-    return !!this.eligibleForAccountStorage ||
-        (!!this.syncStatus && !!this.syncStatus.signedIn && !!this.syncPrefs &&
-         !!this.syncPrefs.encryptAllData) ||
-        this.isUnifiedPasswordManagerEnabled_;
-  }
-
   private computeHasLeakedCredentials_(): boolean {
     return this.leakedPasswords.length > 0;
   }
 
   private computeHasNeverCheckedPasswords_(): boolean {
     return !this.status.elapsedTimeSinceLastCheck;
-  }
-
-  private getPasswordToggleClass_(): string {
-    return this.isUnifiedPasswordManagerEnabled_ ? 'hr' : '';
   }
 
   /**
