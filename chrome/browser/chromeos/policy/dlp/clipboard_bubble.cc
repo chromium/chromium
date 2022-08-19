@@ -314,7 +314,7 @@ ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
 
   // Add cancel button.
   std::u16string cancel_label =
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON);
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON);
   cancel_button_ = AddChildView(std::make_unique<Button>(cancel_label));
   cancel_button_->SetPaintToLayer();
   cancel_button_->layer()->SetFillsBoundsOpaquely(false);
