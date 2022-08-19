@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class FilePath;
 class SequencedTaskRunner;
 class Version;
 }  // namespace base
@@ -83,6 +84,32 @@ class UpdateServiceImpl : public UpdateService {
 
   // Installs applications in the wake task based on the ForceInstalls policy.
   void ForceInstall(StateChangeCallback state_update, Callback callback);
+
+  // `GetDMPolicies` refreshes the DM registration and policies, and is called
+  // before all installs and updates.
+  void GetDMPolicies(base::OnceClosure callback);
+
+  // After `GetDMPolicies` completes, it calls on these `Internal` method to do
+  // the actual install or update.
+  void UpdateAllInternal(StateChangeCallback state_update, Callback callback);
+  void UpdateInternal(const std::string& app_id,
+                      const std::string& install_data_index,
+                      Priority priority,
+                      PolicySameVersionUpdate policy_same_version_update,
+                      StateChangeCallback state_update,
+                      Callback callback);
+  void InstallInternal(const RegistrationRequest& registration,
+                       const std::string& install_data_index,
+                       Priority priority,
+                       StateChangeCallback state_update,
+                       Callback callback);
+  void RunInstallerInternal(const std::string& app_id,
+                            const base::FilePath& installer_path,
+                            const std::string& install_args,
+                            const std::string& install_data,
+                            const std::string& install_settings,
+                            StateChangeCallback state_update,
+                            Callback callback);
 
   bool IsUpdateDisabledByPolicy(const std::string& app_id,
                                 Priority priority,
