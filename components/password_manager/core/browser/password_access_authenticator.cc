@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
 
@@ -53,12 +55,19 @@ void PasswordAccessAuthenticator::OnUserReauthenticationResult(
     AuthResultCallback callback,
     bool authenticated) {
   if (authenticated) {
-    auth_timer_.Start(FROM_HERE, kAuthValidityPeriod,
+    auth_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
                       base::BindRepeating(timeout_call_));
   }
   LogPasswordSettingsReauthResult(authenticated ? ReauthResult::kSuccess
                                                 : ReauthResult::kFailure);
   std::move(callback).Run(authenticated);
+}
+
+base::TimeDelta PasswordAccessAuthenticator::GetAuthValidityPeriod() {
+  return base::FeatureList::IsEnabled(features::kPasswordViewPageInSettings) ||
+                 base::FeatureList::IsEnabled(features::kPasswordNotes)
+             ? kAuthValidityPeriodExtended
+             : kAuthValidityPeriod;
 }
 
 }  // namespace password_manager
