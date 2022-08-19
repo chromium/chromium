@@ -103,12 +103,14 @@ bool ShouldShowForState(PrefService* local_state,
 }
 
 GURL GetServerURL(bool may_redirect) {
-  return may_redirect
-             ? net::AppendQueryParameter(
-                   GURL(kChromeWhatsNewURL), "version",
-                   base::NumberToString(CHROME_VERSION_MAJOR))
-             : GURL(kChromeWhatsNewURL)
-                   .Resolve(base::StringPrintf("m%d", CHROME_VERSION_MAJOR));
+  const GURL url =
+      may_redirect
+          ? net::AppendQueryParameter(
+                GURL(kChromeWhatsNewURL), "version",
+                base::NumberToString(CHROME_VERSION_MAJOR))
+          : GURL(kChromeWhatsNewURL)
+                .Resolve(base::StringPrintf("m%d", CHROME_VERSION_MAJOR));
+  return net::AppendQueryParameter(url, "internal", "true");
 }
 
 GURL GetWebUIStartupURL() {

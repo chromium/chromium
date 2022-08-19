@@ -8360,6 +8360,7 @@ test("unit_tests") {
       "../browser/ui/webui/app_home/mock_app_home_page.cc",
       "../browser/ui/webui/app_home/mock_app_home_page.h",
       "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",
+      "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 
     deps += [
