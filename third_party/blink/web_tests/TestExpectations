@@ -6898,9 +6898,6 @@ crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Skip ]
 crbug.com/1345235 external/wpt/content-security-policy/style-src/stylehash-basic-blocked.sub.html [ Skip ]
 crbug.com/1334674 [ Mac11 ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
 
-# Sheriff 2022-07-19
-crbug.com/1345745 virtual/async-script-scheduling-first-paint-or-finished-parsing/wpt_internal/async-script-scheduling/execution-order.html [ Skip ]
-
 # Sheriff 2022-07-21
 crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Failure Pass ]
 
