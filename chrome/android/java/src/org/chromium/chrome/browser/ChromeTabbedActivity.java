@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -953,34 +954,37 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onNewIntent(Intent intent) {
-        // The intent to use in maybeDispatchExplicitMainViewIntent(). We're explicitly
-        // adding NEW_TASK flag to make sure backing from CCT brings up the caller activity,
-        // and not Chrome
-        Intent intentForDispatching = new Intent(intent);
-        intentForDispatching.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        @LaunchIntentDispatcher.Action
-        int action = maybeDispatchExplicitMainViewIntent(
-                intentForDispatching, DispatchedBy.ON_NEW_INTENT);
-        if (action != LaunchIntentDispatcher.Action.CONTINUE) {
-            // Pressing back button in CCT should bring user to the caller activity.
-            moveTaskToBack(true);
-            // Intent was dispatched to CustomTabActivity, consume it.
-            return;
-        }
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onNewIntent")) {
+            // The intent to use in maybeDispatchExplicitMainViewIntent(). We're explicitly
+            // adding NEW_TASK flag to make sure backing from CCT brings up the caller activity,
+            // and not Chrome
+            Intent intentForDispatching = new Intent(intent);
+            intentForDispatching.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            @LaunchIntentDispatcher.Action
+            int action = maybeDispatchExplicitMainViewIntent(
+                    intentForDispatching, DispatchedBy.ON_NEW_INTENT);
+            if (action != LaunchIntentDispatcher.Action.CONTINUE) {
+                // Pressing back button in CCT should bring user to the caller activity.
+                moveTaskToBack(true);
+                // Intent was dispatched to CustomTabActivity, consume it.
+                return;
+            }
 
-        mIntentHandlingTimeMs = SystemClock.uptimeMillis();
-        super.onNewIntent(intent);
+            mIntentHandlingTimeMs = SystemClock.uptimeMillis();
+            super.onNewIntent(intent);
 
-        // When onNewIntent() comes, calling launchIntent() may trigger a static layout is
-        // showing without even canceling the overview layout which is about to show. It
-        // leaves the StartSurfaceState to be SHOWING_START instead of NOT_SHOWN, since
-        // hiding the overview layout won't be called. Thus we need to reset the
-        // StartSurfaceState to prevent it being a wrong state. See crbug.com/1298740.
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(this) && getCurrentTabModel().getCount() > 0
-                && !isTablet() && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
-                && mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().setStartSurfaceState(
-                    StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
+            // When onNewIntent() comes, calling launchIntent() may trigger a static layout is
+            // showing without even canceling the overview layout which is about to show. It
+            // leaves the StartSurfaceState to be SHOWING_START instead of NOT_SHOWN, since
+            // hiding the overview layout won't be called. Thus we need to reset the
+            // StartSurfaceState to prevent it being a wrong state. See crbug.com/1298740.
+            if (ReturnToChromeUtil.isStartSurfaceEnabled(this)
+                    && getCurrentTabModel().getCount() > 0 && !isTablet()
+                    && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
+                    && mStartSurfaceSupplier.get() != null) {
+                mStartSurfaceSupplier.get().setStartSurfaceState(
+                        StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
+            }
         }
     }
 
@@ -2616,17 +2620,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        CipherFactory.getInstance().saveToBundle(outState);
-        outState.putInt(
-                WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
-        Boolean is_incognito = getCurrentTabModel().isIncognito();
-        outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
-        // If it's Incognito and native is initialized and profile exists, serialize duration
-        // service state.
-        if (is_incognito && ProfileManager.isInitialized()) {
-            AndroidSessionDurationsServiceState.serializeFromNative(
-                    outState, getCurrentTabModel().getProfile());
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onSaveInstanceState")) {
+            super.onSaveInstanceState(outState);
+            CipherFactory.getInstance().saveToBundle(outState);
+            outState.putInt(
+                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
+            Boolean is_incognito = getCurrentTabModel().isIncognito();
+            outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
+            // If it's Incognito and native is initialized and profile exists, serialize duration
+            // service state.
+            if (is_incognito && ProfileManager.isInitialized()) {
+                AndroidSessionDurationsServiceState.serializeFromNative(
+                        outState, getCurrentTabModel().getProfile());
+            }
         }
     }
 
@@ -2848,6 +2854,48 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this, getIntent(), getTabModelSelector(), mInactivityTracker);
     }
 
+    @Override
+    public void onStart() {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onStart")) {
+            super.onStart();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onStop")) {
+            super.onStop();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onPause")) {
+            super.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onResume")) {
+            super.onResume();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onActivityResult")) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void performOnConfigurationChanged(Configuration newConfig) {
+        try (TraceEvent e =
+                        TraceEvent.scoped("ChromeTabbedActivity.performOnConfigurationChanged")) {
+            super.performOnConfigurationChanged(newConfig);
+        }
+    }
     private void returnToOverviewModeOnBackPressed() {
         Tab currentTab = getActivityTab();
         assert currentTab != null;
