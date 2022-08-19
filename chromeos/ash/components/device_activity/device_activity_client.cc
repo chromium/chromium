@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/device_activity_client.h"
+#include "chromeos/ash/components/device_activity/device_activity_client.h"
 
-#include "ash/components/device_activity/device_active_use_case.h"
-#include "ash/components/device_activity/fresnel_service.pb.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
+#include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 // TODO(https://crbug.com/1269900): Migrate to use SFUL library.
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -78,8 +78,9 @@ const char kDeviceActiveClientTransitionToCheckInMinute[] =
 
 // Traffic annotation for check device activity status
 const net::NetworkTrafficAnnotationTag check_membership_traffic_annotation =
-      net::DefineNetworkTrafficAnnotation(
-          "device_activity_client_check_membership",R"(
+    net::DefineNetworkTrafficAnnotation(
+        "device_activity_client_check_membership",
+        R"(
         semantics {
           sender: "Device Activity"
           description:
@@ -494,7 +495,8 @@ void DeviceActivityClient::TransitionToHealthCheck() {
   DCHECK(!url_loader_);
 
   const net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("device_activity_client_health_check", R"(
+      net::DefineNetworkTrafficAnnotation("device_activity_client_health_check",
+                                          R"(
         semantics {
           sender: "Device Activity Health Check"
           description:
@@ -603,10 +605,8 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf(
 
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
-  url_loader_ = network
-      ::SimpleURLLoader
-      ::Create(std::move(resource_request),
-               check_membership_traffic_annotation);
+  url_loader_ = network ::SimpleURLLoader ::Create(
+      std::move(resource_request), check_membership_traffic_annotation);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kOprfRequestTimeout);
   url_loader_->DownloadToString(
@@ -697,10 +697,8 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
 
   // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
   // call to a shared helper method.
-  url_loader_ = network
-      ::SimpleURLLoader
-      ::Create(std::move(resource_request),
-               check_membership_traffic_annotation);
+  url_loader_ = network ::SimpleURLLoader ::Create(
+      std::move(resource_request), check_membership_traffic_annotation);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kQueryRequestTimeout);
   url_loader_->DownloadToString(

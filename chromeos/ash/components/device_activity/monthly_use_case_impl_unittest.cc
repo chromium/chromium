@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/monthly_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 
-#include "ash/components/device_activity/device_activity_controller.h"
-#include "ash/components/device_activity/fresnel_pref_names.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/device_activity_controller.h"
+#include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

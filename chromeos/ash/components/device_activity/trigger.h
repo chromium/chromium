@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
-#define ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
+#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
 
 namespace ash {
 namespace device_activity {
@@ -17,4 +17,4 @@ enum class Trigger {
 }  // namespace device_activity
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_

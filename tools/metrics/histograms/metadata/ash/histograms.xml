@@ -1966,8 +1966,8 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-data-team@google.com</owner>
   <summary>
     Record the total duration to transition between DeviceActivityClient states.
-    States are defined in //ash/components/device_activity_client.h. ChromeOS
-    only. {DeviceActiveClientState}
+    States are defined in //chromeos/ash/components/device_activity_client.h.
+    ChromeOS only. {DeviceActiveClientState}
   </summary>
   <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
 </histogram>
@@ -2002,8 +2002,9 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-data-team@google.com</owner>
   <summary>
     Record the PsmResponse whenever a response is received from the server.
-    PsmResponse is defined in //ash/components/device_activity_client.h.
-    ChromeOS only. {DeviceActiveClientState}
+    PsmResponse is defined in
+    //chromeos/ash/components/device_activity_client.h. ChromeOS only.
+    {DeviceActiveClientState}
   </summary>
   <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
 </histogram>
@@ -2014,8 +2015,8 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-data-team@google.com</owner>
   <summary>
     Recorded every time the DeviceActivityClient enters a new state in its FSM.
-    States are defined in //ash/components/device_activity_client.h. ChromeOS
-    only.
+    States are defined in //chromeos/ash/components/device_activity_client.h.
+    ChromeOS only.
   </summary>
 </histogram>
 
@@ -2032,7 +2033,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-data-team@google.com</owner>
   <summary>
     Record the number of times various methods are called in
-    //ash/components/device_activity/. ChromeOS only.
+    //chromeos/ash/components/device_activity/. ChromeOS only.
   </summary>
 </histogram>
 

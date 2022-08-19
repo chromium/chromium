@@ -1,5 +1,4 @@
-ash/components/device_activity
-====================================
+# chromeos/ash/components/device_activity
 
 This directory contains the code required to send active device pings
 (segmentable across various dimensions) in a privacy-compliant manner.

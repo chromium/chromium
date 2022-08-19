@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DEVICE_ACTIVITY_USE_CASE_H_
-#define ASH_COMPONENTS_DEVICE_ACTIVITY_USE_CASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_
+#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_
 
-#include "ash/components/device_activity/fresnel_service.pb.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 class PrefService;
@@ -28,13 +28,15 @@ namespace device_activity {
 // Fields used in setting device active metadata, that are explicitly
 // required from outside of ASH_CHROME due to the dependency limitations
 // on chrome browser.
-struct COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) ChromeDeviceMetadataParameters {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+    ChromeDeviceMetadataParameters {
   version_info::Channel chromeos_channel;
   MarketSegment market_segment;
 };
 
 // Base class for device active use cases.
-class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+    DeviceActiveUseCase {
  public:
   DeviceActiveUseCase(
       const std::string& psm_device_active_secret,
@@ -179,4 +181,4 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
 }  // namespace device_activity
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_DEVICE_ACTIVITY_USE_CASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_

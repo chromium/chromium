@@ -24792,7 +24792,7 @@ Called by update_debug_scenarios.py.-->
 
 <enum name="DeviceActiveClientPsmResponse">
 <!-- This must be kept current with DeviceActivityClient::PsmResponse
-        located in ash/components/device_activity/device_activity_client.h -->
+located in chromeos/ash/components/device_activity/device_activity_client.h -->
 
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
@@ -24802,7 +24802,7 @@ Called by update_debug_scenarios.py.-->
 
 <enum name="DeviceActiveClientState">
 <!-- This must be kept current with DeviceActivityClient::State
-        located in ash/components/device_activity/device_activity_client.h -->
+located in chromeos/ash/components/device_activity/device_activity_client.h -->
 
   <int value="0" label="Unknown"/>
   <int value="1" label="Idle"/>
@@ -24814,7 +24814,7 @@ Called by update_debug_scenarios.py.-->
 
 <enum name="DeviceActivityMethod">
 <!-- This must be kept current with DeviceActivityClient::DeviceActivityMethod
-        located in ash/components/device_activity/device_activity_client.h -->
+located in chromeos/ash/components/device_activity/device_activity_client.h -->
 
   <int value="0" label="Unknown"/>
   <int value="1" label="DeviceActivityControllerConstructor"/>

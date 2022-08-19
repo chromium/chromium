@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_
-#define ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_
 
-#include "ash/components/device_activity/device_active_use_case.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
 
 class PrefService;
 
@@ -22,7 +22,7 @@ namespace device_activity {
 class ImportDataRequest;
 
 // Contains the methods required to report the daily active use case.
-class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DailyUseCaseImpl
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) DailyUseCaseImpl
     : public DeviceActiveUseCase {
  public:
   DailyUseCaseImpl(
@@ -53,4 +53,4 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DailyUseCaseImpl
 }  // namespace device_activity
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DAILY_USE_CASE_IMPL_H_

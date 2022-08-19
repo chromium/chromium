@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/fresnel_pref_names.h"
+#include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 
 namespace ash {
 namespace prefs {

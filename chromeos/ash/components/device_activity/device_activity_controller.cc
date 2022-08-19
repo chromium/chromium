@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/device_activity_controller.h"
+#include "chromeos/ash/components/device_activity/device_activity_controller.h"
 
-#include "ash/components/device_activity/daily_use_case_impl.h"
-#include "ash/components/device_activity/device_active_use_case.h"
-#include "ash/components/device_activity/device_activity_client.h"
-#include "ash/components/device_activity/fresnel_pref_names.h"
-#include "ash/components/device_activity/monthly_use_case_impl.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
+#include "chromeos/ash/components/device_activity/device_activity_client.h"
+#include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
+#include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"

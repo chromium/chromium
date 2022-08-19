@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/device_active_use_case.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

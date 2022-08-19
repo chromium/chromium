@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/device_activity/device_activity_client.h"
+#include "chromeos/ash/components/device_activity/device_activity_client.h"
 
-#include "ash/components/device_activity/daily_use_case_impl.h"
-#include "ash/components/device_activity/device_activity_controller.h"
-#include "ash/components/device_activity/fresnel_pref_names.h"
-#include "ash/components/device_activity/fresnel_service.pb.h"
-#include "ash/components/device_activity/monthly_use_case_impl.h"
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,6 +15,11 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/device_activity_controller.h"
+#include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
+#include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
+#include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"

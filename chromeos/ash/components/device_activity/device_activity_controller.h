@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
-#define ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
+#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
 
 #include <memory>
 
-#include "ash/components/device_activity/device_active_use_case.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,7 +29,8 @@ class DeviceActivityClient;
 struct ChromeDeviceMetadataParameters;
 
 // Counts device actives in a privacy compliant way.
-class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+    DeviceActivityController {
  public:
   // Retrieves a singleton instance.
   static DeviceActivityController* Get();
@@ -90,4 +91,4 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
 }  // namespace device_activity
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_
