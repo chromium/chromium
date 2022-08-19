@@ -9,12 +9,11 @@
 
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
-#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
-#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -30,6 +29,11 @@ bool TestShellDelegate::CanShowWindowForUser(const aura::Window* window) const {
 std::unique_ptr<CaptureModeDelegate>
 TestShellDelegate::CreateCaptureModeDelegate() const {
   return std::make_unique<TestCaptureModeDelegate>();
+}
+
+std::unique_ptr<GlanceablesDelegate>
+TestShellDelegate::CreateGlanceablesDelegate() const {
+  return std::make_unique<TestGlanceablesDelegate>();
 }
 
 AccessibilityDelegate* TestShellDelegate::CreateAccessibilityDelegate() {

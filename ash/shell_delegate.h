@@ -37,6 +37,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class DesksTemplatesDelegate;
+class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
 
@@ -52,6 +53,10 @@ class ASH_EXPORT ShellDelegate {
 
   // Creates and returns the delegate of the Capture Mode feature.
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
+      const = 0;
+
+  // Creates the delegate for the Glanceables feature.
+  virtual std::unique_ptr<GlanceablesDelegate> CreateGlanceablesDelegate()
       const = 0;
 
   // Creates a accessibility delegate. Shell takes ownership of the delegate.

@@ -68,6 +68,7 @@
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
+#include "ash/glanceables/glanceables_delegate.h"
 #include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
@@ -593,7 +594,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   AccelerometerReader::GetInstance()->Initialize();
 
   if (features::AreGlanceablesEnabled()) {
-    glanceables_controller_ = std::make_unique<GlanceablesController>();
+    glanceables_controller_ = std::make_unique<GlanceablesController>(
+        shell_delegate_->CreateGlanceablesDelegate());
   }
 
   login_screen_controller_ =

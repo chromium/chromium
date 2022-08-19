@@ -8,17 +8,21 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_weather_controller.h"
+#include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "base/logging.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
-GlanceablesController::GlanceablesController() = default;
+GlanceablesController::GlanceablesController(
+    std::unique_ptr<GlanceablesDelegate> delegate)
+    : delegate_(std::move(delegate)) {
+  DCHECK(delegate_);
+}
 
 GlanceablesController::~GlanceablesController() = default;
 
@@ -56,6 +60,10 @@ void GlanceablesController::FetchData() {
       ->ambient_controller()
       ->ambient_weather_controller()
       ->FetchWeather();
+}
+
+void GlanceablesController::RestoreSession() {
+  delegate_->RestoreSession();
 }
 
 }  // namespace ash

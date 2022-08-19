@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/glanceables/glanceables_restore_view.h"
 #include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -66,7 +67,8 @@ GlanceablesView::GlanceablesView() {
   // Container for the views on the right.
   auto* right_column = container->AddChildView(std::make_unique<views::View>());
   right_column->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      /*between_child_spacing=*/32));
 
   // The "Restore last session" label.
   restore_session_label_ =
@@ -75,7 +77,8 @@ GlanceablesView::GlanceablesView() {
   restore_session_label_->SetText(
       l10n_util::GetStringUTF16(IDS_GLANCEABLES_RESTORE_SESSION));
 
-  // TODO(crbug.com/1353119): Add restore session screenshot / button.
+  restore_view_ =
+      right_column->AddChildView(std::make_unique<GlanceablesRestoreView>());
 
   // Share space equally between the two columns.
   container_layout->SetFlexForView(left_column, 1);
