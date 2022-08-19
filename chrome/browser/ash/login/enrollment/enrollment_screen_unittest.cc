@@ -150,8 +150,8 @@ class EnrollmentScreenUnitTest : public testing::Test {
   }
 
   void ConfigureRestoreAfterRollback() {
-    wizard_context_.configuration.SetBoolKey(
-        configuration::kRestoreAfterRollback, true);
+    wizard_context_.configuration.Set(configuration::kRestoreAfterRollback,
+                                      true);
   }
 
   void ShowEnrollmentScreen(bool suppress_jitter = false) {

@@ -124,15 +124,12 @@ void CoreOobeHandler::DeclareLocalizedValues(
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
-  dict->Set("isInTabletMode",
-            base::Value(ash::TabletMode::Get()->InTabletMode()));
-  dict->Set("isDemoModeEnabled",
-            base::Value(DemoSetupController::IsDemoModeAllowed()));
+  dict->Set("isInTabletMode", ash::TabletMode::Get()->InTabletMode());
+  dict->Set("isDemoModeEnabled", DemoSetupController::IsDemoModeAllowed());
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
-    dict->Set("flowType", base::Value("meet"));
+    dict->Set("flowType", "meet");
   }
-  dict->Set("isQuickStartEnabled",
-            base::Value(ash::features::IsOobeQuickStartEnabled()));
+  dict->Set("isQuickStartEnabled", ash::features::IsOobeQuickStartEnabled());
 }
 
 void CoreOobeHandler::RegisterMessages() {
@@ -160,7 +157,7 @@ void CoreOobeHandler::ShowScreenWithData(
 }
 
 void CoreOobeHandler::ReloadContent(base::Value::Dict dictionary) {
-  CallJS("cr.ui.Oobe.reloadContent", base::Value(std::move(dictionary)));
+  CallJS("cr.ui.Oobe.reloadContent", std::move(dictionary));
 }
 
 void CoreOobeHandler::HandleInitialized() {
@@ -242,10 +239,9 @@ void CoreOobeHandler::LaunchHelpApp(int help_topic_id) {
 }
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
-  base::Value configuration(base::Value::Type::DICTIONARY);
-  configuration::FilterConfiguration(
-      OobeConfiguration::Get()->GetConfiguration(),
-      configuration::ConfigurationHandlerSide::HANDLER_JS, configuration);
+  base::Value::Dict configuration = configuration::FilterConfiguration(
+      OobeConfiguration::Get()->configuration(),
+      configuration::ConfigurationHandlerSide::HANDLER_JS);
   CallJS("cr.ui.Oobe.updateOobeConfiguration", std::move(configuration));
 }
 

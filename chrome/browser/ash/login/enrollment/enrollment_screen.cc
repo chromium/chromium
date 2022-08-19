@@ -681,22 +681,20 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
   std::string asset_id;
   std::string location;
 
-  if (!context()->configuration.DictEmpty()) {
-    auto* asset_id_value = context()->configuration.FindKeyOfType(
-        configuration::kEnrollmentAssetId, base::Value::Type::STRING);
+  if (!context()->configuration.empty()) {
+    auto* asset_id_value =
+        context()->configuration.FindString(configuration::kEnrollmentAssetId);
     if (asset_id_value) {
       // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's
       // preserved in the logs.
-      LOG(WARNING) << "Using Asset ID from configuration "
-                   << asset_id_value->GetString();
-      asset_id = asset_id_value->GetString();
+      LOG(WARNING) << "Using Asset ID from configuration " << *asset_id_value;
+      asset_id = *asset_id_value;
     }
-    auto* location_value = context()->configuration.FindKeyOfType(
-        configuration::kEnrollmentLocation, base::Value::Type::STRING);
+    auto* location_value =
+        context()->configuration.FindString(configuration::kEnrollmentLocation);
     if (location_value) {
-      LOG(WARNING) << "Using Location from configuration "
-                   << location_value->GetString();
-      location = location_value->GetString();
+      LOG(WARNING) << "Using Location from configuration " << *location_value;
+      location = *location_value;
     }
   }
 
@@ -709,10 +707,12 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     location = policy->annotated_location();
   }
 
-  if (!context()->configuration.DictEmpty()) {
-    auto* auto_attributes = context()->configuration.FindKeyOfType(
-        configuration::kEnrollmentAutoAttributes, base::Value::Type::BOOLEAN);
-    if (auto_attributes && auto_attributes->GetBool()) {
+  if (!context()->configuration.empty()) {
+    bool auto_attributes =
+        context()
+            ->configuration.FindBool(configuration::kEnrollmentAutoAttributes)
+            .value_or(false);
+    if (auto_attributes) {
       LOG(WARNING) << "Automatically accept attributes";
       OnDeviceAttributeProvided(asset_id, location);
       return;

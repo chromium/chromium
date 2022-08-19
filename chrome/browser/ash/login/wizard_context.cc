@@ -24,7 +24,7 @@ WizardContext::WizardContext()
 WizardContext::~WizardContext() = default;
 
 bool IsRollbackFlow(const WizardContext& context) {
-  return context.configuration.FindBoolKey(configuration::kRestoreAfterRollback)
+  return context.configuration.FindBool(configuration::kRestoreAfterRollback)
       .value_or(false);
 }
 

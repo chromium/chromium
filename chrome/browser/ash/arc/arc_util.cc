@@ -446,12 +446,12 @@ bool IsArcOobeOptInConfigurationBased() {
   if (!oobe_configuration->CheckCompleted())
     return false;
   // Check configuration value that triggers automatic ARC TOS acceptance.
-  auto& configuration = oobe_configuration->GetConfiguration();
-  auto* auto_accept = configuration.FindKeyOfType(
-      ash::configuration::kArcTosAutoAccept, base::Value::Type::BOOLEAN);
+  auto& configuration = oobe_configuration->configuration();
+  auto auto_accept =
+      configuration.FindBool(ash::configuration::kArcTosAutoAccept);
   if (!auto_accept)
     return false;
-  return auto_accept->GetBool();
+  return *auto_accept;
 }
 
 bool IsArcTermsOfServiceNegotiationNeeded(const Profile* profile) {

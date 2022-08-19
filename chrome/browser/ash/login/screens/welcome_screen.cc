@@ -483,10 +483,11 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
       return true;
     if (!view_)
       return true;
-    const auto* key = context()->configuration.FindKeyOfType(
-        configuration::kEnableDemoMode, base::Value::Type::BOOLEAN);
-    const bool value = key && key->GetBool();
-    if (value) {
+    const auto key =
+        context()
+            ->configuration.FindBool(configuration::kEnableDemoMode)
+            .value_or(false);
+    if (key) {
       OnSetupDemoMode();
       return true;
     }

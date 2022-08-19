@@ -2101,18 +2101,16 @@ void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
 }
 
 void WizardController::UpdateOobeConfiguration() {
-  wizard_context_->configuration = base::Value(base::Value::Type::DICTIONARY);
-  configuration::FilterConfiguration(
-      OobeConfiguration::Get()->GetConfiguration(),
-      configuration::ConfigurationHandlerSide::HANDLER_CPP,
-      wizard_context_->configuration);
-  auto* requisition_value = wizard_context_->configuration.FindKeyOfType(
-      configuration::kDeviceRequisition, base::Value::Type::STRING);
+  wizard_context_->configuration = configuration::FilterConfiguration(
+      OobeConfiguration::Get()->configuration(),
+      configuration::ConfigurationHandlerSide::HANDLER_CPP);
+  auto* requisition_value = wizard_context_->configuration.FindString(
+      configuration::kDeviceRequisition);
   if (requisition_value) {
     VLOG(1) << "Using Device Requisition from configuration"
-            << requisition_value->GetString();
+            << *requisition_value;
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(
-        requisition_value->GetString());
+        *requisition_value);
   } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     VLOG(1)
         << "Using default Device Requisition value for CFM build configuration"
@@ -2121,15 +2119,14 @@ void WizardController::UpdateOobeConfiguration() {
         policy::EnrollmentRequisitionManager::kRemoraRequisition);
   }
 
-  auto* network_config_value = wizard_context_->configuration.FindKeyOfType(
-      configuration::kNetworkConfig, base::Value::Type::STRING);
-  if (network_config_value) {
-    std::string network_config = network_config_value->GetString();
+  auto* network_config =
+      wizard_context_->configuration.FindString(configuration::kNetworkConfig);
+  if (network_config) {
     auto rollback_network_config = std::make_unique<mojo::Remote<
         chromeos::rollback_network_config::mojom::RollbackNetworkConfig>>();
     rollback_network_config::BindToInProcessInstance(
         rollback_network_config->BindNewPipeAndPassReceiver());
-    rollback_network_config->get()->RollbackConfigImport(network_config,
+    rollback_network_config->get()->RollbackConfigImport(*network_config,
                                                          base::DoNothing());
   }
 }

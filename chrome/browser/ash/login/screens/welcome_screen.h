@@ -111,8 +111,8 @@ class WelcomeScreen : public BaseScreen,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  base::Value* GetConfigurationForTesting() {
-    return &(context()->configuration);
+  const base::Value::Dict& GetConfigurationForTesting() const {
+    return context()->configuration;
   }
 
   // ChromeVox hint.

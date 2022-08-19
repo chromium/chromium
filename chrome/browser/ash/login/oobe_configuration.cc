@@ -19,10 +19,7 @@ namespace ash {
 OobeConfiguration* OobeConfiguration::instance = nullptr;
 bool OobeConfiguration::skip_check_for_testing_ = false;
 
-OobeConfiguration::OobeConfiguration()
-    : check_completed_(false),
-      configuration_(
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY)) {
+OobeConfiguration::OobeConfiguration() : check_completed_(false) {
   DCHECK(!OobeConfiguration::Get());
   OobeConfiguration::instance = this;
 }
@@ -48,16 +45,12 @@ void OobeConfiguration::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-const base::Value& OobeConfiguration::GetConfiguration() const {
-  return *configuration_.get();
-}
-
 bool OobeConfiguration::CheckCompleted() const {
   return check_completed_;
 }
 
 void OobeConfiguration::ResetConfiguration() {
-  configuration_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  configuration_ = base::Value::Dict();
   if (check_completed_) {
     NotifyObservers();
   }
@@ -84,24 +77,24 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
                << parsed_json.error().message;
-  } else if (!configuration::ValidateConfiguration(*parsed_json)) {
+  } else if (!parsed_json->is_dict()) {
+    LOG(ERROR) << "Configuration should be a dictionary";
+  } else if (!configuration::ValidateConfiguration(parsed_json->GetDict())) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
-    configuration_ = base::Value::ToUniquePtrValue(std::move(*parsed_json));
+    configuration_ = std::move(parsed_json->GetDict());
     UpdateConfigurationValues();
   }
   NotifyObservers();
 }
 
 void OobeConfiguration::UpdateConfigurationValues() {
-  auto* ime_value = configuration_->FindKeyOfType(configuration::kInputMethod,
-                                                  base::Value::Type::STRING);
+  auto* ime_value = configuration_.FindString(configuration::kInputMethod);
   if (ime_value) {
     auto* imm = input_method::InputMethodManager::Get();
-    configuration_->SetKey(
+    configuration_.Set(
         configuration::kInputMethod,
-        base::Value(imm->GetInputMethodUtil()->MigrateInputMethod(
-            ime_value->GetString())));
+        imm->GetInputMethodUtil()->MigrateInputMethod(*ime_value));
   }
 }
 

@@ -3121,9 +3121,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   WelcomeScreen* screen =
       WizardController::default_controller()->GetScreen<WelcomeScreen>();
-  base::Value* configuration = screen->GetConfigurationForTesting();
-  ASSERT_NE(configuration, nullptr);
-  EXPECT_FALSE(configuration->DictEmpty());
+  const base::Value::Dict& configuration = screen->GetConfigurationForTesting();
+  EXPECT_FALSE(configuration.empty());
 }
 
 class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {

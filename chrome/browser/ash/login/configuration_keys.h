@@ -45,13 +45,12 @@ enum class ConfigurationHandlerSide : unsigned int {
 
 // Checks if configuration is valid (all fields have correct types, no extra
 // fields).
-bool ValidateConfiguration(const base::Value& configuration);
+bool ValidateConfiguration(const base::Value::Dict& configuration);
 
-// Copies only fields handled by particular `side` from `configuration` to
-// `filtered_result`.
-void FilterConfiguration(const base::Value& configuration,
-                         ConfigurationHandlerSide side,
-                         base::Value& filtered_result);
+// Returns a dictionary with only fields handled by particular `side` from
+// `configuration`.
+base::Value::Dict FilterConfiguration(const base::Value::Dict& configuration,
+                                      ConfigurationHandlerSide side);
 }  // namespace configuration
 }  // namespace ash
 
