@@ -413,7 +413,8 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
       base::BindRepeating(&MediaFoundationRendererClient::OnOutputRectChange,
                           weak_factory_.GetWeakPtr()));
   if (!success) {
-    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+    std::move(init_cb_).Run(PipelineStatus(PIPELINE_ERROR_INITIALIZATION_FAILED,
+                                           "DComTextureWrapper init failed"));
     return;
   }
 
