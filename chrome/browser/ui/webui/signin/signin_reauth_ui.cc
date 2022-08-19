@@ -19,7 +19,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -98,12 +97,7 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
-  // TODO(crbug.com/1310270): Switch kResources back to consexpr after launching
-  // this feature.
-  bool upm_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerDesktop);
-
-  static webui::ResourcePath kResources[] = {
+  static constexpr webui::ResourcePath kResources[] = {
       {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
       {"signin_reauth_app.html.js",
        IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_HTML_JS},
@@ -113,13 +107,9 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       // Resources for the account passwords reauth.
       {"images/signin_reauth_illustration.svg",
-       upm_enabled
-           ? IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_V2_SVG
-           : IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
+       IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
       {"images/signin_reauth_illustration_dark.svg",
-       upm_enabled
-           ? IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_V2_SVG
-           : IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
+       IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
   };
   source->AddResourcePaths(kResources);
 
