@@ -11,11 +11,17 @@
 
 namespace ash::quick_start {
 
+class RandomSessionId;
+
 // A factory class for creating instances of TargetDeviceConnectionBroker.
 // Calling code should use the static Create() method.
 class TargetDeviceConnectionBrokerFactory {
  public:
   static std::unique_ptr<TargetDeviceConnectionBroker> Create();
+
+  // A RandomSessionId may be provided in order to resume a connection.
+  static std::unique_ptr<TargetDeviceConnectionBroker> Create(
+      RandomSessionId session_id);
 
   static void SetFactoryForTesting(
       TargetDeviceConnectionBrokerFactory* test_factory);
@@ -28,7 +34,8 @@ class TargetDeviceConnectionBrokerFactory {
   virtual ~TargetDeviceConnectionBrokerFactory();
 
  protected:
-  virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance() = 0;
+  virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+      RandomSessionId session_id) = 0;
 
  private:
   static TargetDeviceConnectionBrokerFactory* test_factory_;

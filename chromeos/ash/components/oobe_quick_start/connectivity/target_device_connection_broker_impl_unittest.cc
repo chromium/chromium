@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
+#include <array>
+
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/fast_pair_advertiser.h"
@@ -19,6 +21,12 @@ namespace ash::quick_start {
 namespace {
 
 constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
+
+// 10 random bytes to use as the RandomSessionId. The corresponding display name
+// code is (0x135e % 1000) = 958.
+constexpr std::array<uint8_t, 10> kRandomSessionId = {
+    0x13, 0x5e, 0xfb, 0x0f, 0x3a, 0x20, 0x06, 0xbd, 0xbf, 0x95};
+constexpr char kExpectedEndpointInfoDisplayName[] = "Chromebook (958)";
 
 using testing::NiceMock;
 
@@ -167,8 +175,10 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   }
 
   void CreateConnectionBroker() {
+    RandomSessionId session_id(kRandomSessionId);
     connection_broker_ =
-        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create();
+        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
+            session_id);
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -412,7 +422,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GenerateEndpointInfo) {
   }
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
-  EXPECT_EQ("Chromebook", display_name);
+  EXPECT_EQ(kExpectedEndpointInfoDisplayName, display_name);
   i += j;
 
   ASSERT_GT(endpoint_info.size(), i);

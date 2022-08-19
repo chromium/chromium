@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
+
 namespace ash::quick_start {
 
 FakeTargetDeviceConnectionBroker::Factory::Factory() = default;
@@ -11,7 +13,8 @@ FakeTargetDeviceConnectionBroker::Factory::Factory() = default;
 FakeTargetDeviceConnectionBroker::Factory::~Factory() = default;
 
 std::unique_ptr<TargetDeviceConnectionBroker>
-FakeTargetDeviceConnectionBroker::Factory::CreateInstance() {
+FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
+    RandomSessionId session_id) {
   auto connection_broker = std::make_unique<FakeTargetDeviceConnectionBroker>();
   instances_.push_back(connection_broker.get());
   return std::move(connection_broker);

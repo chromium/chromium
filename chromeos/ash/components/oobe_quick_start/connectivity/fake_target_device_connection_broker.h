@@ -13,6 +13,8 @@
 
 namespace ash::quick_start {
 
+class RandomSessionId;
+
 class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
  public:
   class Factory : public TargetDeviceConnectionBrokerFactory {
@@ -29,7 +31,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     }
 
    private:
-    std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance() override;
+    std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+        RandomSessionId session_id) override;
 
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;
   };

@@ -15,6 +15,10 @@ RandomSessionId::RandomSessionId() {
   crypto::RandBytes(bytes_);
 }
 
+RandomSessionId::RandomSessionId(base::span<const uint8_t, kLength> bytes) {
+  std::copy(bytes.begin(), bytes.end(), bytes_.begin());
+}
+
 std::string RandomSessionId::ToString() const {
   return base::HexEncode(bytes_);
 }

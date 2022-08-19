@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
+#include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 namespace ash::quick_start {
@@ -11,11 +12,17 @@ namespace ash::quick_start {
 // static
 std::unique_ptr<TargetDeviceConnectionBroker>
 TargetDeviceConnectionBrokerFactory::Create() {
+  return Create(RandomSessionId());
+}
+
+// static
+std::unique_ptr<TargetDeviceConnectionBroker>
+TargetDeviceConnectionBrokerFactory::Create(RandomSessionId session_id) {
   if (test_factory_) {
-    return test_factory_->CreateInstance();
+    return test_factory_->CreateInstance(session_id);
   }
 
-  return std::make_unique<TargetDeviceConnectionBrokerImpl>();
+  return std::make_unique<TargetDeviceConnectionBrokerImpl>(session_id);
 }
 
 // static

@@ -20,11 +20,12 @@ class RandomSessionId {
   static constexpr size_t kLength = 10;
 
   RandomSessionId();
+  explicit RandomSessionId(base::span<const uint8_t, kLength> bytes);
   RandomSessionId(RandomSessionId&) = default;
   RandomSessionId& operator=(RandomSessionId&) = default;
   ~RandomSessionId() = default;
 
-  base::span<const uint8_t, kLength> AsBytes() const { return bytes_; };
+  base::span<const uint8_t, kLength> AsBytes() const { return bytes_; }
 
   // Convert to hexadecimal.
   std::string ToString() const;

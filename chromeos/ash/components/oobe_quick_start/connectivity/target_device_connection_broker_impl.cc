@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/random_session_id.h"
@@ -40,15 +41,29 @@ constexpr uint8_t kEndpointInfoIsQuickStart = 1;
 
 constexpr char kEndpointInfoDefaultDisplayName[] = "Chromebook";
 
+// Derive three decimal digits from the RandomSessionId.
+std::string GetDisplayNameSessionIdDigits(const RandomSessionId& session_id) {
+  base::span<const uint8_t, RandomSessionId::kLength> session_id_bytes =
+      session_id.AsBytes();
+  uint32_t high = session_id_bytes[0];
+  uint32_t low = session_id_bytes[1];
+  uint32_t x = (high << 8) + low;
+  return base::NumberToString(x % 1000);
+}
+
 // The display name must:
 // - Be a variable-length string of utf-8 bytes
 // - Be at most 18 bytes
 // - If less than 18 bytes, must be null-terminated
 std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
-    RandomSessionId session_id) {
-  // TODO(b/234655072): Append session id to display name, vary name based on
-  // device type, e.g. Chromebook, Chromebox, Chromebase, Chromebit, etc.
+    const RandomSessionId& session_id) {
   std::string display_name = kEndpointInfoDefaultDisplayName;
+  std::string suffix = " (" + GetDisplayNameSessionIdDigits(session_id) + ")";
+
+  // TODO(b/234655072): Before appending suffix, vary |display_name| based on
+  // device type, e.g. Chromebook, Chromebox, Chromebase, etc.
+  display_name += suffix;
+
   std::vector<uint8_t> display_name_bytes(display_name.begin(),
                                           display_name.end());
   display_name_bytes.push_back(0);
@@ -79,7 +94,9 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
     TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
-TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl() {
+TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
+    RandomSessionId session_id)
+    : random_session_id_(session_id) {
   GetBluetoothAdapter();
 }
 
@@ -149,7 +166,8 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
-  VLOG(1) << "Starting advertising with session id " << random_session_id_;
+  VLOG(1) << "Starting advertising with session id " << random_session_id_
+          << " (" << GetDisplayNameSessionIdDigits(random_session_id_) << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);

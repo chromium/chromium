@@ -40,7 +40,7 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
         bluetooth_adapter_factory_wrapper_for_testing_;
   };
 
-  TargetDeviceConnectionBrokerImpl();
+  explicit TargetDeviceConnectionBrokerImpl(RandomSessionId session_id);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
       TargetDeviceConnectionBrokerImpl&) = delete;
