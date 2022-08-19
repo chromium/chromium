@@ -10,8 +10,11 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
@@ -156,6 +159,16 @@ void DownloadDisplayController::OnManagerGoingDown(
 }
 
 void DownloadDisplayController::OnButtonPressed() {
+  DownloadUIController* download_ui_controller =
+      DownloadCoreServiceFactory::GetForBrowserContext(
+          browser_->profile()->GetOriginalProfile())
+          ->GetDownloadUIController();
+  if (download_ui_controller) {
+    download_ui_controller->OnButtonClicked();
+  }
+}
+
+void DownloadDisplayController::HandleButtonPressed() {
   // If the current state is kComplete, set the icon to inactive because of the
   // user action.
   if (icon_info_.icon_state == DownloadIconState::kComplete) {

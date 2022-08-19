@@ -51,6 +51,11 @@ class TestingDownloadCoreService : public DownloadCoreService {
     return nullptr;
   }
 
+  DownloadUIController* GetDownloadUIController() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+
   DownloadHistory* GetDownloadHistory() override {
     ADD_FAILURE();
     return nullptr;

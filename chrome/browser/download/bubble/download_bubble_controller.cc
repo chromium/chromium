@@ -118,6 +118,10 @@ void DownloadBubbleUIController::HideDownloadUi() {
   display_controller_->HideToolbarButton();
 }
 
+void DownloadBubbleUIController::HandleButtonPressed() {
+  display_controller_->HandleButtonPressed();
+}
+
 bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
                                                      bool is_new) {
   if (profile_->IsOffTheRecord() != item.is_off_the_record)

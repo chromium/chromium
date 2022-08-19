@@ -747,7 +747,7 @@ TEST_F(DownloadDisplayControllerTest, OnButtonPressed_IconStateComplete) {
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 
-  controller().OnButtonPressed();
+  controller().HandleButtonPressed();
 
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,

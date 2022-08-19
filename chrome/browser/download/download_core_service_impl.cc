@@ -94,6 +94,10 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
   return manager_delegate_.get();
 }
 
+DownloadUIController* DownloadCoreServiceImpl::GetDownloadUIController() {
+  return download_ui_ ? download_ui_.get() : nullptr;
+}
+
 DownloadHistory* DownloadCoreServiceImpl::GetDownloadHistory() {
   if (!download_manager_created_) {
     GetDownloadManagerDelegate();

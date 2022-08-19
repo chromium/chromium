@@ -81,6 +81,9 @@ class DownloadBubbleUIController
   // this controller belongs to should show the partial view.
   void OnNewItem(download::DownloadItem* item, bool show_details);
 
+  // Notify when a download toolbar button (in any window) is pressed.
+  void HandleButtonPressed();
+
   // Returns whether the incognito icon should be shown for the download.
   bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;
 

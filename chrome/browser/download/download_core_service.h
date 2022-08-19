@@ -12,6 +12,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 class ChromeDownloadManagerDelegate;
+class DownloadUIController;
 class ExtensionDownloadsEventRouter;
 
 namespace content {
@@ -35,6 +36,9 @@ class DownloadCoreService : public KeyedService {
 
   // Get the download manager delegate, creating it if it doesn't already exist.
   virtual ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() = 0;
+
+  // Get the download UI controller, return nullptr if it doesn't already exist.
+  virtual DownloadUIController* GetDownloadUIController() = 0;
 
   // Get the interface to the history system. Returns NULL if profile is
   // incognito or if the DownloadManager hasn't been created yet or if there is
