@@ -932,6 +932,42 @@
             ]
         }
     ],
+    "AutofillAssistantNiuCowinVaccinationInChromeTriggering": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "json_parameters": "\n        {\n          \"intent\":\"NIU_COWIN_CERTIFICATE_DOWNLOAD\",\n          \"heuristics\":[\n           {\n             \"conditionSet\":{\"\n               urlMatches\":\"https://www.cowin.gov.in\"\n              }\n            }\n           ],\n          \"enabledInCustomTabs\":true,\n          \"enabledForSignedOutUsers\":true\n        }\n        "
+                    },
+                    "enable_features": [
+                        "AutofillAssistantUrlHeuristic1"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillAssistantNiuWtvInChromeTriggering": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "json_parameters": "\n        {\n          \"intent\":\"NIU_BRAZIL_WHERE_TO_VOTE\",\n          \"heuristics\":[\n           {\n            \"conditionSet\":{\n              \"urlMatches\":\"https://www.tse.jus.br\"\n             }\n           }\n          ],\n          \"enabledInCustomTabs\":true,\n          \"enabledForSignedOutUsers\":true\n        }\n        "
+                    },
+                    "enable_features": [
+                        "AutofillAssistantUrlHeuristic2"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillConsiderVariationCountryCodeForPhoneNumbers": [
         {
             "platforms": [
