@@ -1671,8 +1671,10 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/frame/local_frame_mojo_handler.cc',
-            'third_party/blink/renderer/core/frame/local_frame_mojo_handler.h'
+            'third_party/blink/renderer/core/frame/local_frame_mojo_handler.h',
+            'third_party/blink/renderer/core/frame/pausable_script_executor.cc',
         ],
+        # base::Value is used as a part of script evaluation APIs.
         'allowed': ['base::Value'],
     },
     {

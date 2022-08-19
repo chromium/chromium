@@ -73,16 +73,12 @@ v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
   return result;
 }
 
-void ExtensionJSRunner::OnFunctionComplete(
-    ResultCallback callback,
-    const blink::WebVector<v8::Local<v8::Value>>& results,
-    base::TimeTicks start_time) {
+void ExtensionJSRunner::OnFunctionComplete(ResultCallback callback,
+                                           absl::optional<base::Value> value,
+                                           base::TimeTicks start_time) {
   DCHECK(script_context_->is_valid());
 
-  v8::MaybeLocal<v8::Value> result;
-  if (!results.empty() && !results[0].IsEmpty())
-    result = results[0];
-  std::move(callback).Run(script_context_->v8_context(), result);
+  std::move(callback).Run(script_context_->v8_context(), std::move(value));
 }
 
 }  // namespace extensions

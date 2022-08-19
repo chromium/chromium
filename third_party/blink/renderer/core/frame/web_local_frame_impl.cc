@@ -1073,9 +1073,12 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
     v8::Local<v8::Value> argv[],
     WebScriptExecutionCallback callback) {
   DCHECK(GetFrame());
+  const auto want_result_option =
+      callback ? mojom::blink::WantResultOption::kWantResult
+               : mojom::blink::WantResultOption::kNoResult;
   PausableScriptExecutor::CreateAndRun(GetFrame()->DomWindow(), context,
                                        function, receiver, argc, argv,
-                                       std::move(callback));
+                                       want_result_option, std::move(callback));
 }
 
 void WebLocalFrameImpl::RequestExecuteScript(
@@ -1086,38 +1089,13 @@ void WebLocalFrameImpl::RequestExecuteScript(
     mojom::blink::LoadEventBlockingOption blocking_option,
     WebScriptExecutionCallback callback,
     BackForwardCacheAware back_forward_cache_aware,
+    mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_behavior) {
   DCHECK(GetFrame());
-
-  scoped_refptr<DOMWrapperWorld> world;
-  if (world_id == DOMWrapperWorld::kMainWorldId) {
-    world = &DOMWrapperWorld::MainWorld();
-  } else {
-    world =
-        DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
-  }
-
-  if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
-    GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kInjectedJavascript,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
-
-  Vector<WebScriptSource> script_sources;
-  script_sources.Append(sources.data(),
-                        base::checked_cast<wtf_size_t>(sources.size()));
-  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame()->DomWindow(), std::move(world), std::move(script_sources),
-      user_gesture, std::move(callback));
-  executor->set_wait_for_promise(promise_behavior);
-  switch (evaluation_timing) {
-    case mojom::blink::EvaluationTiming::kAsynchronous:
-      executor->RunAsync(blocking_option);
-      break;
-    case mojom::blink::EvaluationTiming::kSynchronous:
-      executor->Run();
-      break;
-  }
+  GetFrame()->RequestExecuteScript(
+      world_id, sources, user_gesture, evaluation_timing, blocking_option,
+      std::move(callback), back_forward_cache_aware, want_result_option,
+      promise_behavior);
 }
 
 v8::MaybeLocal<v8::Value> WebLocalFrameImpl::CallFunctionEvenIfScriptDisabled(

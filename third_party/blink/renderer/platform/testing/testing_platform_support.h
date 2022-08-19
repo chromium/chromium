@@ -69,6 +69,8 @@ class TestingPlatformSupport : public Platform {
   std::string GetDataResourceString(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
+  std::unique_ptr<blink::WebV8ValueConverter> CreateWebV8ValueConverter()
+      override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);

@@ -292,7 +292,7 @@ std::vector<ScriptInjector::CSSSource> UserScriptInjector::GetCssSources(
 }
 
 void UserScriptInjector::OnInjectionComplete(
-    std::unique_ptr<base::Value> execution_result,
+    absl::optional<base::Value> execution_result,
     mojom::RunLocation run_location) {}
 
 void UserScriptInjector::OnWillNotInject(InjectFailureReason reason) {}

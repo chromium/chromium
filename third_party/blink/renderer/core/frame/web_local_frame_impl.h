@@ -189,6 +189,7 @@ class CORE_EXPORT WebLocalFrameImpl final
                             mojom::blink::LoadEventBlockingOption,
                             WebScriptExecutionCallback,
                             BackForwardCacheAware back_forward_cache_aware,
+                            mojom::blink::WantResultOption,
                             mojom::blink::PromiseResultOption) override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;

@@ -33,6 +33,7 @@ class CORE_EXPORT PausableScriptExecutor final
                            v8::Local<v8::Value> receiver,
                            int argc,
                            v8::Local<v8::Value> argv[],
+                           mojom::blink::WantResultOption,
                            WebScriptExecutionCallback);
 
   class Executor : public GarbageCollected<Executor> {
@@ -48,9 +49,11 @@ class CORE_EXPORT PausableScriptExecutor final
                          scoped_refptr<DOMWrapperWorld>,
                          Vector<WebScriptSource>,
                          mojom::blink::UserActivationOption,
+                         mojom::blink::WantResultOption,
                          WebScriptExecutionCallback);
   PausableScriptExecutor(LocalDOMWindow*,
                          ScriptState*,
+                         mojom::blink::WantResultOption,
                          WebScriptExecutionCallback,
                          Executor*);
   ~PausableScriptExecutor() override;
@@ -77,6 +80,7 @@ class CORE_EXPORT PausableScriptExecutor final
   WebScriptExecutionCallback callback_;
   base::TimeTicks start_time_;
   mojom::blink::LoadEventBlockingOption blocking_option_;
+  const mojom::blink::WantResultOption want_result_option_;
   TaskHandle task_handle_;
 
   Member<Executor> executor_;

@@ -14,6 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
@@ -302,8 +303,14 @@ void ScriptContext::SafeCallFunction(
         function->Call(v8_context(), global, argc, argv);
     v8::Local<v8::Value> result;
     if (!callback.is_null() && maybe_result.ToLocal(&result)) {
-      std::vector<v8::Local<v8::Value>> results(1, result);
-      std::move(callback).Run(results, start_time);
+      std::unique_ptr<base::Value> value =
+          content::V8ValueConverter::Create()->FromV8Value(result,
+                                                           v8_context());
+      std::move(callback).Run(
+          value ? absl::make_optional(
+                      base::Value::FromUniquePtrValue(std::move(value)))
+                : absl::nullopt,
+          start_time);
     }
   }
 }

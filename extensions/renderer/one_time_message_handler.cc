@@ -111,41 +111,22 @@ void OneTimeMessageResponseHelper(
 // Called with the results of dispatching an onMessage event to listeners.
 // Returns true if any of the listeners responded with `true`, indicating they
 // will respond to the call asynchronously.
-bool WillListenerReplyAsync(v8::Local<v8::Context> context,
-                            v8::MaybeLocal<v8::Value> maybe_results) {
-  v8::Local<v8::Value> results;
-  // |maybe_results| can be empty if the context was destroyed before the
+bool WillListenerReplyAsync(absl::optional<base::Value> result) {
+  // `result` can be `nullopt` if the context was destroyed before the
   // listeners were ran (or while they were running).
-  if (!maybe_results.ToLocal(&results))
+  if (!result)
     return false;
 
-  if (!results->IsObject())
-    return false;
-
-  // Suppress any script errors, but bail out if they happen (in theory, we
-  // shouldn't have any).
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch try_catch(isolate);
-  // We expect results in the form of an object with an array of results as
-  // a `results` property.
-  v8::Local<v8::Value> results_property;
-  if (!results.As<v8::Object>()
-           ->Get(context, gin::StringToSymbol(isolate, "results"))
-           .ToLocal(&results_property) ||
-      !results_property->IsArray()) {
-    return false;
-  }
-
-  // Check if any of the results is `true`.
-  v8::Local<v8::Array> array = results_property.As<v8::Array>();
-  uint32_t length = array->Length();
-  for (uint32_t i = 0; i < length; ++i) {
-    v8::Local<v8::Value> val;
-    if (!array->Get(context, i).ToLocal(&val))
-      return false;
-
-    if (val->IsTrue())
-      return true;
+  if (const base::Value::Dict* dict = result->GetIfDict()) {
+    // We expect results in the form of an object with an array of results as
+    // a `results` property.
+    if (const base::Value::List* list = dict->FindList("results")) {
+      // Check if any of the results is `true`.
+      for (const base::Value& value : *list) {
+        if (value.is_bool() && value.GetBool())
+          return true;
+      }
+    }
   }
 
   return false;
@@ -568,7 +549,7 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
 
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                          v8::Local<v8::Context> context,
-                                         v8::MaybeLocal<v8::Value> result) {
+                                         absl::optional<base::Value> result) {
   // The context could be tearing down by the time the event is fully
   // dispatched.
   OneTimeMessageContextData* data =
@@ -585,7 +566,7 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   int routing_id = iter->second.routing_id;
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
 
-  if (WillListenerReplyAsync(context, result)) {
+  if (WillListenerReplyAsync(std::move(result))) {
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
     ipc_sender->SendMessageResponsePending(routing_id, port_id);

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -247,22 +248,24 @@ void V8FunctionExecutor::Trace(Visitor* visitor) const {
 
 }  // namespace
 
-void PausableScriptExecutor::CreateAndRun(LocalDOMWindow* window,
-                                          v8::Local<v8::Context> context,
-                                          v8::Local<v8::Function> function,
-                                          v8::Local<v8::Value> receiver,
-                                          int argc,
-                                          v8::Local<v8::Value> argv[],
-                                          WebScriptExecutionCallback callback) {
+void PausableScriptExecutor::CreateAndRun(
+    LocalDOMWindow* window,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Function> function,
+    v8::Local<v8::Value> receiver,
+    int argc,
+    v8::Local<v8::Value> argv[],
+    mojom::blink::WantResultOption want_result_option,
+    WebScriptExecutionCallback callback) {
   ScriptState* script_state = ScriptState::From(context);
   if (!script_state->ContextIsValid()) {
     if (callback)
-      std::move(callback).Run(Vector<v8::Local<v8::Value>>(), {});
+      std::move(callback).Run({}, {});
     return;
   }
   PausableScriptExecutor* executor =
       MakeGarbageCollected<PausableScriptExecutor>(
-          window, script_state, std::move(callback),
+          window, script_state, want_result_option, std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(
               window->GetIsolate(), function, receiver, argc, argv));
   executor->Run();
@@ -275,7 +278,7 @@ void PausableScriptExecutor::ContextDestroyed() {
     // is permitted. Ensure a valid scope is present for the callback.
     // See https://crbug.com/840719.
     ScriptState::Scope script_scope(script_state_);
-    std::move(callback_).Run(Vector<v8::Local<v8::Value>>(), {});
+    std::move(callback_).Run({}, {});
   }
   Dispose();
 }
@@ -285,10 +288,12 @@ PausableScriptExecutor::PausableScriptExecutor(
     scoped_refptr<DOMWrapperWorld> world,
     Vector<WebScriptSource> sources,
     mojom::blink::UserActivationOption user_gesture,
+    mojom::blink::WantResultOption want_result_option,
     WebScriptExecutionCallback callback)
     : PausableScriptExecutor(
           window,
           ToScriptState(window, *world),
+          want_result_option,
           std::move(callback),
           MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
                                                   world->GetWorldId(),
@@ -297,12 +302,14 @@ PausableScriptExecutor::PausableScriptExecutor(
 PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
     ScriptState* script_state,
+    mojom::blink::WantResultOption want_result_option,
     WebScriptExecutionCallback callback,
     Executor* executor)
     : ExecutionContextLifecycleObserver(window),
       script_state_(script_state),
       callback_(std::move(callback)),
       blocking_option_(mojom::blink::LoadEventBlockingOption::kDoNotBlock),
+      want_result_option_(want_result_option),
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
@@ -385,8 +392,33 @@ void PausableScriptExecutor::HandleResults(
   if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
     window->document()->DecrementLoadEventDelayCount();
 
-  if (callback_)
-    std::move(callback_).Run(results, start_time_);
+  if (callback_) {
+    absl::optional<base::Value> value;
+    switch (want_result_option_) {
+      case mojom::blink::WantResultOption::kWantResult:
+      case mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed:
+        if (!results.IsEmpty() && !results.back().IsEmpty()) {
+          v8::Context::Scope context_scope(script_state_->GetContext());
+          std::unique_ptr<WebV8ValueConverter> converter =
+              Platform::Current()->CreateWebV8ValueConverter();
+          if (want_result_option_ ==
+              mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed) {
+            converter->SetDateAllowed(true);
+            converter->SetRegExpAllowed(true);
+          }
+          if (std::unique_ptr<base::Value> new_value = converter->FromV8Value(
+                  results.back(), script_state_->GetContext())) {
+            value = base::Value::FromUniquePtrValue(std::move(new_value));
+          }
+        }
+        break;
+
+      case mojom::blink::WantResultOption::kNoResult:
+        break;
+    }
+
+    std::move(callback_).Run(std::move(value), start_time_);
+  }
 
   Dispose();
 }

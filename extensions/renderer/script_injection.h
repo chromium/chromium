@@ -93,9 +93,8 @@ class ScriptInjection {
 
   // Called when JS injection for the given frame has been completed or
   // cancelled.
-  void OnJsInjectionCompleted(
-      const blink::WebVector<v8::Local<v8::Value>>& results,
-      base::TimeTicks start_time);
+  void OnJsInjectionCompleted(absl::optional<base::Value> value,
+                              base::TimeTicks start_time);
 
  private:
   class FrameWatcher;
@@ -155,7 +154,7 @@ class ScriptInjection {
   bool log_activity_;
 
   // Results storage.
-  std::unique_ptr<base::Value> execution_result_;
+  absl::optional<base::Value> execution_result_;
 
   // The callback to run upon the status updated asynchronously. It's used for
   // the reply of the permission handling or script injection completion.

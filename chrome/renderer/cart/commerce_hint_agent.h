@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
+namespace base {
+class Value;
+}
+
 namespace ukm {
 class MojoUkmRecorder;
 }
@@ -62,7 +66,7 @@ class CommerceHintAgent
       mojo::Remote<mojom::CommerceHintObserver> observer,
       const std::string& product_id_json,
       const std::string& cart_extraction_script);
-  void OnProductsExtracted(const blink::WebVector<v8::Local<v8::Value>>& result,
+  void OnProductsExtracted(absl::optional<base::Value> results,
                            base::TimeTicks start_time);
 
   GURL starting_url_;

@@ -18,6 +18,9 @@ enum WantResultOption {
   // Evaluation result (or promise resolution result if
   // `PromiseResultOption::kAwait` is used) is passed to callback.
   kWantResult,
+
+  // Same as above, with date and regexp allowed in V8ValueConverter.
+  kWantResultDateAndRegExpAllowed,
 };
 
 enum PromiseResultOption {

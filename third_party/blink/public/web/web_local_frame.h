@@ -425,6 +425,7 @@ class WebLocalFrame : public WebFrame {
                                     mojom::LoadEventBlockingOption,
                                     WebScriptExecutionCallback,
                                     BackForwardCacheAware,
+                                    mojom::WantResultOption,
                                     mojom::PromiseResultOption) = 0;
 
   // Logs to the console associated with this frame. If |discard_duplicates| is

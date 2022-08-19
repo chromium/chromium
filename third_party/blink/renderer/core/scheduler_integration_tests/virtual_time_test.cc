@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -23,12 +24,14 @@ namespace virtual_time_test {
 class ScriptExecutionCallbackHelper final {
  public:
   const String Result() const { return result_; }
-  void Completed(const WebVector<v8::Local<v8::Value>>& values,
+  void Completed(absl::optional<base::Value> value,
                  base::TimeTicks start_time) {
-    if (!values.empty() && !values[0].IsEmpty() && values[0]->IsString()) {
-      result_ = ToCoreString(v8::Local<v8::String>::Cast(values[0]));
-    }
+    if (!value)
+      return;
+    if (std::string* str = value->GetIfString())
+      result_ = String(*str);
   }
+
  private:
   String result_;
 };
@@ -54,6 +57,7 @@ class VirtualTimeTest : public SimTest {
         base::BindOnce(&ScriptExecutionCallbackHelper::Completed,
                        base::Unretained(&callback_helper)),
         BackForwardCacheAware::kAllow,
+        mojom::blink::WantResultOption::kWantResult,
         mojom::blink::PromiseResultOption::kDoNotWait);
 
     return callback_helper.Result();
@@ -83,6 +87,8 @@ class VirtualTimeTest : public SimTest {
         base::Milliseconds(delay_ms));
     test::EnterRunLoop();
   }
+
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 // http://crbug.com/633321

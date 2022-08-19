@@ -128,6 +128,53 @@ TestingPlatformSupport::GetBrowserInterfaceBroker() {
   return interface_broker_.get();
 }
 
+// ValueConverter only for simple data types used in tests.
+class V8ValueConverterForTest final : public WebV8ValueConverter {
+ public:
+  void SetDateAllowed(bool val) override {}
+  void SetRegExpAllowed(bool val) override {}
+
+  v8::Local<v8::Value> ToV8Value(base::ValueView,
+                                 v8::Local<v8::Context> context) override {
+    NOTREACHED();
+    return v8::Local<v8::Value>();
+  }
+  std::unique_ptr<base::Value> FromV8Value(
+      v8::Local<v8::Value> val,
+      v8::Local<v8::Context> context) override {
+    CHECK(!val.IsEmpty());
+
+    v8::Context::Scope context_scope(context);
+    auto* isolate = context->GetIsolate();
+    v8::HandleScope handle_scope(isolate);
+
+    if (val->IsBoolean()) {
+      return std::make_unique<base::Value>(
+          base::Value(val->ToBoolean(isolate)->Value()));
+    }
+
+    if (val->IsInt32()) {
+      return std::make_unique<base::Value>(
+          base::Value(val.As<v8::Int32>()->Value()));
+    }
+
+    if (val->IsString()) {
+      v8::String::Utf8Value utf8(isolate, val);
+      return std::make_unique<base::Value>(
+          base::Value(std::string(*utf8, utf8.length())));
+    }
+
+    // Returns `nullptr` for a broader range of values than actual
+    // `V8ValueConverter`.
+    return nullptr;
+  }
+};
+
+std::unique_ptr<blink::WebV8ValueConverter>
+TestingPlatformSupport::CreateWebV8ValueConverter() {
+  return std::make_unique<V8ValueConverterForTest>();
+}
+
 void TestingPlatformSupport::RunUntilIdle() {
   base::RunLoop().RunUntilIdle();
 }

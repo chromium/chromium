@@ -58,7 +58,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
       mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;
-  void OnInjectionComplete(std::unique_ptr<base::Value> execution_result,
+  void OnInjectionComplete(absl::optional<base::Value> execution_result,
                            mojom::RunLocation run_location) override;
   void OnWillNotInject(InjectFailureReason reason) override;
 

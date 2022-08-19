@@ -8,7 +8,12 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
+
+namespace base {
+class Value;
+}
 
 namespace extensions {
 
@@ -32,7 +37,7 @@ class JSRunner {
   // ran).
   // NOTE(devlin): We could easily change that if desired.
   using ResultCallback = base::OnceCallback<void(v8::Local<v8::Context>,
-                                                 v8::MaybeLocal<v8::Value>)>;
+                                                 absl::optional<base::Value>)>;
 
   // Calls the given |function| in the specified |context| and with the provided
   // arguments. JS may be executed asynchronously if it has been suspended in

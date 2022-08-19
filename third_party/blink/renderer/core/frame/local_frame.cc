@@ -2553,6 +2553,46 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
       &DOMWrapperWorld::MainWorld());
 }
 
+void LocalFrame::RequestExecuteScript(
+    int32_t world_id,
+    base::span<const WebScriptSource> sources,
+    mojom::blink::UserActivationOption user_gesture,
+    mojom::blink::EvaluationTiming evaluation_timing,
+    mojom::blink::LoadEventBlockingOption blocking_option,
+    WebScriptExecutionCallback callback,
+    BackForwardCacheAware back_forward_cache_aware,
+    mojom::blink::WantResultOption want_result_option,
+    mojom::blink::PromiseResultOption promise_behavior) {
+  scoped_refptr<DOMWrapperWorld> world;
+  if (world_id == DOMWrapperWorld::kMainWorldId) {
+    world = &DOMWrapperWorld::MainWorld();
+  } else {
+    world = DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(this), world_id);
+  }
+
+  if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
+    GetFrameScheduler()->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kInjectedJavascript,
+        {SchedulingPolicy::DisableBackForwardCache()});
+  }
+
+  Vector<WebScriptSource> script_sources;
+  script_sources.Append(sources.data(),
+                        base::checked_cast<wtf_size_t>(sources.size()));
+  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
+      DomWindow(), std::move(world), std::move(script_sources), user_gesture,
+      want_result_option, std::move(callback));
+  executor->set_wait_for_promise(promise_behavior);
+  switch (evaluation_timing) {
+    case mojom::blink::EvaluationTiming::kAsynchronous:
+      executor->RunAsync(blocking_option);
+      break;
+    case mojom::blink::EvaluationTiming::kSynchronous:
+      executor->Run();
+      break;
+  }
+}
+
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
   DCHECK(RuntimeEnabledFeatures::Prerender2Enabled(
       GetDocument()->GetExecutionContext()));

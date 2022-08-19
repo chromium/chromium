@@ -23,7 +23,6 @@
 #include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/v8_value_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -812,21 +811,15 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
       base::BindOnce(&CommerceHintAgent::OnProductsExtracted,
                      weak_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kAllow,
+      blink::mojom::WantResultOption::kWantResult,
       blink::mojom::PromiseResultOption::kAwait);
 }
 
-void CommerceHintAgent::OnProductsExtracted(
-    const blink::WebVector<v8::Local<v8::Value>>& result,
-    base::TimeTicks start_time) {
+void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
+                                            base::TimeTicks start_time) {
   // Only record when the start time is correctly captured.
   DCHECK(!start_time.is_null());
-  if (result.empty() || result[0].IsEmpty())
-    return;
-  blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
-  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
-  std::unique_ptr<base::Value> results =
-      content::V8ValueConverter::Create()->FromV8Value(result[0], context);
-  if (!results->is_dict())
+  if (!results || !results->is_dict())
     return;
   if (!start_time.is_null()) {
     results->GetDict().Set(
@@ -834,15 +827,7 @@ void CommerceHintAgent::OnProductsExtracted(
         (base::TimeTicks::Now() - start_time).InMillisecondsF());
   }
 
-  if (!results) {
-    DLOG(ERROR) << "OnProductsExtracted() got empty results";
-    return;
-  }
   DVLOG(2) << "OnProductsExtracted: " << *results;
-  if (!results->is_dict()) {
-    DLOG(ERROR) << "OnProductsExtracted() result is not dict";
-    return;
-  }
 
   auto builder = ukm::builders::Shopping_CartExtraction(
       render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());

@@ -198,6 +198,7 @@
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
@@ -274,7 +275,8 @@ void ExecuteScriptsInMainWorld(
       DOMWrapperWorld::kMainWorldId, sources, user_gesture,
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock, std::move(callback),
-      BackForwardCacheAware::kAllow, wait_for_promise);
+      BackForwardCacheAware::kAllow,
+      mojom::blink::WantResultOption::kWantResult, wait_for_promise);
 }
 
 // Same as above, but for a single script.
@@ -492,6 +494,8 @@ class WebFrameTest : public testing::Test {
   std::string base_url_;
   std::string not_base_url_;
   std::string chrome_url_;
+
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 TEST_F(WebFrameTest, ContentText) {
@@ -549,43 +553,42 @@ class ScriptExecutionCallbackHelper final {
   // Returns true if any results (even if they were empty) were passed to the
   // callback helper. This is generally false if the execution context was
   // invalidated while running the script.
-  bool HasAnyResults() const { return !string_values_.IsEmpty(); }
+  bool HasAnyResults() const { return !!result_; }
 
   // Returns the single value returned from the execution.
   String SingleStringValue() const {
-    if (string_values_.size() != 1u) {
-      ADD_FAILURE() << "Expected a single result, but found: "
-                    << string_values_.size();
+    if (!result_) {
+      ADD_FAILURE() << "Expected a single result, but found nullopt";
       return String();
     }
-    return string_values_[0];
-  }
+    if (const std::string* str = result_->GetIfString())
+      return String(*str);
 
-  // Returns the value at the given index.
-  String StringValueAt(wtf_size_t i) const {
-    if (i >= string_values_.size()) {
-      ADD_FAILURE() << "Attempted OOB access at index: " << i;
-      return String();
+    ADD_FAILURE() << "Type mismatch (not string)";
+    return String();
+  }
+  bool SingleBoolValue() const {
+    if (!result_) {
+      ADD_FAILURE() << "Expected a single result, but found nullopt";
+      return false;
     }
-    return string_values_[i];
+    if (absl::optional<bool> b = result_->GetIfBool())
+      return *b;
+
+    ADD_FAILURE() << "Type mismatch (not bool)";
+    return false;
   }
 
  private:
-  void Completed(const WebVector<v8::Local<v8::Value>>& values,
+  void Completed(absl::optional<base::Value> value,
                  base::TimeTicks start_time) {
     did_complete_ = true;
-    string_values_.Grow(static_cast<wtf_size_t>(values.size()));
-    for (wtf_size_t i = 0u; i < values.size(); ++i) {
-      if (values[i].IsEmpty())
-        continue;
-      string_values_[i] =
-          ToCoreString(values[i]->ToString(context_).ToLocalChecked());
-    }
+    result_ = std::move(value);
   }
 
+ private:
   bool did_complete_ = false;
-  Vector<String> string_values_;
-  v8::Local<v8::Context> context_;
+  absl::optional<base::Value> result_;
 };
 
 TEST_F(WebFrameTest, RequestExecuteScript) {
@@ -643,7 +646,7 @@ TEST_F(WebFrameTest, ExecuteScriptWithError) {
   // script runner classes, so the caller never sees it. Instead, the error
   // is represented by an empty V8Value (stringified to an empty string).
   EXPECT_FALSE(try_catch.HasCaught());
-  EXPECT_EQ(String(), callback_helper.SingleStringValue());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
 }
 
 TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
@@ -663,8 +666,10 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
   // Since the caller specified the script shouldn't wait for the promise to
   // be resolved, the callback should have completed normally and the result
   // value should be the promise.
+  // As `V8ValueConverterForTest` fails to convert the promise to `base::Value`,
+  // the callback receives `absl::nullopt`.
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("[object Promise]", callback_helper.SingleStringValue());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
 }
 
 TEST_F(WebFrameTest, ExecuteScriptWithPromiseFulfilled) {
@@ -698,9 +703,9 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseRejected) {
                            kScript, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  // Promise rejection, similar to errors, are represented by empty V8Values
+  // Promise rejection, similar to errors, are represented by `absl::nullopt`
   // passed to the callback.
-  EXPECT_EQ(String(), callback_helper.SingleStringValue());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
 }
 
 TEST_F(WebFrameTest, ExecuteScriptWithFrameRemovalBeforePromiseResolves) {
@@ -749,8 +754,8 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromises) {
                             scripts, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
-  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+  // The result of the last script is returned.
+  EXPECT_EQ("world", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromisesWithDelayedSettlement) {
@@ -778,15 +783,15 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromisesWithDelayedSettlement) {
                              second_callback_helper.Callback());
     RunPendingTasks();
     EXPECT_TRUE(second_callback_helper.DidComplete());
-    EXPECT_EQ("undefined", second_callback_helper.SingleStringValue());
+    // `undefined` is mapped to `nullopt`.
+    EXPECT_FALSE(second_callback_helper.HasAnyResults());
   }
 
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
-  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+  EXPECT_EQ("world", callback_helper.SingleStringValue());
 }
 
-TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereSomeArePromises) {
+TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereFirstIsPromise) {
   RegisterMockedHttpURLLoad("foo.html");
 
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -804,11 +809,31 @@ TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereSomeArePromises) {
   RunPendingTasks();
 
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
-  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+  EXPECT_EQ("world", callback_helper.SingleStringValue());
 }
 
-TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlySomeAreFulfilled) {
+TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereLastIsPromise) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  const String scripts[] = {
+      "'hello';",
+      "Promise.resolve('world');",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper;
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, callback_helper.Callback());
+  RunPendingTasks();
+
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("world", callback_helper.SingleStringValue());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlyFirstIsFulfilled) {
   RegisterMockedHttpURLLoad("foo.html");
 
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -825,8 +850,29 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlySomeAreFulfilled) {
                             scripts, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
-  EXPECT_EQ(String(), callback_helper.StringValueAt(1));
+  // Promise rejection, similar to errors, are represented by `absl::nullopt`
+  // passed to the callback.
+  EXPECT_FALSE(callback_helper.HasAnyResults());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlyLastIsFulfilled) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  String scripts[] = {
+      "Promise.reject('hello');",
+      "Promise.resolve('world');",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper;
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, callback_helper.Callback());
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("world", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, RequestExecuteV8Function) {
@@ -919,7 +965,7 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspendedWithUserGesture) {
   web_view_helper.GetWebView()->GetPage()->SetPaused(false);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("true", callback_helper.SingleStringValue());
+  EXPECT_TRUE(callback_helper.SingleBoolValue());
 }
 
 TEST_F(WebFrameTest, IframeScriptRemovesSelf) {

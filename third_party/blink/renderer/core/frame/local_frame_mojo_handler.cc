@@ -223,105 +223,6 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
                                  static_cast<int>(args.size()), args.data());
 }
 
-// A wrapper class used as the callback for JavaScript executed
-// in an isolated world.
-class JavaScriptIsolatedWorldRequest : public PausableScriptExecutor::Executor {
-  using JavaScriptExecuteRequestInIsolatedWorldCallback =
-      mojom::blink::LocalFrame::JavaScriptExecuteRequestInIsolatedWorldCallback;
-
- public:
-  JavaScriptIsolatedWorldRequest(
-      LocalFrame* local_frame,
-      int32_t world_id,
-      const String& script,
-      bool wants_result,
-      mojom::blink::LocalFrame::JavaScriptExecuteRequestInIsolatedWorldCallback
-          callback);
-  JavaScriptIsolatedWorldRequest(const JavaScriptIsolatedWorldRequest&) =
-      delete;
-  JavaScriptIsolatedWorldRequest& operator=(
-      const JavaScriptIsolatedWorldRequest&) = delete;
-  ~JavaScriptIsolatedWorldRequest() override;
-
-  // PausableScriptExecutor::Executor overrides.
-  Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
-
-  void Trace(Visitor* visitor) const override;
-
-  WebScriptExecutionCallback Callback();
-
- private:
-  void Completed(const WebVector<v8::Local<v8::Value>>& result,
-                 base::TimeTicks);
-
-  Member<LocalFrame> local_frame_;
-  int32_t world_id_;
-  String script_;
-  bool wants_result_;
-  JavaScriptExecuteRequestInIsolatedWorldCallback callback_;
-};
-
-JavaScriptIsolatedWorldRequest::JavaScriptIsolatedWorldRequest(
-    LocalFrame* local_frame,
-    int32_t world_id,
-    const String& script,
-    bool wants_result,
-    JavaScriptExecuteRequestInIsolatedWorldCallback callback)
-    : local_frame_(local_frame),
-      world_id_(world_id),
-      script_(script),
-      wants_result_(wants_result),
-      callback_(std::move(callback)) {
-  DCHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
-}
-
-JavaScriptIsolatedWorldRequest::~JavaScriptIsolatedWorldRequest() = default;
-
-void JavaScriptIsolatedWorldRequest::Trace(Visitor* visitor) const {
-  PausableScriptExecutor::Executor::Trace(visitor);
-  visitor->Trace(local_frame_);
-}
-
-Vector<v8::Local<v8::Value>> JavaScriptIsolatedWorldRequest::Execute(
-    LocalDOMWindow* window) {
-  // Note: An error event in an isolated world will never be dispatched to
-  // a foreign world.
-  ClassicScript* classic_script = ClassicScript::CreateUnspecifiedScript(
-      script_, ScriptSourceLocationType::kInternal,
-      SanitizeScriptErrors::kDoNotSanitize);
-  return {
-      classic_script->RunScriptInIsolatedWorldAndReturnValue(window, world_id_)
-          .GetSuccessValueOrEmpty()};
-}
-
-void JavaScriptIsolatedWorldRequest::Completed(
-    const WebVector<v8::Local<v8::Value>>& result,
-    base::TimeTicks start_time) {
-  base::Value value;
-  if (!result.empty() && !result.begin()->IsEmpty() && wants_result_) {
-    // It's safe to always use the main world context when converting
-    // here. V8ValueConverter shouldn't actually care about the context
-    // scope, and it switches to v8::Object's creation context when
-    // encountered. (from extensions/renderer/script_injection.cc)
-    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame_);
-    v8::Context::Scope context_scope(context);
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
-    converter->SetDateAllowed(true);
-    converter->SetRegExpAllowed(true);
-    std::unique_ptr<base::Value> new_value =
-        converter->FromV8Value(*result.begin(), context);
-    if (new_value)
-      value = base::Value::FromUniquePtrValue(std::move(new_value));
-  }
-  std::move(callback_).Run(std::move(value));
-}
-
-WebScriptExecutionCallback JavaScriptIsolatedWorldRequest::Callback() {
-  return WTF::Bind(&JavaScriptIsolatedWorldRequest::Completed,
-                   WrapWeakPersistent(this));
-}
-
 HitTestResult HitTestResultForRootFramePos(
     LocalFrame* frame,
     const PhysicalOffset& pos_in_root_frame) {
@@ -1121,20 +1022,23 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
   script_execution_power_mode_voter_->VoteFor(
       power_scheduler::PowerMode::kScriptExecution);
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  scoped_refptr<DOMWrapperWorld> isolated_world =
-      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(frame_), world_id);
-
-  // This member will be traced as the |executor| on the PausableScriptExector.
-  auto* execution_request =
-      MakeGarbageCollected<JavaScriptIsolatedWorldRequest>(
-          frame_, world_id, javascript, wants_result, std::move(callback));
-
-  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      DomWindow(), ToScriptState(frame_, *isolated_world),
-      execution_request->Callback(),
-      /*executor=*/execution_request);
-  executor->Run();
+  WebScriptSource web_script_source(javascript);
+  frame_->RequestExecuteScript(
+      world_id, {&web_script_source, 1},
+      mojom::blink::UserActivationOption::kDoNotActivate,
+      mojom::blink::EvaluationTiming::kSynchronous,
+      mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+      WTF::Bind(
+          [](JavaScriptExecuteRequestInIsolatedWorldCallback callback,
+             absl::optional<base::Value> value, base::TimeTicks start_time) {
+            std::move(callback).Run(value ? std::move(*value) : base::Value());
+          },
+          std::move(callback)),
+      BackForwardCacheAware::kAllow,
+      wants_result
+          ? mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed
+          : mojom::blink::WantResultOption::kNoResult,
+      mojom::blink::PromiseResultOption::kDoNotWait);
 
   script_execution_power_mode_voter_->ResetVoteAfterTimeout(
       power_scheduler::PowerModeVoter::kScriptExecutionTimeout);
