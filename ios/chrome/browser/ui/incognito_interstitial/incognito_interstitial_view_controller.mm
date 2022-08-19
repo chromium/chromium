@@ -61,7 +61,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
       kIncognitoInterstitialAccessibilityIdentifier;
 
   self.bannerName = @"incognito_interstitial_screen_banner";
-  self.isTallBanner = YES;
+  self.isTallBanner = NO;
   self.shouldBannerFillTopSpace = YES;
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 
