@@ -1323,6 +1323,12 @@ const base::Feature kProjectorUseOAuthForGetVideoInfo(
 const base::Feature kProjectorLocalPlayback("ProjectorLocalPlayback",
                                             base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable features that are not ready to enable by
+// default but ready for internal testing.
+const base::Feature kProjectorBleedingEdgeExperience(
+    "ProjectorBleedingEdgeExperience",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable quick settings revamped view.
 const base::Feature kQsRevamp{"QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2368,7 +2374,8 @@ bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
 }
 
 bool IsProjectorLocalPlaybackEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorLocalPlayback);
+  return base::FeatureList::IsEnabled(kProjectorLocalPlayback) ||
+         base::FeatureList::IsEnabled(kProjectorBleedingEdgeExperience);
 }
 
 bool IsQsRevampEnabled() {

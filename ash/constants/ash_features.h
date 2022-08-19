@@ -534,6 +534,8 @@ extern const base::Feature kProjectorUseOAuthForGetVideoInfo;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorLocalPlayback;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProjectorBleedingEdgeExperience;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQsRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
