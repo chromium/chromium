@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -454,7 +455,7 @@ TEST_F(PasswordAutofillManagerTest, ExternalDelegatePasswordSuggestions) {
         is_suggestion_on_password_field
             ? autofill::POPUP_ITEM_ID_PASSWORD_ENTRY
             : autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
-        std::string(), 1);
+        autofill::Suggestion::BackendId(), 1);
     histograms.ExpectUniqueSample(
         kDropdownSelectedHistogram,
         metrics_util::PasswordDropdownSelectedOption::kPassword, 1);
@@ -524,7 +525,7 @@ TEST_F(PasswordAutofillManagerTest,
         is_suggestion_on_password_field
             ? autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY
             : autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY,
-        std::string(),
+        autofill::Suggestion::BackendId(),
         /*position=*/1);
   }
 }
@@ -624,7 +625,7 @@ TEST_F(PasswordAutofillManagerTest,
                                              /*has_re_signin=*/false)));
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_TRUE(suggestions.back().is_loading);
 }
@@ -659,7 +660,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_,
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_TRUE(suggestions.back().is_loading);
 }
@@ -678,8 +679,8 @@ TEST_F(PasswordAutofillManagerTest, ClickOnReSiginTriggersSigninAndHides) {
   EXPECT_CALL(autofill_client, HideAutofillPopup);
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_,
-      autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN, std::string(),
-      1);
+      autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
+      autofill::Suggestion::BackendId(), 1);
 }
 
 // Test that the popup is updated once "opt in and fill" is clicked and the
@@ -726,7 +727,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
 
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_FALSE(suggestions.back().is_loading);
 }
@@ -778,7 +779,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_,
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
   ASSERT_GE(suggestions.size(), 2u);
   EXPECT_FALSE(suggestions.back().is_loading);
 }
@@ -813,7 +814,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
 
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
 }
 
 // Test that the popup is hidden and password generation is triggered once
@@ -853,7 +854,7 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_,
       autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
 }
 
 // Test that the popup shows an empty state if opted-into an empty store.
@@ -1254,7 +1255,7 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   EXPECT_CALL(*client.mock_driver(),
               PreviewSuggestion(std::u16string(), test_password_));
   password_autofill_manager_->DidSelectSuggestion(
-      no_username_string, 0 /*not used*/, std::string() /*not used*/);
+      no_username_string, 0 /*not used*/, Suggestion::BackendId() /*not used*/);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that fill of the empty username works.
@@ -1264,8 +1265,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
   password_autofill_manager_->DidAcceptSuggestion(
-      no_username_string, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(),
-      1);
+      no_username_string, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+      autofill::Suggestion::BackendId(), 1);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 }
 
@@ -1313,7 +1314,7 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
   password_autofill_manager_->DidAcceptSuggestion(
       std::u16string(), autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
-      std::string(), 0);
+      autofill::Suggestion::BackendId(), 0);
   histograms.ExpectUniqueSample(
       kDropdownSelectedHistogram,
       metrics_util::PasswordDropdownSelectedOption::kShowAll, 1);
@@ -1425,7 +1426,7 @@ TEST_F(PasswordAutofillManagerTest,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
   password_autofill_manager_->DidAcceptSuggestion(
       std::u16string(), autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY,
-      std::string(), 1);
+      autofill::Suggestion::BackendId(), 1);
   histograms.ExpectUniqueSample(
       kDropdownSelectedHistogram,
       metrics_util::PasswordDropdownSelectedOption::kGenerate, 1);
@@ -1576,8 +1577,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
     password_autofill_manager_->DidAcceptSuggestion(
-        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(),
-        1);
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+        autofill::Suggestion::BackendId(), 1);
   }
 }
 
@@ -1633,8 +1634,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
     password_autofill_manager_->DidAcceptSuggestion(
-        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(),
-        1);
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+        autofill::Suggestion::BackendId(), 1);
   }
 }
 
@@ -1690,8 +1691,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
     password_autofill_manager_->DidAcceptSuggestion(
-        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(),
-        1);
+        test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+        autofill::Suggestion::BackendId(), 1);
   }
 }
 
@@ -1733,7 +1734,8 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
   password_autofill_manager_->DidAcceptSuggestion(
-      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(), 1);
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+      autofill::Suggestion::BackendId(), 1);
 
   EXPECT_CALL(*authenticator_.get(),
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
@@ -1778,7 +1780,8 @@ TEST_F(PasswordAutofillManagerTest,
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
   password_autofill_manager_->DidAcceptSuggestion(
-      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(), 1);
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+      autofill::Suggestion::BackendId(), 1);
 
   EXPECT_CALL(*authenticator_.get(),
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
@@ -1824,7 +1827,8 @@ TEST_F(PasswordAutofillManagerTest,
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
   password_autofill_manager_->DidAcceptSuggestion(
-      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, std::string(), 1);
+      test_username_, autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+      autofill::Suggestion::BackendId(), 1);
 
   EXPECT_CALL(*authenticator_.get(),
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
@@ -1843,7 +1847,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   const std::u16string kAuthenticator = u"Use device sign-in";
   autofill::Suggestion webauthn_credential(kName);
   webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
-  webauthn_credential.payload = kId;
+  webauthn_credential.payload = Suggestion::BackendId(kId);
   webauthn_credential.label = kAuthenticator;
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
@@ -1871,7 +1875,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
 #endif  // !BUILDFLAG(IS_ANDROID)
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
-  EXPECT_EQ(absl::get<std::string>(open_args.suggestions[0].payload), kId);
+  EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId(kId));
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
@@ -1883,7 +1888,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
               PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
   password_autofill_manager_->DidSelectSuggestion(
       kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
-      std::string() /*not used*/);
+      Suggestion::BackendId() /*not used*/);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
@@ -1892,7 +1897,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
   password_autofill_manager_->DidAcceptSuggestion(
-      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL, kId, /*position=*/1);
+      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
+      autofill::Suggestion::BackendId(kId), /*position=*/1);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1940,7 +1946,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   password_autofill_manager_->DidAcceptSuggestion(
       kSignInWithAnotherDeviceText,
       autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
-      /*payload=*/std::string(), /*position=*/1);
+      /*payload=*/autofill::Suggestion::BackendId(), /*position=*/1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

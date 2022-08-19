@@ -451,9 +451,9 @@ void AutofillPopupControllerImpl::SetSelectedLine(
 
   if (selected_line_) {
     const Suggestion& suggestion = suggestions_[*selected_line_];
-    delegate_->DidSelectSuggestion(suggestion.main_text.value,
-                                   suggestion.frontend_id,
-                                   suggestion.GetPayload<std::string>());
+    delegate_->DidSelectSuggestion(
+        suggestion.main_text.value, suggestion.frontend_id,
+        suggestion.GetPayload<Suggestion::BackendId>());
   } else {
     delegate_->ClearPreviewedForm();
   }

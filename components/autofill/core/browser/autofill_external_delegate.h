@@ -48,7 +48,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
                            int frontend_id,
-                           const std::string& backend_id) override;
+                           const Suggestion::BackendId& backend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
                            int frontend_id,
                            const Suggestion::Payload& payload,

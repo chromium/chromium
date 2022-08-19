@@ -125,7 +125,8 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
         password_manager::GetPlatformAuthenticatorLabel());
     suggestion.icon = "globeIcon";
     suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
-    suggestion.payload = base::Base64Encode(credential.cred_id);
+    suggestion.payload =
+        autofill::Suggestion::BackendId(base::Base64Encode(credential.cred_id));
     suggestions.push_back(std::move(suggestion));
   }
   suggestions_ = std::move(suggestions);

@@ -461,7 +461,9 @@ void ChromePasswordManagerClient::ShowTouchToFill(
               TouchToFillWebAuthnCredential::DisplayName(
                   suggestion.main_text.value),
               TouchToFillWebAuthnCredential::BackendId(
-                  suggestion.template GetPayload<std::string>()));
+                  (suggestion
+                       .template GetPayload<autofill::Suggestion::BackendId>())
+                      .value()));
         });
   }
 

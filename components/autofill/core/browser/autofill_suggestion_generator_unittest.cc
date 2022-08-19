@@ -291,8 +291,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_ServerCard) {
 
   EXPECT_EQ(virtual_card_suggestion.frontend_id,
             POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
-  EXPECT_EQ(absl::get<std::string>(virtual_card_suggestion.payload),
-            "00000000-0000-0000-0000-000000000001");
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 
   Suggestion real_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(
@@ -301,8 +301,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_ServerCard) {
           "");
 
   EXPECT_EQ(real_card_suggestion.frontend_id, 0);
-  EXPECT_EQ(absl::get<std::string>(real_card_suggestion.payload),
-            "00000000-0000-0000-0000-000000000001");
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_LocalCard) {
@@ -330,8 +330,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_LocalCard) {
 
   EXPECT_EQ(virtual_card_suggestion.frontend_id,
             POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
-  EXPECT_EQ(absl::get<std::string>(virtual_card_suggestion.payload),
-            "00000000-0000-0000-0000-000000000001");
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 
   Suggestion real_card_suggestion =
       suggestion_generator()->CreateCreditCardSuggestion(
@@ -340,8 +340,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_LocalCard) {
           "");
 
   EXPECT_EQ(real_card_suggestion.frontend_id, 0);
-  EXPECT_EQ(absl::get<std::string>(real_card_suggestion.payload),
-            "00000000-0000-0000-0000-000000000002");
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("00000000-0000-0000-0000-000000000002"));
   EXPECT_TRUE(real_card_suggestion.custom_icon.IsEmpty());
 }
 
@@ -645,13 +645,15 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_EQ(promo_code_suggestions[0].label, u"test_value_prop_text_1");
-  EXPECT_EQ(promo_code_suggestions[0].GetPayload<std::string>(), "1");
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("1"));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
   EXPECT_EQ(promo_code_suggestions[1].label, u"test_value_prop_text_2");
-  EXPECT_EQ(promo_code_suggestions[1].GetPayload<std::string>(), "2");
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("2"));
   EXPECT_EQ(promo_code_suggestions[1].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 
