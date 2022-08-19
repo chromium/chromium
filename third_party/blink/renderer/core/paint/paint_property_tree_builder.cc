@@ -3000,8 +3000,11 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
   if (properties->TransformIsolationNode())
     return true;
   if (auto* offset_translation = properties->PaintOffsetTranslation()) {
-    if (offset_translation->RequiresCompositingForFixedPosition())
+    if (offset_translation->RequiresCompositingForFixedPosition() &&
+        // This is to keep the de facto CLS behavior with crrev.com/1036822.
+        object.GetFrameView()->LayoutViewport()->HasOverflow()) {
       return true;
+    }
   }
   if (auto* sticky_translation = properties->StickyTranslation())
     return true;
