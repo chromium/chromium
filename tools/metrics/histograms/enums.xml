@@ -89409,8 +89409,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Authentication failed with force signin">
     Signed out because credentials are invalid and force-sign-in is enabled.
   </int>
-  <int value="8" label="User turned off sync from DICE UI.">
-    User turned off sync from the Desktop Identity Consistency internals UI.
+  <int value="8" label="(Obsolete) User turned off sync from DICE UI.">
+    <obsolete>
+      Deprecated as of 08/2022.
+    </obsolete>
   </int>
   <int value="9" label="Account removed from device">
     Signout forced because account was removed from device. With M98, on iOS,

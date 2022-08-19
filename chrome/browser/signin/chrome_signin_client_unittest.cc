@@ -260,7 +260,6 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::
         AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN:
     case signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT:
-    case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
     case signin_metrics::ProfileSignout::SIGNIN_RETRIGGERD_FROM_WEB_SIGNIN:
     case signin_metrics::ProfileSignout::
         USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE:
@@ -426,7 +425,6 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::SERVER_FORCED_DISABLE,
     signin_metrics::ProfileSignout::TRANSFER_CREDENTIALS,
     signin_metrics::ProfileSignout::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-    signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI,
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
     signin_metrics::ProfileSignout::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
@@ -444,9 +442,13 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::
         USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
 };
-static_assert(std::size(kSignoutSources) ==
+// kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
+// value is deprecated.
+const int kNumberOfObsoleteSignoutSources = 1;
+static_assert(std::size(kSignoutSources) + kNumberOfObsoleteSignoutSources ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
-              "kSignoutSources should enumerate all ProfileSignout values");
+              "kSignoutSources should enumerate all ProfileSignout values that "
+              "are not obsolete");
 
 INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          ChromeSigninClientSignoutSourceTest,

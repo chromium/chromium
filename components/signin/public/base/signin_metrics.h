@@ -43,7 +43,7 @@ enum ProfileSignout : int {
   // Signed out because credentials are invalid and force-sign-in is enabled.
   AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN = 7,
   // The user disables sync from the DICE UI.
-  USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
+  // Deprecated: USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
   // Signout forced because the account was removed from the device.
   ACCOUNT_REMOVED_FROM_DEVICE = 9,
   // Signin is no longer allowed when the profile is initialized.
