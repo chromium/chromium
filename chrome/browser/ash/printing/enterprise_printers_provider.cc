@@ -29,13 +29,11 @@ namespace ash {
 
 namespace {
 
-std::vector<std::string> ConvertToVector(const base::Value* list) {
+std::vector<std::string> ConvertToVector(const base::Value::List& list) {
   std::vector<std::string> string_list;
-  if (list && list->is_list()) {
-    for (const base::Value& value : list->GetList()) {
-      if (value.is_string()) {
-        string_list.push_back(value.GetString());
-      }
+  for (const base::Value& value : list) {
+    if (value.is_string()) {
+      string_list.push_back(value.GetString());
     }
   }
   return string_list;
@@ -229,7 +227,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
   // Extracts the list of strings named |policy_name| from user policies.
   std::vector<std::string> FromPrefs(const std::string& policy_name) {
-    return ConvertToVector(profile_->GetPrefs()->GetList(policy_name));
+    return ConvertToVector(profile_->GetPrefs()->GetValueList(policy_name));
   }
 
   // Checks if given policy is set and if it is a dictionary
