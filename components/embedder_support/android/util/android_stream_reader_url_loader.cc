@@ -87,7 +87,8 @@ class InputStreamReaderWrapper
   }
 
   int ReadRawData(net::IOBuffer* buffer, int buffer_size) {
-    if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
+    if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers) &&
+        net::features::kOptimizeNetworkBuffersInputStreamCheckAvailable.Get()) {
       int available = 0;
       // Only use `available` if the app has an estimate, otherwise it'll return
       // 0. In that case we still want to do a blocking read until there's data
