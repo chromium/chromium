@@ -698,9 +698,8 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # This builder build 2 chrome(Ash and Lacros), so it need
-    # more time.
-    execution_timeout = 4 * time.hour,
+    # TODO(crbug.com/1345687): use normal machines.
+    builderless = False,
 )
 
 ci.builder(
@@ -731,6 +730,8 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    # TODO(crbug.com/1345687): use normal machines.
+    builderless = False,
 )
 
 ci.thin_tester(
@@ -794,8 +795,8 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # TODO(crbug.com/1345687): Reduce back to 3 hours.
-    execution_timeout = 6 * time.hour,
+    # TODO(crbug.com/1345687): use normal machines.
+    builderless = False,
 )
 
 # For Chromebox for meetings(CfM)
