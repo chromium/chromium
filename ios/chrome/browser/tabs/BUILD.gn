@@ -104,6 +104,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/web:delegate",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:page_placeholder",
+    "//ios/chrome/browser/web/annotations",
     "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/web/image_fetch",
     "//ios/chrome/browser/web/print",

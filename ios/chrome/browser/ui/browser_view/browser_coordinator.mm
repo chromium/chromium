@@ -140,6 +140,7 @@
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
@@ -1794,6 +1795,11 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
     NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
         self.viewController);
   }
+
+  if (AnnotationsTabHelper::FromWebState(webState)) {
+    AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(
+        self.viewController);
+  }
 }
 
 // Uninstalls delegates for `webState`.
@@ -1831,6 +1837,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   if (NewTabPageTabHelper::FromWebState(webState)) {
     NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
+  }
+
+  if (AnnotationsTabHelper::FromWebState(webState)) {
+    AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(nil);
   }
 }
 

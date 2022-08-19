@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
+
+source_set("annotations") {
+  deps = [
+    "//base",
+    "//components/shared_highlighting/ios",
+    "//ios/web/annotations",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/navigation",
+    "//ios/web/public/navigation:referrer",
+    "//ui/base",
+  ]
+
+  sources = [
+    "annotations_tab_helper.h",
+    "annotations_tab_helper.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
