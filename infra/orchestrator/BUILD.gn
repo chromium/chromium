@@ -14,6 +14,7 @@ group("orchestrator_all") {
     # profile information
     ":code_coverage_merge_results_py",
     ":code_coverage_merge_steps_py",
+    ":process_perf_results_py",
     ":standard_gtest_merge_py",
     ":standard_isolated_script_merge_py",
   ]
@@ -68,4 +69,17 @@ python_library("code_coverage_merge_results_py") {
 
 python_library("code_coverage_merge_steps_py") {
   pydeps_file = "//testing/merge_scripts/code_coverage/merge_steps.pydeps"
+}
+
+python_library("process_perf_results_py") {
+  pydeps_file = "//tools/perf/process_perf_results.pydeps"
+
+  # Telemetry fails if catapult's vendored libs aren't present on the
+  # filesystem. But since process_perf_results.py doesn't ever import any of
+  # them, build/print_python_deps.py doesn't detect them. So to appease
+  # telemetry, just add the needed dirs directly.
+  data = [
+      "//third_party/catapult/telemetry/third_party/",
+      "//third_party/catapult/third_party/six/",
+  ]
 }
