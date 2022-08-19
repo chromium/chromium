@@ -545,7 +545,9 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
   }
 
   dcomp_video_frame_ = video_frame;
-  sink_->PaintSingleFrame(dcomp_video_frame_, true);
+  if (!IsFrameServerMode()) {
+    sink_->PaintSingleFrame(dcomp_video_frame_, true);
+  }
 }
 
 void MediaFoundationRendererClient::OnCdmAttached(bool success) {
