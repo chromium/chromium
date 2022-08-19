@@ -11,12 +11,19 @@
 
     <application android:label="BF sandbox">
 
-      <service android:name="org.chromium.weblayer.BrowserSandboxService"
-            android:exported="true" >
-        <intent-filter>
-            <action android:name="org.chromium.weblayer.intent.action.BROWSERSANDBOX" />
-        </intent-filter>
-      </service>
+        <service android:name="org.chromium.weblayer.BrowserSandboxService"
+                android:exported="true" >
+            <intent-filter>
+                <action android:name="org.chromium.weblayer.intent.action.BROWSERSANDBOX" />
+            </intent-filter>
+        </service>
+
+        <service android:name="org.chromium.weblayer.BrowserInProcessService"
+                android:exported="false" >
+            <intent-filter>
+                <action android:name="org.chromium.weblayer.intent.action.BROWSERINPROCESS" />
+            </intent-filter>
+        </service>
 
       <!-- TODO(rayankans): Make this a template. -->
       <meta-data android:name="org.chromium.weblayer.WebLayerPackage"

@@ -43,6 +43,8 @@ android_library("java") {
     "org/chromium/weblayer/BrowserEmbeddabilityMode.java",
     "org/chromium/weblayer/BrowserFragment.java",
     "org/chromium/weblayer/BrowserFragmentCreateParams.java",
+    "org/chromium/weblayer/BrowserFragmentDelegate.java",
+    "org/chromium/weblayer/BrowserFragmentTabDelegate.java",
     "org/chromium/weblayer/BrowserRestoreCallback.java",
     "org/chromium/weblayer/BrowsingDataType.java",
     "org/chromium/weblayer/Callback.java",
@@ -105,6 +107,9 @@ android_library("java") {
     "org/chromium/weblayer/Tab.java",
     "org/chromium/weblayer/TabCallback.java",
     "org/chromium/weblayer/TabListCallback.java",
+    "org/chromium/weblayer/TabNavigationControllerProxy.java",
+    "org/chromium/weblayer/TabParams.java",
+    "org/chromium/weblayer/TabProxy.java",
     "org/chromium/weblayer/ThreadCheck.java",
     "org/chromium/weblayer/UnsupportedVersionException.java",
     "org/chromium/weblayer/UrlBarController.java",
@@ -117,12 +122,14 @@ android_library("java") {
     "org/chromium/weblayer/WebMessage.java",
     "org/chromium/weblayer/WebMessageCallback.java",
     "org/chromium/weblayer/WebMessageReplyProxy.java",
+    "org/chromium/weblayer/WebMessageReplyProxyProxy.java",
     "org/chromium/weblayer/WebViewCompatibilityHelper.java",
     _version_constants_java_file,
   ]
 
   resources_package = "org.chromium.weblayer"
   deps = [
+    ":browserfragment_interfaces_java",
     ":client_resources",
     ":client_version",
     ":weblayer_client_manifest",
@@ -175,7 +182,10 @@ process_version("client_version") {
 }
 
 android_aidl("browserfragment_aidl") {
-  import_include = [ "." ]
+  import_include = [
+    ".",
+    "../../browser/java",
+  ]
   sources = [
     "org/chromium/browserfragment/interfaces/IBooleanCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegate.aidl",
@@ -195,7 +205,10 @@ android_aidl("browserfragment_aidl") {
 }
 
 android_library("browserfragment_interfaces_java") {
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
+  ]
   srcjar_deps = [ ":browserfragment_aidl" ]
 }
 
@@ -216,6 +229,7 @@ android_library("browserfragment_java") {
   resources_package = "org.chromium.browserfragment"
   deps = [
     ":browserfragment_interfaces_java",
+    ":java",
     "//base:base_java",
     "//third_party/android_deps:com_google_guava_guava_android_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
@@ -224,23 +238,21 @@ android_library("browserfragment_java") {
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
 }
 
-android_library("browserfragment_sandbox_java") {
-  sources = [
-    # Additional weblayer public files that are for the sandbox.
-    "org/chromium/weblayer/BrowserFragmentDelegate.java",
-    "org/chromium/weblayer/BrowserFragmentTabDelegate.java",
-    "org/chromium/weblayer/BrowserSandboxService.java",
-    "org/chromium/weblayer/TabNavigationControllerProxy.java",
-    "org/chromium/weblayer/TabParams.java",
-    "org/chromium/weblayer/TabProxy.java",
-    "org/chromium/weblayer/WebMessageReplyProxyProxy.java",
-  ]
+android_library("service_provider_java") {
+  testonly = true
   resources_package = "org.chromium.weblayer"
+
+  sources = [
+    "org/chromium/weblayer/BrowserInProcessService.java",
+    "org/chromium/weblayer/BrowserProcessBinder.java",
+    "org/chromium/weblayer/BrowserSandboxService.java",
+  ]
   deps = [
     ":browserfragment_interfaces_java",
     ":java",

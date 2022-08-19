@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.os.IBinder;
 
 /**
- * Service running the browser process for a BrowserFragment outside of the hosting
+ * Service running the browser process for a BrowserFragment inside the hosting
  * application's process.
  */
-public class BrowserSandboxService extends Service {
-    private IBinder mBinder = new BrowserProcessBinder(this);
+public class BrowserInProcessService extends Service {
+    private final IBinder mBinder = new BrowserProcessBinder(this);
 
     @Override
     public IBinder onBind(Intent intent) {

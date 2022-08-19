@@ -20,6 +20,7 @@ import org.chromium.browserfragment.interfaces.IFragmentParams;
 import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabParams;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * This class acts as a proxy between the embedding app's BrowserFragment and
@@ -80,6 +81,17 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     }
 
     @Override
+    public void retrieveContentViewRenderView() {
+        mHandler.post(() -> {
+            try {
+                mClient.onContentViewRenderViewReady(
+                        ObjectWrapper.wrap(mFragment.getBrowser().getContentViewRenderView()));
+            } catch (RemoteException e) {
+            }
+        });
+    }
+
+    @Override
     public void resizeView(int width, int height) {
         mHandler.post(() -> {
             if (mSurfaceControlViewHost != null) {
@@ -123,8 +135,10 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     public void onDetach() {
         mHandler.post(() -> {
             mFragment.onDetach();
-            mSurfaceControlViewHost.release();
-            mSurfaceControlViewHost = null;
+            if (mSurfaceControlViewHost != null) {
+                mSurfaceControlViewHost.release();
+                mSurfaceControlViewHost = null;
+            }
         });
     }
 

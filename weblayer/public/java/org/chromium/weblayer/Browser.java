@@ -675,6 +675,14 @@ public class Browser {
         }
     }
 
+    View getContentViewRenderView() {
+        try {
+            return ObjectWrapper.unwrap(mImpl.getContentViewRenderView(), View.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     private final class BrowserClientImpl extends IBrowserClient.Stub {
         @Override
         public void onActiveTabChanged(int activeTabId) {

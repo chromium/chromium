@@ -61,4 +61,7 @@ interface IBrowser {
 
   // Added in 105
   int[] getTabIds() = 20;
+
+  // Added in 106.
+  IObjectWrapper getContentViewRenderView() = 21;
 }

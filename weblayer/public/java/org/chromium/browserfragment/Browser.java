@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -25,12 +27,20 @@ import org.chromium.browserfragment.interfaces.IBrowserSandboxService;
  * Handle to the Browsing Sandbox. Must be created asynchronously.
  */
 public class Browser {
+    // TODO(swestphal): Remove this and its function args and detect which service should be used
+    // based on android version.
+    private static final String BROWSER_PROCESS_MODE =
+            "org.chromium.browserfragment.shell.BrowserProcessMode";
+
     // Use another APK as a placeholder for an actual sandbox, since they are conceptually the
     // same thing.
-    private static final String BROWSER_SANDBOX_PACKAGE = "org.chromium.browserfragment.sandbox";
+    private static final String SANDBOX_BROWSER_SANDBOX_PACKAGE =
+            "org.chromium.browserfragment.sandbox";
 
     private static final String BROWSER_SANDBOX_ACTION =
             "org.chromium.weblayer.intent.action.BROWSERSANDBOX";
+    private static final String BROWSER_INPROCESS_ACTION =
+            "org.chromium.weblayer.intent.action.BROWSERINPROCESS";
 
     private static final String DEFAULT_PROFILE_NAME = "DefaultProfile";
 
@@ -90,9 +100,11 @@ public class Browser {
         }
         return CallbackToFutureAdapter.getFuture(completer -> {
             ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
-
-            Intent intent = new Intent(BROWSER_SANDBOX_ACTION);
-            intent.setPackage(BROWSER_SANDBOX_PACKAGE);
+            Intent intent = new Intent(
+                    isInProcessMode(context) ? BROWSER_INPROCESS_ACTION : BROWSER_SANDBOX_ACTION);
+            intent.setPackage(isInProcessMode(context)
+                            ? context.getApplicationContext().getPackageName()
+                            : SANDBOX_BROWSER_SANDBOX_PACKAGE);
 
             context.bindService(intent, connectionSetup, Context.BIND_AUTO_CREATE);
 
@@ -134,5 +146,18 @@ public class Browser {
             mBrowserSandboxService.setRemoteDebuggingEnabled(enabled);
         } catch (RemoteException e) {
         }
+    }
+
+    // TODO(swestphal): Remove this again.
+    protected static boolean isInProcessMode(Context appContext) {
+        try {
+            Bundle metaData = appContext.getPackageManager()
+                                      .getApplicationInfo(appContext.getPackageName(),
+                                              PackageManager.GET_META_DATA)
+                                      .metaData;
+            if (metaData != null) return metaData.getString(BROWSER_PROCESS_MODE).equals("local");
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return false;
     }
 }

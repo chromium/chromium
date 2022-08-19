@@ -14,6 +14,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * Fragment for rendering web content.
@@ -54,6 +57,13 @@ public class BrowserFragment extends Fragment {
                 public void onStarted(Bundle instanceState) {
                     mInstanceState = instanceState;
                     mTabManagerCompleter.set(new TabManager(mDelegate));
+                }
+
+                @Override
+                public void onContentViewRenderViewReady(
+                        IObjectWrapper wrappedContentViewRenderView) {
+                    LinearLayout layout = (LinearLayout) BrowserFragment.super.getView();
+                    layout.addView(ObjectWrapper.unwrap(wrappedContentViewRenderView, View.class));
                 }
             };
 
@@ -135,7 +145,16 @@ public class BrowserFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new BrowserSurfaceView(getActivity(), mSurfaceHolderCallback);
+        if (Browser.isInProcessMode(getActivity())) {
+            LinearLayout layout = new LinearLayout(getActivity());
+            try {
+                mDelegate.retrieveContentViewRenderView();
+            } catch (RemoteException e) {
+            }
+            return layout;
+        } else {
+            return new BrowserSurfaceView(getActivity(), mSurfaceHolderCallback);
+        }
     }
 
     @Override

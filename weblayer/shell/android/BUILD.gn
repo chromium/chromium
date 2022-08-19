@@ -112,7 +112,7 @@ generate_wrapper("run_browserfragment_shell") {
   executable = "//weblayer/tools/run_weblayer_shell.py"
   executable_args = [
     "--shell-apk-path",
-    "@WrappedPath(apks/BFShell.apk)",
+    "@WrappedPath(apks/BFShellSandbox.apk)",
     "--support-apk-path",
     "@WrappedPath(apks/BFSandbox.apk)",
     "--support-apk-path",
@@ -121,7 +121,25 @@ generate_wrapper("run_browserfragment_shell") {
 
   deps = [
     ":browser_sandbox_apk",
-    ":browserfragment_shell_apk",
+    ":browserfragment_shell_sandbox_apk",
+    ":weblayer_support_apk",
+  ]
+}
+
+generate_wrapper("run_browserfragment_shell_local") {
+  testonly = true
+  wrapper_script = "$root_out_dir/bin/run_browserfragment_shell_local"
+  executable = "//weblayer/tools/run_weblayer_shell.py"
+  executable_args = [
+    "--shell-apk-path",
+    "@WrappedPath(apks/BFShellLocal.apk)",
+    "--support-apk-path",
+    "@WrappedPath(apks/WebLayerSupport.apk)",
+  ]
+
+  deps = [
+    ":browser_sandbox_apk",
+    ":browserfragment_shell_local_apk",
     ":weblayer_support_apk",
   ]
 }
@@ -325,17 +343,6 @@ script_test("weblayer_shell_wpt") {
   ]
 }
 
-# TODO(rayankans): Update `run_weblayer_shell` to also deploy the browserfragment shell with a
-# browser sandbox APK.
-
-browserfragment_shell_manifest =
-    "$target_gen_dir/browserfragment_shell_manifest/AndroidManifest.xml"
-
-jinja_template("browserfragment_shell_manifest") {
-  input = "browserfragment_shell_apk/AndroidManifest.xml"
-  output = browserfragment_shell_manifest
-}
-
 android_resources("browserfragment_shell_resources") {
   sources = [
     "browserfragment_shell_apk/res/layout/main.xml",
@@ -350,41 +357,75 @@ android_library("browserfragment_shell_java") {
   sources = [ "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java" ]
 
   deps = [
+    ":browserfragment_service_provider_resources",
     ":browserfragment_shell_resources",
     "//base:base_java",
     "//third_party/android_deps:com_google_guava_guava_android_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//weblayer/public/java:browserfragment_java",
+    "//weblayer/public/java:service_provider_java",
   ]
 }
 
-android_apk("browserfragment_shell_apk") {
+template("browserfragment_shell_apk_helper") {
+  _browserfragment_shell_manifest =
+      "$target_gen_dir/manifest_$target_name/AndroidManifest.xml"
+  _manifest_target = target_name + "_manifest"
+
+  jinja_template(_manifest_target) {
+    input = "browserfragment_shell_apk/AndroidManifest.xml"
+    output = _browserfragment_shell_manifest
+    if (defined(invoker.browser_process_mode)) {
+      variables = [ "browser_process_mode=" + invoker.browser_process_mode ]
+    }
+  }
+  android_apk(target_name + "_apk") {
+    testonly = true
+    apk_name = invoker.apk_name
+
+    # Test runner does not support having "additional apks" that are incremental.
+    never_incremental = true
+
+    deps = [
+      ":$_manifest_target",
+      ":browserfragment_shell_java",
+    ]
+
+    android_manifest = _browserfragment_shell_manifest
+    android_manifest_dep = ":$_manifest_target"
+    min_sdk_version = default_min_sdk_version
+    target_sdk_version = 28
+  }
+}
+
+browserfragment_shell_apk_helper("browserfragment_shell_local") {
+  browser_process_mode = "local"
+  apk_name = "BFShellLocal"
+}
+
+browserfragment_shell_apk_helper("browserfragment_shell_sandbox") {
+  browser_process_mode = "sandbox"
+  apk_name = "BFShellSandbox"
+}
+
+browserfragment_services_manifest =
+    "$target_gen_dir/service_provider/AndroidManifest.xml"
+
+jinja_template("browserfragment_services_manifest") {
+  input = "service_provider/AndroidManifest.xml"
+  output = browserfragment_services_manifest
+}
+
+android_resources("browserfragment_service_provider_resources") {
   testonly = true
+  android_manifest = browserfragment_services_manifest
+  android_manifest_dep = ":browserfragment_services_manifest"
 
-  # Test runner does not support having "additional apks" that are incremental.
-  never_incremental = true
-
-  deps = [
-    ":browserfragment_shell_java",
-    ":browserfragment_shell_manifest",
-  ]
-
-  apk_name = "BFShell"
-  android_manifest = browserfragment_shell_manifest
-  min_sdk_version = default_min_sdk_version
-  target_sdk_version = 28
-  android_manifest_dep = ":browserfragment_shell_manifest"
+  deps = [ ":browserfragment_services_manifest" ]
 }
 
-browser_sandbox_manifest =
-    "$target_gen_dir/browser_sandbox_manifest/AndroidManifest.xml"
-
-jinja_template("browser_sandbox_manifest") {
-  input = "browser_sandbox_apk/AndroidManifest.xml"
-  output = browser_sandbox_manifest
-}
-
+# TODO(swestphal): Make this an AAR when BrowserProcess service can run in isolated process.
 android_apk("browser_sandbox_apk") {
   testonly = true
 
@@ -392,14 +433,15 @@ android_apk("browser_sandbox_apk") {
   never_incremental = true
 
   deps = [
-    ":browser_sandbox_manifest",
-    "//weblayer/public/java:browserfragment_sandbox_java",
+    ":browserfragment_service_provider_resources",
+    "//weblayer/public/java:browserfragment_interfaces_java",
+    "//weblayer/public/java:service_provider_java",
   ]
 
   apk_name = "BFSandbox"
-  android_manifest = browser_sandbox_manifest
+  android_manifest = browserfragment_services_manifest
+  android_manifest_dep = ":browserfragment_services_manifest"
   min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
-  android_manifest_dep = ":browser_sandbox_manifest"
   shared_resources = true
 }

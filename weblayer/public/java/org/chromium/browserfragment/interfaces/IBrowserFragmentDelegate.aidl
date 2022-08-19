@@ -27,6 +27,9 @@ oneway interface IBrowserFragmentDelegate {
     void onResume() = 10;
     void onPause() = 11;
 
+    // In process operations.
+    void retrieveContentViewRenderView() = 12;
+
     // Tab operations.
     void getActiveTab(ITabCallback callback) = 14;
     void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;

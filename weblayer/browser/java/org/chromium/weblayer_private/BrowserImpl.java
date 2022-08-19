@@ -751,6 +751,11 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         host.setView(mViewController.getView(), 0, 0);
     }
 
+    @Override
+    public IObjectWrapper getContentViewRenderView() {
+        return ObjectWrapper.wrap(mViewController.getView());
+    }
+
     @NativeMethods
     interface Natives {
         long createBrowser(long profile, BrowserImpl caller);
