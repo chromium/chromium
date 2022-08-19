@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
@@ -22,6 +23,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -32,6 +34,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/user_manager/known_user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -102,6 +105,7 @@ struct UserMetadata {
   AccountId account_id;
   std::string display_name;
   bool enable_pin = false;
+  bool pin_autosubmit = false;
   bool enable_tap_to_unlock = false;
   bool enable_challenge_response = false;  // Smart Card
   bool enable_auth = true;
@@ -266,9 +270,33 @@ class LockDebugView::DebugDataDispatcherTransformer
   void TogglePinStateForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
-    debug_user->enable_pin = !debug_user->enable_pin;
+    if (!debug_user->enable_pin) {
+      debug_user->enable_pin = true;
+      debug_user->pin_autosubmit = false;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 0);
+    } else if (!debug_user->pin_autosubmit) {
+      debug_user->pin_autosubmit = true;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 6);
+    } else {
+      debug_user->enable_pin = false;
+      debug_user->pin_autosubmit = false;
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .SetUserPinLength(debug_user->account_id, 0);
+    }
     debug_dispatcher_.SetPinEnabledForUser(debug_user->account_id,
                                            debug_user->enable_pin);
+  }
+
+  void ToggleDarkLigntModeForUserIndex(size_t user_index) {
+    UserMetadata* debug_user = &debug_users_[user_index];
+    user_manager::KnownUser(Shell::Get()->local_state())
+        .SetBooleanPref(
+            debug_user->account_id, prefs::kDarkModeEnabled,
+            !ash::DarkLightModeController::Get()->IsDarkModeEnabled());
+    Shell::Get()->login_screen_controller()->data_dispatcher()->NotifyFocusPod(
+        debug_user->account_id);
   }
 
   // Activates or deactivates challenge response for the user at
@@ -1139,6 +1167,13 @@ void LockDebugView::UpdatePerUserActionContainer() {
                   &DebugDataDispatcherTransformer::TogglePinStateForUserIndex,
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
+    AddButton(
+        "Toggle Dark/Light mode",
+        base::BindRepeating(
+            &DebugDataDispatcherTransformer::ToggleDarkLigntModeForUserIndex,
+            base::Unretained(debug_data_dispatcher_.get()), i),
+        row);
+
     AddButton(
         "Toggle Smart card",
         base::BindRepeating(&DebugDataDispatcherTransformer::
