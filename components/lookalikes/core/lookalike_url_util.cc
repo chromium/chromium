@@ -4,17 +4,13 @@
 
 #include "components/lookalikes/core/lookalike_url_util.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -22,12 +18,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/lookalikes/core/features.h"
 #include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
@@ -1300,10 +1293,11 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
 
 bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
-  const auto* list =
-      pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
-  for (const auto& domain_val : list->GetListDeprecated()) {
-    auto domain = domain_val.GetString();
+  const base::Value::List& list =
+      pref_service->GetValueList(prefs::kLookalikeWarningAllowlistDomains);
+
+  for (const auto& domain_val : list) {
+    const std::string& domain = domain_val.GetString();
     if (url.DomainIs(domain)) {
       return true;
     }
