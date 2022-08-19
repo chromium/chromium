@@ -268,6 +268,52 @@ message GetCapabilitiesByHashPrefixResponseProto {
   repeated MatchInfoProto match_info = 1;
 }
 
+message GetNoRoundtripScriptsByHashPrefixRequestProto {
+  // The number of leading bits to consider from hash_prefix. The remaining
+  // trailing bits from hash_prefix should be ignored.
+  optional uint32 hash_prefix_length = 1;
+
+  // The CityHash64 of the URL of interest. Only the first hash_prefix_length
+  // bits are meaningful.
+  optional uint64 hash_prefix = 2;
+
+  // The client context.
+  optional ClientContextProto client_context = 3;
+
+  // Optional script parameters. Note that only a subset of parameters are
+  // allowed to be sent from the client.
+  repeated ScriptParameterProto script_parameters = 4;
+}
+
+message GetNoRoundtripScriptsByHashPrefixResponseProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ScriptActionRequestProto should be ignored.
+  optional CUPResponseData cup_data = 1;
+
+  message MatchInfo {
+    message RoutineScript {
+      optional SupportedScriptProto routine = 1;
+      // The set of actions to execute. If the last executed action is not a
+      // stop action or a stop action inside a JS flow action the script will
+      // fail.
+      optional ActionsResponseProto autobot_response = 2;
+    }
+
+    // The domain for the script
+    optional string domain = 1;
+
+    // The response of the supports site request for this domain.
+    optional SupportsScriptResponseProto supports_site_response = 2;
+
+    // The scripts for the domain. Can contain one main script and several
+    // interrupt scripts.
+    repeated RoutineScript routine_scripts = 3;
+  }
+  // List of potential scripts matches for the request URL hash prefix. Callers
+  // should inspect each element of the list to find the exact match, if any.
+  repeated MatchInfo match_infos = 2;
+}
+
 // Request to get user data.
 message GetUserDataRequestProto {
   message PaymentMethodRequest {
