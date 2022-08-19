@@ -894,6 +894,12 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       DocumentPictureInPictureIsNotConsideredForBlocking) {
+  EXPECT_FALSE(blocked_content::ConsiderForPopupBlocking(
+      WindowOpenDisposition::NEW_PICTURE_IN_PICTURE));
+}
+
 class PopupBlockerFencedFrameTest : public PopupBlockerBrowserTest {
  public:
   PopupBlockerFencedFrameTest() = default;

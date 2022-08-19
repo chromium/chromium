@@ -1164,8 +1164,9 @@ WindowOpenDisposition NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyNewWindow:
       return WindowOpenDisposition::NEW_WINDOW;
     case blink::kWebNavigationPolicyNewPopup:
-    case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_POPUP;
+    case blink::kWebNavigationPolicyPictureInPicture:
+      return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   }
   NOTREACHED() << "Unexpected WebNavigationPolicy";
   return WindowOpenDisposition::IGNORE_ACTION;

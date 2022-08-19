@@ -3476,7 +3476,8 @@ bool ChromeContentBrowserClient::CanCreateWindow(
       frame_name, disposition, features, user_gesture, opener_suppressed);
   NavigateParams nav_params =
       blocked_params.CreateNavigateParams(opener->GetProcess(), web_contents);
-  return blocked_content::MaybeBlockPopup(
+  return !blocked_content::ConsiderForPopupBlocking(disposition) ||
+         blocked_content::MaybeBlockPopup(
              web_contents, &opener_top_level_frame_url,
              std::make_unique<ChromePopupNavigationDelegate>(
                  std::move(nav_params)),
