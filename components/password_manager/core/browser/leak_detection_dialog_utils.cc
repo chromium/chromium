@@ -96,9 +96,7 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
       password_manager_util::UsesPasswordManagerGoogleBranding(
           IsSyncingPasswordsNormally(leak_type));
 #else
-  const bool uses_password_manager_updated_naming =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop);
+  const bool uses_password_manager_updated_naming = true;
   const bool uses_password_manager_google_branding =
       password_manager_util::UsesPasswordManagerGoogleBranding(
           IsSyncingPasswordsNormally(leak_type));
@@ -156,9 +154,7 @@ std::u16string GetTitle(CredentialLeakType leak_type) {
   const bool uses_password_manager_updated_naming =
       password_manager::features::UsesUnifiedPasswordManagerUi();
 #else
-  const bool uses_password_manager_updated_naming =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop);
+  const bool uses_password_manager_updated_naming = true;
 #endif
   if (uses_password_manager_updated_naming) {
     return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
@@ -248,8 +244,7 @@ LeakDialogTraits::LeakDialogTraits(CredentialLeakType leak_type)
           password_manager_util::UsesPasswordManagerGoogleBranding(
               IsSyncingPasswordsNormally(leak_type)))
 #else
-      uses_password_manager_updated_naming_(base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)),
+      uses_password_manager_updated_naming_(true),
       uses_password_manager_google_branding_(
           password_manager_util::UsesPasswordManagerGoogleBranding(
               IsSyncingPasswordsNormally(leak_type)))
