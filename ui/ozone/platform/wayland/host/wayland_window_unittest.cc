@@ -47,6 +47,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -1541,6 +1542,52 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   EXPECT_EQ(event4->AsLocatedEvent()->location(), gfx::Point(7, 16));
 
   menu_window.reset();
+}
+
+// Verify that located events are translated correctly when the windows have
+// geometry with non-zero offset.
+// See https://crbug.com/1292486.
+TEST_P(WaylandWindowTest, ConvertEventToTarget) {
+  // This first section repeats a part of SetDecorationInsets that sets
+  // decoration insets and ensures that they have been applied.
+  constexpr gfx::Rect kMainWindowBounds{956, 556};
+  const auto kMainWindowInsets = gfx::Insets::TLBR(24, 28, 32, 28);
+  auto bounds_with_insets = kMainWindowBounds;
+  bounds_with_insets.Inset(kMainWindowInsets);
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(bounds_with_insets));
+  window_->SetDecorationInsets(&kMainWindowInsets);
+  // Setting the decoration insets does not trigger the immediate update of the
+  // window geometry.  Emulate updating the visual size (sending the frame
+  // update) for that.
+  window_->UpdateVisualSize(kMainWindowBounds.size());
+
+  Sync();
+
+  // Create a menu.
+  constexpr gfx::Rect kMenuBounds{100, 100, 80, 50};
+  MockWaylandPlatformWindowDelegate menu_window_delegate;
+  EXPECT_CALL(menu_window_delegate, GetMenuType())
+      .WillOnce(Return(MenuType::kRootContextMenu));
+  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, widget_, kMenuBounds, &menu_window_delegate);
+  EXPECT_TRUE(menu_window);
+
+  // Now translate the event located at (0, 0) in the parent window into the
+  // coordinate system of the menu.  Its coordinates must be equal to:
+  //     -(offset of parent geometry + offset of the menu).
+  constexpr gfx::PointF kParentPoint{0, 0};
+  ui::MouseEvent event(ui::EventType::ET_MOUSE_MOVED, kParentPoint,
+                       kParentPoint, {}, ui::EF_NONE, ui::EF_NONE);
+
+  ui::Event::DispatcherApi dispatcher_api(&event);
+  dispatcher_api.set_target(window_.get());
+
+  ui::WaylandEventSource::ConvertEventToTarget(menu_window.get(), &event);
+  EXPECT_EQ(event.AsLocatedEvent()->x(),
+            -(kMenuBounds.x() + kMainWindowInsets.left()));
+  EXPECT_EQ(event.AsLocatedEvent()->y(),
+            -(kMenuBounds.y() + kMainWindowInsets.top()));
 }
 
 // Tests that the event grabber gets the events processed by its toplevel parent
