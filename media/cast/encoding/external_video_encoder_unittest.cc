@@ -114,7 +114,7 @@ TEST(ExternalVideoEncoderTest,
 }
 
 TEST(ExternalVideoEncoderTest, RecommendsExternalVp8EncoderForChromecast) {
-#if BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_64_BITS
+#if BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_X86_64
   EXPECT_TRUE(ExternalVideoEncoder::IsRecommended(
       CODEC_VIDEO_VP8, "Eureka Dongle", kValidVeaProfiles));
   EXPECT_FALSE(ExternalVideoEncoder::IsRecommended(
