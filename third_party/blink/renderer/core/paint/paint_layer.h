@@ -618,7 +618,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                       : PhysicalOffset();
   }
 
-  bool KnownToClipSubtree() const;
+  bool KnownToClipSubtreeToPaddingBox() const;
 
   void Trace(Visitor*) const override;
 

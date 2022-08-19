@@ -190,7 +190,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     }
 
     if (!cull_rect_intersects_self && !cull_rect_intersects_contents) {
-      if (paint_layer_.KnownToClipSubtree()) {
+      if (paint_layer_.KnownToClipSubtreeToPaddingBox()) {
         paint_layer_.SetPreviousPaintResult(kMayBeClippedByCullRect);
         return kMayBeClippedByCullRect;
       }

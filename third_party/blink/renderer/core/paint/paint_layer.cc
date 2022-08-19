@@ -2195,7 +2195,7 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
 
   // If the layer is known to clip the whole subtree, then we don't need to
   // expand for children. The clip of the current layer is always applied.
-  if (KnownToClipSubtree())
+  if (KnownToClipSubtreeToPaddingBox())
     return;
 
   PaintLayerPaintOrderIterator iterator(this, kAllChildren);
@@ -2231,13 +2231,15 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
   }
 }
 
-bool PaintLayer::KnownToClipSubtree() const {
+bool PaintLayer::KnownToClipSubtreeToPaddingBox() const {
   if (const auto* box = GetLayoutBox()) {
     if (!box->ShouldClipOverflowAlongBothAxis())
       return false;
     if (HasNonContainedAbsolutePositionDescendant())
       return false;
     if (HasFixedPositionDescendant() && !box->CanContainFixedPositionObjects())
+      return false;
+    if (box->StyleRef().OverflowClipMargin())
       return false;
     // The root frame's clip is special at least in Android WebView.
     if (is_root_layer_ && box->GetFrame()->IsLocalRoot())

@@ -216,10 +216,10 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
       !object.FirstFragment().NextFragment()) {
     const auto* box = layer.GetLayoutBox();
     DCHECK(box);
-    PhysicalRect overflow_rect = box->PhysicalSelfVisualOverflowRect();
-    overflow_rect.Move(box->FirstFragment().PaintOffset());
+    PhysicalRect clip_rect =
+        box->OverflowClipRect(box->FirstFragment().PaintOffset());
     if (!box->FirstFragment().GetCullRect().Intersects(
-            ToEnclosingRect(overflow_rect))) {
+            ToEnclosingRect(clip_rect))) {
       context.current.subtree_is_out_of_cull_rect = true;
     }
   }
