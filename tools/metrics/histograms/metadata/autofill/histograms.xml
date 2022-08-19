@@ -1225,6 +1225,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime"
+    units="ms" expires_after="2023-08-15">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Response time for fetching FastCheckout capabilities for a single domain.
+    The time is recorded for both successful and failed fetches.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2023-02-12">
   <owner>kolos@chromium.org</owner>

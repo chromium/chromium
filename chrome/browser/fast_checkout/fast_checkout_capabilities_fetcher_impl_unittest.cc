@@ -34,11 +34,13 @@ using testing::_;
 
 constexpr uint32_t kHashPrefixSize = 15u;
 constexpr char kIntent[] = "CHROME_FAST_CHECKOUT";
-constexpr char kUmaKeyHttpCode[] =
-    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode";
 constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
     "Autofill.FastCheckout.CapabilitiesFetcher."
     "CacheStateForIsTriggerFormSupported";
+constexpr char kUmaKeyHttpCode[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseCode";
+constexpr char kUmaKeyResponseTime[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime";
 
 constexpr char kUrl1[] = "https://wwww.firstpage.com/";
 constexpr char kUrl2[] = "https://wwww.another-domain.co.uk/";
@@ -92,9 +94,10 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest, GetCapabilitiesEmptyResponse) {
   // The form is still not supported.
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
 
-  // The network metric was recorded.
+  // The network metric and the response time were recorded.
   histogram_tester().ExpectUniqueSample(kUmaKeyHttpCode,
                                         net::HttpStatusCode::HTTP_OK, 1u);
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
@@ -159,9 +162,10 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest, GetCapabilitiesNetworkError) {
   // The cache is still empty - the content of the message was ignored.
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
 
-  // However, the network metric was recorded.
+  // However, the network metric and the response time were recorded.
   histogram_tester().ExpectUniqueSample(
       kUmaKeyHttpCode, net::HttpStatusCode::HTTP_NOT_FOUND, 1u);
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
 }
 
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
@@ -213,6 +217,7 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
       kUmaKeyHttpCode, net::HttpStatusCode::HTTP_REQUEST_TIMEOUT, 1u);
   histogram_tester().ExpectBucketCount(kUmaKeyHttpCode,
                                        net::HttpStatusCode::HTTP_OK, 1u);
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 2u);
 }
 
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest,

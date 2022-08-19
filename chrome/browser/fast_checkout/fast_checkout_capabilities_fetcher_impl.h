@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_IMPL_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_results_cache.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
@@ -63,11 +65,16 @@ class FastCheckoutCapabilitiesFetcherImpl
                               autofill::FormSignature form_signature) override;
 
  private:
+  // Abbreviation for a map of origins to a pair of the start time (in time
+  // ticks) and a vector of callbacks.
+  using RequestMap = base::flat_map<url::Origin, std::vector<Callback>>;
+
   // Processes the result returned by from a previous
   // `AutofillAssistant::GetCapabilitiesByHashPrefix` call and informs callers
   // that availability has been fetched.
   void OnGetCapabilitiesInformationReceived(
       const url::Origin& origin,
+      base::TimeTicks start_time,
       int http_status,
       const std::vector<
           autofill_assistant::AutofillAssistant::CapabilitiesInfo>&
@@ -81,8 +88,8 @@ class FastCheckoutCapabilitiesFetcherImpl
   // The cache of known capabilities results.
   FastCheckoutCapabilitiesResultsCache cache_;
 
-  // A map of origins (of ongoing requests) to their callbacks.
-  base::flat_map<url::Origin, std::vector<Callback>> ongoing_requests_;
+  // Currently ongoing capabilities requests.
+  RequestMap ongoing_requests_;
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_IMPL_H_
