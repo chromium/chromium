@@ -14,6 +14,8 @@ namespace blink {
 
 namespace {
 
+constexpr Color kBorderStartEdgeColor = Color::FromRGB(170, 170, 170);
+constexpr Color kBorderEndEdgeColor = Color::FromRGB(0, 0, 0);
 constexpr Color kBorderFillColor = Color::FromRGB(208, 208, 208);
 
 bool ShouldPaintBorderAfter(const Vector<bool>& allow_border,
@@ -114,11 +116,50 @@ void NGFrameSetPainter::PaintBorders(const PaintInfo& paint_info,
 void NGFrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
                                        const gfx::Rect& border_rect,
                                        const Color& fill_color,
-                                       const AutoDarkMode& auto_dark_mode) {}
+                                       const AutoDarkMode& auto_dark_mode) {
+  // Fill first.
+  GraphicsContext& context = paint_info.context;
+  context.FillRect(border_rect, fill_color, auto_dark_mode);
+
+  // Now stroke the edges but only if we have enough room to paint both edges
+  // with a little bit of the fill color showing through.
+  if (border_rect.height() < 3)
+    return;
+  const ComputedStyle& style = box_fragment_.Style();
+  context.FillRect(
+      gfx::Rect(border_rect.origin(), gfx::Size(border_rect.width(), 1)),
+      kBorderStartEdgeColor,
+      BorderPaintAutoDarkMode(style, kBorderStartEdgeColor));
+  context.FillRect(gfx::Rect(border_rect.x(), border_rect.bottom() - 1,
+                             border_rect.width(), 1),
+                   kBorderEndEdgeColor,
+                   BorderPaintAutoDarkMode(style, kBorderEndEdgeColor));
+}
 
 void NGFrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
                                           const gfx::Rect& border_rect,
                                           const Color& fill_color,
-                                          const AutoDarkMode& auto_dark_mode) {}
+                                          const AutoDarkMode& auto_dark_mode) {
+  if (!paint_info.GetCullRect().Intersects(border_rect))
+    return;
+
+  // Fill first.
+  GraphicsContext& context = paint_info.context;
+  context.FillRect(border_rect, fill_color, auto_dark_mode);
+
+  // Now stroke the edges but only if we have enough room to paint both edges
+  // with a little bit of the fill color showing through.
+  if (border_rect.width() < 3)
+    return;
+  const ComputedStyle& style = box_fragment_.Style();
+  context.FillRect(
+      gfx::Rect(border_rect.origin(), gfx::Size(1, border_rect.height())),
+      kBorderStartEdgeColor,
+      BorderPaintAutoDarkMode(style, kBorderStartEdgeColor));
+  context.FillRect(gfx::Rect(border_rect.right() - 1, border_rect.y(), 1,
+                             border_rect.height()),
+                   kBorderEndEdgeColor,
+                   BorderPaintAutoDarkMode(style, kBorderEndEdgeColor));
+}
 
 }  // namespace blink
