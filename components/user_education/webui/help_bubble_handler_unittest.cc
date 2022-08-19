@@ -224,7 +224,7 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   expected->body_text = base::UTF16ToUTF8(params.body_text);
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
-  expected->position = help_bubble::mojom::HelpBubblePosition::BELOW;
+  expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
 
   EXPECT_CALL(test_handler_->mock(),
               ShowHelpBubble(MatchesHelpBubbleParams(expected.get())));
@@ -269,7 +269,7 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   expected->body_text = base::UTF16ToUTF8(params.body_text);
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
-  expected->position = help_bubble::mojom::HelpBubblePosition::BELOW;
+  expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
 
   auto expected_button = help_bubble::mojom::HelpBubbleButtonParams::New();
   expected_button->text = "button1";

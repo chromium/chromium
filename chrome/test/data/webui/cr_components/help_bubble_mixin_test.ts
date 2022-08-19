@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
-import {HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams, HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleProxy, HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -158,7 +158,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const defaultParams: HelpBubbleParams = new HelpBubbleParams();
   defaultParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
   defaultParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  defaultParams.position = HelpBubblePosition.ABOVE;
+  defaultParams.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
   defaultParams.bodyText = 'This is a help bubble.';
   defaultParams.buttons = [];
 
@@ -258,7 +258,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         const params: HelpBubbleParams = new HelpBubbleParams();
         params.nativeIdentifier = 'This is an unregistered identifier';
         params.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-        params.position = HelpBubblePosition.ABOVE;
+        params.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
         params.bodyText = 'This is a help bubble.';
         params.buttons = [];
 
@@ -372,7 +372,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const paramsWithTitle: HelpBubbleParams = new HelpBubbleParams();
   paramsWithTitle.nativeIdentifier = TITLE_NATIVE_ID;
   paramsWithTitle.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  paramsWithTitle.position = HelpBubblePosition.BELOW;
+  paramsWithTitle.position = HelpBubbleArrowPosition.TOP_CENTER;
   paramsWithTitle.bodyText = 'This is another help bubble.';
   paramsWithTitle.titleText = 'This is a title';
   paramsWithTitle.buttons = [];
@@ -411,7 +411,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const paramsWithProgress: HelpBubbleParams = new HelpBubbleParams();
   paramsWithProgress.nativeIdentifier = LIST_NATIVE_ID;
   paramsWithProgress.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  paramsWithProgress.position = HelpBubblePosition.BELOW;
+  paramsWithProgress.position = HelpBubbleArrowPosition.TOP_CENTER;
   paramsWithProgress.bodyText = 'This is another help bubble.';
   paramsWithProgress.progress = {current: 1, total: 3};
   paramsWithProgress.buttons = [];
@@ -471,7 +471,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const buttonParams: HelpBubbleParams = new HelpBubbleParams();
   buttonParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
   buttonParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  buttonParams.position = HelpBubblePosition.BELOW;
+  buttonParams.position = HelpBubbleArrowPosition.TOP_CENTER;
   buttonParams.bodyText = 'This is another help bubble.';
   buttonParams.titleText = 'This is a title';
   buttonParams.buttons = [

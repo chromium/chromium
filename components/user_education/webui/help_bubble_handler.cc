@@ -29,24 +29,41 @@ namespace {
 
 // Converts help bubble arrow to WebUI bubble position. This is not a complete
 // mapping as many HelpBubbleArrow options are not (yet) supported in WebUI.
-help_bubble::mojom::HelpBubblePosition HelpBubbleArrowToPosition(
+help_bubble::mojom::HelpBubbleArrowPosition HelpBubbleArrowToPosition(
     HelpBubbleArrow arrow) {
   switch (arrow) {
     case HelpBubbleArrow::kBottomLeft:
+      return help_bubble::mojom::HelpBubbleArrowPosition::BOTTOM_LEFT;
     case HelpBubbleArrow::kBottomCenter:
+      return help_bubble::mojom::HelpBubbleArrowPosition::BOTTOM_CENTER;
     case HelpBubbleArrow::kBottomRight:
-      return help_bubble::mojom::HelpBubblePosition::ABOVE;
+      return help_bubble::mojom::HelpBubbleArrowPosition::BOTTOM_RIGHT;
+
+    case HelpBubbleArrow::kTopLeft:
+      return help_bubble::mojom::HelpBubbleArrowPosition::TOP_LEFT;
+    case HelpBubbleArrow::kTopCenter:
+      return help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
+    case HelpBubbleArrow::kTopRight:
+      return help_bubble::mojom::HelpBubbleArrowPosition::TOP_RIGHT;
+
     case HelpBubbleArrow::kLeftTop:
+      return help_bubble::mojom::HelpBubbleArrowPosition::LEFT_TOP;
     case HelpBubbleArrow::kLeftCenter:
+      return help_bubble::mojom::HelpBubbleArrowPosition::LEFT_CENTER;
     case HelpBubbleArrow::kLeftBottom:
-      return help_bubble::mojom::HelpBubblePosition::RIGHT;
+      return help_bubble::mojom::HelpBubbleArrowPosition::LEFT_BOTTOM;
+
     case HelpBubbleArrow::kRightTop:
+      return help_bubble::mojom::HelpBubbleArrowPosition::RIGHT_TOP;
     case HelpBubbleArrow::kRightCenter:
+      return help_bubble::mojom::HelpBubbleArrowPosition::RIGHT_CENTER;
     case HelpBubbleArrow::kRightBottom:
-      return help_bubble::mojom::HelpBubblePosition::LEFT;
+      return help_bubble::mojom::HelpBubbleArrowPosition::RIGHT_BOTTOM;
+
     default:
-      return help_bubble::mojom::HelpBubblePosition::BELOW;
+      NOTIMPLEMENTED();
   }
+  return help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
 }
 
 }  // namespace

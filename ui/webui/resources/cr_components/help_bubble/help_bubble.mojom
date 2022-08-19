@@ -15,11 +15,22 @@ module help_bubble.mojom;
 // more detailed usage information, see README.md.
 
 // Where the help bubble floats relative to its anchor.
-enum HelpBubblePosition {
-  ABOVE,
-  BELOW,
-  LEFT,
-  RIGHT
+enum HelpBubbleArrowPosition {
+  TOP_LEFT,
+  TOP_CENTER,
+  TOP_RIGHT,
+
+  BOTTOM_LEFT,
+  BOTTOM_CENTER,
+  BOTTOM_RIGHT,
+
+  LEFT_TOP,
+  LEFT_CENTER,
+  LEFT_BOTTOM,
+
+  RIGHT_TOP,
+  RIGHT_CENTER,
+  RIGHT_BOTTOM,
 };
 
 // Simplified version of user_education::HelpBubbleButtonParams.
@@ -41,7 +52,7 @@ struct HelpBubbleParams {
   // element ID.
   string native_identifier;
 
-  HelpBubblePosition position = HelpBubblePosition.BELOW;
+  HelpBubbleArrowPosition position = HelpBubbleArrowPosition.TOP_CENTER;
   string? title_text;
   string body_text;
   string close_button_alt_text;

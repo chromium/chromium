@@ -1,70 +1,88 @@
 <style include="cr-hidden-style">
   :host {
+    border-radius: 8px;
+    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
     position: absolute;
     z-index: 1;
   }
 
-  /* HelpBubblePosition.ABOVE */
-  :host([position='0']) {
-    transform: translateY(-100%);
-  }
-
-  /* HelpBubblePosition.BELOW */
-  :host([position='1']) {
-    transform: none;
-  }
-
-  /* HelpBubblePosition.LEFT */
-  :host([position='2']) {
-    transform: translate(-100%, -50%);
-  }
-
-  /* HelpBubblePosition.RIGHT */
-  :host([position='3']) {
-    transform: translateY(-50%);
-  }
-
   #arrow {
-    --help-bubble-arrow-size: 16px;
-    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-size) / 2);
+    --help-bubble-arrow-size: 11.3px;
+    --help-bubble-arrow-size-half: calc(var(--help-bubble-arrow-size) / 2);
+    --help-bubble-arrow-diameter: 16px; /* approx. */
+    --help-bubble-arrow-radius: calc(var(--help-bubble-arrow-diameter) / 2);
+    --help-bubble-arrow-edge-offset: 22px;
+    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-edge-offset) + var(--help-bubble-arrow-radius));
+    --help-bubble-arrow-border-radius: 2px;
+    position: absolute;
+  }
+
+  /* #arrow is rotated and positioned in a container to simplify positioning */
+  #inner-arrow {
     background-color: var(--help-bubble-background);
     height: var(--help-bubble-arrow-size);
+    left: calc(0px - var(--help-bubble-arrow-size-half));
     position: absolute;
-    transform: rotate(-45deg);
+    top: calc(0px - var(--help-bubble-arrow-size-half));
+    transform: rotate(45deg);
     width: var(--help-bubble-arrow-size);
     z-index: -1;
   }
 
-  /* Turns the arrow direction downwards, when the bubble is placed above
-   * the anchor element */
-  #arrow.above {
-    border-bottom-left-radius: 2px;
-    bottom: calc(0 - var(--help-bubble-arrow-offset));
-    left: calc(50% - var(--help-bubble-arrow-offset));
+  #arrow.bottom-edge {
+    bottom: 0;
   }
 
-  /* Turns the arrow direction upwards, when the bubble is placed below
-   * the anchor element */
-  #arrow.below {
-    border-top-right-radius: 2px;
-    left: calc(50% - var(--help-bubble-arrow-offset));
-    top: calc(0 - var(--help-bubble-arrow-offset));
+  #arrow.bottom-edge #inner-arrow {
+    border-bottom-right-radius: var(--help-bubble-arrow-border-radius);
   }
 
-  /* Turns the arrow direction to the right, when the bubble is placed to the
-   * left of the anchor element */
-  #arrow.left {
-    border-bottom-right-radius: 2px;
-    right: calc(0 - var(--help-bubble-arrow-offset));
-    top: calc(50% - var(--help-bubble-arrow-offset));
+  #arrow.top-edge {
+    top: 0;
   }
 
-  /* Turns the arrow direction to the left, when the bubble is placed to the
-   * right of the anchor element */
-  #arrow.right {
-    border-top-left-radius: 2px;
-    left: calc(0 - var(--help-bubble-arrow-offset));
-    top: calc(50% - var(--help-bubble-arrow-offset));
+  #arrow.top-edge #inner-arrow {
+    border-top-left-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.right-edge {
+    right: 0;
+  }
+
+  #arrow.right-edge #inner-arrow {
+    border-top-right-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.left-edge {
+    left: 0;
+  }
+
+  #arrow.left-edge #inner-arrow {
+    border-bottom-left-radius: var(--help-bubble-arrow-border-radius);
+  }
+
+  #arrow.top-position {
+    top: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.vertical-center-position {
+    top: 50%;
+  }
+
+  #arrow.bottom-position {
+    bottom: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.left-position {
+    left: var(--help-bubble-arrow-offset);
+  }
+
+  #arrow.horizontal-center-position {
+    left: 50%;
+  }
+
+  #arrow.right-position {
+    right: var(--help-bubble-arrow-offset);
   }
 
   #topContainer {
@@ -115,19 +133,19 @@
    * themes, which is why the values below do not change based on theme
    * preference. */
 
-   .help-bubble {
+  .help-bubble {
     --help-bubble-background: var(--google-blue-700);
     --help-bubble-element-spacing: 8px;
     --help-bubble-text-color: var(--google-grey-200);
     background-color: var(--help-bubble-background);
     border-radius: 8px;
-    box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
     color: var(--help-bubble-text-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 16px 20px;
-    width: 340px;
+    position: relative;
+    width: 300px;
   }
 
   #main {
@@ -210,12 +228,10 @@
       </template>
     </div>
     <div id="infoIcon" hidden$="[[!shouldShowInfoIcon_(progress, infoIcon)]]"></div>
-    <div class="title"
-         hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
+    <div class="title" hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
       [[titleText]]
     </div>
-    <div class="body"
-         hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
+    <div class="body" hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
       [[bodyText]]
     </div>
     <cr-icon-button id="close" iron-icon="cr:close"
@@ -229,11 +245,11 @@
   </div>
   <div id="buttons" hidden$="[[!buttons.length]]">
     <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">
-      <cr-button id$="[[getButtonId_(itemsIndex)]]"
-          tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
-          class$="[[getButtonClass_(item.isDefault)]]"
-          on-click="onButtonClick_">[[item.text]]</cr-button>
+      <cr-button id$="[[getButtonId_(itemsIndex)]]" tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
+        class$="[[getButtonClass_(item.isDefault)]]" on-click="onButtonClick_">[[item.text]]</cr-button>
     </template>
   </div>
-  <div id="arrow" class$="[[getArrowClass_(position)]]"></div>
+  <div id="arrow" class$="[[getArrowClass_(position)]]">
+    <div id="inner-arrow"></div>
+  </div>
 </div>

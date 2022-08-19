@@ -7,7 +7,7 @@ import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
-import {HelpBubbleButtonParams, HelpBubblePosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition, HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -80,7 +80,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble shows and anchors correctly', () => {
     helpBubble.anchorId = 'p1';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
@@ -98,7 +98,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble titles shows', () => {
     helpBubble.anchorId = 'p1';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.titleText = HELP_BUBBLE_TITLE;
     helpBubble.show();
@@ -116,7 +116,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble titles hides when no title set', () => {
     helpBubble.anchorId = 'p1';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
@@ -129,7 +129,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble closes', () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
 
@@ -147,7 +147,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble open close open', () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
     helpBubble.hide();
@@ -184,7 +184,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     };
     helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
@@ -196,7 +196,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble adds one button', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [{text: 'button1', isDefault: false}];
     helpBubble.show();
@@ -214,7 +214,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble adds several buttons', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [
       {text: 'button1', isDefault: false},
@@ -238,7 +238,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble adds default button', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [{text: 'button1', isDefault: true}];
     helpBubble.show();
@@ -258,7 +258,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble adds default button among several', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
     helpBubble.show();
@@ -303,7 +303,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     };
     helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
@@ -323,7 +323,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with no progress doesn\'t show progress', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
@@ -341,7 +341,7 @@ suite('CrComponentsHelpBubbleTest', () => {
       'help bubble with no progress and title doesn\'t show progress',
       async () => {
         helpBubble.anchorId = 'title';
-        helpBubble.position = HelpBubblePosition.BELOW;
+        helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
         helpBubble.bodyText = HELP_BUBBLE_BODY;
         helpBubble.titleText = HELP_BUBBLE_TITLE;
         helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
@@ -363,7 +363,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with progress shows progress', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 1, total: 3};
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
@@ -387,7 +387,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with progress and title shows progress', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.titleText = HELP_BUBBLE_TITLE;
     helpBubble.progress = {current: 1, total: 2};
@@ -416,7 +416,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with full progress', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 2, total: 2};
 
@@ -435,7 +435,7 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with empty progress', async () => {
     helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubblePosition.BELOW;
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 0, total: 2};
 
