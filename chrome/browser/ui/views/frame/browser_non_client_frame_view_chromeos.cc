@@ -812,6 +812,12 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
   if (!chromeos::features::IsDarkLightModeEnabled())
     return;
 
+  if (highlight_border_overlay_ ||
+      !GetWidget()->GetNativeWindow()->GetProperty(
+          chromeos::kShouldHaveHighlightBorderOverlay)) {
+    return;
+  }
+
   highlight_border_overlay_ =
       std::make_unique<HighlightBorderOverlay>(GetWidget());
 }
