@@ -333,8 +333,6 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
-
 class ExtensionWebRequestApiTest : public ExtensionApiTest {
  public:
   explicit ExtensionWebRequestApiTest(
@@ -400,6 +398,29 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
 };
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionWebRequestApiTestWithContextType
+    : public ExtensionWebRequestApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionWebRequestApiTestWithContextType()
+      : ExtensionWebRequestApiTest(GetParam()) {}
+  ExtensionWebRequestApiTestWithContextType(
+      const ExtensionWebRequestApiTestWithContextType&) = delete;
+  ExtensionWebRequestApiTestWithContextType& operator=(
+      const ExtensionWebRequestApiTestWithContextType&) = delete;
+  ~ExtensionWebRequestApiTestWithContextType() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionWebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionWebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
  public:
@@ -895,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestExtraHeaders) {
 }
 
 // Flaky on all platforms: https://crbug.com/1003661
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        DISABLED_WebRequestExtraHeaders_Auth) {
   CancelLoginDialog login_dialog_helper;
 
@@ -904,24 +925,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestChangeCSPHeaders) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestChangeCSPHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_change_csp_headers"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestCORSWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestRedirects) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects",
@@ -930,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // Tests that redirects from secure to insecure don't send the referrer header.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestRedirectsToInsecure) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   GURL insecure_destination =
@@ -953,6 +976,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       << message_;
 }
 
+// TODO(crbug.com/1093066): The JS file for this test uses XmlHttpRequest,
+// which needs to be migrated to use fetch() to be compatible with
+// service workers.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestSubresourceRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -960,6 +986,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       << message_;
 }
 
+// TODO(crbug.com/1093066): The JS file for this test uses XmlHttpRequest,
+// which needs to be migrated to use fetch() to be compatible with
+// service workers.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestSubresourceRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -968,7 +997,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestNewTab) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestNewTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webrequest/test_new_tab")) << message_;
@@ -1093,27 +1123,6 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
       &body));
   EXPECT_EQ(exptected_content_incognito_window, body);
 }
-
-class ExtensionWebRequestApiTestWithContextType
-    : public ExtensionWebRequestApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionWebRequestApiTestWithContextType()
-      : ExtensionWebRequestApiTest(GetParam()) {}
-  ExtensionWebRequestApiTestWithContextType(
-      const ExtensionWebRequestApiTestWithContextType&) = delete;
-  ExtensionWebRequestApiTestWithContextType& operator=(
-      const ExtensionWebRequestApiTestWithContextType&) = delete;
-  ~ExtensionWebRequestApiTestWithContextType() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionWebRequestApiTestWithContextType,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionWebRequestApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestDeclarativePermissionSpanning1) {
@@ -5199,8 +5208,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
       RunExtensionTest("webrequest", {.page_url = "test_prerendering.html"}))
       << message_;
 }
-
-using ContextType = ExtensionBrowserTest::ContextType;
 
 class WebRequestApiTestWithContextType
     : public ExtensionWebRequestApiTest,
