@@ -56,9 +56,9 @@ struct IdentityProvider {
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests a token to be generated, given an IdentityProvider.
+  // Requests a token to be generated, given an array of IdentityProviders.
   // Returns the raw content of the token.
-  RequestToken(IdentityProvider identity_provider_ptr,
+  RequestToken(array<IdentityProvider> identity_providers,
                  bool prefer_auto_sign_in) =>
       (RequestTokenStatus status, string? token);
 

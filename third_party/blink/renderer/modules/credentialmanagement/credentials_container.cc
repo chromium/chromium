@@ -1234,14 +1234,19 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       options->signal()->AddAlgorithm(WTF::Bind(&AbortIdentityCredentialRequest,
                                                 WrapPersistent(script_state)));
     }
-    mojom::blink::IdentityProviderPtr identity_provider =
-        blink::mojom::blink::IdentityProvider::From(*provider);
+
+    Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
+    for (const auto& provider : options->identity()->providers()) {
+      mojom::blink::IdentityProviderPtr identity_provider =
+          blink::mojom::blink::IdentityProvider::From(*provider);
+      identity_provider_ptrs.push_back(std::move(identity_provider));
+    }
     bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
     auto* auth_request =
         CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
 
     auth_request->RequestToken(
-        std::move(identity_provider), prefer_auto_sign_in,
+        std::move(identity_provider_ptrs), prefer_auto_sign_in,
         WTF::Bind(&OnRequestToken, WrapPersistent(resolver), provider_url,
                   client_id, WrapPersistent(options)));
 

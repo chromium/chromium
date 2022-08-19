@@ -700,10 +700,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                      const std::string& nonce,
                      bool prefer_auto_sign_in,
                      bool wait_for_callback) {
-    blink::mojom::IdentityProviderPtr identity_provider =
+    std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs;
+    blink::mojom::IdentityProviderPtr identity_provider_ptr =
         blink::mojom::IdentityProvider::New(provider, client_id, nonce);
+    identity_provider_ptrs.push_back(std::move(identity_provider_ptr));
 
-    request_remote_->RequestToken(std::move(identity_provider),
+    request_remote_->RequestToken(std::move(identity_provider_ptrs),
                                   prefer_auto_sign_in, auth_helper_.callback());
 
     if (wait_for_callback)

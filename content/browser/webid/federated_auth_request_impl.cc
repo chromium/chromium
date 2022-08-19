@@ -292,9 +292,14 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 }
 
 void FederatedAuthRequestImpl::RequestToken(
-    IdentityProviderPtr identity_provider_ptr,
+    std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
     bool prefer_auto_sign_in,
     RequestTokenCallback callback) {
+  // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
+  // support multiple IDPs.
+  blink::mojom::IdentityProviderPtr identity_provider_ptr =
+      std::move(identity_provider_ptrs[0]);
+
   if (HasPendingRequest()) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests, "");
