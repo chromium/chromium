@@ -22,7 +22,7 @@ specific_include_rules = {
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],
   "run_all_unittests\.cc": [
+    "+third_party/ipcz/src/test",
     "+third_party/ipcz/src/test_buildflags.h",
-    "+third_party/ipcz/src/test/test_child_launcher.h",
   ],
 }

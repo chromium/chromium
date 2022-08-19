@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
-#include "reference_drivers/blob.h"
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/memfd_memory.h"
 #include "reference_drivers/object.h"
@@ -206,11 +205,6 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
       required_num_handles = 1;
       break;
 
-    case Object::kBlob:
-      required_num_bytes += Blob::FromObject(object)->message().size();
-      required_num_handles = 0;
-      break;
-
     default:
       return IPCZ_RESULT_INVALID_ARGUMENT;
   }
@@ -243,12 +237,6 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
       auto memory = MultiprocessMemory::TakeFromObject(object);
       header.memory_size = checked_cast<uint32_t>(memory->size());
       handles[0] = WrappedFileDescriptor::Create(memory->TakeDescriptor());
-      break;
-    }
-
-    case Object::kBlob: {
-      auto blob = Blob::TakeFromObject(object);
-      memcpy(&header + 1, blob->message().data(), blob->message().size());
       break;
     }
 
@@ -288,12 +276,6 @@ IpczResult IPCZ_API Deserialize(const void* data,
             WrappedFileDescriptor::UnwrapHandle(handles[0]),
             header.memory_size);
       }
-      break;
-
-    case Object::kBlob:
-      object = MakeRefCounted<Blob>(
-          std::string_view(reinterpret_cast<const char*>(&header + 1),
-                           num_bytes - sizeof(header)));
       break;
 
     default:

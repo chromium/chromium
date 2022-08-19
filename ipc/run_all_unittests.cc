@@ -9,6 +9,7 @@
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "third_party/ipcz/src/test/multinode_test.h"
 #include "third_party/ipcz/src/test_buildflags.h"
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
@@ -21,6 +22,7 @@ int main(int argc, char** argv) {
 #endif
 
   base::TestSuite test_suite(argc, argv);
+  ipcz::test::RegisterMultinodeTests();
   mojo::core::Init();
   base::TestIOThread test_io_thread(base::TestIOThread::kAutoStart);
   mojo::core::ScopedIPCSupport ipc_support(

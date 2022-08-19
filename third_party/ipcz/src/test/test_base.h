@@ -22,7 +22,7 @@ namespace ipcz::test::internal {
 // use ipcz::test::Test as a base. For multinode tests, use ipcz::test:TestNode
 // as a base for MULTINODE_TEST_NODE() invocations, and use
 // ipcz::test::MultinodeTest<T> (where T is a subclass of TestNode) for
-// TEST_P() invocations for parameterized multinode test bodies.
+// MULTINODE_TEST() invocations for parameterized multinode test bodies.
 class TestBase {
  public:
   using TrapEventHandler = std::function<void(const IpczTrapEvent&)>;

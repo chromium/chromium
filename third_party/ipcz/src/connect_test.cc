@@ -6,7 +6,6 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/node_messages.h"
-#include "reference_drivers/blob.h"
 #include "test/multinode_test.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +24,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, BrokerToNonBrokerClient) {
   Close(b);
 }
 
-TEST_P(ConnectTest, BrokerToNonBroker) {
+MULTINODE_TEST(ConnectTest, BrokerToNonBroker) {
   IpczHandle c = SpawnTestNode<BrokerToNonBrokerClient>();
   Close(c);
 }
@@ -47,7 +46,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, SurplusPortalsClient) {
   CloseAll(portals);
 }
 
-TEST_P(ConnectTest, SurplusPortals) {
+MULTINODE_TEST(ConnectTest, SurplusPortals) {
   IpczHandle portals[kNumBrokerPortals];
   SpawnTestNode<SurplusPortalsClient>(portals);
   CloseAll(portals);
@@ -59,12 +58,12 @@ MULTINODE_TEST_NODE(ConnectTestNode, ExpectDisconnectFromBroker) {
   Close(b);
 }
 
-TEST_P(ConnectTest, DisconnectWithoutBrokerHandshake) {
-  TransportPair transports = CreateTransports();
+MULTINODE_TEST(ConnectTest, DisconnectWithoutBrokerHandshake) {
+  IpczDriverHandle our_transport;
   auto controller =
-      SpawnTestNodeWithTransport<ExpectDisconnectFromBroker>(transports.theirs);
+      SpawnTestNodeNoConnect<ExpectDisconnectFromBroker>(our_transport);
   EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(transports.ours, IPCZ_NO_FLAGS, nullptr));
+            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
   controller->WaitForShutdown();
 }
 
@@ -74,25 +73,25 @@ MULTINODE_TEST_NODE(ConnectTestNode,
   // we never call ConnectToBroker(). No action required.
 }
 
-TEST_P(ConnectTest, DisconnectWithoutNonBrokerHandshake) {
+MULTINODE_TEST(ConnectTest, DisconnectWithoutNonBrokerHandshake) {
   IpczHandle c = SpawnTestNode<DisconnectWithoutNonBrokerHandshakeClient>();
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
   Close(c);
 }
 
-TEST_P(ConnectTest, DisconnectOnBadBrokerMessage) {
-  TransportPair transports = CreateTransports();
+MULTINODE_TEST(ConnectTest, DisconnectOnBadBrokerMessage) {
+  IpczDriverHandle our_transport;
   auto controller =
-      SpawnTestNodeWithTransport<ExpectDisconnectFromBroker>(transports.theirs);
+      SpawnTestNodeNoConnect<ExpectDisconnectFromBroker>(our_transport);
 
   // Send some garbage to the other node.
   const char kBadMessage[] = "this will never be a valid handshake message!";
   EXPECT_EQ(
       IPCZ_RESULT_OK,
-      GetDriver().Transmit(transports.ours, kBadMessage, std::size(kBadMessage),
+      GetDriver().Transmit(our_transport, kBadMessage, std::size(kBadMessage),
                            nullptr, 0, IPCZ_NO_FLAGS, nullptr));
   EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(transports.ours, IPCZ_NO_FLAGS, nullptr));
+            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
 
   // The other node will only shut down once it's observed peer closure on its
   // portal to us; which it should, because we just sent it some garbage.
@@ -115,7 +114,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, TransmitSomeGarbage) {
   listener.StopListening();
 }
 
-TEST_P(ConnectTest, DisconnectOnBadNonBrokerMessage) {
+MULTINODE_TEST(ConnectTest, DisconnectOnBadNonBrokerMessage) {
   IpczHandle c;
   auto controller = SpawnTestNode<TransmitSomeGarbage>({&c, 1});
 
@@ -160,7 +159,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, NonBrokerToNonBrokerClient) {
   CloseAll({c, b});
 }
 
-TEST_P(ConnectTest, NonBrokerToNonBroker) {
+MULTINODE_TEST(ConnectTest, NonBrokerToNonBroker) {
   IpczHandle c1 = SpawnTestNode<NonBrokerToNonBrokerClient>();
   IpczHandle c2 = SpawnTestNode<NonBrokerToNonBrokerClient>();
 
@@ -212,7 +211,7 @@ MULTINODE_TEST_NODE(ConnectTestNode, BadNonBrokerReferralClient) {
             GetDriver().Close(transports.theirs, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST_P(ConnectTest, BadNonBrokerReferral) {
+MULTINODE_TEST(ConnectTest, BadNonBrokerReferral) {
   IpczHandle c = SpawnTestNode<BadNonBrokerReferralClient>();
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
   Close(c);
@@ -230,27 +229,25 @@ MULTINODE_TEST_NODE(ConnectTestNode, FailedNonBrokerReferralReferredClient) {
 MULTINODE_TEST_NODE(ConnectTestNode, FailedNonBrokerReferralClient) {
   IpczHandle b = ConnectToBroker();
 
-  TransportPair transports = CreateTransports();
+  IpczDriverHandle our_transport;
   auto controller =
-      SpawnTestNodeWithTransport<FailedNonBrokerReferralReferredClient>(
-          transports.theirs);
+      SpawnTestNodeNoConnect<FailedNonBrokerReferralReferredClient>(
+          our_transport);
 
   // Disconnect the transport instead of passing to our broker with
   // ConnectNode(). The referred client should observe disconnection of its
   // initial portals and terminate itself.
   EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(transports.ours, IPCZ_NO_FLAGS, nullptr));
+            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
   controller->WaitForShutdown();
   Close(b);
 }
 
-TEST_P(ConnectTest, FailedNonBrokerReferral) {
+MULTINODE_TEST(ConnectTest, FailedNonBrokerReferral) {
   IpczHandle c = SpawnTestNode<FailedNonBrokerReferralClient>();
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
   Close(c);
 }
-
-INSTANTIATE_MULTINODE_TEST_SUITE_P(ConnectTest);
 
 }  // namespace
 }  // namespace ipcz

@@ -6,8 +6,8 @@
 #include <string_view>
 #include <utility>
 
+#include "build/build_config.h"
 #include "ipcz/ipcz.h"
-#include "reference_drivers/blob.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
@@ -31,7 +31,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, BasicConnectionClient) {
   Close(b);
 }
 
-TEST_P(RemotePortalTest, BasicConnection) {
+MULTINODE_TEST(RemotePortalTest, BasicConnection) {
   IpczHandle c = SpawnTestNode<BasicConnectionClient>();
 
   std::string message;
@@ -55,7 +55,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, PortalTransferClient) {
   CloseAll({p, b});
 }
 
-TEST_P(RemotePortalTest, PortalTransfer) {
+MULTINODE_TEST(RemotePortalTest, PortalTransfer) {
   IpczHandle c = SpawnTestNode<PortalTransferClient>();
 
   auto [q, p] = OpenPortals();
@@ -110,7 +110,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, MultipleHopsClient2) {
   CloseAll({p, b});
 }
 
-TEST_P(RemotePortalTest, MultipleHops) {
+MULTINODE_TEST(RemotePortalTest, MultipleHops) {
   IpczHandle c1 = SpawnTestNode<MultipleHopsClient1>();
   IpczHandle c2 = SpawnTestNode<MultipleHopsClient2>();
 
@@ -138,7 +138,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, TransferBackAndForthClient) {
   Close(b);
 }
 
-TEST_P(RemotePortalTest, TransferBackAndForth) {
+MULTINODE_TEST(RemotePortalTest, TransferBackAndForth) {
   IpczHandle c = SpawnTestNode<TransferBackAndForthClient>();
 
   constexpr std::string_view kMessage = "hihihihi";
@@ -176,22 +176,14 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, HugeNumberOfPortalsClient) {
     EXPECT_EQ(IPCZ_RESULT_OK,
               WaitToGet(other_client, nullptr, {&portals[i], 1}));
 
-    IpczDriverHandle blob = reference_drivers::Blob::ReleaseAsHandle(
-        MakeRefCounted<reference_drivers::Blob>(absl::StrCat(absl::Dec(i))));
-    IpczHandle box;
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              ipcz().Box(node(), blob, IPCZ_NO_FLAGS, nullptr, &box));
+    IpczHandle box = BoxBlob(absl::StrCat(absl::Dec(i)));
     EXPECT_EQ(IPCZ_RESULT_OK, Put(portals[i], "", {&box, 1}));
   }
 
   for (size_t i = 0; i < kHugeNumberOfPortalsCount; ++i) {
     IpczHandle box;
     EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portals[i], nullptr, {&box, 1}));
-
-    IpczDriverHandle blob;
-    EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob));
-    EXPECT_EQ(absl::StrCat(absl::Dec(i)),
-              reference_drivers::Blob::TakeFromHandle(blob)->message());
+    EXPECT_EQ(absl::StrCat(absl::Dec(i)), UnboxBlob(box));
   }
 
   EXPECT_EQ(IPCZ_RESULT_OK, Put(b, "", {&other_client, 1}));
@@ -200,7 +192,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, HugeNumberOfPortalsClient) {
   Close(b);
 }
 
-TEST_P(RemotePortalTest, HugeNumberOfPortals) {
+MULTINODE_TEST(RemotePortalTest, HugeNumberOfPortals) {
   // Opens a very large number of portals, and sends them all to client nodes.
   // The client nodes exchange these portals with each other and transmit
   // parcels over them, with and without driver objects. This exercises
@@ -238,7 +230,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, RoutingStressTestClient) {
   Close(b);
 }
 
-TEST_P(RemotePortalTest, RoutingStressTest) {
+MULTINODE_TEST(RemotePortalTest, RoutingStressTest) {
   // This test spawns a bunch of nodes and bounces two portals back and forth
   // among them over a large number of iterations, then waits for all the
   // intermediate routers to be removed. Every iteration also sends a message
@@ -254,11 +246,7 @@ TEST_P(RemotePortalTest, RoutingStressTest) {
 
   auto [a, b] = OpenPortals();
   for (size_t j = 0; j < kRouteExpansionStressTestNumIterations; ++j) {
-    IpczDriverHandle blob = reference_drivers::Blob::ReleaseAsHandle(
-        MakeRefCounted<reference_drivers::Blob>(absl::StrCat(absl::Dec(j))));
-    IpczHandle box;
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              ipcz().Box(node(), blob, IPCZ_NO_FLAGS, nullptr, &box));
+    IpczHandle box = BoxBlob(absl::StrCat(absl::Dec(j)));
     EXPECT_EQ(IPCZ_RESULT_OK,
               Put(a, absl::StrCat("a", absl::Dec(j)), {&box, 1}));
     EXPECT_EQ(IPCZ_RESULT_OK, Put(b, absl::StrCat("b", absl::Dec(j))));
@@ -279,11 +267,7 @@ TEST_P(RemotePortalTest, RoutingStressTest) {
     EXPECT_EQ(absl::StrCat("b", absl::Dec(i)), message);
     EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, &message, {&box, 1}));
     EXPECT_EQ(absl::StrCat("a", absl::Dec(i)), message);
-
-    IpczDriverHandle blob;
-    EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob));
-    EXPECT_EQ(absl::StrCat(absl::Dec(i)),
-              reference_drivers::Blob::TakeFromHandle(blob)->message());
+    EXPECT_EQ(absl::StrCat(absl::Dec(i)), UnboxBlob(box));
   }
 
   for (auto& pair : client_pairs) {
@@ -340,7 +324,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, DisconnectThroughProxyClient3) {
 #else
 #define MAYBE_DisconnectThroughProxy DisconnectThroughProxy
 #endif
-TEST_P(RemotePortalTest, MAYBE_DisconnectThroughProxy) {
+MULTINODE_TEST(RemotePortalTest, MAYBE_DisconnectThroughProxy) {
   // Exercises node disconnection. Namely if portals on nodes 1 and 3 are
   // connected via proxy on node 2, and node 3 disappears, node 1's portal
   // should observe peer closure.
@@ -371,8 +355,6 @@ TEST_P(RemotePortalTest, MAYBE_DisconnectThroughProxy) {
   EXPECT_TRUE(c1_control->WaitForShutdown());
   CloseAll({c1, c2, c3});
 }
-
-INSTANTIATE_MULTINODE_TEST_SUITE_P(RemotePortalTest);
 
 }  // namespace
 }  // namespace ipcz

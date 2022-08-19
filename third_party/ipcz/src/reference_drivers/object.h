@@ -21,11 +21,6 @@ class Object : public RefCounted {
     kMemory,
     kMapping,
 
-    // A non-standard driver object type, used to exercise more complex, custom
-    // driver object de/serialization via boxing and unboxing in tests. See the
-    // Blob definition in src/reference_drivers/blob.h.
-    kBlob,
-
 #if defined(OS_LINUX)
     // A non-standard driver object type which wraps a FileDescriptor object.
     kFileDescriptor,

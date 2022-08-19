@@ -30,7 +30,7 @@ MULTINODE_TEST_NODE(MergePortalsTestNode, MergeWithInitialPortalClient) {
   Close(b);
 }
 
-TEST_P(MergePortalsTest, MergeWithInitialPortal) {
+MULTINODE_TEST(MergePortalsTest, MergeWithInitialPortal) {
   IpczHandle c = SpawnTestNode<MergeWithInitialPortalClient>();
   auto [q, p] = OpenPortals();
   EXPECT_EQ(IPCZ_RESULT_OK, Merge(c, p));
@@ -43,7 +43,7 @@ TEST_P(MergePortalsTest, MergeWithInitialPortal) {
   Close(q);
 }
 
-TEST_P(MergePortalsTest, MergeWithClosedLocalPeer) {
+MULTINODE_TEST(MergePortalsTest, MergeWithClosedLocalPeer) {
   auto [q, p] = OpenPortals();
   auto [d, b] = OpenPortals();
 
@@ -64,7 +64,7 @@ MULTINODE_TEST_NODE(MergePortalsTestNode, MergeWithClosedRemotePeerClient) {
   Close(b);
 }
 
-TEST_P(MergePortalsTest, MergeWithClosedRemotePeer) {
+MULTINODE_TEST(MergePortalsTest, MergeWithClosedRemotePeer) {
   IpczHandle c = SpawnTestNode<MergeWithClosedRemotePeerClient>();
   auto [r, s] = OpenPortals();
   EXPECT_EQ(IPCZ_RESULT_OK, Put(c, "", {&r, 1}));
@@ -95,7 +95,7 @@ MULTINODE_TEST_NODE(MergePortalsTestNode, MergeComplexRoutesClient) {
   CloseAll({b, portal, other_client});
 }
 
-TEST_P(MergePortalsTest, MergeComplexRoutes) {
+MULTINODE_TEST(MergePortalsTest, MergeComplexRoutes) {
   IpczHandle c1 = SpawnTestNode<MergeComplexRoutesClient>();
   IpczHandle c2 = SpawnTestNode<MergeComplexRoutesClient>();
 
@@ -122,8 +122,6 @@ TEST_P(MergePortalsTest, MergeComplexRoutes) {
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c2, &message));
   CloseAll({c1, c2});
 }
-
-INSTANTIATE_MULTINODE_TEST_SUITE_P(MergePortalsTest);
 
 }  // namespace
 }  // namespace ipcz

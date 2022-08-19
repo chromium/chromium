@@ -50,6 +50,10 @@ struct IPCZ_ALIGN(8) TransportHeader {
   // Indicates what type of destination the other end of this serialized
   // transport is connected to.
   Transport::Destination destination;
+
+  // Indicates whether the remote process on the other end of this transport
+  // is the same process sending this object.
+  bool is_same_remote_process;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -338,7 +342,7 @@ IpczResult Transport::DeserializeObject(
   auto object_handles = base::make_span(platform_handles.container());
   switch (header.type) {
     case ObjectBase::kTransport:
-      object = Transport::Deserialize(object_data, object_handles);
+      object = Deserialize(*this, object_data, object_handles);
       break;
 
     case ObjectBase::kSharedBuffer:
@@ -377,7 +381,11 @@ bool Transport::GetSerializedDimensions(Transport& transmitter,
                                         size_t& num_bytes,
                                         size_t& num_handles) {
   num_bytes = sizeof(TransportHeader);
+#if BUILDFLAG(IS_WIN)
+  num_handles = ShouldSerializeProcessHandle(transmitter) ? 2 : 1;
+#else
   num_handles = 1;
+#endif
   return true;
 }
 
@@ -387,25 +395,50 @@ bool Transport::Serialize(Transport& transmitter,
   DCHECK_EQ(sizeof(TransportHeader), data.size());
   auto& header = *reinterpret_cast<TransportHeader*>(data.data());
   header.destination = destination_;
+  header.is_same_remote_process = remote_process_.is_current();
 
-  DCHECK_EQ(1u, handles.size());
+#if BUILDFLAG(IS_WIN)
+  if (ShouldSerializeProcessHandle(transmitter)) {
+    DCHECK_EQ(handles.size(), 2u);
+    DCHECK(remote_process_.IsValid());
+    DCHECK(!remote_process_.is_current());
+    handles[1] = PlatformHandle(
+        base::win::ScopedHandle(remote_process_.Duplicate().Release()));
+  } else {
+    DCHECK_EQ(handles.size(), 1u);
+  }
+#else
+  DCHECK_EQ(handles.size(), 1u);
+#endif
+
   DCHECK(inactive_endpoint_.is_valid());
   handles[0] = inactive_endpoint_.TakePlatformHandle();
-
   return true;
 }
 
 // static
 scoped_refptr<Transport> Transport::Deserialize(
+    Transport& from_transport,
     base::span<const uint8_t> data,
     base::span<PlatformHandle> handles) {
   if (data.size() < sizeof(TransportHeader) || handles.size() < 1) {
     return nullptr;
   }
 
+  base::Process process;
   const auto& header = *reinterpret_cast<const TransportHeader*>(data.data());
+#if BUILDFLAG(IS_WIN)
+  if (handles.size() >= 2 && from_transport.remote_process().IsValid()) {
+    process = base::Process(handles[1].ReleaseHandle());
+  }
+#endif
+  if (header.is_same_remote_process &&
+      from_transport.remote_process().IsValid()) {
+    process = from_transport.remote_process().Duplicate();
+  }
   return base::MakeRefCounted<Transport>(
-      header.destination, PlatformChannelEndpoint(std::move(handles[0])));
+      header.destination, PlatformChannelEndpoint(std::move(handles[0])),
+      std::move(process));
 }
 
 bool Transport::IsIpczTransport() const {
@@ -452,6 +485,16 @@ bool Transport::CanTransmitHandles() const {
   return remote_process_.IsValid() || destination_ == kToBroker;
 #else
   return true;
+#endif
+}
+
+bool Transport::ShouldSerializeProcessHandle(Transport& transmitter) const {
+#if BUILDFLAG(IS_WIN)
+  return remote_process_.IsValid() && !remote_process_.is_current() &&
+         destination_ == kToBroker;
+#else
+  // We have no need for the process handle on other platforms.
+  return false;
 #endif
 }
 

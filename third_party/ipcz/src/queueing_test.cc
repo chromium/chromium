@@ -41,7 +41,7 @@ MULTINODE_TEST_NODE(QueueingTestNode, RemoteQueueFeedbackClient) {
   Close(b);
 }
 
-TEST_P(QueueingTest, RemoteQueueFeedback) {
+MULTINODE_TEST(QueueingTest, RemoteQueueFeedback) {
   // Exercises operations which rely on feedback from the remote peer regarding
   // its inbound parcel queue state.
   IpczHandle c = SpawnTestNode<RemoteQueueFeedbackClient>();
@@ -126,7 +126,7 @@ MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseQueueingClient) {
   Close(b);
 }
 
-TEST_P(QueueingTest, TwoPhaseQueueing) {
+MULTINODE_TEST(QueueingTest, TwoPhaseQueueing) {
   IpczHandle c = SpawnTestNode<TwoPhaseQueueingClient>();
   WaitForDirectRemoteLink(c);
 
@@ -176,7 +176,7 @@ MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseFeedbackClient) {
   Close(b);
 }
 
-TEST_P(QueueingTest, TwoPhaseFeedback) {
+MULTINODE_TEST(QueueingTest, TwoPhaseFeedback) {
   IpczHandle c = SpawnTestNode<TwoPhaseFeedbackClient>();
   WaitForDirectRemoteLink(c);
   EXPECT_EQ(IPCZ_RESULT_OK, Put(c, "hello?"));
@@ -185,8 +185,6 @@ TEST_P(QueueingTest, TwoPhaseFeedback) {
                                   .max_remote_parcels = 1}));
   Close(c);
 }
-
-INSTANTIATE_MULTINODE_TEST_SUITE_P(QueueingTest);
 
 }  // namespace
 }  // namespace ipcz

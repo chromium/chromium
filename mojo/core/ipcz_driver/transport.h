@@ -88,6 +88,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
                  base::span<PlatformHandle> handles) override;
 
   static scoped_refptr<Transport> Deserialize(
+      Transport& from_transport,
       base::span<const uint8_t> data,
       base::span<PlatformHandle> handles);
 
@@ -113,6 +114,13 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   ~Transport() override;
 
   bool CanTransmitHandles() const;
+
+  // Indicates whether this transport should serialize its remote process handle
+  // along with its endpoint handle being serialized for transmission over
+  // `transmitter`. This must only be true if we have a valid remote process
+  // handle and `transmitter` goes to a broker. Always false on non-Windows
+  // platforms.
+  bool ShouldSerializeProcessHandle(Transport& transmitter) const;
 
   const Destination destination_;
   const base::Process remote_process_;
