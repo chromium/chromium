@@ -492,6 +492,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     [self acceptAutocompleteText];
   } else {
     [self becomeFirstResponder];
+    UIMenuController* menuController = [UIMenuController sharedMenuController];
+    if (menuController.isMenuVisible) {
+      [menuController hideMenu];
+    } else {
+      [menuController showMenuFromView:self rect:self.bounds];
+    }
   }
 }
 
