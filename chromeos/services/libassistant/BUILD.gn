@@ -62,6 +62,7 @@ source_set("loader") {
     "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
