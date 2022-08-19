@@ -83,6 +83,7 @@ builder(
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
+    auto_builder_dimension = False,
     # TODO(crbug/1346396) Figure out what machines the runnner should run on
     pool = ci.DEFAULT_POOL,
 )
