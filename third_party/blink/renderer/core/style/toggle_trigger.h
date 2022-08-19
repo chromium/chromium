@@ -35,7 +35,7 @@ class ToggleTrigger {
 
   const AtomicString& Name() const { return name_; }
   ToggleTriggerMode Mode() const { return mode_; }
-  State Value() const { return value_; }
+  const State& Value() const { return value_; }
 
  private:
   const AtomicString name_;

@@ -8,6 +8,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/toggle-helpers.js"></script>
+<style id="style"></style>
 
 <body>
 
@@ -31,12 +32,20 @@ function test_trigger_on_group(toggle_specifier, other_specifier, action, toggle
     other.style.toggle = `test-group ${other_specifier} group`;
     group.appendChild(other);
 
+    let style = document.getElementById("style");
+    style.textContent = `
+      :toggle(test-group ${toggle_expected}) { --v:${toggle_expected}; }
+      :toggle(test-group ${group_expected}) { --v:${group_expected}; }
+    `;
+
     container.replaceChildren(group);
     await wait_for_toggle_creation(toggle);
 
     toggle.click();
     assert_true(toggle.matches(`:toggle(test-group ${toggle_expected}`), "value of triggered toggle");
+    assert_equals(getComputedStyle(toggle).getPropertyValue("--v"), toggle_expected, "style on triggered toggle");
     assert_true(other.matches(`:toggle(test-group ${group_expected}`), "value of other toggle in group");
+    assert_equals(getComputedStyle(other).getPropertyValue("--v"), group_expected, "style on other toggle in group");
   }, `group behavior for toggle "${toggle_specifier}" and action "${action}" with other element in group "${other_specifier}"`);
 }
 
@@ -211,6 +220,11 @@ let finding_group_tests = [
 
 for (let t of finding_group_tests) {
   promise_test(async function() {
+    document.getElementById("style").textContent = `
+      :toggle(test-group 0) { --v:0; }
+      :toggle(test-group 1) { --v:1; }
+      :toggle(test-group 2) { --v:2; }
+    `;
     container.innerHTML = t;
 
     for (let e of container.querySelectorAll('.establish')) {
@@ -235,12 +249,18 @@ for (let t of finding_group_tests) {
     activate.click();
     for (let e of container.querySelectorAll('.assert-in')) {
       assert_true(e.matches(":toggle(test-group 0)"), "element in group");
+      assert_equals(getComputedStyle(e).getPropertyValue("--v"), "0",
+                    "style on element in group");
     }
     for (let e of container.querySelectorAll('.assert-out')) {
       assert_true(e.matches(":toggle(test-group 1)"), "element not in group");
+      assert_equals(getComputedStyle(e).getPropertyValue("--v"), "1",
+                    "style on element not in group");
     }
     for (let e of container.querySelectorAll('.assert-activated')) {
       assert_true(e.matches(":toggle(test-group 2)"), "element was activated");
+      assert_equals(getComputedStyle(e).getPropertyValue("--v"), "2",
+                    "style on activated element");
     }
   }, `toggle groups test: ${t}`);
 }

@@ -63,6 +63,7 @@ extern const AtomicString& g_focus_visible;
 extern const AtomicString& g_focus_within;
 extern const AtomicString& g_hover;
 extern const AtomicString& g_past;
+extern const AtomicString& g_toggle;
 extern const AtomicString& g_unresolved;
 
 void Init();

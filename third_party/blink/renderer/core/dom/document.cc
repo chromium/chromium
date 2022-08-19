@@ -2439,6 +2439,35 @@ void Document::UpdateStyleAndLayoutForNode(const Node* node,
   UpdateStyleAndLayout(reason);
 }
 
+void Document::AddToRecalcStyleForToggle(Element* element) {
+  elements_needing_style_recalc_for_toggle_.insert(element);
+}
+
+bool Document::SetNeedsStyleRecalcForToggles() {
+  // TODO(crbug.com/1250716): We currently call this from
+  // LocalFrameView::RunCSSToggleSteps().  This is not ideal, but it produces
+  // behavior that's basically what we want, except for making
+  // getComputedStyle() produce correct results, which is hopefully fixable
+  // with future changes to PostStyleUpdateScope).  The behavior is also not
+  // yet well-defined; see https://github.com/tabatkins/css-toggle/issues/27
+  // for making this better.
+
+  if (elements_needing_style_recalc_for_toggle_.size() == 0)
+    return false;
+
+  HeapHashSet<Member<Element>> elements;
+  std::swap(elements_needing_style_recalc_for_toggle_, elements);
+
+  const auto& reason = StyleChangeReasonForTracing::CreateWithExtraData(
+      style_change_reason::kPseudoClass, style_change_extra_data::g_toggle);
+
+  for (auto element : elements) {
+    element->SetNeedsStyleRecalc(StyleChangeType::kSubtreeStyleChange, reason);
+  }
+
+  return true;
+}
+
 void Document::ApplyScrollRestorationLogic() {
   DCHECK(View());
   // This function in not re-entrant. However, the places that invoke this are
@@ -8082,6 +8111,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(pop_up_mousedown_target_);
   visitor->Trace(popups_waiting_to_hide_);
   visitor->Trace(all_open_pop_ups_);
+  visitor->Trace(elements_needing_style_recalc_for_toggle_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

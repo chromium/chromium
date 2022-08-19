@@ -1533,6 +1533,14 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void SetPopUpMousedownTarget(const Element*);
 
+  // Add an element to the set of elements that, because of CSS toggle
+  // creation, need style recalc done later.
+  void AddToRecalcStyleForToggle(Element* element);
+
+  // Call SetNeedsStyleRecalc for elements from AddToRecalcStyleForToggle;
+  // return whether any calls were made.
+  bool SetNeedsStyleRecalcForToggles();
+
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
   bool IsTemplateDocument() const { return template_document_host_; }
@@ -2345,6 +2353,10 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<Element>> popups_waiting_to_hide_;
   // A set of all open pop-ups, of all types.
   HeapHashSet<Member<Element>> all_open_pop_ups_;
+
+  // Elements that need to be restyled because a toggle was created on them,
+  // or a prior sibling, during the previous restyle.
+  HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;
 
   int load_event_delay_count_;
 
