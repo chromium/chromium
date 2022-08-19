@@ -81,13 +81,13 @@ void DeskModelWrapper::AddOrUpdateEntry(
   }
 }
 
-void DeskModelWrapper::DeleteEntry(const std::string& uuid_str,
+void DeskModelWrapper::DeleteEntry(const base::GUID& uuid,
                                    DeskModel::DeleteEntryCallback callback) {
   auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
-  if (GetDeskTemplateModel()->HasUuid(uuid_str)) {
-    GetDeskTemplateModel()->DeleteEntry(uuid_str, std::move(callback));
+  if (GetDeskTemplateModel()->HasUuid(uuid.AsLowercaseString())) {
+    GetDeskTemplateModel()->DeleteEntry(uuid, std::move(callback));
   } else {
-    save_and_recall_desks_model_->DeleteEntry(uuid_str, std::move(callback));
+    save_and_recall_desks_model_->DeleteEntry(uuid, std::move(callback));
   }
 }
 

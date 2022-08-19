@@ -64,7 +64,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Delete all templates identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
-  void DeleteTemplates(const std::vector<std::string>& uuids,
+  void DeleteTemplates(const std::vector<base::GUID>& uuids,
                        bool delete_animation);
 
   // This performs the launch animation for Save & Recall. The `DeskItemView`

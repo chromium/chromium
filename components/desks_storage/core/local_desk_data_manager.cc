@@ -122,8 +122,8 @@ bool WriteTemplateFile(const base::FilePath& path_to_template,
 // file given the `file_path` to the desk template or save and recall desk
 // directory and the entry's `uuid`.
 base::FilePath GetFullyQualifiedPath(base::FilePath file_path,
-                                     const std::string& uuid) {
-  std::string filename(uuid);
+                                     const base::GUID& uuid) {
+  std::string filename = uuid.AsLowercaseString();
   filename.append(kFileExtension);
 
   return base::FilePath(file_path.Append(base::FilePath(filename)));
@@ -287,7 +287,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
 }
 
 void LocalDeskDataManager::DeleteEntry(
-    const std::string& uuid_str,
+    const base::GUID& uuid,
     DeskModel::DeleteEntryCallback callback) {
   auto status = std::make_unique<DeskModel::DeleteEntryStatus>();
   if (cache_status_ != CacheStatus::kOk) {
@@ -296,7 +296,6 @@ void LocalDeskDataManager::DeleteEntry(
     return;
   }
 
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid()) {
     // There does not exist an entry with invalid UUID.
     // Therefore the deletion request is vicariously successful.
@@ -314,7 +313,7 @@ void LocalDeskDataManager::DeleteEntry(
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&LocalDeskDataManager::DeleteEntryTask,
-                     base::Unretained(this), uuid_str, status.get()),
+                     base::Unretained(this), uuid, status.get()),
       base::BindOnce(&LocalDeskDataManager::OnDeleteEntry,
                      weak_ptr_factory_.GetWeakPtr(), std::move(status),
                      std::move(entry), std::move(callback)));
@@ -509,7 +508,7 @@ void LocalDeskDataManager::AddOrUpdateEntryTask(
     DeskModel::AddOrUpdateEntryStatus* out_status_ptr,
     base::Value entry_base_value) {
   const base::FilePath fully_qualified_path =
-      GetFullyQualifiedPath(local_saved_desk_path_, uuid.AsLowercaseString());
+      GetFullyQualifiedPath(local_saved_desk_path_, uuid);
   if (WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))) {
     *out_status_ptr = DeskModel::AddOrUpdateEntryStatus::kOk;
   } else {
@@ -536,10 +535,10 @@ void LocalDeskDataManager::OnAddOrUpdateEntry(
 }
 
 void LocalDeskDataManager::DeleteEntryTask(
-    const std::string& uuid_str,
+    const base::GUID& uuid,
     DeskModel::DeleteEntryStatus* out_status_ptr) {
   const base::FilePath fully_qualified_path =
-      GetFullyQualifiedPath(local_saved_desk_path_, uuid_str);
+      GetFullyQualifiedPath(local_saved_desk_path_, uuid);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   if (base::DeleteFile(fully_qualified_path)) {

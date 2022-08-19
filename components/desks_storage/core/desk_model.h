@@ -135,7 +135,7 @@ class DeskModel {
       base::OnceCallback<void(DeleteEntryStatus status)>;
   // Remove entry with `uuid` from entries. If the entry with `uuid` does not
   // exist, then the deletion is considered a success.
-  virtual void DeleteEntry(const std::string& uuid,
+  virtual void DeleteEntry(const base::GUID& uuid,
                            DeleteEntryCallback callback) = 0;
 
   // Delete all entries.

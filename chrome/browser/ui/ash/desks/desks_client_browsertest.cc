@@ -229,9 +229,8 @@ std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
 void DeleteDeskTemplate(const base::GUID uuid) {
   base::RunLoop run_loop;
   DesksClient::Get()->DeleteDeskTemplate(
-      uuid.AsLowercaseString(),
-      base::BindLambdaForTesting(
-          [&](std::string error_string) { run_loop.Quit(); }));
+      uuid, base::BindLambdaForTesting(
+                [&](std::string error_string) { run_loop.Quit(); }));
   run_loop.Run();
 }
 

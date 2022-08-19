@@ -374,9 +374,8 @@ void SavedDeskLibraryView::AddOrUpdateTemplates(
   Layout();
 }
 
-void SavedDeskLibraryView::DeleteTemplates(
-    const std::vector<std::string>& uuids,
-    bool delete_animation) {
+void SavedDeskLibraryView::DeleteTemplates(const std::vector<base::GUID>& uuids,
+                                           bool delete_animation) {
   if (desk_template_grid_view_)
     desk_template_grid_view_->DeleteTemplates(uuids, delete_animation);
   if (save_and_recall_grid_view_)
@@ -432,7 +431,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
       .SetOpacity(item_layer, 0.0f);
 
   // Delete the existing saved desk item without animation.
-  DeleteTemplates({uuid.AsLowercaseString()}, /*delete_animation=*/false);
+  DeleteTemplates({uuid}, /*delete_animation=*/false);
 }
 
 void SavedDeskLibraryView::OnFeedbackButtonPressed() {

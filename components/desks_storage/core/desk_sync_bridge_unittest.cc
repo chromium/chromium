@@ -1456,7 +1456,7 @@ TEST_F(DeskSyncBridgeTest, DeleteEntryLocally) {
   // Delete template 1.
   base::RunLoop loop;
   bridge()->DeleteEntry(
-      kTestUuid1.AsLowercaseString(),
+      kTestUuid1,
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
         loop.Quit();

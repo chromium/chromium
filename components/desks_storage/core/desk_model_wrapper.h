@@ -39,7 +39,7 @@ class DeskModelWrapper : public DeskModel {
                       GetEntryByUuidCallback callback) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
-  void DeleteEntry(const std::string& uuid,
+  void DeleteEntry(const base::GUID& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   std::size_t GetEntryCount() const override;

@@ -181,7 +181,7 @@ void SavedDeskGridView::AddOrUpdateTemplates(
     AnimateGridItems(new_grid_items);
 }
 
-void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids,
+void SavedDeskGridView::DeleteTemplates(const std::vector<base::GUID>& uuids,
                                         bool delete_animation) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
@@ -190,12 +190,11 @@ void SavedDeskGridView::DeleteTemplates(const std::vector<std::string>& uuids,
           ->highlight_controller();
   DCHECK(highlight_controller);
 
-  for (const std::string& uuid : uuids) {
-    auto iter =
-        std::find_if(grid_items_.begin(), grid_items_.end(),
-                     [uuid](SavedDeskItemView* grid_item) {
-                       return uuid == grid_item->uuid().AsLowercaseString();
-                     });
+  for (const base::GUID& uuid : uuids) {
+    auto iter = std::find_if(grid_items_.begin(), grid_items_.end(),
+                             [&uuid](SavedDeskItemView* grid_item) {
+                               return uuid == grid_item->uuid();
+                             });
 
     if (iter == grid_items_.end())
       continue;

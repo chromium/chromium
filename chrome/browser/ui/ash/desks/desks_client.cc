@@ -258,7 +258,7 @@ void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
                                     template_name, std::move(callback)));
 }
 
-void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
+void DesksClient::DeleteDeskTemplate(const base::GUID& template_uuid,
                                      DeleteDeskTemplateCallback callback) {
   if (!active_profile_) {
     std::move(callback).Run(std::string(kNoCurrentUserError));

@@ -60,7 +60,7 @@ class LocalDeskDataManager : public DeskModel {
                       GetEntryByUuidCallback callback) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
-  void DeleteEntry(const std::string& uuid,
+  void DeleteEntry(const base::GUID& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   std::size_t GetEntryCount() const override;
@@ -117,9 +117,9 @@ class LocalDeskDataManager : public DeskModel {
       const base::GUID uuid,
       std::unique_ptr<ash::DeskTemplate> entry);
 
-  // Remove entry with `uuid_str`. If the entry with `uuid_str` does not
-  // exist, then the deletion is considered a success.
-  void DeleteEntryTask(const std::string& uuid_str,
+  // Remove entry with `uuid`. If the entry with `uuid` does not exist, then the
+  // deletion is considered a success.
+  void DeleteEntryTask(const base::GUID& uuid,
                        DeskModel::DeleteEntryStatus* status_ptr);
 
   // Delete all entries.

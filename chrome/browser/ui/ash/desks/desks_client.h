@@ -88,7 +88,7 @@ class DesksClient : public ash::SessionObserver {
   // to be removed,|callback| will be invoked with an empty error string.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
-  void DeleteDeskTemplate(const std::string& template_uuid,
+  void DeleteDeskTemplate(const base::GUID& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
   using GetDeskTemplatesCallback =

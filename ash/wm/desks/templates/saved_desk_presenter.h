@@ -62,7 +62,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
   // record histogram if `record_for_type` is specified.
-  void DeleteEntry(const std::string& uuid,
+  void DeleteEntry(const base::GUID& uuid,
                    absl::optional<DeskTemplateType> record_for_type);
 
   // Launches `saved_desk` into a new desk. `delay` is the time between each app
@@ -104,7 +104,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted saved desk.
-  void OnDeleteEntry(const std::string& uuid,
+  void OnDeleteEntry(const base::GUID& uuid,
                      absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
@@ -120,7 +120,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Helper functions for updating the UI.
   void AddOrUpdateUIEntries(
       const std::vector<const DeskTemplate*>& new_entries);
-  void RemoveUIEntries(const std::vector<std::string>& uuids);
+  void RemoveUIEntries(const std::vector<base::GUID>& uuids);
 
   // Returns a copy of a duplicated name to be stored.  This function works by
   // taking the name to be duplicated and adding a "(1)" to it. If the name

@@ -177,11 +177,10 @@ class SavedDeskTest : public OverviewTestBase {
   void DeleteEntry(const base::GUID& uuid) {
     base::RunLoop loop;
     desk_model()->DeleteEntry(
-        uuid.AsLowercaseString(),
-        base::BindLambdaForTesting(
-            [&](desks_storage::DeskModel::DeleteEntryStatus status) {
-              loop.Quit();
-            }));
+        uuid, base::BindLambdaForTesting(
+                  [&](desks_storage::DeskModel::DeleteEntryStatus status) {
+                    loop.Quit();
+                  }));
     loop.Run();
   }
 
@@ -3217,7 +3216,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   auto callback = base::BindLambdaForTesting([&]() {
     item_view->name_view()->SetText(base::UTF8ToUTF16(name_1));
-    item_view->ReplaceTemplate(uuid_1.AsLowercaseString());
+    item_view->ReplaceTemplate(uuid_1);
   });
 
   dialog_controller->ShowReplaceDialog(

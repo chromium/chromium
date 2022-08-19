@@ -61,7 +61,7 @@ class SavedDeskGridView : public views::View {
   // shuffle `grid_items_` to their final positions. If `delete_animation` is
   // false, then deleted items will simply disappear (shuffled items will still
   // animate).
-  void DeleteTemplates(const std::vector<std::string>& uuids,
+  void DeleteTemplates(const std::vector<base::GUID>& uuids,
                        bool delete_animation);
 
   // Returns true if a template name is being modified using an item view's

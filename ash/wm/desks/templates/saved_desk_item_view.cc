@@ -339,12 +339,12 @@ void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
   saved_desk_util::GetSavedDeskDialogController()->ShowReplaceDialog(
       root_window, name_view_->GetText(), type,
       base::BindOnce(&SavedDeskItemView::ReplaceTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), uuid.AsLowercaseString()),
+                     weak_ptr_factory_.GetWeakPtr(), uuid),
       base::BindOnce(&SavedDeskItemView::RevertTemplateName,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
+void SavedDeskItemView::ReplaceTemplate(const base::GUID& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
   // get template name collisions. Passing `nullopt` as `record_for_type` since
   // we only record the delete operation when the user specifically deletes an
@@ -707,8 +707,8 @@ views::View* SavedDeskItemView::TargetForRect(views::View* root,
 }
 
 void SavedDeskItemView::OnDeleteTemplate() {
-  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
-      desk_template_->uuid().AsLowercaseString(), desk_template_->type());
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(desk_template_->uuid(),
+                                                        desk_template_->type());
 }
 
 void SavedDeskItemView::OnDeleteButtonPressed() {

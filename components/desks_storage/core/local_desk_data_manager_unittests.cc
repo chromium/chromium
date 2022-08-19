@@ -565,7 +565,7 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
   data_manager_->DeleteEntry(
-      kTestUuid1,
+      base::GUID::ParseCaseInsensitive(kTestUuid1),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
@@ -680,7 +680,7 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteSaveAndRecallDeskEntry) {
   VerifyAllEntries(1ul, "Added one save and recall desk");
   EXPECT_EQ(data_manager_->GetSaveAndRecallDeskEntryCount(), 1ul);
   data_manager_->DeleteEntry(
-      kTestSaveAndRecallDeskUuid1,
+      base::GUID::ParseCaseInsensitive(kTestSaveAndRecallDeskUuid1),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
@@ -838,7 +838,7 @@ TEST_F(LocalDeskDataManagerTest, RollbackDeleteTemplatesOnFileDeleteFailure) {
   base::SetPosixFilePermissions(temp_dir_.GetPath(),
                                 base::FILE_PERMISSION_READ_BY_USER);
   data_manager_->DeleteEntry(
-      kTestUuid1,
+      base::GUID::ParseCaseInsensitive(kTestUuid1),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kFailure);
       }));

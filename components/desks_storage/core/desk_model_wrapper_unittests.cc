@@ -622,7 +622,7 @@ TEST_F(DeskModelWrapperTest, CanDeleteDeskTemplateEntry) {
                                    base::BindOnce(&VerifyEntryAddedCorrectly));
 
   model_wrapper_->DeleteEntry(
-      kTestUuid1,
+      base::GUID::ParseCaseInsensitive(kTestUuid1),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
@@ -637,7 +637,7 @@ TEST_F(DeskModelWrapperTest, CanDeleteSaveAndRecallDeskEntry) {
                                    base::BindOnce(&VerifyEntryAddedCorrectly));
 
   model_wrapper_->DeleteEntry(
-      kTestUuid3,
+      base::GUID::ParseCaseInsensitive(kTestUuid3),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));

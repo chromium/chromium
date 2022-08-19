@@ -346,7 +346,7 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
 }
 
 void SavedDeskPresenter::DeleteEntry(
-    const std::string& uuid,
+    const base::GUID& uuid,
     absl::optional<DeskTemplateType> record_for_type) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
@@ -450,7 +450,16 @@ void SavedDeskPresenter::EntriesAddedOrUpdatedRemotely(
 
 void SavedDeskPresenter::EntriesRemovedRemotely(
     const std::vector<std::string>& uuids) {
-  RemoveUIEntries(uuids);
+  // TODO(crbug.com/1352667): We want the backend to provide this as
+  // vector<base::GUID>. Until it does, we'll convert manually here.
+  std::vector<base::GUID> typed_uuids;
+  for (const std::string& uuid_str : uuids) {
+    base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
+    if (uuid.is_valid())
+      typed_uuids.push_back(uuid);
+  }
+
+  RemoveUIEntries(typed_uuids);
 }
 
 void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
@@ -489,7 +498,7 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
 }
 
 void SavedDeskPresenter::OnDeleteEntry(
-    const std::string& uuid,
+    const base::GUID& uuid,
     absl::optional<DeskTemplateType> record_for_type,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
@@ -518,7 +527,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   // store the template ID here since we're about to move the desk template.
   const auto saved_desk_type = saved_desk->type();
   const auto saved_desk_creation_time = saved_desk->created_time();
-  const std::string uuid = saved_desk->uuid().AsLowercaseString();
+  const base::GUID uuid = saved_desk->uuid();
 
   auto* overview_controller = Shell::Get()->overview_controller();
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
@@ -533,7 +542,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
       DCHECK(mini_view);
 
       SavedDeskLibraryView* library = overview_grid->GetSavedDeskLibraryView();
-      library->AnimateDeskLaunch(saved_desk->uuid(), mini_view);
+      library->AnimateDeskLaunch(uuid, mini_view);
     }
   }
 
@@ -696,8 +705,7 @@ void SavedDeskPresenter::AddOrUpdateUIEntries(
     std::move(on_update_ui_closure_for_testing_).Run();
 }
 
-void SavedDeskPresenter::RemoveUIEntries(
-    const std::vector<std::string>& uuids) {
+void SavedDeskPresenter::RemoveUIEntries(const std::vector<base::GUID>& uuids) {
   if (uuids.empty())
     return;
 

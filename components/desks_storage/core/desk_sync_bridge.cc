@@ -1155,7 +1155,7 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   std::move(callback).Run(AddOrUpdateEntryStatus::kOk);
 }
 
-void DeskSyncBridge::DeleteEntry(const std::string& uuid_str,
+void DeskSyncBridge::DeleteEntry(const base::GUID& uuid,
                                  DeleteEntryCallback callback) {
   if (!IsReady()) {
     // This sync bridge has not finished initializing.
@@ -1163,8 +1163,6 @@ void DeskSyncBridge::DeleteEntry(const std::string& uuid_str,
     std::move(callback).Run(DeleteEntryStatus::kFailure);
     return;
   }
-
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
 
   if (GetUserEntryByUUID(uuid) == nullptr) {
     // Consider the deletion successful if the entry does not exist.
