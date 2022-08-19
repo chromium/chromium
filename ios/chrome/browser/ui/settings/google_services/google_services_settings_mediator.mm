@@ -563,8 +563,16 @@ bool GetStatusForSigninPolicy() {
 
 // Updates leak item and asks the consumer to reload it.
 - (void)updateLeakCheckItemAndReload {
+  TableViewModel* model = self.consumer.tableViewModel;
+  TableViewSwitchItem* passwordLeakCheckItem = self.passwordLeakCheckItem;
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    // `passwordLeakCheckItem` is not used when `kEnhancedProtection` is
+    // enabled.
+    DCHECK(![model hasItem:passwordLeakCheckItem]);
+    return;
+  }
   [self updateLeakCheckItem];
-  [self.consumer reloadItem:self.passwordLeakCheckItem];
+  [self.consumer reloadItem:passwordLeakCheckItem];
 }
 
 #pragma mark - GoogleServicesSettingsViewControllerModelDelegate
