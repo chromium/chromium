@@ -22539,6 +22539,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'default': True,
       'example_value': True,
       'id': 727,
@@ -32549,6 +32550,7 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:104-106', 'chrome.*:104-106', 'android:104-106'],
+      'deprecated': True,
       'future_on': ['fuchsia'],
       'features': {
         'per_profile': True,
