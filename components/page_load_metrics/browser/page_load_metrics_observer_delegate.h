@@ -121,6 +121,8 @@ class PageLoadMetricsObserverDelegate {
   virtual PrerenderingState GetPrerenderingState() const = 0;
   // True iff the page is prerendered and activation_start is not yet arrived.
   bool IsInPrerenderingBeforeActivationStart() const;
+  // Returns activation start if activation start was arrived, or nullopt.
+  virtual absl::optional<base::TimeDelta> GetActivationStart() const = 0;
 
   // Whether the page load was initiated by a user.
   virtual const UserInitiatedInfo& GetUserInitiatedInfo() const = 0;

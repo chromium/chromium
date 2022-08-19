@@ -37,6 +37,7 @@ class FakePageLoadMetricsObserverDelegate
   absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
   PrerenderingState GetPrerenderingState() const override;
+  absl::optional<base::TimeDelta> GetActivationStart() const override;
   // By default no BackForwardCacheRestores are present, tests can add them by
   // calling |AddBackForwardCacheRestore|.
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
@@ -106,6 +107,7 @@ class FakePageLoadMetricsObserverDelegate
   bool started_in_foreground_ = true;
   PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
   PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
+  absl::optional<base::TimeDelta> activation_start_ = absl::nullopt;
 
   // This vector backs the |GetBackForwardCacheRestore| and
   // |GetMostRecentBackForwardCacheRestore| methods.

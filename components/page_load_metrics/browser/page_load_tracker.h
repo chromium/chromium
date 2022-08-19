@@ -239,6 +239,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
   PrerenderingState GetPrerenderingState() const override;
+  absl::optional<base::TimeDelta> GetActivationStart() const override;
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
@@ -511,6 +512,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
   // Holds the page's visibility at activation.
   PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
+  absl::optional<base::TimeDelta> activation_start_ = absl::nullopt;
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
   blink::MobileFriendliness latest_mobile_friendliness_;

@@ -810,6 +810,7 @@ void PageLoadTracker::OnTimingChanged() {
     DCHECK(prerendering_state_ ==
            PrerenderingState::kActivatedNoActivationStart);
     prerendering_state_ = PrerenderingState::kActivated;
+    activation_start_ = new_timing.activation_start;
   }
 
   const mojom::PaintTimingPtr& paint_timing =
@@ -1013,6 +1014,10 @@ bool PageLoadTracker::WasPrerenderedThenActivatedInForeground() const {
 
 PrerenderingState PageLoadTracker::GetPrerenderingState() const {
   return prerendering_state_;
+}
+
+absl::optional<base::TimeDelta> PageLoadTracker::GetActivationStart() const {
+  return activation_start_;
 }
 
 const UserInitiatedInfo& PageLoadTracker::GetUserInitiatedInfo() const {

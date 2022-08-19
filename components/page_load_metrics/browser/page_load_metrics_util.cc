@@ -159,8 +159,7 @@ bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate) {
 }
 
 absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
+    const PageLoadMetricsObserverDelegate& delegate) {
   switch (delegate.GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
       if (delegate.StartedInForeground()) {
@@ -175,26 +174,34 @@ absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
       if (delegate.GetVisibilityAtActivation() == PageVisibility::kForeground) {
         return delegate.GetTimeToFirstBackground();
       } else {
-        return timing.activation_start;
+        return delegate.GetActivationStart();
       }
   }
 }
 
 bool EventOccurredBeforeNonPrerenderingBackgroundStart(
     const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
     const base::TimeDelta& event) {
   // If background start is nullopt, it'll must be greater than already
   // occurred event.
   const base::TimeDelta bg_start =
-      GetNonPrerenderingBackgroundStartTiming(delegate, timing)
-          .value_or(base::TimeDelta::Max());
+      GetNonPrerenderingBackgroundStartTiming(delegate).value_or(
+          base::TimeDelta::Max());
   return event < bg_start;
+}
+
+// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
+// We'll left the old version for a while.
+// TODO(https://crbug.com/1317494): Use the above version and delete this.
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  return EventOccurredBeforeNonPrerenderingBackgroundStart(delegate, event);
 }
 
 base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
     const base::TimeDelta& event) {
   base::TimeDelta zero = base::Seconds(0);
 
@@ -205,13 +212,20 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     case PrerenderingState::kActivatedNoActivationStart:
       return zero;
     case PrerenderingState::kActivated: {
-      absl::optional<base::TimeDelta> origin = timing.activation_start;
-      DCHECK(origin.has_value());
-
-      base::TimeDelta corrected = event - origin.value();
-      return corrected < zero ? zero : corrected;
+      base::TimeDelta corrected = event - delegate.GetActivationStart().value();
+      return std::max(zero, corrected);
     }
   }
+}
+
+// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
+// We'll left the old version for a while.
+// TODO(https://crbug.com/1317494): Use the above version and delete this.
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  return CorrectEventAsNavigationOrActivationOrigined(delegate, event);
 }
 
 PageAbortInfo GetPageAbortInfo(

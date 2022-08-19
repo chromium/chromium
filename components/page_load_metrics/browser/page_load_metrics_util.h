@@ -157,14 +157,16 @@ bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate);
 // Note that this can be different from the return value of
 // `PageLoadMetricsObserverDelegate::GetTimeToFirstBackground`.
 absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing);
+    const PageLoadMetricsObserverDelegate& delegate);
 
 // Returns true iff event occurred in prerendered before activation or before
 // background start.
 //
 // Precondition: `HasInvalidActivationStart` must not hold.
 // In this case, arbitrary value will be returned.
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
 bool EventOccurredBeforeNonPrerenderingBackgroundStart(
     const PageLoadMetricsObserverDelegate& delegate,
     const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -176,6 +178,9 @@ bool EventOccurredBeforeNonPrerenderingBackgroundStart(
 // If the page is not prerendered, returns the event as is. If the page is
 // prerendered, returns activation start origined time delta. Negative values
 // are truncated as zero.
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const base::TimeDelta& event);
 base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     const PageLoadMetricsObserverDelegate& delegate,
     const page_load_metrics::mojom::PageLoadTiming& timing,

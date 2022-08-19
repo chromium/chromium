@@ -51,6 +51,11 @@ PrerenderingState FakePageLoadMetricsObserverDelegate::GetPrerenderingState()
   return prerendering_state_;
 }
 
+absl::optional<base::TimeDelta>
+FakePageLoadMetricsObserverDelegate::GetActivationStart() const {
+  return activation_start_;
+}
+
 const PageLoadMetricsObserverDelegate::BackForwardCacheRestore&
 FakePageLoadMetricsObserverDelegate::GetBackForwardCacheRestore(
     size_t index) const {

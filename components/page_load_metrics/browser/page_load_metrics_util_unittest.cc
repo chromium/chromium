@@ -294,6 +294,7 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
   for (const auto& test_case : test_cases) {
     page_load_metrics::FakePageLoadMetricsObserverDelegate delegate;
     delegate.prerendering_state_ = test_case.prerendering_state;
+    delegate.activation_start_ = test_case.activation_start;
     if (test_case.time_to_first_background.has_value()) {
       delegate.first_background_time_ =
           delegate.navigation_start_ +
@@ -327,13 +328,8 @@ TEST_F(PageLoadMetricsUtilTest, GetNonPrerenderingBackgroundStartTiming) {
         break;
     }
 
-    page_load_metrics::mojom::PageLoadTiming timing;
-    page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.navigation_start = base::Time::FromDoubleT(1);
-    timing.activation_start = test_case.activation_start;
-
     absl::optional<base::TimeDelta> got =
-        GetNonPrerenderingBackgroundStartTiming(delegate, timing);
+        GetNonPrerenderingBackgroundStartTiming(delegate);
     EXPECT_EQ(test_case.expected_result, got);
   }
 }
@@ -364,15 +360,31 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
   for (const auto& test_case : test_cases) {
     page_load_metrics::FakePageLoadMetricsObserverDelegate delegate;
     delegate.prerendering_state_ = test_case.prerendering_state;
+    delegate.activation_start_ = test_case.activation_start;
+
+    base::TimeDelta got =
+        CorrectEventAsNavigationOrActivationOrigined(delegate, test_case.event);
+    EXPECT_EQ(test_case.expected_result, got);
+
+    // Currently, multiple implementations of PageLoadMetricsObserver is
+    // ongoing. We'll left the old version for a while.
+    // TODO(https://crbug.com/1317494): Delete below.
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.navigation_start = base::Time::FromDoubleT(1);
     timing.activation_start = test_case.activation_start;
 
-    base::TimeDelta got = CorrectEventAsNavigationOrActivationOrigined(
+    base::TimeDelta got2 = CorrectEventAsNavigationOrActivationOrigined(
         delegate, timing, test_case.event);
-    EXPECT_EQ(test_case.expected_result, got);
+    EXPECT_EQ(test_case.expected_result, got2);
+
+    // In some path, this function is called with old PageLoadTiming, which can
+    // lack activation_start. The result is the same for such case.
+    timing.activation_start = absl::nullopt;
+    base::TimeDelta got3 = CorrectEventAsNavigationOrActivationOrigined(
+        delegate, timing, test_case.event);
+    EXPECT_EQ(test_case.expected_result, got3);
   }
 }
 
