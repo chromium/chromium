@@ -433,30 +433,28 @@ static std::string MakePathRelative(const base::FilePath& parent,
 }
 
 void ExtensionPrefs::MakePathsRelative() {
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *prefs_->GetDictionary(pref_names::kExtensions));
-  if (!dict || dict->DictEmpty())
+  const base::Value::Dict& dict = prefs_->GetValueDict(pref_names::kExtensions);
+  if (dict.empty())
     return;
 
   // Collect all extensions ids with absolute paths in |absolute_keys|.
   std::set<std::string> absolute_keys;
-  for (base::DictionaryValue::Iterator i(*dict); !i.IsAtEnd(); i.Advance()) {
-    const base::DictionaryValue* extension_dict = NULL;
-    if (!i.value().GetAsDictionary(&extension_dict))
+  for (const auto [extension_id, extension_item] : dict) {
+    if (!extension_item.is_dict())
       continue;
-    absl::optional<int> location_value =
-        extension_dict->FindIntKey(kPrefLocation);
+    const base::Value::Dict& extension_dict = extension_item.GetDict();
+    absl::optional<int> location_value = extension_dict.FindInt(kPrefLocation);
     if (location_value && Manifest::IsUnpackedLocation(
                               static_cast<ManifestLocation>(*location_value))) {
       // Unpacked extensions can have absolute paths.
       continue;
     }
-    std::string path_string;
-    if (!extension_dict->GetString(kPrefPath, &path_string))
+    const std::string* path_string = extension_dict.FindString(kPrefPath);
+    if (!path_string)
       continue;
-    base::FilePath path = base::FilePath::FromUTF8Unsafe(path_string);
+    base::FilePath path = base::FilePath::FromUTF8Unsafe(*path_string);
     if (path.IsAbsolute())
-      absolute_keys.insert(i.key());
+      absolute_keys.insert(extension_id);
   }
   if (absolute_keys.empty())
     return;
@@ -487,11 +485,13 @@ const base::DictionaryValue* ExtensionPrefs::GetExtensionPref(
   if (extension_id.empty()) {
     return nullptr;
   }
-  const base::Value* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  if (!extensions)
+  // TODO (https://crbug.com/1342019) This should call
+  // `PrefService::GetValueDict`, which will in turn require the return type to
+  // be `base::Value::Dict`.
+  const base::Value& extensions = prefs_->GetValue(pref_names::kExtensions);
+  if (!extensions.is_dict())
     return nullptr;
-  const base::Value* extension_dict = extensions->FindDictPath(extension_id);
+  const base::Value* extension_dict = extensions.FindDictPath(extension_id);
   return extension_dict ? &base::Value::AsDictionaryValue(*extension_dict)
                         : nullptr;
 }
@@ -1163,8 +1163,11 @@ void ExtensionPrefs::SetLastPingDay(const std::string& extension_id,
 }
 
 base::Time ExtensionPrefs::BlocklistLastPingDay() const {
+  // TODO (https://crbug.com/1342019) This should call
+  // `PrefService::GetValueDict`, which will in turn require the return type to
+  // be `base::Value::Dict`.
   return ReadTime(&base::Value::AsDictionaryValue(
-                      *prefs_->GetDictionary(kExtensionsBlocklistUpdate)),
+                      prefs_->GetValue(kExtensionsBlocklistUpdate)),
                   kLastPingDay);
 }
 
@@ -1492,9 +1495,9 @@ void ExtensionPrefs::SetInstallLocation(const std::string& extension_id,
 
 std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     const std::string& extension_id,
-    const base::Value* extension,
+    const base::Value::Dict& extension,
     bool include_component_extensions) const {
-  absl::optional<int> location_value = extension->FindIntKey(kPrefLocation);
+  absl::optional<int> location_value = extension.FindInt(kPrefLocation);
   if (!location_value)
     return nullptr;
 
@@ -1518,13 +1521,14 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     return nullptr;
   }
 
-  const base::Value* manifest = extension->FindDictKey(kPrefManifest);
-  if (!Manifest::IsUnpackedLocation(location) && !manifest) {
+  const base::Value* manifest = extension.Find(kPrefManifest);
+  if (!Manifest::IsUnpackedLocation(location) &&
+      !(manifest && manifest->is_dict())) {
     LOG(WARNING) << "Missing manifest for extension " << extension_id;
     // Just a warning for now.
   }
 
-  const std::string* path = extension->FindStringPath(kPrefPath);
+  const std::string* path = extension.FindString(kPrefPath);
   if (!path)
     return nullptr;
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(*path);
@@ -1533,7 +1537,9 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   if (!file_path.IsAbsolute())
     file_path = install_directory_.Append(file_path);
   const base::DictionaryValue* manifest_dict =
-      manifest ? &base::Value::AsDictionaryValue(*manifest) : nullptr;
+      (manifest && manifest->is_dict())
+          ? &base::Value::AsDictionaryValue(*manifest)
+          : nullptr;
   return std::make_unique<ExtensionInfo>(manifest_dict, extension_id, file_path,
                                          location);
 }
@@ -1541,21 +1547,19 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
 std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
     const std::string& extension_id,
     bool include_component_extensions) const {
-  const base::Value* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  if (!extensions)
-    return nullptr;
-  const base::Value* ext = extensions->FindDictKey(extension_id);
+  const base::Value::Dict& extensions =
+      prefs_->GetValueDict(pref_names::kExtensions);
+  const base::Value::Dict* ext = extensions.FindDict(extension_id);
   if (!ext)
     return nullptr;
 
-  absl::optional<int> state_value = ext->FindIntKey(kPrefState);
+  absl::optional<int> state_value = ext->FindInt(kPrefState);
   // TODO(devlin): Remove this once all clients are updated with
   // MigrateToNewExternalUninstallPref().
   if (state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED)
     return nullptr;
 
-  return GetInstalledInfoHelper(extension_id, ext,
+  return GetInstalledInfoHelper(extension_id, *ext,
                                 include_component_extensions);
 }
 
@@ -1564,9 +1568,9 @@ ExtensionPrefs::GetInstalledExtensionsInfo(
     bool include_component_extensions) const {
   std::unique_ptr<ExtensionsInfo> extensions_info(new ExtensionsInfo);
 
-  const base::Value* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  for (const auto extension_id : extensions->DictItems()) {
+  const base::Value::Dict& extensions =
+      prefs_->GetValueDict(pref_names::kExtensions);
+  for (const auto extension_id : extensions) {
     if (!crx_file::id_util::IdIsValid(extension_id.first))
       continue;
 
@@ -1663,7 +1667,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
   if (!ext)
     return nullptr;
 
-  return GetInstalledInfoHelper(extension_id, ext,
+  return GetInstalledInfoHelper(extension_id, ext->GetDict(),
                                 /*include_component_extensions = */ false);
 }
 
@@ -1689,14 +1693,13 @@ std::unique_ptr<ExtensionPrefs::ExtensionsInfo>
 ExtensionPrefs::GetAllDelayedInstallInfo() const {
   std::unique_ptr<ExtensionsInfo> extensions_info(new ExtensionsInfo);
 
-  const base::Value* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  for (const auto extension_id : extensions->DictItems()) {
-    if (!crx_file::id_util::IdIsValid(extension_id.first))
+  const base::Value::Dict& extensions =
+      prefs_->GetValueDict(pref_names::kExtensions);
+  for (const auto [extension_id, _] : extensions) {
+    if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
 
-    std::unique_ptr<ExtensionInfo> info =
-        GetDelayedInstallInfo(extension_id.first);
+    std::unique_ptr<ExtensionInfo> info = GetDelayedInstallInfo(extension_id);
     if (info)
       extensions_info->push_back(std::move(info));
   }
@@ -1805,8 +1808,8 @@ void ExtensionPrefs::SetLastLaunchTime(const std::string& extension_id,
 }
 
 void ExtensionPrefs::ClearLastLaunchTimes() {
-  const base::Value* dict = prefs_->GetDictionary(pref_names::kExtensions);
-  if (!dict || dict->DictEmpty())
+  const base::Value::Dict& dict = prefs_->GetValueDict(pref_names::kExtensions);
+  if (dict.empty())
     return;
 
   // Collect all the keys to remove the last launched preference from.
@@ -1906,7 +1909,10 @@ const base::DictionaryValue* ExtensionPrefs::GetPrefAsDictionary(
     const PrefMap& pref) const {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kDictionary, pref.type);
-  return &base::Value::AsDictionaryValue(*prefs_->GetDictionary(pref.name));
+  // TODO (https://crbug.com/1342019) This should call
+  // `PrefService::GetValueDict`, which will in turn require the return type to
+  // be `base::Value::Dict`.
+  return &base::Value::AsDictionaryValue(prefs_->GetValue(pref.name));
 }
 
 std::unique_ptr<prefs::ScopedDictionaryPrefUpdate>
@@ -2021,8 +2027,10 @@ void ExtensionPrefs::SetGeometryCache(
 }
 
 const base::DictionaryValue* ExtensionPrefs::GetInstallSignature() const {
-  return &base::Value::AsDictionaryValue(
-      *prefs_->GetDictionary(kInstallSignature));
+  // TODO (https://crbug.com/1342019) This should call
+  // `PrefService::GetValueDict`, which will in turn require the return type to
+  // be `base::Value::Dict`.
+  return &base::Value::AsDictionaryValue(prefs_->GetValue(kInstallSignature));
 }
 
 void ExtensionPrefs::SetInstallSignature(
@@ -2454,14 +2462,14 @@ void ExtensionPrefs::LoadExtensionControlledPrefs(
     return;
   std::string key = extension_id + "." + scope_string;
 
-  const base::Value* source_dict =
-      pref_service()->GetDictionary(pref_names::kExtensions);
+  const base::Value::Dict& source_dict =
+      pref_service()->GetValueDict(pref_names::kExtensions);
 
-  const base::Value* preferences = source_dict->FindDictPath(key);
+  const base::Value::Dict* preferences = source_dict.FindDictByDottedPath(key);
   if (!preferences)
     return;
 
-  for (auto pair : preferences->DictItems()) {
+  for (auto pair : *preferences) {
     extension_pref_value_map_->SetExtensionPref(extension_id, pair.first, scope,
                                                 pair.second.Clone());
   }
@@ -2549,16 +2557,15 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
 }
 
 void ExtensionPrefs::MigrateYoutubeOffBookmarkApps() {
-  const base::Value* extensions_dictionary =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  DCHECK(extensions_dictionary->is_dict());
-  const base::Value* youtube_dictionary =
-      extensions_dictionary->FindDictPath(extension_misc::kYoutubeAppId);
+  const base::Value::Dict& extensions_dictionary =
+      prefs_->GetValueDict(pref_names::kExtensions);
+  const base::Value::Dict* youtube_dictionary =
+      extensions_dictionary.FindDict(extension_misc::kYoutubeAppId);
   if (!youtube_dictionary) {
     return;
   }
   int creation_flags =
-      youtube_dictionary->FindIntKey(kPrefCreationFlags).value_or(0);
+      youtube_dictionary->FindInt(kPrefCreationFlags).value_or(0);
   if ((creation_flags & Extension::FROM_BOOKMARK) == 0)
     return;
   ScopedExtensionPrefUpdate update(prefs_, extension_misc::kYoutubeAppId);
@@ -2567,9 +2574,8 @@ void ExtensionPrefs::MigrateYoutubeOffBookmarkApps() {
 }
 
 void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
-  const base::Value* extensions_dictionary =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  DCHECK(extensions_dictionary->is_dict());
+  const base::Value::Dict& extensions_dictionary =
+      prefs_->GetValueDict(pref_names::kExtensions);
 
   // Please clean this list up periodically, removing any entries added more
   // than a year ago (with the exception of the testing key).
@@ -2580,7 +2586,7 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
       // TODO(crbug.com/1015619): Remove 2023-05. Incorrect spelling from 2013.
       "id_mapping_dictioanry"};
 
-  for (auto key_value : extensions_dictionary->DictItems()) {
+  for (auto key_value : extensions_dictionary) {
     if (!crx_file::id_util::IdIsValid(key_value.first))
       continue;
     ScopedExtensionPrefUpdate update(prefs_, key_value.first);
@@ -2635,13 +2641,11 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
 }
 
 void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
-  const base::Value* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  if (!extensions)
-    return;
+  const base::Value::Dict& extensions =
+      prefs_->GetValueDict(pref_names::kExtensions);
 
   std::vector<std::string> uninstalled_ids;
-  for (auto item : extensions->DictItems()) {
+  for (auto item : extensions) {
     if (!crx_file::id_util::IdIsValid(item.first) || !item.second.is_dict()) {
       continue;
     }

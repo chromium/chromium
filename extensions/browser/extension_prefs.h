@@ -818,7 +818,7 @@ class ExtensionPrefs : public KeyedService {
   // |extension| dictionary.
   std::unique_ptr<ExtensionInfo> GetInstalledInfoHelper(
       const std::string& extension_id,
-      const base::Value* extension,
+      const base::Value::Dict& extension,
       bool include_component_extensions) const;
 
   // Read the boolean preference entry and return true if the preference exists
