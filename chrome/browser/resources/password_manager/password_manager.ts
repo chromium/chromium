@@ -5,3 +5,4 @@
 import './password_manager_app.js';
 
 export {PasswordManagerAppElement} from './password_manager_app.js';
+export {PasswordManagerToolbarElement} from './toolbar.js';

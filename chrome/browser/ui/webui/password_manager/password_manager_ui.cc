@@ -26,6 +26,8 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"clearSearch", IDS_CLEAR_SEARCH},
+      {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
       {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
   };
   source->AddLocalizedStrings(kStrings);

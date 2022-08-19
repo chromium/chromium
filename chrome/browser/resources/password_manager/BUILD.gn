@@ -7,8 +7,17 @@ import("//chrome/browser/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "password_manager"
   static_files = [ "password_manager.html" ]
-  web_component_files = [ "password_manager_app.ts" ]
+  web_component_files = [
+    "password_manager_app.ts",
+    "toolbar.ts",
+  ]
   non_web_component_files = [ "password_manager.ts" ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
+  ]
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",
