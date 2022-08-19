@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -109,6 +110,16 @@ class GlobalStateInitializer {
 #endif
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    // If FieldTrialList::GetInstance() returns nullptr,
+    // FeatureList::InitializeFromCommandLine(), used by FeatureList::
+    // InitializeInstance internally, creates no field trials. This causes
+    // DCHECK() failure if we have an command line like
+    // --enable-features=TestFeature:TestParam/TestValue.
+    // We don't need to care about FieldTrialList duplication here, because
+    // this code is available for static build. If base library is not shared,
+    // libmojo_core.so and the caller of LoadAndInitializeCoreLibrary doesn't
+    // share FieldTrialList::GetInstance().
+    field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
     base::FeatureList::InitializeInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));
@@ -118,6 +129,7 @@ class GlobalStateInitializer {
 
  private:
   bool initialized_ = false;
+  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 };
 
 }  // namespace
