@@ -476,7 +476,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
   header_combobox_ = header->AddChildView(CreateCombobox());
 
-  header->AddChildView(CreateControlButton(
+  auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),
       base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
       views::kIcCloseIcon, gfx::Insets(),
@@ -484,6 +484,9 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+
+  header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  header_close_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   return header;
 }

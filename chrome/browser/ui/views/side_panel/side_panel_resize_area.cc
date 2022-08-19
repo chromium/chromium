@@ -24,7 +24,7 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
   const gfx::Size preferred_resize_handle_size = gfx::Size(16, 24);
   SetPreferredSize(preferred_resize_handle_size);
   SetCanProcessEventsWithinSubtree(false);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
   FocusRing::Install(this);
 }
 
