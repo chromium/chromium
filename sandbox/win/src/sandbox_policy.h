@@ -242,13 +242,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // called inside the target.
   virtual ResultCode SetDisconnectCsrss() = 0;
 
-  // Sets the interceptions to operate in strict mode. By default, interceptions
-  // are performed in "relaxed" mode, where if something inside NTDLL.DLL is
-  // already patched we attempt to intercept it anyway. Setting interceptions
-  // to strict mode means that when we detect that the function is patched we'll
-  // refuse to perform the interception.
-  virtual void SetStrictInterceptions() = 0;
-
   // Set the handles the target process should inherit for stdout and
   // stderr.  The handles the caller passes must remain valid for the
   // lifetime of the policy object.  This only has an effect on

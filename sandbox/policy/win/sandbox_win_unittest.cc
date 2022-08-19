@@ -135,7 +135,6 @@ class TestTargetPolicy : public TargetPolicy {
   }
   void DestroyAlternateDesktop() override {}
   ResultCode SetDisconnectCsrss() override { return SBOX_ALL_OK; }
-  void SetStrictInterceptions() override {}
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,

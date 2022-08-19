@@ -135,7 +135,7 @@ TEST(InterceptionManagerTest, BufferLayout1) {
   auto target = TargetProcess::MakeTargetProcessForTesting(
       ::GetCurrentProcess(), ::GetModuleHandle(exe_name));
 
-  InterceptionManager interceptions(*target, true);
+  InterceptionManager interceptions(*target);
 
   // Any pointer will do for a function pointer.
   void* function = &interceptions;
@@ -213,7 +213,7 @@ TEST(InterceptionManagerTest, BufferLayout2) {
   auto target = TargetProcess::MakeTargetProcessForTesting(
       ::GetCurrentProcess(), ::GetModuleHandle(exe_name));
 
-  InterceptionManager interceptions(*target, true);
+  InterceptionManager interceptions(*target);
 
   // Any pointer will do for a function pointer.
   void* function = &interceptions;

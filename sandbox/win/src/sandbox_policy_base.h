@@ -146,7 +146,6 @@ class PolicyBase final : public TargetPolicy {
   ResultCode CreateAlternateDesktop(bool alternate_winstation) override;
   void DestroyAlternateDesktop() override;
   ResultCode SetDisconnectCsrss() override;
-  void SetStrictInterceptions() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
@@ -235,7 +234,6 @@ class PolicyBase final : public TargetPolicy {
   size_t memory_limit_;
   bool use_alternate_desktop_;
   bool use_alternate_winstation_;
-  bool relaxed_interceptions_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
   bool is_csrss_connected_;
