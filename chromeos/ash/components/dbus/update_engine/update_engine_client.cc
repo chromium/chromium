@@ -265,15 +265,24 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        std::move(callback)));
   }
 
-  void ApplyDeferredUpdate(base::OnceClosure failure_callback) override {
+  void ApplyDeferredUpdate(bool shutdown_after_update,
+                           base::OnceClosure failure_callback) override {
+    update_engine::ApplyUpdateConfig config;
+    config.set_done_action(shutdown_after_update
+                               ? update_engine::UpdateDoneAction::SHUTDOWN
+                               : update_engine::UpdateDoneAction::REBOOT);
     dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
-                                 update_engine::kApplyDeferredUpdate);
+                                 update_engine::kApplyDeferredUpdateAdvanced);
     dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(config)) {
+      LOG(ERROR) << "Failed to encode ApplyUpdateConfig protobuf.";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(failure_callback));
+      return;
+    }
 
     VLOG(1) << "Requesting UpdateEngine to apply deferred update.";
 
-    // TODO(yuanpengni): Add an option to shutdown after applied deferred
-    // update.
     update_engine_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdate,
@@ -708,8 +717,10 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     std::move(callback).Run(absl::nullopt);
   }
 
-  void ApplyDeferredUpdate(base::OnceClosure failure_callback) override {
-    VLOG(1) << "Applying deferred update.";
+  void ApplyDeferredUpdate(bool shutdown_after_update,
+                           base::OnceClosure failure_callback) override {
+    VLOG(1) << "Applying deferred update and "
+            << (shutdown_after_update ? "shutdown." : "reboot.");
   }
 
  private:

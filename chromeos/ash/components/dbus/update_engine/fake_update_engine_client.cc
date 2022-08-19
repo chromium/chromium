@@ -122,6 +122,7 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
 }
 
 void FakeUpdateEngineClient::ApplyDeferredUpdate(
+    bool shutdown_after_update,
     base::OnceClosure failure_callback) {
   apply_deferred_update_count_++;
 }

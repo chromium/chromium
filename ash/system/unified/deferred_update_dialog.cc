@@ -27,12 +27,16 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
   // dialog_ will be released when the dialog is closed.
   dialog_ = new DeferredUpdateDialog();
 
-  auto ok_text = callback_action == kSignOut
-                     ? IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SIGN_OUT
-                     : IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SHUT_DOWN;
-  auto cancel_text = callback_action == kSignOut
-                         ? IDS_DEFERRED_UPDATE_DIALOG_SIGN_OUT
-                         : IDS_DEFERRED_UPDATE_DIALOG_SHUT_DOWN;
+  auto ok_text = IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SIGN_OUT;
+  auto cancel_text = IDS_DEFERRED_UPDATE_DIALOG_SIGN_OUT;
+
+  // Override texts for shutdown.
+  bool shutdown = callback_action == kShutDown;
+  if (shutdown) {
+    ok_text = IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SHUT_DOWN;
+    cancel_text = IDS_DEFERRED_UPDATE_DIALOG_SHUT_DOWN;
+  }
+
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
           .SetTitle(l10n_util::GetStringUTF16(IDS_DEFERRED_UPDATE_DIALOG_TITLE))
@@ -49,9 +53,9 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
           .AddCheckbox(kAutoUpdateCheckboxId,
                        ui::DialogModelLabel(l10n_util::GetStringUTF16(
                            IDS_DEFERRED_UPDATE_DIALOG_CHECKBOX)))
-          .SetDialogDestroyingCallback(
-              base::BindOnce(&DeferredUpdateDialog::OnDialogClosing,
-                             base::Unretained(dialog_), std::move(callback)))
+          .SetDialogDestroyingCallback(base::BindOnce(
+              &DeferredUpdateDialog::OnDialogClosing, base::Unretained(dialog_),
+              shutdown, std::move(callback)))
           .Build();
 
   dialog_->dialog_model_ = dialog_model.get();
@@ -84,7 +88,8 @@ void DeferredUpdateDialog::OnContinueWithoutUpdate() {
 }
 
 // Invoked when the dialog is closing.
-void DeferredUpdateDialog::OnDialogClosing(base::OnceClosure callback) {
+void DeferredUpdateDialog::OnDialogClosing(bool shutdown_after_update,
+                                           base::OnceClosure callback) {
   dialog_model_ = nullptr;
 
   switch (dialog_result_) {
@@ -94,7 +99,8 @@ void DeferredUpdateDialog::OnDialogClosing(base::OnceClosure callback) {
           /*enable=*/true);
       [[fallthrough]];
     case kApplyUpdate:
-      UpdateEngineClient::Get()->ApplyDeferredUpdate(std::move(callback));
+      UpdateEngineClient::Get()->ApplyDeferredUpdate(shutdown_after_update,
+                                                     std::move(callback));
       break;
     case kIgnoreUpdate:
       std::move(callback).Run();

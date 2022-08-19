@@ -57,7 +57,8 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   void ToggleFeature(const std::string& feature, bool enable) override;
   void IsFeatureEnabled(const std::string& feature,
                         IsFeatureEnabledCallback callback) override;
-  void ApplyDeferredUpdate(base::OnceClosure failure_callback) override;
+  void ApplyDeferredUpdate(bool shutdown_after_update,
+                           base::OnceClosure failure_callback) override;
   // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().

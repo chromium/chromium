@@ -189,8 +189,11 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
   virtual void IsFeatureEnabled(const std::string& feature,
                                 IsFeatureEnabledCallback callback) = 0;
 
-  // Apply a downloaded but deferred update. Runs callback on failure.
-  virtual void ApplyDeferredUpdate(base::OnceClosure failure_callback) = 0;
+  // Apply a downloaded but deferred update. When `shutdown_after_update` is set
+  // to true, shutdown after applying the update, otherwise reboot. The callback
+  // will run on dbus call failure.
+  virtual void ApplyDeferredUpdate(bool shutdown_after_update,
+                                   base::OnceClosure failure_callback) = 0;
 
  protected:
   // Initialize() should be used instead.

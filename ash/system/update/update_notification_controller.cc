@@ -319,7 +319,8 @@ void UpdateNotificationController::HandleNotificationClick(
 
     if (ShouldShowDeferredUpdate()) {
       // When the "update" button is clicked, apply the deferred update.
-      ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(base::DoNothing());
+      ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(
+          /*shutdown_after_update=*/false, base::DoNothing());
     } else if (model_->update_required()) {
       // Restart
       if (slow_boot_file_path_exists_) {

@@ -43,7 +43,7 @@ class DeferredUpdateDialog {
   // Invoked when "cancel" button is clicked.
   void OnContinueWithoutUpdate();
   // Invoked when the dialog is closing.
-  void OnDialogClosing(base::OnceClosure callback);
+  void OnDialogClosing(bool shutdown_after_update, base::OnceClosure callback);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutoUpdateCheckboxId);
   static DeferredUpdateDialog* dialog_;
