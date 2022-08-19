@@ -79,6 +79,59 @@ class WPTManifestUnitTest(unittest.TestCase):
             MOCK_WEB_TESTS + 'wpt_internal',
         ]])
 
+    def test_all_test_types_are_identified(self):
+        manifest_json = '''
+{
+    "items": {
+        "manual": {
+            "test-manual.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        },
+        "reftest": {
+            "test-reference.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        },
+        "print-reftest": {
+            "test-print.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        },
+        "testharness": {
+            "test-harness.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        },
+        "crashtest": {
+            "test-crash.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [null, {}]
+            ]
+        }
+    }
+}
+        '''
+        host = MockHost()
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(host,
+                               MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
+
+        self.assertEqual(manifest.get_test_type('test-manual.html'), 'manual')
+        self.assertEqual(manifest.get_test_type('test-reference.html'),
+                         'reftest')
+        self.assertEqual(manifest.get_test_type('test-print.html'),
+                         'print-reftest')
+        self.assertEqual(manifest.get_test_type('test-harness.html'),
+                         'testharness')
+        self.assertEqual(manifest.get_test_type('test-crash.html'),
+                         'crashtest')
+
     def test_does_not_throw_when_missing_some_test_types(self):
         manifest_json = '''
 {
@@ -100,7 +153,7 @@ class WPTManifestUnitTest(unittest.TestCase):
         self.assertTrue(manifest.is_test_file('test.any.js'))
         self.assertEqual(manifest.all_url_items(),
                          {u'test.any.html': [u'test.any.html', {}]})
-        self.assertEqual(manifest.extract_reference_list('/foo/bar.html'), [])
+        self.assertEqual(manifest.extract_reference_list('foo/bar.html'), [])
 
     def test_all_url_items_skips_jsshell_tests(self):
         manifest_json = '''
@@ -240,6 +293,31 @@ class WPTManifestUnitTest(unittest.TestCase):
                 ]
             ]
         },
+        "print-reftest": {
+            "fuzzy-print.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                [
+                    null,
+                    [
+                        [
+                            "fuzzy-ref.html",
+                            "=="
+                        ]
+                    ],
+                    {
+                        "fuzzy": [
+                            [
+                                null,
+                                [
+                                    [3, 10],
+                                    [20, 100]
+                                ]
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
         "testharness": {
             "not_a_reftest.html": [
                 "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
@@ -259,6 +337,11 @@ class WPTManifestUnitTest(unittest.TestCase):
         self.assertEqual(
             manifest.extract_fuzzy_metadata('fuzzy.html'),
             [[2, 2], [40, 40]],
+        )
+
+        self.assertEqual(
+            manifest.extract_fuzzy_metadata('fuzzy-print.html'),
+            [[3, 10], [20, 100]],
         )
 
         self.assertEqual(manifest.extract_fuzzy_metadata('not_fuzzy.html'),

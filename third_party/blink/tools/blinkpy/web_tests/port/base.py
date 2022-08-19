@@ -1126,6 +1126,16 @@ class Port(object):
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_crash_test(path_in_wpt)
 
+    def is_wpt_print_reftest(self, test):
+        """Returns whether a WPT test is a print reftest."""
+        match = self.WPT_REGEX.match(test)
+        if not match:
+            return False
+
+        wpt_path = match.group(1)
+        path_in_wpt = match.group(2)
+        return self.wpt_manifest(wpt_path).is_print_reftest(path_in_wpt)
+
     def is_slow_wpt_test(self, test_name):
         # When DCHECK is enabled, idlharness tests run 5-6x slower due to the
         # amount of JavaScript they use (most web_tests run very little JS).

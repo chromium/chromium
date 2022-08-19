@@ -11,6 +11,7 @@ from blinkpy.common import path_finder
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.controllers import web_test_finder
 from blinkpy.web_tests.models import test_expectations
+from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
 
 import mock
 
@@ -98,6 +99,47 @@ class WebTestFinderTests(unittest.TestCase):
         finder._options.no_expectations = True
         tests = finder.skip_tests([], all_tests, None)
         self.assertEqual(tests, set())
+
+    def test_skip_print_reftests(self):
+        """Tests that print reftests are skipped, see https://crbug.com/1090628."""
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7', None)
+        add_manifest_to_mock_filesystem(port)
+
+        non_print_reftest = 'external/wpt/dir1/dir2/foo.html'
+        print_reftest_1 = 'external/wpt/foo/bar/test-print.html'
+        print_reftest_2 = 'external/wpt/foo/print/test.html'
+        all_tests = [non_print_reftest, print_reftest_1, print_reftest_2]
+
+        port.tests = lambda paths: paths or all_tests
+        options = optparse.Values({
+            'no_expectations': False,
+            'enable_sanitizer': False,
+            'skipped': 'default',
+            'skip_timeouts': False,
+            'skip_failing_tests': False,
+        })
+        finder = web_test_finder.WebTestFinder(port, options)
+
+        # Default case; print reftests should be skipped
+        expectations = test_expectations.TestExpectations(port)
+        tests = finder.skip_tests([], all_tests, expectations)
+        self.assertEqual(tests, set([print_reftest_1, print_reftest_2]))
+        self.assertTrue(
+            expectations.get_expectations(non_print_reftest).is_default_pass)
+        for test in [print_reftest_1, print_reftest_2]:
+            self.assertEquals(
+                expectations.get_expectations(test).results, {'SKIP'})
+
+        # If a print reftest is added explicitly, it should not be skipped
+        expectations = test_expectations.TestExpectations(port)
+        tests = finder.skip_tests([print_reftest_1], all_tests, expectations)
+        self.assertEqual(tests, set([print_reftest_2]))
+        self.assertTrue(
+            expectations.get_expectations(non_print_reftest).is_default_pass)
+        for test in [print_reftest_1, print_reftest_2]:
+            self.assertEquals(
+                expectations.get_expectations(test).results, {'SKIP'})
 
     def test_skip_tests_idlharness(self):
         """Tests that idlharness tests are skipped on MSAN/ASAN runs.

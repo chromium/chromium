@@ -777,6 +777,8 @@ class PortTest(LoggingTestCase):
             'external/wpt/console/console-is-a-namespace.any.worker.html',
             'external/wpt/dom/ranges/Range-attributes-slow.html',
             'external/wpt/dom/ranges/Range-attributes.html',
+            'external/wpt/foo/bar/test-print.html',
+            'external/wpt/foo/print/test.html',
             'external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html',
             'external/wpt/html/parse.html?run_type=uri',
             'external/wpt/html/parse.html?run_type=write',
@@ -838,6 +840,8 @@ class PortTest(LoggingTestCase):
             'virtual/virtual_wpt/external/wpt/console/console-is-a-namespace.any.worker.html',
             'virtual/virtual_wpt/external/wpt/dom/ranges/Range-attributes-slow.html',
             'virtual/virtual_wpt/external/wpt/dom/ranges/Range-attributes.html',
+            'virtual/virtual_wpt/external/wpt/foo/bar/test-print.html',
+            'virtual/virtual_wpt/external/wpt/foo/print/test.html',
             'virtual/virtual_wpt/external/wpt/html/dom/elements/global-attributes/dir_auto-EN-L.html',
             'virtual/virtual_wpt/external/wpt/html/parse.html?run_type=uri',
             'virtual/virtual_wpt/external/wpt/html/parse.html?run_type=write',
@@ -1014,6 +1018,22 @@ class PortTest(LoggingTestCase):
                 'external/wpt/dom/ranges/Range-attributes.html'))
         self.assertFalse(
             port.is_wpt_crash_test('portals/portals-no-frame-crash.html'))
+
+    def test_is_wpt_print_reftest(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+
+        self.assertTrue(
+            port.is_wpt_print_reftest('external/wpt/foo/bar/test-print.html'))
+        self.assertTrue(
+            port.is_wpt_print_reftest('external/wpt/foo/print/test.html'))
+        self.assertFalse(port.is_wpt_print_reftest('not/a/wpt/test.html'))
+        self.assertFalse(
+            port.is_wpt_print_reftest(
+                'external/wpt/nonexistent/test-print.html'))
+        self.assertFalse(
+            port.is_wpt_print_reftest(
+                'external/wpt/dom/ranges/Range-attributes.html'))
 
     def test_is_slow_wpt_test(self):
         port = self.make_port(with_tests=True)

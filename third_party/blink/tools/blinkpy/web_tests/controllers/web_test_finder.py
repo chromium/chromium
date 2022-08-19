@@ -233,6 +233,7 @@ class WebTestFinder(object):
         all_tests = set(all_tests_list)
         tests_to_skip = set()
         idlharness_skips = set()
+        print_reftest_skips = set()
         tests_always_skipped = set()
         for test in all_tests:
             # Manual tests and virtual tests skipped by platform config are
@@ -252,6 +253,11 @@ class WebTestFinder(object):
                 idlharness_skips.update({test})
                 continue
 
+            # TODO(crbug.com/1090628): print reftests are not yet supported.
+            if self._port.is_wpt_print_reftest(test):
+                tests_to_skip.update({test})
+                print_reftest_skips.update({test})
+
             if self._options.no_expectations:
                 # do not skip anything from TestExpectations
                 continue
@@ -264,13 +270,18 @@ class WebTestFinder(object):
             if self._options.skip_failing_tests and ResultType.Failure in expected_results:
                 tests_to_skip.update({test})
 
-        # Idlharness tests are skipped programmatically on MSAN/ASAN, so we have
+        # Idlharness tests and print reftests are skipped programmatically, so we have
         # to add them to the expectations to avoid reporting unexpected skips.
-        if idlharness_skips and expectations is not None:
+        if expectations and (idlharness_skips or print_reftest_skips):
             raw_expectations = '# results: [ Skip ]\n'
             for test in idlharness_skips:
                 raw_expectations += typ_types.Expectation(
                     reason="crbug.com/856601",
+                    test=test,
+                    results=[ResultType.Skip]).to_string() + '\n'
+            for test in print_reftest_skips:
+                raw_expectations += typ_types.Expectation(
+                    reason="crbug.com/1090628",
                     test=test,
                     results=[ResultType.Skip]).to_string() + '\n'
             expectations.merge_raw_expectations(raw_expectations)

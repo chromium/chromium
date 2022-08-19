@@ -592,6 +592,32 @@ def add_manifest_to_mock_filesystem(port):
                         }
                     }
                 },
+                'print-reftest': {
+                    'foo': {
+                        'bar': {
+                            'test-print.html': [
+                                'abcdef123',
+                                [
+                                    None,
+                                    [['/foo/bar/test-print-ref.html', '==']], {
+                                        'timeout': 'long'
+                                    }
+                                ]
+                            ]
+                        },
+                        'print': {
+                            'test.html': [
+                                'abcdef123',
+                                [
+                                    None,
+                                    [['/foo/bar/test-print-ref.html', '==']], {
+                                        'timeout': 'long'
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                },
                 'crashtest': {
                     'portals': {
                         'portals-no-frame-crash.html':
@@ -610,6 +636,10 @@ def add_manifest_to_mock_filesystem(port):
         '')
     filesystem.write_text_file(
         MOCK_WEB_TESTS + 'external/wpt/common/blank.html', 'foo')
+    filesystem.write_text_file(
+        MOCK_WEB_TESTS + 'external/wpt/foo/bar/test-print.html', '')
+    filesystem.write_text_file(
+        MOCK_WEB_TESTS + 'external/wpt/foo/print/test.html', '')
 
     filesystem.write_text_file(
         MOCK_WEB_TESTS + 'wpt_internal/MANIFEST.json',
