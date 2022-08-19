@@ -175,16 +175,8 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
           last_tokenized_query_.value()));
     } else if (!IsAnswer(match)) {
-      // We can use an unretained pointer here since we own both the
-      // autocomplete controller (which lives for the entirety of our lifetime)
-      // and the results vector. Results are only externally-visible via the
-      // `results()` method, which doesn't transfer ownership.
-      auto remove_closure =
-          base::BindRepeating(&AutocompleteController::DeleteMatch,
-                              base::Unretained(controller_.get()), match);
-
       list_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, std::move(remove_closure),
+          profile_, list_controller_,
           crosapi::CreateResult(
               match, controller_.get(), &favicon_cache_,
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),

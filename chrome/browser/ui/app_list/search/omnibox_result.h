@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -28,14 +27,8 @@ class OmniboxResult : public ChromeSearchResult,
                       public ash::ColorModeObserver,
                       public crosapi::mojom::SearchResultConsumer {
  public:
-  // `remove_closure` must remove this result from the results list; it is
-  // called when the "x" button next to the search result is pressed.
-  //
-  // TODO(1272361): remove this argument once result deletions are handled via
-  //                their own ranker.
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
-                base::RepeatingClosure remove_closure,
                 crosapi::mojom::SearchResultPtr search_result,
                 const std::u16string& query,
                 bool is_zero_suggestion);
@@ -46,7 +39,6 @@ class OmniboxResult : public ChromeSearchResult,
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  void InvokeAction(ash::SearchResultActionType action) override;
 
   // BitmapFetcherDelegate:
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
@@ -91,7 +83,6 @@ class OmniboxResult : public ChromeSearchResult,
   Profile* const profile_;
   AppListControllerDelegate* const list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
-  const base::RepeatingClosure remove_closure_;
   const std::u16string query_;
   const bool is_zero_suggestion_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;

@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "base/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,7 +72,6 @@ ash::SearchResultTags TagsForTextWithMatchTags(
 
 OmniboxResult::OmniboxResult(Profile* profile,
                              AppListControllerDelegate* list_controller,
-                             base::RepeatingClosure remove_closure,
                              crosapi::mojom::SearchResultPtr search_result,
                              const std::u16string& query,
                              bool is_zero_suggestion)
@@ -81,7 +79,6 @@ OmniboxResult::OmniboxResult(Profile* profile,
       profile_(profile),
       list_controller_(list_controller),
       search_result_(std::move(search_result)),
-      remove_closure_(std::move(remove_closure)),
       query_(query),
       is_zero_suggestion_(is_zero_suggestion),
       contents_(search_result_->contents.value_or(u"")),
@@ -142,17 +139,6 @@ void OmniboxResult::Open(int event_flags) {
                             crosapi::PageTransitionToUiPageTransition(
                                 search_result_->page_transition),
                             ui::DispositionFromEventFlags(event_flags));
-}
-
-void OmniboxResult::InvokeAction(ash::SearchResultActionType action) {
-  switch (action) {
-    case ash::SearchResultActionType::kRemove:
-      remove_closure_.Run();
-      break;
-    case ash::SearchResultActionType::kAppend:
-    case ash::SearchResultActionType::kSearchResultActionTypeMax:
-      NOTREACHED();
-  }
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {

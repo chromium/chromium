@@ -225,7 +225,6 @@ class OmniboxResultTest : public testing::Test {
 
     return std::make_unique<OmniboxResult>(
         profile_.get(), app_list_controller_delegate_.get(),
-        /*remove_closure=*/base::RepeatingClosure(),
         crosapi::CreateResult(match, /*controller=*/nullptr,
                               favicon_cache_.get(), bookmark_model_, input_),
         /*query=*/kFullQuery,
