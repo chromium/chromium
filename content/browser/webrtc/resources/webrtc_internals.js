@@ -144,8 +144,19 @@ function initialize() {
         params.eventLogRecordingsToggleable);
   });
 
-  // Requests stats from all peer connections every second.
-  window.setInterval(requestStats, 1000);
+  // Requests stats from all peer connections every second unless specified via
+  // ?statsInterval=(milliseconds >= 100ms)
+  const searchParameters = new URLSearchParams(window.location.search);
+  let statsInterval = 1000;
+  if (searchParameters.has('statsInterval')) {
+    statsInterval = Math.max(
+        parseInt(searchParameters.get('statsInterval'), 10),
+        100);
+    if (!isFinite(statsInterval)) {
+      statsInterval = 1000;
+    }
+  }
+  window.setInterval(requestStats, statsInterval);
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
