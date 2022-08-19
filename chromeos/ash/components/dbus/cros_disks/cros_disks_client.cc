@@ -695,6 +695,71 @@ std::ostream& operator<<(std::ostream& out, const MountError error) {
   return out << std::underlying_type_t<MountError>(error);
 }
 
+std::ostream& operator<<(std::ostream& out, const RenameError error) {
+  switch (error) {
+#define PRINT_ERROR(s) \
+  case RenameError::s: \
+    return out << #s;
+    PRINT_ERROR(kNone)
+    PRINT_ERROR(kUnknown)
+    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kInvalidDevicePath)
+    PRINT_ERROR(kDeviceBeingRenamed)
+    PRINT_ERROR(kUnsupportedFilesystem)
+    PRINT_ERROR(kRenameProgramNotFound)
+    PRINT_ERROR(kRenameProgramFailed)
+    PRINT_ERROR(kDeviceNotAllowed)
+    PRINT_ERROR(kLongName)
+    PRINT_ERROR(kInvalidCharacter)
+#undef PRINT_ERROR
+  }
+
+  return out << std::underlying_type_t<RenameError>(error);
+}
+
+std::ostream& operator<<(std::ostream& out, const FormatError error) {
+  switch (error) {
+#define PRINT_ERROR(s) \
+  case FormatError::s: \
+    return out << #s;
+    PRINT_ERROR(kNone)
+    PRINT_ERROR(kUnknown)
+    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kInvalidDevicePath)
+    PRINT_ERROR(kDeviceBeingFormatted)
+    PRINT_ERROR(kUnsupportedFilesystem)
+    PRINT_ERROR(kFormatProgramNotFound)
+    PRINT_ERROR(kFormatProgramFailed)
+    PRINT_ERROR(kDeviceNotAllowed)
+    PRINT_ERROR(kInvalidOptions)
+    PRINT_ERROR(kLongName)
+    PRINT_ERROR(kInvalidCharacter)
+    PRINT_ERROR(kCount)
+#undef PRINT_ERROR
+  }
+
+  return out << std::underlying_type_t<FormatError>(error);
+}
+
+std::ostream& operator<<(std::ostream& out, const PartitionError error) {
+  switch (error) {
+#define PRINT_ERROR(s)    \
+  case PartitionError::s: \
+    return out << #s;
+    PRINT_ERROR(kNone)
+    PRINT_ERROR(kUnknown)
+    PRINT_ERROR(kInternal)
+    PRINT_ERROR(kInvalidDevicePath)
+    PRINT_ERROR(kDeviceBeingPartitioned)
+    PRINT_ERROR(kProgramNotFound)
+    PRINT_ERROR(kProgramFailed)
+    PRINT_ERROR(kDeviceNotAllowed)
+#undef PRINT_ERROR
+  }
+
+  return out << std::underlying_type_t<PartitionError>(error);
+}
+
 std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
   return out << "error_code = " << entry.error_code << ", source_path = '"
              << entry.source_path << "', mount_type = " << entry.mount_type

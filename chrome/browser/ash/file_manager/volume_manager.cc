@@ -1155,16 +1155,19 @@ void VolumeManager::OnMountEvent(
   const ash::disks::Disk* const disk =
       disk_mount_manager_->FindDiskBySourcePath(mount_info.source_path);
   std::unique_ptr<Volume> volume = Volume::CreateForRemovable(mount_info, disk);
+
   switch (event) {
     case ash::disks::DiskMountManager::MOUNTING: {
       DoMountEvent(error_code, std::move(volume));
       return;
     }
+
     case ash::disks::DiskMountManager::UNMOUNTING:
       DoUnmountEvent(error_code, *volume);
       return;
   }
-  NOTREACHED();
+
+  NOTREACHED() << "Unexpected event type " << event;
 }
 
 void VolumeManager::OnFormatEvent(
@@ -1173,8 +1176,8 @@ void VolumeManager::OnFormatEvent(
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnDeviceEvent: " << event << ", " << static_cast<int>(error_code)
-           << ", " << device_path;
+  DVLOG(1) << "OnFormatEvent: " << event << ", error = " << error_code
+           << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::FORMAT_STARTED:
@@ -1183,6 +1186,7 @@ void VolumeManager::OnFormatEvent(
                                  error_code == ash::FormatError::kNone);
       }
       return;
+
     case ash::disks::DiskMountManager::FORMAT_COMPLETED:
       // Even if format did not complete successfully, try to mount the device
       // so the user can retry.
@@ -1201,7 +1205,8 @@ void VolumeManager::OnFormatEvent(
 
       return;
   }
-  NOTREACHED();
+
+  NOTREACHED() << "Unexpected FormatEvent " << event;
 }
 
 void VolumeManager::OnPartitionEvent(
@@ -1210,8 +1215,8 @@ void VolumeManager::OnPartitionEvent(
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnPartitionEvent: " << event << ", "
-           << static_cast<int>(error_code) << ", " << device_path;
+  DVLOG(1) << "OnPartitionEvent: " << event << ", error = " << error_code
+           << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::PARTITION_STARTED:
@@ -1220,6 +1225,7 @@ void VolumeManager::OnPartitionEvent(
                                     error_code == ash::PartitionError::kNone);
       }
       return;
+
     case ash::disks::DiskMountManager::PARTITION_COMPLETED:
       // If partitioning failed, try to mount the device so the user can retry.
       // MountPath auto-detects filesystem format if second argument is
@@ -1238,7 +1244,8 @@ void VolumeManager::OnPartitionEvent(
       }
       return;
   }
-  NOTREACHED();
+
+  NOTREACHED() << "Unexpected PartitionEvent " << event;
 }
 
 void VolumeManager::OnRenameEvent(
@@ -1247,8 +1254,8 @@ void VolumeManager::OnRenameEvent(
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnDeviceEvent: " << event << ", " << static_cast<int>(error_code)
-           << ", " << device_path;
+  DVLOG(1) << "OnRenameEvent: " << event << ", error = " << error_code
+           << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::RENAME_STARTED:
@@ -1257,6 +1264,7 @@ void VolumeManager::OnRenameEvent(
                                  error_code == ash::RenameError::kNone);
       }
       return;
+
     case ash::disks::DiskMountManager::RENAME_COMPLETED:
       // Find previous mount point label if it exists
       std::string mount_label;
@@ -1283,7 +1291,8 @@ void VolumeManager::OnRenameEvent(
 
       return;
   }
-  NOTREACHED();
+
+  NOTREACHED() << "Unexpected RenameEvent " << event;
 }
 
 void VolumeManager::RestoreProvidedFileSystems() {
