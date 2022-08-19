@@ -19,13 +19,7 @@ GenerationConfirmationBubbleController::GenerationConfirmationBubbleController(
           /*display_disposition=*/display_reason == DisplayReason::kAutomatic
               ? metrics_util::AUTOMATIC_GENERATED_PASSWORD_CONFIRMATION
               : metrics_util::MANUAL_GENERATED_PASSWORD_CONFIRMATION),
-      dismissal_reason_(metrics_util::NO_DIRECT_INTERACTION) {
-  std::u16string link = l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_LINK);
-  size_t offset = 0;
-  save_confirmation_text_ = l10n_util::GetStringFUTF16(
-      IDS_MANAGE_PASSWORDS_CONFIRM_GENERATED_TEXT, link, &offset);
-  save_confirmation_link_range_ = gfx::Range(offset, offset + link.length());
-}
+      dismissal_reason_(metrics_util::NO_DIRECT_INTERACTION) {}
 
 GenerationConfirmationBubbleController::
     ~GenerationConfirmationBubbleController() {
