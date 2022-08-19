@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
@@ -366,14 +366,13 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
                  << ", status=" << status
                  << ", response_code=" << response_code;
 
-  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorResult",
-                            status);
+  base::UmaHistogramEnumeration("Network.NetworkPortalDetectorResult", status);
   NetworkState::NetworkTechnologyType type =
       NetworkState::NetworkTechnologyType::kUnknown;
   if (status == CAPTIVE_PORTAL_STATUS_PORTAL) {
     if (network)
       type = network->GetNetworkTechnologyType();
-    UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorType", type);
+    base::UmaHistogramEnumeration("Network.NetworkPortalDetectorType", type);
   }
 
   if (last_detection_status_ != status) {

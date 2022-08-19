@@ -1770,56 +1770,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of a captive portal probe.</summary>
 </histogram>
 
-<histogram name="CaptivePortal.NetworkPortalDetectorResult"
-    enum="NetworkPortalStatus" expires_after="2021-09-27">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
-  <summary>Chrome captive portal detection results on Chrome OS.</summary>
-</histogram>
-
-<histogram name="CaptivePortal.NetworkPortalDetectorType"
-    enum="NetworkTechnology" expires_after="2021-09-27">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
-  <summary>
-    Captive portal detection network type recorded when Chrome on Chrome OS
-    detects a captive portal.
-  </summary>
-</histogram>
-
-<histogram name="CaptivePortal.NetworkStateResult"
-    enum="CaptivePortalNetworkState" expires_after="2021-04-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
-  <summary>
-    Captive portal detection state from Shill received by NetworkState.
-  </summary>
-</histogram>
-
-<histogram name="CaptivePortal.NetworkStateStatusCode" enum="HttpResponseCode"
-    expires_after="2021-04-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-health@google.com</owner>
-  <summary>
-    Captive portal status code reported by Shill and received by NetworkState.
-  </summary>
-</histogram>
-
-<histogram name="CaptivePortal.ProbeReason" enum="CaptivePortalProbeReason"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed from code 2021-08.
-  </obsolete>
-  <owner>ericorth@chromium.org</owner>
-  <owner>doh-core@google.com</owner>
-  <owner>cros-networking@google.com</owner>
-  <summary>
-    Reason for attempting a captive portal probe. This is logged only when a
-    probe HTTP request is made. If there are multiple reasons that triggered
-    this probe, only the first is logged.
-  </summary>
-</histogram>
-
 <histogram name="Cast.Channel.Certificate" enum="CastCertificateStatus"
     expires_after="never">
 <!-- expires-never: Used for Cast device health monitoring. -->
