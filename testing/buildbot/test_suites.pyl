@@ -3779,6 +3779,10 @@
     'linux_chromeos_specific_gtests': {
       # Chrome OS only.
       'ash_components_unittests': {},
+      # TODO(crbug.com/1351793) Enable on CQ when stable.
+      'ash_crosapi_browsertests': {
+        'ci_only': True,
+      },
       'ash_unittests': {
         'swarming': {
           'shards': 5,
