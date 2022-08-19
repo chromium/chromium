@@ -74,10 +74,7 @@ constexpr size_t kMaxDriveSearchResults = 6;
 // duplicates of these results for the suggestion chips.
 constexpr size_t kMaxZeroStateFileResults = 20;
 constexpr size_t kMaxZeroStateDriveResults = 10;
-
-// TODO(warx): Need UX spec.
 constexpr size_t kMaxAppShortcutResults = 4;
-
 constexpr size_t kMaxPlayStoreResults = 12;
 constexpr size_t kMaxAssistantTextResults = 1;
 
