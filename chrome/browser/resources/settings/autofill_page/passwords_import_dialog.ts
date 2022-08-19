@@ -166,6 +166,7 @@ export class PasswordsImportDialogElement extends
         this.handleSuccess_();
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
+      case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
         this.descriptionText_ = this.i18n('importPasswordsUnknownError');
         this.dialogState = ImportDialogState.ERROR;
         break;
@@ -230,12 +231,16 @@ export class PasswordsImportDialogElement extends
 
   private getFailedEntryError_(
       status: chrome.passwordsPrivate.ImportEntryStatus): string {
+    // TODO(crbug/1325290): return appropriate strings for LONG_URL,
+    // NON_ASCII_URL, UNKNOWN_ERROR.
     switch (status) {
       case chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD:
         return this.i18n('importPasswordsMissingPassword');
       case chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL:
         return this.i18n('importPasswordsMissingURL');
       case chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL:
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
+      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
         return this.i18n('importPasswordsInvalidURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
         return this.i18n('importPasswordsLongPassword');
@@ -248,8 +253,11 @@ export class PasswordsImportDialogElement extends
         return this.i18n('importPasswordsConflictDevice');
       case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
         return this.i18n('importPasswordsConflictAccount', this.accountEmail);
+      case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
+        return '';
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   }
 
   private onCancelClick_() {
