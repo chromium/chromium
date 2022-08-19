@@ -132,8 +132,7 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
                                          static_cast<int>(logs_.size()));
 
   base::ListValue draw_calls;
-  // We are also grabbing the active threads while parsing draw calls.
-  base::ListValue new_threads;
+
   // Hash set to keep track of threads that have been registered already.
   base::flat_set<int> registered_threads;
   for (size_t i = 0; i < max_rect_calls_index; ++i) {
@@ -166,24 +165,11 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
       }
     }
     dict.SetInteger("buff_id", std::move(draw_rect_calls_[i].buff_id));
-
-    // Thread ID and Name processing stuff.
-    int cur_thread_id = draw_rect_calls_[i].thread_id;
-    // If new thread is not registered yet, then register it and mark it as
-    // registered.
-    if (registered_threads.find(cur_thread_id) == registered_threads.end()) {
-      std::string cur_thread_name =
-          base::ThreadIdNameManager::GetInstance()->GetName(cur_thread_id);
-      threads_dict.SetInteger("thread_id", cur_thread_id);
-      threads_dict.SetString("thread_name", cur_thread_name);
-      new_threads.Append(std::move(threads_dict));
-      registered_threads.insert(cur_thread_id);
-    }
-
+    registered_threads.insert(draw_rect_calls_[i].thread_id);
     draw_calls.Append(std::move(dict));
   }
+
   global_dict.SetKey("drawcalls", std::move(draw_calls));
-  global_dict.SetKey("threads", std::move(new_threads));
 
   base::DictionaryValue buff_map;
   for (auto&& each : buffers_) {
@@ -207,6 +193,7 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
     base::DictionaryValue dict = logs_[i].GetDictionaryValue();
     dict.SetString("value", std::move(logs_[i].value));
     logs.Append(std::move(dict));
+    registered_threads.insert(logs_[i].thread_id);
   }
   global_dict.SetKey("logs", std::move(logs));
 
@@ -221,8 +208,23 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
     }
     dict.SetString("text", draw_text_calls_[i].text);
     texts.Append(std::move(dict));
+    registered_threads.insert(draw_text_calls_[i].thread_id);
   }
   global_dict.SetKey("text", std::move(texts));
+
+  // Gather thread name:id for all active threads this frame.
+  base::ListValue new_threads;
+  for (auto&& thread_id : registered_threads) {
+    std::string cur_thread_name =
+        base::ThreadIdNameManager::GetInstance()->GetName(thread_id);
+    base::DictionaryValue threads_dict;
+    threads_dict.SetInteger("thread_id", thread_id);
+    threads_dict.SetString("thread_name", cur_thread_name);
+    new_threads.Append(std::move(threads_dict));
+    registered_threads.insert(thread_id);
+  }
+
+  global_dict.SetKey("threads", std::move(new_threads));
 
   // Reset index counters for each buffer.
   draw_rect_calls_tail_idx_ = 0;

@@ -265,6 +265,11 @@ class DrawFrame {
     for (const log of this.logs_) {
       if (log.drawindex > this.submissionFreezeIndex()) break;
 
+      // If thread not enabled, then skip draw call from this thread.
+      if (!this.threadMapping_[log.thread_id].threadEnabled) {
+        continue;
+      }
+
       var color;
       let filter;
       // If thread is overriding, take thread color.
