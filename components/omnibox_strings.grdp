@@ -138,6 +138,12 @@
       Search or type URL
     </message>
   </if>
+  <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
+    <ph name="TRADITIONAL_TEXT">$1</ph> - <ph name="ADDITIONAL_TEXT">$2</ph>
+  </message>
+  <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_PARENTHESIS_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
+    <ph name="TRADITIONAL_TEXT">$1</ph> (<ph name="ADDITIONAL_TEXT">$2</ph>)
+  </message>
   <message name="IDS_OMNIBOX_TAB_SUGGEST_HINT" desc="The button text contents to say that this suggestion will switch to another tab.">
     Switch to this tab
   </message>
