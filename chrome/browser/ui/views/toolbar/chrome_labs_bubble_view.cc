@@ -88,8 +88,7 @@ END_METADATA
 
 }  // namespace
 
-ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view,
-                                           Browser* browser)
+ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT) {
   SetButtons(ui::DIALOG_BUTTON_NONE);

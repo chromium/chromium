@@ -63,7 +63,7 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
   flags_state_ = about_flags::GetCurrentFlagsState();
 
   auto chrome_labs_bubble_view =
-      std::make_unique<ChromeLabsBubbleView>(anchor_view_, browser_);
+      std::make_unique<ChromeLabsBubbleView>(anchor_view_);
   chrome_labs_bubble_view_ = chrome_labs_bubble_view.get();
   chrome_labs_bubble_view_->View::AddObserver(this);
 
