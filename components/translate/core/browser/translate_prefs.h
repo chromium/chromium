@@ -111,7 +111,6 @@ class TranslatePrefs {
   // TODO(crbug.com/524927): Remove kPrefNeverPromptSites after
   // 3 milestones (M74).
   static const char kPrefNeverPromptSitesDeprecated[];
-  static const char kPrefNeverPromptSitesWithTime[];
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];

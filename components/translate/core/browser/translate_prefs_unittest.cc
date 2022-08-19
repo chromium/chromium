@@ -943,7 +943,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
             2u);
   // Also put one of those sites on the new pref but migrated incorrectly.
   DictionaryPrefUpdate never_prompt_list_update(
-      &prefs_, TranslatePrefs::kPrefNeverPromptSitesWithTime);
+      &prefs_, prefs::kPrefNeverPromptSitesWithTime);
   base::Value::Dict& never_prompt_list = never_prompt_list_update->GetDict();
   never_prompt_list.Set("migratedWrong.com", 0);
 
@@ -961,7 +961,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
 TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
   // Add sites with invalid times.
   DictionaryPrefUpdate never_prompt_list_update(
-      &prefs_, TranslatePrefs::kPrefNeverPromptSitesWithTime);
+      &prefs_, prefs::kPrefNeverPromptSitesWithTime);
   base::Value::Dict& never_prompt_list = never_prompt_list_update->GetDict();
   never_prompt_list.Set("not-a-string.com", 0);
   never_prompt_list.Set("not-a-valid-time.com", "foo");

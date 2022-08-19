@@ -12,6 +12,7 @@ extern const char kOfferTranslateEnabled[];
 extern const char kPrefAlwaysTranslateList[];
 extern const char kPrefTranslateRecentTarget[];
 extern const char kBlockedLanguages[];
+extern const char kPrefNeverPromptSitesWithTime[];
 
 }  // namespace prefs
 }  // namespace translate

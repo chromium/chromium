@@ -56,6 +56,7 @@ export interface LanguagesModel {
   translateTarget: string;
   alwaysTranslate: chrome.languageSettingsPrivate.Language[];
   neverTranslate: chrome.languageSettingsPrivate.Language[];
+  neverTranslateSites: string[];
   spellCheckOnLanguages: SpellCheckLanguageState[];
   spellCheckOffLanguages: SpellCheckLanguageState[];
   // TODO(dpapad): Wrap prospectiveUILanguage with if expr "is_win" block.

@@ -56,6 +56,7 @@ interface ModelArgs {
   translateTarget: string;
   alwaysTranslateCodes: string[];
   neverTranslateCodes: string[];
+  neverTranslateSites: string[];
   startingUILanguage: string;
   supportedInputMethods?: chrome.languageSettingsPrivate.InputMethod[];
   currentInputMethodId?: string;
@@ -132,6 +133,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
           'prefs.translate_allowlists.value.*, languages)',
       'neverTranslateLanguagesPrefChanged_(' +
           'prefs.translate_blocked_languages.value.*, languages)',
+      'neverTranslateSitesPrefChanged_(' +
+          'prefs.translate_site_blocklist_with_time.value.*, languages)',
       // <if expr="is_win">
       'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
       // </if>
@@ -196,6 +199,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       translateTarget: '',
       alwaysTranslateCodes: [],
       neverTranslateCodes: [],
+      neverTranslateSites: [],
       startingUILanguage: '',
 
       // Only used by ChromeOS
@@ -469,6 +473,18 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     this.set('languages.neverTranslate', neverTranslateLanguages);
   }
 
+  /**
+   * Updates the list of never translate sites from translate prefs.
+   */
+  private neverTranslateSitesPrefChanged_() {
+    if (this.prefs === undefined || this.languages === undefined) {
+      return;
+    }
+    const neverTranslateSites =
+        Object.keys(this.getPref('translate_site_blocklist_with_time').value);
+    this.set('languages.neverTranslateSites', neverTranslateSites);
+  }
+
   private translateLanguagesPrefChanged_() {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
@@ -543,6 +559,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       translateTarget: args.translateTarget,
       alwaysTranslate: alwaysTranslateLanguages,
       neverTranslate: neverTranslateLangauges,
+      neverTranslateSites: args.neverTranslateSites,
       spellCheckOnLanguages,
       spellCheckOffLanguages,
       // <if expr="is_win">

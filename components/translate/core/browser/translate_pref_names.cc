@@ -22,5 +22,9 @@ const char kPrefTranslateRecentTarget[] = "translate_recent_target";
 // Languages that the user marked as "do not translate".
 const char kBlockedLanguages[] = "translate_blocked_languages";
 
+// Sites that never prompt to translate.
+const char kPrefNeverPromptSitesWithTime[] =
+    "translate_site_blocklist_with_time";
+
 }  // namespace prefs
 }  // namespace translate

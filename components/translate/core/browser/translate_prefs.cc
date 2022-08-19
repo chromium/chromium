@@ -144,8 +144,6 @@ const char TranslatePrefs::kPrefForceTriggerTranslateCount[] =
     "translate_force_trigger_on_english_count_for_backoff_1";
 const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
     "translate_site_blacklist";
-const char TranslatePrefs::kPrefNeverPromptSitesWithTime[] =
-    "translate_site_blacklist_with_time";
 const char TranslatePrefs::kPrefTranslateDeniedCount[] =
     "translate_denied_count_for_language";
 const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
@@ -611,20 +609,20 @@ void TranslatePrefs::GetTranslatableContentLanguages(
 }
 
 bool TranslatePrefs::IsSiteOnNeverPromptList(base::StringPiece site) const {
-  return prefs_->GetValueDict(kPrefNeverPromptSitesWithTime).Find(site);
+  return prefs_->GetValueDict(prefs::kPrefNeverPromptSitesWithTime).Find(site);
 }
 
 void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
   AddValueToNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdate update(prefs_, prefs::kPrefNeverPromptSitesWithTime);
   update->GetDict().Set(site, base::TimeToValue(base::Time::Now()));
 }
 
 void TranslatePrefs::RemoveSiteFromNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
   RemoveValueFromNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdate update(prefs_, prefs::kPrefNeverPromptSitesWithTime);
   update->GetDict().Remove(site);
 }
 
@@ -632,13 +630,13 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
     base::Time begin,
     base::Time end) const {
   std::vector<std::string> result;
-  const auto& dict = prefs_->GetValueDict(kPrefNeverPromptSitesWithTime);
+  const auto& dict = prefs_->GetValueDict(prefs::kPrefNeverPromptSitesWithTime);
   for (const auto entry : dict) {
     absl::optional<base::Time> time = base::ValueToTime(entry.second);
     if (!time) {
       // Badly formatted preferences may be synced from the server, see
       // https://crbug.com/1295549
-      LOG(ERROR) << "Preference " << kPrefNeverPromptSitesWithTime
+      LOG(ERROR) << "Preference " << prefs::kPrefNeverPromptSitesWithTime
                  << " has invalid format. Ignoring.";
       continue;
     }
@@ -723,7 +721,7 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
 
 void TranslatePrefs::ClearNeverPromptSiteList() {
   prefs_->ClearPref(kPrefNeverPromptSitesDeprecated);
-  prefs_->ClearPref(kPrefNeverPromptSitesWithTime);
+  prefs_->ClearPref(prefs::kPrefNeverPromptSitesWithTime);
 }
 
 bool TranslatePrefs::HasLanguagePairsToAlwaysTranslate() const {
@@ -939,7 +937,7 @@ void TranslatePrefs::RegisterProfilePrefs(
   registry->RegisterListPref(kPrefNeverPromptSitesDeprecated,
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
-      kPrefNeverPromptSitesWithTime,
+      prefs::kPrefNeverPromptSitesWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       prefs::kPrefAlwaysTranslateList,
@@ -990,8 +988,8 @@ void TranslatePrefs::MigrateNeverPromptSites() {
   // Migration copies any sites on the deprecated never prompt pref to
   // the new version and clears all references to the old one. This will
   // make subsequent calls to migrate no-ops.
-  DictionaryPrefUpdate never_prompt_list_update(prefs_,
-                                                kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdate never_prompt_list_update(
+      prefs_, prefs::kPrefNeverPromptSitesWithTime);
   base::Value::Dict& never_prompt_list = never_prompt_list_update->GetDict();
   ListPrefUpdate deprecated_prompt_list_update(prefs_,
                                                kPrefNeverPromptSitesDeprecated);

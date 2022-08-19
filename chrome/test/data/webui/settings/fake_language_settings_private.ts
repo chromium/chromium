@@ -457,6 +457,14 @@ export function getFakeLanguagePrefs() {
       type: chrome.settingsPrivate.PrefType.LIST,
       value: ['en-US'],
     },
+    {
+      key: 'translate_site_blocklist_with_time',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: {
+        'ru.wikipedia.org': '13305315102292953',
+        'de.wikipedia.org': '13305315083099649',
+      },
+    },
     // Note: The real implementation of this pref is actually a dictionary
     // of {always translate: target}, however only the keys are needed for
     // testing.
