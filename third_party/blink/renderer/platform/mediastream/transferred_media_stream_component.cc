@@ -16,7 +16,28 @@ TransferredMediaStreamComponent::TransferredMediaStreamComponent(
 
 void TransferredMediaStreamComponent::SetImplementation(
     MediaStreamComponent* component) {
+  MediaStreamTrackPlatform::CaptureHandle old_capture_handle =
+      GetCaptureHandle();
+  MediaStreamSource::ReadyState old_ready_state = GetReadyState();
+
   component_ = component;
+
+  // Observers may dispatch events which create and add new Observers. Such
+  // observers are added directly to the implementation since component_ is
+  // now set.
+  bool capture_handle_changed =
+      old_capture_handle.origin != GetCaptureHandle().origin ||
+      old_capture_handle.handle != GetCaptureHandle().handle;
+  for (MediaStreamSource::Observer* observer : observers_) {
+    if (capture_handle_changed) {
+      observer->SourceChangedCaptureHandle();
+    }
+    if (old_ready_state != GetReadyState()) {
+      observer->SourceChangedState();
+    }
+    component->AddSourceObserver(observer);
+  }
+  observers_.clear();
 }
 
 MediaStreamComponent* TransferredMediaStreamComponent::Clone(
@@ -76,7 +97,7 @@ MediaStreamSource::ReadyState TransferredMediaStreamComponent::GetReadyState()
     return component_->GetReadyState();
   }
   // TODO(crbug.com/1288839): Return the transferred value
-  return MediaStreamSource::ReadyState::kReadyStateEnded;
+  return MediaStreamSource::ReadyState::kReadyStateLive;
 }
 
 bool TransferredMediaStreamComponent::Remote() const {
@@ -180,6 +201,15 @@ void TransferredMediaStreamComponent::SetCreationFrame(
   }
   // TODO(https://crbug.com/1288839): Save and forward to component_ once it's
   // initialized.
+}
+
+void TransferredMediaStreamComponent::AddSourceObserver(
+    MediaStreamSource::Observer* observer) {
+  if (component_) {
+    component_->AddSourceObserver(observer);
+  } else {
+    observers_.push_back(observer);
+  }
 }
 
 String TransferredMediaStreamComponent::ToString() const {

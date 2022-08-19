@@ -162,6 +162,11 @@ void MediaStreamComponentImpl::SetContentHint(
     native_track->SetContentHint(ContentHint());
 }
 
+void MediaStreamComponentImpl::AddSourceObserver(
+    MediaStreamSource::Observer* observer) {
+  Source()->AddObserver(observer);
+}
+
 String MediaStreamComponentImpl::ToString() const {
   return String::Format("[id: %s, unique_id: %d, enabled: %s]",
                         Id().Utf8().c_str(), UniqueId(),

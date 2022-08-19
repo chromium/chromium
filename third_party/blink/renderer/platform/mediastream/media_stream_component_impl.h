@@ -112,6 +112,8 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
     creation_frame_ = creation_frame;
   }
 
+  void AddSourceObserver(MediaStreamSource::Observer* observer) override;
+
   String ToString() const override;
 
   void Trace(Visitor*) const override;

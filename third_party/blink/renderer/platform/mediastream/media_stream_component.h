@@ -89,6 +89,8 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
   virtual WebLocalFrame* CreationFrame() = 0;
   virtual void SetCreationFrame(WebLocalFrame* creation_frame) = 0;
 
+  virtual void AddSourceObserver(MediaStreamSource::Observer*) = 0;
+
   virtual String ToString() const = 0;
 };
 

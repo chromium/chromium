@@ -65,6 +65,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   WebLocalFrame* CreationFrame() override;
   void SetCreationFrame(WebLocalFrame* creation_frame) override;
 
+  void AddSourceObserver(MediaStreamSource::Observer* observer) override;
+
   String ToString() const override;
 
   void Trace(Visitor*) const override;
@@ -72,6 +74,8 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
  private:
   Member<MediaStreamComponent> component_;
   TransferredValues data_;
+
+  std::vector<MediaStreamSource::Observer*> observers_;
 };
 
 }  // namespace blink

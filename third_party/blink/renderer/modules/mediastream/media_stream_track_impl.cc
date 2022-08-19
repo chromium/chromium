@@ -263,7 +263,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
     : ready_state_(ready_state),
       component_(component),
       execution_context_(context) {
-  component_->Source()->AddObserver(this);
+  component_->AddSourceObserver(this);
 
   // If the source is already non-live at this point, the observer won't have
   // been called. Update the muted state manually.
