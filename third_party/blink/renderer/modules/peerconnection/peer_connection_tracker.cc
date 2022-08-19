@@ -193,6 +193,56 @@ String SerializeOptionalDirection(
   return direction ? SerializeDirection(*direction) : "null";
 }
 
+String SerializeEncodingParameters(
+    const String& indent,
+    const std::vector<webrtc::RtpEncodingParameters>& encodings) {
+  StringBuilder result;
+  if (encodings.empty()) {
+    return result.ToString();
+  }
+  result.Append(indent);
+  result.Append("encodings: [\n");
+  for (const auto& encoding : encodings) {
+    result.Append(indent);
+    result.Append("    {");
+    result.Append("active: ");
+    result.Append(encoding.active ? "true" : "false");
+    result.Append(", ");
+    if (encoding.max_bitrate_bps) {
+      result.Append("maxBitrate: ");
+      result.AppendNumber(*encoding.max_bitrate_bps);
+      result.Append(", ");
+    }
+    if (encoding.scale_resolution_down_by) {
+      result.Append("scaleResolutionDownBy: ");
+      result.AppendNumber(*encoding.scale_resolution_down_by);
+      result.Append(", ");
+    }
+    if (!encoding.rid.empty()) {
+      result.Append("rid: ");
+      result.Append(String(encoding.rid));
+      result.Append(", ");
+    }
+    if (encoding.max_framerate) {
+      result.Append("maxFramerate: ");
+      result.AppendNumber(*encoding.max_framerate);
+      result.Append(", ");
+    }
+    if (encoding.adaptive_ptime) {
+      result.Append("adaptivePtime: true, ");
+    }
+    if (encoding.scalability_mode) {
+      result.Append("scalabilityMode: ");
+      result.Append(String(*encoding.scalability_mode));
+    }
+    result.Append("},\n");
+  }
+  result.Append(indent);
+  result.Append("  ],\n");
+  result.Append(indent);
+  return result.ToString();
+}
+
 String SerializeSender(const String& indent,
                        const blink::RTCRtpSenderPlatform& sender) {
   StringBuilder result;
@@ -214,6 +264,8 @@ String SerializeSender(const String& indent,
   result.Append(SerializeMediaStreamIds(sender.StreamIds()));
   result.Append(",\n");
   result.Append(indent);
+  result.Append(
+      SerializeEncodingParameters(indent, sender.GetParameters()->encodings));
   result.Append("}");
   return result.ToString();
 }

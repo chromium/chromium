@@ -96,8 +96,7 @@ FakeRTCRtpSenderImpl::GetDtmfSender() const {
 
 std::unique_ptr<webrtc::RtpParameters> FakeRTCRtpSenderImpl::GetParameters()
     const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<webrtc::RtpParameters>();
 }
 
 void FakeRTCRtpSenderImpl::SetParameters(
