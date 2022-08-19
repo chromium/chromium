@@ -17,7 +17,8 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -92,7 +93,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
       this.currentChannel_ = info.currentChannel;
       this.targetChannel_ = info.targetChannel;
       // Pre-populate radio group with target channel.
-      const radioGroup = this.shadowRoot!.querySelector('cr-radio-group')!;
+      const radioGroup = this.getRadioGroup_();
       radioGroup.selected = this.targetChannel_;
       radioGroup.focus();
     });
@@ -104,23 +105,25 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
+  private getRadioGroup_(): CrRadioGroupElement {
+    const radioGroup = this.shadowRoot!.querySelector('cr-radio-group');
+    assert(radioGroup);
+    return radioGroup;
+  }
+
   private onCancelTap_() {
     this.$.dialog.close();
   }
 
   private onChangeChannelTap_() {
-    const selectedChannel =
-        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
-        BrowserChannel;
+    const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
   private onChangeChannelAndPowerwashTap_() {
-    const selectedChannel =
-        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
-        BrowserChannel;
+    const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
@@ -151,9 +154,7 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
   }
 
   private onChannelSelectionChanged_() {
-    const selectedChannel =
-        this.shadowRoot!.querySelector('cr-radio-group')!.selected as
-        BrowserChannel;
+    const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
 
     // Selected channel is the same as the target channel so only show 'cancel'.
     if (selectedChannel === this.targetChannel_) {

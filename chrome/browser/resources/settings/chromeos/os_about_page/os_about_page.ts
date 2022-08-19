@@ -26,7 +26,7 @@ import '../os_reset_page/os_powerwash_dialog.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
