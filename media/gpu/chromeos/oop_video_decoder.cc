@@ -164,7 +164,7 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                  InitCB init_cb,
                                  const OutputCB& output_cb,
                                  const WaitingCB& waiting_cb) {
-  VLOGF(2);
+  DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!init_cb_);
@@ -235,7 +235,7 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
 
 void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                              DecodeCB decode_cb) {
-  VLOGF(2);
+  DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!init_cb_);
@@ -279,6 +279,7 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
                                    bool is_flushing,
                                    const DecoderStatus& status) {
+  DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
@@ -306,7 +307,7 @@ void OOPVideoDecoder::OnDecodeDone(uint64_t decode_id,
 }
 
 void OOPVideoDecoder::Reset(base::OnceClosure reset_cb) {
-  VLOGF(2);
+  DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!init_cb_);
@@ -427,7 +428,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
     const base::UnguessableToken& release_token) {
-  VLOGF(2);
+  DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
@@ -451,7 +452,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
-  VLOGF(2);
+  DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
