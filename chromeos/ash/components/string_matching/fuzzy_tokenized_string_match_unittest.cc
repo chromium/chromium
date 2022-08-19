@@ -146,7 +146,6 @@ class FuzzyTokenizedStringMatchTest : public testing::Test {};
 /**********************************************************************
  * Benchmarking section 1 - Abstract test cases                       *
  **********************************************************************/
-// TODO(crbug.com/1336160): Expand abstract benchmarking tests.
 
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCaseInsensitivity) {
   std::u16string text = u"abcde";

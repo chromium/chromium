@@ -20,9 +20,6 @@ namespace ash::string_matching {
 // other. The higher the relevance score, the better the two strings are
 // matched. Matched portions of text are stored as index ranges.
 //
-// TODO(crbug.com/1018613): each of these functions have too many input params,
-// we should revise the structure and remove unnecessary ones.
-//
 // TODO(crbug.com/1336160): Terminology (for example: relevance vs. ratio) is
 // confusing and could be clarified.
 class FuzzyTokenizedStringMatch {
