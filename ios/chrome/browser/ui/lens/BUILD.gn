@@ -26,3 +26,12 @@ source_set("lens_availability") {
   ]
   deps = []
 }
+
+source_set("lens_entrypoint") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "lens_entrypoint.h",
+    "lens_entrypoint.mm",
+  ]
+  deps = []
+}

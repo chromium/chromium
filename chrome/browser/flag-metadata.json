@@ -2444,6 +2444,21 @@
     "expiry_milestone": 107
   },
   {
+    "name": "enable-lens-in-home-screen-widget",
+    "owners": [ "schechter", "hujasonx" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "enable-lens-in-keyboard",
+    "owners": [ "schechter", "hujasonx" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "enable-lens-in-ntp",
+    "owners": [ "schechter", "hujasonx" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-lens-standalone",
     "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
     "expiry_milestone": 107

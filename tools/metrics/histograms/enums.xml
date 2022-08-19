@@ -51779,6 +51779,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
 </enum>
 
+<enum name="IOSLensEntrypoint">
+  <summary>The entrypoint that the user entered Lens by.</summary>
+  <int value="0" label="Context Menu"/>
+  <int value="1" label="Home Screen Widget"/>
+  <int value="2" label="New Tab Page"/>
+  <int value="3" label="Omnibox Keyboard"/>
+</enum>
+
 <enum name="IOSLensSupportStatus">
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>

@@ -714,6 +714,26 @@ const char kUseLensToSearchForImageDescription[] =
     "When enabled, use Lens to search for images from the long press context "
     "menu when Google is the selected search engine.";
 
+const char kEnableLensInHomeScreenWidgetName[] =
+    "Enable Google Lens in the Home Screen Widget";
+const char kEnableLensInHomeScreenWidgetDescription[] =
+    "When enabled, use Lens to search for images from your device camera "
+    "menu when Google is the selected search engine, accessible from the"
+    "home screen widget.";
+
+const char kEnableLensInKeyboardName[] =
+    "Enable Google Lens in the Omnibox Keyboard";
+const char kEnableLensInKeyboardDescription[] =
+    "When enabled, use Lens to search for images from your device camera "
+    "menu when Google is the selected search engine, accessible from the"
+    "omnibox keyboard.";
+
+const char kEnableLensInNTPName[] = "Enable Google Lens in the NTP";
+const char kEnableLensInNTPDescription[] =
+    "When enabled, use Lens to search for images from your device camera "
+    "menu when Google is the selected search engine, accessible from the"
+    "new tab page.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";
