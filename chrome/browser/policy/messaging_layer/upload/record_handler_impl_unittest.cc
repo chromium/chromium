@@ -248,7 +248,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
                         encryption_key_attached_event.cb());
 
   auto response = responder_event.result();
-  EXPECT_EQ(response.status().error_code(), error::INTERNAL);
+  EXPECT_EQ(response.status().error_code(), error::FAILED_PRECONDITION);
 }
 
 TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
@@ -279,7 +279,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   const auto response = response_event.result();
   EXPECT_THAT(response,
               Property(&DmServerUploadService::CompletionResponse::status,
-                       Property(&Status::error_code, Eq(error::INTERNAL))));
+                       Property(&Status::error_code, Eq(error::DATA_LOSS))));
 }
 
 TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {

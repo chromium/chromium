@@ -88,7 +88,7 @@ class RecordHandlerImpl::ReportUploader
 
   void StartUpload();
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
-  void HandleFailedUpload();
+  void HandleFailedUpload(Status status);
   void HandleSuccessfulUpload();
   void Complete(DmServerUploadService::CompletionResponse result);
 
@@ -213,7 +213,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
 
   if (!response.ok()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
-             base::Unretained(this));
+             base::Unretained(this), response.status());
     return;
   }
   last_response_ = std::move(response.ValueOrDie());
@@ -221,7 +221,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
            base::Unretained(this));
 }
 
-void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
+void RecordHandlerImpl::ReportUploader::HandleFailedUpload(Status status) {
   if (highest_sequence_information_.has_value()) {
     Complete(DmServerUploadService::SuccessfulUploadResponse{
         .sequence_information =
@@ -230,7 +230,7 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
     return;
   }
 
-  Complete(Status(error::INTERNAL, "Unable to upload any records"));
+  Complete(status);
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
