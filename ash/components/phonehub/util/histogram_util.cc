@@ -61,9 +61,14 @@ std::string GetMessageResultHistogramName(proto::MessageType message_type) {
     case proto::MessageType::INITIATE_CAMERA_ROLL_ITEM_TRANSFER_REQUEST:
       return "PhoneHub.TaskCompletion.InitiateCameraRollItemTransfer.Result";
 
+    case proto::MessageType::FEATURE_SETUP_REQUEST:
+      [[fallthrough]];
+    case proto::MessageType::FEATURE_SETUP_RESPONSE:
+      return "PhoneHub.TaskCompletion.FeatureSetup.Result";
+
     default:
       // Note that PROVIDE_CROS_STATE, PHONE_STATUS_SNAPSHOT and
-      // PHONE_STATUS_UPDATE message types are not logged as part of this
+      // PHONE_STATUS_UPDATE message types are not logged as part of these
       // metrics.
       return std::string();
   }

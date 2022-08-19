@@ -466,6 +466,7 @@ chromium-metrics-reviews@google.com.
     request message was sent and a response was received.
   </summary>
   <token key="MessageType">
+    <variant name="FeatureSetup"/>
     <variant name="FetchCameraRollItemData"/>
     <variant name="FetchCameraRollItems"/>
     <variant name="InitiateCameraRollItemTransfer"/>
