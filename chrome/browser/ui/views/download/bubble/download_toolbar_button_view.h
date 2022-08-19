@@ -57,6 +57,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // ToolbarButton:
   void UpdateIcon() override;
+  void OnThemeChanged() override;
 
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;

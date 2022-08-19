@@ -287,6 +287,11 @@ void DownloadToolbarButtonView::ButtonPressed() {
   controller_->OnButtonPressed();
 }
 
+void DownloadToolbarButtonView::OnThemeChanged() {
+  ToolbarButton::OnThemeChanged();
+  UpdateIcon();
+}
+
 std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
     std::vector<DownloadUIModel::DownloadUIModelPtr> model_list) {
   // Do not create empty partial view.
