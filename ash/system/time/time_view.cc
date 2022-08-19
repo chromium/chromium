@@ -305,6 +305,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
 
   switch (type_) {
     case kTime: {
+      // Calculate horizontal clock layout label.
       const std::u16string current_time =
           base::TimeFormatTimeOfDayWithHourClockType(
               now, model_->hour_clock_type(), base::kDropAmPm);
@@ -317,22 +318,19 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
           ax::mojom::Event::kTextChanged, true);
 
       // Calculate vertical clock layout labels.
-      const size_t colon_pos = current_time.find(u":");
-      std::u16string hour = current_time.substr(0, colon_pos);
-      const std::u16string minute = current_time.substr(colon_pos + 1);
+      std::u16string current_hours =
+          (model_->hour_clock_type() == base::k24HourClock)
+              ? calendar_utils::GetTwentyFourHourClockHours(now)
+              : calendar_utils::GetTwelveHourClockHours(now);
+      const std::u16string current_minutes = calendar_utils::GetMinutes(now);
 
-      // Sometimes pad single-digit hours with a zero for aesthetic reasons.
-      if (hour.length() == 1 &&
-          model_->hour_clock_type() == base::k24HourClock &&
-          !base::i18n::IsRTL())
-        hour = u"0" + hour;
-
-      vertical_label_hours_->SetText(hour);
-      vertical_label_minutes_->SetText(minute);
+      vertical_label_hours_->SetText(current_hours);
+      vertical_label_minutes_->SetText(current_minutes);
       vertical_label_hours_->NotifyAccessibilityEvent(
           ax::mojom::Event::kTextChanged, true);
       vertical_label_minutes_->NotifyAccessibilityEvent(
           ax::mojom::Event::kTextChanged, true);
+
       Layout();
 
       // When the `new_label` text does not have the some length as the

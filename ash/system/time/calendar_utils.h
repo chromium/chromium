@@ -122,11 +122,11 @@ ASH_EXPORT std::u16string GetDayIntOfMonth(const base::Time local_date);
 // (e.g. March 10)
 ASH_EXPORT std::u16string GetMonthNameAndDayOfMonth(const base::Time date);
 
-// Gets the `date`'s hour in twelve hour clock format.
-// (e.g. 2:31 AM)
+// Gets the `date`'s time in twelve hour clock format.
+// (e.g. 10:31 PM)
 ASH_EXPORT std::u16string GetTwelveHourClockTime(const base::Time date);
 
-// Gets the `date`'s hour in twenty four hour clock format.
+// Gets the `date`'s time in twenty four hour clock format.
 // (e.g. 22:31)
 ASH_EXPORT std::u16string GetTwentyFourHourClockTime(const base::Time date);
 
@@ -145,6 +145,20 @@ ASH_EXPORT std::u16string GetYear(const base::Time date);
 // Gets the `date`'s month name and year.
 // (e.g. March 2022)
 ASH_EXPORT std::u16string GetMonthNameAndYear(const base::Time date);
+
+// Gets the `date`'s hour in twelve hour clock format.
+// (e.g. 9, when given 21:05)
+// Some locales may add zero-padding.
+ASH_EXPORT std::u16string GetTwelveHourClockHours(const base::Time date);
+
+// Gets the `date`'s hour in twenty four hour clock format.
+// (e.g. 21, when given 21:05)
+// Some locales may add zero-padding.
+ASH_EXPORT std::u16string GetTwentyFourHourClockHours(const base::Time date);
+
+// Gets the `date`'s minutes with zero-padding.
+// (e.g. 05, when given 22:05)
+ASH_EXPORT std::u16string GetMinutes(const base::Time date);
 
 // Gets the formatted interval between `start_time` and `end_time` in twelve
 // hour clock format.

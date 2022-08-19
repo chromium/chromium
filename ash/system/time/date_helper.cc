@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
+#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
@@ -33,6 +34,33 @@ UDate TimeToUDate(const base::Time& time) {
                             base::Time::kMillisecondsPerSecond);
 }
 
+// Receives an input `unicode_pattern` in the "Hm" format (HH:mm, aK:mm, h:mm a,
+// a hh:mm, etc.) and extracts the hours part of the pattern.
+icu::UnicodeString getHoursPattern(const icu::UnicodeString& unicode_pattern) {
+  std::string pattern;
+  unicode_pattern.toUTF8String(pattern);
+
+  if (pattern.find("hh") != std::string::npos)
+    return icu::UnicodeString("hh");
+  if (pattern.find("h") != std::string::npos)
+    return icu::UnicodeString("h");
+  if (pattern.find("HH") != std::string::npos)
+    return icu::UnicodeString("HH");
+  if (pattern.find("H") != std::string::npos)
+    return icu::UnicodeString("H");
+  if (pattern.find("KK") != std::string::npos)
+    return icu::UnicodeString("KK");
+  if (pattern.find("K") != std::string::npos)
+    return icu::UnicodeString("K");
+  if (pattern.find("kk") != std::string::npos)
+    return icu::UnicodeString("kk");
+  if (pattern.find("k") != std::string::npos)
+    return icu::UnicodeString("k");
+
+  NOTREACHED() << "Hours pattern not found.";
+  return icu::UnicodeString("HH");
+}
+
 }  // namespace
 
 // static
@@ -55,10 +83,19 @@ icu::SimpleDateFormat DateHelper::CreateSimpleDateFormatter(
       generator->getBestPattern(icu::UnicodeString(pattern), status);
   DCHECK(U_SUCCESS(status));
 
-  // Then, format the time using the generated pattern.
+  // Then, create a formatter object using the generated pattern.
   icu::SimpleDateFormat formatter(generated_pattern, status);
   DCHECK(U_SUCCESS(status));
 
+  return formatter;
+}
+
+icu::SimpleDateFormat DateHelper::CreateSimpleDateFormatterWithoutBestPattern(
+    const char* pattern) {
+  UErrorCode status = U_ZERO_ERROR;
+  DCHECK(U_SUCCESS(status));
+  icu::SimpleDateFormat formatter(icu::UnicodeString(pattern), status);
+  DCHECK(U_SUCCESS(status));
   return formatter;
 }
 
@@ -69,6 +106,24 @@ DateHelper::CreateDateIntervalFormatter(const char* pattern) {
       icu::DateIntervalFormat::createInstance(pattern, status);
   DCHECK(U_SUCCESS(status));
   return absl::WrapUnique(formatter);
+}
+
+icu::SimpleDateFormat DateHelper::CreateHoursFormatter(const char* pattern) {
+  UErrorCode status = U_ZERO_ERROR;
+  DCHECK(U_SUCCESS(status));
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(status));
+  DCHECK(U_SUCCESS(status));
+  icu::UnicodeString generated_pattern =
+      generator->getBestPattern(icu::UnicodeString(pattern), status);
+  DCHECK(U_SUCCESS(status));
+
+  // Extract the hours from the generated pattern.
+  icu::UnicodeString hours_pattern = getHoursPattern(generated_pattern);
+  icu::SimpleDateFormat formatter(hours_pattern, status);
+  DCHECK(U_SUCCESS(status));
+
+  return formatter;
 }
 
 std::u16string DateHelper::GetFormattedTime(const icu::DateFormat* formatter,
@@ -143,6 +198,9 @@ DateHelper::DateHelper()
       day_of_week_formatter_(CreateSimpleDateFormatter("ee")),
       week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
       year_formatter_(CreateSimpleDateFormatter("YYYY")),
+      twelve_hour_clock_hours_formatter_(CreateHoursFormatter("h:mm a")),
+      twenty_four_hour_clock_hours_formatter_(CreateHoursFormatter("HH:mm")),
+      minutes_formatter_(CreateSimpleDateFormatterWithoutBestPattern("mm")),
       twelve_hour_clock_interval_formatter_(CreateDateIntervalFormatter("hm")),
       twenty_four_hour_clock_interval_formatter_(
           CreateDateIntervalFormatter("Hm")) {
@@ -179,6 +237,9 @@ void DateHelper::ResetFormatters() {
   day_of_week_formatter_ = CreateSimpleDateFormatter("ee");
   week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");
   year_formatter_ = CreateSimpleDateFormatter("YYYY");
+  twelve_hour_clock_hours_formatter_ = CreateHoursFormatter("h:mm a");
+  twenty_four_hour_clock_hours_formatter_ = CreateHoursFormatter("HH:mm");
+  minutes_formatter_ = CreateSimpleDateFormatterWithoutBestPattern("mm");
   twelve_hour_clock_interval_formatter_ = CreateDateIntervalFormatter("hm");
   twenty_four_hour_clock_interval_formatter_ =
       CreateDateIntervalFormatter("Hm");
@@ -242,6 +303,7 @@ void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
   gregorian_calendar_->setTimeZone(
       system::TimezoneSettings::GetInstance()->GetTimezone());
   Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents();
+  Shell::Get()->system_tray_model()->clock()->NotifyRefreshClock();
 }
 
 void DateHelper::OnLocaleChanged() {
