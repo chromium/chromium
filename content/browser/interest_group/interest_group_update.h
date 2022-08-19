@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -28,6 +29,12 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   ~InterestGroupUpdate();
 
   absl::optional<double> priority;
+  absl::optional<bool> enable_bidding_signals_prioritization;
+  absl::optional<base::flat_map<std::string, double>> priority_vector;
+  // Unlike other fields, this is merged with the previous value, so can keep
+  // old overrides around. Keys mapped to nullopt are deleted.
+  absl::optional<base::flat_map<std::string, absl::optional<double>>>
+      priority_signals_overrides;
   absl::optional<blink::InterestGroup::ExecutionMode> execution_mode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;

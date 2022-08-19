@@ -109,6 +109,15 @@ base::Value::List MakeAdsValue(
   return list;
 }
 
+base::Value::Dict stringDoubleMapToDict(
+    const base::flat_map<std::string, double>& map) {
+  base::Value::Dict dict;
+  for (const auto& pair : map) {
+    dict.Set(pair.first, pair.second);
+  }
+  return dict;
+}
+
 class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
  public:
   explicit AllowlistedOriginContentBrowserClient() = default;
@@ -444,6 +453,14 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     dict.Set("name", group.name);
     dict.Set("owner", group.owner.Serialize());
     dict.Set("priority", group.priority);
+    dict.Set("enableBiddingSignalsPrioritization",
+             group.enable_bidding_signals_prioritization);
+    if (group.priority_vector)
+      dict.Set("priorityVector", stringDoubleMapToDict(*group.priority_vector));
+    if (group.priority_signals_overrides) {
+      dict.Set("prioritySignalsOverrides",
+               stringDoubleMapToDict(*group.priority_signals_overrides));
+    }
     if (group.bidding_url)
       dict.Set("biddingLogicUrl", group.bidding_url->spec());
     if (group.bidding_wasm_helper_url)
@@ -6581,8 +6598,8 @@ navigator.runAdAuction({
 // These tests validate the `dailyUpdateUrl` and
 // navigator.updateAdInterestGroups() functionality.
 
-// The server JSON updates all fields that can be updated.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
+// The server JSON updates a number of updatable fields.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -6612,8 +6629,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
           /*owner=*/test_origin,
           /*name=*/"cars",
           /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
-          /*priority_vector=*/absl::nullopt,
-          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          /*priority_vector=*/{{{"one", 1}}},
+          /*priority_signals_overrides=*/{{{"two", 2}}}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),

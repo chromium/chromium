@@ -918,6 +918,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
 "priority": 1.59,
+"enableBiddingSignalsPrioritization": true,
+"priorityVector": {"old1": 2, "new1": 1.1},
+"prioritySignalsOverrides": {"old2": 1, "new1": 1.1,
+                             "browserSignals.reserved":-1},
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
 "trustedBiddingSignalsUrl":
@@ -935,6 +939,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
+  interest_group.enable_bidding_signals_prioritization = false;
+  interest_group.priority_vector = {{{"old1", 1}, {"old2", 2}}};
+  interest_group.priority_signals_overrides = {{{"old1", 1}, {"old2", 2}}};
   interest_group.daily_update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -957,6 +964,21 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   EXPECT_EQ(group.priority, 1.59);
+  EXPECT_EQ(group.enable_bidding_signals_prioritization, true);
+
+  // The new value for `priority_vector` should completely replace the old one.
+  base::flat_map<std::string, double> expected_priority_vector{{"old1", 2},
+                                                               {"new1", 1.1}};
+  EXPECT_EQ(group.priority_vector, expected_priority_vector);
+
+  // The new value for `priority_signals_overrides` should be merged with the
+  // old one. Interest groups can use the "browserSignals." prefix, though it's
+  // not allowed in auctionConfig.prioritySignals fields.
+  base::flat_map<std::string, double> expected_priority_signals_overrides{
+      {"old1", 1}, {"old2", 1}, {"new1", 1.1}, {"browserSignals.reserved", -1}};
+  EXPECT_EQ(group.priority_signals_overrides,
+            expected_priority_signals_overrides);
+
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
@@ -1216,6 +1238,133 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdatePriorityVector) {
+  // These are all set in sequence, on top of each other, so if one update
+  // should fail to parse, the previous value should be unmodified.
+  const struct {
+    const char* priority_vector_value;
+    base::flat_map<std::string, double> expected_priority_vector;
+  } kTestCases[] = {
+      // Set one value.
+      {R"({"key1":1})", {{"key1", 1}}},
+      // Overwrite it.
+      {R"({"key1":2})", {{"key1", 2}}},
+
+      // Trying to set a value that's not a double should fail.
+      {R"({"key1":null})", {{"key1", 2}}},
+      {R"({"key1":"42"})", {{"key1", 2}}},
+      {R"({"key1":[42]})", {{"key1", 2}}},
+
+      // Setting the entire vector to something that isn't a dict should fail.
+      {R"(null)", {{"key1", 2}}},
+      {R"([])", {{"key1", 2}}},
+      {R"(5)", {{"key1", 2}}},
+
+      // Old values should not be preserved when setting new values, even when
+      // not explicitly overwriting the old key.
+      {R"({"key2":-2,"key3":0})", {{"key2", -2}, {"key3", 0}}},
+
+      // Empty value is valid.
+      {R"({})", {}},
+  };
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.daily_update_url = kUpdateUrlA;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  JoinInterestGroupAndFlush(interest_group);
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_EQ(groups[0].interest_group.priority_vector, absl::nullopt);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.priority_vector_value);
+
+    // Pass enough time so that update rate limits don't cause an update to
+    // fail.
+    task_environment()->FastForwardBy(
+        InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+
+    // Set new update response, and update.
+    network_responder_->RegisterUpdateResponse(
+        kDailyUpdateUrlPath,
+        base::StringPrintf(R"({"priorityVector": %s})",
+                           test_case.priority_vector_value));
+    UpdateInterestGroupNoFlush();
+    task_environment()->RunUntilIdle();
+
+    groups = GetInterestGroupsForOwner(kOriginA);
+    ASSERT_EQ(groups.size(), 1u);
+    EXPECT_EQ(groups[0].interest_group.priority_vector,
+              test_case.expected_priority_vector);
+  }
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
+  // These are all set in sequence, on top of each other, so if one update
+  // should fail to parse, the previous value should be unmodified.
+  const struct {
+    const char* priority_signals_overrides_value;
+    base::flat_map<std::string, double> expected_priority_signals_overrides;
+  } kTestCases[] = {
+      // Set one value.
+      {R"({"key1":1})", {{"key1", 1}}},
+      // Overwrite it.
+      {R"({"key1":2})", {{"key1", 2}}},
+
+      // Trying to set a value that's not a double or null should fail.
+      {R"({"key1":"42"})", {{"key1", 2}}},
+      {R"({"key1":[42]})", {{"key1", 2}}},
+
+      // Setting the entire vector to something that isn't a dict should fail.
+      {R"(null)", {{"key1", 2}}},
+      {R"([])", {{"key1", 2}}},
+      {R"(5)", {{"key1", 2}}},
+
+      // New values should be merged with old values.
+      {R"({"key2":-2,"key3":0})", {{"key1", 2}, {"key2", -2}, {"key3", 0}}},
+
+      // Setting a value to null should delete it.
+      {R"({"key2":null})", {{"key1", 2}, {"key3", 0}}},
+
+      // Empty value is valid, but has no effect.
+      {R"({})", {{"key1", 2}, {"key3", 0}}},
+  };
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.daily_update_url = kUpdateUrlA;
+  interest_group.expiry = base::Time::Now() + base::Days(30);
+  JoinInterestGroupAndFlush(interest_group);
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_EQ(groups[0].interest_group.priority_signals_overrides, absl::nullopt);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.priority_signals_overrides_value);
+
+    // Pass enough time so that update rate limits don't cause an update to
+    // fail.
+    task_environment()->FastForwardBy(
+        InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+
+    // Set new update response, and update.
+    network_responder_->RegisterUpdateResponse(
+        kDailyUpdateUrlPath,
+        base::StringPrintf(R"({"prioritySignalsOverrides": %s})",
+                           test_case.priority_signals_overrides_value));
+    UpdateInterestGroupNoFlush();
+    task_environment()->RunUntilIdle();
+
+    groups = GetInterestGroupsForOwner(kOriginA);
+    ASSERT_EQ(groups.size(), 1u);
+    EXPECT_EQ(groups[0].interest_group.priority_signals_overrides,
+              test_case.expected_priority_signals_overrides);
+  }
 }
 
 // Join 2 interest groups, each with the same owner, but with different update

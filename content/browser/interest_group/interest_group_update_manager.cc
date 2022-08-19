@@ -97,7 +97,63 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
-// Copies the execution_mode JSON field into `interest_group_update`, returns
+// Copies the `priorityVector` JSON field into `priority_vector`. Returns
+// true if the JSON is valid and the copy completed.
+[[nodiscard]] bool TryToCopyPriorityVector(
+    const base::Value::Dict& dict,
+    absl::optional<base::flat_map<std::string, double>>& priority_vector) {
+  const base::Value* maybe_dict = dict.Find("priorityVector");
+  if (!maybe_dict)
+    return true;
+  if (!maybe_dict->is_dict())
+    return false;
+
+  // Extract all key/value pairs to a vector before writing to a flat_map, since
+  // flat_map insertion is O(n).
+  std::vector<std::pair<std::string, double>> pairs;
+  for (const auto pair : maybe_dict->GetDict()) {
+    if (pair.second.is_int() || pair.second.is_double()) {
+      pairs.emplace_back(pair.first, pair.second.GetDouble());
+      continue;
+    }
+    return false;
+  }
+  priority_vector = base::flat_map<std::string, double>(std::move(pairs));
+  return true;
+}
+
+// Copies the prioritySignalsOverrides JSON field into
+// `priority_signals_overrides`, returns true if the JSON is valid and the copy
+// completed. Maps nulls to nullopt, which means a value should be deleted from
+// the stored interset group.
+[[nodiscard]] bool TryToCopyPrioritySignalsOverrides(
+    const base::Value::Dict& dict,
+    absl::optional<base::flat_map<std::string, absl::optional<double>>>&
+        priority_signals_overrides) {
+  const base::Value* maybe_dict = dict.Find("prioritySignalsOverrides");
+  if (!maybe_dict)
+    return true;
+  if (!maybe_dict->is_dict())
+    return false;
+
+  std::vector<std::pair<std::string, absl::optional<double>>> pairs;
+  for (const auto pair : maybe_dict->GetDict()) {
+    if (pair.second.is_none()) {
+      pairs.emplace_back(pair.first, absl::nullopt);
+      continue;
+    }
+    if (pair.second.is_int() || pair.second.is_double()) {
+      pairs.emplace_back(pair.first, pair.second.GetDouble());
+      continue;
+    }
+    return false;
+  }
+  priority_signals_overrides =
+      base::flat_map<std::string, absl::optional<double>>(std::move(pairs));
+  return true;
+}
+
+// Copies the executionMode JSON field into `interest_group_update`, returns
 // true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyExecutionMode(
     const base::Value::Dict& dict,
@@ -222,7 +278,19 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
       return absl::nullopt;
     interest_group_update.priority = maybe_priority_value->GetDouble();
   }
-  if (!TryToCopyExecutionMode(*dict, interest_group_update)) {
+  const base::Value* maybe_enable_bidding_signals_prioritization =
+      dict->Find("enableBiddingSignalsPrioritization");
+  if (maybe_enable_bidding_signals_prioritization) {
+    // If the field is specified, it must be a bool.
+    if (!maybe_enable_bidding_signals_prioritization->is_bool())
+      return absl::nullopt;
+    interest_group_update.enable_bidding_signals_prioritization =
+        maybe_enable_bidding_signals_prioritization->GetBool();
+  }
+  if (!TryToCopyPriorityVector(*dict, interest_group_update.priority_vector) ||
+      !TryToCopyPrioritySignalsOverrides(
+          *dict, interest_group_update.priority_signals_overrides) ||
+      !TryToCopyExecutionMode(*dict, interest_group_update)) {
     return absl::nullopt;
   }
   const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");

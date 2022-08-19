@@ -38,6 +38,7 @@
 namespace content {
 
 using blink::InterestGroup;
+using testing::Field;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
@@ -206,6 +207,9 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
     EXPECT_EQ("example", interest_groups[0].interest_group.name);
     EXPECT_EQ(1, interest_groups[0].bidding_browser_signals->join_count);
     EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+    EXPECT_EQ(interest_groups[0].joining_origin, test_origin);
+    EXPECT_EQ(interest_groups[0].join_time, base::Time::Now());
+    EXPECT_EQ(interest_groups[0].last_updated, base::Time::Now());
   }
   histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
@@ -221,6 +225,10 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
+  base::RunLoop().RunUntilIdle();
+
+  // Advance time so can verify that `join_time` and `last_updated` are updated.
+  task_environment().FastForwardBy(base::Seconds(125));
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                              test_origin.GetURL());
 
@@ -234,6 +242,8 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
   EXPECT_EQ("example", interest_groups[0].interest_group.name);
   EXPECT_EQ(2, interest_groups[0].bidding_browser_signals->join_count);
   EXPECT_EQ(0, interest_groups[0].bidding_browser_signals->bid_count);
+  EXPECT_EQ(interest_groups[0].join_time, base::Time::Now());
+  EXPECT_EQ(interest_groups[0].last_updated, base::Time::Now());
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example2"),
                              test_origin.GetURL());
@@ -739,9 +749,9 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup full(
       /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
       /*name=*/"full", /*priority=*/1.0,
-      /*enable_bidding_signals_prioritization=*/false,
-      /*priority_vector=*/absl::nullopt,
-      /*priority_signals_overrides=*/absl::nullopt,
+      /*enable_bidding_signals_prioritization=*/true,
+      /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
+      /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
       /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
       /*bidding_url=*/GURL("https://full.example.com/bid"),
       /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
@@ -778,8 +788,15 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   ASSERT_EQ(1u, storage_interest_groups.size());
   EXPECT_TRUE(
       full.IsEqualForTesting(storage_interest_groups[0].interest_group));
+  base::Time join_time = base::Time::Now();
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
 
   // Test update as well.
+
+  // Pass time, so can check if `join_time` or `last_updated` is updated.
+  task_environment().FastForwardBy(base::Seconds(1234));
+
   InterestGroupUpdate update;
   update.bidding_url = GURL("https://full.example.com/bid2");
   update.bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm2");
@@ -808,6 +825,13 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   ASSERT_EQ(1u, storage_interest_groups.size());
   EXPECT_TRUE(
       updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
+  // `join_time` should not be modified be updates, but `last_updated` should
+  // be.
+  EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
+  EXPECT_EQ(storage_interest_groups[0].last_updated, base::Time::Now());
+  // Make sure the clock was advanced.
+  EXPECT_NE(storage_interest_groups[0].join_time,
+            storage_interest_groups[0].last_updated);
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
@@ -1098,245 +1122,248 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
 
   auto expected_interest_group_matcher = testing::UnorderedElementsAre(
       testing::AllOf(
-          testing::Field(
+          Field(
               "interest_group", &StorageInterestGroup::interest_group,
               testing::AllOf(
-                  testing::Field("expiry", &blink::InterestGroup::expiry,
-                                 base::Time::FromDeltaSinceWindowsEpoch(
-                                     base::Microseconds(13293932603076872))),
-                  testing::Field(
-                      "owner", &blink::InterestGroup::owner,
-                      url::Origin::Create(GURL("https://owner.example.com"))),
-                  testing::Field("name", &blink::InterestGroup::name, "group1"),
-                  testing::Field("priority", &blink::InterestGroup::priority,
-                                 0.0),
-                  testing::Field("bidding_url",
-                                 &blink::InterestGroup::bidding_url,
-                                 GURL("https://owner.example.com/bidder.js")),
-                  testing::Field("bidding_wasm_helper_url",
-                                 &blink::InterestGroup::bidding_wasm_helper_url,
-                                 absl::nullopt),
-                  testing::Field("daily_update_url",
-                                 &blink::InterestGroup::daily_update_url,
-                                 GURL("https://owner.example.com/update")),
-                  testing::Field(
-                      "trusted_bidding_signals_url",
-                      &blink::InterestGroup::trusted_bidding_signals_url,
-                      GURL("https://owner.example.com/signals")),
-                  testing::Field(
-                      "trusted_bidding_signals_keys",
-                      &blink::InterestGroup::trusted_bidding_signals_keys,
-                      std::vector<std::string>{"group1"}),
-                  testing::Field("user_bidding_signals",
-                                 &blink::InterestGroup::user_bidding_signals,
-                                 "[[\"1\",\"2\"]]"),
-                  testing::Field(
-                      "ads", &blink::InterestGroup::ads,
-                      testing::Property(
-                          "value()",
-                          &absl::optional<
-                              std::vector<blink::InterestGroup::Ad>>::value,
-                          testing::ElementsAre(testing::AllOf(
-                              testing::Field(
-                                  "render_url",
-                                  &blink::InterestGroup::Ad::render_url,
-                                  GURL("https://ads.example.com/1")),
-                              testing::Field(
-                                  "metadata",
-                                  &blink::InterestGroup::Ad::metadata,
-                                  "[\"4\",\"5\",null,\"6\"]"))))),
-                  testing::Field("ad_components",
-                                 &blink::InterestGroup::ad_components,
-                                 absl::nullopt))),
-          testing::Field(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603076872))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group1"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group1"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"1\",\"2\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
               "bidding_browser_signals",
               &StorageInterestGroup::bidding_browser_signals,
               testing::AllOf(
-                  Pointee(testing::Field("join_count",
-                                         &auction_worklet::mojom::
-                                             BiddingBrowserSignals::join_count,
-                                         5)),
-                  Pointee(testing::Field(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                5)),
+                  Pointee(Field(
                       "bid_count",
                       &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
                       4)))),
-          testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/group1"), false,
-                             base::Time::Min()}),
-          testing::Field("daily_update_url_kanon",
-                         &StorageInterestGroup::daily_update_url_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/update"), false,
-                             base::Time::Min()}),
-          testing::Field("ads_kanon", &StorageInterestGroup::ads_kanon,
-                         testing::UnorderedElementsAre(
-                             StorageInterestGroup::KAnonymityData{
-                                 GURL("https://ads.example.com/1"), false,
-                                 base::Time::Min()})),
-          testing::Field(
-              "joining_origin", &StorageInterestGroup::joining_origin,
-              url::Origin::Create(GURL("https://publisher.example.com")))),
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/group1"), false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/update"), false,
+                    base::Time::Min()}),
+          Field("ads_kanon", &StorageInterestGroup::ads_kanon,
+                testing::UnorderedElementsAre(
+                    StorageInterestGroup::KAnonymityData{
+                        GURL("https://ads.example.com/1"), false,
+                        base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603081533))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603081533)))),
       testing::AllOf(
-          testing::Field(
+          Field(
               "interest_group", &StorageInterestGroup::interest_group,
               testing::AllOf(
-                  testing::Field("expiry", &blink::InterestGroup::expiry,
-                                 base::Time::FromDeltaSinceWindowsEpoch(
-                                     base::Microseconds(13293932603080090))),
-                  testing::Field(
-                      "owner", &blink::InterestGroup::owner,
-                      url::Origin::Create(GURL("https://owner.example.com"))),
-                  testing::Field("name", &blink::InterestGroup::name, "group2"),
-                  testing::Field("priority", &blink::InterestGroup::priority,
-                                 0.0),
-                  testing::Field("bidding_url",
-                                 &blink::InterestGroup::bidding_url,
-                                 GURL("https://owner.example.com/bidder.js")),
-                  testing::Field("bidding_wasm_helper_url",
-                                 &blink::InterestGroup::bidding_wasm_helper_url,
-                                 absl::nullopt),
-                  testing::Field("daily_update_url",
-                                 &blink::InterestGroup::daily_update_url,
-                                 GURL("https://owner.example.com/update")),
-                  testing::Field(
-                      "trusted_bidding_signals_url",
-                      &blink::InterestGroup::trusted_bidding_signals_url,
-                      GURL("https://owner.example.com/signals")),
-                  testing::Field(
-                      "trusted_bidding_signals_keys",
-                      &blink::InterestGroup::trusted_bidding_signals_keys,
-                      std::vector<std::string>{"group2"}),
-                  testing::Field("user_bidding_signals",
-                                 &blink::InterestGroup::user_bidding_signals,
-                                 "[[\"1\",\"3\"]]"),
-                  testing::Field(
-                      "ads", &blink::InterestGroup::ads,
-                      testing::Property(
-                          "value()",
-                          &absl::optional<
-                              std::vector<blink::InterestGroup::Ad>>::value,
-                          testing::ElementsAre(testing::AllOf(
-                              testing::Field(
-                                  "render_url",
-                                  &blink::InterestGroup::Ad::render_url,
-                                  GURL("https://ads.example.com/1")),
-                              testing::Field(
-                                  "metadata",
-                                  &blink::InterestGroup::Ad::metadata,
-                                  "[\"4\",\"5\",null,\"6\"]"))))),
-                  testing::Field("ad_components",
-                                 &blink::InterestGroup::ad_components,
-                                 absl::nullopt))),
-          testing::Field(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603080090))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group2"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group2"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"1\",\"3\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
               "bidding_browser_signals",
               &StorageInterestGroup::bidding_browser_signals,
               testing::AllOf(
-                  Pointee(testing::Field("join_count",
-                                         &auction_worklet::mojom::
-                                             BiddingBrowserSignals::join_count,
-                                         5)),
-                  Pointee(testing::Field(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                5)),
+                  Pointee(Field(
                       "bid_count",
                       &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
                       3)))),
-          testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/group2"), false,
-                             base::Time::Min()}),
-          testing::Field("daily_update_url_kanon",
-                         &StorageInterestGroup::daily_update_url_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/update"), false,
-                             base::Time::Min()}),
-          testing::Field("ads_kanon", &StorageInterestGroup::ads_kanon,
-                         testing::UnorderedElementsAre(
-                             StorageInterestGroup::KAnonymityData{
-                                 GURL("https://ads.example.com/1"), false,
-                                 base::Time::Min()})),
-          testing::Field(
-              "joining_origin", &StorageInterestGroup::joining_origin,
-              url::Origin::Create(GURL("https://publisher.example.com")))),
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/group2"), false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/update"), false,
+                    base::Time::Min()}),
+          Field("ads_kanon", &StorageInterestGroup::ads_kanon,
+                testing::UnorderedElementsAre(
+                    StorageInterestGroup::KAnonymityData{
+                        GURL("https://ads.example.com/1"), false,
+                        base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603089914))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603089914)))),
       testing::AllOf(
-          testing::Field(
+          Field(
               "interest_group", &StorageInterestGroup::interest_group,
               testing::AllOf(
-                  testing::Field("expiry", &blink::InterestGroup::expiry,
-                                 base::Time::FromDeltaSinceWindowsEpoch(
-                                     base::Microseconds(13293932603052561))),
-                  testing::Field(
-                      "owner", &blink::InterestGroup::owner,
-                      url::Origin::Create(GURL("https://owner.example.com"))),
-                  testing::Field("name", &blink::InterestGroup::name, "group3"),
-                  testing::Field("priority", &blink::InterestGroup::priority,
-                                 0.0),
-                  testing::Field("bidding_url",
-                                 &blink::InterestGroup::bidding_url,
-                                 GURL("https://owner.example.com/bidder.js")),
-                  testing::Field("bidding_wasm_helper_url",
-                                 &blink::InterestGroup::bidding_wasm_helper_url,
-                                 absl::nullopt),
-                  testing::Field("daily_update_url",
-                                 &blink::InterestGroup::daily_update_url,
-                                 GURL("https://owner.example.com/update")),
-                  testing::Field(
-                      "trusted_bidding_signals_url",
-                      &blink::InterestGroup::trusted_bidding_signals_url,
-                      GURL("https://owner.example.com/signals")),
-                  testing::Field(
-                      "trusted_bidding_signals_keys",
-                      &blink::InterestGroup::trusted_bidding_signals_keys,
-                      std::vector<std::string>{"group3"}),
-                  testing::Field("user_bidding_signals",
-                                 &blink::InterestGroup::user_bidding_signals,
-                                 "[[\"3\",\"2\"]]"),
-                  testing::Field(
-                      "ads", &blink::InterestGroup::ads,
-                      testing::Property(
-                          "value()",
-                          &absl::optional<
-                              std::vector<blink::InterestGroup::Ad>>::value,
-                          testing::ElementsAre(testing::AllOf(
-                              testing::Field(
-                                  "render_url",
-                                  &blink::InterestGroup::Ad::render_url,
-                                  GURL("https://ads.example.com/1")),
-                              testing::Field(
-                                  "metadata",
-                                  &blink::InterestGroup::Ad::metadata,
-                                  "[\"4\",\"5\",null,\"6\"]"))))),
-                  testing::Field("ad_components",
-                                 &blink::InterestGroup::ad_components,
-                                 absl::nullopt))),
-          testing::Field(
+                  Field("expiry", &InterestGroup::expiry,
+                        base::Time::FromDeltaSinceWindowsEpoch(
+                            base::Microseconds(13293932603052561))),
+                  Field("owner", &InterestGroup::owner,
+                        url::Origin::Create(GURL("https://owner.example.com"))),
+                  Field("name", &InterestGroup::name, "group3"),
+                  Field("priority", &InterestGroup::priority, 0.0),
+                  Field("enable_bidding_signals_prioritization",
+                        &InterestGroup::enable_bidding_signals_prioritization,
+                        false),
+                  Field("priority_vector", &InterestGroup::priority_vector,
+                        absl::nullopt),
+                  Field("priority_signals_overrides",
+                        &InterestGroup::priority_signals_overrides,
+                        absl::nullopt),
+                  Field("bidding_url", &InterestGroup::bidding_url,
+                        GURL("https://owner.example.com/bidder.js")),
+                  Field("bidding_wasm_helper_url",
+                        &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
+                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                        GURL("https://owner.example.com/update")),
+                  Field("trusted_bidding_signals_url",
+                        &InterestGroup::trusted_bidding_signals_url,
+                        GURL("https://owner.example.com/signals")),
+                  Field("trusted_bidding_signals_keys",
+                        &InterestGroup::trusted_bidding_signals_keys,
+                        std::vector<std::string>{"group3"}),
+                  Field("user_bidding_signals",
+                        &InterestGroup::user_bidding_signals,
+                        "[[\"3\",\"2\"]]"),
+                  Field("ads", &InterestGroup::ads,
+                        testing::Property(
+                            "value()",
+                            &absl::optional<
+                                std::vector<blink::InterestGroup::Ad>>::value,
+                            testing::ElementsAre(testing::AllOf(
+                                Field("render_url",
+                                      &InterestGroup::Ad::render_url,
+                                      GURL("https://ads.example.com/1")),
+                                Field("metadata", &InterestGroup::Ad::metadata,
+                                      "[\"4\",\"5\",null,\"6\"]"))))),
+                  Field("ad_components", &InterestGroup::ad_components,
+                        absl::nullopt))),
+          Field(
               "bidding_browser_signals",
               &StorageInterestGroup::bidding_browser_signals,
               testing::AllOf(
-                  Pointee(testing::Field("join_count",
-                                         &auction_worklet::mojom::
-                                             BiddingBrowserSignals::join_count,
-                                         4)),
-                  Pointee(testing::Field(
+                  Pointee(Field("join_count",
+                                &auction_worklet::mojom::BiddingBrowserSignals::
+                                    join_count,
+                                4)),
+                  Pointee(Field(
                       "bid_count",
                       &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
                       4)))),
-          testing::Field("name_kanon", &StorageInterestGroup::name_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/group3"), false,
-                             base::Time::Min()}),
-          testing::Field("daily_update_url_kanon",
-                         &StorageInterestGroup::daily_update_url_kanon,
-                         StorageInterestGroup::KAnonymityData{
-                             GURL("https://owner.example.com/update"), false,
-                             base::Time::Min()}),
-          testing::Field("ads_kanon", &StorageInterestGroup::ads_kanon,
-                         testing::UnorderedElementsAre(
-                             StorageInterestGroup::KAnonymityData{
-                                 GURL("https://ads.example.com/1"), false,
-                                 base::Time::Min()})),
-          testing::Field(
-              "joining_origin", &StorageInterestGroup::joining_origin,
-              url::Origin::Create(GURL("https://publisher.example.com")))));
+          Field("name_kanon", &StorageInterestGroup::name_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/group3"), false,
+                    base::Time::Min()}),
+          Field("daily_update_url_kanon",
+                &StorageInterestGroup::daily_update_url_kanon,
+                StorageInterestGroup::KAnonymityData{
+                    GURL("https://owner.example.com/update"), false,
+                    base::Time::Min()}),
+          Field("ads_kanon", &StorageInterestGroup::ads_kanon,
+                testing::UnorderedElementsAre(
+                    StorageInterestGroup::KAnonymityData{
+                        GURL("https://ads.example.com/1"), false,
+                        base::Time::Min()})),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                url::Origin::Create(GURL("https://publisher.example.com"))),
+          Field("join_time", &StorageInterestGroup::join_time,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603098283))),
+          Field("last_updated", &StorageInterestGroup::last_updated,
+                base::Time::FromDeltaSinceWindowsEpoch(
+                    base::Microseconds(13291340603098283)))));
 
   // Upgrade if necessary and read.
   {
@@ -1409,75 +1436,55 @@ TEST_F(InterestGroupStorageTest,
 
   auto expected_interest_group_matcher = testing::UnorderedElementsAre(
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, cluster_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 cluster_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "separate_same"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kCompatibilityMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                cluster_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "separate_same"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 other_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "separate_other"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kCompatibilityMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "separate_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 cluster_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "clustered_different"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kGroupedByOriginMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "clustered_different"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 other_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "clustered_other"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kGroupedByOriginMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "clustered_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 cluster_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "cluster0"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kGroupedByOriginMode)))));
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "cluster0"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))));
   interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
   EXPECT_THAT(interest_groups, expected_interest_group_matcher);
 }
@@ -1530,61 +1537,45 @@ TEST_F(InterestGroupStorageTest,
 
   auto expected_interest_group_matcher = testing::UnorderedElementsAre(
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, cluster_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 cluster_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "separate_same"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kCompatibilityMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                cluster_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "separate_same"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 other_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "separate_other"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kCompatibilityMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "separate_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kCompatibilityMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 cluster_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "clustered_different"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kGroupedByOriginMode)))),
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, cluster_origin),
+                    Field("name", &InterestGroup::name, "clustered_different"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))),
       testing::AllOf(
-          testing::Field("joining_origin",
-                         &StorageInterestGroup::joining_origin, other_origin),
-          testing::Field(
-              "interest_group", &StorageInterestGroup::interest_group,
-              testing::AllOf(
-                  testing::Field("owner", &blink::InterestGroup::owner,
-                                 other_origin),
-                  testing::Field("name", &blink::InterestGroup::name,
-                                 "clustered_other"),
-                  testing::Field("execution_mode",
-                                 &blink::InterestGroup::execution_mode,
-                                 blink::InterestGroup::ExecutionMode::
-                                     kGroupedByOriginMode)))));
+          Field("joining_origin", &StorageInterestGroup::joining_origin,
+                other_origin),
+          Field("interest_group", &StorageInterestGroup::interest_group,
+                testing::AllOf(
+                    Field("owner", &InterestGroup::owner, other_origin),
+                    Field("name", &InterestGroup::name, "clustered_other"),
+                    Field("execution_mode", &InterestGroup::execution_mode,
+                          blink::InterestGroup::ExecutionMode::
+                              kGroupedByOriginMode)))));
 
   interest_groups = storage->GetAllInterestGroupsUnfilteredForTesting();
   EXPECT_THAT(interest_groups, expected_interest_group_matcher);
