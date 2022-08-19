@@ -188,7 +188,7 @@ class MockAxTreeManager : public ui::AXTreeManager {
   ~MockAxTreeManager() = default;
 
   MOCK_CONST_METHOD2(GetNodeFromTree,
-                     ui::AXNode*(const ui::AXTreeID tree_id,
+                     ui::AXNode*(const ui::AXTreeID& tree_id,
                                  const int32_t node_id));
   MOCK_CONST_METHOD2(GetDelegate,
                      ui::AXPlatformNodeDelegate*(const ui::AXTreeID tree_id,

@@ -1675,7 +1675,7 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
 }
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
-    const ui::AXTreeID tree_id,
+    const ui::AXTreeID& tree_id,
     const ui::AXNodeID node_id) const {
   auto* manager = BrowserAccessibilityManager::FromID(tree_id);
   CHECK(manager);

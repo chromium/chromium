@@ -58,7 +58,7 @@ void ViewsAXTreeManager::UnsetGeneratedEventCallbackForTesting() {
 }
 
 ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
-    const ui::AXTreeID tree_id,
+    const ui::AXTreeID& tree_id,
     const ui::AXNodeID node_id) const {
   if (!widget_ || !widget_->GetRootView())
     return nullptr;

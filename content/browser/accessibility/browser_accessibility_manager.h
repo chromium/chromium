@@ -483,7 +483,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
       const std::vector<ui::AXTreeObserver::Change>& changes) override;
 
   // AXTreeManager overrides.
-  ui::AXNode* GetNodeFromTree(ui::AXTreeID tree_id,
+  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
                               ui::AXNodeID node_id) const override;
   ui::AXNode* GetNodeFromTree(ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(

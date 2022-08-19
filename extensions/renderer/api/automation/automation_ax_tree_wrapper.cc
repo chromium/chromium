@@ -549,7 +549,7 @@ bool AutomationAXTreeWrapper::IsTreeIgnored() {
 }
 
 ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
-    const ui::AXTreeID tree_id,
+    const ui::AXTreeID& tree_id,
     const ui::AXNodeID node_id) const {
   AutomationAXTreeWrapper* tree_wrapper =
       owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);

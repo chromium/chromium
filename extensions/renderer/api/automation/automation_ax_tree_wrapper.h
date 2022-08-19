@@ -107,7 +107,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   bool IsTreeIgnored();
 
   // AXTreeManager overrides.
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID tree_id,
+  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
                               const ui::AXNodeID node_id) const override;
   ui::AXNode* GetNodeFromTree(const ui::AXNodeID node_id) const override;
   ui::AXTreeID GetParentTreeID() const override;

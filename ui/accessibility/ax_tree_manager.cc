@@ -20,7 +20,7 @@ AXTreeManagerMap& AXTreeManager::GetMap() {
 }
 
 // static
-AXTreeManager* AXTreeManager::FromID(AXTreeID ax_tree_id) {
+AXTreeManager* AXTreeManager::FromID(const AXTreeID& ax_tree_id) {
   return ax_tree_id != AXTreeIDUnknown() ? GetMap().GetManager(ax_tree_id)
                                          : nullptr;
 }

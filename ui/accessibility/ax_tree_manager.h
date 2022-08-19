@@ -21,7 +21,7 @@ class AXTreeManagerMap;
 // trees).
 class AX_EXPORT AXTreeManager : public AXTreeObserver {
  public:
-  static AXTreeManager* FromID(AXTreeID ax_tree_id);
+  static AXTreeManager* FromID(const AXTreeID& ax_tree_id);
   // If the child of `parent_node` exists in a separate child tree, return the
   // tree manager for that child tree. Otherwise, return nullptr.
   static AXTreeManager* ForChildTree(const AXNode& parent_node);
@@ -35,7 +35,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
   // TODO(kschmi): Remove |tree_id| parameter, as it's unnecessary.
-  virtual AXNode* GetNodeFromTree(const AXTreeID tree_id,
+  virtual AXNode* GetNodeFromTree(const AXTreeID& tree_id,
                                   const AXNodeID node_id) const = 0;
 
   // Returns the AXNode in the current tree that has the given |node_id|.
@@ -68,22 +68,22 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   AXEventGenerator& event_generator() { return event_generator_; }
 
   // AXTreeObserver implementation.
-  void OnTreeDataChanged(ui::AXTree* tree,
-                         const ui::AXTreeData& old_data,
-                         const ui::AXTreeData& new_data) override;
-  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
-  void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override {}
-  void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override {}
-  void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override {}
-  void OnNodeReparented(ui::AXTree* tree, ui::AXNode* node) override {}
-  void OnRoleChanged(ui::AXTree* tree,
-                     ui::AXNode* node,
+  void OnTreeDataChanged(AXTree* tree,
+                         const AXTreeData& old_data,
+                         const AXTreeData& new_data) override;
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override {}
+  void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override {}
+  void OnNodeCreated(AXTree* tree, AXNode* node) override {}
+  void OnNodeDeleted(AXTree* tree, int32_t node_id) override {}
+  void OnNodeReparented(AXTree* tree, AXNode* node) override {}
+  void OnRoleChanged(AXTree* tree,
+                     AXNode* node,
                      ax::mojom::Role old_role,
                      ax::mojom::Role new_role) override {}
   void OnAtomicUpdateFinished(
-      ui::AXTree* tree,
+      AXTree* tree,
       bool root_changed,
-      const std::vector<ui::AXTreeObserver::Change>& changes) override {}
+      const std::vector<AXTreeObserver::Change>& changes) override {}
 
  protected:
   AXTreeManager();
