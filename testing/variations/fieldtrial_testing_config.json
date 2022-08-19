@@ -1839,6 +1839,25 @@
             ]
         }
     ],
+    "AvoidEarlyExtensionScriptContextCreation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220819",
+                    "enable_features": [
+                        "AvoidEarlyExtensionScriptContextCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidUnnecessaryBeforeUnloadCheckSync": [
         {
             "platforms": [
