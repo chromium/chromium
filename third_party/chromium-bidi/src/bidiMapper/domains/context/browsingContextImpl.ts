@@ -51,7 +51,11 @@ export class BrowsingContextImpl {
   #eventManager: IEventManager;
   readonly #children: BrowsingContextImpl[] = [];
   #scriptEvaluator: ScriptEvaluator;
-  #executionContext: number | null = null;
+  // Default execution context is set with key `null`.
+  readonly #sandboxToExecutionContextIdMap: Map<
+    string | null,
+    Protocol.Runtime.ExecutionContextId
+  > = new Map();
 
   constructor(
     contextId: string,
@@ -285,10 +289,10 @@ export class BrowsingContextImpl {
         if (params.context.auxData.frameId !== this.contextId) {
           return;
         }
-        if (!params.context.auxData.isDefault) {
-          return;
+        if (params.context.auxData.isDefault) {
+          // Default execution context is set with key `null`.
+          this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
         }
-        this.#executionContext = params.context.id;
       }
     );
   }
@@ -390,18 +394,17 @@ export class BrowsingContextImpl {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
+    sandbox: string | null,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
     await this.#targetDefers.targetUnblocked;
 
-    if (this.#executionContext === null) {
-      throw Error('No execution context');
-    }
+    const executionContext = await this.#getOrCreateSandbox(sandbox);
 
     return {
       result: await this.#scriptEvaluator.callFunction(
-        this.#executionContext!,
+        executionContext,
         functionDeclaration,
         _this,
         _arguments,
@@ -413,17 +416,16 @@ export class BrowsingContextImpl {
 
   async scriptEvaluate(
     expression: string,
+    sandbox: string | null,
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     await this.#targetDefers.targetUnblocked;
 
-    if (this.#executionContext === null) {
-      throw Error('No execution context');
-    }
+    const executionContext = await this.#getOrCreateSandbox(sandbox);
 
     return this.#scriptEvaluator.scriptEvaluate(
-      this.#executionContext!,
+      executionContext,
       expression,
       awaitPromise,
       resultOwnership
@@ -449,11 +451,33 @@ export class BrowsingContextImpl {
         type: 'undefined',
       },
       _arguments,
+      null,
       true,
       'root'
     );
 
     // TODO(sadym): handle type properly.
     return result as any as BrowsingContext.PROTO.FindElementResult;
+  }
+
+  async #getOrCreateSandbox(
+    sandbox: string | null
+  ): Promise<Protocol.Runtime.ExecutionContextId> {
+    if (!this.#sandboxToExecutionContextIdMap.has(sandbox)) {
+      // Default execution context is set with key `null`.
+      if (sandbox === null) {
+        throw Error('No default execution context');
+      }
+      const resp = await this.#cdpClient.Page.createIsolatedWorld({
+        frameId: this.contextId,
+        worldName: sandbox,
+      });
+      this.#sandboxToExecutionContextIdMap.set(
+        sandbox,
+        resp.executionContextId
+      );
+    }
+
+    return this.#sandboxToExecutionContextIdMap.get(sandbox)!;
   }
 }

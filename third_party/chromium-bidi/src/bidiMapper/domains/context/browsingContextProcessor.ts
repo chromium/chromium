@@ -265,11 +265,15 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const context = BrowsingContextProcessor.#getKnownContext(
-      (params.target as Script.ContextTarget).context
-    );
+    if ('realm' in params.target) {
+      throw new Error('Realm target is not implemented yet.');
+    }
+    const target: Script.ContextTarget = params.target;
+
+    const context = BrowsingContextProcessor.#getKnownContext(target.context);
     return await context.scriptEvaluate(
       params.expression,
+      target.sandbox ?? null,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
@@ -278,15 +282,19 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const context = BrowsingContextProcessor.#getKnownContext(
-      (params.target as Script.ContextTarget).context
-    );
+    if ('realm' in params.target) {
+      throw new Error('Realm target is not implemented yet.');
+    }
+    const target: Script.ContextTarget = params.target;
+
+    const context = BrowsingContextProcessor.#getKnownContext(target.context);
     return await context.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
+      target.sandbox ?? null,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
