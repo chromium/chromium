@@ -27,7 +27,7 @@ public class AndroidKeyStoreTestUtil {
     /**
      * Called from native code to create a PrivateKey object from its
      * encoded PKCS#8 representation.
-     * @param type The key type, accoding to PrivateKeyType.
+     * @param type The key type, according to PrivateKeyType.
      * @return new PrivateKey handle, or null in case of error.
      */
     @CalledByNative

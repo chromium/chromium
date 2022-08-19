@@ -1389,7 +1389,7 @@ int64_t CountWriteBytes(base::span<const MockWrite> writes);
 bool CanGetTaggedBytes();
 
 // Query the system to find out how many bytes were received with tag
-// |expected_tag| for our UID.  Return the count of recieved bytes.
+// |expected_tag| for our UID.  Return the count of received bytes.
 uint64_t GetTaggedBytes(int32_t expected_tag);
 #endif
 

@@ -242,7 +242,7 @@ class NET_EXPORT URLRequestJob {
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) {}
 
   // Sets a callback that will be invoked each time the response is received
-  // from the remote party with the actual response headers recieved.
+  // from the remote party with the actual response headers received.
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) {}
 
   // Sets a callback that will be invoked each time a 103 Early Hints response

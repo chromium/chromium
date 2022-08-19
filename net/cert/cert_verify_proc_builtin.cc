@@ -493,7 +493,7 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
   // IMPORTANT: If the path was invalid for a reason that was not
   // explicity checked above, set a general error. This is important as
   // |cert_status| is what ultimately indicates whether verification was
-  // successful or not (absense of errors implies success).
+  // successful or not (absence of errors implies success).
   if (!IsCertStatusError(*cert_status))
     *cert_status |= CERT_STATUS_INVALID;
 }
