@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -381,8 +380,6 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
 }
 
 TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTabSearchMediaTabs);
   std::unique_ptr<content::WebContents> test_web_contents(
       content::WebContentsTester::CreateTestWebContents(
           content::WebContents::CreateParams(profile())));

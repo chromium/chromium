@@ -133,8 +133,6 @@ extern const char kTabSearchSearchThresholdName[];
 // This means that it will not matter where in the string the pattern occurs.
 extern const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation;
 
-extern const base::Feature kTabSearchMediaTabs;
-
 extern const char kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName[];
 
 // Determines how close the match must be to the beginning of the string. Eg a

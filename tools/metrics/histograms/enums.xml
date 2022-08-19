@@ -13185,11 +13185,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Tablet"/>
 </enum>
 
-<enum name="BooleanTabSearchWithSearchQuery">
-  <int value="0" label="Action occurred from an unfiltered item list"/>
-  <int value="1" label="Action occurred from a filtered item list"/>
-</enum>
-
 <enum name="BooleanTerminated">
   <int value="0" label="Not terminated"/>
   <int value="1" label="Terminated"/>
@@ -56111,7 +56106,6 @@ from previous Chrome versions.
   <int value="-1969625771" label="MessagesForAndroidOfferNotification:enabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
-  <int value="-1965232124" label="TabSearchMediaTabs:disabled"/>
   <int value="-1964730371"
       label="AutofillFillMerchantPromoCodeFields:disabled"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>
@@ -60763,7 +60757,6 @@ from previous Chrome versions.
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
-  <int value="912279548" label="TabSearchMediaTabs:enabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
   <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>

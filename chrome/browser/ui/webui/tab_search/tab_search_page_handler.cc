@@ -152,13 +152,6 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   if (!sent_initial_payload_) {
     sent_initial_payload_ = true;
     int tab_count = 0;
-    int media_tab_count = 0;
-    for (const auto& window : profile_tabs->windows) {
-      tab_count += window->tabs.size();
-      media_tab_count += base::ranges::count_if(
-          window->tabs.begin(), window->tabs.end(),
-          [](const auto& tab) { return tab->alert_states.size() > 0; });
-    }
     base::UmaHistogramCounts100("Tabs.TabSearch.NumWindowsOnOpen",
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
@@ -170,8 +163,6 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
         "Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen",
         expand_preference ? TabSearchRecentlyClosedToggleAction::kExpand
                           : TabSearchRecentlyClosedToggleAction::kCollapse);
-    base::UmaHistogramCounts10000("Tabs.TabSearch.NumMediaTabsOnOpen",
-                                  media_tab_count);
   }
 
   std::move(callback).Run(std::move(profile_tabs));
@@ -478,7 +469,6 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time_ticks);
 
-  if (base::FeatureList::IsEnabled(features::kTabSearchMediaTabs)) {
     std::vector<TabAlertState> alert_states =
         chrome::GetTabAlertStatesForContents(contents);
     // Currently, we only report media alert states.
@@ -489,9 +479,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
                                    alert == TabAlertState::AUDIO_PLAYING ||
                                    alert == TabAlertState::AUDIO_MUTING;
                           });
-  }
 
-  return tab_data;
+    return tab_data;
 }
 
 tab_search::mojom::RecentlyClosedTabPtr

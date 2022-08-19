@@ -1557,15 +1557,6 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      std::size(kMinimumTabWidthSettingFull), nullptr}};
 
-const FeatureEntry::FeatureParam kAlsoShowMediaTabsinOpenTabsSection[] = {
-    {features::kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName,
-     "true"}};
-
-const FeatureEntry::FeatureVariation kTabSearchMediaTabsVariations[] = {
-    {" - media tabs also shown in open tabs section",
-     kAlsoShowMediaTabsinOpenTabsSection,
-     std::size(kAlsoShowMediaTabsinOpenTabsSection), nullptr}};
-
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
     {features::kTabSearchSearchThresholdName, "0.3"}};
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
@@ -7991,13 +7982,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDrawPredictedInkPoint,
                                     kDrawPredictedPointVariations,
                                     "DrawPredictedInkPoint")},
-
-    {flag_descriptions::kTabSearchMediaTabsId,
-     flag_descriptions::kTabSearchMediaTabsName,
-     flag_descriptions::kTabSearchMediaTabsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchMediaTabs,
-                                    kTabSearchMediaTabsVariations,
-                                    "TabSearchMediaTabs")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"optimization-guide-push-notifications",

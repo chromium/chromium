@@ -401,10 +401,7 @@ export class TabSearchAppElement extends PolymerElement {
     this.tabItemAction_(tabItem, e.model.index);
   }
 
-  private recordMetricsForAction(
-      action: string, isMediaTab: boolean, tabIndex: number,
-      indexRelativeToSection: number,
-      distanceFromInitiallySelectedIndex: number) {
+  private recordMetricsForAction(action: string, tabIndex: number) {
     const withSearch = !!this.searchText_;
     if (action === 'SwitchTab') {
       chrome.metricsPrivate.recordEnumerationValue(
@@ -417,21 +414,6 @@ export class TabSearchAppElement extends PolymerElement {
         withSearch ? `Tabs.TabSearch.WebUI.IndexOf${action}InFilteredList` :
                      `Tabs.TabSearch.WebUI.IndexOf${action}InUnfilteredList`,
         tabIndex);
-    chrome.metricsPrivate.recordSmallCount(
-        withSearch ? `Tabs.TabSearch.DistanceOf${
-                         action}FromInitiallySelectedTabInFilteredList` :
-                     `Tabs.TabSearch.DistanceOf${
-                         action}FromInitiallySelectedTabInUnfilteredList`,
-        distanceFromInitiallySelectedIndex);
-    if (isMediaTab) {
-      chrome.metricsPrivate.recordBoolean(
-          `Tabs.TabSearch.WebUI.MediaTab${action}Action`, withSearch);
-    } else if (!withSearch) {
-      chrome.metricsPrivate.recordSmallCount(
-          `Tabs.TabSearch.WebUI.IndexRelativeToOpenTabsSectionOf${
-              action}InUnfilteredList`,
-          indexRelativeToSection);
-    }
   }
 
   /**
@@ -452,12 +434,7 @@ export class TabSearchAppElement extends PolymerElement {
           }
         }
 
-        const isMediaTab = tabHasMediaAlerts((itemData as TabData).tab as Tab);
-        const tabIndexRelativeToSection =
-            isMediaTab ? tabIndex : tabIndex - this.filteredMediaTabsCount_;
-        this.recordMetricsForAction(
-            'SwitchTab', isMediaTab, tabIndex, tabIndexRelativeToSection,
-            Math.abs(this.initiallySelectedTabIndex_ - tabIndex));
+        this.recordMetricsForAction('SwitchTab', tabIndex);
         this.apiProxy_.switchToTab({tabId: (itemData as TabData).tab.tabId});
         action = 'SwitchTab';
         break;
@@ -486,12 +463,7 @@ export class TabSearchAppElement extends PolymerElement {
     performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
     const tabIndex = e.model.index;
-    const isMediaTab = tabHasMediaAlerts(e.model.item.tab as Tab);
-    const tabIndexRelativeToSection =
-        isMediaTab ? tabIndex : tabIndex - this.filteredMediaTabsCount_;
-    this.recordMetricsForAction(
-        'CloseTab', isMediaTab, tabIndex, tabIndexRelativeToSection,
-        Math.abs(this.initiallySelectedTabIndex_ - tabIndex));
+    this.recordMetricsForAction('CloseTab', tabIndex);
     this.apiProxy_.closeTab(tabId);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
@@ -697,8 +669,7 @@ export class TabSearchAppElement extends PolymerElement {
           filteredMediaTabs.length;
     }
 
-    if (!loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection') &&
-        this.searchText_.length === 0) {
+    if (this.searchText_.length === 0) {
       filteredOpenTabs = filteredOpenTabs.filter(
           tabData => !tabHasMediaAlerts(tabData.tab as Tab));
     }

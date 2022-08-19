@@ -894,10 +894,6 @@ extern const char kHeavyAdInterventionDescription[];
 extern const char kTabAudioMutingName[];
 extern const char kTabAudioMutingDescription[];
 
-extern const char kTabSearchMediaTabsId[];
-extern const char kTabSearchMediaTabsName[];
-extern const char kTabSearchMediaTabsDescription[];
-
 extern const char kTabSwitcherOnReturnName[];
 extern const char kTabSwitcherOnReturnDescription[];
 

@@ -38,19 +38,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // Tab Search Media Tabs
-    std::vector<std::u16string> tab_search_media_tabs_variation_description = {
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_TABS_ALSO_SHOWN_IN_OPEN_TABS_SECTION)};
-
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kTabSearchMediaTabsId,
-        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(
-            IDS_TAB_SEARCH_MEDIA_TABS_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-tab-search-media-tabs", version_info::Channel::BETA,
-        tab_search_media_tabs_variation_description));
-
     // Tab Scrolling.
     std::vector<std::u16string> tab_scrolling_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),

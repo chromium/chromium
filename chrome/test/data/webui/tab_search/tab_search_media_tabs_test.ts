@@ -151,37 +151,17 @@ suite('TabSearchMediaTabsTest', () => {
 
   test('Show media tab in Audio & Video section', async () => {
     await setupTest(
-        createProfileData({
-          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-        }),
-        {alsoShowMediaTabsinOpenTabsSection: false});
+        createProfileData({windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB}));
     // One media tab and two non-media tabs.
     assertEquals(3, queryRows().length);
     // "Audio and Video" and "Open Tabs" section should both exist.
     assertEquals(2, queryListTitle().length);
   });
 
-  test(
-      'Show media tab in Audio & Video section and Open Tabs section',
-      async () => {
-        await setupTest(
-            createProfileData({
-              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-            }),
-            {alsoShowMediaTabsinOpenTabsSection: true});
-        // Only the two media tabs should be duplicated.
-        assertEquals(4, queryRows().length);
-        // "Audio and Video" and "Open Tabs" section should both exist.
-        assertEquals(2, queryListTitle().length);
-      });
 
   test('Tab is no longer media tab', async () => {
     await setupTest(
-        createProfileData({
-          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-        }),
-        {alsoShowMediaTabsinOpenTabsSection: false});
-
+        createProfileData({windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB}));
     const updatedTab: Tab = createTab({
       alertStates: [],
       tabId: 1,
@@ -200,40 +180,11 @@ suite('TabSearchMediaTabsTest', () => {
     assertEquals(1, queryListTitle().length);
   });
 
-  test(
-      'Tab is no longer media tab with media tabs also shown in Open Tabs section ',
-      async () => {
-        await setupTest(
-            createProfileData({
-              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-            }),
-            {alsoShowMediaTabsinOpenTabsSection: true});
-
-        const updatedTab: Tab = createTab({
-          alertStates: [],
-          tabId: 1,
-          lastActiveTimeTicks: {internalValue: BigInt(1)},
-        });
-
-        const tabUpdateInfo = {
-          inActiveWindow: true,
-          tab: updatedTab,
-        };
-        testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-        await flushTasks();
-        // Three non-media tabs.
-        assertEquals(3, queryRows().length);
-        // Only "Open Tabs" section should exist.
-        assertEquals(1, queryListTitle().length);
-      });
 
   test('Non-media tab becomes media tab', async () => {
     await setupTest(
-        createProfileData({
-          windows: SAMPLE_WINDOW_DATA,
-        }),
-        {alsoShowMediaTabsinOpenTabsSection: false});
-
+        createProfileData({windows: SAMPLE_WINDOW_DATA}),
+    );
     assertEquals(1, queryListTitle().length);
 
     const updatedTab: Tab = createTab({
@@ -254,43 +205,10 @@ suite('TabSearchMediaTabsTest', () => {
     assertEquals(2, queryListTitle().length);
   });
 
-  test(
-      'Non-media tab becomes media tab with media tabs also shown in Open Tabs section ',
-      async () => {
-        await setupTest(
-            createProfileData({
-              windows: SAMPLE_WINDOW_DATA,
-            }),
-            {alsoShowMediaTabsinOpenTabsSection: true});
-
-        assertEquals(1, queryListTitle().length);
-
-        const updatedTab: Tab = createTab({
-          alertStates: [TabAlertState.kAudioPlaying],
-          tabId: 5,
-          lastActiveTimeTicks: {internalValue: BigInt(1)},
-        });
-
-        const tabUpdateInfo = {
-          inActiveWindow: true,
-          tab: updatedTab,
-        };
-
-        testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-        await flushTasks();
-        // One media tab is duplicated, the rest are non-media tabs.
-        assertEquals(7, queryRows().length);
-        // "Audio and Video" and "Open Tabs" section should both exist.
-        assertEquals(2, queryListTitle().length);
-      });
 
   test('Search for media tab', async () => {
     await setupTest(
-        createProfileData({
-          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-        }),
-        {alsoShowMediaTabsinOpenTabsSection: false});
-
+        createProfileData({windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB}));
     const searchField = tabSearchApp.$.searchField;
     searchField.setValue('google');
     await flushTasks();
@@ -298,21 +216,4 @@ suite('TabSearchMediaTabsTest', () => {
     assertEquals(1, queryListTitle().length);
     assertEquals(2, queryRows().length);
   });
-
-  test(
-      'Search for media tab with media tabs also shown in Open Tabs section',
-      async () => {
-        await setupTest(
-            createProfileData({
-              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
-            }),
-            {alsoShowMediaTabsinOpenTabsSection: true});
-
-        const searchField = tabSearchApp.$.searchField;
-        searchField.setValue('google');
-        await flushTasks();
-        // No media tabs section when there is a search query.
-        assertEquals(1, queryListTitle().length);
-        assertEquals(2, queryRows().length);
-      });
 });

@@ -72,12 +72,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       "useMetricsReporter",
       base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter));
 
-  source->AddBoolean(
-      "alsoShowMediaTabsinOpenTabsSection",
-      GetFieldTrialParamByFeatureAsBool(
-          features::kTabSearchMediaTabs,
-          features::kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName,
-          false));
   source->AddBoolean("searchIgnoreLocation",
                      features::kTabSearchSearchIgnoreLocation.Get());
   source->AddInteger("searchDistance",
