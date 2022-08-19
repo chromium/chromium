@@ -22,6 +22,7 @@
 #include "ui/aura/window.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #endif
 
@@ -119,6 +120,7 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
     dlp_files_controller_->IsFilesTransferRestricted(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()),
         {download_item_->GetURL()}, path.value(),
+        policy::DlpWarnDialog::FilesAction::kDownload,
         base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
                        base::Unretained(this), path));
     return;

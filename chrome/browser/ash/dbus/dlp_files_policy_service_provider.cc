@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -114,6 +115,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
 
   dlp_files_controller_.IsFilesTransferRestricted(
       profile, source_urls, request.destination_url(),
+      policy::DlpWarnDialog::FilesAction::kTransfer,
       base::BindOnce(
           &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
           weak_ptr_factory_.GetWeakPtr(), method_call,

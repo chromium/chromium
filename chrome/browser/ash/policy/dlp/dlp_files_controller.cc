@@ -6,6 +6,7 @@
 
 #include <sys/types.h>
 #include <iterator>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -96,7 +99,8 @@ DlpFilesController::DlpFileRestrictionDetails::operator=(
 DlpFilesController::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
     default;
 
-DlpFilesController::DlpFilesController() = default;
+DlpFilesController::DlpFilesController()
+    : warn_notifier_(std::make_unique<DlpWarnNotifier>()) {}
 
 DlpFilesController::~DlpFilesController() = default;
 
@@ -192,6 +196,7 @@ void DlpFilesController::IsFilesTransferRestricted(
     Profile* profile,
     std::vector<GURL> files_sources,
     std::string destination,
+    DlpWarnDialog::FilesAction files_action,
     IsFilesTransferRestrictedCallback result_callback) {
   DCHECK(profile);
   policy::DlpRulesManager* dlp_rules_manager =
@@ -204,6 +209,7 @@ void DlpFilesController::IsFilesTransferRestricted(
   auto dst_component =
       MapFilePathtoPolicyComponent(profile, base::FilePath(destination));
   std::vector<GURL> restricted_files_sources;
+  std::vector<GURL> warned_files_sources;
   for (const auto& src : files_sources) {
     DlpRulesManager::Level level;
     if (dst_component.has_value()) {
@@ -220,8 +226,34 @@ void DlpFilesController::IsFilesTransferRestricted(
 
     if (level == DlpRulesManager::Level::kBlock)
       restricted_files_sources.push_back(src);
+    else if (level == DlpRulesManager::Level::kWarn)
+      warned_files_sources.push_back(src);
   }
-  std::move(result_callback).Run(std::move(restricted_files_sources));
+
+  if (warned_files_sources.empty()) {
+    std::move(result_callback).Run(std::move(restricted_files_sources));
+    return;
+  }
+
+  warn_notifier_->ShowDlpFilesWarningDialog(
+      base::BindOnce(
+          &DlpFilesController::OnDlpWarnDialogReply,
+          weak_ptr_factory_.GetWeakPtr(), std::move(restricted_files_sources),
+          std::move(warned_files_sources), std::move(result_callback)),
+      files_action);
+}
+
+void DlpFilesController::OnDlpWarnDialogReply(
+    std::vector<GURL> restricted_files_sources,
+    std::vector<GURL> warned_files_sources,
+    IsFilesTransferRestrictedCallback callback,
+    bool should_proceed) {
+  std::vector<GURL> blocked_files_sources(restricted_files_sources);
+  if (!should_proceed)
+    blocked_files_sources.insert(blocked_files_sources.end(),
+                                 warned_files_sources.begin(),
+                                 warned_files_sources.end());
+  std::move(callback).Run(std::move(blocked_files_sources));
 }
 
 std::vector<DlpFilesController::DlpFileRestrictionDetails>
@@ -293,6 +325,12 @@ bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
     }
   }
   return restricted;
+}
+
+void DlpFilesController::SetWarnNotifierForTesting(
+    std::unique_ptr<DlpWarnNotifier> warn_notifier) {
+  DCHECK(warn_notifier);
+  warn_notifier_ = std::move(warn_notifier);
 }
 
 void DlpFilesController::ReturnDisallowedTransfers(

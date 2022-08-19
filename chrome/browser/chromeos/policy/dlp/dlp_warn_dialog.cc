@@ -10,6 +10,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -81,8 +82,8 @@ constexpr int kConfidentialContentListMaxHeight = 240;
 
 // Returns the OK button label for |restriction|.
 const std::u16string GetDialogButtonOkLabel(
-    DlpWarnDialog::Restriction restriction) {
-  switch (restriction) {
+    DlpWarnDialog::DlpWarnDialogOptions options) {
+  switch (options.restriction) {
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON);
@@ -95,6 +96,10 @@ const std::u16string GetDialogButtonOkLabel(
     case DlpWarnDialog::Restriction::kScreenShare:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_SHARE_WARN_CONTINUE_BUTTON);
+    case DlpWarnDialog::Restriction::kFiles:
+      DCHECK(options.files_action.has_value());
+      // TODO(crbug.com/1350936) Add proper strings to the dialog
+      return u"Transfer anyway";
   }
 }
 
@@ -114,12 +119,15 @@ const std::u16string GetDialogButtonCancelLabel(
     case DlpWarnDialog::Restriction::kScreenShare:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_SHARE_WARN_CANCEL_BUTTON);
+    case DlpWarnDialog::Restriction::kFiles:
+      // TODO(crbug.com/1350936) Add proper strings to the dialog
+      return u"Cancel";
   }
 }
 
 // Returns the title for |restriction|.
-const std::u16string GetTitle(DlpWarnDialog::Restriction restriction) {
-  switch (restriction) {
+const std::u16string GetTitle(DlpWarnDialog::DlpWarnDialogOptions options) {
+  switch (options.restriction) {
     case DlpWarnDialog::Restriction::kScreenCapture:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE);
@@ -129,6 +137,10 @@ const std::u16string GetTitle(DlpWarnDialog::Restriction restriction) {
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_TITLE);
     case DlpWarnDialog::Restriction::kScreenShare:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE);
+    case DlpWarnDialog::Restriction::kFiles:
+      DCHECK(options.files_action.has_value());
+      // TODO(crbug.com/1350936) Add proper strings to the dialog
+      return u"Transfer confidential file(s)?";
   }
 }
 
@@ -148,6 +160,11 @@ const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
       return l10n_util::GetStringFUTF16(
           IDS_POLICY_DLP_SCREEN_SHARE_WARN_MESSAGE,
           options.application_title.value());
+    case DlpWarnDialog::Restriction::kFiles:
+      DCHECK(options.files_action.has_value());
+      // TODO(crbug.com/1350936) Add proper strings to the dialog
+      return u"Administrator policy doesn’t recommend transfering this/these "
+             u"file(s) to destination";
   }
 }
 
@@ -184,7 +201,7 @@ void AddGeneralInformation(views::View* upper_panel,
                                                kManagedIconSize, color));
 
   views::Label* title_label = upper_panel->AddChildView(
-      std::make_unique<views::Label>(GetTitle(options.restriction)));
+      std::make_unique<views::Label>(GetTitle(options)));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
 // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
@@ -309,6 +326,11 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 }
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
+    Restriction restriction,
+    FilesAction files_action)
+    : restriction(restriction), files_action(files_action) {}
+
+DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     const DlpWarnDialogOptions& other) = default;
 
 DlpWarnDialog::DlpWarnDialogOptions&
@@ -326,8 +348,7 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   SetShowCloseButton(false);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 GetDialogButtonOkLabel(options.restriction));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetDialogButtonOkLabel(options));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  GetDialogButtonCancelLabel(options.restriction));
 

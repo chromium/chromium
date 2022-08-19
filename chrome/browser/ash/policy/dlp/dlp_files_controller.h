@@ -11,6 +11,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -102,12 +104,13 @@ class DlpFilesController {
       const GURL& destination,
       FilterDisallowedUploadsCallback result_callback);
 
-  // Returns a list of |files_sources| from which files aren't allowed to
-  // be transferred to |destination| in |result_callback|.
+  // Returns a sublist of |files_sources| in |result_callback| with files
+  // sources restricted from performing |action| to |destination|.
   void IsFilesTransferRestricted(
       Profile* profile,
       std::vector<GURL> files_sources,
       std::string destination,
+      DlpWarnDialog::FilesAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
   // Returns restriction information for `sourceUrl`.
@@ -117,7 +120,18 @@ class DlpFilesController {
   // Returns whether a dlp policy matches for the `source_url`.
   bool IsDlpPolicyMatched(const std::string& source_url);
 
+  void SetWarnNotifierForTesting(
+      std::unique_ptr<DlpWarnNotifier> warn_notifier);
+
  private:
+  // Called back from warning dialog. Passes blocked files sources along
+  // to |callback|. In case |should_proceed| is true, passes only
+  // |restricted_files_sources|, otherwise passes also |warned_files_sources|.
+  void OnDlpWarnDialogReply(std::vector<GURL> restricted_files_sources,
+                            std::vector<GURL> warned_files_sources,
+                            IsFilesTransferRestrictedCallback callback,
+                            bool should_proceed);
+
   void ReturnDisallowedTransfers(
       base::flat_map<std::string, storage::FileSystemURL> files_map,
       GetDisallowedTransfersCallback result_callback,
@@ -130,6 +144,9 @@ class DlpFilesController {
   void ReturnDlpMetadata(std::vector<absl::optional<ino_t>> inodes,
                          GetDlpMetadataCallback result_callback,
                          const dlp::GetFilesSourcesResponse response);
+
+  // Is used for creating and showing the warning dialog.
+  std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
 };

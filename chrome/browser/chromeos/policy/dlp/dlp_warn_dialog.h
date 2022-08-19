@@ -34,8 +34,13 @@ class DlpWarnDialog : public views::DialogDelegateView {
     kScreenCapture,
     kVideoCapture,
     kPrinting,
-    kScreenShare
+    kScreenShare,
+    kFiles
   };
+
+  // Type of the files action for which the dialog with kFiles restriction is
+  // created, used to determine the text shown in the dialog.
+  enum class FilesAction { kDownload, kTransfer };
 
   // A structure to keep track of optional and configurable parameters of a
   // DlpWarnDialog.
@@ -47,6 +52,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
     DlpWarnDialogOptions(Restriction restriction,
                          DlpConfidentialContents confidential_contents,
                          const std::u16string& application_title);
+    DlpWarnDialogOptions(Restriction restriction, FilesAction files_action);
     DlpWarnDialogOptions(const DlpWarnDialogOptions& other);
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
     ~DlpWarnDialogOptions();
@@ -68,6 +74,9 @@ class DlpWarnDialog : public views::DialogDelegateView {
     Restriction restriction;
     DlpConfidentialContents confidential_contents;
     absl::optional<std::u16string> application_title;
+
+    // Has value only if the |restriction| is kFiles.
+    absl::optional<FilesAction> files_action;
   };
 
   DlpWarnDialog() = delete;

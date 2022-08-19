@@ -25,7 +25,9 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -581,8 +583,68 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
-  files_controller_.IsFilesTransferRestricted(profile_.get(), files_sources,
-                                              dst_url.path().value(), cb.Get());
+  files_controller_.IsFilesTransferRestricted(
+      profile_.get(), files_sources, dst_url.path().value(),
+      DlpWarnDialog::FilesAction::kDownload, cb.Get());
+}
+
+class DlpFilesWarningDialogTest
+    : public DlpFilesControllerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, std::vector<std::string>>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesWarningDialogTest,
+    ::testing::Values(
+        std::make_tuple(true, std::vector<std::string>({kExample1})),
+        std::make_tuple(false,
+                        std::vector<std::string>({kExample1, kExample2}))));
+
+TEST_P(DlpFilesWarningDialogTest,
+       IsFilesTransferRestricted_FileDownloadWarned) {
+  auto [should_proceed, disallowed_sources_str] = GetParam();
+  std::vector<GURL> disallowed_sources;
+  for (const auto& source : disallowed_sources_str)
+    disallowed_sources.emplace_back(source);
+  std::vector<GURL> files_sources(
+      {GURL(kExample1), GURL(kExample2), GURL(kExample3)});
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  mount_points->RevokeAllFileSystems();
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(),
+      base::FilePath(file_manager::util::kRemovableMediaPath)));
+
+  std::unique_ptr<MockDlpWarnNotifier> wrapper =
+      std::make_unique<MockDlpWarnNotifier>(should_proceed);
+  MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
+  files_controller_.SetWarnNotifierForTesting(std::move(wrapper));
+
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
+
+  MockIsFilesTransferRestrictedCallback cb;
+  EXPECT_CALL(cb, Run(disallowed_sources)).Times(1);
+
+  EXPECT_CALL(*rules_manager_,
+              IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
+
+  auto dst_url = mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey(), "removable",
+      base::FilePath("MyUSB/path/in/removable"));
+  ASSERT_TRUE(dst_url.is_valid());
+
+  files_controller_.IsFilesTransferRestricted(
+      profile_.get(), files_sources, dst_url.path().value(),
+      DlpWarnDialog::FilesAction::kDownload, cb.Get());
+
+  storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }
 
 }  // namespace policy
