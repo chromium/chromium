@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DISKS_DISK_H_
-#define ASH_COMPONENTS_DISKS_DISK_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DISKS_DISK_H_
+#define CHROMEOS_ASH_COMPONENTS_DISKS_DISK_H_
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 namespace ash {
 namespace disks {
 
-class COMPONENT_EXPORT(ASH_DISKS) Disk {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) Disk {
  public:
   class Builder;
 
@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(ASH_DISKS) Disk {
   std::string base_mount_path_;
 };
 
-class COMPONENT_EXPORT(ASH_DISKS) Disk::Builder {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) Disk::Builder {
  public:
   Builder();
 
@@ -217,9 +217,10 @@ class COMPONENT_EXPORT(ASH_DISKS) Disk::Builder {
   std::unique_ptr<Disk> disk_;
 };
 
-COMPONENT_EXPORT(ASH_DISKS) base::FilePath GetStatefulPartitionPath();
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS)
+base::FilePath GetStatefulPartitionPath();
 
 }  // namespace disks
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_DISKS_DISK_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DISKS_DISK_H_

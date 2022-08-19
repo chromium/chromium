@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/disks/disk.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -975,15 +975,15 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
       mock_callback2,
       Run(MountError::kNone,
           Field(&DiskMountManager::MountPoint::mount_path, kMountPath2)))
-      .WillOnce([&](MountError,
-                    const DiskMountManager::MountPoint& mount_point) {
-        // Verify the disk appears read-only when the callback is invoked. See
-        // below comment about the 2nd source.
-        EXPECT_TRUE(manager->disks()
-                        .find(mount_point.source_path)
-                        ->get()
-                        ->is_read_only());
-      });
+      .WillOnce(
+          [&](MountError, const DiskMountManager::MountPoint& mount_point) {
+            // Verify the disk appears read-only when the callback is invoked.
+            // See below comment about the 2nd source.
+            EXPECT_TRUE(manager->disks()
+                            .find(mount_point.source_path)
+                            ->get()
+                            ->is_read_only());
+          });
 
   manager->MountPath(kSourcePath1, kSourceFormat, std::string(), {},
                      MountType::kDevice, MountAccessMode::kReadWrite,

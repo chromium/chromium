@@ -230,7 +230,6 @@ source_set("app_shell_lib") {
       "browser/shell_screen.h",
     ]
     deps += [
-      "//ash/components/disks",
       "//ash/constants",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus",
@@ -238,6 +237,7 @@ source_set("app_shell_lib") {
       "//chromeos/ash/components/dbus/cros_disks",
       "//chromeos/ash/components/dbus/hermes",
       "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/disks",
       "//chromeos/ash/components/network",
       "//chromeos/login/login_state",
       "//ui/chromeos",

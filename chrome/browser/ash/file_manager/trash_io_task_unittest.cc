@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 
-#include "ash/components/disks/disk_mount_manager.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"

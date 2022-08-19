@@ -10,6 +10,10 @@ accounts, but only on behalf of ChromeOS code.
 //components/account_manager_core contains cross-platform support for
 accounts.
 
+Some subdirectories contain low-level utility code. For example,
+//chromeos/ash/components/disks has utilities for mounting and unmounting disk
+volumes.
+
 Much of this code used to live in //chromeos/components. The
 [Lacros project](/docs/lacros.md) is extracting browser functionality into a
 separate binary. As part of this migration, code used only by the ash-chrome

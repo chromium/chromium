@@ -31,12 +31,12 @@ component("drivefs") {
     ]
   }
   deps = [
-    "//ash/components/disks",
     "//ash/components/drivefs/mojom",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
     "//chromeos/components/mojo_bootstrap",
     "//components/account_id",
     "//components/drive",
@@ -82,10 +82,10 @@ source_set("unit_tests") {
   deps = [
     ":drivefs",
     ":test_support",
-    "//ash/components/disks:test_support",
     "//ash/components/drivefs/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
     "//chromeos/components/mojo_bootstrap",
     "//components/account_id",
     "//components/drive",

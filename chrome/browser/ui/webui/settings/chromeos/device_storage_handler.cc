@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/disks/disk.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/disks/disk.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"

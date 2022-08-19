@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,8 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/disks/disk.h"
-#include "ash/components/disks/suspend_unmount_manager.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -26,6 +24,8 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/components/disks/suspend_unmount_manager.h"
 
 namespace ash::disks {
 namespace {

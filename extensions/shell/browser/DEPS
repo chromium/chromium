@@ -1,6 +1,5 @@
 include_rules = [
   "+apps",
-  "+ash/components/disks",
   "+chromeos",
   "+components/keep_alive_registry",
   "+components/keyed_service",

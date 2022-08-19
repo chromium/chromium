@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include <memory>
 
-#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
 namespace guest_os {

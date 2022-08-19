@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/disks/mock_disk_mount_manager.h"
+#include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 
 #include <stdint.h>
 
 #include <memory>
 #include <utility>
 
-#include "ash/components/disks/disk.h"
-
-using testing::_;
-using testing::AnyNumber;
-using testing::Invoke;
-using testing::ReturnRef;
+#include "chromeos/ash/components/disks/disk.h"
 
 namespace ash {
 namespace disks {
 
 namespace {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Invoke;
+using ::testing::ReturnRef;
 
 const char kTestSystemPath[] = "/this/system/path";
 const char kTestStorageDevicePath[] = "/this/system";
@@ -69,8 +69,8 @@ MockDiskMountManager::MockDiskMountManager() {
   ON_CALL(*this, mount_points())
       .WillByDefault(Invoke(this, &MockDiskMountManager::mountPointsInternal));
   ON_CALL(*this, FindDiskBySourcePath(_))
-      .WillByDefault(Invoke(
-          this, &MockDiskMountManager::FindDiskBySourcePathInternal));
+      .WillByDefault(
+          Invoke(this, &MockDiskMountManager::FindDiskBySourcePathInternal));
   // Invoke doesn't handle move-only types, so use a lambda instead.
   ON_CALL(*this, EnsureMountInfoRefreshed(_, _))
       .WillByDefault([](EnsureMountInfoRefreshedCallback callback, bool force) {
@@ -129,20 +129,16 @@ void MockDiskMountManager::NotifyMountEvent(MountEvent event,
 }
 
 void MockDiskMountManager::SetupDefaultReplies() {
-  EXPECT_CALL(*this, disks())
-      .WillRepeatedly(ReturnRef(disks_));
-  EXPECT_CALL(*this, mount_points())
-      .WillRepeatedly(ReturnRef(mount_points_));
-  EXPECT_CALL(*this, FindDiskBySourcePath(_))
-      .Times(AnyNumber());
+  EXPECT_CALL(*this, disks()).WillRepeatedly(ReturnRef(disks_));
+  EXPECT_CALL(*this, mount_points()).WillRepeatedly(ReturnRef(mount_points_));
+  EXPECT_CALL(*this, FindDiskBySourcePath(_)).Times(AnyNumber());
   EXPECT_CALL(*this, EnsureMountInfoRefreshed(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, MountPath(_, _, _, _, _, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, UnmountPath(_, _)).Times(AnyNumber());
   EXPECT_CALL(*this, RemountAllRemovableDrives(_)).Times(AnyNumber());
   EXPECT_CALL(*this, FormatMountedDevice(_, _, _)).Times(AnyNumber());
   EXPECT_CALL(*this, SinglePartitionFormatDevice(_, _, _)).Times(AnyNumber());
-  EXPECT_CALL(*this, UnmountDeviceRecursively(_, _))
-      .Times(AnyNumber());
+  EXPECT_CALL(*this, UnmountDeviceRecursively(_, _)).Times(AnyNumber());
 }
 
 void MockDiskMountManager::CreateDiskEntryForMountDevice(

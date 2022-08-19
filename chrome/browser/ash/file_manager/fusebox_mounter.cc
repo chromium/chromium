@@ -7,7 +7,6 @@
 #include <cerrno>
 #include <utility>
 
-#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 namespace file_manager {
 

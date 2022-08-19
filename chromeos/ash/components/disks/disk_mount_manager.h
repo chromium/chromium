@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
-#define ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
 
 #include <stdint.h>
 
 #include <memory>
 #include <set>
 
-#include "ash/components/disks/disk.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/disks/disk.h"
 
 namespace ash {
 namespace disks {
@@ -31,7 +31,7 @@ enum class MountCondition {
 };
 
 // Output operator for logging.
-COMPONENT_EXPORT(ASH_DISKS)
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS)
 std::ostream& operator<<(std::ostream& out, MountCondition condition);
 
 // Possible filesystem types that can be passed to FormatMountedDevice.
@@ -47,7 +47,7 @@ enum class FormatFileSystemType {
 
 // This class handles the interaction with cros-disks.
 // Other classes can add themselves as observers.
-class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
  public:
   // Event types passed to the observers.
   enum DiskEvent {
@@ -295,4 +295,4 @@ using ::ash::disks::DiskMountManager;
 }  // namespace disks
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_

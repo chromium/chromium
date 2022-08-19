@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/drivefs/drivefs_auth.h"
 #include "ash/components/drivefs/drivefs_session.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -19,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

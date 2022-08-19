@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
 
 #include "ash/components/arc/mojom/volume_mounter.mojom-shared.h"
-#include "ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 
 namespace mojo {
 
