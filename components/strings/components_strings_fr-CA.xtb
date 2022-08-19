@@ -191,7 +191,7 @@
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1432187715652018471">cette page veut installer un module de traitement de service.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
-<translation id="1435940442311036198">Utiliser un mot de passe sur un autre appareil</translation>
+<translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
 <translation id="1442386063175183758">Pli du volet droit</translation>
 <translation id="1442987760062738829">Perforer</translation>
@@ -1711,7 +1711,7 @@
 <translation id="5571083550517324815">Impossible d'effectuer un ramassage à partir de cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="557886905979275351">Rasoirs</translation>
 <translation id="5580958916614886209">Vérifiez le mois d'expiration et réessayez</translation>
-<translation id="558420943003240152">Gérer les mots de passe…</translation>
+<translation id="558420943003240152">Gérer les clés d'accès…</translation>
 <translation id="5586446728396275693">Aucune adresse enregistrée</translation>
 <translation id="5587987780934666589">Utilisateur de la plateforme</translation>
 <translation id="5593349413089863479">La connexion n'est pas entièrement sécurisée</translation>
@@ -1776,7 +1776,7 @@
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
 <translation id="5776313857861697733">Priorité</translation>
-<translation id="5778389256418062749">Utiliser un mot de passe sur un autre appareil</translation>
+<translation id="5778389256418062749">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="5781136890105823427">Expérience activée</translation>
 <translation id="578305955206182703">Ambre</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
@@ -2536,7 +2536,7 @@ Détails supplémentaires :
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Poids lourds et semi-remorques</translation>
-<translation id="788679692472636252">Gérer les mots de passe…</translation>
+<translation id="788679692472636252">Gérer les clés d'accès…</translation>
 <translation id="7887683347370398519">Veuillez vérifier votre CVC et réessayer</translation>
 <translation id="7887885240995164102">Lancer le mode d'incrustation d'image</translation>
 <translation id="7888575728750733395">Intention de rendu d'impression</translation>

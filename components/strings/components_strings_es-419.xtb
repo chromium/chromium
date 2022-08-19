@@ -191,6 +191,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
+<translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
@@ -1408,7 +1409,9 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4798078619018708837">Ingresa la fecha de vencimiento y el CVC de la tarjeta <ph name="CREDIT_CARD" /> para actualizar los datos. Después de confirmar esta acción, esos datos en tu Cuenta de Google se compartirán con este sitio.</translation>
 <translation id="4800132727771399293">Verifica la fecha de vencimiento y el CVC, y vuelve a intentarlo.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">Usar Touch ID</translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
+<translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
 <translation id="4812751092864334025">Tecnología wearable</translation>
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
@@ -1681,6 +1684,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5509780412636533143">Favoritos administrados</translation>
 <translation id="5510481203689988000">Esta opción se controla en la configuración de cookies.</translation>
 <translation id="5510766032865166053">Es posible que lo hayan movido o borrado.</translation>
+<translation id="5513528801833998679">Usar el acceso del dispositivo</translation>
 <translation id="5518670652865028077">Arte y entretenimiento</translation>
 <translation id="5519516356611866228">Con tus cambios</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
@@ -1708,6 +1712,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5571083550517324815">No se puede retirar el artículo en esta dirección. Selecciona una diferente.</translation>
 <translation id="557886905979275351">Rasuradoras y afeitadoras</translation>
 <translation id="5580958916614886209">Comprueba el mes de vencimiento y vuelve a intentarlo</translation>
+<translation id="558420943003240152">Administrar contraseñas y claves de acceso…</translation>
 <translation id="5586446728396275693">No hay direcciones guardadas</translation>
 <translation id="5587987780934666589">Usuario de la plataforma</translation>
 <translation id="5593349413089863479">La conexión no es totalmente segura</translation>
@@ -1772,6 +1777,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5776313857861697733">Prioridad</translation>
+<translation id="5778389256418062749">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="5781136890105823427">Se habilitó un experimento</translation>
 <translation id="578305955206182703">Ámbar</translation>
 <translation id="57838592816432529">Silenciar</translation>
@@ -2531,6 +2537,7 @@ Detalles adicionales:
 <translation id="7880146494886811634">Guardar dirección</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7882995332186050355">Camiones de carga y remolques</translation>
+<translation id="788679692472636252">Administrar contraseñas y claves de acceso…</translation>
 <translation id="7887683347370398519">Verifica tu CVC y vuelve a intentarlo.</translation>
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
