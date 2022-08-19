@@ -144,9 +144,12 @@ class FileSystemAccessPermissionContext {
 
   // Return the path associated with well-known directories such as "desktop"
   // and "music", or a default path if the |directory| cannot be matched to a
-  // well-known directory.
+  // well-known directory. When |directory| is WellKnownDirectory.DIR_DOWNLOADS,
+  // |origin| is used to determine if browser-specified download directory
+  // should be returned instead of OS default download directory.
   virtual base::FilePath GetWellKnownDirectoryPath(
-      blink::mojom::WellKnownDirectory directory) = 0;
+      blink::mojom::WellKnownDirectory directory,
+      const url::Origin& origin) = 0;
 
   // Return the desired title of the file picker for the given `options`.
   virtual std::u16string GetPickerTitle(

@@ -487,7 +487,8 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
         // Prioritize an explicitly stated well-known directory over an
         // implicitly remembered LastPicked directory.
         path_info.path = permission_context_->GetWellKnownDirectoryPath(
-            common_options->well_known_starting_directory);
+            common_options->well_known_starting_directory,
+            context.storage_key.origin());
       } else { /*well_known_starting_directory ==
                   blink::mojom::WellKnownDirectory::kDefault*/
         // If `id` empty or unset, fall back to the default LastPickedDirectory.
@@ -528,7 +529,8 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
 
   if (!default_directory_exists && permission_context_) {
     default_directory = permission_context_->GetWellKnownDirectoryPath(
-        blink::mojom::WellKnownDirectory::kDefault);
+        blink::mojom::WellKnownDirectory::kDefault,
+        context.storage_key.origin());
   }
 
   auto request_directory_write_access =

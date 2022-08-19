@@ -22,6 +22,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -87,6 +91,11 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   }
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    DownloadCoreServiceFactory::GetForBrowserContext(profile())
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile()));
+
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     FileSystemAccessPermissionRequestManager::CreateForWebContents(
@@ -167,6 +176,8 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kTestOrigin2 =
       url::Origin::Create(GURL("https://test.com"));
+  const url::Origin kPdfOrigin = url::Origin::Create(
+      GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html"));
   const std::string kTestStartingDirectoryId = "test_id";
   const base::FilePath kTestPath =
       base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
@@ -689,7 +700,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride user_desktop_override(
       base::DIR_USER_DESKTOP, temp_dir_.GetPath(), true, true);
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
-                blink::mojom::WellKnownDirectory::kDirDesktop),
+                blink::mojom::WellKnownDirectory::kDirDesktop, kTestOrigin),
             temp_dir_.GetPath());
 }
 
@@ -698,7 +709,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
-                blink::mojom::WellKnownDirectory::kDirDocuments),
+                blink::mojom::WellKnownDirectory::kDirDocuments, kTestOrigin),
             temp_dir_.GetPath());
 }
 
@@ -707,7 +718,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
   EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
-                blink::mojom::WellKnownDirectory::kDefault),
+                blink::mojom::WellKnownDirectory::kDefault, kTestOrigin),
+            temp_dir_.GetPath());
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GetWellKnownDirectoryPath_Pdf_Downloads) {
+  DownloadPrefs::FromBrowserContext(browser_context())
+      ->SkipSanitizeDownloadTargetPathForTesting();
+  DownloadPrefs::FromBrowserContext(browser_context())
+      ->SetDownloadPath(temp_dir_.GetPath());
+  EXPECT_EQ(permission_context()->GetWellKnownDirectoryPath(
+                blink::mojom::WellKnownDirectory::kDirDownloads, kPdfOrigin),
             temp_dir_.GetPath());
 }
 

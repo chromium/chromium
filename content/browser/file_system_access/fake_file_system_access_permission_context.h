@@ -68,7 +68,8 @@ class FakeFileSystemAccessPermissionContext
   // Retrieves a path which was earlier specified via SetWellKnownDirectoryPath.
   // Otherwise, returns an empty path.
   base::FilePath GetWellKnownDirectoryPath(
-      blink::mojom::WellKnownDirectory directory) override;
+      blink::mojom::WellKnownDirectory directory,
+      const url::Origin& origin) override;
 
   // Returns `kPickerTitle`.
   std::u16string GetPickerTitle(

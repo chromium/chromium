@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/installable/installable_utils.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/file_system_access_dialogs.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pdf_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -1361,8 +1363,20 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
 
 base::FilePath
 ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
-    blink::mojom::WellKnownDirectory directory) {
+    blink::mojom::WellKnownDirectory directory,
+    const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // PDF viewer uses the default Download directory set in browser, if possible.
+  if (directory == blink::mojom::WellKnownDirectory::kDirDownloads &&
+      IsPdfExtensionOrigin(origin)) {
+    base::FilePath profile_download_path =
+        DownloadPrefs::FromBrowserContext(profile())->DownloadPath();
+    if (!profile_download_path.empty()) {
+      return profile_download_path;
+    }
+  }
+
   int key = base::PATH_START;
   switch (directory) {
     case blink::mojom::WellKnownDirectory::kDefault:

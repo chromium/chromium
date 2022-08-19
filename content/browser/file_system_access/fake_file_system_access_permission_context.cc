@@ -89,7 +89,8 @@ void FakeFileSystemAccessPermissionContext::SetWellKnownDirectoryPath(
 }
 
 base::FilePath FakeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
-    blink::mojom::WellKnownDirectory directory) {
+    blink::mojom::WellKnownDirectory directory,
+    const url::Origin& origin) {
   return well_known_directory_map_.find(directory) !=
                  well_known_directory_map_.end()
              ? well_known_directory_map_[directory]

@@ -87,7 +87,8 @@ class MockFileSystemAccessPermissionContext
 
   MOCK_METHOD(base::FilePath,
               GetWellKnownDirectoryPath,
-              (blink::mojom::WellKnownDirectory directory),
+              (blink::mojom::WellKnownDirectory directory,
+               const url::Origin& origin),
               (override));
 
   MOCK_METHOD(std::u16string,

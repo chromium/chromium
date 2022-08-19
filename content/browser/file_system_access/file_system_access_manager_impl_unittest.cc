@@ -1295,7 +1295,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+                                kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
@@ -1381,7 +1382,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+                                kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
@@ -1463,7 +1465,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   EXPECT_CALL(
       permission_context_,
-      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault,
+                                kTestStorageKey.origin()))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
