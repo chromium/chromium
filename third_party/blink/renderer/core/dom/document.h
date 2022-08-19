@@ -2518,8 +2518,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool rendering_has_begun_ = false;
 
-  int async_script_count_ = 0;
-
   DeclarativeShadowRootAllowState declarative_shadow_root_allow_state_ =
       DeclarativeShadowRootAllowState::kNotSet;
 
