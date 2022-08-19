@@ -53,10 +53,10 @@ class InfobarModalCompletionNotifierTest : public PlatformTest {
       scoped_observation_{&observer_};
 };
 
-// Tests that the observer is notified when all modal requests for |infobar_|
+// Tests that the observer is notified when all modal requests for `infobar_`
 // have been removed.
 TEST_F(InfobarModalCompletionNotifierTest, ModalCompletion) {
-  // Add a modal request for |infobar_|.
+  // Add a modal request for `infobar_`.
   std::unique_ptr<OverlayRequest> modal_request =
       OverlayRequest::CreateWithConfig<InfobarOverlayRequestConfig>(
           &infobar_, InfobarOverlayType::kModal, false);

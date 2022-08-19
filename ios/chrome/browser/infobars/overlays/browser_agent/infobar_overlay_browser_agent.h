@@ -26,7 +26,7 @@ class InfobarOverlayBrowserAgent
 
   // Adds an InfobarInteractionHandler to make model-layer updates for
   // interactions with infobars.  An OverlayCallbackInstaller will be created
-  // from each added handler for each InfobarOverlayType.  |interaction_handler|
+  // from each added handler for each InfobarOverlayType.  `interaction_handler`
   // must not be null.  Only one interaction handler for a given InfobarType
   // can be added.
   void AddInfobarInteractionHandler(
@@ -40,7 +40,7 @@ class InfobarOverlayBrowserAgent
   explicit InfobarOverlayBrowserAgent(Browser* browser);
 
   // Returns the interaction handler for the InfobarType of the infobar used to
-  // configure |request|, or nullptr if |request| is not supported.
+  // configure `request`, or nullptr if `request` is not supported.
   InfobarInteractionHandler* GetInteractionHandler(OverlayRequest* request);
 
   // Helper object that notifies interaction handler of changes in infobar UI
@@ -53,7 +53,7 @@ class InfobarOverlayBrowserAgent
 
    private:
     // Notifies the BrowserAgent's interaction handler that the visibility of
-    // |request|'s UI has changed.
+    // `request`'s UI has changed.
     void OverlayVisibilityChanged(OverlayRequest* request, bool visible);
 
     // OverlayPresenterObserver:

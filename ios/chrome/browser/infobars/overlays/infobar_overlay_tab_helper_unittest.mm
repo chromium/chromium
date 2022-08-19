@@ -42,7 +42,7 @@ class InfobarOverlayTabHelperTest : public PlatformTest {
     InfobarOverlayTabHelper::CreateForWebState(&web_state_);
   }
 
-  // Returns the front request of |web_state_|'s OverlayRequestQueue.
+  // Returns the front request of `web_state_`'s OverlayRequestQueue.
   OverlayRequest* front_request() {
     return OverlayRequestQueue::FromWebState(&web_state_,
                                              OverlayModality::kInfobarBanner)

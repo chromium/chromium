@@ -29,7 +29,7 @@ using translate_infobar_overlays::PlaceholderRequestCancelHandler;
 using translate_infobar_overlay::ModalRequestCallbackInstaller;
 
 namespace {
-// Records a histogram of |histogram| for |langCode|. This is used to log the
+// Records a histogram of `histogram` for `langCode`. This is used to log the
 // language distribution of certain Translate events.
 void RecordLanguageDataHistogram(const std::string& histogram_name,
                                  const std::string& lang_code) {

@@ -51,7 +51,7 @@ InfobarOverlayRequestInserter::InfobarOverlayRequestInserter(
       request_factory_(factory) {
   DCHECK(web_state_);
   DCHECK(request_factory_);
-  // Populate |queues_| with the request queues at the appropriate modalities.
+  // Populate `queues_` with the request queues at the appropriate modalities.
   queues_[InfobarOverlayType::kBanner] = OverlayRequestQueue::FromWebState(
       web_state_, OverlayModality::kInfobarBanner);
   queues_[InfobarOverlayType::kModal] = OverlayRequestQueue::FromWebState(

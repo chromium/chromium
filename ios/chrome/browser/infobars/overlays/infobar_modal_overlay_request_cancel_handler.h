@@ -14,8 +14,8 @@
 class InfobarModalOverlayRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| from |queue|.
-  // |modal_completion_notifier| is used to detect the completion of any modal
+  // Constructor for a handler that cancels `request` from `queue`.
+  // `modal_completion_notifier` is used to detect the completion of any modal
   // UI that was presented from the banner.
   InfobarModalOverlayRequestCancelHandler(
       OverlayRequest* request,

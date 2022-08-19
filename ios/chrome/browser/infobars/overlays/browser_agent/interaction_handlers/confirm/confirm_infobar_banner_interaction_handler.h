@@ -22,7 +22,7 @@ class ConfirmInfobarBannerInteractionHandler
   void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
  private:
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   ConfirmInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
 };
 

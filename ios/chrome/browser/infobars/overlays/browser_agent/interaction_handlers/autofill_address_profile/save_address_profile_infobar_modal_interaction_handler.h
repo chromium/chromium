@@ -41,7 +41,7 @@ class SaveAddressProfileInfobarModalInteractionHandler
   std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
   CreateModalInstaller() override;
 
-  // Returns the SaveAddressProfile delegate from |infobar|.
+  // Returns the SaveAddressProfile delegate from `infobar`.
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfoBarDelegate(
       InfoBarIOS* infobar);
 };

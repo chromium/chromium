@@ -24,7 +24,7 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
   // Returns the InfoBar that the corresponding request was configured with.
   InfoBarIOS* infobar() const { return infobar_; }
 
-  // Called when the infobar triggering |request| was replaced in its manager.
+  // Called when the infobar triggering `request` was replaced in its manager.
   // Default implementation does nothing.
   virtual void HandleReplacement(InfoBarIOS* replacement);
 

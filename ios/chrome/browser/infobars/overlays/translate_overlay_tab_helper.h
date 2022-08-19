@@ -58,7 +58,7 @@ class TranslateOverlayTabHelper
     TranslateStepObserver(TranslateOverlayTabHelper* tab_helper);
     ~TranslateStepObserver() override;
 
-    // Starts observing |infobar|'s delegate, stores |infobar| for
+    // Starts observing `infobar`'s delegate, stores `infobar` for
     // TranslateDid[Start/Finish]
     void SetTranslateInfoBar(InfoBarIOS* infobar);
 

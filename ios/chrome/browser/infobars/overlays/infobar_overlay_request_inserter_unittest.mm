@@ -57,7 +57,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
   }
 
   // Adds an InfoBar created with a test delegate to the manager.  Returns a
-  // pointer to the added InfoBar.  If |message_text| matches an infobar already
+  // pointer to the added InfoBar.  If `message_text` matches an infobar already
   // added, then it the new one will be ignored.
   InfoBar* CreateInfobar(std::u16string message_text) {
     std::unique_ptr<InfoBar> added_infobar = std::make_unique<FakeInfobarIOS>(
@@ -75,7 +75,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
 TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
   OverlayRequestQueue* queue = GetQueue(InfobarOverlayType::kBanner);
   ASSERT_EQ(0U, queue->size());
-  // Insert |infobar| at front of queue and check that the queue is updated
+  // Insert `infobar` at front of queue and check that the queue is updated
   // correctly.
   InfoBar* infobar = CreateInfobar(kFirstInfobarMessageText);
   InsertParams params(static_cast<InfoBarIOS*>(infobar));
@@ -87,7 +87,7 @@ TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
   EXPECT_EQ(infobar, queue->front_request()
                          ->GetConfig<InfobarOverlayRequestConfig>()
                          ->infobar());
-  // Insert |inserted_infobar| in front of |infobar| and check that it is now
+  // Insert `inserted_infobar` in front of `infobar` and check that it is now
   // the front request.
   InfoBar* inserted_infobar = CreateInfobar(kSecondInfobarMessageText);
   params.infobar = static_cast<InfoBarIOS*>(inserted_infobar);
@@ -102,7 +102,7 @@ TEST_F(InfobarOverlayRequestInserterTest, InsertBanner) {
 TEST_F(InfobarOverlayRequestInserterTest, AddBanner) {
   OverlayRequestQueue* queue = GetQueue(InfobarOverlayType::kBanner);
   ASSERT_EQ(0U, queue->size());
-  // Add |infobar| to the back of the queue and check that the it is updated
+  // Add `infobar` to the back of the queue and check that the it is updated
   // correctly.
   InfoBar* infobar = CreateInfobar(kFirstInfobarMessageText);
   InsertParams params(static_cast<InfoBarIOS*>(infobar));
@@ -114,7 +114,7 @@ TEST_F(InfobarOverlayRequestInserterTest, AddBanner) {
   EXPECT_EQ(infobar, queue->front_request()
                          ->GetConfig<InfobarOverlayRequestConfig>()
                          ->infobar());
-  // Add |second_infobar| in to the queue and check that it is second in the
+  // Add `second_infobar` in to the queue and check that it is second in the
   // queue.
   InfoBar* second_infobar = CreateInfobar(kSecondInfobarMessageText);
   params.infobar = static_cast<InfoBarIOS*>(second_infobar);

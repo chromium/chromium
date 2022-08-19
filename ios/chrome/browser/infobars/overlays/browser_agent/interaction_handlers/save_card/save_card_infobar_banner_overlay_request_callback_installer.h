@@ -14,15 +14,15 @@ class SaveCardInfobarBannerOverlayRequestCallbackInstaller
     : public InfobarBannerOverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks that forward
-  // interaction events to |interaction_handler|.
+  // interaction events to `interaction_handler`.
   explicit SaveCardInfobarBannerOverlayRequestCallbackInstaller(
       SaveCardInfobarBannerInteractionHandler* interaction_handler);
   ~SaveCardInfobarBannerOverlayRequestCallbackInstaller() override;
 
  private:
-  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // Used as a callback for OverlayResponses dispatched through `request`'s
   // callback manager.  The OverlayDispatchCallback is created with an
-  // OverlayResponseSupport that guarantees that |response| is created with an
+  // OverlayResponseSupport that guarantees that `response` is created with an
   // save_card_infobar_modal_responses::SaveCardMainAction.
   void SaveCredentialsCallback(OverlayRequest* request,
                                OverlayResponse* response);

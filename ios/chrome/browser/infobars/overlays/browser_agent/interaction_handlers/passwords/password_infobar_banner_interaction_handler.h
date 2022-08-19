@@ -23,7 +23,7 @@ class PasswordInfobarBannerInteractionHandler
   void MainButtonTapped(InfoBarIOS* infobar) override;
 
  private:
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   IOSChromeSavePasswordInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
 };
 

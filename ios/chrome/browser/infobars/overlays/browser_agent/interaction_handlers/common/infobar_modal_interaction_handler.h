@@ -16,7 +16,7 @@ class InfobarModalInteractionHandler
  public:
   ~InfobarModalInteractionHandler() override;
 
-  // Updates the model to perform the main action for |infobar|.
+  // Updates the model to perform the main action for `infobar`.
   virtual void PerformMainAction(InfoBarIOS* infobar) = 0;
 
  protected:

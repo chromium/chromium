@@ -7,7 +7,7 @@
 
 class Browser;
 
-// Attaches browser agents to |browser| that manage the model changes for
+// Attaches browser agents to `browser` that manage the model changes for
 // infobar UI presented via OverlayPresenter.
 void AttachInfobarOverlayBrowserAgent(Browser* browser);
 

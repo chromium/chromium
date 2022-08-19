@@ -23,8 +23,8 @@ class SaveCardInfobarBannerInteractionHandler
   SaveCardInfobarBannerInteractionHandler();
   ~SaveCardInfobarBannerInteractionHandler() override;
 
-  // Instructs the handler to update the credentials with |cardholder_name|,
-  // |expiration_date_month|, and |expiration_date_year|. This replaces
+  // Instructs the handler to update the credentials with `cardholder_name`,
+  // `expiration_date_month`, and `expiration_date_year`. This replaces
   // MainButtonTapped.
   virtual void SaveCredentials(InfoBarIOS* infobar,
                                std::u16string cardholder_name,
@@ -40,7 +40,7 @@ class SaveCardInfobarBannerInteractionHandler
   std::unique_ptr<InfobarBannerOverlayRequestCallbackInstaller>
   CreateBannerInstaller() override;
 
-  // Returns the SaveCard delegate from |infobar|.
+  // Returns the SaveCard delegate from `infobar`.
   autofill::AutofillSaveCardInfoBarDelegateMobile* GetInfobarDelegate(
       InfoBarIOS* infobar);
 };

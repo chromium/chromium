@@ -67,7 +67,7 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
     InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
   }
 
-  // Returns the front request of |web_state_|'s OverlayRequestQueue.
+  // Returns the front request of `web_state_`'s OverlayRequestQueue.
   OverlayRequest* front_request() {
     return OverlayRequestQueue::FromWebState(&web_state_,
                                              OverlayModality::kInfobarBanner)

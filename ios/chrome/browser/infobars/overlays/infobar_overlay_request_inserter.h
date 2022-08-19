@@ -49,7 +49,7 @@ struct InsertParams {
 class InfobarOverlayRequestInserter
     : public web::WebStateUserData<InfobarOverlayRequestInserter> {
  public:
-  // Creates an inserter for |web_state| that uses |request_factory| to create
+  // Creates an inserter for `web_state` that uses `request_factory` to create
   // inserted requests.
   static void CreateForWebState(
       web::WebState* web_state,
@@ -57,7 +57,7 @@ class InfobarOverlayRequestInserter
 
   ~InfobarOverlayRequestInserter() override;
 
-  // Creates an OverlayRequest with |params| configurations.
+  // Creates an OverlayRequest with `params` configurations.
   void InsertOverlayRequest(const InsertParams& params);
 
   // Notifies observers of Infobar request insertions
@@ -67,12 +67,12 @@ class InfobarOverlayRequestInserter
     ~Observer() override = default;
 
     // Called to notify observers that an Infobar request has been inserted
-    // with |params| configurations.
-    // |params.insertion_index| must be less than or equal to the size of the
+    // with `params` configurations.
+    // `params.insertion_index` must be less than or equal to the size of the
     // queue.
     virtual void InfobarRequestInserted(InfobarOverlayRequestInserter* inserter,
                                         const InsertParams& params) = 0;
-    // Called to notify observers that the |inserter| is about to be destroyed;
+    // Called to notify observers that the `inserter` is about to be destroyed;
     virtual void InserterDestroyed(InfobarOverlayRequestInserter* inserter) = 0;
   };
 
@@ -84,9 +84,9 @@ class InfobarOverlayRequestInserter
   friend class web::WebStateUserData<InfobarOverlayRequestInserter>;
   WEB_STATE_USER_DATA_KEY_DECL();
 
-  // Constructor for an inserter that uses |factory| to construct
-  // OverlayRequests to insert into |web_state|'s OverlayRequestQueues.  Both
-  // |web_state| and |factory| must be non-null.
+  // Constructor for an inserter that uses `factory` to construct
+  // OverlayRequests to insert into `web_state`'s OverlayRequestQueues.  Both
+  // `web_state` and `factory` must be non-null.
   InfobarOverlayRequestInserter(web::WebState* web_state,
                                 InfobarOverlayRequestFactory factory);
 

@@ -26,7 +26,7 @@ class SaveAddressProfileInfobarBannerInteractionHandler
   void BannerDismissedByUser(InfoBarIOS* infobar) override;
 
  private:
-  // Returns the SaveAddressProfile delegate from |infobar|.
+  // Returns the SaveAddressProfile delegate from `infobar`.
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfobarDelegate(
       InfoBarIOS* infobar);
 };

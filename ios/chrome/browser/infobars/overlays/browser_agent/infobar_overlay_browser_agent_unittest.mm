@@ -101,9 +101,9 @@ class InfobarOverlayBrowserAgentTest
   }
 
   // Creates the OverlayRequestCallbackInstaller to return from
-  // CreateInstaller() for the mock interaction handler for |overlay_type|.
+  // CreateInstaller() for the mock interaction handler for `overlay_type`.
   // Returned installers forwards callbacks to the receivers in
-  // |mock_callback_receivers_|.
+  // `mock_callback_receivers_`.
   std::unique_ptr<FakeOverlayRequestCallbackInstaller> CreateInstaller(
       InfobarOverlayType overlay_type) {
     std::unique_ptr<FakeOverlayRequestCallbackInstaller> installer =
@@ -168,7 +168,7 @@ TEST_P(InfobarOverlayBrowserAgentTest, OverlayPresentation) {
   EXPECT_CALL(*mock_handler(),
               InfobarVisibilityChanged(&infobar_, /*visible=*/true));
   queue()->AddRequest(std::move(added_request));
-  // Verify that dispatched responses sent through |request|'s callback manager
+  // Verify that dispatched responses sent through `request`'s callback manager
   // are received by the expected receiver.
   EXPECT_CALL(*mock_callback_receiver(),
               DispatchCallback(request, DispatchInfo::ResponseSupport()));

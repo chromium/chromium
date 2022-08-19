@@ -22,7 +22,7 @@ namespace translate_infobar_overlays {
 class PlaceholderRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| of |translate_infobar|.
+  // Constructor for a handler that cancels `request` of `translate_infobar`.
   PlaceholderRequestCancelHandler(OverlayRequest* request,
                                   OverlayRequestQueue* queue,
                                   TranslateOverlayTabHelper* tab_helper,

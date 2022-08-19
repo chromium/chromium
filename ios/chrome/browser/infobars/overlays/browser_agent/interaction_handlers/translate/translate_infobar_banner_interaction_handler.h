@@ -21,7 +21,7 @@ class TranslateInfobarBannerInteractionHandler
   void MainButtonTapped(InfoBarIOS* infobar) override;
 
  private:
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   translate::TranslateInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
 };
 
