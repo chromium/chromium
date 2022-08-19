@@ -251,7 +251,6 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1222944")
     public void testNoQuery_UserAbort() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
