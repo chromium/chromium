@@ -181,6 +181,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kGuestOSGenericInstaller;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBruschetta;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kBruschettaAlphaMigrate;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2AlwaysUseActiveEligibleHosts;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceActivityStatus;

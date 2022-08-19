@@ -25,4 +25,9 @@ const char* BruschettaResultString(const BruschettaResult res) {
   return "unknown code";
 }
 
+guest_os::GuestId GetBruschettaId() {
+  return guest_os::GuestId{guest_os::VmType::BRUSCHETTA, kBruschettaVmName,
+                           "penguin"};
+}
+
 }  // namespace bruschetta

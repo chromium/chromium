@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -26,6 +27,11 @@ class BruschettaService : public KeyedService {
   // Helper method to get the service instance for the given profile.
   static BruschettaService* GetForProfile(Profile* profile);
 
+  // Register a bruschetta instance with the GuestOS service. This is called at
+  // service construction for all installed instances, and from the installer
+  // for new instances.
+  void Register(const guest_os::GuestId& guest_id);
+
   // Returns a handle to the launcher for the vm specified by `vm_name`. Will
   // return a null pointer if the name isn't recognised.
   base::WeakPtr<BruschettaLauncher> GetLauncher(std::string vm_name);
@@ -35,6 +41,8 @@ class BruschettaService : public KeyedService {
 
  private:
   base::flat_map<std::string, std::unique_ptr<BruschettaLauncher>> launchers_;
+
+  Profile* const profile_;
 };
 
 }  // namespace bruschetta

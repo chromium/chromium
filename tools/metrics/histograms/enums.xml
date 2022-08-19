@@ -60797,6 +60797,7 @@ from previous Chrome versions.
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
+  <int value="947323794" label="BruschettaAlphaMigrate:disabled"/>
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
@@ -61095,6 +61096,7 @@ from previous Chrome versions.
   <int value="1133635187" label="force-gpu-rasterization"/>
   <int value="1134969852" label="NtpPhotosModuleCustomizedOptInTitle:enabled"/>
   <int value="1135728116" label="PluginVmShowCameraPermissions:enabled"/>
+  <int value="1135893278" label="BruschettaAlphaMigrate:enabled"/>
   <int value="1137878410" label="DragUnpinnedAppToPin:enabled"/>
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>
   <int value="1138349838" label="EnableMDRoundedCornersOnDialogs:disabled"/>

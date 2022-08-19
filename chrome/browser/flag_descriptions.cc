@@ -4861,6 +4861,11 @@ const char kBruschettaName[] = "Enable the third party VMs feature";
 const char kBruschettaDescription[] =
     "Enables UI support for third party/generic VMs";
 
+const char kBruschettaAlphaMigrateName[] = "Migration for Bruschetta Alpha";
+const char kBruschettaAlphaMigrateDescription[] =
+    "Enable this flag to migrate a Bruschetta installed during the alpha. "
+    "Requires the bruschetta flag to be enabled.";
+
 const char kCameraAppDocScanDlcName[] = "Camera App Doc Scan DLC";
 const char kCameraAppDocScanDlcDescription[] =
     "Enables this flag to allow downloading document scanning feature via DLC "

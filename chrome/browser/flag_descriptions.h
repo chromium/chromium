@@ -2786,6 +2786,9 @@ extern const char kGuestOSGenericInstallerDescription[];
 extern const char kBruschettaName[];
 extern const char kBruschettaDescription[];
 
+extern const char kBruschettaAlphaMigrateName[];
+extern const char kBruschettaAlphaMigrateDescription[];
+
 extern const char kCameraAppDocScanDlcName[];
 extern const char kCameraAppDocScanDlcDescription[];
 

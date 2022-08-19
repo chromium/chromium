@@ -429,6 +429,10 @@ const base::Feature kGuestOSGenericInstaller{"GuestOSGenericInstaller",
 const base::Feature kBruschetta{"Bruschetta",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables migration for third party VMs installed during alpha.
+const base::Feature kBruschettaAlphaMigrate{"BruschettaAlphaMigrate",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 const base::Feature kCryptAuthV2AlwaysUseActiveEligibleHosts{

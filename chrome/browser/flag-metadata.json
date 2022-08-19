@@ -764,6 +764,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "bruschetta-alpha-migrate",
+    "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "bubble-rich-iph",
     "owners": ["christianxu", "lpromero", "bling-flags@google.com"],
     "expiry_milestone": 106

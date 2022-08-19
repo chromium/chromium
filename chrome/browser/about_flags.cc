@@ -4350,6 +4350,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"bruschetta", flag_descriptions::kBruschettaName,
      flag_descriptions::kBruschettaDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kBruschetta)},
+    {"bruschetta-alpha-migrate", flag_descriptions::kBruschettaAlphaMigrateName,
+     flag_descriptions::kBruschettaAlphaMigrateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kBruschettaAlphaMigrate)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_ANDROID)) &&                        \

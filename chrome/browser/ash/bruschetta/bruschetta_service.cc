@@ -5,41 +5,60 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 
 #include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "bruschetta_terminal_provider.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
 namespace bruschetta {
 
-BruschettaService::BruschettaService(Profile* profile) {
-  // TODO(b/233289313): Once we have an installer we need to do this
-  // dynamically, but in the alpha people have VMs they created via vmc called
-  // "bru" so hardcode this to get them working while we work on the full
-  // installer. Similarly, Bruschetta doesn't have a container but it runs a
-  // garcon that identifies itself as in a penguin container, so use that name.
-  guest_os::GuestId alpha_id{guest_os::VmType::BRUSCHETTA, kBruschettaVmName,
-                             "penguin"};
-  launchers_.insert(
-      {alpha_id.vm_name, std::make_unique<BruschettaLauncher>("bru", profile)});
-  guest_os::GuestOsService::GetForProfile(profile)
-      ->MountProviderRegistry()
-      ->Register(std::make_unique<BruschettaMountProvider>(profile, alpha_id));
-  guest_os::GuestOsService::GetForProfile(profile)
-      ->TerminalProviderRegistry()
-      ->Register(
-          std::make_unique<BruschettaTerminalProvider>(profile, alpha_id));
+BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
+  // Don't set up anything if the bruschetta flag isn't enabled.
+  if (!BruschettaFeatures::Get()->IsEnabled())
+    return;
+
+  bool registered_guests = false;
+  // Register all bruschetta instances that have already been installed.
+  for (const auto& guest_id :
+       guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA)) {
+    Register(guest_id);
+    registered_guests = true;
+  }
+
+  // Migrate VMs installed during the alpha. These will have been set up by hand
+  // using vmc so chrome doesn't know about this, but we know what the VM name
+  // should be, so register it here is nothing has been registered from prefs
+  // and the migration flag is turned on.
+  if (!registered_guests && base::FeatureList::IsEnabled(
+                                chromeos::features::kBruschettaAlphaMigrate)) {
+    Register(GetBruschettaId());
+  }
 }
 
 BruschettaService::~BruschettaService() = default;
 
 BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
   return BruschettaServiceFactory::GetForProfile(profile);
+}
+
+void BruschettaService::Register(const guest_os::GuestId& guest_id) {
+  launchers_.insert({guest_id.vm_name, std::make_unique<BruschettaLauncher>(
+                                           guest_id.vm_name, profile_)});
+  guest_os::GuestOsService::GetForProfile(profile_)
+      ->MountProviderRegistry()
+      ->Register(std::make_unique<BruschettaMountProvider>(profile_, guest_id));
+  guest_os::GuestOsService::GetForProfile(profile_)
+      ->TerminalProviderRegistry()
+      ->Register(
+          std::make_unique<BruschettaTerminalProvider>(profile_, guest_id));
 }
 
 base::WeakPtr<BruschettaLauncher> BruschettaService::GetLauncher(

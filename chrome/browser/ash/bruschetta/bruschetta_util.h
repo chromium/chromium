@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 
+#include "chrome/browser/ash/guest_os/guest_id.h"
+
 namespace bruschetta {
 
 extern const char kBruschettaVmName[];
@@ -21,6 +23,8 @@ enum class BruschettaResult {
 
 // Returns the string name of the BruschettaResult.
 const char* BruschettaResultString(const BruschettaResult res);
+
+guest_os::GuestId GetBruschettaId();
 
 }  // namespace bruschetta
 
