@@ -73,6 +73,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -892,6 +893,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
     ash::cros_healthd::FakeCrosHealthd::Initialize();
+    ash::FakeSpacedClient::InitializeFake();
 
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
@@ -917,6 +919,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::UpdateEngineClient::Shutdown();
     ash::KioskAppManager::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
+    ash::FakeSpacedClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
@@ -2941,6 +2944,24 @@ TEST_F(DeviceStatusCollectorTest, TestStatefulPartitionInfo) {
             device_status_.stateful_partition_info().mount_source());
   EXPECT_EQ(fakeStatefulPartitionInfo.filesystem(),
             device_status_.stateful_partition_info().filesystem());
+}
+
+TEST_F(DeviceStatusCollectorTest, TestRootDeviceStorage) {
+  DisableDefaultSettings();
+  static constexpr int64_t kRootDeviceRoundedSize = 128LL * 1024 * 1024 * 1024;
+  static constexpr int64_t kRootDeviceSize = kRootDeviceRoundedSize - 85;
+  ash::FakeSpacedClient::Get()->set_root_device_size(kRootDeviceSize);
+
+  auto options = CreateEmptyDeviceStatusCollectorOptions();
+  RestartStatusCollector(std::move(options));
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceStorageStatus, true);
+
+  GetStatus();
+
+  ASSERT_TRUE(device_status_.has_root_device_total_storage_bytes());
+  EXPECT_EQ(device_status_.root_device_total_storage_bytes(),
+            kRootDeviceRoundedSize);
 }
 
 TEST_F(DeviceStatusCollectorTest, TestGraphicsStatus) {

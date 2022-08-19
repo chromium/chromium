@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 #include <set>
@@ -63,6 +64,7 @@
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/settings/chromeos/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -71,6 +73,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -759,6 +762,12 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         base::BindOnce(
             &DeviceStatusCollectorState::OnStatefulPartitionInfoReceived,
             this));
+  }
+
+  void FetchRootDeviceSize() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash::SpacedClient::Get()->GetRootDeviceSize(
+        base::BindOnce(&DeviceStatusCollectorState::OnGetRootDeviceSize, this));
   }
 
   void FetchGraphicsStatus(const DeviceStatusCollector::GraphicsStatusFetcher&
@@ -1509,6 +1518,20 @@ class DeviceStatusCollectorState : public StatusCollectorState {
         response_params_.device_status->mutable_stateful_partition_info();
     DCHECK_GE(hdsi.total_space(), hdsi.available_space());
     stateful_partition_info->CopyFrom(hdsi);
+    SetDeviceStatusReported();
+  }
+
+  void OnGetRootDeviceSize(absl::optional<int64_t> root_device_size) {
+    if (!root_device_size.has_value()) {
+      DVLOG(1) << "Could not fetch root device size from spaced.";
+      return;
+    }
+    if (root_device_size.value() <= 0) {
+      DVLOG(1) << "Invalid root device size " << root_device_size.value();
+      return;
+    }
+    response_params_.device_status->set_root_device_total_storage_bytes(
+        chromeos::settings::RoundByteSize(root_device_size.value()));
     SetDeviceStatusReported();
   }
 
@@ -2648,6 +2671,7 @@ void DeviceStatusCollector::GetStorageStatus(
   state->FetchStatefulPartitionInfo(stateful_partition_info_fetcher_);
   state->SampleVolumeInfo(volume_info_fetcher_);
   state->FetchEMMCLifeTime(emmc_lifetime_fetcher_);
+  state->FetchRootDeviceSize();
 }
 
 void DeviceStatusCollector::GetGraphicsStatus(
