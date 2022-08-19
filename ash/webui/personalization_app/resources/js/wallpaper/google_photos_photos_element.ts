@@ -542,18 +542,6 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     return i + 1;
   }
 
-  /**
-   * Returns 'true' or 'false' depending on whether the specified |photo| is
-   * currently selected.
-   */
-  private getPhotoAriaSelected_(
-      photo: GooglePhotosPhoto|null,
-      currentSelected: GooglePhotosPhotos['currentSelected_'],
-      pendingSelected: GooglePhotosPhotos['pendingSelected_']): string {
-    return this.isPhotoSelected_(photo, currentSelected, pendingSelected)
-        .toString();
-  }
-
   /** Returns whether the title for the specified grid |row| is visible. */
   private isGridRowTitleVisible_(
       row: GooglePhotosPhotosRow,

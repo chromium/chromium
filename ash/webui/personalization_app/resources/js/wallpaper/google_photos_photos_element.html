@@ -44,6 +44,7 @@
     justify-content: flex-start;
     width: 100%;
   }
+
 </style>
 <iron-scroll-threshold id="gridScrollThreshold"
     on-lower-threshold="onGridScrollThresholdReached_" scroll-target="document">
@@ -53,34 +54,33 @@
       role="listbox">
     <template>
       <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
-        on-focus="onGridRowFocused_" on-keydown="onGridRowKeyDown_">
+          on-focus="onGridRowFocused_" on-keydown="onGridRowKeyDown_">
         <template is="dom-if"
-          if="[[isGridRowTitleVisible_(row, photosBySection_)]]">
+            if="[[isGridRowTitleVisible_(row, photosBySection_)]]">
           <p class="photo-row-info">
             <span class="date">[[getGridRowDate_(row, photosBySection_)]]</span>
-            <span class="location">[[getGridRowLocations_(row, photosBySection_)]]</span>
+            <span class="location">
+              [[getGridRowLocations_(row, photosBySection_)]]
+            </span>
           </p>
         </template>
         <div class="photos">
           <template is="dom-repeat" items="[[row]]" as="photo">
             <wallpaper-grid-item
-              aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
-              aria-label$="[[getPhotoAriaLabel_(photo)]]"
-              aria-posinset$="[[getPhotoAriaIndex_(photo.index)]]"
-              aria-selected$="[[getPhotoAriaSelected_(
-                photo, currentSelected_, pendingSelected_)]]"
-              class="photo"
-              colindex$="[[index]]"
-              image-src="[[photo.url.url]]"
-              index="[[photo.index]]"
-              on-click="onPhotoSelected_"
-              on-keypress="onPhotoSelected_"
-              photoindex$="[[photo.index]]"
-              placeholder$="[[isPhotoPlaceholder_(photo)]]"
-              role="option"
-              selected="[[isPhotoSelected_(
-                photo, currentSelected_, pendingSelected_)]]"
-              tabindex="-1">
+                aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
+                aria-label$="[[getPhotoAriaLabel_(photo)]]"
+                aria-posinset$="[[getPhotoAriaIndex_(photo.index)]]"
+                class="photo"
+                colindex$="[[index]]"
+                image-src="[[photo.url.url]]"
+                index="[[photo.index]]"
+                on-click="onPhotoSelected_"
+                on-keypress="onPhotoSelected_"
+                photoindex$="[[photo.index]]"
+                placeholder="[[isPhotoPlaceholder_(photo)]]"
+                role="option"
+                selected="[[isPhotoSelected_(photo, currentSelected_, pendingSelected_)]]"
+                tabindex="-1">
             </wallpaper-grid-item>
           </template>
         </div>

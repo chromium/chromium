@@ -18,8 +18,8 @@ suite('WallpaperGridItemTest', function() {
    * Returns the match for |selector| in |wallpaperGridItemElement|'s shadow
    * DOM.
    */
-  function querySelector(selector: string): Element|null {
-    return wallpaperGridItemElement!.shadowRoot!.querySelector(selector);
+  function querySelector<T extends Element>(selector: string) {
+    return wallpaperGridItemElement!.shadowRoot!.querySelector<T>(selector);
   }
 
   teardown(async () => {
@@ -99,31 +99,44 @@ suite('WallpaperGridItemTest', function() {
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state.
-    assertNotEquals(querySelector('.text'), null);
-    assertEquals(querySelector('.primary-text'), null);
-    assertEquals(querySelector('.secondary-text')?.innerHTML, secondaryText);
+    assertNotEquals(querySelector('.text'), null, 'text container is present');
+    assertEquals(querySelector('.primary-text'), null, 'primary text is null');
+    assertEquals(
+        querySelector<HTMLParagraphElement>('.secondary-text')?.innerText,
+        secondaryText, 'secondary text is correct string');
   });
 
-  test('displays selected', async () => {
+  test('sets aria-selected based on selected property', async () => {
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItem);
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state.
-    assertEquals(querySelector('.item[aria-selected]'), null);
-    assertEquals(getComputedStyle(querySelector('iron-icon')!).display, 'none');
+    assertEquals(
+        wallpaperGridItemElement.ariaSelected, null,
+        'aria selected attribute is initially missing');
+    assertEquals(
+        getComputedStyle(querySelector('iron-icon')!).display, 'none',
+        'iron-icon is display none when aria-selected is missing');
 
     // Select |wallpaperGridItemElement| and verify state.
     wallpaperGridItemElement.selected = true;
     await waitAfterNextRender(wallpaperGridItemElement);
-    assertNotEquals(querySelector('.item[aria-selected]'), null);
+    assertEquals(
+        wallpaperGridItemElement.ariaSelected, 'true',
+        'aria selected attribute set to true when selected is true');
     assertNotEquals(
-        getComputedStyle(querySelector('iron-icon')!).display, 'none');
+        getComputedStyle(querySelector('iron-icon')!).display, 'none',
+        'iron-icon is not display none when aria selected is true');
 
     // Deselect |wallpaperGridItemElement| and verify state.
     wallpaperGridItemElement.selected = false;
     await waitAfterNextRender(wallpaperGridItemElement);
-    assertEquals(querySelector('.item[aria-selected]'), null);
-    assertEquals(getComputedStyle(querySelector('iron-icon')!).display, 'none');
+    assertEquals(
+        wallpaperGridItemElement.ariaSelected, 'false',
+        'aria selected back to false');
+    assertEquals(
+        getComputedStyle(querySelector('iron-icon')!).display, 'none',
+        'iron-icon is display none when aria selected is false');
   });
 });

@@ -237,7 +237,8 @@ cr-button[aria-selected=true] {
  * with chrome scaling images.
  */
 .preview-image-border,
-.photo-images-border {
+.photo-images-border,
+.wallpaper-grid-item-border {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   bottom: 0;

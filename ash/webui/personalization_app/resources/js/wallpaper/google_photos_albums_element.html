@@ -7,6 +7,7 @@
   iron-list {
     width: 100%;
   }
+
 </style>
 <iron-scroll-threshold id="gridScrollThreshold" scroll-target="document"
     on-lower-threshold="onGridScrollThresholdReached_">
@@ -19,18 +20,18 @@
       role="list">
     <template>
       <wallpaper-grid-item
-        aria-label$="[[getAlbumAriaLabel_(album)]]"
-        aria-posinset$="[[getAlbumAriaIndex_(index)]]"
-        class="album"
-        image-src="[[album.preview.url]]"
-        index="[[index]]"
-        on-click="onAlbumSelected_"
-        on-keypress="onAlbumSelected_"
-        placeholder$="[[isAlbumPlaceholder_(album)]]"
-        primary-text="[[album.title]]"
-        role="listitem"
-        secondary-text="[[getSecondaryText_(album)]]"
-        tabindex$="[[tabIndex]]">
+          aria-label$="[[getAlbumAriaLabel_(album)]]"
+          aria-posinset$="[[getAlbumAriaIndex_(index)]]"
+          class="album"
+          image-src="[[album.preview.url]]"
+          index="[[index]]"
+          on-click="onAlbumSelected_"
+          on-keypress="onAlbumSelected_"
+          placeholder="[[isAlbumPlaceholder_(album)]]"
+          primary-text="[[album.title]]"
+          role="listitem"
+          secondary-text="[[getSecondaryText_(album)]]"
+          tabindex$="[[tabIndex]]">
       </wallpaper-grid-item>
     </template>
   </iron-list>

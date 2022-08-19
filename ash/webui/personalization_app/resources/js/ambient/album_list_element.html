@@ -7,24 +7,23 @@
     height: auto;
     width: 100%;
   }
-</style>
 
+</style>
 <iron-list id="grid" items="[[albums]]" as="album" grid role="listbox"
     aria-setsize$="[[albums.length]]">
   <template>
     <wallpaper-grid-item
-      aria-label$="[[album.title]]"
-      aria-posinset$="[[getAriaIndex_(index)]]"
-      aria-selected$="[[getAriaSelected_(album, albums)]]"
-      role="option"
-      class$="[[getAlbumItemClass_(album, albums)]]"
-      image-src="[[album.url.url]]"
-      on-click="onAlbumSelected_"
-      on-keypress="onAlbumSelected_"
-      primary-text="[[album.title]]"
-      secondary-text="[[getSecondaryText_(album, topicSource)]]"
-      selected$="[[isAlbumSelected_(album, albums)]]"
-      tabindex$="[[tabIndex]]">
+        aria-label$="[[album.title]]"
+        aria-posinset$="[[getAriaIndex_(index)]]"
+        class$="[[getAlbumItemClass_(album, albums)]]"
+        image-src="[[album.url.url]]"
+        on-click="onAlbumSelected_"
+        on-keypress="onAlbumSelected_"
+        primary-text="[[album.title]]"
+        role="option"
+        secondary-text="[[getSecondaryText_(album, topicSource)]]"
+        selected="[[isAlbumSelected_(album, albums)]]"
+        tabindex$="[[tabIndex]]">
     </wallpaper-grid-item>
   </template>
 </iron-list>

@@ -242,58 +242,56 @@ suite('GooglePhotosPhotosTest', function() {
   });
 
   [true, false].forEach(
-      (dismissFromUser: boolean) =>
-          test('displays error when photos fail to load', async () => {
-            // Set values returned by |wallpaperProvider|.
-            wallpaperProvider.setGooglePhotosPhotos(undefined);
+      (dismissFromUser:
+           boolean) => test('displays error when photos fail to load', async () => {
+        // Set values returned by |wallpaperProvider|.
+        wallpaperProvider.setGooglePhotosPhotos(undefined);
 
-            // Initialize |googlePhotosPhotosElement|.
-            googlePhotosPhotosElement =
-                initElement(GooglePhotosPhotos, {hidden: false});
-            await waitAfterNextRender(googlePhotosPhotosElement);
+        // Initialize |googlePhotosPhotosElement|.
+        googlePhotosPhotosElement =
+            initElement(GooglePhotosPhotos, {hidden: false});
+        await waitAfterNextRender(googlePhotosPhotosElement);
 
-            // Initialize Google Photos data in the |personalizationStore| and
-            // expect an |error|.
-            personalizationStore.expectAction(
-                PersonalizationActionName.SET_ERROR);
-            await initializeGooglePhotosData(
-                wallpaperProvider, personalizationStore);
-            await fetchGooglePhotosPhotos(
-                wallpaperProvider, personalizationStore);
-            const {error} =
-                await personalizationStore.waitForAction(
-                    PersonalizationActionName.SET_ERROR) as SetErrorAction;
+        // Initialize Google Photos data in the |personalizationStore| and
+        // expect an |error|.
+        personalizationStore.expectAction(PersonalizationActionName.SET_ERROR);
+        await initializeGooglePhotosData(
+            wallpaperProvider, personalizationStore);
+        await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
+        const {error} =
+            await personalizationStore.waitForAction(
+                PersonalizationActionName.SET_ERROR) as SetErrorAction;
 
-            // Verify |error| expectations.
-            assertEquals(
-                error.message,
-                'Couldn’t load images. Check your network connection or try loading the images again.');
-            assertEquals(error.dismiss?.message, 'Try again');
-            assertNotEquals(error.dismiss?.callback, undefined);
+        // Verify |error| expectations.
+        assertEquals(
+            error.message,
+            'Couldn’t load images. Check your network connection or try loading the images again.');
+        assertEquals(error.dismiss?.message, 'Try again');
+        assertNotEquals(error.dismiss?.callback, undefined);
 
-            wallpaperProvider.reset();
+        wallpaperProvider.reset();
 
-            // Simulate dismissal of |error| conditionally |fromUser| and verify
-            // expected interactions with wallpaper provider.
-            error.dismiss?.callback?.(/*fromUser=*/ dismissFromUser);
-            await new Promise<void>(resolve => setTimeout(resolve));
-            assertEquals(
-                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'),
-                dismissFromUser ? 1 : 0);
+        // Simulate dismissal of |error| conditionally |fromUser| and verify
+        // expected interactions with wallpaper provider.
+        error.dismiss?.callback?.(/*fromUser=*/ dismissFromUser);
+        await new Promise<void>(resolve => setTimeout(resolve));
+        assertEquals(
+            wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'),
+            dismissFromUser ? 1 : 0);
 
-            wallpaperProvider.reset();
+        wallpaperProvider.reset();
 
-            // Simulate hiding |googlePhotosPhotosElement| and verify the
-            // |error| is dismissed though not |fromUser|.
-            const dismissCallbackPromise = new Promise<boolean>(resolve => {
-              personalizationStore.data.error!.dismiss!.callback = resolve;
-            });
-            googlePhotosPhotosElement.hidden = true;
-            assertEquals(await dismissCallbackPromise, /*fromUser=*/ false);
-            await new Promise<void>(resolve => setTimeout(resolve));
-            assertEquals(
-                wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
-          }));
+        // Simulate hiding |googlePhotosPhotosElement| and verify the
+        // |error| is dismissed though not |fromUser|.
+        const dismissCallbackPromise = new Promise<boolean>(resolve => {
+          personalizationStore.data.error!.dismiss!.callback = resolve;
+        });
+        googlePhotosPhotosElement.hidden = true;
+        assertEquals(await dismissCallbackPromise, /*fromUser=*/ false);
+        await new Promise<void>(resolve => setTimeout(resolve));
+        assertEquals(
+            wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+      }));
 
   test('displays photos', async () => {
     const photos: GooglePhotosPhoto[] = [
@@ -384,18 +382,22 @@ suite('GooglePhotosPhotosTest', function() {
 
         // Verify that the expected date is rendered.
         if (rowIndex === 0) {
-          const dateEl = rowEl!.querySelector(`${photoRowInfo} .date`);
-          assertNotEquals(dateEl, null);
-          assertEquals(dateEl!.innerHTML, section.date);
+          const dateEl =
+              rowEl!.querySelector<HTMLSpanElement>(`${photoRowInfo} .date`);
+          assertNotEquals(dateEl, null, 'date element exists');
+          assertEquals(
+              dateEl!.innerText, section.date, 'date element has correct text');
         }
 
         // Verify that the expected location is rendered.
         if (rowIndex === 0) {
-          const locationEl = rowEl!.querySelector(`${photoRowInfo} .location`);
-          assertNotEquals(locationEl, null);
+          const locationEl = rowEl!.querySelector<HTMLSpanElement>(
+              `${photoRowInfo} .location`);
+          assertNotEquals(locationEl, null, 'location element exists');
           assertEquals(
-              locationEl!.innerHTML,
-              Array.from(section.locations).sort().join(' · '));
+              locationEl!.innerText.trim(),
+              Array.from(section.locations).sort().join(' · '),
+              'location element has correct text');
         }
 
         // Verify that the expected |photos| are rendered.

@@ -40,7 +40,13 @@ export class WallpaperGridItem extends PolymerElement {
 
       selected: {
         type: Boolean,
+        observer: 'onSelectedChanged_',
+      },
+
+      placeholder: {
+        type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
     };
   }
@@ -57,8 +63,17 @@ export class WallpaperGridItem extends PolymerElement {
   /** The secondary text to render for the grid item. */
   secondaryText: string|undefined;
 
-  /** Whether the grid item is currently selected. */
-  selected: boolean;
+  /**
+   * Whether the grid item is currently selected. Controls the aria-selected
+   * html attribute. When undefined, aria-selected will be removed.
+   */
+  selected: boolean|undefined;
+
+  /**
+   * Whether to show a loading animation instead of the real image. Defaults to
+   * false. Will also set a placeholder html attribute.
+   */
+  placeholder: boolean;
 
   // Invoked on changes to |imageSrc|.
   private onImageSrcChanged_(imageSrc: WallpaperGridItem['imageSrc']) {
@@ -68,6 +83,14 @@ export class WallpaperGridItem extends PolymerElement {
     this.$.image.onload = (imageSrc && imageSrc.length) ?
         () => this.$.image.removeAttribute('hidden') :
         null;
+  }
+
+  private onSelectedChanged_(selected: boolean|undefined) {
+    if (typeof selected === 'boolean') {
+      this.setAttribute('aria-selected', selected.toString());
+    } else {
+      this.removeAttribute('aria-selected');
+    }
   }
 
   /** Returns the delay to use for the grid item's placeholder animation. */

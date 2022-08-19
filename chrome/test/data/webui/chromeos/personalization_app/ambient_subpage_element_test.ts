@@ -595,9 +595,9 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!albums[0]);
     assertTrue(!!albums[1]);
     assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected);
-    assertFalse(albums[1].selected);
-    assertTrue(albums[2].selected);
+    assertFalse(albums[0].selected!);
+    assertFalse(albums[1].selected!);
+    assertTrue(albums[2].selected!);
     let selectedAlbums = getSelectedAlbums(
         personalizationStore.data.ambient.albums,
         personalizationStore.data.ambient.topicSource);
@@ -606,7 +606,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(AmbientActionName.SET_ALBUM_SELECTED);
     albums[1].click();
-    assertTrue(albums[1].selected);
+    assertTrue(albums[1].selected!);
     await personalizationStore.waitForAction(
         AmbientActionName.SET_ALBUM_SELECTED);
     selectedAlbums = getSelectedAlbums(
@@ -653,9 +653,9 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!albums[0]);
     assertTrue(!!albums[1]);
     assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected);
-    assertFalse(albums[1].selected);
-    assertTrue(albums[2].selected);
+    assertFalse(albums[0].selected!);
+    assertFalse(albums[1].selected!);
+    assertTrue(albums[2].selected!);
 
     // Click the last art album item image will not toggle the check and will
     // show a dialog.
