@@ -72,7 +72,7 @@ SecurePaymentConfirmationRequest* CreateSecurePaymentConfirmationRequest(
 
 // Test that parsing a valid SecurePaymentConfirmationRequest succeeds and
 // correctly copies the fields to the mojo output.
-TEST(SecurePaymentConfirmationHelper, Parse_Success) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -98,7 +98,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_Success) {
 }
 
 // Test that optional fields are correctly copied to the mojo output.
-TEST(SecurePaymentConfirmationHelper, Parse_OptionalFields) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -121,7 +121,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_OptionalFields) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // credentialIds field throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyIdCredentialIds) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIdCredentialIds) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -141,7 +141,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyIdCredentialIds) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty ID inside
 // the credentialIds field throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyId) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyId) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -172,7 +172,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyId) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty challenge
 // throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyChallenge) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyChallenge) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -197,7 +197,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyChallenge) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // displayName throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyDisplayName) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyDisplayName) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -216,7 +216,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyDisplayName) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // icon throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyIcon) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIcon) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -235,7 +235,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyIcon) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid icon URL
 // throws.
-TEST(SecurePaymentConfirmationHelper, Parse_InvalidIcon) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidIcon) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -254,27 +254,39 @@ TEST(SecurePaymentConfirmationHelper, Parse_InvalidIcon) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid RP
 // domain throws.
-TEST(SecurePaymentConfirmationHelper, Parse_InvalidRpId) {
-  V8TestingScope scope;
-  SecurePaymentConfirmationRequest* request =
-      CreateSecurePaymentConfirmationRequest(scope);
+TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidRpId) {
+  const String invalid_cases[] = {
+      "",
+      "domains cannot have spaces.example",
+      "https://bank.example",
+      "username:password@bank.example",
+      "bank.example/has/a/path",
+      "139.56.146.66",
+      "9d68:ea08:fc14:d8be:344c:60a0:c4db:e478",
+  };
+  for (const String& rp_id : invalid_cases) {
+    V8TestingScope scope;
+    SecurePaymentConfirmationRequest* request =
+        CreateSecurePaymentConfirmationRequest(scope);
 
-  // TODO(https://crbug.com/1342686): Test a non-empty but invalid domain.
-  request->setRpId("");
+    request->setRpId(rp_id);
 
-  ScriptValue script_value(scope.GetIsolate(),
-                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
-                               scope.GetScriptState(), request));
-  SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-      script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(ESErrorType::kTypeError,
-            scope.GetExceptionState().CodeAs<ESErrorType>());
+    ScriptValue script_value(scope.GetIsolate(),
+                             ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                                 scope.GetScriptState(), request));
+    SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+        script_value, *scope.GetExecutionContext(), scope.GetExceptionState());
+    EXPECT_TRUE(scope.GetExceptionState().HadException())
+        << "RpId " << rp_id << " did not throw";
+    EXPECT_EQ(ESErrorType::kTypeError,
+              scope.GetExceptionState().CodeAs<ESErrorType>());
+  }
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with neither a payeeName
 // or payeeOrigin throws.
-TEST(SecurePaymentConfirmationHelper, Parse_MissingPayeeNameAndPayeeOrigin) {
+TEST(SecurePaymentConfirmationHelperTest,
+     Parse_MissingPayeeNameAndPayeeOrigin) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope,
@@ -296,7 +308,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_MissingPayeeNameAndPayeeOrigin) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty payeeName
 // throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyPayeeName) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeName) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -315,7 +327,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyPayeeName) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // payeeOrigin throws.
-TEST(SecurePaymentConfirmationHelper, Parse_EmptyPayeeOrigin) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeOrigin) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -334,7 +346,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_EmptyPayeeOrigin) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
 // payeeOrigin URL throws.
-TEST(SecurePaymentConfirmationHelper, Parse_InvalidPayeeOrigin) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidPayeeOrigin) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -353,7 +365,7 @@ TEST(SecurePaymentConfirmationHelper, Parse_InvalidPayeeOrigin) {
 
 // Test that parsing a SecurePaymentConfirmationRequest with a non-https
 // payeeOrigin URL throws.
-TEST(SecurePaymentConfirmationHelper, Parse_NotHttpsPayeeOrigin) {
+TEST(SecurePaymentConfirmationHelperTest, Parse_NotHttpsPayeeOrigin) {
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);

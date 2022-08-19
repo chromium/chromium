@@ -174,20 +174,35 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
 }
 
-// Test that parsing a SecurePaymentConfirmationRequest with an empty
-// RP domain fails.
+// Test that parsing a SecurePaymentConfirmationRequest with an invalid RP
+// domain fails.
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyRpId) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  method_data->secure_payment_confirmation =
-      CreateSecurePaymentConfirmationRequest();
-  method_data->secure_payment_confirmation->rp_id.clear();
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      std::move(method_data), &context_);
+       SecureConfirmationPaymentRequest_InvalidRpId) {
+  std::string invalid_cases[] = {
+      "",
+      "domains cannot have spaces.example",
+      "https://bank.example",
+      "username:password@bank.example",
+      "bank.example/has/a/path",
+      "139.56.146.66",
+      "9d68:ea08:fc14:d8be:344c:60a0:c4db:e478",
+  };
+  for (const std::string& rp_id : invalid_cases) {
+    auto method_data = mojom::PaymentMethodData::New();
+    method_data->supported_method = "secure-payment-confirmation";
+    method_data->secure_payment_confirmation =
+        CreateSecurePaymentConfirmationRequest();
+    method_data->secure_payment_confirmation->rp_id = rp_id;
+    auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+        std::move(method_data), &context_);
 
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+    // EXPECT_CALL doesn't support <<, so to make it clear which rp_id was being
+    // tested in a failure case we use SCOPED_TRACE.
+    SCOPED_TRACE(rp_id);
+    EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+    secure_payment_confirmation_app_factory_.Create(
+        mock_delegate->GetWeakPtr());
+  }
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with a missing payeeName

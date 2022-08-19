@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -27,6 +28,19 @@ bool IsEmpty(const V8UnionArrayBufferOrArrayBufferView* buffer) {
     case V8BufferSource::ContentType::kArrayBufferView:
       return buffer->GetAsArrayBufferView()->byteLength() == 0;
   }
+}
+
+// Determine whether an RP ID is a 'valid domain' as per the URL spec:
+// https://url.spec.whatwg.org/#valid-domain
+//
+// TODO(crbug.com/1354209): This is a workaround to a lack of support for 'valid
+// domain's in the //url code.
+bool IsValidDomain(const String& rp_id) {
+  // A valid domain, such as 'site.example', should be a URL host (and nothing
+  // more of the URL!) that is not an IP address.
+  KURL url("https://" + rp_id);
+  return url.IsValid() && url.Host() == rp_id &&
+         !url::HostIsIPAddress(url.Host().Utf8());
 }
 }  // namespace
 
@@ -83,11 +97,10 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "the \"instrument.icon\" field.");
     return nullptr;
   }
-  // TODO(https://crbug.com/1342686): Check that rpId is a valid domain.
-  if (request->rpId().IsEmpty()) {
+  if (!IsValidDomain(request->rpId())) {
     exception_state.ThrowTypeError(
-        "The \"secure-payment-confirmation\" method requires a non-empty "
-        "\"rpId\" field.");
+        "The \"secure-payment-confirmation\" method requires a valid domain "
+        "in the \"rpId\" field.");
     return nullptr;
   }
   if ((!request->hasPayeeOrigin() && !request->hasPayeeName()) ||

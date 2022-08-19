@@ -227,8 +227,8 @@ const char kInvalidIcon[] =
     "The \"instrument.icon\" either could not be downloaded or decoded.";
 
 const char kRpIdRequired[] =
-    "The \"secure-payment-confirmation\" method requires a non-empty \"rpId\" "
-    "field.";
+    "The \"secure-payment-confirmation\" method requires a valid domain in the "
+    "\"rpId\" field.";
 
 const char kPayeeOriginOrPayeeNameRequired[] =
     "The \"secure-payment-confirmation\" method requires a non-empty "
