@@ -328,6 +328,13 @@ bool PrivacySandboxSettings::IsSharedStorageAllowed(
                                            top_frame_origin);
 }
 
+bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& reporting_origin) const {
+  return IsPrivacySandboxEnabledForContext(reporting_origin.GetURL(),
+                                           top_frame_origin);
+}
+
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   // If the delegate is restricting access the Privacy Sandbox is disabled.
   if (delegate_->IsPrivacySandboxRestricted())

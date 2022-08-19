@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -25,6 +24,7 @@
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -45,6 +45,7 @@ using Checkpoint = testing::MockFunction<void(int step)>;
 const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
+constexpr char kExampleMainFrameUrl[] = "https://main_frame.example";
 
 class PrivateAggregationManagerImplUnderTest
     : public PrivateAggregationManagerImpl {
@@ -81,15 +82,14 @@ class PrivateAggregationManagerImplTest : public testing::Test {
                  base::WrapUnique(aggregation_service_)) {}
 
  protected:
+  BrowserTaskEnvironment task_environment_;
+
   // Keep pointers around for EXPECT_CALL.
   MockPrivateAggregationBudgeter* budgeter_;
   MockPrivateAggregationHost* host_;
   MockAggregationService* aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PrivateAggregationManagerImplTest,
@@ -265,21 +265,25 @@ TEST_F(PrivateAggregationManagerImplTest,
        BindNewReceiver_InvokesHostMethodIdentically) {
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
+  const url::Origin example_main_frame_origin =
+      url::Origin::Create(GURL(kExampleMainFrameUrl));
 
   EXPECT_CALL(*host_,
-              BindNewReceiver(example_origin,
+              BindNewReceiver(example_origin, example_main_frame_origin,
                               PrivateAggregationBudgetKey::Api::kFledge, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
-      example_origin, PrivateAggregationBudgetKey::Api::kFledge,
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kFledge,
       mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin,
+                          example_origin, example_main_frame_origin,
                           PrivateAggregationBudgetKey::Api::kSharedStorage, _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
-      example_origin, PrivateAggregationBudgetKey::Api::kSharedStorage,
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kSharedStorage,
       mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
 }
 

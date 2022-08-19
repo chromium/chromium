@@ -313,6 +313,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
                               const url::Origin& top_frame_origin,
                               const url::Origin& accessing_origin) override;
+  bool IsPrivateAggregationAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif

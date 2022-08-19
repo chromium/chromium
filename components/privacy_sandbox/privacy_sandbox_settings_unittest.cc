@@ -131,6 +131,10 @@ TEST_P(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -180,6 +184,10 @@ TEST_P(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -223,6 +231,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -263,6 +275,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
@@ -318,6 +334,13 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://unrelated-c.com")),
       url::Origin::Create(GURL("https://unrelated-d.com")),
       url::Origin::Create(GURL("https://unrelated-e.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://unrelated-a.com")),
+      url::Origin::Create(GURL("https://unrelated-b.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -387,6 +410,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://yet-another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -427,6 +454,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -465,6 +496,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
@@ -499,6 +534,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
@@ -540,6 +579,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->ShouldSendConversionReport(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivateAggregationAllowed(
+      url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(

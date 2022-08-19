@@ -13,6 +13,8 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/common/aggregatable_report.mojom-forward.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -35,6 +37,8 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               (override));
 };
 
+// Note: the `TestBrowserContext` may require a `BrowserTaskEnvironment` to be
+// set up.
 class MockPrivateAggregationHost : public PrivateAggregationHost {
  public:
   MockPrivateAggregationHost();
@@ -43,6 +47,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
   MOCK_METHOD(bool,
               BindNewReceiver,
               (url::Origin,
+               url::Origin,
                PrivateAggregationBudgetKey::Api,
                mojo::PendingReceiver<mojom::PrivateAggregationHost>),
               (override));
@@ -51,6 +56,24 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               SendHistogramReport,
               (std::vector<mojom::AggregatableReportHistogramContributionPtr>,
                mojom::AggregationServiceMode aggregation_mode),
+              (override));
+
+ private:
+  TestBrowserContext test_browser_context_;
+};
+
+class MockPrivateAggregationContentBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  MockPrivateAggregationContentBrowserClient();
+  ~MockPrivateAggregationContentBrowserClient() override;
+
+  // ContentBrowserClient:
+  MOCK_METHOD(bool,
+              IsPrivateAggregationAllowed,
+              (content::BrowserContext * browser_context,
+               const url::Origin& top_frame_origin,
+               const url::Origin& reporting_origin),
               (override));
 };
 

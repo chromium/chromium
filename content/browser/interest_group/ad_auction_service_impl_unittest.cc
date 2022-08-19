@@ -5638,13 +5638,14 @@ function scoreAd(
                                    PrivateAggregationBudgetKey)>
       mock_callback;
 
-  static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition())
-      ->OverridePrivateAggregationManagerForTesting(
-          std::make_unique<TestPrivateAggregationManagerImpl>(
-              std::make_unique<MockPrivateAggregationBudgeter>(),
-              std::make_unique<PrivateAggregationHost>(
-                  /*on_report_request_received=*/mock_callback.Get())));
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+      std::make_unique<TestPrivateAggregationManagerImpl>(
+          std::make_unique<MockPrivateAggregationBudgeter>(),
+          std::make_unique<PrivateAggregationHost>(
+              /*on_report_request_received=*/mock_callback.Get(),
+              /*browser_context=*/storage_partition_impl->browser_context())));
 
   network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);

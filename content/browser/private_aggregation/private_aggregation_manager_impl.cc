@@ -57,7 +57,9 @@ PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
               /*on_report_request_received=*/base::BindRepeating(
                   &PrivateAggregationManagerImpl::
                       OnReportRequestReceivedFromHost,
-                  base::Unretained(this))),
+                  base::Unretained(this)),
+              storage_partition ? storage_partition->browser_context()
+                                : nullptr),
           storage_partition) {}
 
 PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
@@ -75,9 +77,11 @@ PrivateAggregationManagerImpl::~PrivateAggregationManagerImpl() = default;
 
 bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
+    url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver) {
-  return host_->BindNewReceiver(std::move(worklet_origin), api_for_budgeting,
+  return host_->BindNewReceiver(std::move(worklet_origin),
+                                std::move(top_frame_origin), api_for_budgeting,
                                 std::move(pending_receiver));
 }
 

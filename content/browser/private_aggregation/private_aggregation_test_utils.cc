@@ -16,9 +16,16 @@ MockPrivateAggregationBudgeter::~MockPrivateAggregationBudgeter() = default;
 
 MockPrivateAggregationHost::MockPrivateAggregationHost()
     : PrivateAggregationHost(
-          /*on_report_request_received=*/base::DoNothing()) {}
+          /*on_report_request_received=*/base::DoNothing(),
+          &test_browser_context_) {}
 
 MockPrivateAggregationHost::~MockPrivateAggregationHost() = default;
+
+MockPrivateAggregationContentBrowserClient::
+    MockPrivateAggregationContentBrowserClient() = default;
+
+MockPrivateAggregationContentBrowserClient::
+    ~MockPrivateAggregationContentBrowserClient() = default;
 
 bool operator==(const PrivateAggregationBudgetKey::TimeWindow& a,
                 const PrivateAggregationBudgetKey::TimeWindow& b) {
