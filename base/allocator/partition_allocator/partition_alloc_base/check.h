@@ -98,7 +98,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
   LogMessage* log_message_;
 };
 
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
+    !BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 
 // Discard log strings to reduce code bloat.
 //
