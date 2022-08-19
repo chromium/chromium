@@ -6,7 +6,7 @@ We’d all like to ensure that the user experience in Chrome is optimal, no matt
 
 1. Take a screenshot of the UI that displays the modified string (e.g. `IDS_NEW_STRING` in `path/to/file.grd`)
 2. Save it under the screenshot directory for the file you are editing: `path/to/file_grd/IDS_NEW_STRING.png`. If `path/to/file_grd` doesn’t exist, create it. Only .png files are supported.
-3. Run `python tools/translation/upload_screenshots.py` (without flags) to upload the screenshot to Google Cloud Storage.
+3. Run `python3 tools/translation/upload_screenshots.py` (without flags) to upload the screenshot to Google Cloud Storage. (You may need to use `python` instead of `python3` depending on your system)
 4. This will generate `path/to/file_grd/IDS_NEW_STRING.png.sha1`. Add this file to your CL and you are done. Don’t add the actual image to your CL.
 
 Unfortunately, only contributors with @google.com accounts can upload images to the Cloud Storage bucket (Step 3). If you can’t upload images, please ask a Googler for help, then continue with Step 4.
