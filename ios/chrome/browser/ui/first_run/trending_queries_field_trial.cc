@@ -53,6 +53,12 @@ std::map<variations::VariationID, int> GetGroupWeights() {
       weight_by_id[kTrendingQueriesControlID] = 10;
       break;
     case version_info::Channel::STABLE:
+      weight_by_id[kTrendingQueriesEnabledAllUsersID] = 1;
+      weight_by_id[kTrendingQueriesEnabledAllUsersHideShortcutsID] = 1;
+      weight_by_id[kTrendingQueriesEnabledDisabledFeedID] = 1;
+      weight_by_id[kTrendingQueriesEnabledSignedOutID] = 1;
+      weight_by_id[kTrendingQueriesEnabledNeverShowModuleID] = 1;
+      weight_by_id[kTrendingQueriesControlID] = 1;
       break;
   }
   return weight_by_id;
