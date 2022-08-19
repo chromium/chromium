@@ -15,8 +15,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -164,4 +166,62 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
   AddDangerousUrl(url);
   EXPECT_EQ("share failed: NotAllowedError: Permission denied",
             content::EvalJs(contents, "share_pdf_file()"));
+}
+
+class ShareServicePrerenderBrowserTest : public ShareServiceBrowserTest {
+ public:
+  ShareServicePrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&ShareServicePrerenderBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~ShareServicePrerenderBrowserTest() override = default;
+
+ protected:
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ShareServicePrerenderBrowserTest, Text) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  content::WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start a prerender.
+  const GURL kPrerenderUrl =
+      embedded_test_server()->GetURL("/webshare/index.html");
+  const int kPrerenderHostId = prerender_helper_.AddPrerender((kPrerenderUrl));
+  ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
+
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(kPrerenderHostId);
+  EXPECT_EQ(prerender_rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+  const std::string script = "share_text('hello')";
+  const content::EvalJsResult prerendered_result =
+      content::EvalJs(prerender_rfh, script);
+  EXPECT_EQ(
+      "share failed: NotAllowedError: Failed to execute 'share' on "
+      "'Navigator': Must be handling a user gesture to perform a share "
+      "request.",
+      prerendered_result);
+  histogram_tester.ExpectBucketCount(kWebShareApiCountMetric,
+                                     WebShareMethod::kShare, 0);
+
+  // Activate the prerendered page.
+  prerender_helper_.NavigatePrimaryPage(kPrerenderUrl);
+  EXPECT_EQ(prerender_rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+  ASSERT_EQ(kPrerenderUrl, contents->GetLastCommittedURL());
+  const content::EvalJsResult activated_result =
+      content::EvalJs(prerender_rfh, script);
+  EXPECT_EQ("share succeeded", activated_result);
+  histogram_tester.ExpectBucketCount(kWebShareApiCountMetric,
+                                     WebShareMethod::kShare, 1);
 }
