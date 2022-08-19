@@ -227,7 +227,7 @@ message UMAOutput {
 
 // Metadata about a segmentation model for a given segment. Contains information
 // on how to use the model such as collecting signals, interpreting results etc.
-// Next tag: 12
+// Next tag: 14
 message SegmentationModelMetadata {
   // The version information needed to validate segmentation models.
   optional VersionInfo version_info = 9;
@@ -285,4 +285,13 @@ message SegmentationModelMetadata {
   // The default key to use during the mapping process if no key has been
   // provided.
   optional string default_discrete_mapping = 8;
+
+  // The delay, in seconds, to collect output tensors after input tensors are
+  // collected. For example, output labels can be collected one week after input
+  // tensors are collected. If not specified, output tensors are collected in
+  // the same time period as input tensors.
+  optional int64 output_collection_delay_sec = 12;
+
+  // Whether the client should upload the input and output tensors through UKM.
+  optional bool upload_tensors = 13;
 }
