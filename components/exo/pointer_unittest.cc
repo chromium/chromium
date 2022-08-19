@@ -1815,7 +1815,7 @@ TEST_F(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   pointer_.reset();
 }
 
-TEST_F(PointerConstraintTest, DefaultSecrityDeletegate) {
+TEST_F(PointerConstraintTest, DefaultSecurityDeletegate) {
   auto default_security_delegate =
       SecurityDelegate::GetDefaultSecurityDelegate();
   auto shell_surface = test::ShellSurfaceBuilder({10, 10})
@@ -1860,6 +1860,34 @@ TEST_F(PointerConstraintTest, DefaultSecrityDeletegate) {
   pointer_.reset();
 }
 
+TEST_F(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
+  testing::MockFunction<void(std::string check_point_name)> check;
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(check, Call("Unconstrain pointer"));
+    EXPECT_CALL(delegate_, OnPointerMotion(testing::_, testing::_)).Times(0);
+  }
+
+  generator_->MoveMouseTo(
+      surface_->window()->GetBoundsInScreen().CenterPoint() +
+      gfx::Vector2d(4, 4));
+
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+
+  generator_->MoveMouseTo(
+      surface_->window()->GetBoundsInScreen().CenterPoint() +
+      gfx::Vector2d(-4, -4));
+
+  check.Call("Unconstrain pointer");
+
+  pointer_->UnconstrainPointerByUserAction();
+
+  // Ensure the posted task for synthesized mouse move event is run.
+  base::RunLoop().RunUntilIdle();
+
+  pointer_.reset();
+}
 #endif
 
 TEST_F(PointerTest, PointerStylus) {

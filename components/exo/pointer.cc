@@ -265,7 +265,7 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
 
   // Permission of Pointer lock is controlled by SecurityDelegate, created per
   // server instance. Default implementation allows this for ARC and Lacros
-  // windows which have their own security mechanism and are consiered trusted.
+  // windows which have their own security mechanism and are considered trusted.
   aura::Window* toplevel = constrained_surface->window()->GetToplevelWindow();
   auto* shell_surface_base = GetShellSurfaceBaseForWindow(toplevel);
   auto* security_delegate = shell_surface_base->GetSecurityDelegate();
@@ -398,6 +398,7 @@ void Pointer::DisablePointerCapture() {
   gfx::Point p = location_when_pointer_capture_enabled_
                      ? *location_when_pointer_capture_enabled_
                      : root->bounds().CenterPoint();
+  expected_next_mouse_location_ = p;
   root->MoveCursorTo(p);
 
   aura::Window* window = capture_window_;
@@ -528,12 +529,28 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
 #endif
 
     if (!same_location) {
-      bool needs_frame = HandleRelativePointerMotion(
-          event->time_stamp(), location_in_root, ordinal_motion);
+      bool ignore_motion = false;
+      if (expected_next_mouse_location_) {
+        const gfx::Point& expected = *expected_next_mouse_location_;
+        // Since MoveCursorTo() takes integer coordinates, the resulting move
+        // could have a conversion error of up to 2 due to fractional scale
+        // factors.
+        if (std::abs(location_in_root.x() - expected.x()) <= 2 &&
+            std::abs(location_in_root.y() - expected.y()) <= 2) {
+          // This was a synthetic move event, so do not forward it and clear the
+          // expected location.
+          expected_next_mouse_location_.reset();
+          ignore_motion = true;
+        }
+      }
+      bool needs_frame =
+          !ignore_motion &&
+          HandleRelativePointerMotion(event->time_stamp(), location_in_root,
+                                      ordinal_motion);
       if (capture_window_) {
         if (ShouldMoveToCenter())
           MoveCursorToCenterOfActiveDisplay();
-      } else if (event->type() != ui::ET_MOUSE_EXITED) {
+      } else if (event->type() != ui::ET_MOUSE_EXITED && !ignore_motion) {
         delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
         needs_frame = true;
       }
@@ -997,7 +1014,7 @@ void Pointer::MoveCursorToCenterOfActiveDisplay() {
     return;
   aura::Window* root = capture_window_->GetRootWindow();
   gfx::Point p = root->bounds().CenterPoint();
-  location_synthetic_move_ = p;
+  expected_next_mouse_location_ = p;
   root->MoveCursorTo(p);
 }
 
@@ -1007,19 +1024,6 @@ bool Pointer::HandleRelativePointerMotion(
     const absl::optional<gfx::Vector2dF>& ordinal_motion) {
   if (!relative_pointer_delegate_)
     return false;
-
-  if (location_synthetic_move_) {
-    gfx::Point synthetic = *location_synthetic_move_;
-    // Since MoveCursorTo() takes integer coordinates, the resulting move could
-    // have a conversion error of up to 2 due to fractional scale factors.
-    if (std::abs(location_in_root.x() - synthetic.x()) <= 2 &&
-        std::abs(location_in_root.y() - synthetic.y()) <= 2) {
-      // This was a synthetic move event, so do not forward it and clear the
-      // synthetic move.
-      location_synthetic_move_.reset();
-      return false;
-    }
-  }
 
   gfx::Vector2dF delta = location_in_root - location_;
   relative_pointer_delegate_->OnPointerRelativeMotion(

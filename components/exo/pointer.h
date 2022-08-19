@@ -233,7 +233,7 @@ class Pointer : public SurfaceTreeHost,
 
   // If this is not nullptr, a synthetic move was sent and this points to the
   // location of a generated move that was sent which should not be forwarded.
-  absl::optional<gfx::Point> location_synthetic_move_;
+  absl::optional<gfx::Point> expected_next_mouse_location_;
 
   // The window with pointer capture. Pointer capture is enabled if and only if
   // this is not null.
