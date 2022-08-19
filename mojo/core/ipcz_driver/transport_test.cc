@@ -21,6 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_driver/driver.h"
+#include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
 #include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
 #include "mojo/core/test/mojo_test_base.h"
@@ -129,6 +130,20 @@ class MojoIpczTransportTest : public test::MojoTestBase {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     return base::File(wrapper->TakeHandle().TakeFD());
 #endif
+  }
+
+  static TestMessage SerializeRegionFor(Transport& transmitter,
+                                        base::UnsafeSharedMemoryRegion region) {
+    auto handle = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+        std::move(region));
+    return SerializeObjectFor(
+        transmitter, base::MakeRefCounted<SharedBuffer>(std::move(handle)));
+  }
+
+  base::UnsafeSharedMemoryRegion BufferObjectToRegion(
+      scoped_refptr<SharedBuffer> buffer) {
+    return base::UnsafeSharedMemoryRegion::Deserialize(
+        std::move(buffer->region()));
   }
 };
 
@@ -386,6 +401,39 @@ TEST_F(MojoIpczTransportTest, TransmitFile) {
 
     TransportListener listener(*transport);
     SerializeFileFor(*transport, std::move(new_file)).Transmit(*transport);
+    listener.WaitForDisconnect();
+  });
+}
+
+constexpr std::string_view kMemoryMessage = "mojo wuz here";
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitMemoryClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+  TransportListener listener(*transport);
+  const TestMessage message = listener.WaitForNextMessage();
+  auto region = base::UnsafeSharedMemoryRegion::Deserialize(std::move(
+      DeserializeObjectFrom<SharedBuffer>(*transport, message)->region()));
+  EXPECT_EQ(kMemoryMessage.size(), region.GetSize());
+  auto mapping = region.Map();
+  auto contents = std::string_view(static_cast<const char*>(mapping.memory()),
+                                   kMemoryMessage.size());
+  EXPECT_EQ(kMemoryMessage, contents);
+}
+
+TEST_F(MojoIpczTransportTest, TransmitMemory) {
+  RunTestClientWithController("TransmitMemoryClient", [&](ClientController& c) {
+    scoped_refptr<Transport> transport =
+        CreateAndSendTransport(c.pipe(), c.process());
+
+    auto region = base::UnsafeSharedMemoryRegion::Create(kMemoryMessage.size());
+    auto mapping = region.Map();
+    memcpy(mapping.memory(), kMemoryMessage.data(), kMemoryMessage.size());
+    auto buffer = SharedBuffer::MakeForRegion(std::move(region));
+
+    TransportListener listener(*transport);
+    SerializeObjectFor(*transport, std::move(buffer)).Transmit(*transport);
     listener.WaitForDisconnect();
   });
 }

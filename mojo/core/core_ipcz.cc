@@ -6,16 +6,24 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
+#include "mojo/core/ipcz_driver/shared_buffer.h"
+#include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
 #include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -136,6 +144,38 @@ class MojoMessage {
   base::span<uint8_t> data_;
   std::vector<IpczHandle> handles_;
 };
+
+// Tracks active Mojo memory mappings by base address, since that's how the Mojo
+// API identifies them for unmapping.
+class MappingTable {
+ public:
+  MappingTable() = default;
+  ~MappingTable() = default;
+
+  void Add(scoped_refptr<ipcz_driver::SharedBufferMapping> mapping) {
+    base::AutoLock lock(lock_);
+    void* address = mapping->memory();
+    mappings_.emplace(address, std::move(mapping));
+  }
+
+  MojoResult Remove(void* address) {
+    base::AutoLock lock(lock_);
+    if (!mappings_.erase(address)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    return MOJO_RESULT_OK;
+  }
+
+ private:
+  base::Lock lock_;
+  std::map<void*, scoped_refptr<ipcz_driver::SharedBufferMapping>> mappings_
+      GUARDED_BY(lock_);
+};
+
+MappingTable& GetMappingTable() {
+  static base::NoDestructor<MappingTable> table;
+  return *table;
+}
 
 // ipcz get and put operations differ slightly in their return code semantics as
 // compared to Mojo read and write operations. These helpers perform the
@@ -406,14 +446,37 @@ MojoResult MojoCreateSharedBufferIpcz(
     uint64_t num_bytes,
     const MojoCreateSharedBufferOptions* options,
     MojoHandle* shared_buffer_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto region =
+      base::subtle::PlatformSharedMemoryRegion::CreateWritable(num_bytes);
+  if (!region.IsValid()) {
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  *shared_buffer_handle =
+      ipcz_driver::SharedBuffer::MakeBoxed(std::move(region));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoDuplicateBufferHandleIpcz(
     MojoHandle buffer_handle,
     const MojoDuplicateBufferHandleOptions* options,
     MojoHandle* new_buffer_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* buffer = ipcz_driver::SharedBuffer::FromBox(buffer_handle);
+  if (!buffer || !new_buffer_handle ||
+      (options && options->struct_size < sizeof(*options))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  const bool read_only =
+      options &&
+      (options->flags & MOJO_DUPLICATE_BUFFER_HANDLE_FLAG_READ_ONLY) != 0;
+  auto [new_buffer, result] = buffer->Duplicate(read_only);
+  if (result != IPCZ_RESULT_OK) {
+    return result;
+  }
+
+  *new_buffer_handle = ipcz_driver::SharedBuffer::Box(std::move(new_buffer));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoMapBufferIpcz(MojoHandle buffer_handle,
@@ -421,17 +484,35 @@ MojoResult MojoMapBufferIpcz(MojoHandle buffer_handle,
                              uint64_t num_bytes,
                              const MojoMapBufferOptions* options,
                              void** address) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* buffer = ipcz_driver::SharedBuffer::FromBox(buffer_handle);
+  if (!buffer) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  auto mapping = ipcz_driver::SharedBufferMapping::Create(
+      buffer->region(), static_cast<size_t>(offset),
+      static_cast<size_t>(num_bytes));
+  if (!mapping) {
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+  *address = mapping->memory();
+  GetMappingTable().Add(std::move(mapping));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoUnmapBufferIpcz(void* address) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  return GetMappingTable().Remove(address);
 }
 
 MojoResult MojoGetBufferInfoIpcz(MojoHandle buffer_handle,
                                  const MojoGetBufferInfoOptions* options,
                                  MojoSharedBufferInfo* info) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* buffer = ipcz_driver::SharedBuffer::FromBox(buffer_handle);
+  if (!buffer || !info || info->struct_size < sizeof(*info)) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  info->size = buffer->region().GetSize();
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoCreateTrapIpcz(MojoTrapEventHandler handler,
@@ -517,7 +598,18 @@ MojoResult MojoWrapPlatformSharedMemoryRegionIpcz(
     MojoPlatformSharedMemoryRegionAccessMode access_mode,
     const MojoWrapPlatformSharedMemoryRegionOptions* options,
     MojoHandle* mojo_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!platform_handles || !num_bytes || !guid || !mojo_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  auto buffer = ipcz_driver::SharedBuffer::CreateForMojoWrapper(
+      base::make_span(platform_handles, num_platform_handles), num_bytes, *guid,
+      access_mode);
+  if (!buffer) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  *mojo_handle = ipcz_driver::SharedBuffer::Box(std::move(buffer));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
@@ -528,7 +620,70 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
     uint64_t* num_bytes,
     MojoSharedBufferGuid* mojo_guid,
     MojoPlatformSharedMemoryRegionAccessMode* access_mode) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!mojo_handle || !platform_handles || !num_platform_handles ||
+      !mojo_guid) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  auto* buffer = ipcz_driver::SharedBuffer::FromBox(mojo_handle);
+  if (!buffer) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  using Mode = base::subtle::PlatformSharedMemoryRegion::Mode;
+  const Mode mode = buffer->region().GetMode();
+  const base::UnguessableToken guid = buffer->region().GetGUID();
+  const uint32_t size = static_cast<uint32_t>(buffer->region().GetSize());
+
+  uint32_t capacity = *num_platform_handles;
+  uint32_t required_handles = 1;
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+  if (buffer->region().GetMode() ==
+      base::subtle::PlatformSharedMemoryRegion::Mode::kWritable) {
+    required_handles = 2;
+  }
+#endif
+  *num_platform_handles = required_handles;
+  if (capacity < required_handles) {
+    return MOJO_RESULT_RESOURCE_EXHAUSTED;
+  }
+
+  PlatformHandle handles[2];
+  base::subtle::ScopedPlatformSharedMemoryHandle region_handle =
+      buffer->region().PassPlatformHandle();
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+  handles[0] = PlatformHandle(std::move(region_handle.fd));
+  handles[1] = PlatformHandle(std::move(region_handle.readonly_fd));
+#else
+  handles[0] = PlatformHandle(std::move(region_handle));
+#endif
+
+  for (size_t i = 0; i < required_handles; ++i) {
+    PlatformHandle::ToMojoPlatformHandle(std::move(handles[i]),
+                                         &platform_handles[i]);
+  }
+
+  *num_bytes = size;
+  mojo_guid->high = guid.GetHighForSerialization();
+  mojo_guid->low = guid.GetLowForSerialization();
+
+  switch (mode) {
+    case Mode::kReadOnly:
+      *access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_READ_ONLY;
+      break;
+    case Mode::kWritable:
+      *access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE;
+      break;
+    case Mode::kUnsafe:
+      *access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
+      break;
+    default:
+      *access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_READ_ONLY;
+      NOTREACHED();
+  }
+
+  std::ignore = ipcz_driver::SharedBuffer::Unbox(mojo_handle);
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoCreateInvitationIpcz(const MojoCreateInvitationOptions* options,

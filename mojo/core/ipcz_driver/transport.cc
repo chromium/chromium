@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "mojo/core/core.h"
 #include "mojo/core/ipcz_driver/object.h"
+#include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
 #include "mojo/core/ipcz_driver/wrapped_platform_handle.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -341,9 +342,8 @@ IpczResult Transport::DeserializeObject(
       break;
 
     case ObjectBase::kSharedBuffer:
-      // TODO: Implement this.
-      NOTIMPLEMENTED();
-      return IPCZ_RESULT_UNIMPLEMENTED;
+      object = SharedBuffer::Deserialize(object_data, object_handles);
+      break;
 
     case ObjectBase::kTransmissiblePlatformHandle:
       object =

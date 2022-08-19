@@ -85,6 +85,9 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
     return object;
   }
 
+  // Boxes a reference to `object` and returns an IpczHandle for the box.
+  static IpczHandle Box(scoped_refptr<ObjectBase> object);
+
   // Closes this object.
   virtual void Close();
 
@@ -107,9 +110,6 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
 
  protected:
   virtual ~ObjectBase();
-
-  // Boxes a reference to `object` and returns an IpczHandle for the box.
-  static IpczHandle Box(scoped_refptr<ObjectBase> object);
 
   // Peeks at `box` and returns its underlying driver handle.
   static IpczDriverHandle PeekBox(IpczHandle box);
