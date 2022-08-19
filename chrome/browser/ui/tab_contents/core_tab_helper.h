@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "components/search_engines/template_url.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -43,6 +44,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
                               const GURL& src_url,
                               lens::EntryPoint entry_point,
+                              lens::RenderingEnvironment rendering_environment,
                               bool use_side_panel);
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
@@ -53,6 +55,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   void SearchWithLensInNewTab(gfx::Image image,
                               const gfx::Size& image_original_size,
                               lens::EntryPoint entry_point,
+                              lens::RenderingEnvironment rendering_environment,
                               bool use_side_panel);
 
   // Perform an image search for the image that triggered the context menu.  The

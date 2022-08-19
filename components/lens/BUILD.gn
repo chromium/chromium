@@ -4,10 +4,12 @@
 
 static_library("lens") {
   sources = [
-    "lens_entrypoints.cc",
     "lens_entrypoints.h",
     "lens_features.cc",
     "lens_features.h",
+    "lens_rendering_environment.h",
+    "lens_url_utils.cc",
+    "lens_url_utils.h",
   ]
   deps = [
     "//base:base",
@@ -19,7 +21,7 @@ static_library("lens") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lens_entrypoints_unittest.cc" ]
+  sources = [ "lens_url_utils_unittest.cc" ]
 
   deps = [
     ":lens",

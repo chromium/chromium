@@ -22,6 +22,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_rendering_environment.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -96,22 +98,27 @@ void CoreTabHelper::SearchWithLensInNewTab(
     content::RenderFrameHost* render_frame_host,
     const GURL& src_url,
     lens::EntryPoint entry_point,
+    lens::RenderingEnvironment rendering_environment,
     bool use_side_panel) {
   SearchByImageInNewTabImpl(
       render_frame_host, src_url, kImageSearchThumbnailMinSize,
       lens::features::GetMaxPixelsForImageSearch(),
       lens::features::GetMaxPixelsForImageSearch(),
-      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel),
+      lens::GetQueryParametersForLensRequest(entry_point, rendering_environment,
+                                             use_side_panel),
       use_side_panel);
 }
 
-void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
-                                           const gfx::Size& image_original_size,
-                                           lens::EntryPoint entry_point,
-                                           bool use_side_panel) {
+void CoreTabHelper::SearchWithLensInNewTab(
+    gfx::Image image,
+    const gfx::Size& image_original_size,
+    lens::EntryPoint entry_point,
+    lens::RenderingEnvironment rendering_environment,
+    bool use_side_panel) {
   SearchByImageInNewTabImpl(
       image, image_original_size,
-      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel),
+      lens::GetQueryParametersForLensRequest(entry_point, rendering_environment,
+                                             use_side_panel),
       use_side_panel);
 }
 

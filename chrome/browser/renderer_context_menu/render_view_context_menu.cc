@@ -3576,6 +3576,9 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
   core_tab_helper->SearchWithLensInNewTab(
       render_frame_host, params().src_url,
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
+      lens::features::IsLensSidePanelEnabled()
+          ? lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
+          : lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
       lens::features::IsLensSidePanelEnabled());
 }
 

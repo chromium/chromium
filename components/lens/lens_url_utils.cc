@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_url_utils.h"
 
 #include <map>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -26,6 +29,11 @@ constexpr char kSurfaceQueryParameter[] = "s";
 constexpr char kStartTimeQueryParameter[] = "st";
 constexpr char kSidePanel[] = "csp";
 
+constexpr char kRenderingEnvironmentQueryParameter[] = "re";
+constexpr char kOneLensDesktopWebChromeSidePanel[] = "dcsp";
+constexpr char kOneLensDesktopWebFullscreen[] = "df";
+constexpr char kOneLensAmbientVisualSearchWebFullscreen[] = "avsf";
+
 void AppendQueryParam(std::string* query_string,
                       const char name[],
                       const char value[]) {
@@ -37,6 +45,7 @@ void AppendQueryParam(std::string* query_string,
 
 std::map<std::string, std::string> GetLensQueryParametersMap(
     lens::EntryPoint ep,
+    lens::RenderingEnvironment re,
     bool is_side_panel_request) {
   std::map<std::string, std::string> query_parameters;
   switch (ep) {
@@ -64,6 +73,27 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
       // Empty strings are ignored when query parameters are built.
       break;
   }
+  switch (re) {
+    case lens::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL:
+      query_parameters.insert({kRenderingEnvironmentQueryParameter,
+                               kOneLensDesktopWebChromeSidePanel});
+      break;
+    case lens::ONELENS_DESKTOP_WEB_FULLSCREEN:
+      query_parameters.insert(
+          {kRenderingEnvironmentQueryParameter, kOneLensDesktopWebFullscreen});
+      break;
+    case lens::ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN:
+      query_parameters.insert({kRenderingEnvironmentQueryParameter,
+                               kOneLensAmbientVisualSearchWebFullscreen});
+      break;
+    default:
+      // Empty strings are ignored when query parameters are built.
+      break;
+  }
+  // Continue to include the Surface param until Lens Web can properly handle
+  // all of our RenderingEnvironments
+  // TODO(242102743): Change Surface param to always be Chromium once Lens Web
+  // is fully backwards compatable
   if (is_side_panel_request) {
     query_parameters.insert({kSurfaceQueryParameter, kSidePanel});
   } else {
@@ -81,19 +111,23 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
 namespace lens {
 
 GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
-                                                  EntryPoint ep,
+                                                  lens::EntryPoint ep,
+                                                  lens::RenderingEnvironment re,
                                                   bool is_side_panel_request) {
   GURL modified_url(url);
-  for (auto const& param : GetLensQueryParametersMap(ep, is_side_panel_request))
+  for (auto const& param :
+       GetLensQueryParametersMap(ep, re, is_side_panel_request))
     modified_url = net::AppendOrReplaceQueryParameter(modified_url, param.first,
                                                       param.second);
   return modified_url;
 }
 
-std::string GetQueryParametersForLensRequest(EntryPoint ep,
+std::string GetQueryParametersForLensRequest(lens::EntryPoint ep,
+                                             lens::RenderingEnvironment re,
                                              bool is_side_panel_request) {
   std::string query_string;
-  for (auto const& param : GetLensQueryParametersMap(ep, is_side_panel_request))
+  for (auto const& param :
+       GetLensQueryParametersMap(ep, re, is_side_panel_request))
     AppendQueryParam(&query_string, param.first.c_str(), param.second.c_str());
   return query_string;
 }

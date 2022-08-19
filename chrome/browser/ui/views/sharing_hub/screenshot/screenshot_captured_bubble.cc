@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -338,6 +339,10 @@ void ScreenshotCapturedBubble::SearchImageButtonPressed() {
   CoreTabHelper::FromWebContents(web_contents_.get())
       ->SearchWithLensInNewTab(
           image_, GetImageSize(), lens::EntryPoint::CHROME_SCREENSHOT_SEARCH,
+          lens::features::UseSidePanelForScreenshotSharing()
+              ? lens::RenderingEnvironment::
+                    ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
+              : lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
           lens::features::UseSidePanelForScreenshotSharing());
 
   // Need to manually close the screenshot bubble if side panel is enabled

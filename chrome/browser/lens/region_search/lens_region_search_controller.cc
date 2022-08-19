@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_rendering_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image_util.h"
@@ -195,10 +196,21 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::features::IsLensFullscreenSearchEnabled()
             ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
             : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+    lens::RenderingEnvironment rendering_environment =
+        lens::features::IsLensFullscreenSearchEnabled()
+            ? lens::RenderingEnvironment::
+                  ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN
+            : (lens::features::IsLensSidePanelEnabled()
+                   ? lens::RenderingEnvironment::
+                         ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
+                   : lens::RenderingEnvironment::
+                         ONELENS_DESKTOP_WEB_FULLSCREEN);
+
     bool use_side_panel = lens::features::IsLensSidePanelEnabled() &&
                           !lens::features::IsLensFullscreenSearchEnabled();
     core_tab_helper->SearchWithLensInNewTab(image, captured_image.Size(),
-                                            entry_point, use_side_panel);
+                                            entry_point, rendering_environment,
+                                            use_side_panel);
   } else {
     core_tab_helper->SearchByImageInNewTab(image, captured_image.Size());
   }
