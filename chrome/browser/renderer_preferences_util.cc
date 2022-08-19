@@ -83,13 +83,10 @@ void ParsePortRange(const std::string& range,
 
 // Extracts the string representation of URLs allowed for local IP exposure.
 std::vector<std::string> GetLocalIpsAllowedUrls(
-    const base::Value* allowed_urls) {
+    const base::Value::List& allowed_urls) {
   std::vector<std::string> ret;
-  if (allowed_urls) {
-    const auto& urls = allowed_urls->GetListDeprecated();
-    for (const auto& url : urls)
-      ret.push_back(url.GetString());
-  }
+  for (const auto& url : allowed_urls)
+    ret.push_back(url.GetString());
   return ret;
 }
 
@@ -139,8 +136,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,
                  &prefs->webrtc_udp_max_port);
 
-  const base::Value* allowed_urls =
-      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
+  const base::Value::List& allowed_urls =
+      pref_service->GetValueList(prefs::kWebRtcLocalIpsAllowedUrls);
   prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
   prefs->webrtc_allow_legacy_tls_protocols =
       pref_service->GetBoolean(prefs::kWebRTCAllowLegacyTLSProtocols);
