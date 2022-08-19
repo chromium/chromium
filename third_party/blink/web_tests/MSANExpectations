@@ -100,3 +100,8 @@ crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/pre
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip ]
 crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip ]
+
+# use-of-uninitialized-value
+crbug.com/887140 [ Linux ] virtual/hdr/color-jpeg-with-color-profile.html [ Skip ]
+crbug.com/887140 [ Linux ] virtual/hdr/color-profile-video.html [ Skip ]
+crbug.com/887140 [ Linux ] virtual/hdr/video-canvas-alpha.html [ Skip ]
