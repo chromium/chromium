@@ -291,6 +291,27 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 }
 @end
 
+@interface NativeWidgetMacNSWindowForTesting : NativeWidgetMacNSWindow {
+  BOOL hasShadowForTesting;
+}
+@end
+
+@implementation NativeWidgetMacNSWindowForTesting
+
+// Preserves the value of the hasShadow flag. During testing, -hasShadow will
+// always return NO because shadows are disabled on the bots.
+- (void)setHasShadow:(BOOL)flag {
+  hasShadowForTesting = flag;
+  [super setHasShadow:flag];
+}
+
+// Returns the value of the hasShadow flag during tests.
+- (BOOL)hasShadowForTesting {
+  return hasShadowForTesting;
+}
+
+@end
+
 namespace views {
 namespace test {
 
@@ -311,7 +332,7 @@ class MockNativeWidgetMac : public NativeWidgetMac {
     ownership_ = params.ownership;
 
     base::scoped_nsobject<NativeWidgetMacNSWindow> window(
-        [[NativeWidgetMacNSWindow alloc]
+        [[NativeWidgetMacNSWindowForTesting alloc]
             initWithContentRect:ui::kWindowSizeDeterminedLater
                       styleMask:NSWindowStyleMaskBorderless
                         backing:NSBackingStoreBuffered
@@ -404,6 +425,12 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     if (auto* bridge = native_widget_mac_->GetInProcessNSWindowBridge())
       return bridge->ns_window();
     return nil;
+  }
+
+  bool BridgeWindowHasShadow() {
+    return
+        [base::mac::ObjCCast<NativeWidgetMacNSWindowForTesting>(bridge_window())
+            hasShadowForTesting];
   }
 
  protected:
@@ -903,9 +930,7 @@ TEST_F(BridgedNativeWidgetInitTest, InitNotCalled) {
 }
 
 // Tests the shadow type given in InitParams.
-// Disabled because shadows are disabled on the bots - see
-// https://crbug.com/899286.
-TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
+TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
   // Verify Widget::InitParam defaults and arguments added from SetUp().
   EXPECT_EQ(Widget::InitParams::TYPE_WINDOW_FRAMELESS, type_);
   EXPECT_EQ(Widget::InitParams::WindowOpacity::kOpaque, opacity_);
@@ -913,29 +938,27 @@ TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
 
   CreateNewWidgetToInit();
   EXPECT_FALSE(
-      [bridge_window() hasShadow]);  // Default for NSWindowStyleMaskBorderless.
+      BridgeWindowHasShadow());  // Default for NSWindowStyleMaskBorderless.
   PerformInit();
 
   // Borderless is 0, so isn't really a mask. Check that nothing is set.
   EXPECT_EQ(NSWindowStyleMaskBorderless, [bridge_window() styleMask]);
-  EXPECT_TRUE(
-      [bridge_window() hasShadow]);  // ShadowType::kDefault means a shadow.
+  EXPECT_TRUE(BridgeWindowHasShadow());  // ShadowType::kDefault means a shadow.
 
   CreateNewWidgetToInit();
   shadow_type_ = Widget::InitParams::ShadowType::kNone;
   PerformInit();
-  EXPECT_FALSE([bridge_window() hasShadow]);  // Preserves lack of shadow.
+  EXPECT_FALSE(BridgeWindowHasShadow());  // Preserves lack of shadow.
 
   // Default for Widget::InitParams::TYPE_WINDOW.
   CreateNewWidgetToInit();
   PerformInit();
-  EXPECT_FALSE(
-      [bridge_window() hasShadow]);  // ShadowType::kNone removes shadow.
+  EXPECT_FALSE(BridgeWindowHasShadow());  // ShadowType::kNone removes shadow.
 
   shadow_type_ = Widget::InitParams::ShadowType::kDefault;
   CreateNewWidgetToInit();
   PerformInit();
-  EXPECT_TRUE([bridge_window() hasShadow]);  // Preserves shadow.
+  EXPECT_TRUE(BridgeWindowHasShadow());  // Preserves shadow.
 
   widget_.reset();
 }
