@@ -32,7 +32,6 @@ component("sensors") {
       "ash/sensor_hal_dispatcher.cc",
       "ash/sensor_hal_dispatcher.h",
     ]
-    deps += [ "//chromeos/components/mojo_service_manager" ]
   }
   if (is_chromeos_lacros) {
     deps += [

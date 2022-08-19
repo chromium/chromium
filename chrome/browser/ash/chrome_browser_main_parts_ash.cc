@@ -709,10 +709,6 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
     // |mojo_ipc_support_| in |content::BrowserMainLoop| to be created.
     mojo_service_manager_closer_ =
         mojo_service_manager::CreateConnectionAndPassCloser();
-
-    auto* dispatcher = chromeos::sensors::SensorHalDispatcher::GetInstance();
-    DCHECK(dispatcher);
-    dispatcher->TryToEstablishMojoChannelByServiceManager();
   }
 
   // Need to be done after LoginState has been initialized in DBusServices().
