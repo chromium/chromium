@@ -65,7 +65,10 @@ const int kURLLabelDefaultNumberOfLines = 3;
   self.shouldBannerFillTopSpace = YES;
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 
-  self.titleText = l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE);
+  self.title = title;
+  self.titleText = title;
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO);
   self.secondaryActionString =
@@ -210,6 +213,13 @@ const int kURLLabelDefaultNumberOfLines = 3;
     self.expandURLButton.hidden =
         (expandedNumberOfLines <= kURLLabelDefaultNumberOfLines);
   }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // Ensure the title label is focused when the Incognito interstial appears.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.titleLabel);
 }
 
 #pragma mark - Accessors
