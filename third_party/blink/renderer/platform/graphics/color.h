@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -35,13 +36,7 @@
 
 namespace blink {
 
-// TODO(crbug.com/1308932): Blink classes should use SkColor4f directly,
-// ulitmately this class should be deleted.
-class Color;
-
 typedef unsigned RGBA32;  // RGBA quadruplet
-
-PLATFORM_EXPORT int DifferenceSquared(const Color&, const Color&);
 
 struct NamedColor {
   DISALLOW_NEW();
@@ -56,7 +51,11 @@ class PLATFORM_EXPORT Color {
 
  public:
   // The default constructor creates a transparent color.
-  constexpr Color() = default;
+  constexpr Color()
+      : param0_is_none_(0),
+        param1_is_none_(0),
+        param2_is_none_(0),
+        alpha_is_none_(0) {}
 
   // TODO(crbug.com/1351544): Replace these constructors with explicit From
   // functions below.
@@ -75,7 +74,8 @@ class PLATFORM_EXPORT Color {
                  ClampInt(b));
   }
 
-  // Create a color using the rgba() syntax, with float arguments.
+  // Create a color using the rgba() syntax, with float arguments. All
+  // parameters will be clamped to the [0, 1] interval.
   static Color FromRGBAFloat(float r, float g, float b, float a);
 
   // Create a color using the hsl() syntax.
@@ -83,6 +83,53 @@ class PLATFORM_EXPORT Color {
 
   // Create a color using the hwb() syntax.
   static Color FromHWBA(double h, double w, double b, double a);
+
+  // Create a color using the color() function. This includes both predefined
+  // color spaces and xyz spaces. Parameters that are none should be specified
+  // as absl::nullopt. The value for `alpha` will be clamped to the [0, 1]
+  // interval.
+  enum class ColorFunctionSpace : uint8_t {
+    kSRGB,
+    kSRGBLinear,
+    kDisplayP3,
+    kA98RGB,
+    kProPhotoRGB,
+    kRec2020,
+    kXYZ,
+    kXYZD50,
+    kXYZD65,
+  };
+  static Color FromColorFunction(ColorFunctionSpace space,
+                                 absl::optional<float> red_or_x,
+                                 absl::optional<float> green_or_y,
+                                 absl::optional<float> blue_or_z,
+                                 absl::optional<float> alpha);
+
+  // Create a color using the lab() and oklab() functions. Parameters that are
+  // none should be specified as absl::nullopt. The value for `L` will be
+  // clamped to be non-negative. The value for `alpha` will be clamped to the
+  // [0, 1] interval.
+  static Color FromLab(absl::optional<float> L,
+                       absl::optional<float> a,
+                       absl::optional<float> b,
+                       absl::optional<float> alpha);
+  static Color FromOKLab(absl::optional<float> L,
+                         absl::optional<float> a,
+                         absl::optional<float> b,
+                         absl::optional<float> alpha);
+
+  // Create a color using the lch() and oklch() functions. Parameters that are
+  // none should be specified as absl::nullopt. The value for `L` and `chroma`
+  // will be clamped to be non-negative. The value for `alpha` will be clamped
+  // to the [0, 1] interval.
+  static Color FromLCH(absl::optional<float> L,
+                       absl::optional<float> chroma,
+                       absl::optional<float> hue,
+                       absl::optional<float> alpha);
+  static Color FromOKLCH(absl::optional<float> L,
+                         absl::optional<float> chroma,
+                         absl::optional<float> hue,
+                         absl::optional<float> alpha);
 
   // TODO(crbug.com/1308932): These three functions are just helpers for while
   // we're converting platform/graphics to float color.
@@ -137,6 +184,8 @@ class PLATFORM_EXPORT Color {
   Color CombineWithAlpha(float other_alpha) const;
 
   // This is an implementation of Porter-Duff's "source-over" equation
+  // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending,
+  // including a color interpolation method parameter.
   Color Blend(const Color&) const;
   Color BlendWithWhite() const;
 
@@ -152,14 +201,24 @@ class PLATFORM_EXPORT Color {
   static const Color kTransparent;
 
   inline bool operator==(const Color& other) const {
-    return param0_ == other.param0_ && param1_ == other.param1_ &&
-           param2_ == other.param2_ && alpha_ == other.alpha_;
+    return serialization_type_ == other.serialization_type_ &&
+           color_function_space_ == other.color_function_space_ &&
+           param0_is_none_ == other.param0_is_none_ &&
+           param1_is_none_ == other.param1_is_none_ &&
+           param2_is_none_ == other.param2_is_none_ &&
+           alpha_is_none_ == other.alpha_is_none_ && param0_ == other.param0_ &&
+           param1_ == other.param1_ && param2_ == other.param2_ &&
+           alpha_ == other.alpha_;
   }
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
  private:
   constexpr explicit Color(RGBA32 color)
-      : param0_(((color >> 16) & 0xFF) / 255.f),
+      : param0_is_none_(0),
+        param1_is_none_(0),
+        param2_is_none_(0),
+        alpha_is_none_(0),
+        param0_(((color >> 16) & 0xFF) / 255.f),
         param1_(((color >> 8) & 0xFF) / 255.f),
         param2_(((color >> 0) & 0xFF) / 255.f),
         alpha_(((color >> 24) & 0xFF) / 255.f) {}
@@ -168,16 +227,54 @@ class PLATFORM_EXPORT Color {
   }
   void GetHueMaxMin(double&, double&, double&) const;
 
-  // The parameters for the color. These are currently red, green, and blue sRGB
-  // values.
+  // The way that this color will be serialized. The value of
+  // `serialization_type` determines the interpretation of `params_`.
+  enum class SerializationType : uint8_t {
+    // Serializes to rgb() or rgba(). The values of `params0_`, `params1_`, and
+    // `params2_` are red, green, and blue sRGB values, and are guaranteed to be
+    // present and in the [0, 1] interval.
+    kRGB,
+    // Serialize to the color() syntax of a given predefined color space. The
+    // values of `params0_`, `params1_`, and `params2_` are red, green, and blue
+    // values in the color space specified by `color_function_space_`.
+    kColor,
+    // Serializes to lab(). The value of `param0_` is lightness and is
+    // guaranteed to be non-negative. The value of `param1_` and `param2_` are
+    // the a-axis and b-axis values and are unbounded.
+    kLab,
+    // Serializes to oklab(). Parameter meanings are the same as for kLab.
+    kOKLab,
+    // Serializes to lch(). The value of `param0_` is lightness and is
+    // guaranteed to be non-negative. The value of `param1_` is chroma and is
+    // also guaranteed to be non-negative. The value of `param2_` is hue, and
+    // is unbounded.
+    kLCH,
+    // Serializes to oklch(). Parameter meanings are the same as for kLCH.
+    kOKLCH,
+  };
+  SerializationType serialization_type_ = SerializationType::kRGB;
+
+  // The color space for serialization type kColor. For all other serialization
+  // types this is not used, and must be set to kSRGB.
+  ColorFunctionSpace color_function_space_ = ColorFunctionSpace::kSRGB;
+
+  // Whether or not color parameters were specified as none (this only affects
+  // interpolation behavior, the parameter values area always valid).
+  unsigned param0_is_none_ : 1;
+  unsigned param1_is_none_ : 1;
+  unsigned param2_is_none_ : 1;
+  unsigned alpha_is_none_ : 1;
+
+  // The color parameters.
   float param0_ = 0.f;
   float param1_ = 0.f;
   float param2_ = 0.f;
 
-  // The alpha value for the color is guaranteed to be in the interval [0, 1].
+  // The alpha value for the color is guaranteed to be in the [0, 1] interval.
   float alpha_ = 0.f;
 };
 
+PLATFORM_EXPORT int DifferenceSquared(const Color&, const Color&);
 PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
 PLATFORM_EXPORT RGBA32 PremultipliedARGBFromColor(const Color&);
 

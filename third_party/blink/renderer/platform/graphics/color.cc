@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
@@ -231,6 +232,14 @@ constexpr int AlphaChannel(RGBA32 color) {
 
 }  // namespace
 
+// The color parameters will use 16 bytes (for 4 floats). Ensure that the
+// remaining parameters fit into another 4 bytes (or 8 bytes, on Windows)
+#if BUILDFLAG(IS_WIN)
+static_assert(sizeof(Color) <= 24, "blink::Color should be <= 24 bytes.");
+#else
+static_assert(sizeof(Color) <= 20, "blink::Color should be <= 20 bytes.");
+#endif
+
 Color::Color(int r, int g, int b) {
   *this = FromRGB(r, g, b);
 }
@@ -250,6 +259,98 @@ Color Color::FromHWBA(double h, double w, double b, double a) {
 }
 
 // static
+Color Color::FromColorFunction(ColorFunctionSpace space,
+                               absl::optional<float> red_or_x,
+                               absl::optional<float> green_or_y,
+                               absl::optional<float> blue_or_z,
+                               absl::optional<float> alpha) {
+  Color result;
+  result.serialization_type_ = SerializationType::kColor;
+  result.color_function_space_ = space;
+  result.param0_is_none_ = !red_or_x;
+  result.param1_is_none_ = !green_or_y;
+  result.param2_is_none_ = !blue_or_z;
+  result.alpha_is_none_ = !alpha;
+  result.param0_ = red_or_x.value_or(0.f);
+  result.param1_ = green_or_y.value_or(0.f);
+  result.param2_ = blue_or_z.value_or(0.f);
+  result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
+  return result;
+}
+
+// static
+Color Color::FromLab(absl::optional<float> L,
+                     absl::optional<float> a,
+                     absl::optional<float> b,
+                     absl::optional<float> alpha) {
+  Color result;
+  result.serialization_type_ = SerializationType::kLab;
+  result.param0_is_none_ = !L;
+  result.param1_is_none_ = !a;
+  result.param2_is_none_ = !b;
+  result.alpha_is_none_ = !alpha;
+  result.param0_ = std::max(L.value_or(0.f), 0.f);
+  result.param1_ = a.value_or(0.f);
+  result.param2_ = b.value_or(0.f);
+  result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
+  return result;
+}
+
+// static
+Color Color::FromOKLab(absl::optional<float> L,
+                       absl::optional<float> a,
+                       absl::optional<float> b,
+                       absl::optional<float> alpha) {
+  Color result;
+  result.serialization_type_ = SerializationType::kOKLab;
+  result.param0_is_none_ = !L;
+  result.param1_is_none_ = !a;
+  result.param2_is_none_ = !b;
+  result.alpha_is_none_ = !alpha;
+  result.param0_ = std::max(L.value_or(0.f), 0.f);
+  result.param1_ = a.value_or(0.f);
+  result.param2_ = b.value_or(0.f);
+  result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
+  return result;
+}
+
+// static
+Color Color::FromLCH(absl::optional<float> L,
+                     absl::optional<float> chroma,
+                     absl::optional<float> hue,
+                     absl::optional<float> alpha) {
+  Color result;
+  result.serialization_type_ = SerializationType::kLCH;
+  result.param0_is_none_ = !L;
+  result.param1_is_none_ = !chroma;
+  result.param2_is_none_ = !hue;
+  result.alpha_is_none_ = !alpha;
+  result.param0_ = std::max(L.value_or(0.f), 0.f);
+  result.param1_ = std::max(chroma.value_or(0.f), 0.f);
+  result.param2_ = hue.value_or(0.f);
+  result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
+  return result;
+}
+
+// static
+Color Color::FromOKLCH(absl::optional<float> L,
+                       absl::optional<float> chroma,
+                       absl::optional<float> hue,
+                       absl::optional<float> alpha) {
+  Color result;
+  result.serialization_type_ = SerializationType::kOKLCH;
+  result.param0_is_none_ = !L;
+  result.param1_is_none_ = !chroma;
+  result.param2_is_none_ = !hue;
+  result.alpha_is_none_ = !alpha;
+  result.param0_ = std::max(L.value_or(0.f), 0.f);
+  result.param1_ = std::max(chroma.value_or(0.f), 0.f);
+  result.param2_ = hue.value_or(0.f);
+  result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
+  return result;
+}
+
+// static
 Color Color::FromRGBAFloat(float r, float g, float b, float a) {
   return Color(MakeRGBA32FromFloats(r, g, b, a));
 }
@@ -260,7 +361,21 @@ Color Color::FromSkColor4f(SkColor4f fc) {
 }
 
 SkColor4f Color::toSkColor4f() const {
-  return SkColor4f{param0_, param1_, param2_, alpha_};
+  switch (serialization_type_) {
+    case SerializationType::kRGB:
+      return SkColor4f{param0_, param1_, param2_, alpha_};
+    case SerializationType::kColor:
+      switch (color_function_space_) {
+        case ColorFunctionSpace::kSRGB:
+          return SkColor4f{param0_, param1_, param2_, alpha_};
+        default:
+          NOTIMPLEMENTED();
+          return SkColor4f{0.f, 0.f, 0.f, 0.f};
+      }
+    default:
+      NOTIMPLEMENTED();
+      return SkColor4f{0.f, 0.f, 0.f, 0.f};
+  }
 }
 
 bool Color::HasAlpha() const {
@@ -308,6 +423,7 @@ int DifferenceSquared(const Color& c1, const Color& c2) {
 }
 
 bool Color::SetFromString(const String& name) {
+  // TODO(https://crbug.com/1333988): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
   if (name.Is8Bit())
@@ -316,6 +432,12 @@ bool Color::SetFromString(const String& name) {
 }
 
 String Color::Serialized() const {
+  if (serialization_type_ != SerializationType::kRGB) {
+    // TODO(https://crbug.com/1333988): Implement CSS Color level 4
+    // serialization.
+    NOTIMPLEMENTED();
+    return "rgb(0, 0, 0)";
+  }
   if (!HasAlpha())
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
 
@@ -341,6 +463,11 @@ String Color::Serialized() const {
 }
 
 String Color::NameForLayoutTreeAsText() const {
+  if (serialization_type_ != SerializationType::kRGB) {
+    // TODO(https://crbug.com/1333988): Determine if CSS Color Level 4 colors
+    // should use this representation here.
+    return Serialized();
+  }
   if (Alpha() < 0xFF)
     return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(), Alpha());
   return String::Format("#%02X%02X%02X", Red(), Green(), Blue());
@@ -382,6 +509,7 @@ Color Color::CombineWithAlpha(float other_alpha) const {
 }
 
 Color Color::Blend(const Color& source) const {
+  // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending.
   if (!Alpha() || !source.HasAlpha())
     return source;
 
