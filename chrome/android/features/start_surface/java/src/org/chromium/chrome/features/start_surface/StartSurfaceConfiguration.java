@@ -29,27 +29,27 @@ public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
     public static final StringCachedFieldTrialParameter START_SURFACE_VARIATION =
             new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "start_surface_variation", "");
+                    ChromeFeatureList.START_SURFACE_ANDROID, "start_surface_variation", "single");
     public static final BooleanCachedFieldTrialParameter START_SURFACE_EXCLUDE_MV_TILES =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "exclude_mv_tiles", false);
     public static final BooleanCachedFieldTrialParameter
             START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
                     new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                            "hide_switch_when_no_incognito_tabs", false);
+                            "hide_switch_when_no_incognito_tabs", true);
 
     public static final BooleanCachedFieldTrialParameter START_SURFACE_LAST_ACTIVE_TAB_ONLY =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "show_last_active_tab_only", false);
+                    ChromeFeatureList.START_SURFACE_ANDROID, "show_last_active_tab_only", true);
     public static final BooleanCachedFieldTrialParameter START_SURFACE_OPEN_NTP_INSTEAD_OF_START =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", false);
+                    ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", true);
 
     private static final String TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM =
             "tab_count_button_on_start_surface";
     public static final BooleanCachedFieldTrialParameter TAB_COUNT_BUTTON_ON_START_SURFACE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM, false);
+                    TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM, true);
 
     private static final String SHOW_TABS_IN_MRU_ORDER_PARAM = "show_tabs_in_mru_order";
     public static final BooleanCachedFieldTrialParameter SHOW_TABS_IN_MRU_ORDER =
@@ -101,21 +101,21 @@ public class StartSurfaceConfiguration {
 
     private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, Integer.MAX_VALUE);
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, 5);
 
     private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
             "signin_promo_NTP_since_first_time_shown_limit_hours";
     public static final IntCachedFieldTrialParameter
             SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
                     new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM, -1);
+                            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM, 336);
 
     private static final String SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM =
             "signin_promo_NTP_reset_after_hours";
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM, -1);
+                    SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM, 672);
 
     private static final String IS_DOODLE_SUPPORTED_PARAM = "is_doodle_supported";
     public static final BooleanCachedFieldTrialParameter IS_DOODLE_SUPPORTED =

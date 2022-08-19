@@ -87,8 +87,8 @@ public final class ReturnToChromeUtil {
     @VisibleForTesting
     public static final String TAB_SWITCHER_ON_RETURN_MS_PARAM = "tab_switcher_on_return_time_ms";
     public static final IntCachedFieldTrialParameter TAB_SWITCHER_ON_RETURN_MS =
-            new IntCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_SWITCHER_ON_RETURN, TAB_SWITCHER_ON_RETURN_MS_PARAM, -1);
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_SWITCHER_ON_RETURN,
+                    TAB_SWITCHER_ON_RETURN_MS_PARAM, 28800000); // 8 hours
 
     @VisibleForTesting
     static final String UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT =

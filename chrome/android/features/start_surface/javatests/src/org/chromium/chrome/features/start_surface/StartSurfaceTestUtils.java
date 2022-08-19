@@ -98,10 +98,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StartSurfaceTestUtils {
     public static final String INSTANT_START_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:"
-            + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single";
+            + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
+    public static final String START_SURFACE_TEST_SINGLE_ENABLED_PARAMS =
+            "force-fieldtrial-params=Study.Group:"
+            + "show_last_active_tab_only/false/open_ntp_instead_of_start/false";
     public static final String START_SURFACE_TEST_BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:start_surface_variation/single";
+            "force-fieldtrial-params=Study.Group:";
     public static List<ParameterSet> sClassParamsForStartSurfaceTest =
             Arrays.asList(new ParameterSet().value(false, false).name("NoInstant_NoReturn"),
                     new ParameterSet().value(true, false).name("Instant_NoReturn"),

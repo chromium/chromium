@@ -57,6 +57,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -103,6 +104,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
+@DoNotBatch(reason = "This test suite tests startup behaviours and thus can't be batched.")
 public class InstantStartTabSwitcherTest {
     // clang-format on
     private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
@@ -212,7 +214,7 @@ public class InstantStartTabSwitcherTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
         sdk_is_greater_than = Build.VERSION_CODES.O)
     public void renderTabGroups() throws IOException {
@@ -264,7 +266,7 @@ public class InstantStartTabSwitcherTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
         sdk_is_greater_than = Build.VERSION_CODES.O)
     public void renderTabGroups_ThemeRefactor() throws IOException {
@@ -303,7 +305,7 @@ public class InstantStartTabSwitcherTest {
     @MediumTest
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     public void testSingleAsHomepage_CloseTabInCarouselTabSwitcher()
             throws IOException, ExecutionException {
         // clang-format on
@@ -381,9 +383,10 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+            INSTANT_START_TEST_BASE_PARAMS
+                    + "/show_last_active_tab_only/false/open_ntp_instead_of_start/false"})
+    // clang-format off
     public void testSingleAsHomepage_Landscape_TabSize() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);

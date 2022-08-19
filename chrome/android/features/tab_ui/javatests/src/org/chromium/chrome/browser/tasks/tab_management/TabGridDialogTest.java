@@ -52,6 +52,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.p
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -131,8 +132,6 @@ public class TabGridDialogTest {
     // clang-format on
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
-    private static final String START_SURFACE_BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:start_surface_variation";
     private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
             "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
 
@@ -928,7 +927,8 @@ public class TabGridDialogTest {
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testDialogSetup_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
@@ -966,11 +966,14 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"})
     @DisableIf.
     Build(sdk_is_greater_than = VERSION_CODES.M, message = "crbug.com/1119899, crbug.com/1131545")
     @DisableIf.Device(type = UiDisableIf.TABLET)
+    // clang-format off
     public void testUndoClosureInDialog_WithStartSurface() throws Exception {
+        // clang-format on
         // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
         createThumbnailBitmapAndWriteToFile(0);
