@@ -20,6 +20,7 @@
 #include "ui/display/util/gpu_info_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -31,6 +32,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/base/display_util.h"
+#endif
 
 #if defined(USE_DBUS)
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
@@ -240,6 +245,11 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
   changed_display.set_label(label);
 
   display_list_.AddOrUpdateDisplay(changed_display, type);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  gfx::SetFontRenderParamsDeviceScaleFactor(
+      chromeos::GetRepresentativeDeviceScaleFactor(display_list_.displays()));
+#endif
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {

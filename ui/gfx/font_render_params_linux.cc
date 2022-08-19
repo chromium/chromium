@@ -226,15 +226,15 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     params.subpixel_positioning = false;
   } else if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kDisableFontSubpixelPositioning)) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
-#else
+#if BUILDFLAG(IS_CHROMEOS)
     // We want to enable subpixel positioning for fractional dsf.
     params.subpixel_positioning =
         std::abs(std::round(actual_query.device_scale_factor) -
                  actual_query.device_scale_factor) >
         std::numeric_limits<float>::epsilon();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+    params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // To enable subpixel positioning, we need to disable hinting.
     if (params.subpixel_positioning)

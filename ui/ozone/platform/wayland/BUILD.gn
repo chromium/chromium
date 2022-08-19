@@ -334,6 +334,7 @@ source_set("wayland") {
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
+      "//chromeos/ui/base",
     ]
   }
 

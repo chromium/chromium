@@ -50,6 +50,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chromeos/system/devicemode.h"
+#include "chromeos/ui/base/display_util.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -396,16 +397,8 @@ void DisplayManager::UpdateInternalDisplay(
 
 void DisplayManager::RefreshFontParams() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Use the largest device scale factor among currently active displays. Non
-  // internal display may have bigger scale factor in case the external display
-  // is an 4K display.
-  float largest_device_scale_factor = 1.0f;
-  for (const Display& display : active_display_list_) {
-    const ManagedDisplayInfo& info = display_info_[display.id()];
-    largest_device_scale_factor = std::max(
-        largest_device_scale_factor, info.GetEffectiveDeviceScaleFactor());
-  }
-  gfx::SetFontRenderParamsDeviceScaleFactor(largest_device_scale_factor);
+  gfx::SetFontRenderParamsDeviceScaleFactor(
+      chromeos::GetRepresentativeDeviceScaleFactor(active_display_list_));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

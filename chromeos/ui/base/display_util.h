@@ -54,6 +54,11 @@ bool IsDisplayLayoutHorizontal(const display::Display& display);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsDisplayLayoutPrimary(const display::Display& display);
 
+// Given a list of displays, selects one DSF to represent them all.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+float GetRepresentativeDeviceScaleFactor(
+    const std::vector<display::Display>& displays);
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_UI_BASE_DISPLAY_UTIL_H_
