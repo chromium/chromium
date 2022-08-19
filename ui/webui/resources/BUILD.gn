@@ -173,7 +173,6 @@ checked_in_dts_files = [
   "cr_elements/cr_radio_button/cr_radio_button_behavior.d.ts",
   "cr_elements/cr_radio_button/cr_radio_button.d.ts",
   "cr_elements/cr_scrollable_behavior.m.d.ts",
-  "cr_elements/cr_toggle/cr_toggle.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
   "cr_elements/policy/cr_policy_indicator_behavior.m.d.ts",
   "cr_elements/policy/cr_policy_indicator.m.d.ts",

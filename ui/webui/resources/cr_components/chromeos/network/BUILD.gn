@@ -358,11 +358,12 @@ js_library("network_config.m") {
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":network_config_module" ]
 }
 
@@ -406,8 +407,9 @@ js_library("network_config_toggle.m") {
     ":network_config_element_behavior.m",
     ":network_shared_css.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":network_config_toggle_module" ]
 }
 
@@ -430,9 +432,10 @@ js_library("network_ip_config.m") {
     ":network_shared_css.m",
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":network_ip_config_module" ]
 }
 
@@ -536,10 +539,11 @@ js_library("network_proxy.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":network_proxy_module" ]
 }
 
@@ -601,11 +605,12 @@ js_library("network_siminfo.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":network_siminfo_module" ]
 }
 
@@ -640,9 +645,10 @@ js_library("sim_lock_dialogs.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
   extra_deps = [ ":sim_lock_dialogs_module" ]
 }
 
@@ -754,7 +760,7 @@ polymer_modulizer("network_ip_config") {
   js_file = "network_ip_config.js"
   html_file = "network_ip_config.html"
   html_type = "dom-module"
-  auto_imports = cr_components_chromeos_auto_imports + [ "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html|CrToggleElement" ]
+  auto_imports = cr_components_chromeos_auto_imports
   migrated_imports = cr_components_migrated_imports
 }
 
@@ -844,7 +850,7 @@ polymer_modulizer("network_siminfo") {
   js_file = "network_siminfo.js"
   html_file = "network_siminfo.html"
   html_type = "dom-module"
-  auto_imports = cr_components_chromeos_auto_imports + [ "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html|CrToggleElement" ]
+  auto_imports = cr_components_chromeos_auto_imports
   migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }

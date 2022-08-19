@@ -139,7 +139,6 @@ if (include_polymer) {
       "cr_radio_button/cr_card_radio_button.js",
       "cr_radio_button/cr_radio_button.js",
       "cr_scrollable_behavior.m.js",
-      "cr_toggle/cr_toggle.js",
       "hidden_style_css.m.js",
       "icons.m.js",
       "md_select_css.m.js",
@@ -175,7 +174,6 @@ if (include_polymer) {
       "cr_input:closure_compile_module",
       "cr_lottie:closure_compile_module",
       "cr_radio_button:closure_compile_module",
-      "cr_toggle:closure_compile_module",
       "policy:closure_compile_module",
     ]
   }
@@ -274,7 +272,6 @@ if (include_polymer) {
       "cr_input:web_components",
       "cr_lottie:cr_lottie_module",
       "cr_radio_button:web_components",
-      "cr_toggle:web_components",
       "policy:polymer3_elements",
     ]
 
