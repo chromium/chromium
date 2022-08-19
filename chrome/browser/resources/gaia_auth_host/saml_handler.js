@@ -267,7 +267,7 @@ cr.define('cr.login', function() {
           samlPasswordAttributes.PasswordAttributes.EMPTY;
 
       /**
-       * User's email/
+       * User's email.
        * @public {?string}
        */
       this.email = null;
@@ -618,6 +618,10 @@ cr.define('cr.login', function() {
      * @private
      */
     onMainFrameHttpsWebRequest_(details) {
+      // Ignore GAIA page - we are only interested in 3P IdP page here.
+      if (!this.isSamlPage_ && !this.pendingIsSamlPage_) {
+        return {};
+      }
       const urlToAutofillUsername = samlUsernameAutofill.maybeAutofillUsername(
           details.url, this.urlParameterToAutofillSAMLUsername, this.email);
       if (urlToAutofillUsername) {

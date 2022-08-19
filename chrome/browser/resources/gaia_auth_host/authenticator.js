@@ -252,7 +252,7 @@ cr.define('cr.login', function() {
    */
   const messageHandlers = {
     'attemptLogin'(msg) {
-      this.email_ = msg.email;
+      this.setEmail_(msg.email);
       if (this.authMode === AuthMode.DESKTOP) {
         this.password_ = msg.password;
       }
@@ -281,6 +281,7 @@ cr.define('cr.login', function() {
           new CustomEvent('menuItemClicked', {detail: msg.item}));
     },
     'identifierEntered'(msg) {
+      this.setEmail_(msg.accountIdentifier);
       this.dispatchEvent(new CustomEvent(
           'identifierEntered',
           {detail: {accountIdentifier: msg.accountIdentifier}}));
@@ -652,7 +653,7 @@ cr.define('cr.login', function() {
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
       this.samlAclUrl_ = data.samlAclUrl;
-      this.email_ = data.email;
+      this.setEmail_(data.email);
 
       if (data.startsOnSamlPage) {
         this.samlHandler_.startsOnSamlPage = true;
@@ -663,7 +664,6 @@ cr.define('cr.login', function() {
           this.idpOrigin_.startsWith('https://');
       this.samlHandler_.extractSamlPasswordAttributes =
           data.extractSamlPasswordAttributes;
-      this.samlHandler_.email = data.email;
       this.samlHandler_.urlParameterToAutofillSAMLUsername =
           data.urlParameterToAutofillSAMLUsername;
 
@@ -889,8 +889,7 @@ cr.define('cr.login', function() {
 
     /**
      * Invoked when headers are received in the main frame of the webview. It
-     * 1) reads the authenticated user info from a signin header,
-     * 2) signals the start of a saml flow upon receiving a saml header.
+     * reads the authenticated user info from a signin header.
      * @param {OnHeadersReceivedDetails} details
      * @private
      */
@@ -919,7 +918,8 @@ cr.define('cr.login', function() {
             signinDetails[pair[0].trim()] = pair[1].trim();
           });
           // Removes "" around.
-          this.email_ = signinDetails['email'].slice(1, -1);
+          const email = signinDetails['email'].slice(1, -1);
+          this.setEmail_(email);
           this.gaiaId_ = signinDetails['obfuscatedid'].slice(1, -1);
           this.sessionIndex_ = signinDetails['sessionindex'];
         } else if (headerName === LOCATION_HEADER) {
@@ -1434,6 +1434,16 @@ cr.define('cr.login', function() {
       }
       window.clearTimeout(this.gaiaDoneTimer_);
       this.gaiaDoneTimer_ = null;
+    }
+
+    /**
+     * Set the user's email.
+     * @param {string} email New email value.
+     * @private
+     */
+    setEmail_(email) {
+      this.email_ = email;
+      this.samlHandler_.email = email;
     }
   }
 

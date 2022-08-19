@@ -31,6 +31,11 @@ cr.define('samlUsernameAutofill', function() {
     if (!email) {
       return null;
     }
+    // Don't do anything if url already contains
+    // `urlParameterNameToAutofillUsername`.
+    if (url.match(urlParameterNameToAutofillUsername)) {
+      return null;
+    }
 
     url = appendParam(url, urlParameterNameToAutofillUsername, email);
     return url;

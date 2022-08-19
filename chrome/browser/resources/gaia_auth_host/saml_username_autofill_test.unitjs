@@ -49,6 +49,19 @@ TEST_F('SamlUsernameAutofillUnitTest', 'SuccessWithParam', function () {
   assertEquals(newUrl, expectedResult);
 });
 
+// Test that we do not add url parameter repeatedly.
+TEST_F('SamlUsernameAutofillUnitTest', 'UrlAlreadyContainsParameter',
+    function () {
+  const urlParameterNameToAutofillUsername = 'login_hint';
+  const urlWithAutofillParameter = appendParam(IDP_URL_FOR_TESTS,
+     urlParameterNameToAutofillUsername, EMAIL_FOR_TESTS);
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(
+     urlWithAutofillParameter, urlParameterNameToAutofillUsername,
+     EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, null);
+});
+
 // Test that we don't autofill the username when user's email is absent.
 TEST_F('SamlUsernameAutofillUnitTest', 'NoEmail', function () {
   const newUrl = samlUsernameAutofill.maybeAutofillUsername(
