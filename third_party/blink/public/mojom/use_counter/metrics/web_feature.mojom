@@ -1939,7 +1939,7 @@ enum WebFeature {
   kCSSValueAppearanceSquareButtonRendered = 2586,
   kCursorImageLE32x32 = 2589,
   kCursorImageGT32x32 = 2590,
-  kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics = 2591,
+  kOBSOLETE_RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics = 2591,
   // The above items are available in M71 branch.
 
   kResizeObserver_Constructor = 2592,
@@ -3077,7 +3077,7 @@ enum WebFeature {
   kAddressSpaceUnknownNonSecureContextNavigatedToLocal = 3770,
   kAddressSpaceUnknownSecureContextNavigatedToPrivate = 3771,
   kAddressSpaceUnknownNonSecureContextNavigatedToPrivate = 3772,
-  kRTCPeerConnectionSdpSemanticsPlanB = 3773,
+  kOBSOLETE_RTCPeerConnectionSdpSemanticsPlanB = 3773,
   // The items above roughly this point are available in the M89 branch.
 
   kFetchRespondWithNoResponseWithUsedRequestBody = 3774,
@@ -3091,10 +3091,10 @@ enum WebFeature {
   kOBSOLETE_V8HTMLPopupElement_Show_Method = 3782,
   kOBSOLETE_V8HTMLPopupElement_Hide_Method = 3783,
   kOBSOLETE_WindowOpenWithAdditionalBoolParameter = 3784,
-  kRTCPeerConnectionConstructedWithPlanB = 3785,
-  kRTCPeerConnectionConstructedWithUnifiedPlan = 3786,
-  kRTCPeerConnectionUsingComplexPlanB = 3787,
-  kRTCPeerConnectionUsingComplexUnifiedPlan = 3788,
+  kOBSOLETE_RTCPeerConnectionConstructedWithPlanB = 3785,
+  kOBSOLETE_RTCPeerConnectionConstructedWithUnifiedPlan = 3786,
+  kOBSOLETE_RTCPeerConnectionUsingComplexPlanB = 3787,
+  kOBSOLETE_RTCPeerConnectionUsingComplexUnifiedPlan = 3788,
   kWindowScreenIsExtended = 3789,
   kWindowScreenChange = 3790,
   kXRWebGLDepthInformationTextureAttribute = 3791,
@@ -3242,7 +3242,7 @@ enum WebFeature {
   kSpeculationRules = 3932,
   kV8AbortSignal_Abort_Method = 3933,
   kSelectionBackgroundColorInversion = 3934,
-  kRTCPeerConnectionPlanBThrewAnException = 3935,
+  kOBSOLETE_RTCPeerConnectionPlanBThrewAnException = 3935,
   kHTMLRootContained = 3936,
   kHTMLBodyContained = 3937,
   kXRFrameGetJointPose = 3938,

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL setLocalDescription(rollback) from have-local-offer state should reset back to stable state promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
-FAIL setLocalDescription(rollback) from stable state should reject with InvalidStateError promise_rejects_dom: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Rollback not supported in Plan B" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
-FAIL setLocalDescription(rollback) after setting answer description should reject with InvalidStateError promise_rejects_dom: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Rollback not supported in Plan B" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
-FAIL setLocalDescription(rollback) should ignore invalid sdp content and succeed promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
-FAIL setLocalDescription(rollback) should update internal state with a queued tassk, in the right order promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-Harness: the test ran to completion.
-

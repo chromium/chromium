@@ -379,11 +379,6 @@ void RTCRtpTransceiverImpl::set_state(RtpTransceiverState transceiver_state,
   internal_->set_state(std::move(transceiver_state), update_mode);
 }
 
-RTCRtpTransceiverPlatformImplementationType
-RTCRtpTransceiverImpl::ImplementationType() const {
-  return RTCRtpTransceiverPlatformImplementationType::kFullTransceiver;
-}
-
 uintptr_t RTCRtpTransceiverImpl::Id() const {
   return GetId(internal_->state().webrtc_transceiver().get());
 }

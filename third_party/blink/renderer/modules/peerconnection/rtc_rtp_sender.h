@@ -105,8 +105,7 @@ class RTCRtpSender final : public ScriptWrappable {
 
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpSenderPlatform> sender_;
-  // The spec says that "kind" should be looked up in transceiver, but keeping
-  // a copy here as long as we support Plan B.
+  // TODO(https://crbug.com/1302249): Delete this, it was only used for Plan B!
   String kind_;
   Member<MediaStreamTrack> track_;
   Member<RTCDtlsTransport> transport_;

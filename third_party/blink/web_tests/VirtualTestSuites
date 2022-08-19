@@ -442,12 +442,6 @@
     "args": ["--isolated-app-origins=https://web-platform.test"]
   },
   {
-    "prefix": "webrtc-wpt-plan-b",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/webrtc"],
-    "args": ["--disable-features=RTCUnifiedPlanByDefault"]
-  },
-  {
     "prefix": "display-compositor-pixel-dump",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],

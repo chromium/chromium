@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS replaceTrack() sets the track attribute to a new track.
-PASS replaceTrack() sets the track attribute to null.
-PASS replaceTrack() does not set the track synchronously.
-PASS replaceTrack() rejects when the peer connection is closed.
-FAIL replaceTrack() does not reject when invoked after removeTrack(). promise_test: Unhandled rejection with value: object "InvalidModificationError"
-PASS replaceTrack() does not reject after a subsequent removeTrack().
-Harness: the test ran to completion.
-

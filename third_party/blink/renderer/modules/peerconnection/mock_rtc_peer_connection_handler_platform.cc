@@ -215,10 +215,6 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
 
   scoped_refptr<DummyTransceiverInternal> internal() const { return internal_; }
 
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override {
-    return RTCRtpTransceiverPlatformImplementationType::kFullTransceiver;
-  }
   uintptr_t Id() const override { return internal_->id(); }
   String Mid() const override { return String(); }
   std::unique_ptr<RTCRtpSenderPlatform> Sender() const override {

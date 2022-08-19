@@ -204,11 +204,6 @@ FakeRTCRtpTransceiverImpl::FakeRTCRtpTransceiverImpl(
 
 FakeRTCRtpTransceiverImpl::~FakeRTCRtpTransceiverImpl() {}
 
-RTCRtpTransceiverPlatformImplementationType
-FakeRTCRtpTransceiverImpl::ImplementationType() const {
-  return RTCRtpTransceiverPlatformImplementationType::kFullTransceiver;
-}
-
 uintptr_t FakeRTCRtpTransceiverImpl::Id() const {
   NOTIMPLEMENTED();
   return 0u;

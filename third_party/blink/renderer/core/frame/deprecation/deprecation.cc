@@ -207,14 +207,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRTCConstraintEnableDtlsSrtpTrue);
-    case WebFeature::kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics:
-      return DeprecationInfo::WithTranslation(
-          feature,
-          DeprecationIssueType::
-              kRTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics);
-    case WebFeature::kRTCPeerConnectionSdpSemanticsPlanB:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRTCPeerConnectionSdpSemanticsPlanB);
     case WebFeature::kRtcpMuxPolicyNegotiate:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRtcpMuxPolicyNegotiate);

@@ -24,8 +24,11 @@ enum RTCRtcpMuxPolicy {
     "require"
 };
 
-// Nonstandard
-// For usage, see transition plan referenced from https://crbug.com/799030
+// The only supported format is "unified-plan". Exposed in
+// RTCPeerConnection.getConfiguration().sdpSemantics for backwards-compatibility
+// reasons. "plan-b" is only listed here as to avoid a type error when
+// attempting to construct an RTCPeerConnection with "plan-b", but it will be
+// ignored.
 enum SdpSemantics {
   "plan-b",
   "unified-plan"
@@ -46,8 +49,7 @@ dictionary RTCConfiguration {
     // TODO(foolip): DOMString peerIdentity;
     sequence<RTCCertificate> certificates;
     [EnforceRange] octet iceCandidatePoolSize = 0;
-    // Nonstandard, added for Unified Plan migration
-    [RuntimeEnabled=RTCUnifiedPlan] SdpSemantics sdpSemantics;
+    SdpSemantics sdpSemantics = "unified-plan";
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;

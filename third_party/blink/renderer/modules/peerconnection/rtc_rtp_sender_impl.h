@@ -169,33 +169,6 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   scoped_refptr<RTCRtpSenderInternal> internal_;
 };
 
-class MODULES_EXPORT RTCRtpSenderOnlyTransceiver
-    : public RTCRtpPlanBTransceiverPlatform {
- public:
-  explicit RTCRtpSenderOnlyTransceiver(
-      std::unique_ptr<blink::RTCRtpSenderPlatform> sender);
-  ~RTCRtpSenderOnlyTransceiver() override;
-
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override;
-  uintptr_t Id() const override;
-  String Mid() const override;
-  std::unique_ptr<RTCRtpSenderPlatform> Sender() const override;
-  std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
-  webrtc::RtpTransceiverDirection Direction() const override;
-  webrtc::RTCError SetDirection(
-      webrtc::RtpTransceiverDirection direction) override;
-  absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
-      const override;
-  absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
-      const override;
-  webrtc::RTCError SetCodecPreferences(
-      Vector<webrtc::RtpCodecCapability>) override;
-
- private:
-  std::unique_ptr<blink::RTCRtpSenderPlatform> sender_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SENDER_IMPL_H_

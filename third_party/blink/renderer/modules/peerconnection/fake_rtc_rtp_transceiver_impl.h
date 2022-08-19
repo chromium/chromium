@@ -96,8 +96,6 @@ class FakeRTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
       absl::optional<webrtc::RtpTransceiverDirection> current_direction);
   ~FakeRTCRtpTransceiverImpl() override;
 
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override;
   uintptr_t Id() const override;
   String Mid() const override;
   std::unique_ptr<blink::RTCRtpSenderPlatform> Sender() const override;

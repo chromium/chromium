@@ -239,44 +239,34 @@ String SerializeReceiver(const String& indent,
 }
 
 String SerializeTransceiver(const RTCRtpTransceiverPlatform& transceiver) {
-  if (transceiver.ImplementationType() ==
-      RTCRtpTransceiverPlatformImplementationType::kFullTransceiver) {
-    StringBuilder result;
-    result.Append("{\n");
-    // mid:'foo',
-    if (transceiver.Mid().IsNull()) {
-      result.Append("  mid:null,\n");
-    } else {
-      result.Append("  mid:'");
-      result.Append(String(transceiver.Mid()));
-      result.Append("',\n");
-    }
-    // sender:{...},
-    result.Append("  sender:");
-    result.Append(SerializeSender("  ", *transceiver.Sender()));
-    result.Append(",\n");
-    // receiver:{...},
-    result.Append("  receiver:");
-    result.Append(SerializeReceiver("  ", *transceiver.Receiver()));
-    result.Append(",\n");
-    // direction:'sendrecv',
-    result.Append("  direction:");
-    result.Append(SerializeDirection(transceiver.Direction()));
-    result.Append(",\n");
-    // currentDirection:null,
-    result.Append("  currentDirection:");
-    result.Append(SerializeOptionalDirection(transceiver.CurrentDirection()));
-    result.Append(",\n");
-    result.Append("}");
-    return result.ToString();
+  StringBuilder result;
+  result.Append("{\n");
+  // mid:'foo',
+  if (transceiver.Mid().IsNull()) {
+    result.Append("  mid:null,\n");
+  } else {
+    result.Append("  mid:'");
+    result.Append(String(transceiver.Mid()));
+    result.Append("',\n");
   }
-  if (transceiver.ImplementationType() ==
-      RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly) {
-    return SerializeSender("", *transceiver.Sender());
-  }
-  DCHECK(transceiver.ImplementationType() ==
-         RTCRtpTransceiverPlatformImplementationType::kPlanBReceiverOnly);
-  return SerializeReceiver("", *transceiver.Receiver());
+  // sender:{...},
+  result.Append("  sender:");
+  result.Append(SerializeSender("  ", *transceiver.Sender()));
+  result.Append(",\n");
+  // receiver:{...},
+  result.Append("  receiver:");
+  result.Append(SerializeReceiver("  ", *transceiver.Receiver()));
+  result.Append(",\n");
+  // direction:'sendrecv',
+  result.Append("  direction:");
+  result.Append(SerializeDirection(transceiver.Direction()));
+  result.Append(",\n");
+  // currentDirection:null,
+  result.Append("  currentDirection:");
+  result.Append(SerializeOptionalDirection(transceiver.CurrentDirection()));
+  result.Append(",\n");
+  result.Append("}");
+  return result.ToString();
 }
 
 String SerializeIceTransportType(
@@ -336,21 +326,6 @@ String SerializeRtcpMuxPolicy(
   return policy_str;
 }
 
-String SerializeSdpSemantics(webrtc::SdpSemantics sdp_semantics) {
-  String sdp_semantics_str("");
-  switch (sdp_semantics) {
-    case webrtc::SdpSemantics::kPlanB:
-      sdp_semantics_str = "plan-b";
-      break;
-    case webrtc::SdpSemantics::kUnifiedPlan:
-      sdp_semantics_str = "unified-plan";
-      break;
-    default:
-      NOTREACHED();
-  }
-  return "\"" + sdp_semantics_str + "\"";
-}
-
 // Serializes things that are of interest from the RTCConfiguration. Note that
 // this does not include some parameters that were passed down via
 // GoogMediaConstraints; see SerializePeerConnectionMediaConstraints() for that.
@@ -369,8 +344,6 @@ String SerializeConfiguration(
   result.Append(SerializeRtcpMuxPolicy(config.rtcp_mux_policy));
   result.Append(", iceCandidatePoolSize: ");
   result.AppendNumber(config.ice_candidate_pool_size);
-  result.Append(", sdpSemantics: ");
-  result.Append(SerializeSdpSemantics(config.sdp_semantics));
   if (usesInsertableStreams) {
     result.Append(", encodedInsertableStreams: true");
   }
@@ -949,15 +922,6 @@ void PeerConnectionTracker::TrackModifyTransceiver(
                    transceiver_index);
 }
 
-void PeerConnectionTracker::TrackRemoveTransceiver(
-    RTCPeerConnectionHandler* pc_handler,
-    PeerConnectionTracker::TransceiverUpdatedReason reason,
-    const RTCRtpTransceiverPlatform& transceiver,
-    size_t transceiver_index) {
-  TrackTransceiver("Removed", pc_handler, reason, transceiver,
-                   transceiver_index);
-}
-
 void PeerConnectionTracker::TrackTransceiver(
     const char* callback_type_ending,
     RTCPeerConnectionHandler* pc_handler,
@@ -968,34 +932,15 @@ void PeerConnectionTracker::TrackTransceiver(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String callback_type;
-  if (transceiver.ImplementationType() ==
-      RTCRtpTransceiverPlatformImplementationType::kFullTransceiver) {
-    callback_type = "transceiver";
-  } else if (transceiver.ImplementationType() ==
-             RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly) {
-    callback_type = "sender";
-  } else {
-    callback_type = "receiver";
-  }
-  callback_type = callback_type + callback_type_ending;
-
+  String callback_type = "transceiver" + String::FromUTF8(callback_type_ending);
   StringBuilder result;
   result.Append("Caused by: ");
   result.Append(GetTransceiverUpdatedReasonString(reason));
   result.Append("\n\n");
-  if (transceiver.ImplementationType() ==
-      RTCRtpTransceiverPlatformImplementationType::kFullTransceiver) {
-    result.Append("getTransceivers()");
-  } else if (transceiver.ImplementationType() ==
-             RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly) {
-    result.Append("getSenders()");
-  } else {
-    DCHECK_EQ(transceiver.ImplementationType(),
-              RTCRtpTransceiverPlatformImplementationType::kPlanBReceiverOnly);
-    result.Append("getReceivers()");
-  }
-  result.Append(String("[" + String::Number(transceiver_index) + "]:"));
+  result.Append("getTransceivers()");
+  result.Append("[");
+  result.Append(String::Number(transceiver_index));
+  result.Append("]:");
   result.Append(SerializeTransceiver(transceiver));
   SendPeerConnectionUpdate(id, callback_type, result.ToString());
 }

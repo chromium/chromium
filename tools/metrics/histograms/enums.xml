@@ -39292,7 +39292,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2589" label="CursorImageLE32x32"/>
   <int value="2590" label="CursorImageGT32x32"/>
   <int value="2591"
-      label="RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics"/>
+      label="OBSOLETE_RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics"/>
   <int value="2592" label="ResizeObserver_Constructor"/>
   <int value="2593" label="Collator"/>
   <int value="2594" label="NumberFormat"/>
@@ -40541,7 +40541,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3771" label="AddressSpaceUnknownSecureContextNavigatedToPrivate"/>
   <int value="3772"
       label="AddressSpaceUnknownNonSecureContextNavigatedToPrivate"/>
-  <int value="3773" label="RTCPeerConnectionSdpSemanticsPlanB"/>
+  <int value="3773" label="OBSOLETE_RTCPeerConnectionSdpSemanticsPlanB"/>
   <int value="3774" label="FetchRespondWithNoResponseWithUsedRequestBody"/>
   <int value="3775" label="V8TCPSocket_Close_Method"/>
   <int value="3776" label="V8TCPSocket_Readable_AttributeGetter"/>
@@ -40553,10 +40553,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3782" label="OBSOLETE_V8HTMLPopupElement_Show_Method"/>
   <int value="3783" label="OBSOLETE_V8HTMLPopupElement_Hide_Method"/>
   <int value="3784" label="OBSOLETE_WindowOpenWithAdditionalBoolParameter"/>
-  <int value="3785" label="RTCPeerConnectionConstructedWithPlanB"/>
-  <int value="3786" label="RTCPeerConnectionConstructedWithUnifiedPlan"/>
-  <int value="3787" label="RTCPeerConnectionUsingComplexPlanB"/>
-  <int value="3788" label="RTCPeerConnectionUsingComplexUnifiedPlan"/>
+  <int value="3785" label="OBSOLETE_RTCPeerConnectionConstructedWithPlanB"/>
+  <int value="3786"
+      label="OBSOLETE_RTCPeerConnectionConstructedWithUnifiedPlan"/>
+  <int value="3787" label="OBSOLETE_RTCPeerConnectionUsingComplexPlanB"/>
+  <int value="3788" label="OBSOLETE_RTCPeerConnectionUsingComplexUnifiedPlan"/>
   <int value="3789" label="WindowScreenIsExtended"/>
   <int value="3790" label="WindowScreenChange"/>
   <int value="3791" label="XRWebGLDepthInformationTextureAttribute"/>
@@ -40705,7 +40706,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3932" label="SpeculationRules"/>
   <int value="3933" label="V8AbortSignal_Abort_Method"/>
   <int value="3934" label="SelectionBackgroundColorInversion"/>
-  <int value="3935" label="RTCPeerConnectionPlanBThrewAnException"/>
+  <int value="3935" label="OBSOLETE_RTCPeerConnectionPlanBThrewAnException"/>
   <int value="3936" label="HTMLRootContained"/>
   <int value="3937" label="HTMLBodyContained"/>
   <int value="3938" label="XRFrameGetJointPose"/>

@@ -314,11 +314,10 @@ class RTCPeerConnectionHandlerTest : public SimTest {
 
     pc_handler_ = CreateRTCPeerConnectionHandlerUnderTest();
     mock_tracker_ = MakeGarbageCollected<NiceMock<MockPeerConnectionTracker>>();
-    webrtc::PeerConnectionInterface::RTCConfiguration config;
-    config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
     DummyExceptionStateForTesting exception_state;
-    EXPECT_TRUE(pc_handler_->InitializeForTest(config, mock_tracker_.Get(),
-                                               exception_state));
+    EXPECT_TRUE(pc_handler_->InitializeForTest(
+        webrtc::PeerConnectionInterface::RTCConfiguration(),
+        mock_tracker_.Get(), exception_state));
     mock_peer_connection_ = pc_handler_->native_peer_connection();
     ASSERT_TRUE(mock_peer_connection_);
     EXPECT_CALL(*mock_peer_connection_, Close());
@@ -438,9 +437,6 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       auto error_or_transceiver = pc_handler_->AddTrack(
           component, MediaStreamDescriptorVector({descriptor}));
       if (error_or_transceiver.ok()) {
-        DCHECK_EQ(
-            error_or_transceiver.value()->ImplementationType(),
-            RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly);
         auto sender = error_or_transceiver.value()->Sender();
         senders_.push_back(std::unique_ptr<blink::RTCRtpSenderImpl>(
             static_cast<blink::RTCRtpSenderImpl*>(sender.release())));
@@ -450,9 +446,6 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       auto error_or_transceiver = pc_handler_->AddTrack(
           component, MediaStreamDescriptorVector({descriptor}));
       if (error_or_transceiver.ok()) {
-        DCHECK_EQ(
-            error_or_transceiver.value()->ImplementationType(),
-            RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly);
         auto sender = error_or_transceiver.value()->Sender();
         senders_.push_back(std::unique_ptr<blink::RTCRtpSenderImpl>(
             static_cast<blink::RTCRtpSenderImpl*>(sender.release())));
@@ -642,17 +635,13 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
   pc_handler_->observer()->OnIceGatheringChange(
       webrtc::PeerConnectionInterface::kIceGatheringNew);
 
-  EXPECT_CALL(*mock_client_.get(), DidChangeIceConnectionState(_)).Times(0);
-  pc_handler_->observer()->OnIceConnectionChange(
-      webrtc::PeerConnectionInterface::kIceConnectionDisconnected);
-
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
+  EXPECT_CALL(*mock_client_.get(), DidModifyTransceiversForMock(_, _, _))
       .Times(0);
   rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
       AddRemoteMockMediaStream("remote_stream", "video", "audio"));
   InvokeOnAddStream(remote_stream);
 
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
+  EXPECT_CALL(*mock_client_.get(), DidModifyTransceiversForMock(_, _, _))
       .Times(0);
   InvokeOnRemoveStream(remote_stream);
 
@@ -834,12 +823,6 @@ TEST_F(RTCPeerConnectionHandlerTest, addAndRemoveStream) {
       TrackAddTransceiver(
           pc_handler_.get(),
           PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack, _, _))
-      .Times(2);
-  EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackRemoveTransceiver(
-          pc_handler_.get(),
-          PeerConnectionTracker::TransceiverUpdatedReason::kRemoveTrack, _, _))
       .Times(2);
   EXPECT_TRUE(AddStream(local_stream));
   EXPECT_EQ(stream_label.Utf8(), mock_peer_connection_->stream_label());
@@ -1061,53 +1044,6 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   EXPECT_EQ(defined_stats_count, 1);
 }
 
-TEST_F(RTCPeerConnectionHandlerTest, OnIceConnectionChange) {
-  testing::InSequence sequence;
-
-  webrtc::PeerConnectionInterface::IceConnectionState new_state =
-      webrtc::PeerConnectionInterface::kIceConnectionNew;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionNew));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionChecking;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionChecking));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionConnected;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionConnected));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionCompleted;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionCompleted));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionFailed;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionFailed));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionDisconnected;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionDisconnected));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-
-  new_state = webrtc::PeerConnectionInterface::kIceConnectionClosed;
-  EXPECT_CALL(*mock_client_.get(),
-              DidChangeIceConnectionState(
-                  webrtc::PeerConnectionInterface::kIceConnectionClosed));
-  pc_handler_->observer()->OnStandardizedIceConnectionChange(new_state);
-}
-
 TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
   testing::InSequence sequence;
 
@@ -1222,55 +1158,6 @@ TEST_F(RTCPeerConnectionHandlerTest, OnIceGatheringChange) {
   EXPECT_EQ("", mock_client_->candidate_mid());
   EXPECT_FALSE(mock_client_->candidate_mlineindex().has_value());
   EXPECT_EQ("", mock_client_->candidate_sdp());
-}
-
-// TODO(hbos): Enable when not mocking or remove test. https://crbug.com/788659
-TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnAddAndOnRemoveStream) {
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
-      AddRemoteMockMediaStream("remote_stream", "video", "audio"));
-  // Grab receivers when they're added to/removed from the PC.
-  std::vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_added;
-  std::vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_removed;
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
-      .WillRepeatedly(Invoke(
-          [&receivers_added, &receivers_removed](
-              webrtc::PeerConnectionInterface::SignalingState signaling_state,
-              Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
-                  platform_receivers_added,
-              Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
-                  platform_receivers_removed) {
-            if (!platform_receivers_added->IsEmpty()) {
-              receivers_added.push_back(
-                  std::move((*platform_receivers_added)[0]));
-            }
-            if (!platform_receivers_removed->IsEmpty()) {
-              receivers_removed.push_back(
-                  std::move((*platform_receivers_removed)[0]));
-            }
-          }));
-  EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackAddTransceiver(
-          pc_handler_.get(),
-          PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack, _, _))
-      .Times(2);
-  EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackRemoveTransceiver(
-          pc_handler_.get(),
-          PeerConnectionTracker::TransceiverUpdatedReason::kRemoveTrack, _, _))
-      .Times(2);
-
-  InvokeOnAddStream(remote_stream);
-  RunMessageLoopsUntilIdle();
-  EXPECT_TRUE(HasReceiverForEveryTrack(remote_stream, receivers_added));
-  InvokeOnRemoveStream(remote_stream);
-  RunMessageLoopsUntilIdle();
-
-  EXPECT_EQ(receivers_added.size(), 2u);
-  EXPECT_EQ(receivers_added.size(), receivers_removed.size());
-  EXPECT_EQ(receivers_added[0]->Id(), receivers_removed[0]->Id());
-  EXPECT_EQ(receivers_added[1]->Id(), receivers_removed[1]->Id());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {

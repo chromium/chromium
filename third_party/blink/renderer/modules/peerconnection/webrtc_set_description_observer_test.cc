@@ -77,8 +77,7 @@ class ObserverHandlerWrapper {
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only)
+      scoped_refptr<WebRtcSetDescriptionObserver> observer)
       : signaling_task_runner_(std::move(signaling_task_runner)),
         handler_type_(handler_type),
         local_handler_(nullptr),
@@ -87,14 +86,12 @@ class ObserverHandlerWrapper {
       case ObserverHandlerType::kLocal:
         local_handler_ = WebRtcSetLocalDescriptionObserverHandler::Create(
             std::move(main_task_runner), signaling_task_runner_, std::move(pc),
-            std::move(track_adapter_map), std::move(observer),
-            surface_receivers_only);
+            std::move(track_adapter_map), std::move(observer));
         break;
       case ObserverHandlerType::kRemote:
         remote_handler_ = WebRtcSetRemoteDescriptionObserverHandler::Create(
             std::move(main_task_runner), signaling_task_runner_, std::move(pc),
-            std::move(track_adapter_map), std::move(observer),
-            surface_receivers_only);
+            std::move(track_adapter_map), std::move(observer));
         break;
     }
   }
@@ -171,28 +168,17 @@ enum class StateSurfacerType {
   kReceiversOnly,
 };
 
-using TestVariety = std::tuple<ObserverHandlerType, StateSurfacerType>;
-
-struct PrintToStringTestVariety {
+struct PrintToStringObserverHandlerType {
   std::string operator()(
-      const testing::TestParamInfo<TestVariety>& info) const {
-    ObserverHandlerType handler_type = std::get<0>(info.param);
-    StateSurfacerType surfacer_type = std::get<1>(info.param);
+      const testing::TestParamInfo<ObserverHandlerType>& info) const {
+    ObserverHandlerType handler_type = info.param;
     std::string str;
     switch (handler_type) {
       case ObserverHandlerType::kLocal:
-        str += "LocalDescriptionWith";
+        str += "LocalDescription";
         break;
       case ObserverHandlerType::kRemote:
-        str += "RemoteDescriptionWith";
-        break;
-    }
-    switch (surfacer_type) {
-      case StateSurfacerType::kTransceivers:
-        str += "TransceiverStates";
-        break;
-      case StateSurfacerType::kReceiversOnly:
-        str += "ReceiverStates";
+        str += "RemoteDescription";
         break;
     }
     return str;
@@ -205,20 +191,10 @@ struct PrintToStringTestVariety {
 // setLocalDescription() and setRemoteDescription() respectively, are virtually
 // identical in terms of functionality but have different class hierarchies due
 // to webrtc observer interfaces being different classes.
-//
-// Each handler is testable under two modes of operation: surfacing state
-// information about transceivers (includes both senders and receivers), or only
-// surfacing receiver state information. Unified Plan requires the former and
-// Plan B requires the latter.
-//
-// Parameterization allows easily running the same tests for each handler and
-// mode, as specified by the TestVariety.
 class WebRtcSetDescriptionObserverHandlerTest
-    : public ::testing::TestWithParam<TestVariety> {
+    : public ::testing::TestWithParam<ObserverHandlerType> {
  public:
-  WebRtcSetDescriptionObserverHandlerTest()
-      : handler_type_(std::get<0>(GetParam())),
-        surfacer_type_(std::get<1>(GetParam())) {}
+  WebRtcSetDescriptionObserverHandlerTest() : handler_type_(GetParam()) {}
 
   void SetUp() override {
     pc_ = new MockPeerConnectionInterface;
@@ -232,8 +208,7 @@ class WebRtcSetDescriptionObserverHandlerTest
     observer_handler_ = std::make_unique<ObserverHandlerWrapper>(
         handler_type_, main_thread_,
         dependency_factory_->GetWebRtcSignalingTaskRunner(), pc_,
-        track_adapter_map_, observer_,
-        surfacer_type_ == StateSurfacerType::kReceiversOnly);
+        track_adapter_map_, observer_);
   }
 
   void TearDown() override { blink::WebHeap::CollectAllGarbageForTesting(); }
@@ -253,8 +228,6 @@ class WebRtcSetDescriptionObserverHandlerTest
   }
 
   void CreateTransceivers() {
-    ASSERT_EQ(StateSurfacerType::kTransceivers, surfacer_type_);
-
     auto* component = CreateLocalTrack("local_track");
     auto local_track_adapter =
         track_adapter_map_->GetOrCreateLocalTrackAdapter(component);
@@ -287,9 +260,7 @@ class WebRtcSetDescriptionObserverHandlerTest
   }
 
   void ExpectMatchingTransceivers() {
-    ASSERT_EQ(StateSurfacerType::kTransceivers, surfacer_type_);
     ASSERT_EQ(1u, transceivers_.size());
-
     auto transceiver = transceivers_[0];
     auto sender = transceiver->sender();
     auto receiver = transceiver->receiver();
@@ -324,41 +295,6 @@ class WebRtcSetDescriptionObserverHandlerTest
     EXPECT_EQ(receiver->stream_ids(), receiver_state.stream_ids());
   }
 
-  void CreateReceivers() {
-    ASSERT_EQ(StateSurfacerType::kReceiversOnly, surfacer_type_);
-
-    scoped_refptr<blink::MockWebRtcAudioTrack> remote_track =
-        blink::MockWebRtcAudioTrack::Create("remote_track");
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
-        new rtc::RefCountedObject<blink::MockMediaStream>("remote_stream"));
-    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver(
-        new rtc::RefCountedObject<blink::FakeRtpReceiver>(
-            rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(
-                remote_track.get()),
-            std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>(
-                {remote_stream})));
-    receivers_.push_back(receiver);
-    EXPECT_CALL(*pc_, GetReceivers()).WillRepeatedly(Return(receivers_));
-  }
-
-  void ExpectMatchingReceivers() {
-    ASSERT_EQ(StateSurfacerType::kReceiversOnly, surfacer_type_);
-    ASSERT_EQ(1u, receivers_.size());
-
-    auto receiver = receivers_[0];
-    EXPECT_EQ(1u, observer_->states().transceiver_states.size());
-    const blink::RtpTransceiverState& transceiver_state =
-        observer_->states().transceiver_states[0];
-    EXPECT_FALSE(transceiver_state.sender_state());
-    EXPECT_TRUE(transceiver_state.receiver_state());
-    const blink::RtpReceiverState& receiver_state =
-        *transceiver_state.receiver_state();
-    EXPECT_TRUE(receiver_state.is_initialized());
-    EXPECT_EQ(receiver.get(), receiver_state.webrtc_receiver());
-    EXPECT_EQ(receiver->track(), receiver_state.track_ref()->webrtc_track());
-    EXPECT_EQ(receiver->stream_ids(), receiver_state.stream_ids());
-  }
-
  protected:
   scoped_refptr<MockPeerConnectionInterface> pc_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
@@ -367,7 +303,6 @@ class WebRtcSetDescriptionObserverHandlerTest
   scoped_refptr<WebRtcSetDescriptionObserverForTest> observer_;
 
   ObserverHandlerType handler_type_;
-  StateSurfacerType surfacer_type_;
   std::unique_ptr<ObserverHandlerWrapper> observer_handler_;
 
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
@@ -375,20 +310,10 @@ class WebRtcSetDescriptionObserverHandlerTest
   std::vector<
       std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>>
       local_track_adapters_;
-  // Used instead of |transceivers_| when |surfacer_type_| is
-  // StateSurfacerType::kReceiversOnly.
-  std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface>> receivers_;
 };
 
 TEST_P(WebRtcSetDescriptionObserverHandlerTest, OnSuccess) {
-  switch (surfacer_type_) {
-    case StateSurfacerType::kTransceivers:
-      CreateTransceivers();
-      break;
-    case StateSurfacerType::kReceiversOnly:
-      CreateReceivers();
-      break;
-  }
+  CreateTransceivers();
 
   EXPECT_CALL(*pc_, signaling_state())
       .WillRepeatedly(Return(webrtc::PeerConnectionInterface::kStable));
@@ -400,25 +325,11 @@ TEST_P(WebRtcSetDescriptionObserverHandlerTest, OnSuccess) {
   EXPECT_EQ(webrtc::PeerConnectionInterface::kStable,
             observer_->states().signaling_state);
 
-  switch (surfacer_type_) {
-    case StateSurfacerType::kTransceivers:
-      ExpectMatchingTransceivers();
-      break;
-    case StateSurfacerType::kReceiversOnly:
-      ExpectMatchingReceivers();
-      break;
-  }
+  ExpectMatchingTransceivers();
 }
 
 TEST_P(WebRtcSetDescriptionObserverHandlerTest, OnFailure) {
-  switch (surfacer_type_) {
-    case StateSurfacerType::kTransceivers:
-      CreateTransceivers();
-      break;
-    case StateSurfacerType::kReceiversOnly:
-      CreateReceivers();
-      break;
-  }
+  CreateTransceivers();
 
   EXPECT_CALL(*pc_, signaling_state())
       .WillRepeatedly(Return(webrtc::PeerConnectionInterface::kStable));
@@ -433,14 +344,7 @@ TEST_P(WebRtcSetDescriptionObserverHandlerTest, OnFailure) {
   EXPECT_EQ(webrtc::PeerConnectionInterface::kStable,
             observer_->states().signaling_state);
 
-  switch (surfacer_type_) {
-    case StateSurfacerType::kTransceivers:
-      ExpectMatchingTransceivers();
-      break;
-    case StateSurfacerType::kReceiversOnly:
-      ExpectMatchingReceivers();
-      break;
-  }
+  ExpectMatchingTransceivers();
 }
 
 // Test coverage for https://crbug.com/897251. If the webrtc peer connection is
@@ -453,14 +357,7 @@ TEST_P(WebRtcSetDescriptionObserverHandlerTest, OnFailure) {
 // due to track adapters not existing.
 TEST_P(WebRtcSetDescriptionObserverHandlerTest,
        ClosePeerConnectionBeforeCallback) {
-  switch (surfacer_type_) {
-    case StateSurfacerType::kTransceivers:
-      CreateTransceivers();
-      break;
-    case StateSurfacerType::kReceiversOnly:
-      CreateReceivers();
-      break;
-  }
+  CreateTransceivers();
 
   // Simulate the peer connection having been closed and local track adapters
   // destroyed before the observer was invoked.
@@ -478,17 +375,10 @@ TEST_P(WebRtcSetDescriptionObserverHandlerTest,
   EXPECT_EQ(0u, observer_->states().transceiver_states.size());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebRtcSetDescriptionObserverHandlerTest,
-    ::testing::Values(std::make_tuple(ObserverHandlerType::kLocal,
-                                      StateSurfacerType::kTransceivers),
-                      std::make_tuple(ObserverHandlerType::kRemote,
-                                      StateSurfacerType::kTransceivers),
-                      std::make_tuple(ObserverHandlerType::kLocal,
-                                      StateSurfacerType::kReceiversOnly),
-                      std::make_tuple(ObserverHandlerType::kRemote,
-                                      StateSurfacerType::kReceiversOnly)),
-    PrintToStringTestVariety());
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebRtcSetDescriptionObserverHandlerTest,
+                         ::testing::Values(ObserverHandlerType::kLocal,
+                                           ObserverHandlerType::kRemote),
+                         PrintToStringObserverHandlerType());
 
 }  // namespace blink

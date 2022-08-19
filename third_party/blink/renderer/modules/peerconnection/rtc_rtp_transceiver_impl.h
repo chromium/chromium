@@ -168,8 +168,6 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
   blink::RTCRtpSenderImpl* content_sender();
   blink::RTCRtpReceiverImpl* content_receiver();
 
-  RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const override;
   uintptr_t Id() const override;
   String Mid() const override;
   void SetMid(absl::optional<String>) override;

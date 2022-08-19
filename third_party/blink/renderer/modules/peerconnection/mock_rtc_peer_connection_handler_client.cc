@@ -16,9 +16,6 @@ MockRTCPeerConnectionHandlerClient::MockRTCPeerConnectionHandlerClient() {
       .WillByDefault(testing::Invoke(
           this,
           &MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker));
-  ON_CALL(*this, DidModifyReceiversPlanBForMock(_, _, _))
-      .WillByDefault(testing::Invoke(
-          this, &MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker));
 }
 
 MockRTCPeerConnectionHandlerClient::~MockRTCPeerConnectionHandlerClient() {}

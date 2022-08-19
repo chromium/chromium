@@ -108,8 +108,7 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only);
+      scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
   WebRtcSetDescriptionObserverHandlerImpl(
       const WebRtcSetDescriptionObserverHandlerImpl&) = delete;
@@ -143,7 +142,6 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
   scoped_refptr<webrtc::PeerConnectionInterface> pc_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
   scoped_refptr<WebRtcSetDescriptionObserver> observer_;
-  bool surface_receivers_only_;
 };
 
 // An implementation of webrtc::SetLocalDescriptionObserverInterface for
@@ -156,8 +154,7 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only);
+      scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
   WebRtcSetLocalDescriptionObserverHandler(
       const WebRtcSetLocalDescriptionObserverHandler&) = delete;
@@ -174,8 +171,7 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only);
+      scoped_refptr<WebRtcSetDescriptionObserver> observer);
   ~WebRtcSetLocalDescriptionObserverHandler() override;
 
   scoped_refptr<WebRtcSetDescriptionObserverHandlerImpl> handler_impl_;
@@ -191,8 +187,7 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only);
+      scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
   WebRtcSetRemoteDescriptionObserverHandler(
       const WebRtcSetRemoteDescriptionObserverHandler&) = delete;
@@ -210,8 +205,7 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
       scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      scoped_refptr<WebRtcSetDescriptionObserver> observer,
-      bool surface_receivers_only);
+      scoped_refptr<WebRtcSetDescriptionObserver> observer);
   ~WebRtcSetRemoteDescriptionObserverHandler() override;
 
   scoped_refptr<WebRtcSetDescriptionObserverHandlerImpl> handler_impl_;

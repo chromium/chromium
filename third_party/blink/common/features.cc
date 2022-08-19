@@ -390,14 +390,6 @@ const base::Feature kPurgeRendererMemoryWhenBackgrounded {
 const base::Feature kWindowOpenNewPopupBehavior{
     "WindowOpenNewPopupBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Changes the default RTCPeerConnection constructor behavior to use Unified
-// Plan as the SDP semantics. When the feature is enabled, Unified Plan is used
-// unless the default is overridden (by passing {sdpSemantics:'plan-b'} as the
-// argument). This was shipped in M72.
-// The feature is still used by virtual test suites exercising Plan B.
-const base::Feature kRTCUnifiedPlanByDefault{"RTCUnifiedPlanByDefault",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Determines if the SDP attrbute extmap-allow-mixed should be offered by
 // default or not. The default value can be overridden by passing
 // {offerExtmapAllowMixed:false} as an argument to the RTCPeerConnection

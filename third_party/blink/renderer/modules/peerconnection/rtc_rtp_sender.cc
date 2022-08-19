@@ -647,11 +647,6 @@ void RTCRtpSender::setStreams(HeapVector<Member<MediaStream>> streams,
         "The RTCPeerConnection's signalingState is 'closed'.");
     return;
   }
-  if (pc_->sdp_semantics() != webrtc::SdpSemantics::kUnifiedPlan) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kOnlySupportedInUnifiedPlanMessage);
-    return;
-  }
   Vector<String> stream_ids;
   for (auto stream : streams)
     stream_ids.emplace_back(stream->id());

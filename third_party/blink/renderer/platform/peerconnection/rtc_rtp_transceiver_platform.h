@@ -20,23 +20,6 @@ namespace blink {
 class RTCRtpReceiverPlatform;
 class RTCRtpSenderPlatform;
 
-// In Unified Plan transceivers exist and a full implementation of
-// RTCRtpTransceiverPlatform is required.
-// In Plan B, the same methods that would be used to surface transceivers only
-// surface the sender or receiver component.
-// To make the Plan B -> Unified Plan transition easier,
-// RTCRtpTransceiverPlatform is used in both cases and ImplementationType
-// indicates which methods are applicable for the RTCRtpTransceiverPlatform
-// implementation.
-enum class RTCRtpTransceiverPlatformImplementationType {
-  // Unified Plan: All methods implemented.
-  kFullTransceiver,
-  // Plan B: Only Sender() is implemented.
-  kPlanBSenderOnly,
-  // Plan B: Only Receiver() is implemented.
-  kPlanBReceiverOnly,
-};
-
 // Interface for content to implement as to allow the surfacing of transceivers.
 // TODO(hbos): [Onion Soup] Remove the content layer versions of this class and
 // rely on webrtc directly from blink. Requires coordination with senders and
@@ -44,11 +27,6 @@ enum class RTCRtpTransceiverPlatformImplementationType {
 class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
  public:
   virtual ~RTCRtpTransceiverPlatform();
-
-  // Which methods (other than ImplementationType()) is guaranteed to be
-  // implemented.
-  virtual RTCRtpTransceiverPlatformImplementationType ImplementationType()
-      const = 0;
 
   // Identifies the webrtc-layer transceiver. Multiple RTCRtpTransceiverPlatform
   // can exist for the same webrtc-layer transceiver.
@@ -77,24 +55,6 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
   HeaderExtensionsNegotiated() const = 0;
   virtual Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
       const = 0;
-};
-
-// This class contains dummy implementations for functions that are not
-// supported in Plan B mode.
-class RTCRtpPlanBTransceiverPlatform : public RTCRtpTransceiverPlatform {
- public:
-  webrtc::RTCError SetOfferedRtpHeaderExtensions(
-      Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override {
-    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
-  }
-  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
-      const override {
-    return {};
-  }
-  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
-      const override {
-    return {};
-  }
 };
 
 }  // namespace blink

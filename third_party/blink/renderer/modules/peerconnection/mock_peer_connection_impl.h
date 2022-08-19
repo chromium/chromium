@@ -231,9 +231,7 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface>> GetReceivers()
       const override;
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
-  GetTransceivers() const override {
-    return {};
-  }
+  GetTransceivers() const override;
   MOCK_CONST_METHOD0(GetSctpTransport,
                      rtc::scoped_refptr<webrtc::SctpTransportInterface>());
   rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
@@ -416,6 +414,7 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   std::vector<std::string> local_stream_ids_;
   rtc::scoped_refptr<MockStreamCollection> remote_streams_;
   std::vector<rtc::scoped_refptr<FakeRtpSender>> senders_;
+  std::vector<rtc::scoped_refptr<FakeRtpTransceiver>> transceivers_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> local_desc_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> remote_desc_;
   std::unique_ptr<webrtc::SessionDescriptionInterface>

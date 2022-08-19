@@ -91,8 +91,6 @@ class V8RTCStatsCallback;
 class V8UnionMediaStreamTrackOrString;
 class V8VoidFunction;
 
-extern const char kOnlySupportedInUnifiedPlanMessage[];
-
 class MODULES_EXPORT RTCPeerConnection final
     : public EventTargetWithInlineData,
       public RTCPeerConnectionHandlerClient,
@@ -113,7 +111,6 @@ class MODULES_EXPORT RTCPeerConnection final
 
   RTCPeerConnection(ExecutionContext*,
                     webrtc::PeerConnectionInterface::RTCConfiguration,
-                    bool sdp_semantics_specified,
                     bool encoded_insertable_streams,
                     GoogMediaConstraints*,
                     ExceptionState&);
@@ -298,15 +295,8 @@ class MODULES_EXPORT RTCPeerConnection final
       RTCSessionDescriptionPlatform* current_remote_description) override;
   void DidChangeIceGatheringState(
       webrtc::PeerConnectionInterface::IceGatheringState) override;
-  void DidChangeIceConnectionState(
-      webrtc::PeerConnectionInterface::IceConnectionState) override;
   void DidChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState) override;
-  void DidModifyReceiversPlanB(
-      webrtc::PeerConnectionInterface::SignalingState,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
-      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
-          platform_receivers_removed) override;
   void DidModifySctpTransport(WebRTCSctpTransportSnapshot) override;
   void DidModifyTransceivers(webrtc::PeerConnectionInterface::SignalingState,
                              Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
@@ -335,17 +325,6 @@ class MODULES_EXPORT RTCPeerConnection final
   static int PeerConnectionCount();
   static int PeerConnectionCountLimit();
 
-  // SLD/SRD Helper method, public for testing.
-  // This function returns a value that indicates if complex SDP is being used
-  // and whether a format is explicitly specified. If the SDP is not complex or
-  // it could not be parsed, absl::nullopt is returned.
-  // When "Complex" SDP (i.e., SDP that has multiple tracks) is used without
-  // explicitly specifying the SDP format, there may be errors if the
-  // application assumes a format that differs from the actual default format.
-  absl::optional<ComplexSdpCategory> CheckForComplexSdp(
-      const ParsedSessionDescription&) const;
-  void NoteVoidRequestCompleted(RTCSetSessionDescriptionOperation operation,
-                                bool success);
   static void GenerateCertificateCompleted(
       ScriptPromiseResolver* resolver,
       rtc::scoped_refptr<rtc::RTCCertificate> certificate);
@@ -353,8 +332,6 @@ class MODULES_EXPORT RTCPeerConnection final
   // Called by RTCIceTransport::OnStateChange to update the ice connection
   // state.
   void UpdateIceConnectionState();
-
-  webrtc::SdpSemantics sdp_semantics() { return sdp_semantics_; }
 
   bool encoded_insertable_streams() { return encoded_insertable_streams_; }
 
@@ -507,8 +484,6 @@ class MODULES_EXPORT RTCPeerConnection final
 
   DOMException* checkSdpForStateErrors(ExecutionContext*,
                                        const ParsedSessionDescription&);
-  void RecordSdpCategoryAndMaybeEmitWarnings(
-      const ParsedSessionDescription&) const;
 
   HeapHashSet<Member<RTCIceTransport>> ActiveIceTransports() const;
 
@@ -597,17 +572,6 @@ class MODULES_EXPORT RTCPeerConnection final
   String last_answer_;
 
   Member<RTCSctpTransport> sctp_transport_;
-
-  // In Plan B, senders and receivers are added or removed independently of one
-  // another. In Unified Plan, senders and receivers are created in pairs as
-  // transceivers. Transceivers may become inactive, but are never removed.
-  // The value of this member affects the behavior of some methods and what
-  // information is surfaced from webrtc. This has the value "kPlanB" or
-  // "kUnifiedPlan", if constructed with "kDefault" it is translated to one or
-  // the other.
-  webrtc::SdpSemantics sdp_semantics_;
-  // Whether sdpSemantics was specified at construction.
-  bool sdp_semantics_specified_;
 
   // Blink and WebRTC timestamp diff.
   const base::TimeDelta blink_webrtc_time_diff_;

@@ -306,10 +306,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   void OnIceGatheringChange(
       webrtc::PeerConnectionInterface::IceGatheringState new_state);
   void OnNegotiationNeededEvent(uint32_t event_id);
-  void OnReceiversModifiedPlanB(
-      webrtc::PeerConnectionInterface::SignalingState signaling_state,
-      Vector<blink::RtpReceiverState> receiver_state,
-      Vector<uintptr_t> receiver_id);
   void OnModifySctpTransport(blink::WebRTCSctpTransportSnapshot state);
   void OnModifyTransceivers(
       webrtc::PeerConnectionInterface::SignalingState signaling_state,
@@ -384,14 +380,11 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>*
           error_or_sender);
-  bool RemoveTrackPlanB(blink::RTCRtpSenderPlatform* web_sender);
-  webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
-  RemoveTrackUnifiedPlan(blink::RTCRtpSenderPlatform* web_sender);
   // Helper function to remove a track on the signaling thread.
   // Updates the entire transceiver state.
   // The result will be absl::nullopt if the operation is cancelled,
   // and no change to the state will be made.
-  void RemoveTrackUnifiedPlanOnSignalingThread(
+  void RemoveTrackOnSignalingThread(
       webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       absl::optional<webrtc::RTCError>* result);
@@ -458,10 +451,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // needs to reference it, and automatically disposed when there are no longer
   // any components referencing it.
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
-  // In Plan B, senders and receivers are added or removed independently of one
-  // another. In Unified Plan, senders and receivers are created in pairs as
-  // transceivers. Transceivers may become inactive, but are never removed.
-  // TODO(hbos): Implement transceiver behaviors. https://crbug.com/777617
   // Blink layer correspondents of |webrtc::RtpSenderInterface|.
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>> rtp_senders_;
   // Blink layer correspondents of |webrtc::RtpReceiverInterface|.

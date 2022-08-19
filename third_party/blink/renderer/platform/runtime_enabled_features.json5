@@ -1957,17 +1957,6 @@
       name: "RTCSvcScalabilityMode",
       status: "experimental",
     },
-    // Enables the use of |RTCConfiguration::sdpSemantics| to override the
-    // default SDP semantics at RTCPeerConnection construction.
-    {
-      name: "RTCUnifiedPlan",
-      status: "stable",
-    },
-    // Overrides the default SDP semantics to be Unified Plan at
-    // RTCPeerConnection construction (unless otherwise specified).
-    {
-      name: "RTCUnifiedPlanByDefault",
-    },
     {
       name: "SanitizerAPI",
       status: "experimental",

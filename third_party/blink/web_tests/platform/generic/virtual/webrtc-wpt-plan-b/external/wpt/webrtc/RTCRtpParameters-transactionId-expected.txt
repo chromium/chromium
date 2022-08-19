@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL sender.getParameters() should return different transaction IDs for each call promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL sender.setParameters() with transaction ID different from last getParameters() should reject with InvalidModificationError promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL sender.setParameters() with transaction ID unset should reject with TypeError promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL setParameters() twice with the same parameters should reject with InvalidStateError promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL setParameters() with parameters older than last getParameters() should reject with InvalidModificationError promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-Harness: the test ran to completion.
-

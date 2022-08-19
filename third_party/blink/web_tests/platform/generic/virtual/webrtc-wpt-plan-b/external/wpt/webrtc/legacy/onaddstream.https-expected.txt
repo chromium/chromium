@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_true: Transceiver is set on event expected true got false
-FAIL Check onaddstream assert_equals: expected "[{streams:[{}]},{streams:[{}]}]" but got "[]"
-Harness: the test ran to completion.
-

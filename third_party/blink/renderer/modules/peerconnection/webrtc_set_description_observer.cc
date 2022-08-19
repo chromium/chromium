@@ -54,14 +54,12 @@ WebRtcSetDescriptionObserverHandlerImpl::
         scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
-        scoped_refptr<WebRtcSetDescriptionObserver> observer,
-        bool surface_receivers_only)
+        scoped_refptr<WebRtcSetDescriptionObserver> observer)
     : main_task_runner_(std::move(main_task_runner)),
       signaling_task_runner_(std::move(signaling_task_runner)),
       pc_(std::move(pc)),
       track_adapter_map_(std::move(track_adapter_map)),
-      observer_(std::move(observer)),
-      surface_receivers_only_(surface_receivers_only) {}
+      observer_(std::move(observer)) {}
 
 WebRtcSetDescriptionObserverHandlerImpl::
     ~WebRtcSetDescriptionObserverHandlerImpl() = default;
@@ -72,20 +70,13 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       receiver_only_transceivers;
   std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
-  // Only surface transceiver/receiver states if the peer connection is not
-  // closed. If the peer connection is closed, the peer connection handler may
-  // have been destroyed along with any track adapters that
-  // blink::TransceiverStateSurfacer assumes exist. This is treated as a special
-  // case due to https://crbug.com/897251.
+  // Only surface transceiver states if the peer connection is not closed. If
+  // the peer connection is closed, the peer connection handler may have been
+  // destroyed along with any track adapters that TransceiverStateSurfacer
+  // assumes exist. This is treated as a special case due to
+  // https://crbug.com/897251.
   if (pc_->signaling_state() != webrtc::PeerConnectionInterface::kClosed) {
-    if (surface_receivers_only_) {
-      for (const auto& receiver : pc_->GetReceivers()) {
-        transceivers.emplace_back(
-            new blink::SurfaceReceiverStateOnly(receiver));
-      }
-    } else {
-      transceivers = pc_->GetTransceivers();
-    }
+    transceivers = pc_->GetTransceivers();
   }
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       main_task_runner_, signaling_task_runner_);
@@ -146,12 +137,10 @@ WebRtcSetLocalDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
     scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-    scoped_refptr<WebRtcSetDescriptionObserver> observer,
-    bool surface_receivers_only) {
+    scoped_refptr<WebRtcSetDescriptionObserver> observer) {
   return new rtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
-      std::move(pc), std::move(track_adapter_map), std::move(observer),
-      surface_receivers_only);
+      std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
 
 WebRtcSetLocalDescriptionObserverHandler::
@@ -161,16 +150,14 @@ WebRtcSetLocalDescriptionObserverHandler::
         scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
-        scoped_refptr<WebRtcSetDescriptionObserver> observer,
-        bool surface_receivers_only)
+        scoped_refptr<WebRtcSetDescriptionObserver> observer)
     : handler_impl_(
           base::MakeRefCounted<WebRtcSetDescriptionObserverHandlerImpl>(
               std::move(main_task_runner),
               std::move(signaling_task_runner),
               std::move(pc),
               std::move(track_adapter_map),
-              std::move(observer),
-              surface_receivers_only)) {}
+              std::move(observer))) {}
 
 WebRtcSetLocalDescriptionObserverHandler::
     ~WebRtcSetLocalDescriptionObserverHandler() = default;
@@ -186,12 +173,10 @@ WebRtcSetRemoteDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
     scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-    scoped_refptr<WebRtcSetDescriptionObserver> observer,
-    bool surface_receivers_only) {
+    scoped_refptr<WebRtcSetDescriptionObserver> observer) {
   return new rtc::RefCountedObject<WebRtcSetRemoteDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
-      std::move(pc), std::move(track_adapter_map), std::move(observer),
-      surface_receivers_only);
+      std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
 
 WebRtcSetRemoteDescriptionObserverHandler::
@@ -201,16 +186,14 @@ WebRtcSetRemoteDescriptionObserverHandler::
         scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
-        scoped_refptr<WebRtcSetDescriptionObserver> observer,
-        bool surface_receivers_only)
+        scoped_refptr<WebRtcSetDescriptionObserver> observer)
     : handler_impl_(
           base::MakeRefCounted<WebRtcSetDescriptionObserverHandlerImpl>(
               std::move(main_task_runner),
               std::move(signaling_task_runner),
               std::move(pc),
               std::move(track_adapter_map),
-              std::move(observer),
-              surface_receivers_only)) {}
+              std::move(observer))) {}
 
 WebRtcSetRemoteDescriptionObserverHandler::
     ~WebRtcSetRemoteDescriptionObserverHandler() = default;
