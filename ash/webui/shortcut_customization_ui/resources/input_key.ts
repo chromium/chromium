@@ -11,13 +11,12 @@ import {getTemplate} from './input_key.html.js';
 
 /**
  * Refers to the state of an 'input-key' item.
- * @enum {string}
  */
-export const KeyInputState = {
-  NOT_SELECTED: 'not-selected',
-  MODIFIER_SELECTED: 'modifier-selected',
-  ALPHANUMERIC_SELECTED: 'alpha-numeric-selected',
-};
+export enum KeyInputState {
+  NOT_SELECTED = 'not-selected',
+  MODIFIER_SELECTED = 'modifier-selected',
+  ALPHANUMERIC_SELECTED = 'alpha-numeric-selected',
+}
 
 /**
  * @fileoverview
@@ -43,6 +42,9 @@ export class InputKeyElement extends PolymerElement {
       },
     };
   }
+
+  key: string;
+  keyState: KeyInputState;
 
   static get template() {
     return getTemplate();

@@ -23,12 +23,12 @@ non_web_component_files = [
 ]
 
 web_component_files = [
-  "accelerator_edit_dialog.js",
+  "accelerator_edit_dialog.ts",
   "accelerator_edit_view.js",
   "accelerator_row.js",
   "accelerator_subsection.js",
   "accelerator_view.js",
-  "input_key.js",
+  "input_key.ts",
   "shortcut_customization_app.js",
   "shortcut_input.js",
   "shortcuts_page.js",
@@ -36,7 +36,11 @@ web_component_files = [
 
 html_files = []
 foreach(f, web_component_files) {
-  html_files += [ string_replace(f, ".js", ".html") ]
+  if (get_path_info(f, "extension") == "ts") {
+    html_files += [ string_replace(f, ".ts", ".html") ]
+  } else {
+    html_files += [ string_replace(f, ".js", ".html") ]
+  }
 }
 
 icons_html_files = [ "icons.html" ]
