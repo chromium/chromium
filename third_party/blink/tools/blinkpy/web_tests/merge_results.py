@@ -734,6 +734,11 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
         raise IOError(('Unable to remove output directory %s contents!\n'
                        'See log output for errors.') % layout_test_results)
 
+    profraw = fs.join(directory, 'profraw')
+    if (fs.exists(profraw) and not fs.remove_contents(profraw)):
+        raise IOError(('Unable to remove output directory %s contents!\n'
+                       'See log output for errors.') % profraw)
+
     merged_output_jsons = ['output.json', 'run_histories.json']
     for output_json in merged_output_jsons:
         output_json_fullpath = fs.join(directory, output_json)
