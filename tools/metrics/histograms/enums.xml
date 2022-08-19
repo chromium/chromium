@@ -17986,6 +17986,21 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="GOOGLE_LOCATION_SERVICE"/>
 </enum>
 
+<enum name="ConsolidatedConsentScreenUserAction">
+  <summary>Actions which happen on the consolidated consent screen.</summary>
+  <int value="0" label="Accept button clicked"/>
+  <int value="1" label="Back button on demo mode clicked"/>
+  <int value="2" label="Google ToS link clicked"/>
+  <int value="3" label="Chrome and ChromeOS additional ToS clicked"/>
+  <int value="4" label="Google Play ToS clicked"/>
+  <int value="5" label="Google Privacy Policy clicked"/>
+  <int value="6" label="Usage data opt-in learn more clicked"/>
+  <int value="7" label="Backup opt-in learn more clicked"/>
+  <int value="8" label="Location opt-in learn more clicked"/>
+  <int value="9" label="Footer learn more clicked"/>
+  <int value="10" label="Error step retry button clicked"/>
+</enum>
+
 <enum name="ContactsPickerDialogAction">
   <int value="0" label="Cancel"/>
   <int value="1" label="Contact(s) selected"/>

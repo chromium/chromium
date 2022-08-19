@@ -34,6 +34,29 @@ const PRIVACY_POLICY_URL = 'chrome://terms/arc/privacy_policy';
 const CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
 
 /**
+ * This enum is tied directly to a UMA enum defined in
+ * //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+ * change one without changing the other).
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * @enum {number}
+ */
+const ConsolidatedConsentUserAction = {
+  ACCEPT_BUTTON: 0,
+  BACK_DEMO_BUTTON: 1,
+  GOOGLE_EULA_LINK: 2,
+  CROS_EULA_LINK: 3,
+  ARC_TOS_LINK: 4,
+  PRIVACY_POLICY_LINK: 5,
+  USAGE_OPTIN_LEARN_MORE: 6,
+  BACKUP_OPTIN_LEARN_MORE: 7,
+  LOCATION_OPTIN_LEARN_MORE: 8,
+  FOOTER_LEARN_MORE: 9,
+  ERROR_STEP_RETRY_BUTTON: 10,
+  MAX: 11,
+};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -442,18 +465,18 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   updateLocalizedContent() {
-    this.shadowRoot.querySelector('#privacyPolicyLink')
-        .addEventListener('click', () => this.onPrivacyPolicyLinkClick_());
-    this.shadowRoot.querySelector('#googleEulaLink')
-        .addEventListener('click', () => this.onGoogleEulaLinkClick_());
-    this.shadowRoot.querySelector('#googleEulaLinkArcDisabled')
-        .addEventListener('click', () => this.onGoogleEulaLinkClick_());
-    this.shadowRoot.querySelector('#crosEulaLink')
-        .addEventListener('click', () => this.onCrosEulaLinkClick_());
-    this.shadowRoot.querySelector('#crosEulaLinkArcDisabled')
-        .addEventListener('click', () => this.onCrosEulaLinkClick_());
-    this.shadowRoot.querySelector('#arcTosLink')
-        .addEventListener('click', () => this.onArcTosLinkClick_());
+    this.shadowRoot.querySelector('#privacyPolicyLink').onclick = () =>
+        this.onPrivacyPolicyLinkClick_();
+    this.shadowRoot.querySelector('#googleEulaLink').onclick = () =>
+        this.onGoogleEulaLinkClick_();
+    this.shadowRoot.querySelector('#googleEulaLinkArcDisabled').onclick = () =>
+        this.onGoogleEulaLinkClick_();
+    this.shadowRoot.querySelector('#crosEulaLink').onclick = () =>
+        this.onCrosEulaLinkClick_();
+    this.shadowRoot.querySelector('#crosEulaLinkArcDisabled').onclick = () =>
+        this.onCrosEulaLinkClick_();
+    this.shadowRoot.querySelector('#arcTosLink').onclick = () =>
+        this.onArcTosLinkClick_();
   }
 
   getSubtitleArcEnabled_(locale) {
@@ -611,18 +634,26 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   onGoogleEulaLinkClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.GOOGLE_EULA_LINK);
     this.setUIStep(ConsolidatedConsentScreenState.GOOGLE_EULA);
   }
 
   onCrosEulaLinkClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.CROS_EULA_LINK);
     this.setUIStep(ConsolidatedConsentScreenState.CROS_EULA);
   }
 
   onArcTosLinkClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.ARC_TOS_LINK);
     this.setUIStep(ConsolidatedConsentScreenState.ARC);
   }
 
   onPrivacyPolicyLinkClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.PRIVACY_POLICY_LINK);
     this.setUIStep(ConsolidatedConsentScreenState.PRIVACY);
   }
 
@@ -631,22 +662,32 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   onUsageLearnMoreClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.USAGE_OPTIN_LEARN_MORE);
     this.$.usageLearnMorePopUp.showDialog();
   }
 
   onBackupLearnMoreClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.BACKUP_OPTIN_LEARN_MORE);
     this.$.backupLearnMorePopUp.showDialog();
   }
 
   onLocationLearnMoreClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.LOCATION_OPTIN_LEARN_MORE);
     this.$.locationLearnMorePopUp.showDialog();
   }
 
   onFooterLearnMoreClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.FOOTER_LEARN_MORE);
     this.$.footerLearnMorePopUp.showDialog();
   }
 
   onAcceptClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.ACCEPT_BUTTON);
     chrome.send('ToSAccept', [
       this.usageChecked,
       this.backupChecked,
@@ -661,6 +702,8 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
    * @private
    */
   onRetryClick_() {
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.ERROR_STEP_RETRY_BUTTON);
     this.setUIStep(ConsolidatedConsentScreenState.LOADING);
     this.$.retryButton.focus();
     this.maybeLoadWebviews_(this.isTosHidden_, this.isArcEnabled_);
@@ -672,7 +715,17 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
    * @private
    */
   onBack_() {
-    this.userActed('back');
+    this.RecordUMAHistogramForUserActions_(
+        ConsolidatedConsentUserAction.BACK_DEMO_BUTTON);
+    this.userActed('back-demo-button-clicked');
+  }
+
+  RecordUMAHistogramForUserActions_(result) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'OOBE.ConsolidatedConsentScreen.UserActions',
+      result,
+      ConsolidatedConsentUserAction.MAX,
+    ]);
   }
 
   /**

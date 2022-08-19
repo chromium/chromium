@@ -211,6 +211,16 @@ chromium-metrics-reviews@google.com.
   <summary>Time from the login screen start to user session start.</summary>
 </histogram>
 
+<histogram name="OOBE.ConsolidatedConsentScreen.UserActions"
+    enum="ConsolidatedConsentScreenUserAction" expires_after="2023-09-01">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Tracks user actions on the consolidated consent screen. Recorded when user
+    clicks on buttons on the consolidated consent screen.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.ErrorScreensTime.Enrollment.{OOBENetworkError}"
     units="ms" expires_after="2022-12-18">
   <owner>raleksandrov@google.com</owner>

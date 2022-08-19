@@ -40,6 +40,7 @@ namespace {
 using ::consent_auditor::FakeConsentAuditor;
 using ::sync_pb::UserConsentTypes;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ArcPlayTermsOfServiceConsent =
     ::sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
 using ArcBackupAndRestoreConsent =
@@ -187,6 +188,21 @@ ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
 // Regular user flow with ARC not enabled
 class ConsolidatedConsentScreenTest : public OobeBaseTest {
  public:
+  enum class UserAction {
+    kAcceptButtonClicked = 0,
+    kBackDemoButtonClicked = 1,
+    kGoogleEulaLinkClicked = 2,
+    kCrosEulaLinkClicked = 3,
+    kArcTosLinkClicked = 4,
+    kPrivacyPolicyLinkClicked = 5,
+    kUsageOptinLearnMoreClicked = 6,
+    kBackupOptinLearnMoreClicked = 7,
+    kLocationOptinLearnMoreClicked = 8,
+    kFooterLearnMoreClicked = 9,
+    kErrorStepRetryButtonClicked = 10,
+    kMaxValue = kErrorStepRetryButtonClicked,
+  };
+
   ConsolidatedConsentScreenTest() {
     feature_list_.InitAndEnableFeature(features::kOobeConsolidatedConsent);
   }
@@ -219,8 +235,12 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
   }
 
   absl::optional<ConsolidatedConsentScreen::Result> screen_result_;
-  std::unique_ptr<base::HistogramTester> histogram_tester =
-      std::make_unique<base::HistogramTester>();
+  base::HistogramTester histogram_tester_;
+
+  std::vector<base::Bucket> GetAllRecordedUserActions() {
+    return histogram_tester_.GetAllSamples(
+        "OOBE.ConsolidatedConsentScreen.UserActions");
+  }
 
  protected:
   void HandleScreenExit(ConsolidatedConsentScreen::Result result) {
@@ -266,6 +286,10 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, GoogleEula) {
               std::string::npos);
   test::OobeJS().ClickOnPath(kGoogleEulaOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+
+  EXPECT_THAT(GetAllRecordedUserActions(),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(UserAction::kGoogleEulaLinkClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, CrosEula) {
@@ -283,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, CrosEula) {
 
   test::OobeJS().ClickOnPath(kCrosEulaOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+
+  EXPECT_THAT(GetAllRecordedUserActions(),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(UserAction::kCrosEulaLinkClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
@@ -290,20 +318,22 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
 
-  test::OobeJS().ClickOnPath(kCrosEulaOkButton);
-
   test::OobeJS().CreateVisibilityWaiter(true, kAcceptButton)->Wait();
   test::OobeJS().ClickOnPath(kAcceptButton);
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             ConsolidatedConsentScreen::Result::ACCEPTED);
 
-  histogram_tester->ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
-  histogram_tester->ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
 
   // ARC is not available, ARC ToS and privacy policy will not be loaded.
-  histogram_tester->ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
-  histogram_tester->ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 0);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 0);
+
+  EXPECT_THAT(GetAllRecordedUserActions(),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(UserAction::kAcceptButtonClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, LearnMore) {
@@ -315,6 +345,11 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, LearnMore) {
   test::OobeJS().ExpectDialogOpen(kUsageLearnMorePopUp);
   test::OobeJS().ClickOnPath(kUsageLearnMorePopUpClose);
   test::OobeJS().ExpectDialogClosed(kUsageLearnMorePopUp);
+
+  EXPECT_THAT(
+      GetAllRecordedUserActions(),
+      ElementsAre(base::Bucket(
+          static_cast<int>(UserAction::kUsageOptinLearnMoreClicked), 1)));
 }
 
 class ConsolidatedConsentScreenArcEnabledTest
@@ -369,6 +404,12 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, EULA) {
   test::OobeJS().CreateVisibilityWaiter(true, kCrosEulaDialog)->Wait();
   test::OobeJS().ClickOnPath(kCrosEulaOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+
+  EXPECT_THAT(
+      GetAllRecordedUserActions(),
+      ElementsAre(
+          base::Bucket(static_cast<int>(UserAction::kGoogleEulaLinkClicked), 1),
+          base::Bucket(static_cast<int>(UserAction::kCrosEulaLinkClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, ArcToS) {
@@ -385,6 +426,9 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, ArcToS) {
 
   test::OobeJS().ClickOnPath(kArcTosOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  EXPECT_THAT(GetAllRecordedUserActions(),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(UserAction::kArcTosLinkClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, PrivacyPolicy) {
@@ -402,6 +446,9 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest, PrivacyPolicy) {
 
   test::OobeJS().ClickOnPath(kPrivacyPolicyOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+  EXPECT_THAT(GetAllRecordedUserActions(),
+              ElementsAre(base::Bucket(
+                  static_cast<int>(UserAction::kPrivacyPolicyLinkClicked), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
@@ -424,6 +471,16 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
   test::OobeJS().ExpectDialogOpen(kFooterLearnMorePopUp);
   test::OobeJS().ClickOnPath(kFooterLearnMorePopUpClose);
   test::OobeJS().ExpectDialogClosed(kFooterLearnMorePopUp);
+
+  EXPECT_THAT(
+      GetAllRecordedUserActions(),
+      ElementsAre(
+          base::Bucket(
+              static_cast<int>(UserAction::kBackupOptinLearnMoreClicked), 1),
+          base::Bucket(
+              static_cast<int>(UserAction::kLocationOptinLearnMoreClicked), 1),
+          base::Bucket(static_cast<int>(UserAction::kFooterLearnMoreClicked),
+                       1)));
 }
 
 // There are two toggles for enabling/disabling ARC backup restore and
@@ -502,12 +559,12 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_, ConsolidatedConsentScreen::Result::ACCEPTED);
 
-  histogram_tester->ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
-  histogram_tester->ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
 
   // ARC is available, ARC ToS and privacy policy will be loaded.
-  histogram_tester->ExpectTotalCount(kArcTosWebviewFirstLoadResult, 1);
-  histogram_tester->ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kArcTosWebviewFirstLoadResult, 1);
+  histogram_tester_.ExpectTotalCount(kPrivacyPolicyFirstLoadResult, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
