@@ -14,7 +14,6 @@ js_type_check("closure_compile_module") {
     ":change_picture_browser_proxy",
     ":personalization_hub_browser_proxy",
     ":personalization_page",
-    ":wallpaper_browser_proxy",
   ]
 }
 
@@ -48,7 +47,6 @@ js_library("change_picture_browser_proxy") {
 js_library("personalization_page") {
   deps = [
     ":personalization_hub_browser_proxy",
-    ":wallpaper_browser_proxy",
     "..:deep_linking_behavior",
     "..:os_route",
     "..:prefs_behavior",
@@ -60,11 +58,6 @@ js_library("personalization_page") {
 }
 
 js_library("personalization_hub_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("wallpaper_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

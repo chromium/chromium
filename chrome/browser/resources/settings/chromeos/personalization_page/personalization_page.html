@@ -16,18 +16,6 @@
           on-click="navigateToChangePicture_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <cr-link-row class="hr" id="wallpaperButton"
-          hidden="[[!showWallpaperRow_]]"
-          on-click="openWallpaperManager_" label="$i18n{setWallpaper}"
-          sub-label="$i18n{openWallpaperApp}"
-          disabled="[[isWallpaperPolicyControlled_]]" external
-          deep-link-focus-id$="[[Setting.kOpenWallpaper]]">
-        <template is="dom-if" if="[[isWallpaperPolicyControlled_]]">
-          <cr-policy-indicator id="wallpaperPolicyIndicator"
-              indicator-type="devicePolicy">
-          </cr-policy-indicator>
-        </template>
-      </cr-link-row>
     </template>
   </div>
 

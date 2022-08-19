@@ -119,7 +119,6 @@ non_web_component_files = [
   "chromeos/parental_controls_page/parental_controls_browser_proxy.js",
   "chromeos/personalization_page/change_picture_browser_proxy.js",
   "chromeos/personalization_page/personalization_hub_browser_proxy.js",
-  "chromeos/personalization_page/wallpaper_browser_proxy.js",
   "chromeos/personalization_search_handler.js",
   "chromeos/pref_to_setting_metric_converter.js",
   "chromeos/prefs_behavior.js",

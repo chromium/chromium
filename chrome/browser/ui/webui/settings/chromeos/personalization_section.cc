@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/change_picture_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_hub_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/wallpaper_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -116,8 +115,6 @@ void PersonalizationSection::AddLoadTimeData(
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::WallpaperHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::ChangePictureHandler>());
   if (ash::features::IsPersonalizationHubEnabled()) {

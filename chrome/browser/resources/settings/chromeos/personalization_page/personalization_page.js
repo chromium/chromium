@@ -23,7 +23,6 @@ import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
-import {WallpaperBrowserProxy, WallpaperBrowserProxyImpl} from './wallpaper_browser_proxy.js';
 
 /**
  * @constructor
@@ -52,12 +51,6 @@ class SettingsPersonalizationPageElement extends
        * Preferences state.
        */
       prefs: Object,
-
-      /** @private */
-      showWallpaperRow_: {type: Boolean, value: true},
-
-      /** @private */
-      isWallpaperPolicyControlled_: {type: Boolean, value: true},
 
       /** @private */
       isPersonalizationHubEnabled_: {
@@ -96,26 +89,9 @@ class SettingsPersonalizationPageElement extends
   constructor() {
     super();
 
-    /** @private {!WallpaperBrowserProxy} */
-    this.wallpaperBrowserProxy_ = WallpaperBrowserProxyImpl.getInstance();
-
     /** @private {!PersonalizationHubBrowserProxy} */
     this.personalizationHubBrowserProxy_ =
         PersonalizationHubBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-
-    this.wallpaperBrowserProxy_.isWallpaperSettingVisible().then(
-        isWallpaperSettingVisible => {
-          this.showWallpaperRow_ = isWallpaperSettingVisible;
-        });
-    this.wallpaperBrowserProxy_.isWallpaperPolicyControlled().then(
-        isPolicyControlled => {
-          this.isWallpaperPolicyControlled_ = isPolicyControlled;
-        });
   }
 
   /**
@@ -129,13 +105,6 @@ class SettingsPersonalizationPageElement extends
     }
 
     this.attemptDeepLink();
-  }
-
-  /**
-   * @private
-   */
-  openWallpaperManager_() {
-    this.wallpaperBrowserProxy_.openWallpaperManager();
   }
 
   /** @private */

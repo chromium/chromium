@@ -3024,8 +3024,6 @@ static_library("ui") {
       "webui/settings/chromeos/switch_access_handler.h",
       "webui/settings/chromeos/tts_handler.cc",
       "webui/settings/chromeos/tts_handler.h",
-      "webui/settings/chromeos/wallpaper_handler.cc",
-      "webui/settings/chromeos/wallpaper_handler.h",
       "webui/signin/inline_login_dialog_chromeos.cc",
       "webui/signin/inline_login_dialog_chromeos.h",
       "webui/signin/inline_login_dialog_chromeos_onboarding.cc",
