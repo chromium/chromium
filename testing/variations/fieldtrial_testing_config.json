@@ -2203,6 +2203,21 @@
             ]
         }
     ],
+    "BiometricAuthenticationInSettingsStudy": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BiometricAuthenticationInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "BlinkSchedulerPrioritizeRenderingAfterInput": [
         {
             "platforms": [
