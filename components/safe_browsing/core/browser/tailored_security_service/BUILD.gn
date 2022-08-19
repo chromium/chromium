@@ -9,6 +9,8 @@ source_set("tailored_security_service") {
     "tailored_security_service.cc",
     "tailored_security_service.h",
     "tailored_security_service_observer.h",
+    "tailored_security_service_util.cc",
+    "tailored_security_service_util.h",
   ]
 
   deps = [
@@ -18,6 +20,7 @@ source_set("tailored_security_service") {
     "//components/prefs:prefs",
     "//components/query_parser",
     "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//components/url_formatter",

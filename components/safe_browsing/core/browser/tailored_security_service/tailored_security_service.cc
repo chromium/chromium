@@ -18,8 +18,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -378,6 +381,44 @@ void TailoredSecurityService::OnTailoredSecurityBitRetrieved(
         FROM_HERE,
         base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes), this,
         &TailoredSecurityService::QueryTailoredSecurityBit);
+  }
+}
+
+void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
+                                                  base::Time previous_update) {
+  if (!base::FeatureList::IsEnabled(kTailoredSecurityIntegration))
+    return;
+
+  if (!identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    if (is_enabled) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kAccountNotConsented);
+    }
+    return;
+  }
+
+  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
+          prefs())) {
+    if (is_enabled) {
+      RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kSafeBrowsingControlledByPolicy);
+    }
+    return;
+  }
+
+  if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
+    RecordEnabledNotificationResult(
+        TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
+  }
+
+  if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
+    ShowSyncNotification(true);
+  }
+
+  if (!is_enabled && IsEnhancedProtectionEnabled(*prefs()) &&
+      prefs()->GetBoolean(
+          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
+    ShowSyncNotification(false);
   }
 }
 

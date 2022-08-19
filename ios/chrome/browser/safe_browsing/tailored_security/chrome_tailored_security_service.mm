@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
+#import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -22,19 +23,6 @@
 
 namespace safe_browsing {
 
-namespace {
-
-// Records an UMA Histogram value to count the result of trying to notify a sync
-// user about enhanced protection for the enable case.
-void RecordEnabledNotificationResult(
-    TailoredSecurityNotificationResult result) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
-      result);
-}
-
-}  // namespace
-
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
     ChromeBrowserState* browser_state)
     : TailoredSecurityService(
@@ -43,45 +31,6 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(
       browser_state_(browser_state) {}
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() = default;
-
-void ChromeTailoredSecurityService::MaybeNotifySyncUser(
-    bool is_enabled,
-    base::Time previous_update) {
-  if (!base::FeatureList::IsEnabled(kTailoredSecurityIntegration))
-    return;
-
-  if (!identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    if (is_enabled) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kAccountNotConsented);
-    }
-    return;
-  }
-
-  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-          browser_state_->GetPrefs())) {
-    if (is_enabled) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kSafeBrowsingControlledByPolicy);
-    }
-    return;
-  }
-
-  if (is_enabled && IsEnhancedProtectionEnabled(*prefs())) {
-    RecordEnabledNotificationResult(
-        TailoredSecurityNotificationResult::kEnhancedProtectionAlreadyEnabled);
-  }
-
-  if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
-    ShowSyncNotification(true);
-  }
-
-  if (!is_enabled && IsEnhancedProtectionEnabled(*prefs()) &&
-      prefs()->GetBoolean(
-          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
-    ShowSyncNotification(false);
-  }
-}
 
 void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
   std::unique_ptr<web::WebState> web_state =

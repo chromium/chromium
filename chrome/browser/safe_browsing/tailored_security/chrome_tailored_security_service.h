@@ -27,8 +27,7 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   ~ChromeTailoredSecurityService() override;
 
  protected:
-  void MaybeNotifySyncUser(bool is_enabled,
-                           base::Time previous_update) override;
+  void ShowSyncNotification(bool is_enabled) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Shows a dialog on the provided `web_contents`. If `show_enable_dialog` is
@@ -42,8 +41,6 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
-  void ShowSyncNotification(bool is_enabled);
-
 #if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
