@@ -43,18 +43,19 @@ class GameModeController : public aura::client::FocusChangeObserver {
 
   class GameModeEnabler {
    public:
-    GameModeEnabler();
+    explicit GameModeEnabler(ash::ResourcedClient::GameMode mode);
     ~GameModeEnabler();
 
    private:
     static void OnSetGameMode(
-        bool was_refresh,
+        absl::optional<ash::ResourcedClient::GameMode> refresh_of,
         absl::optional<ash::ResourcedClient::GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.
     static bool should_record_failure;
     base::RepeatingTimer timer_;
+    const ash::ResourcedClient::GameMode mode_;
   };
 
   class WindowTracker : public ash::WindowStateObserver,

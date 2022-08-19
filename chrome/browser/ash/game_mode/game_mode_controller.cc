@@ -78,7 +78,8 @@ void GameModeController::WindowTracker::OnPostWindowStateTypeChange(
 void GameModeController::WindowTracker::UpdateGameModeStatus(
     ash::WindowState* window_state) {
   if (!game_mode_ && window_state->IsFullscreen()) {
-    game_mode_ = std::make_unique<GameModeEnabler>();
+    game_mode_ = std::make_unique<GameModeEnabler>(
+        ash::ResourcedClient::GameMode::BOREALIS);
   } else if (game_mode_ && !window_state->IsFullscreen()) {
     game_mode_.reset();
   }
@@ -93,13 +94,18 @@ void GameModeController::WindowTracker::OnWindowDestroying(
 
 bool GameModeController::GameModeEnabler::should_record_failure;
 
-GameModeController::GameModeEnabler::GameModeEnabler() {
+GameModeController::GameModeEnabler::GameModeEnabler(
+    ash::ResourcedClient::GameMode mode)
+    : mode_(mode) {
+  DCHECK(mode != ash::ResourcedClient::GameMode::OFF);
+
   GameModeEnabler::should_record_failure = true;
   RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kAttempted);
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
-        ash::ResourcedClient::GameMode::BOREALIS, kTimeoutSec,
-        base::BindOnce(&GameModeEnabler::OnSetGameMode, false));
+        mode_, kTimeoutSec,
+        base::BindOnce(&GameModeEnabler::OnSetGameMode,
+                       /*refresh_of=*/absl::nullopt));
   }
   timer_.Start(FROM_HERE, base::Seconds(kRefreshSec), this,
                &GameModeEnabler::RefreshGameMode);
@@ -110,26 +116,26 @@ GameModeController::GameModeEnabler::~GameModeEnabler() {
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
         ash::ResourcedClient::GameMode::OFF, 0,
-        base::BindOnce(&GameModeEnabler::OnSetGameMode, true));
+        base::BindOnce(&GameModeEnabler::OnSetGameMode, /*refresh_of=*/mode_));
   }
 }
 
 void GameModeController::GameModeEnabler::RefreshGameMode() {
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
-        ash::ResourcedClient::GameMode::BOREALIS, kTimeoutSec,
-        base::BindOnce(&GameModeEnabler::OnSetGameMode, true));
+        mode_, kTimeoutSec,
+        base::BindOnce(&GameModeEnabler::OnSetGameMode, /*refresh_of=*/mode_));
   }
 }
 
 // Previous is whether game mode was enabled previous to this call.
 void GameModeController::GameModeEnabler::OnSetGameMode(
-    bool was_refresh,
+    absl::optional<ash::ResourcedClient::GameMode> refresh_of,
     absl::optional<ash::ResourcedClient::GameMode> previous) {
   if (!previous.has_value()) {
     LOG(ERROR) << "Failed to set Game Mode";
-  } else if (GameModeEnabler::should_record_failure && was_refresh &&
-             previous.value() != ash::ResourcedClient::GameMode::BOREALIS) {
+  } else if (GameModeEnabler::should_record_failure && refresh_of.has_value() &&
+             previous.value() != refresh_of.value()) {
     // If game mode was not on and it was not the initial call,
     // it means the previous call failed/timed out.
     RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kFailed);
