@@ -84,25 +84,6 @@ android_resources("cast_shell_android_stub_resources") {
   sources = common_resources
 }
 
-android_library("cast_audio_manager_java") {
-  java_src_dir = "//chromecast/browser/android/apk/src"
-
-  alternative_android_sdk_dep =
-      "//third_party/android_sdk:public_framework_system_java"
-
-  sources = [
-    "$java_src_dir/org/chromium/chromecast/shell/CastAudioFocusRequest.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastAudioManager.java",
-  ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//build/android:build_java",
-    "//chromecast/base:base_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-}
-
 android_library("cast_command_line_helper_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [
@@ -142,7 +123,6 @@ android_library("reactive_android_java") {
 }
 
 common_android_library_deps = [
-  ":cast_audio_manager_java",
   ":cast_command_line_helper_java",
   ":cast_intents_java",
   ":reactive_android_java",
@@ -244,8 +224,6 @@ android_library("cast_browser_java") {
 robolectric_binary("cast_shell_junit_tests") {
   sources = [
     "junit/src/org/chromium/chromecast/shell/AsyncTaskRunnerTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastAudioFocusRequestTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastAudioManagerTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsActivityTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsComponentTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsIntentUtilsTest.java",
@@ -260,7 +238,6 @@ robolectric_binary("cast_shell_junit_tests") {
   srcjar_deps = [ ":cast_shell_build_config_gen" ]
 
   deps = [
-    ":cast_audio_manager_java",
     ":cast_intents_java",
     ":cast_shell_java",
     ":reactive_android_java",
