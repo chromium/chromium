@@ -16696,6 +16696,7 @@
       'deprecated': True,
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:64-', 'chrome.mac:66-', 'android:65-'],
+      'future_on': ['chrome.linux'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
