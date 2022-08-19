@@ -507,12 +507,17 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 using PaymentRequestInitiatedCompletionStatusMetricsTest =
     PaymentRequestBrowserTestBase;
 
-// Disabled due to flakiness: https://crbug.com/1003253.
-// TODO(https://crbug.com/1209835): Migrate away from basic-card or remove test.
 IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
-                       DISABLED_Aborted_NotShown) {
+                       Aborted_NotShown) {
   base::HistogramTester histogram_tester;
   NavigateTo("/initiated_test.html");
+
+  // Ensure that the browser side PaymentRequest service has initialized.
+  EXPECT_EQ(false, content::EvalJs(
+                       GetActiveWebContents(),
+                       content::JsReplace(
+                           "canMakePayment($1)",
+                           https_server()->GetURL("example.test", "/webpay"))));
 
   // Navigate away.
   NavigateTo("/payment_request_email_test.html");
@@ -527,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(JourneyLogger::EVENT_INITIATED | JourneyLogger::EVENT_USER_ABORTED |
-                JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
+                JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE |
                 JourneyLogger::EVENT_REQUEST_METHOD_OTHER |
                 JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT,
             buckets[0].min);
