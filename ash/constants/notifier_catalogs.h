@@ -169,7 +169,8 @@ enum class NotificationCatalogName {
 };
 
 // A living catalog that registers system nudges.
-// Current values should not be renumbered or removed.
+// Current values should not be renumbered or removed. Please keep in sync with
+// "NudgeCatalogName" in tools/metrics/histograms/enums.xml.
 // To deprecate comment out the entry.
 enum class NudgeCatalogName {
   kTestCatalogName = 0,

@@ -200,6 +200,9 @@ void SystemNudge::Show() {
   const std::u16string accessibility_text = GetAccessibilityText();
   if (!accessibility_text.empty())
     nudge_view_->GetViewAccessibility().AnnounceText(accessibility_text);
+
+  base::UmaHistogramEnumeration("Ash.NotifierFramework.Nudge.ShownCount",
+                                params_.catalog_name);
 }
 
 void SystemNudge::Close() {

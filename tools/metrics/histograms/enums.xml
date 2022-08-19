@@ -71441,6 +71441,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="0x00000000 - STATUS_SUCCESS"/>
 </enum>
 
+<enum name="NudgeCatalogName">
+<!-- Defined in ash/constants/notifier_catalogs.h -->
+
+  <int value="0" label="Test Catalog Name"/>
+  <int value="1" label="Dictation"/>
+  <int value="2" label="Multipaste"/>
+  <int value="3" label="Dark Light Mode"/>
+  <int value="4" label="Autozoom"/>
+  <int value="5" label="Adaptive Charging"/>
+</enum>
+
 <enum name="NukeProfileResult">
   <int value="0" label="Success (1st attempt)"/>
   <int value="1" label="Success (2nd attempt)"/>
@@ -94826,6 +94837,8 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="ToastCatalogName">
+<!-- Defined in ash/constants/notifier_catalogs.h -->
+
   <int value="0" label="Virtual Desks Limit Max"/>
   <int value="1" label="Virtual Desks Limit Min"/>
   <int value="2" label="Assistant Error"/>

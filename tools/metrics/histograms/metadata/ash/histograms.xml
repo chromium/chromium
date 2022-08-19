@@ -2961,6 +2961,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.NotifierFramework.Nudge.ShownCount"
+    enum="NudgeCatalogName" expires_after="2023-03-15">
+  <owner>kradtke@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the number of times a specific nudge is shown to users. This metric
+    is recorded every time a nudge is shown.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotifierFramework.Toast.Dismissed.{TimeRange}"
     enum="ToastCatalogName" expires_after="2023-02-10">
   <owner>kradtke@google.com</owner>

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -26,9 +27,11 @@ gfx::VectorIcon kEmptyIcon;
 
 class TestSystemNudge : public SystemNudge {
  public:
-  explicit TestSystemNudge(bool anchor_status_area)
+  explicit TestSystemNudge(
+      bool anchor_status_area,
+      NudgeCatalogName catalog_name = NudgeCatalogName::kTestCatalogName)
       : SystemNudge(kNudgeName,
-                    NudgeCatalogName::kTestCatalogName,
+                    catalog_name,
                     kIconSize,
                     kIconLabelSpacing,
                     kNudgePadding,
@@ -49,6 +52,9 @@ class TestSystemNudge : public SystemNudge {
     return std::u16string();
   }
 };
+
+constexpr char kNudgeShownCountHistogramName[] =
+    "Ash.NotifierFramework.Nudge.ShownCount";
 
 }  // namespace
 
@@ -120,6 +126,24 @@ TEST_F(SystemNudgeTest, NudgeAnchorStatusArea) {
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x() + shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
+}
+
+TEST_F(SystemNudgeTest, ShownCountMetric) {
+  base::HistogramTester histogram_tester;
+
+  const NudgeCatalogName catalog_name_1 = static_cast<NudgeCatalogName>(1);
+  const NudgeCatalogName catalog_name_2 = static_cast<NudgeCatalogName>(2);
+  TestSystemNudge nudge_1(/*anchor_status_area=*/true, catalog_name_1);
+  TestSystemNudge nudge_2(/*anchor_status_area=*/true, catalog_name_2);
+
+  nudge_1.Show();
+  histogram_tester.ExpectBucketCount(kNudgeShownCountHistogramName,
+                                     catalog_name_1, 1);
+
+  nudge_2.Show();
+  nudge_2.Show();
+  histogram_tester.ExpectBucketCount(kNudgeShownCountHistogramName,
+                                     catalog_name_2, 2);
 }
 
 }  // namespace ash
