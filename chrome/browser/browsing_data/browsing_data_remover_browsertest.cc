@@ -78,7 +78,6 @@
 #include "chromeos/startup/browser_init_params.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 using content::BrowserThread;

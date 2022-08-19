@@ -28,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/patcher.h"
