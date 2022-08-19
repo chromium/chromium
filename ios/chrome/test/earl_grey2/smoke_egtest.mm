@@ -238,7 +238,8 @@
 }
 
 // Tests gracefully kill through AppLaunchManager.
-- (void)testAppLaunchManagerForceRelaunchByCleanShutdown {
+// TODO(crbug.com/1354554): Test flaky on smoke.
+- (void)DISABLED_testAppLaunchManagerForceRelaunchByCleanShutdown {
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
