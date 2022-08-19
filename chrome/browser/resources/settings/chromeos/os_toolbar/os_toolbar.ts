@@ -8,15 +8,16 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '../os_settings_search_box/os_settings_search_box.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import '../os_settings_search_box/os_settings_search_box.js';
 
+import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_toolbar.html.js';
 
-/** @polymer */
-class OsToolbarElement extends PolymerElement {
+export class OsToolbarElement extends PolymerElement {
   static get is() {
     return 'os-toolbar';
   }
@@ -48,14 +49,12 @@ class OsToolbarElement extends PolymerElement {
        * True when the toolbar is displaying in an extremely narrow mode that
        * the viewport may cutoff an OsSettingsSearchBox with a specific px
        * width.
-       * @private
        */
       isSearchBoxCutoff_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @private */
       showingSearch_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -63,18 +62,32 @@ class OsToolbarElement extends PolymerElement {
     };
   }
 
-  /** @return {?CrToolbarSearchFieldElement} */
-  getSearchField() {
-    return /** @type {?CrToolbarSearchFieldElement} */ (
-        this.shadowRoot.querySelector('os-settings-search-box')
-            .shadowRoot.querySelector('cr-toolbar-search-field'));
+  spinnerActive: boolean;
+  showMenu: boolean;
+  showSearch: boolean;
+  narrow: boolean;
+  private isSearchBoxCutoff_: boolean;
+  private showingSearch_: boolean;
+
+  getSearchField(): CrToolbarSearchFieldElement {
+    const searchBox = this.shadowRoot!.querySelector('os-settings-search-box');
+    assert(searchBox);
+    const searchField =
+        searchBox.shadowRoot!.querySelector('cr-toolbar-search-field');
+    assert(searchField);
+    return searchField;
   }
 
-  /** @private */
-  onMenuTap_() {
+  private onMenuTap_() {
     const event =
         new CustomEvent('os-toolbar-menu-tap', {bubbles: true, composed: true});
     this.dispatchEvent(event);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-toolbar': OsToolbarElement;
   }
 }
 

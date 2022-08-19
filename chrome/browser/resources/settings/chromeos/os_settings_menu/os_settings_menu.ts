@@ -14,7 +14,10 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 import '../os_icons.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
@@ -23,15 +26,19 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 
 import {getTemplate} from './os_settings_menu.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsMenuElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement);
+interface OsSettingsMenuElement {
+  $: {
+    topMenu: IronSelectorElement,
+    subMenu: IronSelectorElement,
+    advancedSubmenu: IronCollapseElement,
+  };
+}
 
-/** @polymer */
+const OsSettingsMenuElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement) as {
+      new (): PolymerElement & RouteObserverBehaviorInterface,
+    };
+
 class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
     return 'os-settings-menu';
@@ -51,7 +58,6 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
       /**
        * Whether the user is in guest mode.
-       * @private{boolean}
        */
       isGuestMode_: {
         type: Boolean,
@@ -61,7 +67,6 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
       /**
        * Whether Accessibility OS Settings visibility improvements are enabled.
-       * @private{boolean}
        */
       isAccessibilityOSSettingsVisibilityEnabled_: {
         type: Boolean,
@@ -82,8 +87,15 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     };
   }
 
-  /** @param {!Route} newRoute */
-  currentRouteChanged(newRoute) {
+  advancedOpened: boolean;
+  showCrostini: boolean;
+  showStartup: boolean;
+  showReset: boolean;
+  showKerberosSection: boolean;
+  private isGuestMode_: boolean;
+  private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
+
+  override currentRouteChanged(newRoute: Route) {
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('search');
     // If the route navigated to by a search result is in the advanced
@@ -94,10 +106,11 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     }
 
     // Focus the initially selected path.
-    const anchors = this.root.querySelectorAll('a');
+    const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
-      const anchorRoute =
-          Router.getInstance().getRouteForPath(anchors[i].getAttribute('href'));
+      const href = anchors[i].getAttribute('href');
+      assert(href);
+      const anchorRoute = Router.getInstance().getRouteForPath(href);
       if (anchorRoute && anchorRoute.contains(newRoute)) {
         this.setSelectedUrl_(anchors[i].href);
         return;
@@ -107,19 +120,16 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.setSelectedUrl_('');  // Nothing is selected.
   }
 
-  /** @private */
-  onAdvancedButtonToggle_() {
+  private onAdvancedButtonToggle_() {
     this.advancedOpened = !this.advancedOpened;
   }
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately by <iron-selector>.
-   * @param {!Event} event
-   * @private
    */
-  onLinkClick_(event) {
-    if (event.target.matches('a')) {
+  private onLinkClick_(event: Event) {
+    if ((event.target as HTMLElement).matches('a')) {
       event.preventDefault();
     }
   }
@@ -127,42 +137,36 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   /**
    * Keeps both menus in sync. |url| needs to come from |element.href| because
    * |iron-list| uses the entire url. Using |getAttribute| will not work.
-   * @param {string} url
    */
-  setSelectedUrl_(url) {
+  private setSelectedUrl_(url: string) {
     this.$.topMenu.selected = this.$.subMenu.selected = url;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectorActivate_(event) {
+  private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
     this.setSelectedUrl_(event.detail.selected);
   }
 
   /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Which icon to use.
-   * @private
-   * */
-  arrowState_(opened) {
+   * @param opened Whether the menu is expanded.
+   * @return Which icon to use.
+   */
+  private arrowState_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /** @return {boolean} Whether the advanced submenu is open. */
-  isAdvancedSubmenuOpenedForTest() {
-    const submenu = /** @type {IronCollapseElement} */ (this.$.advancedSubmenu);
-    return submenu.opened;
+  /** @return Whether the advanced submenu is open. */
+  isAdvancedSubmenuOpenedForTest(): boolean {
+    return this.$.advancedSubmenu.opened;
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-menu': OsSettingsMenuElement;
   }
 }
 

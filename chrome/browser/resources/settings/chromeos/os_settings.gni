@@ -14,12 +14,12 @@ web_component_files = [
   "chromeos/os_about_page/edit_hostname_dialog.ts",
   "chromeos/os_about_page/os_about_page.ts",
   "chromeos/os_about_page/update_warning_dialog.ts",
-  "chromeos/os_settings_main/os_settings_main.js",
-  "chromeos/os_settings_menu/os_settings_menu.js",
+  "chromeos/os_settings_main/os_settings_main.ts",
+  "chromeos/os_settings_menu/os_settings_menu.ts",
   "chromeos/os_settings_page/os_settings_page.js",
   "chromeos/os_settings_page/settings_idle_load.js",
-  "chromeos/os_settings_ui/os_settings_ui.js",
-  "chromeos/os_toolbar/os_toolbar.js",
+  "chromeos/os_settings_ui/os_settings_ui.ts",
+  "chromeos/os_toolbar/os_toolbar.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -129,6 +129,8 @@ non_web_component_files = [
   # Files below are from Browser Settings and shared with ChromeOS Settings
   "i18n_setup.ts",
   "lifetime_browser_proxy.ts",
+  "prefs/prefs.ts",
+  "prefs/prefs_types.ts",
   "router.js",
 ]
 
