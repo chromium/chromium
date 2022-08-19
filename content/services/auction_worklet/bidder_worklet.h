@@ -26,6 +26,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -113,7 +114,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
-      GenerateBidCallback generate_bid_callback) override;
+      mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
+          generate_bid_client) override;
   void SendPendingSignalsRequests() override;
   void ReportWin(
       const std::string& interest_group_name,
@@ -160,7 +162,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     // reported on bid completion.
     absl::optional<std::string> trusted_bidding_signals_error_msg;
 
-    GenerateBidCallback callback;
+    mojo::AssociatedRemote<mojom::GenerateBidClient> generate_bid_client;
   };
 
   using GenerateBidTaskList = std::list<GenerateBidTask>;

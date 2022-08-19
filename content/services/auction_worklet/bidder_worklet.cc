@@ -36,6 +36,8 @@
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -192,7 +194,8 @@ void BidderWorklet::GenerateBid(
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     uint64_t trace_id,
-    GenerateBidCallback generate_bid_callback) {
+    mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
+        generate_bid_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   generate_bid_tasks_.emplace_front();
@@ -211,7 +214,7 @@ void BidderWorklet::GenerateBid(
       std::move(bidding_browser_signals);
   generate_bid_task->auction_start_time = auction_start_time;
   generate_bid_task->trace_id = trace_id;
-  generate_bid_task->callback = std::move(generate_bid_callback);
+  generate_bid_task->generate_bid_client.Bind(std::move(generate_bid_client));
 
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
@@ -961,11 +964,11 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     error_msgs.emplace_back(
         std::move(task->trusted_bidding_signals_error_msg).value());
   }
-  std::move(task->callback)
-      .Run(std::move(bid), bidding_signals_data_version.value_or(0),
-           bidding_signals_data_version.has_value(), debug_loss_report_url,
-           debug_win_report_url, set_priority.value_or(0),
-           set_priority.has_value(), std::move(pa_requests), error_msgs);
+  task->generate_bid_client->OnGenerateBidComplete(
+      std::move(bid), bidding_signals_data_version.value_or(0),
+      bidding_signals_data_version.has_value(), debug_loss_report_url,
+      debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
+      std::move(pa_requests), error_msgs);
   generate_bid_tasks_.erase(task);
 }
 

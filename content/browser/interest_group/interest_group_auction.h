@@ -26,6 +26,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -190,6 +191,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // absl::nullopt means no ID is currently assigned, and there's no pending
     // event.
     absl::optional<uint64_t> trace_id;
+
+    // ReceiverId for use as a GenerateBidClient. Only populated while
+    // generateBid() is running.
+    absl::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
 
     // True if the worklet successfully made a bid.
     bool made_bid = false;

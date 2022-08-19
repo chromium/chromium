@@ -28,7 +28,9 @@
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/http/http_status_code.h"
@@ -112,6 +114,76 @@ std::string CreateReportWinScript(const std::string& function_body) {
   return CreateBasicGenerateBidScript() +
          base::StringPrintf(kReportWinScript, function_body.c_str());
 }
+
+// A GenerateBidClient that takes a callback to call in OnGenerateBid().
+class GenerateBidClientWithCallbacks : public mojom::GenerateBidClient {
+ public:
+  using GenerateBidCallback =
+      base::OnceCallback<void(mojom::BidderWorkletBidPtr bid,
+                              uint32_t data_version,
+                              bool has_data_version,
+                              const absl::optional<GURL>& debug_loss_report_url,
+                              const absl::optional<GURL>& debug_win_report_url,
+                              double set_priority,
+                              bool has_set_priority,
+                              PrivateAggregationRequests pa_requests,
+                              const std::vector<std::string>& errors)>;
+
+  explicit GenerateBidClientWithCallbacks(
+      GenerateBidCallback generate_bid_callback)
+      : generate_bid_callback_(std::move(generate_bid_callback)) {}
+
+  ~GenerateBidClientWithCallbacks() override = default;
+
+  // Helper that creates a GenerateBidClientWithCallbacks whose lifetime is
+  // managed by a self-owned receiver.
+  static mojo::PendingAssociatedRemote<mojom::GenerateBidClient> Create(
+      GenerateBidCallback callback) {
+    mojo::PendingAssociatedRemote<mojom::GenerateBidClient> client_remote;
+    mojo::MakeSelfOwnedAssociatedReceiver(
+        std::make_unique<GenerateBidClientWithCallbacks>(std::move(callback)),
+        client_remote.InitWithNewEndpointAndPassReceiver());
+    return client_remote;
+  }
+
+  // Creates a GenerateBidClient() that expects OnGenerateBidComplete() never to
+  // be invoked. Allows OnBiddingSignalsReceived() to be invoked.
+  static mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
+  CreateNeverCompletes() {
+    return Create(GenerateBidNeverInvokedCallback());
+  }
+
+  static GenerateBidCallback GenerateBidNeverInvokedCallback() {
+    return base::BindOnce([](mojom::BidderWorkletBidPtr bid,
+                             uint32_t data_version, bool has_data_version,
+                             const absl::optional<GURL>& debug_loss_report_url,
+                             const absl::optional<GURL>& debug_win_report_url,
+                             double set_priority, bool has_set_priority,
+                             PrivateAggregationRequests pa_requests,
+                             const std::vector<std::string>& errors) {
+      ADD_FAILURE() << "OnGenerateBidComplete should not be invoked.";
+    });
+  }
+
+  // mojom::GenerateBidClient implementation:
+  void OnGenerateBidComplete(mojom::BidderWorkletBidPtr bid,
+                             uint32_t data_version,
+                             bool has_data_version,
+                             const absl::optional<GURL>& debug_loss_report_url,
+                             const absl::optional<GURL>& debug_win_report_url,
+                             double set_priority,
+                             bool has_set_priority,
+                             PrivateAggregationRequests pa_requests,
+                             const std::vector<std::string>& errors) override {
+    std::move(generate_bid_callback_)
+        .Run(std::move(bid), data_version, has_data_version,
+             debug_loss_report_url, debug_win_report_url, set_priority,
+             has_set_priority, std::move(pa_requests), errors);
+  }
+
+ private:
+  GenerateBidCallback generate_bid_callback_;
+};
 
 class BidderWorkletTest : public testing::Test {
  public:
@@ -399,36 +471,35 @@ class BidderWorkletTest : public testing::Test {
     return bidder_worklet;
   }
 
-  void GenerateBid(mojom::BidderWorklet* bidder_worklet) {
+  // If no `generate_bid_client` is provided, uses one that invokes
+  // GenerateBidCallback().
+  void GenerateBid(mojom::BidderWorklet* bidder_worklet,
+                   mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
+                       generate_bid_client = mojo::NullAssociatedRemote()) {
+    if (!generate_bid_client) {
+      generate_bid_client =
+          GenerateBidClientWithCallbacks::Create(base::BindOnce(
+              &BidderWorkletTest::GenerateBidCallback, base::Unretained(this)));
+    }
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), join_origin_, auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        /*trace_id=*/1,
-        base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
-                       base::Unretained(this)));
+        /*trace_id=*/1, std::move(generate_bid_client));
     bidder_worklet->SendPendingSignalsRequests();
   }
 
-  // Calls GenerateBid(), expecting the callback never to be invoked.
-  void GenerateBidExpectingCallbackNotInvoked(
+  // Calls GenerateBid(), expecting the GenerateBidClient's
+  // OnGenerateBidComplete() method never to be invoked.
+  void GenerateBidExpectingNeverCompletes(
       mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), join_origin_, auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
-        /*trace_id=*/1,
-        base::BindOnce([](mojom::BidderWorkletBidPtr bid, uint32_t data_version,
-                          bool has_data_version,
-                          const absl::optional<GURL>& debug_loss_report_url,
-                          const absl::optional<GURL>& debug_win_report_url,
-                          double set_priority, bool has_set_priority,
-                          PrivateAggregationRequests pa_requests,
-                          const std::vector<std::string>& errors) {
-          ADD_FAILURE() << "Callback should not be invoked.";
-        }));
+        /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes());
     bidder_worklet->SendPendingSignalsRequests();
   }
 
@@ -587,7 +658,7 @@ class BidderWorkletTest : public testing::Test {
 // invoking it.
 TEST_F(BidderWorkletTest, PipeClosed) {
   auto bidder_worklet = CreateWorklet();
-  GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+  GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   bidder_worklet.reset();
   EXPECT_FALSE(bidder_worklets_.empty());
 
@@ -601,7 +672,7 @@ TEST_F(BidderWorkletTest, NetworkError) {
                                   CreateBasicGenerateBidScript(),
                                   net::HTTP_NOT_FOUND);
   auto bidder_worklet = CreateWorklet();
-  GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+  GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
             WaitForDisconnect());
 }
@@ -610,7 +681,7 @@ TEST_F(BidderWorkletTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         "Invalid Javascript");
   auto bidder_worklet = CreateWorklet();
-  GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+  GenerateBidExpectingNeverCompletes(bidder_worklet.get());
 
   std::string error = WaitForDisconnect();
   EXPECT_THAT(error, StartsWith("https://url.test/:1 "));
@@ -1586,7 +1657,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           browser_signal_top_level_seller_origin_,
           CreateBiddingBrowserSignals(), auction_start_time_,
           /*trace_id=*/1,
-          base::BindLambdaForTesting(
+          GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                   bool has_data_version,
@@ -1603,7 +1674,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
                 ++num_generate_bid_calls;
                 if (num_generate_bid_calls == kNumGenerateBidCalls)
                   run_loop.Quit();
-              }));
+              })));
     }
 
     // If this is the first loop iteration, wait for all the Mojo calls to
@@ -1630,7 +1701,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallelLoadFails) {
   auto bidder_worklet = CreateWorklet();
 
   for (size_t i = 0; i < 10; ++i) {
-    GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+    GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   }
 
   // Script fails to load.
@@ -1680,7 +1751,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
-        base::BindLambdaForTesting(
+        GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                 bool has_data_version,
@@ -1698,7 +1769,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls)
                 run_loop.Quit();
-            }));
+            })));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1783,7 +1854,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
-        base::BindLambdaForTesting(
+        GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                 bool has_data_version,
@@ -1801,7 +1872,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls)
                 run_loop.Quit();
-            }));
+            })));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1892,7 +1963,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
-        base::BindLambdaForTesting(
+        GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                 bool has_data_version,
@@ -1910,7 +1981,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls)
                 run_loop.Quit();
-            }));
+            })));
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -1980,7 +2051,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
         auction_start_time_,
         /*trace_id=*/1,
-        base::BindLambdaForTesting(
+        GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                 bool has_data_version,
@@ -1998,7 +2069,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
               ++num_generate_bid_calls;
               if (num_generate_bid_calls == kNumGenerateBidCalls)
                 run_loop.Quit();
-            }));
+            })));
 
     // Send one request at a time.
     bidder_worklet->SendPendingSignalsRequests();
@@ -2329,7 +2400,7 @@ TEST_F(BidderWorkletTest, GenerateBidWasm404) {
                         CreateBasicGenerateBidScript());
 
   auto bidder_worklet = CreateWorklet();
-  GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+  GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   EXPECT_EQ(
       "Failed to load https://foo.test/helper.wasm "
       "HTTP status = 404 Not Found.",
@@ -2348,7 +2419,7 @@ TEST_F(BidderWorkletTest, GenerateBidWasmFailure) {
                         CreateBasicGenerateBidScript());
 
   auto bidder_worklet = CreateWorklet();
-  GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+  GenerateBidExpectingNeverCompletes(bidder_worklet.get());
   EXPECT_EQ(
       "https://foo.test/helper.wasm Uncaught CompileError: "
       "WasmModuleObject::Compile(): expected magic word 00 61 73 6d, found "
@@ -2473,7 +2544,7 @@ TEST_F(BidderWorkletTest, WasmOrdering) {
       GenerateBid(bidder_worklet.get());
     } else {
       // On error, the pipe is closed without invoking the callback.
-      GenerateBidExpectingCallbackNotInvoked(bidder_worklet.get());
+      GenerateBidExpectingNeverCompletes(bidder_worklet.get());
     }
 
     for (Event ev : test.events) {
@@ -3460,7 +3531,7 @@ TEST_F(BidderWorkletTest, ParseErrorV8Debug) {
   auto worklet =
       CreateWorklet(interest_group_bidding_url_,
                     /*pause_for_debugger_on_start=*/true, &worklet_impl);
-  GenerateBidExpectingCallbackNotInvoked(worklet.get());
+  GenerateBidExpectingNeverCompletes(worklet.get());
   int id = worklet_impl->context_group_id_for_testing();
   TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
 

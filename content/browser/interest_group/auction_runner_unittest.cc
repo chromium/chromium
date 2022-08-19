@@ -46,6 +46,8 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -874,11 +876,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
-      GenerateBidCallback generate_bid_callback) override {
+      mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
+          generate_bid_client) override {
     generate_bid_called_ = true;
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
-    DCHECK(!generate_bid_callback_);
+    DCHECK(!generate_bid_client_);
 
     // per_buyer_timeout passed to GenerateBid() should not be empty, because
     // auction_config's all_buyers_timeout (which is the key of '*' in
@@ -901,7 +904,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     // before invoking SendPendingSignalsRequests().
     EXPECT_FALSE(send_pending_signals_requests_called_);
 
-    generate_bid_callback_ = std::move(generate_bid_callback);
+    generate_bid_client_.Bind(std::move(generate_bid_client));
     if (generate_bid_run_loop_)
       generate_bid_run_loop_->Quit();
   }
@@ -942,11 +945,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void WaitForGenerateBid() {
-    if (!generate_bid_callback_) {
+    if (!generate_bid_client_) {
       generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
       generate_bid_run_loop_->Run();
       generate_bid_run_loop_.reset();
-      DCHECK(generate_bid_callback_);
+      DCHECK(generate_bid_client_);
     }
   }
 
@@ -965,33 +968,32 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     WaitForGenerateBid();
 
     if (!bid.has_value()) {
-      std::move(generate_bid_callback_)
-          .Run(/*bid=*/nullptr,
-               /*bidding_signals_data_version=*/0,
-               /*has_bidding_signals_data_version=*/false,
-               debug_loss_report_url,
-               /*debug_win_report_url=*/absl::nullopt,
-               /*set_priority=*/0,
-               /*has_set_priority=*/false,
-               /*pa_requests=*/std::move(pa_requests),
-               /*errors=*/std::vector<std::string>());
+      generate_bid_client_->OnGenerateBidComplete(
+          /*bid=*/nullptr,
+          /*bidding_signals_data_version=*/0,
+          /*has_bidding_signals_data_version=*/false, debug_loss_report_url,
+          /*debug_win_report_url=*/absl::nullopt,
+          /*set_priority=*/0,
+          /*has_set_priority=*/false,
+          /*pa_requests=*/std::move(pa_requests),
+          /*errors=*/std::vector<std::string>());
       return;
     }
 
-    std::move(generate_bid_callback_)
-        .Run(auction_worklet::mojom::BidderWorkletBid::New(
-                 "ad", *bid, render_url, ad_component_urls, duration),
-             bidding_signals_data_version.value_or(0),
-             bidding_signals_data_version.has_value(), debug_loss_report_url,
-             debug_win_report_url,
-             /*set_priority=*/0,
-             /*has_set_priority=*/false,
-             /*pa_requests=*/std::move(pa_requests),
-             /*errors=*/std::vector<std::string>());
+    generate_bid_client_->OnGenerateBidComplete(
+        auction_worklet::mojom::BidderWorkletBid::New(
+            "ad", *bid, render_url, ad_component_urls, duration),
+        bidding_signals_data_version.value_or(0),
+        bidding_signals_data_version.has_value(), debug_loss_report_url,
+        debug_win_report_url,
+        /*set_priority=*/0,
+        /*has_set_priority=*/false,
+        /*pa_requests=*/std::move(pa_requests),
+        /*errors=*/std::vector<std::string>());
   }
 
   void WaitForReportWin() {
-    DCHECK(!generate_bid_callback_);
+    DCHECK(!generate_bid_client_);
     DCHECK(!report_win_run_loop_);
     if (!report_win_callback_) {
       report_win_run_loop_ = std::make_unique<base::RunLoop>();
@@ -1020,7 +1022,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
  private:
   void OnPipeClosed() { pipe_closed_ = true; }
 
-  BidderWorklet::GenerateBidCallback generate_bid_callback_;
+  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
+      generate_bid_client_;
 
   bool pipe_closed_ = false;
 

@@ -78,7 +78,8 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
-      GenerateBidCallback generate_bid_callback) override {
+      mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
+          generate_bid_client) override {
     ADD_FAILURE() << "GenerateBid shouldn't be called on DebugConnector";
   }
 

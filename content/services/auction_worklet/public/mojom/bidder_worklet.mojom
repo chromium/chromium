@@ -87,6 +87,57 @@ struct BidderWorkletBid {
   mojo_base.mojom.TimeDelta bid_duration;
 };
 
+// Single use client for each GenerateBid() call.
+interface GenerateBidClient {
+  // Invoked once GenerateBid completes, either having successfully generated a
+  // bid, or having failed to generate one for any reason.
+  //
+  // `bid` If the worklet is successfully loaded and chooses to bid in the
+  //  auction, contains information about the bid. Null otherwise.
+  //
+  // `bidding_signals_data_version` The value of the Data-Version header served
+  //  with the trusted bidding signals.
+  //
+  // `has_bidding_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted bidding signals.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
+  // `debug_loss_report_url` The URL to request if the auction runs to
+  //  completion and this bid does not win. All bidders are allowed to send loss
+  //  report, including those who does not bid. This field has the debug prefix
+  //  because it's part of an interim reporting API that will be replaced with
+  //  standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
+  // `debug_win_report_url` The URL to request if the auction runs to completion
+  //  and this bid wins. This field has the debug prefix because it's part of an
+  //  interim reporting API that will be replaced with standardized reporting
+  //  APIs once available. It must be a valid HTTPS URL.
+  //
+  // `set_priority` The value of the updated priority for this interest group.
+  //  This priority should be applied to the interest group after the auction.
+  //
+  // `has_set_priority` True to indicate the worklet has requested the an
+  //  update to the interest group priority.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
+  // `errors` The various error messages to be used for debugging. These are too
+  //  sensitive for the renderer to see. There may be errors even when a bid
+  //  is offered, and there may be no errors when there's no bid. Includes
+  //  errors from failing to load the worklet script.
+  OnGenerateBidComplete(
+      BidderWorkletBid? bid,
+      uint32 bidding_signals_data_version,
+      bool has_bidding_signals_data_version,
+      url.mojom.Url? debug_loss_report_url,
+      url.mojom.Url? debug_win_report_url,
+      double set_priority,
+      bool has_set_priority,
+      array<PrivateAggregationRequest> pa_requests,
+      array<string> errors);
+};
+
 // Manages the auction workflow for one loaded FLEDGE bidder worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
@@ -138,41 +189,8 @@ interface BidderWorklet {
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
-  // Returns:
-  // `bid` If the worklet is successfully loaded and chooses to bid in the
-  //  auction, contains information about the bid. Null otherwise.
-  //
-  // `bidding_signals_data_version` The value of the Data-Version header served
-  //  with the trusted bidding signals.
-  //
-  // `has_bidding_signals_data_version` True to indicate Data-Version header
-  //  was present in the HTTP response for the trusted bidding signals.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
-  //
-  // `debug_loss_report_url` The URL to request if the auction runs to
-  //  completion and this bid does not win. All bidders are allowed to send loss
-  //  report, including those who does not bid. This field has the debug prefix
-  //  because it's part of an interim reporting API that will be replaced with
-  //  standardized reporting APIs once available. It must be a valid HTTPS URL.
-  //
-  // `debug_win_report_url` The URL to request if the auction runs to completion
-  //  and this bid wins. This field has the debug prefix because it's part of an
-  //  interim reporting API that will be replaced with standardized reporting
-  //  APIs once available. It must be a valid HTTPS URL.
-  //
-  // `set_priority` The value of the updated priority for this interest group.
-  //  This priority should be applied to the interest group after the auction.
-  //
-  // `has_set_priority` True to indicate the worklet has requested the an
-  //  update to the interest group priority.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
-  //
-  // `pa_requests` The various requests made to the Private Aggregation API.
-  //
-  // `errors` The various error messages to be used for debugging. These are too
-  //  sensitive for the renderer to see. There may be errors even when a bid
-  //  is offered, and there may be no errors when there's no bid. Includes
-  //  errors from failing to load the worklet script.
+  // `generate_bid_client` On completion, its OnGenerateBidComplete()
+  //  method is called. Associated to retain priority ordering of calls.
   GenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
       url.mojom.Origin interest_group_join_origin,
@@ -183,16 +201,8 @@ interface BidderWorklet {
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
-      uint64 trace_id) => (
-          BidderWorkletBid? bid,
-          uint32 bidding_signals_data_version,
-          bool has_bidding_signals_data_version,
-          url.mojom.Url? debug_loss_report_url,
-          url.mojom.Url? debug_win_report_url,
-          double set_priority,
-          bool has_set_priority,
-          array<PrivateAggregationRequest> pa_requests,
-          array<string> errors);
+      uint64 trace_id,
+      pending_associated_remote<GenerateBidClient> generate_bid_client);
 
   // Sends pending bidding signals URL requests, if any. Unlike with
   // SellerWorklets, this must be called for BidderWorklets that need to send

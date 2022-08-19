@@ -136,7 +136,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       uint64_t trace_id,
-      GenerateBidCallback generate_bid_callback) override {
+      mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
+          generate_bid_client) override {
     NOTREACHED();
   }
 
