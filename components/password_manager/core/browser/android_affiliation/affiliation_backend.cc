@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
@@ -45,6 +46,7 @@ void AffiliationBackend::Initialize(
         pending_url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& db_path) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::Initialize");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!throttler_);
   throttler_ = std::make_unique<AffiliationFetchThrottler>(
@@ -67,6 +69,7 @@ void AffiliationBackend::GetAffiliationsAndBranding(
     StrategyOnCacheMiss cache_miss_strategy,
     AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::GetAffiliationsAndBranding");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
@@ -80,6 +83,7 @@ void AffiliationBackend::GetAffiliationsAndBranding(
 
 void AffiliationBackend::Prefetch(const FacetURI& facet_uri,
                                   const base::Time& keep_fresh_until) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::Prefetch");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
@@ -92,6 +96,7 @@ void AffiliationBackend::Prefetch(const FacetURI& facet_uri,
 
 void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
                                         const base::Time& keep_fresh_until) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::CancelPrefetch");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto facet_manager_it = facet_managers_.find(facet_uri);
@@ -105,6 +110,7 @@ void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
 
 void AffiliationBackend::KeepPrefetchForFacets(
     std::vector<FacetURI> facet_uris) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::KeepPrefetchForFacets");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Firstly, check which facets are missing from the |facet_managers_| and
@@ -139,6 +145,7 @@ void AffiliationBackend::KeepPrefetchForFacets(
 }
 
 void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::TrimCacheForFacetURI");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AffiliatedFacetsWithUpdateTime affiliation;
@@ -147,6 +154,7 @@ void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
 }
 
 void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+  TRACE_EVENT0("passwords", "AffiliationBackend::TrimUnusedCache");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cache_->RemoveMissingFacetURI(facet_uris);
