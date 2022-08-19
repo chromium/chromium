@@ -170,8 +170,15 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   base::UserActionTester user_action_tester;
 };
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
+  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanel
+#else
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
+  ImageSearchWithValidImageOpensUnifiedSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
+                       MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
 
@@ -256,8 +263,15 @@ class SearchImageWithUnifiedSidePanelFooterDisabled
   }
 };
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
+  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanel
+#else
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel \
+  ImageSearchWithValidImageOpensUnifiedSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
-                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
+                       MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
 
