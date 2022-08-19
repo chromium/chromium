@@ -4,8 +4,6 @@
 
 package org.chromium.components.payments.secure_payment_confirmation;
 
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,11 +14,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 /* package */ class SecurePaymentConfirmationAuthnViewBinder {
     /* package */ static void bind(
             PropertyModel model, SecurePaymentConfirmationAuthnView view, PropertyKey propertyKey) {
-        if (SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN == propertyKey) {
-            String origin = UrlFormatter.formatOriginForSecurityDisplay(
-                    model.get(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN),
-                    SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-            view.mStoreOrigin.setText(origin);
+        if (SecurePaymentConfirmationAuthnProperties.STORE_LABEL == propertyKey) {
+            view.mStoreOrigin.setText(
+                    model.get(SecurePaymentConfirmationAuthnProperties.STORE_LABEL));
         } else if (SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON == propertyKey) {
             view.mPaymentIcon.setImageDrawable(
                     model.get(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON));

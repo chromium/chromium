@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.url.Origin;
 
 /**
  * The properties of the SecurePaymentConfirmation Authn UI, which fully describe the state of the
@@ -16,7 +15,7 @@ import org.chromium.url.Origin;
  */
 /* package */ class SecurePaymentConfirmationAuthnProperties {
     /** The store value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<Origin> STORE_ORIGIN =
+    /* package */ static final ReadableObjectPropertyKey<String> STORE_LABEL =
             new ReadableObjectPropertyKey<>();
 
     /** The payment icon for the UI. */
@@ -44,8 +43,8 @@ import org.chromium.url.Origin;
             new ReadableObjectPropertyKey<>();
 
     /* package */ static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {STORE_ORIGIN, PAYMENT_ICON, PAYMENT_INSTRUMENT_LABEL, TOTAL,
-                    CURRENCY, CONTINUE_BUTTON_CALLBACK, CANCEL_BUTTON_CALLBACK};
+            new PropertyKey[] {STORE_LABEL, PAYMENT_ICON, PAYMENT_INSTRUMENT_LABEL, TOTAL, CURRENCY,
+                    CONTINUE_BUTTON_CALLBACK, CANCEL_BUTTON_CALLBACK};
 
     // Prevent instantiation.
     private SecurePaymentConfirmationAuthnProperties() {}

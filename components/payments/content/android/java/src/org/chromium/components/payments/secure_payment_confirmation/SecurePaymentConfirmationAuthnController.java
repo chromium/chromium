@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -18,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.R;
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -141,10 +144,11 @@ public class SecurePaymentConfirmationAuthnController {
      * @param paymentInstrumentLabel The label to display for the payment instrument.
      * @param total The total amount of the transaction.
      * @param callback The function to call on sheet dismiss; false if it failed.
-     * @param payeeOrigin The origin of the payee.
+     * @param payeeName The name of the payee, or null if not specified
+     * @param payeeOrigin The origin of the payee, or null if not specified
      */
     public boolean show(Drawable paymentIcon, String paymentInstrumentLabel, PaymentItem total,
-            Callback<Boolean> callback, Origin payeeOrigin) {
+            Callback<Boolean> callback, @Nullable String payeeName, @Nullable Origin payeeOrigin) {
         if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -157,7 +161,8 @@ public class SecurePaymentConfirmationAuthnController {
 
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
-                        .with(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN, payeeOrigin)
+                        .with(SecurePaymentConfirmationAuthnProperties.STORE_LABEL,
+                                getStoreLabel(payeeName, payeeOrigin))
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON, paymentIcon)
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
                                 paymentInstrumentLabel)
@@ -211,6 +216,18 @@ public class SecurePaymentConfirmationAuthnController {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean isHidden() {
         return mHider == null;
+    }
+
+    private String getStoreLabel(@Nullable String payeeName, @Nullable Origin payeeOrigin) {
+        // At least one of the payeeName and payeeOrigin must be non-null in SPC; this should be
+        // enforced by PaymentRequestService.isValidSecurePaymentConfirmationRequest.
+        assert payeeName != null || payeeOrigin != null;
+
+        if (payeeOrigin == null) return payeeName;
+
+        String origin = UrlFormatter.formatOriginForSecurityDisplay(
+                payeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        return payeeName == null ? origin : String.format("%s (%s)", payeeName, origin);
     }
 
     private String formatPaymentItem(PaymentItem paymentItem) {

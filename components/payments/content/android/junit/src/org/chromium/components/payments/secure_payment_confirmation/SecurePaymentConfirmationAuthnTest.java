@@ -142,8 +142,8 @@ public class SecurePaymentConfirmationAuthnTest {
         mIsPaymentCancelled = false;
         org.chromium.url.internal.mojom.Origin mojoOrigin =
                 new org.chromium.url.internal.mojom.Origin();
-        return mAuthnController.show(
-                mDrawable, "paymentInstrumentLabel", mTotal, mCallback, new Origin(mojoOrigin));
+        return mAuthnController.show(mDrawable, "paymentInstrumentLabel", mTotal, mCallback,
+                "payee name", new Origin(mojoOrigin));
     }
 
     private void setWindowAndroid(WindowAndroid windowAndroid, WebContents webContents) {

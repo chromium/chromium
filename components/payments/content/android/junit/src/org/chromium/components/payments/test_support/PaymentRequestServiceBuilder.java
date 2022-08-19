@@ -242,6 +242,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
+    public PaymentRequestServiceBuilder setPayeeName(String payeeName) {
+        mSecurePaymentConfirmationRequest.payeeName = payeeName;
+        return this;
+    }
+
     public PaymentRequestServiceBuilder setPayeeOrigin(
             org.chromium.url.internal.mojom.Origin payeeOrigin) {
         mSecurePaymentConfirmationRequest.payeeOrigin = payeeOrigin;
