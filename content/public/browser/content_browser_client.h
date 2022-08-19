@@ -342,11 +342,12 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns true if effective URLs should be compared when choosing a
   // SiteInstance for a navigation to |destination_url|.
-  // |is_main_frame| is true if the navigation will take place in a main frame.
+  // |is_outermost_main_frame| is true if the navigation will take place in an
+  // outermost main frame.
   virtual bool ShouldCompareEffectiveURLsForSiteInstanceSelection(
       BrowserContext* browser_context,
       content::SiteInstance* candidate_site_instance,
-      bool is_main_frame,
+      bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url);
 

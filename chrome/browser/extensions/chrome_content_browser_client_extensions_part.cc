@@ -280,10 +280,6 @@ bool ChromeContentBrowserClientExtensionsPart::
   // the app process to not break scripting when a hosted app opens a same-site
   // popup. See https://crbug.com/718516 and https://crbug.com/828720 and
   // https://crbug.com/859062.
-  // TODO(crbug.com/3577897): Follow up to confirm correctness for fenced
-  // frames. This code has comprehensive tests in HostedAppProcessModelTest and
-  // coveraged should be added to ensure that fenced frames cannot jump into/out
-  // of the app.
   if (!is_outermost_main_frame)
     return false;
   size_t candidate_active_contents_count =

@@ -2635,9 +2635,6 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
   // this object with the URL & origin of `candidate`. This is to determine if
   // `dest_url_info` would be considered "same site" if `candidate` occupied the
   // position of this object in the frame tree.
-  // TODO(crbug.com/1314749): With MPArch there may be multiple main frames and
-  // so IsMainFrame should not be used to identify subframes. Follow up to
-  // confirm correctness.
   return candidate->GetSiteInstance()->IsNavigationSameSite(
       candidate->last_successful_url(), candidate->GetLastCommittedOrigin(),
       frame_tree_node_->IsOutermostMainFrame(), dest_url_info);

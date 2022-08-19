@@ -11229,7 +11229,7 @@ bool RenderFrameHostImpl::IsNavigationSameSite(const UrlInfo& dest_url_info) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(
-      last_successful_url(), GetLastCommittedOrigin(), is_main_frame(),
+      last_successful_url(), GetLastCommittedOrigin(), IsOutermostMainFrame(),
       dest_url_info);
 }
 
