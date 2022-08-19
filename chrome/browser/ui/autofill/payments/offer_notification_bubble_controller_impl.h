@@ -107,7 +107,7 @@ class OfferNotificationBubbleControllerImpl
 
   // The Autofill offer being displayed as a bubble. Set when the bubble is
   // requested to be shown via ShowOfferNotificationIfApplicable(~).
-  AutofillOfferData offer_;
+  raw_ptr<const AutofillOfferData> offer_ = nullptr;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
