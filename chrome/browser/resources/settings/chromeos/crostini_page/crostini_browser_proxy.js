@@ -267,10 +267,9 @@ export class CrostiniBrowserProxy {
    * Opens file selector dialog to allow user to select an Ansible playbook
    * to preconfigure their container.
    *
-   * @return {!Promise<string>} Returns a filepath to the selected Ansible
-   *      Playbook
+   * @return {!Promise<string>} Returns a filepath to the selected file.
    */
-  applyAnsiblePlaybook() {}
+  openContainerFileSelector() {}
 }
 
 /** @type {?CrostiniBrowserProxy} */
@@ -452,7 +451,7 @@ export class CrostiniBrowserProxyImpl {
   }
 
   /** @override */
-  applyAnsiblePlaybook() {
-    return sendWithPromise('applyAnsiblePlaybook');
+  openContainerFileSelector() {
+    return sendWithPromise('openContainerFileSelector');
   }
 }

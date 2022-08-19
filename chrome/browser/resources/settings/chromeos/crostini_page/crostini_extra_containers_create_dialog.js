@@ -190,7 +190,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
   /** @private */
   async onAnsiblePlaybookUploadClick_() {
     this.$.preconfiguredContainersInput.value =
-        await this.browserProxy_.applyAnsiblePlaybook();
+        await this.browserProxy_.openContainerFileSelector();
   }
 
   /** @private */

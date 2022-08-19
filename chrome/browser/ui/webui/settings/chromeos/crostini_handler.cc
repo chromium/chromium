@@ -177,8 +177,8 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
-        "applyAnsiblePlaybook",
-        base::BindRepeating(&CrostiniHandler::HandleApplyAnsiblePlaybook,
+        "openContainerFileSelector",
+        base::BindRepeating(&CrostiniHandler::HandleOpenContainerFileSelector,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -812,20 +812,19 @@ void CrostiniHandler::HandleStopContainer(const base::Value::List& args) {
   }
 }
 
-void CrostiniHandler::HandleApplyAnsiblePlaybook(
+void CrostiniHandler::HandleOpenContainerFileSelector(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
-  ansible_file_selector_ =
-      std::make_unique<crostini::AnsibleFileSelector>(web_ui());
-  ansible_file_selector_->SelectFile(
-      base::BindOnce(&CrostiniHandler::OnAnsiblePlaybookSelected,
+  file_selector_ = std::make_unique<crostini::CrostiniFileSelector>(web_ui());
+  file_selector_->SelectFile(
+      base::BindOnce(&CrostiniHandler::OnContainerFileSelected,
                      handler_weak_ptr_factory_.GetWeakPtr(), callback_id),
       base::DoNothing());
 }
 
-void CrostiniHandler::OnAnsiblePlaybookSelected(const std::string& callback_id,
-                                                const base::FilePath& path) {
+void CrostiniHandler::OnContainerFileSelected(const std::string& callback_id,
+                                              const base::FilePath& path) {
   base::Value filePath(path.value());
   ResolveJavascriptCallback(base::Value(callback_id), filePath);
 }

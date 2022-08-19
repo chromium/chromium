@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_FILE_SELECTOR_H_
-#define CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_FILE_SELECTOR_H_
+#ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_FILE_SELECTOR_H_
+#define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_FILE_SELECTOR_H_
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,15 +13,15 @@
 
 namespace crostini {
 
-// Helper class to open a file dialog to select an Ansible Playbook for
-// preconfigured containers.
-class AnsibleFileSelector : public ui::SelectFileDialog::Listener {
+// Helper class to open a file dialog to select a file from which the
+// container will be created.
+class CrostiniFileSelector : public ui::SelectFileDialog::Listener {
  public:
-  explicit AnsibleFileSelector(content::WebUI* web_ui);
-  AnsibleFileSelector(const AnsibleFileSelector&) = delete;
-  AnsibleFileSelector& operator=(const AnsibleFileSelector&) = delete;
+  explicit CrostiniFileSelector(content::WebUI* web_ui);
+  CrostiniFileSelector(const CrostiniFileSelector&) = delete;
+  CrostiniFileSelector& operator=(const CrostiniFileSelector&) = delete;
 
-  ~AnsibleFileSelector() override;
+  ~CrostiniFileSelector() override;
 
   // Opens a file selection dialog to choose an Ansible Playbook.
   virtual void SelectFile(
@@ -46,4 +46,4 @@ class AnsibleFileSelector : public ui::SelectFileDialog::Listener {
 
 }  // namespace crostini
 
-#endif  // CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_FILE_SELECTOR_H_
+#endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_FILE_SELECTOR_H_
