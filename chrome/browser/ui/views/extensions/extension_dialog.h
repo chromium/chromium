@@ -18,7 +18,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -63,10 +63,10 @@ class ExtensionDialog : public views::DialogDelegate,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // |title_color| customizes the color of the window title.
-    absl::optional<SkColor> title_color;
+    absl::optional<ui::ColorId> title_color;
     // |title_inactive_color| customizes the color of the window title when
     // window is inactive.
-    absl::optional<SkColor> title_inactive_color;
+    absl::optional<ui::ColorId> title_inactive_color;
 #endif
   };
 

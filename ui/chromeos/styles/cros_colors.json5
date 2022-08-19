@@ -230,6 +230,7 @@
     highlight_color_hover: {
       light: "rgba($google_grey_700.rgb, 0.2)",
       dark: "rgba($white.rgb, 0.2)",
+      generate_per_mode: true,
     },
     highlight_color_focus: {
       light: "rgba($black.rgb, $ripple_opacity)",
@@ -500,7 +501,11 @@
     },
     /* TODO(crbug.com/1284178) waiting for UX input to see how to combine
     this variable together with `dialog_title_background_color` */
-    dialog_title_bar_color: "blend($highlight_color_hover, $bg_color)",
+    dialog_title_bar_color: {
+      light: "blend($highlight_color_hover_light, $bg_color)",
+      dark: "blend($highlight_color_hover_dark, $bg_color)",
+      generate_per_mode: true,
+    },
 
     /* toast */
     /* Toast colors are inverted for contrast. */

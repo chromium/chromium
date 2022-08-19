@@ -11,10 +11,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -51,6 +47,8 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -188,8 +186,7 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 // A customization of SystemWebDialogDelegate that provides notifications
 // to SelectFileDialogExtension about web dialog closing events. Must be outside
 // anonymous namespace for the friend declaration to work.
-class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
-                                     public ash::ColorModeObserver {
+class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
  public:
   SystemFilesAppDialogDelegate(base::WeakPtr<SelectFileDialogExtension> parent,
                                const std::string& id,
@@ -197,12 +194,8 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
                                std::u16string title)
       : chromeos::SystemWebDialogDelegate(url, title),
         id_(id),
-        parent_(std::move(parent)) {
-    ash::DarkLightModeController::Get()->AddObserver(this);
-  }
-  ~SystemFilesAppDialogDelegate() override {
-    ash::DarkLightModeController::Get()->RemoveObserver(this);
-  }
+        parent_(std::move(parent)) {}
+  ~SystemFilesAppDialogDelegate() override = default;
 
   void SetModal(bool modal) {
     set_modal_type(modal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE);
@@ -283,9 +276,8 @@ void SelectFileDialogExtension::ListenerDestroyed() {
 
 void SelectFileDialogExtension::ExtensionDialogClosing(
     ExtensionDialog* /*dialog*/) {
-  if (!ash::features::IsFileManagerSwaEnabled() &&
-      ash::DarkLightModeController::Get()) {
-    ash::DarkLightModeController::Get()->RemoveObserver(this);
+  if (!ash::features::IsFileManagerSwaEnabled()) {
+    ColorProviderSourceObserver::Observe(nullptr);
   }
   profile_ = nullptr;
   owner_window_ = nullptr;
@@ -303,15 +295,26 @@ void SelectFileDialogExtension::ExtensionTerminated(
   dialog->GetWidget()->Close();
 }
 
-void SelectFileDialogExtension::OnColorModeChanged(bool dark_mode_enabled) {
+void SelectFileDialogExtension::OnColorProviderChanged() {
+  auto* color_provider_source = GetColorProviderSource();
+  if (!color_provider_source)
+    return;
+
+  auto* color_provider = color_provider_source->GetColorProvider();
+  if (!color_provider)
+    return;
+
   if (!ash::features::IsFileManagerSwaEnabled() && extension_dialog_.get()) {
-    auto* color_provider = ash::ColorProvider::Get();
-    gfx::NativeWindow native_view =
-        extension_dialog_->GetWidget()->GetNativeView();
-    native_view->SetProperty(chromeos::kFrameActiveColorKey,
-                             color_provider->GetActiveDialogTitleBarColor());
-    native_view->SetProperty(chromeos::kFrameInactiveColorKey,
-                             color_provider->GetInactiveDialogTitleBarColor());
+    SkColor title_color =
+        ash::features::IsDarkLightModeEnabled()
+            ? color_provider->GetColor(cros_tokens::kDialogTitleBarColor)
+            : color_provider->GetColor(cros_tokens::kDialogTitleBarColorLight);
+    views::Widget* widget = extension_dialog_->GetWidget();
+    DCHECK(widget);
+    gfx::NativeWindow native_view = widget->GetNativeView();
+    native_view->SetProperty(chromeos::kFrameActiveColorKey, title_color);
+    // TODO(wenbojie): Use a different inactive color in future.
+    native_view->SetProperty(chromeos::kFrameInactiveColorKey, title_color);
   }
 }
 
@@ -528,13 +531,13 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     dialog_params.min_size = {kFileManagerMinimumWidth,
                               kFileManagerMinimumHeight};
     dialog_params.title = dialog_title;
-    auto* color_provider = ash::ColorProvider::Get();
-    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-    dialog_params.title_color = color_provider->GetActiveDialogTitleBarColor();
-    dialog_params.title_inactive_color =
-        color_provider->GetInactiveDialogTitleBarColor();
-
-    ash::DarkLightModeController::Get()->AddObserver(this);
+    if (ash::features::IsDarkLightModeEnabled()) {
+      dialog_params.title_color = cros_tokens::kDialogTitleBarColor;
+    } else {
+      dialog_params.title_color = cros_tokens::kDialogTitleBarColorLight;
+    }
+    // TODO(wenbojie): Use a different inactive color in future.
+    dialog_params.title_inactive_color = dialog_params.title_color;
 
     ExtensionDialog* dialog = ExtensionDialog::Show(
         file_manager_url, parent_window, profile_, web_contents,
@@ -549,6 +552,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
         dialog->host()->host_contents(), routing_id);
 
     extension_dialog_ = dialog;
+    ColorProviderSourceObserver::Observe(extension_dialog_->GetWidget());
   }
 
   // Connect our listener to FileDialogFunction's per-tab callbacks.

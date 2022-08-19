@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
@@ -39,7 +39,7 @@ class SelectFilePolicy;
 // file manager extension implementation.
 class SelectFileDialogExtension : public ui::SelectFileDialog,
                                   public ExtensionDialogObserver,
-                                  public ash::ColorModeObserver {
+                                  public ui::ColorProviderSourceObserver {
  public:
   // Opaque ID type for identifying the tab spawned each dialog, unique for
   // every WebContents or every Android task ID.
@@ -60,8 +60,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
   void ExtensionDialogClosing(ExtensionDialog* dialog) override;
   void ExtensionTerminated(ExtensionDialog* dialog) override;
 
-  // ash::ColorModeObserver:
-  void OnColorModeChanged(bool dark_mode_enabled) override;
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
   // Routes callback to appropriate SelectFileDialog::Listener based on the
   // owning |web_contents|.
