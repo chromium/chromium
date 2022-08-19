@@ -10,13 +10,19 @@
 
 namespace blink {
 
+class ExecutionContext;
 class MediaStreamComponent;
+class MediaStreamSource;
+class MediaStreamTrack;
 
 class MediaStreamUtils {
   STATIC_ONLY(MediaStreamUtils);
 
  public:
   static void DidCreateMediaStreamTrack(MediaStreamComponent*);
+
+  static MediaStreamTrack* CreateLocalAudioTrack(ExecutionContext*,
+                                                 MediaStreamSource*);
 };
 
 }  // namespace blink

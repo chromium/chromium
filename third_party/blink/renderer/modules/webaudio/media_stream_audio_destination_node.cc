@@ -42,16 +42,6 @@ namespace {
 // Default to stereo; `options` will update it appropriately if needed.
 constexpr uint32_t kDefaultNumberOfChannels = 2;
 
-void DidCreateMediaStreamAndTracks(MediaStreamDescriptor* stream) {
-  for (uint32_t i = 0; i < stream->NumberOfAudioComponents(); ++i) {
-    MediaStreamUtils::DidCreateMediaStreamTrack(stream->AudioComponent(i));
-  }
-
-  for (uint32_t i = 0; i < stream->NumberOfVideoComponents(); ++i) {
-    MediaStreamUtils::DidCreateMediaStreamTrack(stream->VideoComponent(i));
-  }
-}
-
 MediaStreamSource* CreateMediaStreamSource() {
   DVLOG(1) << "Creating WebAudio media stream source.";
   // TODO(crbug.com/704136) Use executionContext::GetTaskRunner() instead.
@@ -87,11 +77,11 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     uint32_t number_of_channels)
     : AudioBasicInspectorNode(context),
       source_(CreateMediaStreamSource()),
-      stream_(MediaStream::Create(context.GetExecutionContext(),
-                                  MakeGarbageCollected<MediaStreamDescriptor>(
-                                      MediaStreamSourceVector({source_.Get()}),
-                                      MediaStreamSourceVector()))) {
-  DidCreateMediaStreamAndTracks(stream_->Descriptor());
+      stream_(MediaStream::Create(
+          context.GetExecutionContext(),
+          MediaStreamTrackVector({MediaStreamUtils::CreateLocalAudioTrack(
+              context.GetExecutionContext(),
+              source_)}))) {
   SetHandler(
       MediaStreamAudioDestinationHandler::Create(*this, number_of_channels));
   WebRtcLogMessage(
