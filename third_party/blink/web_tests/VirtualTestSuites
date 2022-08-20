@@ -450,13 +450,6 @@
              "--enable-accelerated-2d-canvas"]
   },
   {
-    "prefix": "lazyload-image",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/lazyload"],
-    "args": ["--enable-blink-features=AutomaticLazyImageLoading",
-             "--disable-blink-features=RestrictAutomaticLazyImageLoadingToDataSaver"]
-  },
-  {
     "prefix": "webgl-extra-video-texture-metadata",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/webgl/video-metadata"],

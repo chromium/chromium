@@ -1037,15 +1037,6 @@ paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html 
 # Tests that use too much storage for automation.
 http/tests/cachestorage/large-put.html [ Skip ]
 
-# Tests that work only when LazyImageLoading feature is enabled.
-crbug.com/846170 http/tests/lazyload/* [ Skip ]
-virtual/lazyload-image/http/tests/lazyload/* [ Pass ]
-crbug.com/869492 virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ Skip ]
-crbug.com/869492 virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-loading-lazy-tentative.sub.html [ Skip ]
-crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-disabled-image-tentative.html [ Skip ]
-crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ Skip ]
-crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-loading-lazy-tentative.sub.html [ Skip ]
-
 # Not expected to pass in default configuration, only virtual test suite.
 crbug.com/830901 fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ Skip ]
 virtual/webgl-extra-video-texture-metadata/fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ Pass ]
