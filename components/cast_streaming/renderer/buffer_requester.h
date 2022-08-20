@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_BUFFER_REQUESTER_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_BUFFER_REQUESTER_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_BUFFER_REQUESTER_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_BUFFER_REQUESTER_H_
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/demuxer_stream_traits.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/renderer/public/web_codecs/decoder_buffer_provider.h"
-#include "components/cast_streaming/renderer/web_codecs/decoder_buffer_provider_impl.h"
+#include "components/cast_streaming/renderer/decoder_buffer_provider_impl.h"
+#include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "media/mojo/mojom/media_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace cast_streaming::webcodecs {
+namespace cast_streaming {
 
 template <typename TMojoRemoteType>
 class BufferRequester;
@@ -49,6 +50,7 @@ class BufferRequester
 
     virtual void OnNewBufferProvider(
         base::WeakPtr<DecoderBufferProvider<ConfigType>> ptr) = 0;
+    virtual void OnMojoDisconnect() = 0;
   };
 
   BufferRequester(Client* client,
@@ -62,6 +64,11 @@ class BufferRequester
         weak_factory_(this) {
     DCHECK(client_);
     DCHECK(task_runner_);
+
+    // Unretained is safe here because |client| is expected to outlive this
+    // instance.
+    remote_.set_disconnect_handler(
+        base::BindOnce(&Client::OnMojoDisconnect, base::Unretained(client)));
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&BufferRequester<TMojoRemoteType>::OnNewConfig,
@@ -80,6 +87,12 @@ class BufferRequester
     buffer_request_cb_ = std::move(on_buffer_received);
     remote_->GetBuffer(base::BindOnce(&BufferRequester::OnGetBufferDone,
                                       weak_factory_.GetWeakPtr()));
+  }
+
+  // |callback| is called upon completion of the async call, with result true
+  // if the call succeeded and false in all other cases.
+  void EnableBitstreamConverterAsync(base::OnceCallback<void(bool)> callback) {
+    remote_->EnableBitstreamConverter(std::move(callback));
   }
 
  private:
@@ -124,6 +137,6 @@ class BufferRequester
   base::WeakPtrFactory<BufferRequester<TMojoRemoteType>> weak_factory_;
 };
 
-}  // namespace cast_streaming::webcodecs
+}  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_BUFFER_REQUESTER_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_BUFFER_REQUESTER_H_

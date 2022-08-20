@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/web_codecs/decoder_buffer_provider_impl.h"
+#include "components/cast_streaming/renderer/decoder_buffer_provider_impl.h"
 
 #include <memory>
 
@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cast_streaming::webcodecs {
+namespace cast_streaming {
 namespace {
 
 constexpr uint32_t kDefaultDataPipeCapacityBytes = 512;
@@ -114,4 +114,4 @@ TEST_F(DecoderBufferProviderImplTest, ReadTest) {
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace cast_streaming::webcodecs
+}  // namespace cast_streaming

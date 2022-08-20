@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/cast_streaming/renderer/public/web_codecs/decoder_buffer_provider.h"
+#include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 
 namespace cast_streaming::webcodecs {
 

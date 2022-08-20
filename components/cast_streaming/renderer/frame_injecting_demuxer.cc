@@ -11,7 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/demuxer_stream_traits.h"
-#include "components/cast_streaming/renderer/decoder_buffer_reader.h"
+#include "components/cast_streaming/renderer/buffer_requester.h"
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -31,31 +31,30 @@ namespace {
 // |TMojoRemoteType| is the interface used for requesting data buffers.
 // Currently expected to be either AudioBufferRequester or VideoBufferRequester.
 template <typename TMojoRemoteType>
-class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
-                                    public media::DemuxerStream {
+class FrameInjectingDemuxerStream
+    : public DemuxerStreamTraits<TMojoRemoteType>,
+      public BufferRequester<TMojoRemoteType>::Client,
+      public media::DemuxerStream {
  public:
   // See DemuxerStreamTraits for further details on these types.
   using Traits = DemuxerStreamTraits<TMojoRemoteType>;
-  using StreamInfoType = typename Traits::StreamInfoType;
   using ConfigType = typename Traits::ConfigType;
 
   FrameInjectingDemuxerStream(
       mojo::PendingRemote<TMojoRemoteType> pending_remote,
-      StreamInfoType stream_initialization_info)
-      : remote_(std::move(pending_remote)), weak_factory_(this) {
-    // Mojo service disconnection means the Cast Streaming Session ended and no
-    // further buffer will be requested. kAborted will be returned to the media
-    // pipeline for every subsequent DemuxerStream::Read() attempt.
-    remote_.set_disconnect_handler(
-        base::BindOnce(&FrameInjectingDemuxerStream::OnMojoDisconnect,
-                       weak_factory_.GetWeakPtr()));
-
-    // Set the new config, but then un-set |pending_config_change_| as the
-    // initial config is already applied prior to the first Read() call.
-    OnNewConfig(std::move(stream_initialization_info));
-    DCHECK(pending_config_change_);
-    pending_config_change_ = false;
-  }
+      typename Traits::StreamInfoType stream_initialization_info,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::OnceClosure on_initialization_complete_cb)
+      : on_initialization_complete_cb_(
+            std::move(on_initialization_complete_cb)),
+        decoder_config_(stream_initialization_info->decoder_config),
+        buffer_requester_(std::make_unique<BufferRequester<TMojoRemoteType>>(
+            this,
+            stream_initialization_info->decoder_config,
+            std::move(stream_initialization_info->data_pipe),
+            std::move(pending_remote),
+            task_runner)),
+        weak_factory_(this) {}
 
   ~FrameInjectingDemuxerStream() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -64,116 +63,15 @@ class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
   void AbortPendingRead() {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    was_read_aborted_ = true;
     if (pending_read_cb_)
       std::move(pending_read_cb_).Run(Status::kAborted, nullptr);
   }
 
  protected:
-  const ConfigType& config() {
-    DCHECK(decoder_config_);
-    return decoder_config_.value();
-  }
+  const ConfigType& config() { return decoder_config_; }
 
  private:
-  void OnMojoDisconnect() {
-    DLOG(ERROR) << __func__ << ": Mojo Pipe Disconnected";
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    remote_.reset();
-    buffer_reader_.reset();
-    if (pending_read_cb_) {
-      std::move(pending_read_cb_)
-          .Run(Status::kAborted, scoped_refptr<media::DecoderBuffer>(nullptr));
-    }
-  }
-
-  void OnBufferReady(scoped_refptr<media::DecoderBuffer> buffer) {
-    DVLOG(3) << __func__;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(buffer);
-
-    // Stop processing the pending buffer. OnMojoDisconnect() will trigger
-    // sending kAborted on subsequent Read() calls. This can happen if this
-    // object was in the process of reading a buffer off the data pipe when the
-    // Mojo connection ended.
-    if (!remote_.is_bound()) {
-      DVLOG(1) << "Read has been cancelled due to mojo disconnection.";
-      return;
-    }
-
-    // Can only occur when a read has been aborted.
-    if (!pending_read_cb_) {
-      DVLOG(1) << "Read has been cancelled via Abort() call.";
-      return;
-    }
-
-    if (buffer->end_of_stream()) {
-      std::move(pending_read_cb_).Run(Status::kError, nullptr);
-    } else {
-      std::move(pending_read_cb_).Run(Status::kOk, std::move(buffer));
-    }
-  }
-
-  // Asynchronously requests a new buffer be sent from the browser process. The
-  // result will be processed in OnGetBufferDone().
-  void RequestNextBuffer() {
-    DVLOG(3) << __func__;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(remote_);
-
-    remote_->GetBuffer(
-        base::BindOnce(&FrameInjectingDemuxerStream::OnGetBufferDone,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  // Processes a new buffer as received over mojo.
-  void OnGetBufferDone(
-      typename Traits::GetBufferResponseType get_buffer_response) {
-    DVLOG(3) << __func__;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(buffer_reader_);
-
-    if (get_buffer_response->is_stream_info()) {
-      OnNewConfig(std::move(get_buffer_response->get_stream_info()));
-    } else {
-      // Eventually calls OnBufferReady().
-      buffer_reader_->ProvideBuffer(
-          std::move(get_buffer_response->get_buffer()));
-    }
-  }
-
-  // Called when a new config is received over mojo. Sets for the next call to
-  // DemuxerStream::Read() to signal for a new config, and replaces the data
-  // pipe which is used to read buffers in future.
-  void OnNewConfig(StreamInfoType data_stream_info) {
-    DCHECK(data_stream_info);
-    DVLOG(1) << __func__ << ": config info: "
-             << data_stream_info->decoder_config.AsHumanReadableString();
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    decoder_config_ = std::move(data_stream_info->decoder_config);
-    if (!buffer_reader_) {
-      buffer_reader_ = std::make_unique<DecoderBufferReader>(
-          base::BindRepeating(&FrameInjectingDemuxerStream::OnBufferReady,
-                              weak_factory_.GetWeakPtr()),
-          std::move(data_stream_info->data_pipe));
-    } else {
-      buffer_reader_ = std::make_unique<DecoderBufferReader>(
-          std::move(*buffer_reader_), std::move(data_stream_info->data_pipe));
-    }
-
-    if (pending_read_cb_) {
-      // Return early if there is already an ongoing Read() call. The prior
-      // |buffer_reader_| instance will no longer exist, so the associated
-      // OnBufferReady() call with which this Read() is associated will never
-      // arrive - so the Read() call must be responded to now or the
-      // DemuxerStream will deadlock.
-      std::move(pending_read_cb_).Run(Status::kConfigChanged, nullptr);
-    } else {
-      pending_config_change_ = true;
-    }
-  }
-
   void OnBitstreamConverterEnabled(bool success) {
     if (!success) {
       LOG(ERROR) << "Failed to enable Bitstream Converter";
@@ -187,27 +85,91 @@ class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
     }
   }
 
+  // Called by |current_buffer_provider_->ReadBufferAsync()|.
+  void OnNewBuffer(scoped_refptr<media::DecoderBuffer> buffer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(!!pending_read_cb_ != was_read_aborted_);
+
+    was_read_aborted_ = false;
+    if (!pending_read_cb_) {
+      return;
+    }
+
+    if (buffer->end_of_stream()) {
+      std::move(pending_read_cb_).Run(Status::kError, nullptr);
+    } else {
+      std::move(pending_read_cb_).Run(Status::kOk, std::move(buffer));
+    }
+  }
+
+  // Called by |current_buffer_provider_->GetConfigAsync()|.
+  void OnNewConfig(ConfigType config) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(!!pending_read_cb_ != was_read_aborted_);
+
+    decoder_config_ = std::move(config);
+    was_read_aborted_ = false;
+    pending_config_change_ = true;
+
+    if (pending_read_cb_) {
+      Read(std::move(pending_read_cb_));
+    }
+  }
+
+  // BufferRequester::Client implementation.
+  void OnNewBufferProvider(
+      base::WeakPtr<DecoderBufferProvider<ConfigType>> ptr) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    current_buffer_provider_ = std::move(ptr);
+
+    // During initialization, the config is set from the instance provided to
+    // the ctor.
+    if (on_initialization_complete_cb_) {
+      std::move(on_initialization_complete_cb_).Run();
+      return;
+    }
+
+    current_buffer_provider_->GetConfigAsync(base::BindOnce(
+        &FrameInjectingDemuxerStream::OnNewConfig, weak_factory_.GetWeakPtr()));
+  }
+
+  void OnMojoDisconnect() override {
+    DLOG(ERROR) << __func__ << ": Mojo Pipe Disconnected";
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    buffer_requester_.reset();
+    if (pending_read_cb_) {
+      std::move(pending_read_cb_)
+          .Run(Status::kAborted, scoped_refptr<media::DecoderBuffer>(nullptr));
+    }
+  }
+
   // DemuxerStream partial implementation.
   void Read(ReadCB read_cb) final {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(!pending_read_cb_);
+    DCHECK(!buffer_requester_ || current_buffer_provider_);
 
-    DCHECK(pending_read_cb_.is_null());
     pending_read_cb_ = std::move(read_cb);
 
     // Check whether OnMojoDisconnect() has been called and abort if so.
-    if (!remote_) {
+    if (!buffer_requester_) {
       std::move(pending_read_cb_)
           .Run(Status::kAborted, scoped_refptr<media::DecoderBuffer>(nullptr));
       return;
     }
 
+    // In this case, a callback to get a Read() result is already running, so
+    // just replace the |pending_read_cb_| and let the ongoing call continue.
+    if (was_read_aborted_) {
+      was_read_aborted_ = false;
+      return;
+    }
+
     // Handle the special case of a config change.
     if (pending_config_change_) {
-      // By design, the Read() method should never be called until after the
-      // |decoder_config_| has been set.
-      DCHECK(decoder_config_);
-
       pending_config_change_ = false;
       std::move(pending_read_cb_).Run(Status::kConfigChanged, nullptr);
       return;
@@ -219,16 +181,14 @@ class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
       return;
     }
 
-    // Request a new buffer from the browser process.
-    RequestNextBuffer();
-
-    // Eventually this will call OnBufferReady().
-    buffer_reader_->ReadBufferAsync();
+    current_buffer_provider_->ReadBufferAsync(base::BindOnce(
+        &FrameInjectingDemuxerStream::OnNewBuffer, weak_factory_.GetWeakPtr()));
   }
 
   void EnableBitstreamConverter() final {
+    DCHECK(buffer_requester_);
     is_bitstream_enable_in_progress_ = true;
-    remote_->EnableBitstreamConverter(base::BindOnce(
+    buffer_requester_->EnableBitstreamConverterAsync(base::BindOnce(
         &FrameInjectingDemuxerStream::OnBitstreamConverterEnabled,
         weak_factory_.GetWeakPtr()));
   }
@@ -239,16 +199,11 @@ class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
 
   bool SupportsConfigChanges() final { return true; }
 
-  mojo::Remote<TMojoRemoteType> remote_;
-
   // Called once the response to the first GetBuffer() call has been received.
-  base::OnceClosure on_initialization_complete_;
+  base::OnceClosure on_initialization_complete_cb_;
 
-  // Responsible for reading buffers from a data pipe.
-  std::unique_ptr<DecoderBufferReader> buffer_reader_;
-
-  // The current decoder config, empty until first received.
-  absl::optional<ConfigType> decoder_config_;
+  // Current config, as last provided by |current_buffer_provider_|.
+  ConfigType decoder_config_;
 
   // Currently processing DemuxerStream::Read call's callback, if one is in
   // process.
@@ -259,7 +214,12 @@ class FrameInjectingDemuxerStream : public DemuxerStreamTraits<TMojoRemoteType>,
 
   bool is_bitstream_enable_in_progress_ = false;
 
+  bool was_read_aborted_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtr<DecoderBufferProvider<ConfigType>> current_buffer_provider_;
+  std::unique_ptr<BufferRequester<TMojoRemoteType>> buffer_requester_;
 
   base::WeakPtrFactory<FrameInjectingDemuxerStream> weak_factory_;
 };
@@ -348,15 +308,32 @@ void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
     return;
   }
 
+  auto initialization_complete_cb_ = base::BindRepeating(
+      &FrameInjectingDemuxer::OnStreamInitializationComplete,
+      weak_factory_.GetWeakPtr());
   if (audio_stream_info) {
+    pending_stream_initialization_callbacks_++;
     audio_stream_ = std::make_unique<FrameInjectingAudioDemuxerStream>(
         std::move(audio_stream_info->buffer_requester),
-        std::move(audio_stream_info->stream_initialization_info));
+        std::move(audio_stream_info->stream_initialization_info),
+        media_task_runner_, initialization_complete_cb_);
   }
   if (video_stream_info) {
+    pending_stream_initialization_callbacks_++;
     video_stream_ = std::make_unique<FrameInjectingVideoDemuxerStream>(
         std::move(video_stream_info->buffer_requester),
-        std::move(video_stream_info->stream_initialization_info));
+        std::move(video_stream_info->stream_initialization_info),
+        media_task_runner_, std::move(initialization_complete_cb_));
+  }
+}
+
+void FrameInjectingDemuxer::OnStreamInitializationComplete() {
+  DCHECK_GE(pending_stream_initialization_callbacks_, 1);
+  DCHECK(initialized_cb_);
+
+  pending_stream_initialization_callbacks_--;
+  if (pending_stream_initialization_callbacks_ != 0) {
+    return;
   }
 
   was_initialization_successful_ = true;

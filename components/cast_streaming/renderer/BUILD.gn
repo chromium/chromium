@@ -48,9 +48,15 @@ source_set("resource_provider_factory") {
   deps = [ ":resource_provider_impl" ]
 }
 
+source_set("decoder_buffer_provider") {
+  public = [ "public/decoder_buffer_provider.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("resource_provider_impl") {
   public_deps = [ ":resource_provider" ]
   deps = [
+    ":buffer_requester",
     ":decoder_buffer_reader",
     "//base",
     "//components/cast_streaming/public",
@@ -106,14 +112,13 @@ source_set("playback_command_forwarding_renderer") {
   visibility = [ ":*" ]
 }
 
-source_set("web_codecs") {
+source_set("buffer_requester") {
   sources = [
-    "public/web_codecs/decoder_buffer_provider.h",
-    "web_codecs/buffer_requester.h",
-    "web_codecs/decoder_buffer_provider_impl.h",
-    "web_codecs/delegating_decoder_buffer_provider.h",
+    "buffer_requester.h",
+    "decoder_buffer_provider_impl.h",
   ]
   public_deps = [
+    ":decoder_buffer_provider",
     ":decoder_buffer_reader",
     "//base",
     "//components/cast_streaming/public:demuxer_stream_traits",
@@ -122,21 +127,33 @@ source_set("web_codecs") {
     "//media/mojo/common",
     "//media/mojo/mojom",
   ]
+  visibility = [ ":*" ]
+}
+
+source_set("web_codecs") {
+  sources = [ "web_codecs/delegating_decoder_buffer_provider.h" ]
+  public_deps = [
+    ":decoder_buffer_provider",
+    "//base",
+  ]
+  visibility = [ ":*" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "buffer_requester_unittest.cc",
+    "decoder_buffer_provider_impl_unittest.cc",
     "decoder_buffer_reader_unittest.cc",
     "playback_command_forwarding_renderer_factory_unittest.cc",
     "playback_command_forwarding_renderer_unittest.cc",
-    "web_codecs/buffer_requester_unittest.cc",
-    "web_codecs/decoder_buffer_provider_impl_unittest.cc",
     "web_codecs/delegating_decoder_buffer_provider_unittest.cc",
   ]
 
   deps = [
+    ":buffer_requester",
+    ":decoder_buffer_provider",
     ":decoder_buffer_reader",
     ":playback_command_forwarding_renderer",
     ":renderer",

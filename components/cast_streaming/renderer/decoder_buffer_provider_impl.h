@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_DECODER_BUFFER_PROVIDER_IMPL_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_DECODER_BUFFER_PROVIDER_IMPL_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_PROVIDER_IMPL_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_PROVIDER_IMPL_H_
 
 #include <memory>
 
@@ -13,12 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/renderer/decoder_buffer_reader.h"
-#include "components/cast_streaming/renderer/public/web_codecs/decoder_buffer_provider.h"
+#include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "media/base/decoder_buffer.h"
 #include "media/mojo/mojom/media_types.mojom-forward.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace cast_streaming::webcodecs {
+namespace cast_streaming {
 
 // This class provides a synchronous implementation of DecoderBufferProvider,
 // to be used for processing decoder buffers with respect to a single config.
@@ -134,6 +134,6 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   base::WeakPtrFactory<DecoderBufferProviderImpl> weak_factory_;
 };
 
-}  // namespace cast_streaming::webcodecs
+}  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_WEB_CODECS_DECODER_BUFFER_PROVIDER_IMPL_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_PROVIDER_IMPL_H_

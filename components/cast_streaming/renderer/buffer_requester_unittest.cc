@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/web_codecs/buffer_requester.h"
+#include "components/cast_streaming/renderer/buffer_requester.h"
 
 #include <utility>
 
@@ -21,7 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cast_streaming::webcodecs {
+namespace cast_streaming {
 namespace {
 
 class MockAudioBufferRequestReceiver : public mojom::AudioBufferRequester {
@@ -45,6 +45,7 @@ class MockClient : public AudioBufferRequester::Client {
   MOCK_METHOD1(
       OnNewBufferProvider,
       void(base::WeakPtr<DecoderBufferProvider<media::AudioDecoderConfig>>));
+  MOCK_METHOD0(OnMojoDisconnect, void());
 
   MOCK_METHOD1(OnBufferReceivedOverMojo, void(media::mojom::DecoderBufferPtr));
 };
@@ -155,4 +156,4 @@ TEST_F(BufferRequesterTest, ConfigReceivedOverMojoCallsClientCallback) {
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace cast_streaming::webcodecs
+}  // namespace cast_streaming

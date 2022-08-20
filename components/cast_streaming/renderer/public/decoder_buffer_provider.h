@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_WEB_CODECS_DECODER_BUFFER_PROVIDER_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_WEB_CODECS_DECODER_BUFFER_PROVIDER_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_DECODER_BUFFER_PROVIDER_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_DECODER_BUFFER_PROVIDER_H_
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "media/base/decoder_buffer.h"
 
-namespace cast_streaming::webcodecs {
+namespace media {
+class DecoderBuffer;
+}
+
+namespace cast_streaming {
 
 // This class provides a way for a caller to asynchronously request a new
 // buffer, as well as provide information associated with the buffers which it
@@ -45,6 +48,6 @@ class DecoderBufferProvider {
   virtual void SetInvalidationCallback(DeletionCb callback) = 0;
 };
 
-}  // namespace cast_streaming::webcodecs
+}  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_WEB_CODECS_DECODER_BUFFER_PROVIDER_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_DECODER_BUFFER_PROVIDER_H_
