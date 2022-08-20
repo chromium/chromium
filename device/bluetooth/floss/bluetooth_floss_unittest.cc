@@ -13,6 +13,7 @@
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
+#include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/test/mock_pairing_delegate.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
@@ -42,12 +43,14 @@ class BluetoothFlossTest : public testing::Test {
 
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
     auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
+    auto fake_floss_socket_manager = std::make_unique<FakeFlossSocketManager>();
 
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_adapter_client_ = fake_floss_adapter_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
+    dbus_setter->SetFlossSocketManager(std::move(fake_floss_socket_manager));
   }
 
   void InitializeAdapter() {

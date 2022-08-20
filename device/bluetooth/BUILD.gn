@@ -438,6 +438,8 @@ component("bluetooth") {
         "floss/bluetooth_device_floss.h",
         "floss/bluetooth_pairing_floss.cc",
         "floss/bluetooth_pairing_floss.h",
+        "floss/bluetooth_socket_floss.cc",
+        "floss/bluetooth_socket_floss.h",
         "floss/exported_callback_manager.h",
         "floss/floss_adapter_client.cc",
         "floss/floss_adapter_client.h",
@@ -526,6 +528,8 @@ component("bluetooth") {
           "floss/fake_floss_adapter_client.h",
           "floss/fake_floss_manager_client.cc",
           "floss/fake_floss_manager_client.h",
+          "floss/fake_floss_socket_manager.cc",
+          "floss/fake_floss_socket_manager.h",
         ]
       }
       if (use_dbus) {

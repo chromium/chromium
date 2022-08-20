@@ -13,8 +13,10 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
+#include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 
 namespace floss {
 
@@ -269,14 +271,34 @@ void BluetoothDeviceFloss::ConnectToService(
     const device::BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  BLUETOOTH_LOG(EVENT) << address_
+                       << ": Connecting to service: " << uuid.canonical_value();
+  scoped_refptr<BluetoothSocketFloss> socket =
+      BluetoothSocketFloss::CreateBluetoothSocket(ui_task_runner_,
+                                                  socket_thread_);
+
+  socket->Connect(this, FlossSocketManager::Security::kSecure, uuid,
+                  base::BindOnce(std::move(callback), socket),
+                  base::BindOnce(&BluetoothDeviceFloss::OnConnectToServiceError,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(error_callback)));
 }
 
 void BluetoothDeviceFloss::ConnectToServiceInsecurely(
     const device::BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  BLUETOOTH_LOG(EVENT) << address_
+                       << ": Connecting to service: " << uuid.canonical_value();
+  scoped_refptr<BluetoothSocketFloss> socket =
+      BluetoothSocketFloss::CreateBluetoothSocket(ui_task_runner_,
+                                                  socket_thread_);
+
+  socket->Connect(this, FlossSocketManager::Security::kInsecure, uuid,
+                  base::BindOnce(std::move(callback), socket),
+                  base::BindOnce(&BluetoothDeviceFloss::OnConnectToServiceError,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(error_callback)));
 }
 
 std::unique_ptr<device::BluetoothGattConnection>
@@ -352,9 +374,16 @@ void BluetoothDeviceFloss::DisconnectGatt() {
   NOTIMPLEMENTED();
 }
 
-BluetoothDeviceFloss::BluetoothDeviceFloss(BluetoothAdapterFloss* adapter,
-                                           const FlossDeviceId& device)
-    : BluetoothDevice(adapter), address_(device.address), name_(device.name) {
+BluetoothDeviceFloss::BluetoothDeviceFloss(
+    BluetoothAdapterFloss* adapter,
+    const FlossDeviceId& device,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<device::BluetoothSocketThread> socket_thread)
+    : BluetoothDevice(adapter),
+      address_(device.address),
+      name_(device.name),
+      ui_task_runner_(ui_task_runner),
+      socket_thread_(socket_thread) {
   // TODO(abps): Add observers and cache data here.
 }
 
@@ -479,6 +508,17 @@ void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
   }
 
   std::move(callback).Run();
+}
+
+void BluetoothDeviceFloss::OnConnectToServiceError(
+    ConnectToServiceErrorCallback error_callback,
+    const std::string& error_message) {
+  BLUETOOTH_LOG(ERROR) << address_
+                       << ": Failed to connect to service: " << error_message;
+
+  // TODO - Log service connection failures for metrics.
+
+  std::move(error_callback).Run(error_message);
 }
 
 void BluetoothDeviceFloss::InitializeDeviceProperties() {

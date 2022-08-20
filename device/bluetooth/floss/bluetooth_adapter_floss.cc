@@ -15,8 +15,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
+#include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace floss {
@@ -62,7 +65,10 @@ scoped_refptr<BluetoothAdapterFloss> BluetoothAdapterFloss::CreateAdapter() {
   return base::WrapRefCounted(new BluetoothAdapterFloss());
 }
 
-BluetoothAdapterFloss::BluetoothAdapterFloss() = default;
+BluetoothAdapterFloss::BluetoothAdapterFloss() {
+  ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  socket_thread_ = device::BluetoothSocketThread::Get();
+}
 
 BluetoothAdapterFloss::~BluetoothAdapterFloss() {
   Shutdown();
@@ -514,8 +520,8 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  auto device_floss =
-      base::WrapUnique(new BluetoothDeviceFloss(this, device_found));
+  auto device_floss = base::WrapUnique(new BluetoothDeviceFloss(
+      this, device_found, ui_task_runner_, socket_thread_));
 
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
@@ -549,8 +555,8 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  auto device_floss =
-      base::WrapUnique(new BluetoothDeviceFloss(this, device_cleared));
+  auto device_floss = base::WrapUnique(new BluetoothDeviceFloss(
+      this, device_cleared, ui_task_runner_, socket_thread_));
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
   if (base::Contains(devices_, canonical_address)) {
@@ -712,7 +718,15 @@ void BluetoothAdapterFloss::CreateRfcommService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  DCHECK(!dbus_is_shutdown_);
+  BLUETOOTH_LOG(DEBUG) << "Creating RFCOMM service: " << uuid.canonical_value();
+  scoped_refptr<BluetoothSocketFloss> socket =
+      BluetoothSocketFloss::CreateBluetoothSocket(ui_task_runner_,
+                                                  socket_thread_);
+
+  socket->Listen(this, FlossSocketManager::SocketType::kRfcomm, uuid, options,
+                 base::BindOnce(std::move(callback), socket),
+                 std::move(error_callback));
 }
 
 void BluetoothAdapterFloss::CreateL2capService(
@@ -720,7 +734,15 @@ void BluetoothAdapterFloss::CreateL2capService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  DCHECK(!dbus_is_shutdown_);
+  BLUETOOTH_LOG(DEBUG) << "Creating L2CAP service: " << uuid.canonical_value();
+  scoped_refptr<BluetoothSocketFloss> socket =
+      BluetoothSocketFloss::CreateBluetoothSocket(ui_task_runner_,
+                                                  socket_thread_);
+
+  socket->Listen(this, FlossSocketManager::SocketType::kL2cap, uuid, options,
+                 base::BindOnce(std::move(callback), socket),
+                 std::move(error_callback));
 }
 
 void BluetoothAdapterFloss::RegisterAdvertisement(

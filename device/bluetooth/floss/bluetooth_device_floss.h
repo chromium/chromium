@@ -12,6 +12,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_pairing_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 
@@ -32,8 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   BluetoothDeviceFloss(const BluetoothDeviceFloss&) = delete;
   BluetoothDeviceFloss& operator=(const BluetoothDeviceFloss&) = delete;
 
-  BluetoothDeviceFloss(BluetoothAdapterFloss* adapter,
-                       const FlossDeviceId& device);
+  BluetoothDeviceFloss(
+      BluetoothAdapterFloss* adapter,
+      const FlossDeviceId& device,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<device::BluetoothSocketThread> socket_thread);
   ~BluetoothDeviceFloss() override;
 
   // BluetoothDevice override
@@ -147,6 +151,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                                       ErrorCallback error_callback,
                                       DBusResult<Void> ret);
 
+  void OnConnectToServiceError(ConnectToServiceErrorCallback error_callback,
+                               const std::string& error_message);
+
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
 
@@ -176,6 +183,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // but squashing all connected states >= 1 as a single "connected" since it's
   // not used in the Chrome layer.
   bool is_connected_ = false;
+
+  // UI thread task runner and socket thread used to create sockets.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<device::BluetoothSocketThread> socket_thread_;
 
   // Represents currently ongoing pairing with this remote device.
   std::unique_ptr<BluetoothPairingFloss> pairing_;

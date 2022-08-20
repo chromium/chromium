@@ -17,6 +17,7 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
@@ -212,6 +213,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Keeps track of whether Shutdown is called (and dbus clients are cleaned
   // up properly).
   bool dbus_is_shutdown_ = false;
+
+  // Socket thread object used to create sockets. Public socket apis are run on
+  // the ui thread but socket operations (including connect/disconnect) will be
+  // run in this thread. See |BluetoothSocketNet| for more details.
+  scoped_refptr<device::BluetoothSocketThread> socket_thread_;
 
   base::WeakPtrFactory<BluetoothAdapterFloss> weak_ptr_factory_{this};
 };

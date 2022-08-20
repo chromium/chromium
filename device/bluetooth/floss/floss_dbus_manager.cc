@@ -18,6 +18,7 @@
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 
 namespace floss {
 
@@ -177,6 +178,10 @@ FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
   return client_bundle_->adapter_client();
 }
 
+FlossSocketManager* FlossDBusManager::GetSocketManager() {
+  return client_bundle_->socket_manager();
+}
+
 void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Clean up active adapter clients
   if (active_adapter_ != kInvalidAdapter) {
@@ -196,6 +201,8 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Initialize any adapter clients.
   client_bundle_->adapter_client()->Init(GetSystemBus(), kAdapterService,
                                          adapter_path.value());
+  client_bundle_->socket_manager()->Init(GetSystemBus(), kAdapterService,
+                                         adapter_path.value());
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(
@@ -206,6 +213,11 @@ void FlossDBusManagerSetter::SetFlossManagerClient(
 void FlossDBusManagerSetter::SetFlossAdapterClient(
     std::unique_ptr<FlossAdapterClient> client) {
   FlossDBusManager::Get()->client_bundle_->adapter_client_ = std::move(client);
+}
+
+void FlossDBusManagerSetter::SetFlossSocketManager(
+    std::unique_ptr<FlossSocketManager> mgr) {
+  FlossDBusManager::Get()->client_bundle_->socket_manager_ = std::move(mgr);
 }
 
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
@@ -226,6 +238,7 @@ void FlossClientBundle::ResetAdapterClients() {
   }
 
   adapter_client_ = FlossAdapterClient::Create();
+  socket_manager_ = FlossSocketManager::Create();
 }
 
 }  // namespace floss

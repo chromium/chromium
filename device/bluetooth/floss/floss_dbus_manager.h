@@ -27,9 +27,10 @@ class ErrorResponse;
 namespace floss {
 
 class FlossAdapterClient;
-class FlossManagerClient;
 class FlossClientBundle;
 class FlossDBusManagerSetter;
+class FlossManagerClient;
+class FlossSocketManager;
 
 // FlossDBusManager manages the lifetimes of D-Bus connections and clients. It
 // ensures the proper ordering of shutdowns for the D-Bus thread, connections
@@ -100,6 +101,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // pointers after FlossDBusManager has been shut down.
   FlossManagerClient* GetManagerClient();
   FlossAdapterClient* GetAdapterClient();
+  FlossSocketManager* GetSocketManager();
 
  private:
   friend class FlossDBusManagerSetter;
@@ -146,6 +148,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
  public:
   void SetFlossManagerClient(std::unique_ptr<FlossManagerClient> client);
   void SetFlossAdapterClient(std::unique_ptr<FlossAdapterClient> client);
+  void SetFlossSocketManager(std::unique_ptr<FlossSocketManager> manager);
 };
 
 // FlossDBusThreadManager manages the D-Bus thread, the thread dedicated to
@@ -192,6 +195,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
 
   FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
 
+  FlossSocketManager* socket_manager() { return socket_manager_.get(); }
+
  private:
   friend FlossDBusManagerSetter;
   friend FlossDBusManager;
@@ -201,6 +206,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   bool use_stubs_;
   std::unique_ptr<FlossManagerClient> manager_client_;
   std::unique_ptr<FlossAdapterClient> adapter_client_;
+  std::unique_ptr<FlossSocketManager> socket_manager_;
 };
 
 }  // namespace floss
