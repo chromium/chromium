@@ -460,7 +460,17 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
   size_t test_bucket_index_;
 };
 
+// Death tests misbehave on Android, http://crbug.com/643760.
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#define PA_HAS_DEATH_TESTS
+
 class PartitionAllocDeathTest : public PartitionAllocTest {};
+
+INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
+                         PartitionAllocDeathTest,
+                         testing::Values(false, true));
+
+#endif
 
 namespace {
 
@@ -2037,12 +2047,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->decommitted_slot_spans_head);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
-
-INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
-                         PartitionAllocDeathTest,
-                         testing::Values(false, true));
+#if defined(PA_HAS_DEATH_TESTS)
 
 // Unit tests that check if an allocation fails in "return null" mode,
 // repeating it doesn't crash, and still returns null. The tests need to
@@ -2341,7 +2346,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 #endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !defined(PA_HAS_DEATH_TESTS)
 
 // Tests that |PartitionDumpStats| and |PartitionDumpStats| run without
 // crashing and return non-zero values when memory is allocated.
@@ -4023,6 +4028,8 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 }
 
+#if defined(PA_HAS_DEATH_TESTS)
+
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
   void* ptr = allocator.root()->Alloc(64 - kExtraAllocSize, type_name);
@@ -4045,6 +4052,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
   allocator.root()->Free(ptr);
 }
 
+#endif  // defined(PA_HAS_DEATH_TESTS)
 #endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 TEST_P(PartitionAllocTest, ReservationOffset) {
@@ -4245,8 +4253,7 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
   allocator.root()->FreeNoHooks(ptr2);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#if defined(PA_HAS_DEATH_TESTS)
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
@@ -4258,13 +4265,12 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 }
 
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#endif  // defined(PA_HAS_DEATH_TESTS)
 
 // Not on chromecast, since gtest considers extra output from itself as a test
 // failure:
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&                \
-    defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) && \
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_HAS_DEATH_TESTS) && \
     !BUILDFLAG(PA_IS_CASTOS)
 
 namespace {
@@ -4342,8 +4348,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) &&
-        // !BUILDFLAG(PA_IS_CASTOS)
+        // defined(PA_HAS_DEATH_TESTS) &&  !BUILDFLAG(PA_IS_CASTOS)
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
