@@ -200,6 +200,8 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
   switch (web_app->GetHighestPrioritySource()) {
     case WebAppManagement::kSystem:
       return apps::mojom::InstallReason::kSystem;
+    case WebAppManagement::kKiosk:
+      return apps::mojom::InstallReason::kKiosk;
     case WebAppManagement::kPolicy:
       return apps::mojom::InstallReason::kPolicy;
     case WebAppManagement::kSubApp:
@@ -235,6 +237,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
     case webapps::WebappInstallSource::SUB_APP:
     case webapps::WebappInstallSource::CHROME_SERVICE:
+    case webapps::WebappInstallSource::KIOSK:
       return apps::mojom::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::mojom::InstallSource::kPlayStore;

@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_sources.h"
@@ -819,6 +820,8 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
       return webapps::WebappInstallSource::SYSTEM_DEFAULT;
     case ExternalInstallSource::kArc:
       return webapps::WebappInstallSource::ARC;
+    case ExternalInstallSource::kKiosk:
+      return webapps::WebappInstallSource::KIOSK;
     default:
       NOTREACHED();
       return webapps::WebappInstallSource::SYNC;
@@ -844,6 +847,9 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
     case ExternalInstallSource::kArc:
       uninstall_source = webapps::WebappUninstallSource::kArc;
       break;
+    case ExternalInstallSource::kKiosk:
+      NOTREACHED() << "Kiosk apps should not be uninstalled";
+      uninstall_source = webapps::WebappUninstallSource::kUnknown;
   }
 
   return uninstall_source;
@@ -875,6 +881,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
       return WebAppManagement::kPolicy;
+
+    case webapps::WebappInstallSource::KIOSK:
+      return WebAppManagement::kKiosk;
 
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       return WebAppManagement::kSystem;

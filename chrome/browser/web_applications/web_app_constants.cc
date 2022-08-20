@@ -17,6 +17,8 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
       return os << "System";
+    case WebAppManagement::Type::kKiosk:
+      return os << "Kiosk";
     case WebAppManagement::Type::kPolicy:
       return os << "Policy";
     case WebAppManagement::Type::kSubApp:

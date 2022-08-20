@@ -148,6 +148,7 @@ enum InstallReason {
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
   [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
+  [MinVersion=8] kKiosk,      // Installed by Kiosk on Chrome OS.
 };
 
 // Augments a bool to include an 'unknown' value.

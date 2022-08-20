@@ -400,6 +400,7 @@ bool AppUpdate::InstalledInternally() const {
     case apps::InstallReason::kPolicy:
     case apps::InstallReason::kOem:
     case apps::InstallReason::kDefault:
+    case apps::InstallReason::kKiosk:
       return true;
     case apps::InstallReason::kUnknown:
     case apps::InstallReason::kSync:

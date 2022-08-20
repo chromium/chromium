@@ -74,7 +74,8 @@ ENUM(InstallReason,
      kDefault,  // Preinstalled by default, but is not considered a system app.
      kSync,     // Installed by sync.
      kUser,     // Installed by user action.
-     kSubApp    // Installed by the SubApp API call.
+     kSubApp,   // Installed by the SubApp API call.
+     kKiosk     // Installed by Kiosk on Chrome OS.
 )
 
 // Where the app was installed from.

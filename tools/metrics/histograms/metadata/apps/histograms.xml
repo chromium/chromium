@@ -105,6 +105,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="InstallReason">
+  <variant name="Kiosk" summary="Installed by Kiosk on Chrome OS"/>
   <variant name="Oem" summary="Installed by an OEM"/>
   <variant name="Policy" summary="Installed by policy"/>
   <variant name="Preload" summary="Preinstalled by default"/>

@@ -414,6 +414,8 @@ api::autotest_private::AppInstallSource GetAppInstallSource(
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_USER;
     case apps::InstallReason::kSubApp:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SUBAPP;
+    case apps::InstallReason::kKiosk:
+      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_KIOSK;
   }
   NOTREACHED();
   return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_NONE;

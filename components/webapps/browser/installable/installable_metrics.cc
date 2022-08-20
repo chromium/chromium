@@ -43,6 +43,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::MENU_CUSTOM_TAB:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case WebappInstallSource::SYSTEM_DEFAULT:
+    case WebappInstallSource::KIOSK:
       return true;
     case WebappInstallSource::MANAGEMENT_API:
     case WebappInstallSource::SUB_APP:
@@ -80,6 +81,7 @@ bool InstallableMetrics::IsUserInitiatedInstallSource(
     case WebappInstallSource::SYSTEM_DEFAULT:
     case WebappInstallSource::SYNC:
     case WebappInstallSource::SUB_APP:
+    case WebappInstallSource::KIOSK:
       return false;
     case WebappInstallSource::COUNT:
       NOTREACHED();

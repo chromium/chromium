@@ -245,6 +245,8 @@ InstallReason EnumTraits<InstallReason, apps::InstallReason>::ToMojom(
       return InstallReason::kUser;
     case apps::InstallReason::kSubApp:
       return InstallReason::kSubApp;
+    case apps::InstallReason::kKiosk:
+      return InstallReason::kKiosk;
   }
 }
 
@@ -275,6 +277,9 @@ bool EnumTraits<InstallReason, apps::InstallReason>::FromMojom(
       return true;
     case InstallReason::kSubApp:
       *output = apps::InstallReason::kSubApp;
+      return true;
+    case InstallReason::kKiosk:
+      *output = apps::InstallReason::kKiosk;
       return true;
   }
 }

@@ -105,6 +105,9 @@ enum class WebappInstallSource {
   // PWA rich install bottom sheet in WebLayer.
   RICH_INSTALL_UI_WEBLAYER = 20,
 
+  // Installed by Kiosk on Chrome OS.
+  KIOSK = 21,
+
   // Add any new values above this one.
   COUNT,
 };

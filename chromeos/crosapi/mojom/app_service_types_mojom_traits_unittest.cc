@@ -354,6 +354,13 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripInstallReason) {
         input, output));
     EXPECT_EQ(output->install_reason, apps::InstallReason::kUser);
   }
+  {
+    input->install_reason = apps::InstallReason::kKiosk;
+    apps::AppPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(
+        input, output));
+    EXPECT_EQ(output->install_reason, apps::InstallReason::kKiosk);
+  }
 }
 
 // Test that serialization and deserialization works with updating

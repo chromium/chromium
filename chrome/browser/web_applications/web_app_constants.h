@@ -31,6 +31,8 @@ namespace WebAppManagement {
 enum Type {
   kMinValue = 0,
   kSystem = kMinValue,
+  // Installed by Kiosk on Chrome OS.
+  kKiosk,
   kPolicy,
   kSubApp,
   kWebAppStore,
@@ -134,6 +136,11 @@ enum class ExternalInstallSource {
   // are not installed via ExternallyManagedAppManager. This is used in
   // ExternallyInstalledWebAppPrefs to track navigation url to app_id entries.
   kArc = 4,
+
+  // Installed by Kiosk. There is no call to SynchronizeInstalledApps for this
+  // type because Kiosk apps are bound to their profiles. They will never be
+  // uninstalled in Kiosk sessions.
+  kKiosk = 5,
 };
 
 // Icon size in pixels.

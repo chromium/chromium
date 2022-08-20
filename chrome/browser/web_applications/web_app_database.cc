@@ -236,6 +236,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       [[fallthrough]];
     case WebAppManagementProto::SYSTEM:
       return WebAppManagement::Type::kSystem;
+    case WebAppManagementProto::KIOSK:
+      return WebAppManagement::Type::kKiosk;
     case WebAppManagementProto::POLICY:
       return WebAppManagement::Type::kPolicy;
     case WebAppManagementProto::SUBAPP:
@@ -253,6 +255,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
       return WebAppManagementProto::SYSTEM;
+    case WebAppManagement::Type::kKiosk:
+      return WebAppManagementProto::KIOSK;
     case WebAppManagement::Type::kPolicy:
       return WebAppManagementProto::POLICY;
     case WebAppManagement::Type::kSubApp:
@@ -374,6 +378,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_[WebAppManagement::kDefault]);
   local_data->mutable_sources()->set_sub_app(
       web_app.sources_[WebAppManagement::kSubApp]);
+  local_data->mutable_sources()->set_kiosk(
+      web_app.sources_[WebAppManagement::kKiosk]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -791,6 +797,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources[WebAppManagement::kDefault] = local_data.sources().default_();
   if (local_data.sources().has_sub_app()) {
     sources[WebAppManagement::kSubApp] = local_data.sources().sub_app();
+  }
+  if (local_data.sources().has_kiosk()) {
+    sources[WebAppManagement::kKiosk] = local_data.sources().kiosk();
   }
   if (!sources.any() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no any source in sources field, "

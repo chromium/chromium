@@ -127,6 +127,10 @@ bool WebApp::IsSubAppInstalledApp() const {
   return sources_[WebAppManagement::kSubApp];
 }
 
+bool WebApp::IsKioskInstalledApp() const {
+  return sources_[WebAppManagement::kKiosk];
+}
+
 bool WebApp::CanUserUninstallWebApp() const {
   return web_app::CanUserUninstallWebApp(sources_);
 }
@@ -689,6 +693,8 @@ base::Value WebApp::AsDebugValue() const {
         switch (source) {
           case WebAppManagement::Type::kSystem:
             return "System";
+          case WebAppManagement::Type::kKiosk:
+            return "Kiosk";
           case WebAppManagement::Type::kPolicy:
             return "Policy";
           case WebAppManagement::Type::kSubApp:
