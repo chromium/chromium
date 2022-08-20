@@ -411,13 +411,6 @@
       status: "stable"
     },
     {
-      // Compositing of video element is no longer necessary after launch of
-      // CompositeAfterPaint. This feature is to keep the old behavior for A/B
-      // testing. Will disable and remove.
-      name: "CompositeVideoElement",
-      status: "stable",
-    },
-    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
     },

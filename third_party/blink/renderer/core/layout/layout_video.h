@@ -85,7 +85,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
-    return RuntimeEnabledFeatures::CompositeVideoElementEnabled();
+    return true;
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
