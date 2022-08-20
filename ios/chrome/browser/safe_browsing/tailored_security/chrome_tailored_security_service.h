@@ -9,6 +9,10 @@
 
 class ChromeBrowserState;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace safe_browsing {
 
 // TailoredSecurityService for iOS. This class is used to bridge
@@ -17,7 +21,9 @@ namespace safe_browsing {
 // features.
 class ChromeTailoredSecurityService : public TailoredSecurityService {
  public:
-  explicit ChromeTailoredSecurityService(ChromeBrowserState* state);
+  explicit ChromeTailoredSecurityService(
+      ChromeBrowserState* state,
+      signin::IdentityManager* identity_manager);
   ~ChromeTailoredSecurityService() override;
 
  protected:

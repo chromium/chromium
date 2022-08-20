@@ -7,8 +7,11 @@ source_set("tailored_security") {
   sources = [
     "chrome_tailored_security_service.h",
     "chrome_tailored_security_service.mm",
+    "tailored_security_service_factory.h",
+    "tailored_security_service_factory.mm",
   ]
   deps = [
+    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/safe_browsing/core/common",
@@ -18,4 +21,18 @@ source_set("tailored_security") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tailored_security_service_factory_unittest.mm" ]
+
+  deps = [
+    ":tailored_security",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 }

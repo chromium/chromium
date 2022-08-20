@@ -24,10 +24,9 @@
 namespace safe_browsing {
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
-    ChromeBrowserState* browser_state)
-    : TailoredSecurityService(
-          IdentityManagerFactory::GetForBrowserState(browser_state),
-          browser_state->GetPrefs()),
+    ChromeBrowserState* browser_state,
+    signin::IdentityManager* identity_manager)
+    : TailoredSecurityService(identity_manager, browser_state->GetPrefs()),
       browser_state_(browser_state) {}
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() = default;
@@ -37,6 +36,7 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
       web::WebState::Create(web::WebState::CreateParams(browser_state_));
   if (!web_state) {
     if (is_enabled) {
+      // Record BrowserState/WebContents not being available.
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kNoWebContentsAvailable);
     }
