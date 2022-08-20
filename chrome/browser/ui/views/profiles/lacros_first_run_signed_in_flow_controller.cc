@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -29,8 +30,13 @@ class OnRefreshTokensLoadedObserver : public signin::IdentityManager::Observer {
 
   // signin::IdentityManager::Observer
   void OnRefreshTokensLoaded() override {
-    if (callback_)
-      std::move(callback_).Run();
+    // The callback must be dispatched since proper functionality requires all
+    // other signin::IdentityManager::Observers to finish executing. See
+    // https://crbug.com/1340791.
+    if (callback_) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                       std::move(callback_));
+    }
   }
 
  private:
