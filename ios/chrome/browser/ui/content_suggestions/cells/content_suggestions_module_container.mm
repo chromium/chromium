@@ -104,6 +104,7 @@ const float kTrendingQueriesContentHeight = 103;
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
       self.title.textColor = [UIColor colorNamed:kTextSecondaryColor];
       self.title.accessibilityTraits |= UIAccessibilityTraitHeader;
+      self.title.accessibilityIdentifier = [self titleString];
       self.title.translatesAutoresizingMaskIntoConstraints = NO;
       [contentContainer addSubview:self.title];
       [NSLayoutConstraint activateConstraints:@[

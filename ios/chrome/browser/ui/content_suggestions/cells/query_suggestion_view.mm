@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -60,7 +61,10 @@ const CGFloat kTouchDownAlpha = 0.25f;
     self.queryLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.queryLabel.numberOfLines = 2;
     self.queryLabel.adjustsFontForContentSizeCategory = YES;
-    //      self.userInteractionEnabled = YES;
+    // Set this for visibility validation in EGTests.
+    self.queryLabel.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%i", kQuerySuggestionViewA11yIdentifierPrefix,
+                         config.index];
 
     if (!config) {
       // If there is no config, then this is a placeholder tile.
