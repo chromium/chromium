@@ -609,8 +609,8 @@ void ResourceLoader::DidReceiveData(base::span<const char> data) {
 
 void ResourceLoader::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
-  resource_->DidReceiveDecodedData(data, std::move(digest));
+    std::unique_ptr<Resource::DecodedDataInfo> info) {
+  resource_->DidReceiveDecodedData(data, std::move(info));
 }
 
 void ResourceLoader::DidFinishLoadingBody() {

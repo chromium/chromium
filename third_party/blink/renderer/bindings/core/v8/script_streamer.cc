@@ -160,8 +160,9 @@ class ResourceScriptStreamer::ScriptDecoder {
       std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
       CrossThreadOnceClosure main_thread_continuation) {
     if (response_body_loader_client) {
-      response_body_loader_client->DidReceiveDecodedData(decoded_data,
-                                                         std::move(digest));
+      response_body_loader_client->DidReceiveDecodedData(
+          decoded_data, std::make_unique<ScriptResource::ScriptDecodedDataInfo>(
+                            std::move(digest)));
     }
 
     std::move(main_thread_continuation).Run();

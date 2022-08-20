@@ -435,8 +435,9 @@ void StyleSheetContents::ParseAuthorStyleSheet(
 
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
-  CSSParser::ParseSheet(context, this, sheet_text,
-                        CSSDeferPropertyParsing::kYes);
+  CSSParser::ParseSheet(
+      context, this, sheet_text, CSSDeferPropertyParsing::kYes, true,
+      sheet_text.IsNull() ? nullptr : cached_style_sheet->TakeTokenizer());
 }
 
 ParseSheetResult StyleSheetContents::ParseString(

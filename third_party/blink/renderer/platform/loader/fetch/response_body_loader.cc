@@ -415,11 +415,11 @@ void ResponseBodyLoader::DidReceiveData(base::span<const char> data) {
 
 void ResponseBodyLoader::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<Resource::DecodedDataInfo> info) {
   if (aborted_)
     return;
 
-  client_->DidReceiveDecodedData(data, std::move(digest));
+  client_->DidReceiveDecodedData(data, std::move(info));
 }
 
 void ResponseBodyLoader::DidFinishLoadingBody() {

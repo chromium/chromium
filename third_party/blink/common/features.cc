@@ -1561,6 +1561,8 @@ const base::Feature kPretokenizeCSS{"PretokenizeCSS",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<bool> kPretokenizeInlineSheets = {
     &kPretokenizeCSS, "pretokenize_inline_sheets", true};
+const base::FeatureParam<bool> kPretokenizeExternalSheets = {
+    &kPretokenizeCSS, "pretokenize_external_sheets", true};
 
 const base::Feature kSimulateClickOnAXFocus {
   "SimulateClickOnAXFocus",

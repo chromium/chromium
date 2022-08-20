@@ -1340,5 +1340,22 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/pending_beacon"],
     "args": ["--enable-features=PendingBeaconAPI"]
+  },
+  {
+    "prefix": "pretokenize-css",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/css/css-syntax/charset",
+      "external/wpt/subresource-integrity",
+      "fast/css/cached-sheet-restore-crash.html",
+      "fast/css/link-alternate-stylesheet-1.html",
+      "fast/css/link-alternate-stylesheet-2.html",
+      "fast/css/link-alternate-stylesheet-3.html",
+      "fast/css/link-alternate-stylesheet-4.html",
+      "fast/css/link-alternate-stylesheet-5.html",
+      "fast/css/sheet-collection-link.html",
+      "fast/encoding/css-charset-default.xhtml"
+    ],
+    "args": ["--enable-features=PretokenizeCSS"]
   }
 ]
