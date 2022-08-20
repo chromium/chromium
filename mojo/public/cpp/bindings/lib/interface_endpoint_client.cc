@@ -853,17 +853,7 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
               perfetto::StaticString{method_name_callback_(*message)},
               [&](perfetto::EventContext& ctx) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
-                // Generate mojo interface tag only for local traces.
-                //
-                // This saves trace buffer space for field traces. The
-                // interface tag can be extracted from the interface method
-                // after symbolization.
-                //
-                // For local traces, this produces a raw string so that the
-                // trace doesn't require symbolization to be useful.
-                if (!ctx.ShouldFilterDebugAnnotations()) {
-                  info->set_mojo_interface_tag(interface_name_);
-                }
+                info->set_mojo_interface_tag(interface_name_);
                 const auto method_info = method_info_callback_(*message);
                 if (method_info) {
                   info->set_ipc_hash((*method_info)());
