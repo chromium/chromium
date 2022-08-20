@@ -98,10 +98,6 @@ using payments::mojom::blink::PaymentCredentialStorageStatus;
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 
-// Maximum number of unique origins in ancestor chain (including the source
-// frame origin) for which FedCM API is enabled.
-const int kMaxUniqueOriginInAncestorChainForFedCM = 2;
-
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
 enum class RequiredOriginType {
@@ -172,11 +168,6 @@ bool AreUniqueOriginsLessOrEqualTo(const Frame* frame, int max_unique_origins) {
 bool IsAncestorChainValidForWebOTP(const Frame* frame) {
   return AreUniqueOriginsLessOrEqualTo(
       frame, kMaxUniqueOriginInAncestorChainForWebOTP);
-}
-
-bool IsAncestorChainValidForFedCM(const Frame* frame) {
-  return AreUniqueOriginsLessOrEqualTo(frame,
-                                       kMaxUniqueOriginInAncestorChainForFedCM);
 }
 
 bool CheckSecurityRequirementsBeforeRequest(
@@ -268,12 +259,6 @@ bool CheckSecurityRequirementsBeforeRequest(
             "document."));
         return false;
       }
-      if (!IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame())) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotAllowedError,
-            "More than two unique origins are detected in the origin chain."));
-        return false;
-      }
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
@@ -329,10 +314,8 @@ void AssertSecurityRequirementsBeforeResponse(
       break;
 
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
-      SECURITY_CHECK(
-          resolver->GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::PermissionsPolicyFeature::kFederatedCredentials) &&
-          IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame()));
+      SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kFederatedCredentials));
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
