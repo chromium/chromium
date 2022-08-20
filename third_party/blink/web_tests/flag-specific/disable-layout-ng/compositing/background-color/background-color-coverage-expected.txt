@@ -54,13 +54,6 @@
       "transform": 5
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
-      "bounds": [85, 10000],
-      "contentsOpaque": true,
-      "backgroundColor": "#664C00",
-      "transform": 5
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [100, 15],
@@ -72,6 +65,13 @@
       "position": [85, 0],
       "bounds": [15, 85],
       "contentsOpaque": true,
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664C00",
       "transform": 5
     },
     {
@@ -88,13 +88,6 @@
       "transform": 6
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
-      "bounds": [85, 10000],
-      "contentsOpaque": true,
-      "backgroundColor": "#664C00",
-      "transform": 6
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [100, 15],
@@ -106,6 +99,13 @@
       "position": [85, 0],
       "bounds": [15, 85],
       "contentsOpaque": true,
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664C00",
       "transform": 6
     }
   ],

@@ -13,13 +13,6 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV class='scroller'",
-      "bounds": [1000, 1000],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [0, 285],
       "bounds": [285, 15],
@@ -38,6 +31,13 @@
       "position": [285, 285],
       "bounds": [15, 15],
       "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='scroller'",
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
       "transform": 1
     }
   ],

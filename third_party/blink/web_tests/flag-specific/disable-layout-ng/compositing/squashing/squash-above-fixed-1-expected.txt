@@ -19,9 +19,8 @@ CASE 1, original layer tree:
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
-      "position": [0, 100],
-      "bounds": [200, 1300],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
+      "bounds": [200, 1400],
       "contentsOpaqueForText": true
     },
     {
@@ -62,9 +61,8 @@ CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
-      "position": [0, 100],
-      "bounds": [200, 1300],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
+      "bounds": [200, 1400],
       "contentsOpaqueForText": true,
       "transform": 1
     },
@@ -115,9 +113,8 @@ CASE 3, scrolling y to 120, no repaints expected:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
-      "position": [0, 100],
-      "bounds": [200, 1300],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
+      "bounds": [200, 1400],
       "contentsOpaqueForText": true,
       "transform": 1
     },
@@ -168,9 +165,8 @@ CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
-      "position": [0, 100],
-      "bounds": [200, 1300],
+      "name": "LayoutBlockFlow (relative positioned) DIV id='paragraph-a' class='overlapping cyan'",
+      "bounds": [200, 1400],
       "contentsOpaqueForText": true,
       "transform": 1
     },

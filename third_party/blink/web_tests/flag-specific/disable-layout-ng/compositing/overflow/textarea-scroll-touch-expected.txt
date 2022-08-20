@@ -20,19 +20,19 @@
       "bounds": [261, 140]
     },
     {
+      "name": "VerticalScrollbar",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
       "name": "LayoutTextControl TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 2
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [190, 1],
-      "bounds": [15, 109],
-      "contentsOpaque": true,
-      "transform": 1
     },
     {
       "name": "LayoutTextControl TEXTAREA",
@@ -49,19 +49,19 @@
       "transform": 3
     },
     {
+      "name": "VerticalScrollbar",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "contentsOpaque": true,
+      "transform": 3
+    },
+    {
       "name": "LayoutTextControl TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 4
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [190, 1],
-      "bounds": [15, 109],
-      "contentsOpaque": true,
-      "transform": 3
     }
   ],
   "transforms": [

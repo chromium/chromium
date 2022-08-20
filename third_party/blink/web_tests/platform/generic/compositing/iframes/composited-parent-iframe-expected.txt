@@ -14,17 +14,17 @@
       "transform": 1
     },
     {
-      "name": "Scrolling background of LayoutView #document",
-      "bounds": [285, 230],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 2
-    },
-    {
       "name": "VerticalScrollbar",
       "position": [285, 0],
       "bounds": [15, 150],
       "contentsOpaque": true,
+      "transform": 2
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [285, 230],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {

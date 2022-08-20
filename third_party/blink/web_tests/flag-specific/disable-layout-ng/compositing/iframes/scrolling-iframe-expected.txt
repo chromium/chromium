@@ -7,13 +7,6 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Scrolling background of LayoutView #document",
-      "bounds": [508, 608],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 2
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [0, 135],
       "bounds": [285, 15],
@@ -33,6 +26,13 @@
       "bounds": [15, 15],
       "contentsOpaque": true,
       "transform": 1
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [508, 608],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
     },
     {
       "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",

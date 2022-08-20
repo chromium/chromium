@@ -27,6 +27,13 @@
       "transform": 1
     },
     {
+      "name": "HorizontalScrollbar",
+      "position": [1, 20],
+      "bounds": [164, 15],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [1, 1],
       "bounds": [470, 19],
@@ -35,13 +42,6 @@
         [0, 0, 470, 19]
       ],
       "transform": 2
-    },
-    {
-      "name": "HorizontalScrollbar",
-      "position": [1, 20],
-      "bounds": [164, 15],
-      "contentsOpaque": true,
-      "transform": 1
     },
     {
       "name": "Caret",

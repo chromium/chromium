@@ -12,18 +12,18 @@
       "drawsContent": false
     },
     {
+      "name": "VerticalScrollbar",
+      "position": [185, 0],
+      "bounds": [15, 100],
+      "contentsOpaque": true
+    },
+    {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [185, 210],
       "backgroundColor": "#80808080",
       "invalidations": [
         [0, 5, 15, 15]
       ]
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [185, 0],
-      "bounds": [15, 100],
-      "contentsOpaque": true
     }
   ]
 }

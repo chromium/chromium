@@ -27,17 +27,17 @@ scroll me
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='scroller'",
-      "bounds": [185, 400],
-      "backgroundColor": "#FFFF0080",
-      "transform": 3
-    },
-    {
       "name": "VerticalScrollbar",
       "position": [185, 0],
       "bounds": [15, 200],
       "contentsOpaque": true,
       "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [185, 400],
+      "backgroundColor": "#FFFF0080",
+      "transform": 3
     }
   ],
   "transforms": [

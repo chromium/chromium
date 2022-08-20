@@ -20,13 +20,6 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='target'",
-      "bounds": [185, 2000],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 1
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [0, 185],
       "bounds": [200, 15],
@@ -38,6 +31,13 @@
       "position": [185, 0],
       "bounds": [15, 185],
       "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='target'",
+      "bounds": [185, 2000],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
