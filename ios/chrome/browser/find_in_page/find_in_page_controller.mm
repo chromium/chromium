@@ -211,7 +211,7 @@ static NSString* gSearchTerm;
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
   if (matchCount == 0 && !query) {
-    // StopFinding responds with |matchCount| as 0 and |query| as nil.
+    // StopFinding responds with `matchCount` as 0 and `query` as nil.
     [self.responseDelegate findDidStop];
     return;
   }
