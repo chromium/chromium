@@ -23,6 +23,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,7 +81,6 @@
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_ui.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_ui.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -445,15 +445,10 @@ WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
 template <>
 WebUIController* NewWebUI<OptimizationGuideInternalsUI>(WebUI* web_ui,
                                                         const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service)
-    return nullptr;
-  return new OptimizationGuideInternalsUI(
-      web_ui, service->GetOptimizationGuideLogger(),
-      base::BindOnce(&SetUpWebUIDataSource, web_ui,
-                     optimization_guide_internals::
-                         kChromeUIOptimizationGuideInternalsHost));
+  return OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
+      web_ui, base::BindOnce(&SetUpWebUIDataSource, web_ui,
+                             optimization_guide_internals::
+                                 kChromeUIOptimizationGuideInternalsHost));
 }
 
 template <>

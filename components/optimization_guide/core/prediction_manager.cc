@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -39,6 +40,7 @@
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/core/store_update_data.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -592,6 +594,24 @@ void PredictionManager::OnModelDownloadFailed(
     proto::OptimizationTarget optimization_target) {
   RecordLifecycleState(optimization_target,
                        ModelDeliveryEvent::kModelDownloadFailure);
+}
+
+std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
+PredictionManager::GetDownloadedModelsInfoForWebUI() const {
+  std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>
+      downloaded_models_info;
+  downloaded_models_info.reserve(optimization_target_model_info_map_.size());
+  for (const auto& it : optimization_target_model_info_map_) {
+    const std::string& optimization_target_name =
+        optimization_guide::proto::OptimizationTarget_Name(it.first);
+    const optimization_guide::ModelInfo* const model_info = it.second.get();
+    auto downloaded_model_info_ptr =
+        optimization_guide_internals::mojom::DownloadedModelInfo::New(
+            optimization_target_name, model_info->GetVersion(),
+            model_info->GetModelFilePath().AsUTF8Unsafe());
+    downloaded_models_info.push_back(std::move(downloaded_model_info_ptr));
+  }
+  return downloaded_models_info;
 }
 
 void PredictionManager::NotifyObserversOfNewModel(

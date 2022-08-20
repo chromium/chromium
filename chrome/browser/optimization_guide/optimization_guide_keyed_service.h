@@ -143,6 +143,7 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::android::OptimizationGuideBridge;
+  friend class OptimizationGuideInternalsUI;
 
   // Initializes |this|.
   void Initialize();

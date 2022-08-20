@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+
 import {$} from 'chrome://resources/js/util.m.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
+import {DownloadedModelInfo, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
 // Contains all the log events received when the internals page is open.
@@ -101,12 +104,63 @@ function onLogMessagesDump() {
   a.dispatchEvent(event);
 }
 
+async function onModelsPageOpen() {
+  const downloadedModelsContainer =
+      $('downloaded-models-container') as HTMLTableElement;
+  try {
+    const response: {downloadedModelsInfo: DownloadedModelInfo[]} =
+        await PageHandlerFactory.getRemote().requestDownloadedModelsInfo();
+    const downloadedModelsInfo = response.downloadedModelsInfo;
+    for (const {optimizationTarget, version, filePath} of
+             downloadedModelsInfo) {
+      const versionStr = version.toString();
+      const existingModel = $(optimizationTarget) as HTMLTableRowElement;
+      if (existingModel) {
+        existingModel.querySelector('.downloaded-models-version')!.innerHTML =
+            versionStr;
+        existingModel.querySelector('.downloaded-models-file-path')!.innerHTML =
+            filePath;
+      } else {
+        const downloadedModel = downloadedModelsContainer.insertRow();
+        downloadedModel.id = optimizationTarget;
+        appendTD(
+            downloadedModel, optimizationTarget,
+            'downloaded-models-optimization-target');
+        appendTD(downloadedModel, versionStr, 'downloaded-models-version');
+        appendTD(downloadedModel, filePath, 'downloaded-models-file-path');
+      }
+    }
+  } catch (err) {
+    throw new Error(
+        `Error resolving promise from requestDownloadedModelsInfo, ${err}`);
+  }
+}
+
+/**
+ * Appends a new TD element to the specified |parent| element.
+ *
+ * @param {HTMLTableRowElement} parent The element to which a new TD element is
+ *     appended.
+ * @param {string} innerHTML The inner HTML of the element.
+ * @param {string} className The class name of the element.
+ */
+function appendTD(
+    parent: HTMLTableRowElement, innerHTML: string, className: string) {
+  const td = parent.insertCell();
+  td.innerHTML = innerHTML;
+  td.className = className;
+  parent.appendChild(td);
+}
+
 function getProxy(): OptimizationGuideInternalsBrowserProxy {
   return OptimizationGuideInternalsBrowserProxy.getInstance();
 }
 
 
 function initialize() {
+  const tabbox = document.querySelector('cr-tab-box') as HTMLElement;
+  tabbox.hidden = false;
+
   const logMessageContainer = $('log-message-container') as HTMLTableElement;
 
   $('log-messages-dump').addEventListener('click', onLogMessagesDump);
@@ -123,14 +177,45 @@ function initialize() {
           sourceLocation,
           message,
         });
-        if (logMessageContainer) {
-          const logmessage = logMessageContainer.insertRow();
-          logmessage.insertCell().innerHTML = eventTimeStr;
-          logmessage.insertCell().innerHTML = logSourceStr;
-          logmessage.insertCell().innerHTML = sourceLocation;
-          logmessage.insertCell().innerHTML = message;
-        }
+        const logMessage = logMessageContainer.insertRow();
+        appendTD(logMessage, eventTimeStr, 'event-logs-time');
+        appendTD(logMessage, logSourceStr, 'event-logs-log-source');
+        appendTD(logMessage, sourceLocation, 'event-logs-source-location');
+        appendTD(logMessage, message, 'event-logs-message');
       });
+
+  const tabpanelNodeList = document.querySelectorAll('div[slot=\'panel\']');
+  const tabpanels = Array.prototype.slice.call(tabpanelNodeList, 0);
+  const tabpanelIds = tabpanels.map(function(tab) {
+    return tab.id;
+  });
+
+  tabbox.addEventListener('selected-index-change', e => {
+    const tabpanel = tabpanels[(e as CustomEvent).detail];
+    const hash = tabpanel.id.match(/(?:^tabpanel-)(.+)/)[1];
+    window.location.hash = hash;
+  });
+
+  const activateTabByHash = function() {
+    let hash = window.location.hash;
+
+    // Remove the first character '#'.
+    hash = hash.substring(1);
+
+    const id = 'tabpanel-' + hash;
+    const index = tabpanelIds.indexOf(id);
+    if (index === -1) {
+      return;
+    }
+    tabbox.setAttribute('selected-index', `${index}`);
+
+    if (hash === 'models') {
+      onModelsPageOpen();
+    }
+  };
+
+  window.onhashchange = activateTabByHash;
+  activateTabByHash();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

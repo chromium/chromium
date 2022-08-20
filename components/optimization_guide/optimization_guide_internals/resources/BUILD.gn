@@ -73,6 +73,9 @@ generate_grd("build_grd") {
   deps = [ ":build_ts" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  input_files = [ "optimization_guide_internals.html" ]
+  input_files = [
+    "optimization_guide_internals.html",
+    "optimization_guide_internals.css",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 }

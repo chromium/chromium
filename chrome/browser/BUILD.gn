@@ -958,6 +958,8 @@ static_library("browser") {
     "optimization_guide/model_validator_keyed_service.h",
     "optimization_guide/model_validator_keyed_service_factory.cc",
     "optimization_guide/model_validator_keyed_service_factory.h",
+    "optimization_guide/optimization_guide_internals_ui.cc",
+    "optimization_guide/optimization_guide_internals_ui.h",
     "optimization_guide/optimization_guide_keyed_service.cc",
     "optimization_guide/optimization_guide_keyed_service.h",
     "optimization_guide/optimization_guide_keyed_service_factory.cc",
