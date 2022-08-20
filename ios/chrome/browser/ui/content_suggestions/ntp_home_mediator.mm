@@ -268,7 +268,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _webState = webState;
   [self.logoVendor setWebState:webState];
   if (_webState && _webStateObserver) {
-    [self setContentOffsetForWebState:webState];
+    [self setContentOffsetForWebState:webState refreshFeedIfNeeded:NO];
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -280,7 +280,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // changes.
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   DCHECK_EQ(_webState, webState);
-  [self setContentOffsetForWebState:webState];
+  [self setContentOffsetForWebState:webState refreshFeedIfNeeded:YES];
 }
 
 - (void)webStateWasHidden:(web::WebState*)webState {
@@ -370,8 +370,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - Private
 
-// Set the NTP scroll offset for the current navigation item.
-- (void)setContentOffsetForWebState:(web::WebState*)webState {
+// Set the NTP scroll offset for the current navigation item. If
+// `refreshFeedIfNeeded` is YES a feed refresh will be attempted.
+- (void)setContentOffsetForWebState:(web::WebState*)webState
+                refreshFeedIfNeeded:(BOOL)refreshFeedIfNeeded {
   if (webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
       kChromeUINewTabURL) {
     return;
@@ -398,7 +400,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     [self.suggestionsMediator refreshMostVisitedTiles];
 
     // Refresh DiscoverFeed unless in off-the-record NTP.
-    if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+    if (!self.browser->GetBrowserState()->IsOffTheRecord() &&
+        refreshFeedIfNeeded) {
       DiscoverFeedServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
           ->RefreshFeedIfNeeded();
