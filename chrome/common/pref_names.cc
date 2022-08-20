@@ -1338,6 +1338,20 @@ const char kAccessibilityFocusHighlightEnabled[] =
 // accessibility feature that simulates forced colors mode at the browser level.
 const char kPageColors[] = "settings.a11y.page_colors";
 
+// Boolean Pref that indicates whether the user wants to enable page colors only
+// when the OS is in an Increased Contrast mode such as High Contrast on Windows
+// or Increased Contrast on Mac.
+const char kApplyPageColorsOnlyOnIncreasedContrast[] =
+    "settings.a11y.apply_page_colors_only_on_increased_contrast";
+
+#if BUILDFLAG(IS_WIN)
+// Boolean that indicates what the default page colors state should be. When
+// true, page colors will be 'High Contrast' when OS High Contrast is turned on,
+// otherwise page colors will remain 'Off'.
+const char kIsDefaultPageColorsOnHighContrast[] =
+    "settings.a11y.is_default_page_colors_on_high_contrast";
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the application should show the info bar
 // asking the user to set up automatic updates when Keystone promotion is

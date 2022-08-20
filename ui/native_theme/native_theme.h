@@ -433,6 +433,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Notify observers of caption style changes.
   virtual void NotifyOnCaptionStyleUpdated();
 
+  // Notify observers of preferred contrast changes.
+  virtual void NotifyOnPreferredContrastUpdated();
+
   // Returns whether the user has an explicit contrast preference.
   virtual bool UserHasContrastPreference() const;
 
@@ -483,9 +486,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
   }
-  void set_preferred_contrast(PreferredContrast preferred_contrast) {
-    preferred_contrast_ = preferred_contrast;
-  }
+  void SetPreferredContrast(PreferredContrast preferred_contrast);
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
   bool is_custom_system_theme() const { return is_custom_system_theme_; }
 

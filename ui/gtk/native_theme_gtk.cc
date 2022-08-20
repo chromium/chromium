@@ -161,7 +161,7 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   // Update the preferred contrast settings for the NativeThemeAura instance and
   // notify its observers about the change.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_preferred_contrast(
+  native_theme->SetPreferredContrast(
       UserHasContrastPreference()
           ? ui::NativeThemeBase::PreferredContrast::kMore
           : ui::NativeThemeBase::PreferredContrast::kNoPreference);
@@ -206,7 +206,7 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                  ::tolower);
   bool high_contrast = theme_name.find("high") != std::string::npos &&
                        theme_name.find("contrast") != std::string::npos;
-  set_preferred_contrast(
+  SetPreferredContrast(
       high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
                     : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 

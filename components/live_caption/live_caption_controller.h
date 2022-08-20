@@ -23,10 +23,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace ui {
-class NativeTheme;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -99,7 +95,6 @@ class LiveCaptionController : public KeyedService,
                           speech::SodaInstaller::ErrorCode error_code) override;
 
   // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {}
   void OnCaptionStyleUpdated() override;
 
   void OnLiveCaptionEnabledChanged();

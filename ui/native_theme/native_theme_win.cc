@@ -302,7 +302,7 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   // Initialize the cached system colors.
   UpdateSystemColors();
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  set_preferred_contrast(CalculatePreferredContrast());
+  SetPreferredContrast(CalculatePreferredContrast());
 
   memset(theme_handles_, 0, sizeof(theme_handles_));
 
@@ -326,7 +326,7 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_use_dark_colors(ShouldUseDarkColors());
   web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
-  web_instance->set_preferred_contrast(GetPreferredContrast());
+  web_instance->SetPreferredContrast(GetPreferredContrast());
   web_instance->set_system_colors(GetSystemColors());
 }
 
@@ -357,7 +357,7 @@ void NativeThemeWin::OnSysColorChange() {
   if (!IsForcedHighContrast())
     set_forced_colors(IsUsingHighContrastThemeInternal());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  set_preferred_contrast(CalculatePreferredContrast());
+  SetPreferredContrast(CalculatePreferredContrast());
   NotifyOnNativeThemeUpdated();
 }
 

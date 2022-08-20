@@ -419,7 +419,7 @@ class PrefersContrastTest
 };
 
 IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
-  test_theme_.set_preferred_contrast(GetParam());
+  test_theme_.SetPreferredContrast(GetParam());
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()

@@ -97,6 +97,15 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
     observer.OnCaptionStyleUpdated();
 }
 
+void NativeTheme::NotifyOnPreferredContrastUpdated() {
+  // This specific method is prone to being mistakenly called on the wrong
+  // sequence, because it is often invoked from a platform-specific event
+  // listener, and those events may be delivered on unexpected sequences.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (NativeThemeObserver& observer : native_theme_observers_)
+    observer.OnPreferredContrastChanged();
+}
+
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
                                            float zoom_level) const {
   float zoomed = floorf(border_width * zoom_level);
@@ -155,6 +164,14 @@ NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
 
 NativeTheme::PreferredContrast NativeTheme::GetPreferredContrast() const {
   return preferred_contrast_;
+}
+
+void NativeTheme::SetPreferredContrast(
+    NativeTheme::PreferredContrast preferred_contrast) {
+  if (preferred_contrast_ == preferred_contrast)
+    return;
+  preferred_contrast_ = preferred_contrast;
+  NotifyOnPreferredContrastUpdated();
 }
 
 bool NativeTheme::IsForcedDarkMode() const {
@@ -261,7 +278,7 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     notify_observers = true;
   }
   if (theme_to_update_->GetPreferredContrast() != preferred_contrast) {
-    theme_to_update_->set_preferred_contrast(preferred_contrast);
+    theme_to_update_->SetPreferredContrast(preferred_contrast);
     notify_observers = true;
   }
 

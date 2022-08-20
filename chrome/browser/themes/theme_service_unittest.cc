@@ -245,7 +245,7 @@ class ColorProviderTest
       color_scheme = ui::NativeTheme::ColorScheme::kPlatformHighContrast;
     native_theme_->set_forced_colors(high_contrast);
 #endif  // BUILDFLAG(IS_WIN)
-    native_theme_->set_preferred_contrast(
+    native_theme_->SetPreferredContrast(
         high_contrast ? ui::NativeTheme::PreferredContrast::kMore
                       : ui::NativeTheme::PreferredContrast::kNoPreference);
     native_theme_->set_use_dark_colors(color_scheme ==
@@ -274,7 +274,7 @@ class ColorProviderTest
   void TearDown() override {
     // Restore the original NativeTheme parameters.
     native_theme_->set_forced_colors(original_forced_colors_);
-    native_theme_->set_preferred_contrast(original_preferred_contrast_);
+    native_theme_->SetPreferredContrast(original_preferred_contrast_);
     native_theme_->set_use_dark_colors(original_should_use_dark_colors_);
     native_theme_->NotifyOnNativeThemeUpdated();
     ThemeServiceTest::TearDown();

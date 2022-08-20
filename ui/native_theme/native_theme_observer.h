@@ -16,10 +16,13 @@ class NATIVE_THEME_EXPORT NativeThemeObserver {
  public:
   // Called when the native theme changes. The observed theme is passed so that
   // observers may handle changes to their associated native theme instances.
-  virtual void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) = 0;
+  virtual void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {}
 
   // Called when the caption style changes.
   virtual void OnCaptionStyleUpdated() {}
+
+  // Called when the system Increased Contrast state changes.
+  virtual void OnPreferredContrastChanged() {}
 
  protected:
   virtual ~NativeThemeObserver();
