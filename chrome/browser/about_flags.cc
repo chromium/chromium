@@ -8424,6 +8424,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"u2f-security-key-api", flag_descriptions::kU2FSecurityKeyAPIName,
      flag_descriptions::kU2FSecurityKeyAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(extensions_features::kU2FSecurityKeyAPI)},
+    {"load-cryptotoken-extension",
+     flag_descriptions::kLoadCryptoTokenExtensionName,
+     flag_descriptions ::kLoadCryptoTokenExtensionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(extensions_features::kLoadCryptoTokenExtension)},
 #endif  // ENABLE_EXTENSIONS
     {"force-major-version-to-minor",
      flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentName,

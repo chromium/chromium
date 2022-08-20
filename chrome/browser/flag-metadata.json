@@ -4189,6 +4189,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "load-cryptotoken-extension",
+    "owners": [ "martinkr", "chrome-webauthn" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "location-bar-model-optimizations",
     "owners": [ "pnoland@google.com"],
     "expiry_milestone": 105

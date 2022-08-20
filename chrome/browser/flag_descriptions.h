@@ -156,6 +156,9 @@ extern const char kU2FPermissionPromptDescription[];
 extern const char kU2FSecurityKeyAPIName[];
 extern const char kU2FSecurityKeyAPIDescription[];
 
+extern const char kLoadCryptoTokenExtensionName[];
+extern const char kLoadCryptoTokenExtensionDescription[];
+
 extern const char kUpcomingSharingFeaturesName[];
 extern const char kUpcomingSharingFeaturesDescription[];
 
