@@ -199,12 +199,12 @@ class PartialMatch {
 class Replacement {
   /**
    * @param {Node} HTMLElement The HTML Node containing search result.
-   * @param {Array<HTMLElement>} newNodes New HTML Nodes created for
+   * @param {Array<Node>} newNodes New HTML Nodes created for
    *     substitution of |oldNode|.
    */
   constructor(
       private readonly oldNode: HTMLElement,
-      private readonly newNodes: HTMLElement[]) {}
+      private readonly newNodes: Node[]) {}
 
   /**
    * Executes the replacement to highlight search result.
@@ -245,9 +245,10 @@ class Section {
   /**
    * @param {number} begin Beginning index of |node|.textContent in |allText_|.
    * @param {number} end Ending index of |node|.textContent in |allText_|.
-   * @param {Node} node The TEXT Node of this section.
+   * @param {HTMLElement} node The TEXT Node of this section.
    */
-  constructor(public begin: number, public end: number, public node: Node) {}
+  constructor(
+      public begin: number, public end: number, public node: HTMLElement) {}
 }
 
 /**
