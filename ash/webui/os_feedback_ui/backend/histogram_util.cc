@@ -30,8 +30,8 @@ void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action) {
     case mojom::FeedbackAppPreSubmitAction::kViewedMetrics:
       base::UmaHistogramBoolean(kFeedbackAppViewedMetrics, true);
       break;
-    // TODO(longbowei): Handle ViewedHelpContent case.
     case mojom::FeedbackAppPreSubmitAction::kViewedHelpContent:
+      base::UmaHistogramBoolean(kFeedbackAppViewedHelpContent, true);
       break;
   }
 }

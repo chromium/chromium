@@ -11,7 +11,7 @@ import './strings.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackAppExitPath, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppExitPath, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -133,6 +133,8 @@ export class FeedbackFlowElement extends PolymerElement {
         return;
       }
       this.helpContentClicked_ = true;
+      this.feedbackServiceProvider_.recordPreSubmitAction(
+          FeedbackAppPreSubmitAction.kViewedHelpContent);
     });
 
     window.addEventListener('beforeunload', event => {

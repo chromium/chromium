@@ -6,7 +6,7 @@ import {fakeFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {FeedbackAppExitPath, FeedbackContext, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
+import {FeedbackAppExitPath, FeedbackAppPreSubmitAction, FeedbackContext, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
@@ -435,6 +435,11 @@ export function FeedbackFlowTestSuite() {
     let helpContentClicked = false;
     await initializePage();
 
+    assertEquals(
+        0,
+        feedbackServiceProvider.getRecordPreSubmitActionCallCount(
+            FeedbackAppPreSubmitAction.kViewedHelpContent));
+
     // Get Search Page.
     const SearchPage = getSearchPage();
     const iframe = /** @type {!HTMLIFrameElement} */ (
@@ -448,6 +453,8 @@ export function FeedbackFlowTestSuite() {
       if ('help-content-clicked-for-testing' === event.data.id &&
           OS_FEEDBACK_TRUSTED_ORIGIN === event.origin) {
         helpContentClicked = true;
+        feedbackServiceProvider.recordPreSubmitAction(
+            FeedbackAppPreSubmitAction.kViewedHelpContent);
       }
     });
 
@@ -461,6 +468,11 @@ export function FeedbackFlowTestSuite() {
     await eventToPromise('message', window);
     // Verify that help content have been clicked.
     assertTrue(helpContentClicked);
+    // Verify that viewedHelpContent metrics is emitted.
+    assertEquals(
+        1,
+        feedbackServiceProvider.getRecordPreSubmitActionCallCount(
+            FeedbackAppPreSubmitAction.kViewedHelpContent));
   });
 
   // Test that correct exitPathMetrics is emitted when user clicks help content

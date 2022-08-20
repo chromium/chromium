@@ -5847,6 +5847,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.ViewedHelpContent" units="boolean"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record number of times the user viewed the help content. Fires when user
+    clicks help content on search page.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.ViewedImage" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>
