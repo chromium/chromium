@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -19,6 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/setup/setup_util.h"
@@ -207,6 +209,17 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
   if (FAILED(hr)) {
     VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
             << hr;
+
+    // TODO(crbug.com/1341471) - revert the CL that introduced this check after
+    // the bug is resolved.
+    for (int i = 0; i < 10; ++i) {
+      base::WaitableEvent().TimedWait(base::Seconds(1));
+      CHECK(FAILED(server.As(&updater_internal)))
+          << "Unexpectedly succeeded in querying the updater_internal "
+             "interface after retrying: "
+          << i;
+    }
+
     CheckComInterfaceTypeLib(scope_, true);
     CheckComInterfaceTypeLib(scope_, false);
     std::move(callback).Run();
