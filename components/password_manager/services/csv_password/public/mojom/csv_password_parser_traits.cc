@@ -23,7 +23,15 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
     return false;
   if (!data.ReadPassword(&password))
     return false;
-  *out = password_manager::CSVPassword(url, username, password);
+  if (url.is_valid()) {
+    *out = password_manager::CSVPassword(url, username, password);
+    return true;
+  }
+  absl::optional<std::string> invalid_url;
+  if (!data.ReadInvalidUrl(&invalid_url))
+    return false;
+  DCHECK(invalid_url.has_value());
+  *out = password_manager::CSVPassword(invalid_url.value(), username, password);
   return true;
 }
 

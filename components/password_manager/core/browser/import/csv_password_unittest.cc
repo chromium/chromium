@@ -28,8 +28,7 @@ TEST(CSVPasswordTest, Construction) {
   };
   // Use const to check that ParseValid does not mutate the CSVPassword.
   const CSVPassword csv_pwd(kColMap, "http://example.com,user,password");
-  const GURL expected_origin("http://example.com");
-  EXPECT_EQ(expected_origin, csv_pwd.GetURL());
+  EXPECT_EQ(GURL("http://example.com"), csv_pwd.GetURL());
   EXPECT_EQ("user", csv_pwd.GetUsername());
   EXPECT_EQ("password", csv_pwd.GetPassword());
 }
@@ -108,9 +107,7 @@ TEST_P(CSVPasswordTestSuccess, ShouldParse) {
   const CSVPassword csv_pwd(test_case.map, test_case.csv);
   EXPECT_EQ(Status::kOK, csv_pwd.GetParseStatus());
 
-  const GURL expected_origin(test_case.origin);
-
-  EXPECT_EQ(expected_origin, csv_pwd.GetURL());
+  EXPECT_EQ(GURL(test_case.origin), csv_pwd.GetURL());
   EXPECT_EQ(test_case.username, csv_pwd.GetUsername());
   EXPECT_EQ(test_case.password, csv_pwd.GetPassword());
 }
