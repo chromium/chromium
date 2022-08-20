@@ -30,6 +30,9 @@
   <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
     Load more
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_NO_RESULTS" desc="Text shown when no history cluster entries are found.">
+    No results
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_NO_SEARCH_RESULTS" desc="Text used to denote that there are no search results for a search term in history clusters.">
     No search results
   </message>
