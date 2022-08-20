@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/functional/overloaded.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -71,25 +72,17 @@ namespace content {
 namespace {
 
 base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
-  struct Visitor {
-    base::Time operator()(const StorableSource& source) {
-      return source.common_info().impression_time();
-    }
-
-    base::Time operator()(const AttributionTriggerAndTime& trigger) {
-      return trigger.time;
-    }
-
-    base::Time operator()(const AttributionSimulatorCookie& cookie) {
-      return cookie.cookie.CreationDate();
-    }
-
-    base::Time operator()(const AttributionDataClear& clear) {
-      return clear.time;
-    }
-  };
-
-  return absl::visit(Visitor(), event.first);
+  return absl::visit(
+      base::Overloaded{
+          [](const StorableSource& source) {
+            return source.common_info().impression_time();
+          },
+          [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
+          [](const AttributionSimulatorCookie& cookie) {
+            return cookie.cookie.CreationDate();
+          },
+          [](const AttributionDataClear& clear) { return clear.time; }},
+      event.first);
 }
 
 class AlwaysSetCookieChecker : public AttributionCookieChecker {
