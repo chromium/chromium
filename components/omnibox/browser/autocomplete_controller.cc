@@ -480,9 +480,11 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
       history_clusters::IsApplicationLocaleSupportedByJourneys(
           provider_client_->GetApplicationLocale()) &&
-      search_provider_ != nullptr) {
-    providers_.push_back(new HistoryClusterProvider(provider_client_.get(),
-                                                    this, search_provider_));
+      search_provider_ != nullptr && history_url_provider_ != nullptr &&
+      history_quick_provider_ != nullptr) {
+    providers_.push_back(new HistoryClusterProvider(
+        provider_client_.get(), this, search_provider_, history_url_provider_,
+        history_quick_provider_));
   }
 #endif
 

@@ -8,25 +8,34 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_group.h"
 
 HistoryClusterProvider::HistoryClusterProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener,
-    SearchProvider* search_provider)
+    AutocompleteProvider* search_provider,
+    AutocompleteProvider* history_url_provider,
+    AutocompleteProvider* history_quick_provider)
     : AutocompleteProvider(AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER),
       client_(client),
-      search_provider_(search_provider) {
+      search_provider_(search_provider),
+      history_url_provider_(history_url_provider),
+      history_quick_provider_(history_quick_provider) {
   DCHECK(search_provider_);
+  DCHECK(history_url_provider_);
+  DCHECK(history_quick_provider_);
   AddListener(listener);
   search_provider_->AddListener(this);
+  history_url_provider_->AddListener(this);
+  history_quick_provider_->AddListener(this);
 }
 
 void HistoryClusterProvider::Start(const AutocompleteInput& input,
@@ -47,20 +56,51 @@ void HistoryClusterProvider::Start(const AutocompleteInput& input,
   done_ = false;
   input_ = input;
 
-  if (search_provider_->done())
+  if (AllProvidersDone())
     CreateMatches();
 }
 
 void HistoryClusterProvider::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
-  if (done_ || !search_provider_->done())
+  if (done_ || !AllProvidersDone())
     return;
   NotifyListeners(CreateMatches());
 }
 
+bool HistoryClusterProvider::AllProvidersDone() {
+  return search_provider_->done() && history_url_provider_->done() &&
+         history_quick_provider_->done();
+}
+
 bool HistoryClusterProvider::CreateMatches() {
   done_ = true;
+
+  // If there's a reasonably clear navigation intent, don't distract the user
+  // with a history cluster suggestion.
+  if (!history_clusters::GetConfig().omnibox_action_on_navigation_intents) {
+    // Helper to get the top relevance score looking at both providers.
+    const auto top_relevance =
+        [&](history_clusters::TopRelevanceFilter filter) {
+          return std::max(
+              {history_clusters::TopRelevance(
+                   search_provider_->matches().begin(),
+                   search_provider_->matches().end(), filter),
+               history_clusters::TopRelevance(
+                   history_url_provider_->matches().begin(),
+                   history_url_provider_->matches().end(), filter),
+               history_clusters::TopRelevance(
+                   history_quick_provider_->matches().begin(),
+                   history_quick_provider_->matches().end(), filter)});
+        };
+    if (history_clusters::IsNavigationIntent(
+            top_relevance(history_clusters::TopRelevanceFilter::
+                              FILTER_FOR_SEARCH_MATCHES),
+            top_relevance(history_clusters::TopRelevanceFilter::
+                              FILTER_FOR_NON_SEARCH_MATCHES))) {
+      return false;
+    }
+  }
 
   // Iterate search matches in their current order. This is usually highest to
   // lowest relevance with an exception for search-what-you-typed search

@@ -20,6 +20,7 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
   void SetType(Type type) { type_ = type; }
 
   using AutocompleteProvider::done_;
+  using AutocompleteProvider::matches_;
 
  private:
   ~FakeAutocompleteProvider() override = default;
