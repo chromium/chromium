@@ -146420,6 +146420,19 @@
        {}
       ]
      ],
+     "overflow-clip-margin-011.html": [
+      "5952f5e9ded1f463bc72062d9c9fa0833b165200",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-margin-invalidation.html": [
       "d9c87a34a53f17451b0d3ae8c2071971d1df3a94",
       [
@@ -283315,6 +283328,10 @@
       "e548417c728fce159e7a7388d5530966944bd4ea",
       []
      ],
+     "overflow-clip-margin-011-ref.html": [
+      "684de0cf0cbb59fdbe488573b19d9b55974ce93a",
+      []
+     ],
      "overflow-clip-margin-invalidation-ref.html": [
       "1ec2a5ce0a21c8dd578b3fcfde702307e4e2a9a8",
       []
@@ -291583,7 +291600,7 @@
      },
      "support": {
       "toggle-helpers.js": [
-       "098bf481a169ba920622eb2c5a69bdb81011563e",
+       "48f0916b4e6dc35d6c805747756250d1d09de45c",
        []
       ]
      }
@@ -395245,14 +395262,14 @@
       ]
      },
      "toggle-activation-with-groups.tentative.html": [
-      "d026ab368e00eff2157dd07989b7f5480fe590b7",
+      "1d731d902ba6683ee13622d042bff7b055ef8e3e",
       [
        null,
        {}
       ]
      ],
      "toggle-activation.tentative.html": [
-      "b087f07fd8109ab52bf7e786442e95d63f54316f",
+      "fca06d1ac7a9798189ed557a494fe25030a43134",
       [
        null,
        {}
@@ -396528,7 +396545,7 @@
        ]
       ],
       "normalize-tokens.tentative.html": [
-       "6dbc3e3dde4b6f0bd9596b30339a89116c763ec6",
+       "c83e093e62280b0ea4276c2db38273b78e1e5a70",
        [
         null,
         {}
@@ -530817,14 +530834,14 @@
       ]
      ],
      "innerhtml-before-closing-tag.tentative.html": [
-      "9a6067709066c4fdd5336975c53536a64b3dea11",
+      "cfa471d1a6f7ae72af382d67ef918e3b3bb46086",
       [
        null,
        {}
       ]
      ],
      "innerhtml-on-ordinary-template.tentative.html": [
-      "6d01ced8e81d96400479c19fcc6c7d702c7ce314",
+      "221b252ae96dbf8d04054d074d20e4b0426fbc4a",
       [
        null,
        {}
@@ -560007,7 +560024,7 @@
      ]
     ],
     "supported-stats.html": [
-     "fd08a16b11ec3dfabaad5af70b8f38255226c5a9",
+     "f59f5d8e8f95244aac767660fe8c141c048bd874",
      [
       null,
       {

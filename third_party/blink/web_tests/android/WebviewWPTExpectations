@@ -1461,7 +1461,6 @@ crbug.com/1050754 external/wpt/css/css-transitions/zero-duration-multiple-transi
 crbug.com/1050754 external/wpt/css/css-typed-om/CSSMatrixComponent-DOMMatrix-mutable.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/idlharness.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-normalization/normalize-image.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-normalization/normalize-tokens.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-subclasses/numeric-objects/cssUnitValue.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-subclasses/numeric-objects/numeric-factory.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/alignment-baseline.html [ Failure Pass ]
