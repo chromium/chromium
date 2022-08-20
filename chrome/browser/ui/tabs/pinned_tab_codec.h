@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace base {
-class Value;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -41,7 +37,6 @@ class PinnedTabCodec {
 
   // Reads and returns the set of pinned tabs to restore from preferences.
   static StartupTabs ReadPinnedTabs(Profile* profile);
-  static StartupTabs ReadPinnedTabs(const base::Value* value);
 
  private:
   PinnedTabCodec();
