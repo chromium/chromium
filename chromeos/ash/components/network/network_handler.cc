@@ -203,12 +203,18 @@ void NetworkHandler::InitializePrefServices(
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get(), logged_in_profile_prefs, device_prefs,
       is_enterprise_managed_));
+  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
+    hidden_network_handler_->SetNetworkMetadataStore(
+        network_metadata_store_.get());
+  }
 }
 
 void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
+  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration))
+    hidden_network_handler_->SetNetworkMetadataStore(nullptr);
   network_metadata_store_.reset();
 }
 

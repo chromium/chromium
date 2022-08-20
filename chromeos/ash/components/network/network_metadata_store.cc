@@ -404,7 +404,7 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
 
   if (!network || network->GetNetworkTechnologyType() !=
                       NetworkState::NetworkTechnologyType::kWiFi) {
-    return base::Time::UnixEpoch();
+    return base::Time::Now().UTCMidnight();
   }
 
   const base::Value* creation_timestamp =

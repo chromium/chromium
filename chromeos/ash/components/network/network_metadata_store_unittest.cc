@@ -487,19 +487,19 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonWifi) {
   scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigEthernet);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid3),
-            base::Time::UnixEpoch());
+            base::Time::Now().UTCMidnight());
 }
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonExistentNetwork) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
-            base::Time::UnixEpoch());
+            base::Time::Now().UTCMidnight());
   // Fast forward 2 weeks to check that creation timestamp is always
   // base::Time::UnixEpoch() for non-existent networks.
   task_environment()->FastForwardBy(base::Days(14));
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
-            base::Time::UnixEpoch());
+            base::Time::Now().UTCMidnight());
 }
 
 TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {
