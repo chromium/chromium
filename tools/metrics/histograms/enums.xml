@@ -48433,6 +48433,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="kLacrosDownload"/>
   <int value="9" label="kScan"/>
   <int value="10" label="kPhoneHubCameraRoll"/>
+  <int value="11" label="kDriveSuggestion"/>
+  <int value="12" label="kLocalSuggestion"/>
 </enum>
 
 <enum name="HoldingSpacePodAction">

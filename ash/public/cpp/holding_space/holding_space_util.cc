@@ -6,8 +6,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 
-namespace ash {
-namespace holding_space_util {
+namespace ash::holding_space_util {
 
 gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
   gfx::Size max_size;
@@ -15,12 +14,14 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
     case HoldingSpaceItem::Type::kArcDownload:
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kDriveSuggestion:
     case HoldingSpaceItem::Type::kLacrosDownload:
+    case HoldingSpaceItem::Type::kLocalSuggestion:
     case HoldingSpaceItem::Type::kNearbyShare:
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
-    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
       max_size =
           gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;
@@ -70,5 +71,4 @@ bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
   return false;
 }
 
-}  // namespace holding_space_util
-}  // namespace ash
+}  // namespace ash::holding_space_util

@@ -8,7 +8,6 @@
 #include <deque>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -44,12 +43,10 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -193,8 +190,15 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
 
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
+  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue);
+       ++i) {
+    // TODO(crbug/1353993): Remove check once the suggestions section is added
+    // to the holding space tray bubble.
+    if (!HoldingSpaceItem::IsSuggestion(
+            static_cast<HoldingSpaceItem::Type>(i))) {
+      types.push_back(static_cast<HoldingSpaceItem::Type>(i));
+    }
+  }
   return types;
 }
 
@@ -975,6 +979,7 @@ INSTANTIATE_TEST_SUITE_P(
                       HoldingSpaceItem::Type::kDownload,
                       HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
+                      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
                       HoldingSpaceItem::Type::kPrintedPdf,
                       HoldingSpaceItem::Type::kScan));
 

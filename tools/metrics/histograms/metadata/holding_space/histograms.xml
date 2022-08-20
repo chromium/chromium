@@ -43,9 +43,13 @@ chromium-metrics-reviews@google.com.
       summary="Items backed by a diagnostics log file."/>
   <variant name="Download"
       summary="Items backed by a download file originating from Ash Chrome."/>
+  <variant name="DriveSuggestion"
+      summary="Items backed by a suggested Drive file."/>
   <variant name="LacrosDownload"
       summary="Items backed by a download file originating from Lacros
                Chrome."/>
+  <variant name="LocalSuggestion"
+      summary="Items backed by a suggested local file."/>
   <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
   <variant name="PhoneHubCameraRoll"
       summary="Recent photos and videos taken on connected Android phone."/>

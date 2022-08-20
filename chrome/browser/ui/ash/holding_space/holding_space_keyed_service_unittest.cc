@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
@@ -19,14 +18,9 @@
 #include "ash/public/cpp/image_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/scoped_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/time/time_override.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -35,7 +29,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
@@ -52,10 +45,8 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/download_item_utils.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
-#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -2234,6 +2225,10 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
       case HoldingSpaceItem::Type::kDiagnosticsLog:
         holding_space_service->AddDiagnosticsLog(file_path);
         break;
+      case HoldingSpaceItem::Type::kDriveSuggestion:
+      case HoldingSpaceItem::Type::kLocalSuggestion:
+        holding_space_service->AddSuggestion(type, file_path);
+        break;
       case HoldingSpaceItem::Type::kNearbyShare:
         holding_space_service->AddNearbyShare(file_path);
         break;
@@ -2243,6 +2238,13 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
                  ->CrackURLInFirstPartyContext(
                      holding_space_util::ResolveFileSystemUrl(profile,
                                                               file_path))});
+        break;
+      case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+        EXPECT_EQ(
+            holding_space_model->ContainsItem(type, file_path),
+            holding_space_service
+                ->AddPhoneHubCameraRollItem(file_path, HoldingSpaceProgress())
+                .empty());
         break;
       case HoldingSpaceItem::Type::kPrintedPdf:
         holding_space_service->AddPrintedPdf(file_path,
@@ -2256,13 +2258,6 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         break;
       case HoldingSpaceItem::Type::kScreenshot:
         holding_space_service->AddScreenshot(file_path);
-        break;
-      case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
-        EXPECT_EQ(
-            holding_space_model->ContainsItem(type, file_path),
-            holding_space_service
-                ->AddPhoneHubCameraRollItem(file_path, HoldingSpaceProgress())
-                .empty());
         break;
     }
 

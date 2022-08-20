@@ -12,8 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 
-namespace ash {
-namespace holding_space_metrics {
+namespace ash::holding_space_metrics {
 
 namespace {
 
@@ -80,10 +79,16 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "DiagnosticsLog";
     case HoldingSpaceItem::Type::kDownload:
       return "Download";
+    case HoldingSpaceItem::Type::kDriveSuggestion:
+      return "DriveSuggestion";
     case HoldingSpaceItem::Type::kLacrosDownload:
       return "LacrosDownload";
+    case HoldingSpaceItem::Type::kLocalSuggestion:
+      return "LocalSuggestion";
     case HoldingSpaceItem::Type::kNearbyShare:
       return "NearbyShare";
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+      return "PhoneHubCameraRoll";
     case HoldingSpaceItem::Type::kPinnedFile:
       return "PinnedFile";
     case HoldingSpaceItem::Type::kPrintedPdf:
@@ -94,8 +99,6 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "ScreenRecording";
     case HoldingSpaceItem::Type::kScreenshot:
       return "Screenshot";
-    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
-      return "PhoneHubCameraRoll";
   }
   NOTREACHED();
   return std::string();
@@ -217,5 +220,4 @@ void RecordPodResizeAnimationSmoothness(int smoothness) {
                                smoothness);
 }
 
-}  // namespace holding_space_metrics
-}  // namespace ash
+}  // namespace ash::holding_space_metrics

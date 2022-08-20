@@ -105,6 +105,13 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // Adds a photo or video downloaded from a connected Android phone via
+  // PhoneHub. Returns the id of the added holding space item or an empty string
+  // if the item was not added due to de-duplication checks.
+  const std::string& AddPhoneHubCameraRollItem(
+      const base::FilePath& item_path,
+      const HoldingSpaceProgress& progress);
+
   // Adds a scanned item backed by the provided absolute file path.
   void AddScan(const base::FilePath& file_path);
 
@@ -114,12 +121,10 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a screenshot item backed by the provided absolute file path.
   void AddScreenshot(const base::FilePath& screenshot_path);
 
-  // Adds a photo or video downloaded from a connected Android phone via
-  // PhoneHub. Returns the id of the added holding space item or an empty string
-  // if the item was not added due to de-duplication checks.
-  const std::string& AddPhoneHubCameraRollItem(
-      const base::FilePath& item_path,
-      const HoldingSpaceProgress& progress);
+  // Adds a suggested item of the specified `type` backed by the provided
+  // absolute file path. NOTE: `type` must refer to a suggestion type.
+  void AddSuggestion(HoldingSpaceItem::Type type,
+                     const base::FilePath& suggestion_path);
 
   // Adds the specified `item` to the holding space model. Returns the id of the
   // added holding space item or an empty string if the item was not added due

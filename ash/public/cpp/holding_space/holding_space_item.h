@@ -85,7 +85,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kLacrosDownload = 8,
     kScan = 9,
     kPhoneHubCameraRoll = 10,
-    kMaxValue = kPhoneHubCameraRoll,
+    kDriveSuggestion = 11,
+    kLocalSuggestion = 12,
+    kMaxValue = kLocalSuggestion,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;
@@ -117,6 +119,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownload(HoldingSpaceItem::Type type);
+
+  // Returns `true` if `type` is a suggestion type, `false` otherwise.
+  static bool IsSuggestion(HoldingSpaceItem::Type type);
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
