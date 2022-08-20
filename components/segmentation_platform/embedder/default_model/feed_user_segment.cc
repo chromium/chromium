@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -17,6 +16,39 @@
 namespace segmentation_platform {
 
 namespace {
+
+// List of sub-segments for Feed segment.
+enum class FeedUserSubsegment {
+  kUnknown = 0,
+  kOther = 1,
+
+  // Legacy groups, split into feed engagement types below.
+  kDeprecatedActiveOnFeedOnly = 2,
+  kDeprecatedActiveOnFeedAndNtpFeatures = 3,
+
+  // Recorded when no feed usage was observed.
+  kNoFeedAndNtpFeatures = 4,
+  kMvtOnly = 5,
+  kReturnToCurrentTabOnly = 6,
+  kUsedNtpWithoutModules = 7,
+  kNoNTPOrHomeOpened = 8,
+
+  // Cut-off after which the model returns Feed user as final segment.
+
+  // Feed engagement combined with NTP features.
+  kNtpAndFeedEngaged = 9,
+  kNtpAndFeedEngagedSimple = 10,
+  kNtpAndFeedScrolled = 11,
+  kNtpAndFeedInteracted = 12,
+  kNoNtpAndFeedEngaged = 13,
+  kNoNtpAndFeedEngagedSimple = 14,
+  kNoNtpAndFeedScrolled = 15,
+  kNoNtpAndFeedInteracted = 16,
+  kMaxValue = kNoNtpAndFeedInteracted
+};
+
+#define RANK(x) static_cast<int>(x)
+
 using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
@@ -30,32 +62,12 @@ constexpr int64_t kFeedUserResultTTL = 1;
 
 // Discrete mapping parameters.
 constexpr char kFeedUserDiscreteMappingKey[] = "feed_user_segment";
-constexpr float kFeedUserDiscreteMappingMinResult = 0.8;
+// All values greater than or equal to kNtpAndFeedEngaged will map to true.
+constexpr float kFeedUserDiscreteMappingMinResult =
+    RANK(FeedUserSubsegment::kNtpAndFeedEngaged);
 constexpr int64_t kFeedUserDiscreteMappingRank = 1;
 constexpr std::pair<float, int> kDiscreteMappings[] = {
     {kFeedUserDiscreteMappingMinResult, kFeedUserDiscreteMappingRank}};
-
-#define RANK(x) static_cast<int>(FeedUserSubsegment::x)
-
-static constexpr std::array<std::pair<float, /*FeedUserSubsegment*/ int>, 16>
-    kFeedUserScoreToSubGroup = {{
-        {1.0, RANK(kDeprecatedActiveOnFeedOnly)},
-        {0.98, RANK(kNtpAndFeedEngaged)},
-        {0.96, RANK(kNtpAndFeedEngagedSimple)},
-        {0.94, RANK(kNtpAndFeedScrolled)},
-        {0.92, RANK(kNtpAndFeedInteracted)},
-        {0.90, RANK(kNoNtpAndFeedEngaged)},
-        {0.88, RANK(kNoNtpAndFeedEngagedSimple)},
-        {0.86, RANK(kNoNtpAndFeedScrolled)},
-        {0.84, RANK(kNoNtpAndFeedInteracted)},
-        {0.8, RANK(kDeprecatedActiveOnFeedAndNtpFeatures)},
-        {0.7, RANK(kNoFeedAndNtpFeatures)},
-        {0.5, RANK(kMvtOnly)},
-        {0.4, RANK(kReturnToCurrentTabOnly)},
-        {0.2, RANK(kUsedNtpWithoutModules)},
-        {0.1, RANK(kNoNTPOrHomeOpened)},
-        {0.0, RANK(kUnknown)},
-    }};
 
 // InputFeatures.
 
@@ -95,16 +107,6 @@ constexpr std::array<MetadataWriter::UMAFeature, 11> kFeedUserUMAFeatures = {
         kFeedEngagementScrolled.data(),
         kFeedEngagementScrolled.size()),
 };
-
-float GetScoreForSubsegment(FeedUserSubsegment subgroup) {
-  for (const auto& score_and_type : kFeedUserScoreToSubGroup) {
-    if (score_and_type.second == static_cast<int>(subgroup)) {
-      return score_and_type.first;
-    }
-  }
-  NOTREACHED();
-  return 0;
-}
 
 // Any updates to these strings need to also update the field trials allowlist
 // in go/segmentation-field-trials-map.
@@ -153,8 +155,8 @@ FeedUserSegment::FeedUserSegment() : ModelProvider(kFeedUserSegmentId) {}
 
 absl::optional<std::string> FeedUserSegment::GetSubsegmentName(
     int subsegment_rank) {
-  DCHECK(RANK(kUnknown) <= subsegment_rank &&
-         subsegment_rank <= RANK(kMaxValue));
+  DCHECK(RANK(FeedUserSubsegment::kUnknown) <= subsegment_rank &&
+         subsegment_rank <= RANK(FeedUserSubsegment::kMaxValue));
   FeedUserSubsegment subgroup =
       static_cast<FeedUserSubsegment>(subsegment_rank);
   return FeedUserSubsegmentToString(subgroup);
@@ -173,10 +175,14 @@ void FeedUserSegment::InitAndFetchModel(
                                    kDiscreteMappings, 1);
 
   // Add subsegment mapping.
+  std::vector<std::pair<float, int>> subsegment_mapping;
+  for (unsigned i = 1; i <= RANK(FeedUserSubsegment::kMaxValue); ++i) {
+    subsegment_mapping.emplace_back(i, i);
+  }
   writer.AddDiscreteMappingEntries(
       base::StrCat(
           {kFeedUserDiscreteMappingKey, kSubsegmentDiscreteMappingSuffix}),
-      kFeedUserScoreToSubGroup.data(), kFeedUserScoreToSubGroup.size());
+      subsegment_mapping.data(), subsegment_mapping.size());
 
   // Set features.
   writer.AddUmaFeatures(kFeedUserUMAFeatures.data(),
@@ -236,7 +242,7 @@ void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
     segment = segment = FeedUserSubsegment::kNoNTPOrHomeOpened;
   }
 
-  float result = GetScoreForSubsegment(segment);
+  float result = RANK(segment);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
