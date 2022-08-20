@@ -76,6 +76,10 @@ class DesktopMediaPicker {
     // policies that may restrict the available choices, and a suitable warning
     // should be shown to the user.
     bool restricted_by_policy = false;
+    // Indicate which display surface should be most prominently offered in the
+    // picker.
+    blink::mojom::PreferredDisplaySurface preferred_display_surface =
+        blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
   };
 
   // Creates a picker dialog/confirmation box depending on the value of

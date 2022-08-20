@@ -88,6 +88,15 @@ enum MediaStreamStateChange {
   PAUSE,
 };
 
+// Type of preferred display surface to indicate which display surface type
+// (screen, windows, or tabs) should be most prominently offered to the user.
+enum PreferredDisplaySurface {
+  NO_PREFERENCE,
+  MONITOR,
+  WINDOW,
+  BROWSER,
+};
+
 // See MediaStreamDispatcherHost below for information.
 struct StreamSelectionInfo {
   StreamSelectionStrategy strategy;
@@ -126,6 +135,7 @@ struct StreamControls {
   bool exclude_self_browser_surface;
   bool request_pan_tilt_zoom_permission;
   bool request_all_screens;
+  PreferredDisplaySurface preferred_display_surface;
 };
 
 // Results returned by a successful GetOpenDevice call.

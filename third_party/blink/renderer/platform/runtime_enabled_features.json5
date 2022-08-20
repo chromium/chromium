@@ -864,6 +864,15 @@
       settable_from_internals: true,
     },
     {
+      // When a Web application calls getDisplayMedia() and asks for video,
+      // allow a hint to be provided as to whether it prefers that a
+      // certain surface type be more prominently offered to the user.
+      //
+      // https://github.com/w3c/mediacapture-screen-share/pull/186/files
+      name: "DisplaySurfaceConstraint",
+      status: "stable",
+    },
+    {
       name: "DocumentCookie",
     },
     {

@@ -702,6 +702,14 @@ bool ValidateAndCopyConstraintSet(
     CopyBooleanOrDoubleConstraint(constraints_in->zoom(), naked_treatment,
                                   constraint_buffer.zoom);
   }
+  if (constraints_in->hasDisplaySurface()) {
+    if (!ValidateAndCopyStringConstraint(
+            constraints_in->displaySurface(), naked_treatment,
+            constraint_buffer.display_surface, error_state)) {
+      DCHECK(error_state.HadException());
+      return false;
+    }
+  }
   return true;
 }
 

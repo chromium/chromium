@@ -105,6 +105,11 @@ void DesktopMediaPickerViewsTestApi::SelectTabForSourceType(
   }
 }
 
+DesktopMediaList::Type
+DesktopMediaPickerViewsTestApi::GetSelectedSourceListType() const {
+  return picker_->dialog_->GetSelectedSourceListType();
+}
+
 absl::optional<int> DesktopMediaPickerViewsTestApi::GetSelectedSourceId()
     const {
   DesktopMediaListController* controller =

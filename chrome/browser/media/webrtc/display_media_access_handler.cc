@@ -354,6 +354,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       pending_request.request.exclude_system_audio;
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
+  picker_params.preferred_display_surface =
+      pending_request.request.preferred_display_surface;
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }

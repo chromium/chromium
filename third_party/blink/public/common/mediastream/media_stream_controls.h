@@ -58,6 +58,8 @@ struct BLINK_COMMON_EXPORT StreamControls {
   bool exclude_self_browser_surface = false;
   bool request_pan_tilt_zoom_permission = false;
   bool request_all_screens = false;
+  mojom::PreferredDisplaySurface preferred_display_surface =
+      mojom::PreferredDisplaySurface::NO_PREFERENCE;
 };
 
 }  // namespace blink

@@ -248,6 +248,7 @@ struct MediaTrackConstraintSetPlatform {
   DoubleConstraint tilt;
   DoubleConstraint zoom;
   StringConstraint group_id;
+  StringConstraint display_surface;
   // Constraints not exposed in Blink at the moment, only through
   // the legacy name interface.
   StringConstraint media_stream_source;  // tab, screen, desktop, system

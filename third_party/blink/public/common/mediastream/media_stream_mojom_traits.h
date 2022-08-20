@@ -122,6 +122,11 @@ struct BLINK_COMMON_EXPORT
     return controls.request_all_screens;
   }
 
+  static blink::mojom::PreferredDisplaySurface preferred_display_surface(
+      const blink::StreamControls& controls) {
+    return controls.preferred_display_surface;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };

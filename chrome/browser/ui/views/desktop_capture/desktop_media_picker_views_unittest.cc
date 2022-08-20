@@ -58,13 +58,13 @@ class TestDialogObserver : public DesktopMediaPickerManager::DialogObserver {
 
 std::vector<DesktopMediaList::Type> GetSourceTypes(
     bool should_prefer_current_tab) {
-  std::vector<DesktopMediaList::Type> result{
-      DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
-      DesktopMediaList::Type::kWebContents};
   if (should_prefer_current_tab) {
-    result.push_back(DesktopMediaList::Type::kCurrentTab);
+    return {DesktopMediaList::Type::kCurrentTab,
+            DesktopMediaList::Type::kWebContents,
+            DesktopMediaList::Type::kWindow, DesktopMediaList::Type::kScreen};
   }
-  return result;
+  return {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
+          DesktopMediaList::Type::kWebContents};
 }
 
 DesktopMediaID::Type GetSourceIdType(DesktopMediaList::Type type) {
@@ -99,6 +99,10 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
         switches::kDisableModalAnimations);
 #endif
     DesktopMediaPickerManager::Get()->AddObserver(&observer_);
+    MaybeCreatePickerViews();
+  }
+
+  virtual void MaybeCreatePickerViews() {
     CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false);
   }
 
@@ -109,7 +113,11 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     DesktopMediaPickerManager::Get()->RemoveObserver(&observer_);
   }
 
-  void CreatePickerViews(bool request_audio, bool exclude_system_audio) {
+  void CreatePickerViews(
+      bool request_audio,
+      bool exclude_system_audio,
+      blink::mojom::PreferredDisplaySurface preferred_display_surface =
+          blink::mojom::PreferredDisplaySurface::NO_PREFERENCE) {
     widget_destroyed_waiter_.reset();
     picker_views_.reset();
 
@@ -126,6 +134,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     picker_params.target_name = kAppName;
     picker_params.request_audio = request_audio;
     picker_params.exclude_system_audio = exclude_system_audio;
+    picker_params.preferred_display_surface = preferred_display_surface;
 
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
     for (auto type : source_types_) {
@@ -492,16 +501,20 @@ TEST_P(DesktopMediaPickerViewsTest, DoneWithAudioShare) {
 }
 
 TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
-  constexpr DesktopMediaID kFakeId(DesktopMediaID::TYPE_SCREEN, 222);
+  DesktopMediaID fake_id(DesktopMediaID::TYPE_SCREEN, 222);
 
   media_lists_[DesktopMediaList::Type::kWindow]->AddSourceByFullMediaID(
-      kFakeId);
+      fake_id);
+  if (PreferCurrentTab()) {
+    fake_id.web_contents_id.disable_local_echo = true;
+    fake_id.audio_share = true;
+  }
 
   EXPECT_FALSE(
       GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
-  GetPickerDialogView()->AcceptSpecificSource(kFakeId);
-  EXPECT_EQ(kFakeId, WaitForPickerDone());
+  GetPickerDialogView()->AcceptSpecificSource(fake_id);
+  EXPECT_EQ(fake_id, WaitForPickerDone());
 }
 
 class DesktopMediaPickerViewsSystemAudioTest
@@ -512,14 +525,7 @@ class DesktopMediaPickerViewsSystemAudioTest
             GetSourceTypes(/*should_prefer_current_tab=*/false)) {}
   ~DesktopMediaPickerViewsSystemAudioTest() override = default;
 
-  void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    // These tests create actual child Widgets, which normally have a closure
-    // animation on Mac; inhibit it here to avoid the tests flakily hanging.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableModalAnimations);
-#endif
-    DesktopMediaPickerManager::Get()->AddObserver(&observer_);
+  void MaybeCreatePickerViews() override {
     // CreatePickerViews() called  directly from tests.
   }
 };
@@ -637,5 +643,61 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
   test_api_.PressKeyOnSourceAtIndex(
       0, ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0));
 }
+
+using PreferredDisplaySurfaceTestData =
+    std::tuple<bool, blink::mojom::PreferredDisplaySurface>;
+
+class DesktopMediaPickerPreferredDisplaySurfaceTest
+    : public DesktopMediaPickerViewsTestBase,
+      public testing::WithParamInterface<PreferredDisplaySurfaceTestData> {
+ public:
+  DesktopMediaPickerPreferredDisplaySurfaceTest()
+      : DesktopMediaPickerViewsTestBase(GetSourceTypes(PreferCurrentTab())) {}
+
+  void MaybeCreatePickerViews() override {
+    CreatePickerViews(/*request_audio=*/true, /*exclude_system_audio=*/false,
+                      PreferredDisplaySurface());
+  }
+
+  bool PreferCurrentTab() const { return std::get<0>(GetParam()); }
+
+  blink::mojom::PreferredDisplaySurface PreferredDisplaySurface() const {
+    return std::get<1>(GetParam());
+  }
+};
+
+TEST_P(DesktopMediaPickerPreferredDisplaySurfaceTest,
+       SelectedTabMatchesPreferredDisplaySurface) {
+  switch (PreferredDisplaySurface()) {
+    case blink::mojom::PreferredDisplaySurface::NO_PREFERENCE:
+      EXPECT_EQ(test_api_.GetSelectedSourceListType(),
+                PreferCurrentTab() ? DesktopMediaList::Type::kCurrentTab
+                                   : DesktopMediaList::Type::kScreen);
+      break;
+    case blink::mojom::PreferredDisplaySurface::MONITOR:
+      EXPECT_EQ(test_api_.GetSelectedSourceListType(),
+                DesktopMediaList::Type::kScreen);
+      break;
+    case blink::mojom::PreferredDisplaySurface::WINDOW:
+      EXPECT_EQ(test_api_.GetSelectedSourceListType(),
+                DesktopMediaList::Type::kWindow);
+      break;
+    case blink::mojom::PreferredDisplaySurface::BROWSER:
+      EXPECT_EQ(test_api_.GetSelectedSourceListType(),
+                PreferCurrentTab() ? DesktopMediaList::Type::kCurrentTab
+                                   : DesktopMediaList::Type::kWebContents);
+      break;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesktopMediaPickerPreferredDisplaySurfaceTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(blink::mojom::PreferredDisplaySurface::NO_PREFERENCE,
+                        blink::mojom::PreferredDisplaySurface::MONITOR,
+                        blink::mojom::PreferredDisplaySurface::WINDOW,
+                        blink::mojom::PreferredDisplaySurface::BROWSER)));
 
 }  // namespace views

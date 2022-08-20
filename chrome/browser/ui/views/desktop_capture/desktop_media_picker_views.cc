@@ -236,6 +236,23 @@ std::unique_ptr<views::View> CreatePolicyRestrictedView() {
   return policy_view;
 }
 
+bool ShouldSelectTab(DesktopMediaList::Type type,
+                     blink::mojom::PreferredDisplaySurface display_surface) {
+  switch (type) {
+    case DesktopMediaList::Type::kNone:
+      break;
+    case DesktopMediaList::Type::kScreen:
+      return display_surface == blink::mojom::PreferredDisplaySurface::MONITOR;
+    case DesktopMediaList::Type::kWindow:
+      return display_surface == blink::mojom::PreferredDisplaySurface::WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      return display_surface == blink::mojom::PreferredDisplaySurface::BROWSER;
+  }
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace
 
 bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
@@ -454,8 +471,16 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   if (panes.size() > 1) {
     auto tabbed_pane = std::make_unique<views::TabbedPane>();
-    for (auto& pane : panes)
+    for (auto& pane : panes) {
       tabbed_pane->AddTab(pane.first, std::move(pane.second));
+    }
+    for (size_t i = 0; i < categories_.size(); i++) {
+      if (ShouldSelectTab(categories_[i].type,
+                          params.preferred_display_surface)) {
+        tabbed_pane->SelectTabAt(i, /*animate=*/false);
+        break;
+      }
+    }
     tabbed_pane->set_listener(this);
     tabbed_pane->SetFocusBehavior(views::View::FocusBehavior::NEVER);
     tabbed_pane_ = AddChildView(std::move(tabbed_pane));

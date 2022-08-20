@@ -90,6 +90,12 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // tabs offered to the user.
   bool exclude_self_browser_surface = false;
 
+  // Flag to indicate a preference for which display surface type (screen,
+  // windows, or tabs) should be most prominently offered to the user. The
+  // browser may disregard this preference.
+  blink::mojom::PreferredDisplaySurface preferred_display_surface =
+      blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
+
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
 };

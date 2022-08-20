@@ -73,6 +73,7 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->request_pan_tilt_zoom_permission =
       input.request_pan_tilt_zoom_permission();
   out->request_all_screens = input.request_all_screens();
+  out->preferred_display_surface = input.preferred_display_surface();
   return true;
 }
 

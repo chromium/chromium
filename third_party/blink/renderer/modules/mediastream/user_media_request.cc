@@ -321,6 +321,8 @@ UserMediaRequest* UserMediaRequest::Create(
   if (error_state.HadException())
     return nullptr;
 
+  std::string display_surface_constraint;
+
   if (media_type == UserMediaRequestType::kUserMedia && !video.IsNull()) {
     if (video.Basic().pan.HasMandatory()) {
       error_state.ThrowTypeError("Mandatory pan constraint is not supported");
@@ -388,6 +390,11 @@ UserMediaRequest* UserMediaRequest::Create(
       if (error_state.HadException())
         return nullptr;
     }
+    if (video.Basic().display_surface.HasIdeal() &&
+        video.Basic().display_surface.Ideal().size() > 0) {
+      display_surface_constraint =
+          video.Basic().display_surface.Ideal()[0].Utf8();
+    }
   }
 
   if (audio.IsNull() && video.IsNull()) {
@@ -417,6 +424,17 @@ UserMediaRequest* UserMediaRequest::Create(
       options->hasSelfBrowserSurface() &&
       options->selfBrowserSurface().AsEnum() ==
           V8SelfCapturePreferenceEnum::Enum::kExclude);
+
+  mojom::blink::PreferredDisplaySurface preferred_display_surface =
+      mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
+  if (display_surface_constraint == "monitor") {
+    preferred_display_surface = mojom::blink::PreferredDisplaySurface::MONITOR;
+  } else if (display_surface_constraint == "window") {
+    preferred_display_surface = mojom::blink::PreferredDisplaySurface::WINDOW;
+  } else if (display_surface_constraint == "browser") {
+    preferred_display_surface = mojom::blink::PreferredDisplaySurface::BROWSER;
+  }
+  result->set_preferred_display_surface(preferred_display_surface);
 
   return result;
 }

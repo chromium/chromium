@@ -44,6 +44,7 @@ class DesktopMediaPickerViewsTestApi {
   bool HasSourceAtIndex(size_t index) const;
   void FocusSourceAtIndex(size_t index, bool select = true);
   void DoubleTapSourceAtIndex(size_t index);
+  DesktopMediaList::Type GetSelectedSourceListType() const;
   absl::optional<int> GetSelectedSourceId() const;
   views::View* GetSelectedListView();
 

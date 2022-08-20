@@ -845,6 +845,9 @@ void UserMediaProcessor::SetupVideoInput() {
   stream_controls->exclude_self_browser_surface =
       request->exclude_self_browser_surface();
 
+  stream_controls->preferred_display_surface =
+      request->preferred_display_surface();
+
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
         WTF::Bind(&UserMediaProcessor::SelectVideoDeviceSettings,

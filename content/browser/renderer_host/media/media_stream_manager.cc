@@ -773,6 +773,7 @@ class MediaStreamManager::DeviceRequest {
     ui_request_->exclude_system_audio = controls.exclude_system_audio;
     ui_request_->exclude_self_browser_surface =
         controls.exclude_self_browser_surface;
+    ui_request_->preferred_display_surface = controls.preferred_display_surface;
   }
 
   // Creates a tab capture specific MediaStreamRequest object that is used by
