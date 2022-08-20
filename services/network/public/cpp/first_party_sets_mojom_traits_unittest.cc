@@ -25,6 +25,16 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_SiteIndex) {
   EXPECT_EQ(original, round_tripped);
 }
 
+TEST(FirstPartySetsTraitsTest, Roundtrips_SiteType) {
+  for (net::SiteType site_type :
+       {net::SiteType::kPrimary, net::SiteType::kAssociated}) {
+    net::SiteType roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SiteType>(
+        site_type, roundtrip));
+    EXPECT_EQ(site_type, roundtrip);
+  }
+}
+
 TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetEntry) {
   net::SchemefulSite primary(GURL("https://primary.test"));
 

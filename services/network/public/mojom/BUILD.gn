@@ -756,8 +756,25 @@ mojom("mojom_first_party_sets") {
               cpp = "::net::FirstPartySetEntry::SiteIndex"
             },
             {
+              mojom = "network.mojom.SiteType"
+              cpp = "::net::SiteType"
+            },
+            {
               mojom = "network.mojom.FirstPartySetEntry"
               cpp = "::net::FirstPartySetEntry"
+            },
+            {
+              mojom = "network.mojom.SamePartyCookieContextType"
+              cpp = "::net::SamePartyContext::Type"
+            },
+            {
+              mojom = "network.mojom.SamePartyContext"
+              cpp = "::net::SamePartyContext"
+            },
+            {
+              mojom = "network.mojom.FirstPartySetMetadata"
+              cpp = "::net::FirstPartySetMetadata"
+              move_only = true
             },
           ]
           traits_headers = [
@@ -899,11 +916,6 @@ mojom("cookies_mojom") {
         {
           mojom = "network.mojom.CookieSourceScheme"
           cpp = "::net::CookieSourceScheme"
-        },
-        {
-          mojom = "network.mojom.FirstPartySetMetadata"
-          cpp = "::net::FirstPartySetMetadata"
-          move_only = true
         },
       ]
       traits_headers =
