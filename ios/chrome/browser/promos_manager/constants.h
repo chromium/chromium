@@ -13,8 +13,14 @@ namespace promos_manager {
 // promos_manager::Promo `promo` isn't found in the impressions list.
 extern const int kLastSeenDayPromoNotFound;
 
+// The max number of days for impression history to be stored & maintained.
+extern const int kNumDaysImpressionHistoryStored;
+
 enum class Promo {
-  Test = 0,  // Test promo used for testing purposes (e.g. unit tests)
+  Test = 0,            // Test promo used for testing purposes (e.g. unit tests)
+  DefaultBrowser = 1,  // Fullscreen Default Browser Promo
+  AppStoreRating = 2,  // App Store Rating Prompt
+  CredentialProviderExtension = 3,  // Credential Provider Extension
 };
 
 typedef struct Impression {

@@ -5,8 +5,14 @@
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 
 #import <Foundation/Foundation.h>
+
+#import <algorithm>
+#import <iterator>
+#import <map>
+#import <numeric>
 #import <vector>
 
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/pref_names.h"
@@ -23,6 +29,12 @@ namespace {
 // Comparator for descending sort evaluation using std::is_sorted.
 bool Compare(promos_manager::Impression a, promos_manager::Impression b) {
   return a.day > b.day;
+}
+
+// The number of days since the Unix epoch; one day, in this context, runs
+// from UTC midnight to UTC midnight.
+int TodaysDay() {
+  return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
 }
 
 }  // namespace
@@ -57,7 +69,13 @@ void PromosManager::Init() {
 
 #pragma mark - Private
 
-NSArray<ImpressionLimit*>* GlobalImpressionLimits() {
+NSArray<ImpressionLimit*>* PromosManager::PromoImpressionLimits(
+    promos_manager::Promo promo) const {
+  // TODO(crbug.com/1354665): Return `promo`-specific limits.
+  return @[];
+}
+
+NSArray<ImpressionLimit*>* PromosManager::GlobalImpressionLimits() const {
   static NSArray<ImpressionLimit*>* limits;
   static dispatch_once_t onceToken;
 
@@ -72,7 +90,8 @@ NSArray<ImpressionLimit*>* GlobalImpressionLimits() {
   return limits;
 }
 
-NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits() {
+NSArray<ImpressionLimit*>* PromosManager::GlobalPerPromoImpressionLimits()
+    const {
   static NSArray<ImpressionLimit*>* limits;
   static dispatch_once_t onceToken;
 
@@ -102,4 +121,113 @@ int PromosManager::LastSeenDay(
   }
 
   return promos_manager::kLastSeenDayPromoNotFound;
+}
+
+bool PromosManager::AnyImpressionLimitTriggered(
+    int impression_count,
+    int window_days,
+    NSArray<ImpressionLimit*>* impression_limits) const {
+  for (ImpressionLimit* impression_limit in impression_limits) {
+    if (window_days < impression_limit.numDays &&
+        impression_count >= impression_limit.numImpressions)
+      return true;
+  }
+
+  return false;
+}
+
+bool PromosManager::CanShowPromo(
+    promos_manager::Promo promo,
+    const std::vector<promos_manager::Impression>& valid_impressions) const {
+  // Maintains a map ([promos_manager::Promo] : [current impression count]) for
+  // evaluating against GlobalImpressionLimits(),
+  // GlobalPerPromoImpressionLimits(), and, if defined, `promo`-specific
+  // impression limits
+  std::map<promos_manager::Promo, int> promo_impression_counts;
+
+  NSArray<ImpressionLimit*>* promo_impression_limits =
+      PromoImpressionLimits(promo);
+  NSArray<ImpressionLimit*>* global_per_promo_impression_limits =
+      GlobalPerPromoImpressionLimits();
+  NSArray<ImpressionLimit*>* global_impression_limits =
+      GlobalImpressionLimits();
+
+  int window_start = TodaysDay();
+  int window_end =
+      (window_start - promos_manager::kNumDaysImpressionHistoryStored) + 1;
+  size_t curr_impression_index = 0;
+
+  // Impression limits are defined by a certain number of impressions
+  // (int) within a certain window of days (int).
+  //
+  // This loop starts at TodaysDay() (today) and grows a window, day-by-day, to
+  // check against different impression limits.
+  //
+  // Depending on the size of the window, impression limits may become valid or
+  // invalid. For example, if the window covers 7 days, an impression limit of
+  // 2-day scope is no longer valid. However, if window covered 1-2 days, an
+  // impression limit of 2-day scope is valid.
+  for (int curr_day = window_start; curr_day >= window_end; --curr_day) {
+    if (curr_impression_index < valid_impressions.size()) {
+      promos_manager::Impression curr_impression =
+          valid_impressions[curr_impression_index];
+      // If the current impression matches the current day, add it to
+      // `promo_impression_counts`.
+      if (curr_impression.day == curr_day) {
+        promo_impression_counts[curr_impression.promo]++;
+        curr_impression_index++;
+      } else {
+        // Only check impression limits when counts are incremented: if an
+        // impression limit were to be triggered below - but counts weren't
+        // incremented above - it wouldve've already been triggered in a
+        // previous loop run.
+        continue;
+      }
+    }
+
+    int window_days = window_start - curr_day;
+    int promo_impression_count = promo_impression_counts[promo];
+    int most_seen_promo_impression_count =
+        MaxImpressionCount(promo_impression_counts);
+    int total_impression_count = TotalImpressionCount(promo_impression_counts);
+
+    if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
+                                    promo_impression_limits) ||
+        AnyImpressionLimitTriggered(most_seen_promo_impression_count,
+                                    window_days,
+                                    global_per_promo_impression_limits) ||
+        AnyImpressionLimitTriggered(total_impression_count, window_days,
+                                    global_impression_limits))
+      return false;
+  }
+
+  return true;
+}
+
+std::vector<int> PromosManager::ImpressionCounts(
+    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
+  std::vector<int> counts;
+
+  for (const auto& [promo, count] : promo_impression_counts)
+    counts.push_back(count);
+
+  return counts;
+}
+
+int PromosManager::MaxImpressionCount(
+    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
+  std::vector<int> counts = ImpressionCounts(promo_impression_counts);
+  std::vector<int>::iterator max_count_iter =
+      std::max_element(counts.begin(), counts.end());
+  size_t index = std::distance(counts.begin(), max_count_iter);
+  if (index < counts.size())
+    return counts[index];
+  return 0;
+}
+
+int PromosManager::TotalImpressionCount(
+    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
+  std::vector<int> counts = ImpressionCounts(promo_impression_counts);
+
+  return std::accumulate(counts.begin(), counts.end(), 0);
 }

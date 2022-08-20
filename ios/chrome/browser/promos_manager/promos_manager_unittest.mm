@@ -21,6 +21,16 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// The number of days since the Unix epoch; one day, in this context, runs
+// from UTC midnight to UTC midnight.
+int TodaysDay() {
+  return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+}
+
+}  // namespace
+
 PromosManagerTest::PromosManagerTest() {
   scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
 }
@@ -143,4 +153,164 @@ TEST_F(PromosManagerTest, ReturnsSentinelForNonExistentPromo) {
   EXPECT_EQ(
       promos_manager_->LastSeenDay(promos_manager::Promo::Test, impressions),
       promos_manager::kLastSeenDayPromoNotFound);
+}
+
+// Tests PromosManager::ImpressionCounts() correctly returns a counts list from
+// an impression counts map.
+TEST_F(PromosManagerTest, ReturnsImpressionCounts) {
+  std::map<promos_manager::Promo, int> promo_impression_counts = {
+      {promos_manager::Promo::Test, 3},
+      {promos_manager::Promo::AppStoreRating, 1},
+      {promos_manager::Promo::CredentialProviderExtension, 6},
+      {promos_manager::Promo::DefaultBrowser, 5},
+  };
+
+  std::vector<int> counts = {3, 5, 1, 6};
+
+  EXPECT_EQ(promos_manager_->ImpressionCounts(promo_impression_counts), counts);
+}
+
+// Tests PromosManager::ImpressionCounts() correctly returns an empty counts
+// list for an empty impression counts map.
+TEST_F(PromosManagerTest, ReturnsEmptyImpressionCounts) {
+  std::map<promos_manager::Promo, int> promo_impression_counts;
+  std::vector<int> counts;
+
+  EXPECT_EQ(promos_manager_->ImpressionCounts(promo_impression_counts), counts);
+}
+
+// Tests PromosManager::TotalImpressionCount() correctly adds the counts of
+// different promos from an impression counts map.
+TEST_F(PromosManagerTest, ReturnsTotalImpressionCount) {
+  std::map<promos_manager::Promo, int> promo_impression_counts = {
+      {promos_manager::Promo::Test, 3},
+      {promos_manager::Promo::AppStoreRating, 1},
+      {promos_manager::Promo::CredentialProviderExtension, 6},
+      {promos_manager::Promo::DefaultBrowser, 5},
+
+  };
+
+  EXPECT_EQ(promos_manager_->TotalImpressionCount(promo_impression_counts), 15);
+}
+
+// Tests PromosManager::TotalImpressionCount() returns zero for an empty
+// impression counts map.
+TEST_F(PromosManagerTest, ReturnsZeroForTotalImpressionCount) {
+  std::map<promos_manager::Promo, int> promo_impression_counts;
+
+  EXPECT_EQ(promos_manager_->TotalImpressionCount(promo_impression_counts), 0);
+}
+
+// Tests PromosManager::MaxImpressionCount() correctly returns the max
+// impression count from an impression counts map.
+TEST_F(PromosManagerTest, ReturnsMaxImpressionCount) {
+  std::map<promos_manager::Promo, int> promo_impression_counts = {
+      {promos_manager::Promo::Test, 3},
+      {promos_manager::Promo::AppStoreRating, 1},
+      {promos_manager::Promo::CredentialProviderExtension, 6},
+      {promos_manager::Promo::DefaultBrowser, 5},
+  };
+
+  EXPECT_EQ(promos_manager_->MaxImpressionCount(promo_impression_counts), 6);
+}
+
+// Tests PromosManager::MaxImpressionCount() correctly returns zero for an empty
+// impression counts map.
+TEST_F(PromosManagerTest, ReturnsZeroForMaxImpressionCount) {
+  std::map<promos_manager::Promo, int> promo_impression_counts;
+
+  EXPECT_EQ(promos_manager_->MaxImpressionCount(promo_impression_counts), 0);
+}
+
+// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
+// impression limit is triggered.
+TEST_F(PromosManagerTest, DetectsSingleImpressionLimitTriggered) {
+  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
+                                                               forNumDays:7];
+  NSArray<ImpressionLimit*>* limits = @[
+    thricePerWeek,
+  ];
+
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(3, 1, limits), true);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(4, 5, limits), true);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(4, 6, limits), true);
+  // This is technically the 8th day, so it's the start of a new week, and
+  // doesn't hit the limit.
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(3, 7, limits), false);
+}
+
+// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
+// impression limit is triggered over multiple impression limits.
+TEST_F(PromosManagerTest, DetectsOneOfMultipleImpressionLimitsTriggered) {
+  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
+                                                                  forNumDays:2];
+  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
+                                                               forNumDays:7];
+  NSArray<ImpressionLimit*>* limits = @[
+    thricePerWeek,
+    onceEveryTwoDays,
+  ];
+
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 1, limits), true);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 2, limits), false);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 2, limits), false);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 4, limits), false);
+}
+
+// Tests PromosManager::AnyImpressionLimitTriggered() correctly detects no
+// impression limits are triggered.
+TEST_F(PromosManagerTest, DetectsNoImpressionLimitTriggered) {
+  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
+                                                                  forNumDays:2];
+  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
+                                                               forNumDays:7];
+  NSArray<ImpressionLimit*>* limits = @[ onceEveryTwoDays, thricePerWeek ];
+
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 1, nil), false);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(0, 3, limits), false);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(1, 5, limits), false);
+  EXPECT_EQ(promos_manager_->AnyImpressionLimitTriggered(2, 5, limits), false);
+}
+
+// Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
+// because it hasn't met any impression limits.
+TEST_F(PromosManagerTest, DecidesCanShowPromo) {
+  const std::vector<promos_manager::Impression> zeroImpressions = {};
+  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::Test,
+                                          zeroImpressions),
+            true);
+}
+
+// Tests PromosManager::CanShowPromo() correctly denies promos from being shown
+// as they've triggered impression limits.
+TEST_F(PromosManagerTest, DecidesCannotShowPromo) {
+  int today = TodaysDay();
+
+  const std::vector<promos_manager::Impression> impressions = {
+      promos_manager::Impression(promos_manager::Promo::Test, today),
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
+                                 today - 7),
+      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
+                                 today - 14),
+      promos_manager::Impression(
+          promos_manager::Promo::CredentialProviderExtension, today - 180),
+  };
+
+  // False because triggers no more than 1 impression per month global
+  // impression limit.
+  EXPECT_EQ(
+      promos_manager_->CanShowPromo(promos_manager::Promo::Test, impressions),
+      false);
+  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::DefaultBrowser,
+                                          impressions),
+            false);
+  EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::AppStoreRating,
+                                          impressions),
+            false);
+  // False because an impression has already been shown this month, even though
+  // it's not the CredentialProviderExtension promo.
+  EXPECT_EQ(
+      promos_manager_->CanShowPromo(
+          promos_manager::Promo::CredentialProviderExtension, impressions),
+      false);
 }

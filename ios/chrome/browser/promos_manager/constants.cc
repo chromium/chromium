@@ -9,12 +9,19 @@
 namespace promos_manager {
 
 const int kLastSeenDayPromoNotFound = -1;
+const int kNumDaysImpressionHistoryStored = 365;
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 Promo PromoForName(std::string promo) {
   if (promo == "promos_manager::Promo::Test") {
     return promos_manager::Promo::Test;
+  } else if (promo == "promos_manager::Promo::DefaultBrowser") {
+    return promos_manager::Promo::DefaultBrowser;
+  } else if (promo == "promos_manager::Promo::AppStoreRating") {
+    return promos_manager::Promo::AppStoreRating;
+  } else if (promo == "promos_manager::Promo::CredentialProviderExtension") {
+    return promos_manager::Promo::CredentialProviderExtension;
   } else {
     NOTREACHED();
 
@@ -28,6 +35,12 @@ std::string NameForPromo(Promo promo) {
   switch (promo) {
     case promos_manager::Promo::Test:
       return "promos_manager::Promo::Test";
+    case promos_manager::Promo::DefaultBrowser:
+      return "promos_manager::Promo::DefaultBrowser";
+    case promos_manager::Promo::AppStoreRating:
+      return "promos_manager::Promo::AppStoreRating";
+    case promos_manager::Promo::CredentialProviderExtension:
+      return "promos_manager::Promo::CredentialProviderExtension";
   }
 }
 
