@@ -667,7 +667,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1621984899599015181">Jagamisvalikuid haldab teie organisatsioon. Mõni üksus võib olla peidetud.</translation>
 <translation id="1622054403950683339">WiFi-võrgu unustamine</translation>
 <translation id="1623723619460186680">Sinise valguse vähendamine</translation>
-<translation id="1624012933569991823">Seaded</translation>
 <translation id="1624599281783425761">Te ei näe enam kaupmeest <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">See fail on teie seadme jaoks liiga suur. Proovige seda teises seadmes alla laadida</translation>
 <translation id="1627276047960621195">Faili deskriptorid</translation>
@@ -983,7 +982,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1897120393475391208">Kasutage tugevat parooli</translation>
 <translation id="1900305421498694955">Google Playst pärinevad rakendused võivad vajada täielikku juurdepääsu failisüsteemile, et välistelt salvestusseadmetelt faile lugeda ja neid sinna kirjutada. Selles seadmes loodud failid ja kaustad on nähtavad kõigile, kes välist ketast kasutavad. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Vali &amp;kõik</translation>
-<translation id="1901396183631570154">Chrome'il ei õnnestunud neid paroole teie Google'i kontole salvestada. Saate need siiski salvestada sellesse seadmesse.</translation>
 <translation id="1903995858055162096">Kas see pole teie seade? Kasutage <ph name="BEGIN_LINK" />külalisrežiimi<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Teie külastatavad URL-id salvestatakse teie Google'i kontole</translation>
 <translation id="1905375423839394163">Chromebooki seadme nimi</translation>
@@ -1621,7 +1619,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2476974672882258506">Tarkvara <ph name="PARALLELS_DESKTOP" /> desinstallimiseks lülitage Windows välja.</translation>
 <translation id="2477065602824695373">Kuna seadistasite mitu seadet, on automaatne skannimine välja lülitatud.</translation>
 <translation id="2478176599153288112">Meediafaili load laiendusele „<ph name="EXTENSION" />”</translation>
-<translation id="248003956660572823">Paroole ei salvestatud</translation>
 <translation id="2480868415629598489">Kopeeritud ja kleebitud andmete muutmine</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2482895651873876648">Vaheleht teisaldati gruppi <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1983,7 +1980,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2813094189969465044">Vanemlik järelevalve</translation>
 <translation id="281390819046738856">Taotlust ei saanud allkirjastada.</translation>
 <translation id="2814489978934728345">Peata selle lehekülje laadimine</translation>
-<translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Järjehoidjakaust</translation>
 <translation id="2816319641769218778">Paroolide salvestamiseks oma Google'i kontole lülitage sisse sünkroonimine.</translation>
 <translation id="2816628817680324566">Kas lubada sellel saidil teie turvavõti tuvastada?</translation>
@@ -4282,7 +4278,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5078638979202084724">Lisab kõik vahelehed järjehoidjatesse</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5079010647467150187">Sisseehitatud VPN-i lisamine …</translation>
-<translation id="5079950360618752063">Kasuta soovitatud parooli</translation>
 <translation id="508059534790499809">Kerberose pileti värskendamine</translation>
 <translation id="5084328598860513926">Ettevalmistamise voogu katkestati. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Värskenduste otsimine</translation>
@@ -4407,7 +4402,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5206215183583316675">Kas kustutada „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Viga sertifikaadi importimisel</translation>
 <translation id="5206562235913517859">Jaekaupluse ID on vormingus ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Ohustatud parooli muutmine õnnestus. Teil on veel # ohustatud parool. Chrome soovitab seda parooli kohe kontrollida.}other{Ohustatud parooli muutmine õnnestus. Teil on veel # ohustatud parooli. Chrome soovitab neid paroole kohe kontrollida.}}</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="520840839826327499">Teenus <ph name="SERVICE_NAME" /> soovib kontrollida, kas kasutate sobilikku Chrome OS-i seadet.</translation>
 <translation id="5208548918290612795">Teenuse <ph name="WEB_DRIVE" /> autentimismärgi salvestamine</translation>
@@ -6235,7 +6229,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6970861306198150268">Veenduge, et salvestaksite selle saidi jaoks praeguse parooli</translation>
 <translation id="6972180789171089114">Heli/video</translation>
 <translation id="6972754398087986839">Alustamine</translation>
-<translation id="6972887130317925583">Ohustatud parooli muutmine õnnestus. Paroole saate alati kontrollida menüüs <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Lubatud saata hüpikaknaid ja kasutada ümbersuunamisi</translation>
 <translation id="6973611239564315524">Uuendamine versioonile Debian 10 (Buster) on saadaval</translation>
 <translation id="69739764870135975">Kui Google on ka teie vaikeotsingumootor, näete paremaid, konteksti suhtes asjakohaseid soovitusi</translation>

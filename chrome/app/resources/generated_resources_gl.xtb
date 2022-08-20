@@ -663,7 +663,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1621984899599015181">A túa organización xestiona as opcións para compartir o contido. É posible que algúns elementos estean ocultos.</translation>
 <translation id="1622054403950683339">Esquecer rede wifi</translation>
 <translation id="1623723619460186680">Redución da luz azul</translation>
-<translation id="1624012933569991823">Configuración</translation>
 <translation id="1624599281783425761">Deixarás de ver o carro de <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Este ficheiro é demasiado grande para que o xestione o dispositivo. Tenta descargalo noutro dispositivo</translation>
 <translation id="1627276047960621195">Descritores de ficheiro</translation>
@@ -979,7 +978,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1897120393475391208">Usa este contrasinal seguro</translation>
 <translation id="1900305421498694955">As aplicacións de Google Play poden necesitar acceso total ao sistema de ficheiros para ler e editar ficheiros no almacenamento externo. Os ficheiros e os cartafoles creados no dispositivo son visibles para todos os usuarios da unidade externa. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar todo</translation>
-<translation id="1901396183631570154">Chrome non puido gardar estes contrasinais na túa Conta de Google. Así e todo, podes gardalos neste dispositivo.</translation>
 <translation id="1903995858055162096">Non é o teu dispositivo? Utiliza o <ph name="BEGIN_LINK" />modo de convidado<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
 <translation id="1905375423839394163">Nome do dispositivo Chromebook</translation>
@@ -1614,7 +1612,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, pecha Windows.</translation>
 <translation id="2477065602824695373">Como configuraches varios interruptores, desactivouse a función de exploración automática.</translation>
 <translation id="2478176599153288112">Permisos de ficheiros multimedia para "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Non se gardaron os contrasinais</translation>
 <translation id="2480868415629598489">Modificar os datos que copias e pegas</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2482895651873876648">A pestana moveuse ao grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
@@ -1976,7 +1973,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2813094189969465044">Controis parentais</translation>
 <translation id="281390819046738856">Non se puido asinar a solicitude.</translation>
 <translation id="2814489978934728345">Deixa de cargar esta páxina</translation>
-<translation id="281504910091592009">Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Cartafol de marcadores</translation>
 <translation id="2816319641769218778">Activa a sincronización para gardar contrasinais na túa Conta de Google.</translation>
 <translation id="2816628817680324566">Queres permitir que este sitio identifique a túa chave de seguranza?</translation>
@@ -4275,7 +4271,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5078638979202084724">Establecer todas as pestanas como marcadores</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5079010647467150187">Engadir VPN integrada…</translation>
-<translation id="5079950360618752063">Utilizar contrasinal suxerido</translation>
 <translation id="508059534790499809">Actualizar un tícket de Kerberos</translation>
 <translation id="5084328598860513926">Interrompeuse o fluxo de abastecemento. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Comprobando se hai actualizacións</translation>
@@ -4400,7 +4395,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5206215183583316675">Queres eliminar "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Produciuse un erro ao importar o certificado</translation>
 <translation id="5206562235913517859">O código de identificación da tenda retallista ten o formato ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Cambiouse correctamente o contrasinal vulnerado. Quédache # máis. Chrome recomenda comprobar este contrasinal agora.}other{Cambiouse correctamente o contrasinal vulnerado. Quédanche # máis. Chrome recomenda comprobar estes contrasinais agora.}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quere comprobar se usas un dispositivo Chrome OS compatible.</translation>
 <translation id="5208548918290612795">Almacenamento dun token de autenticación de <ph name="WEB_DRIVE" /></translation>
@@ -6225,7 +6219,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6970861306198150268">Asegúrate de gardar o teu contrasinal actual deste sitio</translation>
 <translation id="6972180789171089114">Audio/Vídeo</translation>
 <translation id="6972754398087986839">Introdución</translation>
-<translation id="6972887130317925583">Cambiouse correctamente o contrasinal vulnerado. Comproba os teus contrasinais cando queiras en <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Sitios que poden mostrar ventás emerxentes e usar redireccións</translation>
 <translation id="6973611239564315524">Está dispoñible unha actualización a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Se o teu motor de busca predeterminado tamén é Google, recibirás mellores suxestións que serán relevantes segundo o contexto</translation>

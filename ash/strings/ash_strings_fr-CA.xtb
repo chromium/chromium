@@ -671,6 +671,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="479989351350248267">chercher</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
+<translation id="481455355267255546">À venir</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
@@ -1013,6 +1014,7 @@ Nouvelle installation</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
+<translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
@@ -1261,6 +1263,7 @@ Nouvelle installation</translation>
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché sur une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise de courant. N'éteignez pas votre Chromebook.</translation>
 <translation id="8236042855478648955">C'est le moment de prendre une pause</translation>
+<translation id="8246282815785366524">Bon retour, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
 <translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>

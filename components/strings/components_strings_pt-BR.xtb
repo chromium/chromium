@@ -421,6 +421,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2040894699575719559">Acesso ao local bloqueado</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Faça login para usar as senhas salvas na sua Conta do Google</translation>
+<translation id="2048261947532620704">Traduzindo página</translation>
 <translation id="205212645995975601">Churrasco e grelhados</translation>
 <translation id="2053111141626950936">Páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}=1{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}one{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dia.}other{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
@@ -911,6 +912,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3427342743765426898">&amp;Refazer editar</translation>
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
+<translation id="3431216045099978607">Pressione |<ph name="ACCELERATOR" />| para sair da tela cheia e ver o download.</translation>
 <translation id="3431636764301398940">Salvar este cartão neste dispositivo</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -1939,6 +1941,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
+<translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6265794661083428563">Copiar o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Verde-água</translation>

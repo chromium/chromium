@@ -667,7 +667,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1621984899599015181">Organisaatiosi ylläpitää jakamisasetuksia. Osa kohteista on voitu piilottaa.</translation>
 <translation id="1622054403950683339">Unohda Wi-Fi-verkko</translation>
 <translation id="1623723619460186680">Sinisen valon vähennys</translation>
-<translation id="1624012933569991823">asetuksista</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> ei jatkossa enää näy</translation>
 <translation id="1624863973697515675">Laite ei voi käsitellä tätä tiedostoa, koska se on liian iso. Kokeile ladata se toiselle laitteella</translation>
 <translation id="1627276047960621195">Tiedostokuvaajat</translation>
@@ -991,7 +990,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1897120393475391208">Käytä vahvaa salasanaa</translation>
 <translation id="1900305421498694955">Google Playn sovellukset voivat edellyttää täysiä tiedostojärjestelmän käyttöoikeuksia, jotta ne voivat kirjoittaa ja lukea ulkoisten tallennustilalaitteiden tiedostoja. Kaikki ulkoisen aseman käyttäjät voivat nähdä laitteella luodut tiedostot ja kansiot. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Valitse &amp;kaikki</translation>
-<translation id="1901396183631570154">Chrome ei voinut tallentaa näitä salasanoja Google-tilillesi. Voit kuitenkin tallentaa ne laitteellesi.</translation>
 <translation id="1903995858055162096">Eikö tämä ole laitteesi? Käytä <ph name="BEGIN_LINK" />vierastilaa<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Avaamasi URL-osoitteet tallennetaan Google-tilillesi</translation>
 <translation id="1905375423839394163">Chromebook-laitteen nimi</translation>
@@ -1629,7 +1627,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2476974672882258506">Sammuta Windows, jotta <ph name="PARALLELS_DESKTOP" /> voidaan poistaa.</translation>
 <translation id="2477065602824695373">Koska olet ottanut käyttöön useita kytkimiä, automaattinen skannaus on laitettu pois päältä.</translation>
 <translation id="2478176599153288112">Mediatiedoston luvat laajennukselle <ph name="EXTENSION" /></translation>
-<translation id="248003956660572823">Salasanoja ei tallennettu</translation>
 <translation id="2480868415629598489">muokata kopioituja ja liitettyjä tietoja</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2482895651873876648">Välilehti siirretty ryhmään nimeltä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1991,7 +1988,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2813094189969465044">Lapsilukko</translation>
 <translation id="281390819046738856">Pyynnön allekirjoittaminen epäonnistui.</translation>
 <translation id="2814489978934728345">Pysäytä tämän sivun lataus</translation>
-<translation id="281504910091592009">Katso ja ylläpidä <ph name="BEGIN_LINK" />Google-tilille<ph name="END_LINK" /> tallennettuja salasanoja</translation>
 <translation id="2815693974042551705">Kirjanmerkkikansio</translation>
 <translation id="2816319641769218778">Jos haluat tallentaa salasanoja Google-tilillesi, ota synkronointi käyttöön.</translation>
 <translation id="2816628817680324566">Saako tämä sivusto tunnistaa suojausavaimesi?</translation>
@@ -4288,7 +4284,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5078638979202084724">Lisää kaikki välilehdet kirjanmerkkeihin</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5079010647467150187">Lisää sisäänrakennettu VPN…</translation>
-<translation id="5079950360618752063">Käytä salasanaehdotusta</translation>
 <translation id="508059534790499809">Päivitä Kerberos-tukipyyntö</translation>
 <translation id="5084328598860513926">Käyttäjien valinta keskeytyi. Yritä uudelleen tai ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Haetaan päivityksiä</translation>
@@ -4413,7 +4408,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5206215183583316675">Poistetaanko <ph name="CERTIFICATE_NAME" />?</translation>
 <translation id="520621735928254154">Varmenteen tuontivirhe</translation>
 <translation id="5206562235913517859">Jälleenmyyjän kauppatunnus on muodossa ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Vaarantunut salasana vaihdettu onnistuneesti. Sinulla on vielä # vaarantunut salasana. Chrome suosittelee tarkistamaan tämän salasanan nyt.}other{Vaarantunut salasana vaihdettu onnistuneesti. Sinulla on vielä # vaarantunutta salasanaa. Chrome suosittelee tarkistamaan nämä salasanat nyt.}}</translation>
 <translation id="5207949376430453814">Korosta tekstikursori</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> haluaa tarkistaa, että käytät yhteensopivaa Chrome-käyttöjärjestelmää käyttävää laitetta.</translation>
 <translation id="5208548918290612795">Tallennetaan todennustunnus: <ph name="WEB_DRIVE" /></translation>
@@ -6241,7 +6235,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6970861306198150268">Varmista, että tallennat tämän sivuston nykyisen salasanasi</translation>
 <translation id="6972180789171089114">Ääni- ja videotiedostot</translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
-<translation id="6972887130317925583">Vaarantunut salasana vaihdettu onnistuneesti. Tarkista salasanasi koska tahansa <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Ponnahdusikkunat tai uudelleenohjaukset sallittu</translation>
 <translation id="6973611239564315524">Päivitys Debian 10:een (Buster) saatavilla</translation>
 <translation id="69739764870135975">Jos Google on lisäksi oletushakukone, näet parempia ja asiayhteyteen sopivampia ehdotuksia</translation>

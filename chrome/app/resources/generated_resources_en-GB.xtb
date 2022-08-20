@@ -667,7 +667,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1621984899599015181">Options for sharing are managed by your organisation. Some items may be hidden.</translation>
 <translation id="1622054403950683339">Forget Wi-Fi network</translation>
 <translation id="1623723619460186680">Blue light reduction</translation>
-<translation id="1624012933569991823">Settings</translation>
 <translation id="1624599281783425761">You won't see <ph name="MERCHANT" /> again</translation>
 <translation id="1624863973697515675">This file is too big for your device to manage. Try to download it on another device</translation>
 <translation id="1627276047960621195">File Descriptors</translation>
@@ -993,7 +992,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1897120393475391208">Use strong password</translation>
 <translation id="1900305421498694955">Apps from Google Play may require full file system access to read and write files on external storage devices. Files and folders created on the device are visible to anyone who uses the external drive. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Select &amp;all</translation>
-<translation id="1901396183631570154">Chrome couldn't save these passwords in your Google Account. You can still save them on this device.</translation>
 <translation id="1903995858055162096">Not your device? Use <ph name="BEGIN_LINK" />guest mode<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1905375423839394163">Chromebook device name</translation>
@@ -1631,7 +1629,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Passwords not saved</translation>
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Tab moved into group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1993,7 +1990,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2813094189969465044">Parental controls</translation>
 <translation id="281390819046738856">Request could not be signed.</translation>
 <translation id="2814489978934728345">Stop loading this page</translation>
-<translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Bookmark folder</translation>
 <translation id="2816319641769218778">To save passwords to your Google account, turn on sync.</translation>
 <translation id="2816628817680324566">Allow this site to identify your security key?</translation>
@@ -2571,6 +2567,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3406290648907941085">Allowed to use virtual reality devices and data</translation>
 <translation id="3406396172897554194">Search by language or input name</translation>
 <translation id="3406605057700382950">&amp;Show bookmarks bar</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 password imported to Google Password Manager for <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} passwords imported to Google Password Manager for <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Jump to Selection</translation>
 <translation id="3413122095806433232">CA Issuers: <ph name="LOCATION" /></translation>
@@ -3755,6 +3752,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4541123282641193691">Couldn't verify your account. Please try again or restart your Chromebook.</translation>
 <translation id="4541662893742891060">Unable to connect to this profile. For technical support, please contact your operator.</translation>
 <translation id="4541706525461326392">Removing profile. This may take a few minutes.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 password imported to Google Password Manager on this device}other{{NUM_PASSWORDS} passwords imported to Google Password Manager on this device}}</translation>
 <translation id="4542520061254486227">Read your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Certificate manager</translation>
 <translation id="4544174279960331769">Default blue avatar</translation>
@@ -4294,7 +4292,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5078638979202084724">Bookmark all tabs</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5079010647467150187">Add built-in VPN…</translation>
-<translation id="5079950360618752063">Use suggested password</translation>
 <translation id="508059534790499809">Refresh a Kerberos ticket</translation>
 <translation id="5084328598860513926">Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Checking for updates</translation>
@@ -4420,7 +4417,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5206215183583316675">Delete "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Certificate import error</translation>
 <translation id="5206562235913517859">Retailer-store ID is ABC-1234 format</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Successfully changed the compromised password. You have # more compromised password. Chrome recommends checking this password now.}other{Successfully changed the compromised password. You have # more compromised passwords. Chrome recommends checking these passwords now.}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> wants to check if you are using an eligible Chrome OS device.</translation>
 <translation id="5208548918290612795">Storing <ph name="WEB_DRIVE" /> authentication token</translation>
@@ -6244,11 +6240,11 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6968288415730398122">Enter your password to configure screen lock</translation>
 <translation id="6969047215179982698">Turn off Nearby Share</translation>
 <translation id="6970480684834282392">Startup type</translation>
+<translation id="6970543303783413625">Can't import passwords. You can only import up to <ph name="COUNT" /> passwords at a time.</translation>
 <translation id="6970856801391541997">Print Specific Pages</translation>
 <translation id="6970861306198150268">Make sure that you're saving your current password for this site</translation>
 <translation id="6972180789171089114">Audio/Video</translation>
 <translation id="6972754398087986839">Get started</translation>
-<translation id="6972887130317925583">Successfully changed the compromised password. Check your passwords at any time in <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Allowed to send pop-ups and use redirects</translation>
 <translation id="6973611239564315524">An upgrade to Debian 10 (Buster) is available</translation>
 <translation id="69739764870135975">If Google is also your default search engine, you'll see better, contextually relevant suggestions</translation>
@@ -6476,6 +6472,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
+<translation id="7210471695184432500">To import passwords to Google Password Manager on this device, select a CSV file</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
@@ -7534,6 +7531,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208216423136871611">Don't save</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# new notifications}}</translation>
+<translation id="821119981794423735">To import passwords to Google Password Manager for <ph name="USER_EMAIL" />, select a CSV file</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
 <translation id="8213449224684199188">Photo mode entered</translation>
 <translation id="8214489666383623925">Open File...</translation>

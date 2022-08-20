@@ -666,7 +666,6 @@
 <translation id="1621984899599015181">शेअर करण्याचे पर्याय हे तुमच्या संस्थेद्वारे व्यवस्थापित केले जातात. काही आयटम लपवलेले असू शकतात.</translation>
 <translation id="1622054403950683339">वाय-फाय नेटवर्क विसरा</translation>
 <translation id="1623723619460186680">न‍िळा लाइट कमी करणे</translation>
-<translation id="1624012933569991823">सेटिंग्ज</translation>
 <translation id="1624599281783425761">तुम्हाला <ph name="MERCHANT" /> पुन्हा दिसणार नाही</translation>
 <translation id="1624863973697515675">ही फाइल तुमच्या डिव्हाइसला व्यवस्थापित करता येण्यासाठी खूप मोठी आहे. ती दुसऱ्या डिव्हाइसवर डाउनलोड करून पहा</translation>
 <translation id="1627276047960621195">फाईल वर्णनकर्ते</translation>
@@ -991,7 +990,6 @@
 <translation id="1897120393475391208">क्लिष्ट पासवर्ड वापरा</translation>
 <translation id="1900305421498694955">Google Play वरील ॲप्सना कदाचित बाह्य स्टोरेज डिव्हाइसवरील फाइल रीड आणि राइट करण्यासाठी संपूर्ण फाइल सिस्टम ॲक्सेसची आवश्यकता असू शकते. डिव्हाइसवर तयार केलेल्या फाइल आणि फोल्डर हे बाह्य ड्राइव्ह वापरणार्‍या कोणालाही दिसतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;सर्व निवडा</translation>
-<translation id="1901396183631570154">Chrome ला हे पासवर्ड तुमच्या Google खाते मध्ये सेव्ह करता आले नाहीत. तुम्ही तरीही ते या डिव्हाइसवर सेव्ह करू शकता.</translation>
 <translation id="1903995858055162096">तुमचे डिव्हाइस नाही का? <ph name="BEGIN_LINK" />अतिथी मोड<ph name="END_LINK" /> वापरा.</translation>
 <translation id="1904580727789512086">तुम्ही भेट दिलेल्या URL तुमच्या Google खाते मध्ये सेव्ह केल्या जातात</translation>
 <translation id="1905375423839394163">Chromebook डिव्हाइसचे नाव</translation>
@@ -1629,7 +1627,6 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> अनइंस्टॉल करण्यासाठी Windows बंद करा.</translation>
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
-<translation id="248003956660572823">पासवर्ड सेव्ह केले गेले नाहीत</translation>
 <translation id="2480868415629598489">तुम्ही कॉपी आणि पेस्ट करता तो डेटा सुधारित करा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2482895651873876648">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामध्ये हलवला आहे</translation>
@@ -1991,7 +1988,6 @@
 <translation id="2813094189969465044">पालक नियंत्रणे</translation>
 <translation id="281390819046738856">विनंतीवर साइन करता आले नाही.</translation>
 <translation id="2814489978934728345">हे पृष्ठ लोड करणे थांबवा</translation>
-<translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="2815693974042551705">बुकमार्क फोल्डर</translation>
 <translation id="2816319641769218778">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी सिंक सुरू करा.</translation>
 <translation id="2816628817680324566">या साइटला तुमची सिक्युरिटी की ओळखण्याची अनुमती द्यायची का?</translation>
@@ -4289,7 +4285,6 @@
 <translation id="5078638979202084724">सर्व टॅब बुकमार्क करा</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5079010647467150187">बिल्ट-इन VPN जोडा...</translation>
-<translation id="5079950360618752063">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="508059534790499809">Kerberos तिकीट रिफ्रेश करा</translation>
 <translation id="5084328598860513926">तरतूद प्रवाहात व्यत्यय आला. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">अद्यतनांसाठी तपासत आहे</translation>
@@ -4414,7 +4409,6 @@
 <translation id="5206215183583316675">"<ph name="CERTIFICATE_NAME" />" हटवायचे?</translation>
 <translation id="520621735928254154">सर्टिफिकेट आया‍त एरर</translation>
 <translation id="5206562235913517859">रिटेलर-स्टोअर आयडी हा ABC-1234 फॉरमॅटमध्ये आहे</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{धोक्यात असलेला पासवर्ड यशस्वीरीत्या बदलला. तुमच्याकडे आणखी # धोक्यात असलेला पासवर्ड आहे. Chrome हा पासवर्ड आता तपासण्याची शिफारस करते.}other{धोक्यात असलेले पासवर्ड यशस्वीरीत्या बदलले. तुमच्याकडे आणखी # धोक्यात असलेले पासवर्ड आहेत. Chrome हे पासवर्ड आता तपासण्याची शिफारस करते.}}</translation>
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ला तुम्ही पात्र ChromeOS डिव्हाइस वापरत आहात की नाही हे तपासायचे आहे.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> चे ऑथेंटिकेशन टोकन स्टोअर करणे</translation>
@@ -6244,7 +6238,6 @@
 <translation id="6970861306198150268">या साइटसाठी तुम्ही तुमचा सध्याचा पासवर्ड सेव्ह करत असल्याची खात्री करा</translation>
 <translation id="6972180789171089114">ऑडिओ/व्हिडिओ</translation>
 <translation id="6972754398087986839">सुरू करा</translation>
-<translation id="6972887130317925583">धोक्यात असलेला पासवर्ड यशस्वीरीत्या बदलला. तुमचे पासवर्ड <ph name="SETTINGS" /> मध्ये कधीही तपासा.</translation>
 <translation id="697312151395002334">पॉप-अप पाठवण्याची आणि रीडिरेक्‍ट वापरण्याची अनुमती आहे</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) साठी अपग्रेड उपलब्ध आहे</translation>
 <translation id="69739764870135975">Google देखील तुमचे डीफॉल्ट शोध इंजीन असल्यास, तुम्हाला आणखी चांगल्या, संदर्भानुसार उपयुक्त सूचना दिसतील</translation>

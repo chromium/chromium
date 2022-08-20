@@ -645,6 +645,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2657637947725373811">{0,plural, =1{要傳輸機密檔案嗎？}other{要傳輸機密檔案嗎？}}</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">返回頁首</translation>
@@ -789,6 +790,7 @@
 <translation id="3108943290502734357">中匣</translation>
 <translation id="3109728660330352905">您並未獲授權查看此網頁。</translation>
 <translation id="3113284927548439113">第三批</translation>
+<translation id="3115363211799416195">{0,plural, =1{要下載機密檔案嗎？}other{要下載機密檔案嗎？}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> 要求您備份資料，並歸還此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="3116158981186517402">粘合</translation>
 <translation id="3120730422813725195">Elo</translation>
@@ -911,6 +913,7 @@
 <translation id="3427342743765426898">重做編輯(&amp;R)</translation>
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
+<translation id="3431216045099978607">按下 |<ph name="ACCELERATOR" />| 以離開全螢幕，並查看下載項目。</translation>
 <translation id="3431636764301398940">將這張信用卡儲存至此裝置</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -977,6 +980,7 @@
 <translation id="3615877443314183785">請輸入有效的到期日</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
+<translation id="3628905806504633297">{0,plural, =1{管理員政策不建議傳輸此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議傳輸這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
 <translation id="3630699740441428070">此裝置的管理員已設定您的網絡連線，此設定可允許管理員查看您的網絡流量，包括您瀏覽的網站。</translation>
@@ -1336,6 +1340,7 @@
 <translation id="4607603470419975064">查看 Google 提示掣，㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="4617273035598175554">平面設計和動畫軟件</translation>
+<translation id="4622292761762557753">仍要傳輸</translation>
 <translation id="4627675673814409125">此政策無法設定於 Chrome 設定檔層級，因此會被忽略。</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
@@ -1651,6 +1656,7 @@
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="5412040515238827314">格式無效：輸入的值需要是模式清單。</translation>
 <translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
@@ -1938,6 +1944,7 @@
 <translation id="6254436959401408446">記憶體不足，因此無法開啟此網頁</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
+<translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全連線</translation>
 <translation id="6265794661083428563">複製 <ph name="POLICY_NAME" /> 政策的值</translation>
 <translation id="6266934640124581640">淺藍綠色</translation>
@@ -2582,6 +2589,7 @@
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統將會儲存此付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}other{系統將會儲存這些付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">攻擊者可能會透過此網站誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8027077570865220386">紙匣 15</translation>
@@ -2633,6 +2641,7 @@
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入休眠狀態。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
+<translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8157295877370077682">離開網站</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>

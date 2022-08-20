@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">Lieu bloqué</translation>
 <translation id="2042213636306070719">Bac 7</translation>
 <translation id="204357726431741734">Connectez-vous pour utiliser les mots de passe enregistrés dans votre compte Google</translation>
+<translation id="2048261947532620704">Traduction de la page en cours…</translation>
 <translation id="205212645995975601">Barbecue et grillades</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}=1{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les jours.}one{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour chaque {NUM_DAYS} jour.}other{Lorsque cette commande est activée et que son état est défini à actif, Chrome détermine à quel grand groupe de personnes, ou « cohorte », votre activité de navigation récente ressemble le plus. Les annonceurs peuvent sélectionner des annonces pour le groupe, et votre activité de navigation reste privée sur votre appareil. Votre groupe est mis à jour tous les {NUM_DAYS} jours.}}</translation>
@@ -1939,6 +1940,7 @@
 <translation id="6254436959401408446">Mémoire insuffisante pour ouvrir cette page</translation>
 <translation id="6259156558325130047">&amp;Rétablir la réorganisation</translation>
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
+<translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Retour à la sécurité</translation>
 <translation id="6265794661083428563">Copier la valeur de la politique <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Bleu sarcelle clair</translation>

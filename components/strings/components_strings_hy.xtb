@@ -911,6 +911,7 @@
 <translation id="3427342743765426898">&amp;Վերարկել փոփոխումը</translation>
 <translation id="342781501876943858">Խորհուրդ ենք տալիս վերակայել ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates կանոնի սերվերի ձևանմուշների URI-ներից առնվազն մեկն անվավեր է և չի կարող օգտագործվել:</translation>
+<translation id="3431216045099978607">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք |<ph name="ACCELERATOR" />|։</translation>
 <translation id="3431636764301398940">Պահել քարտն այս սարքում</translation>
 <translation id="3432601291244612633">Փակել էջը</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
@@ -1940,6 +1941,7 @@
 <translation id="6254436959401408446">Այս էջը բացելու համար բավարար տարածք չկա</translation>
 <translation id="6259156558325130047">&amp;Վերարկել վերադասավորումը</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-ի էջանիշներ</translation>
+<translation id="6264376385120300461">Ներբեռնել</translation>
 <translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
 <translation id="6265794661083428563">Պատճենել <ph name="POLICY_NAME" /> կանոնի արժեքը</translation>
 <translation id="6266934640124581640">Բաց փիրուզագույն</translation>

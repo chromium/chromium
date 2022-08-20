@@ -664,7 +664,6 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1621984899599015181">La teva organització gestiona les opcions de compartició. Pot ser que alguns elements estiguin amagats.</translation>
 <translation id="1622054403950683339">Oblida la xarxa Wi-Fi</translation>
 <translation id="1623723619460186680">Reducció de la llum blava</translation>
-<translation id="1624012933569991823">Configuració</translation>
 <translation id="1624599281783425761">No tornaràs a veure <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Aquest fitxer és massa gran perquè el teu dispositiu pugui gestionar-lo. Prova de baixar-lo en un altre dispositiu.</translation>
 <translation id="1627276047960621195">Descriptors dels fitxers</translation>
@@ -980,7 +979,6 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1897120393475391208">Utilitza una contrasenya segura</translation>
 <translation id="1900305421498694955">Pot ser que les aplicacions de Google Play requereixin accés complet al sistema de fitxers per llegir i escriure fitxers en dispositius d'emmagatzematge externs. Qualsevol persona que faci servir la unitat externa podrà veure les carpetes i els fitxers creats al dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Selecciona-ho &amp;tot</translation>
-<translation id="1901396183631570154">Chrome no ha pogut desar aquestes contrasenyes al teu Compte de Google. Pots continuar desant-les en aquest dispositiu.</translation>
 <translation id="1903995858055162096">No és el teu dispositiu? Fes servir el <ph name="BEGIN_LINK" />mode de convidat<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="1905375423839394163">Nom del dispositiu Chromebook</translation>
@@ -1615,7 +1613,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2476974672882258506">Apaga Windows per desinstal·lar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Com que has configurat diversos interruptors, la cerca automàtica s'ha desactivat.</translation>
 <translation id="2478176599153288112">Permisos de fitxer multimèdia per a "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Les contrasenyes no s'han desat</translation>
 <translation id="2480868415629598489">Modificar les dades que copies i enganxes</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2482895651873876648">La pestanya s'ha mogut al grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -1977,7 +1974,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2813094189969465044">Controls parentals</translation>
 <translation id="281390819046738856">La sol·licitud no s'ha pogut signar.</translation>
 <translation id="2814489978934728345">Atura la càrrega d'aquesta pàgina</translation>
-<translation id="281504910091592009">Consulta i gestiona les contrasenyes desades al <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Carpeta d'adreces d'interès</translation>
 <translation id="2816319641769218778">Per desar les contrasenyes al teu Compte de Google, activa la sincronització.</translation>
 <translation id="2816628817680324566">Vols permetre que aquest lloc web identifiqui la teva clau de seguretat?</translation>
@@ -4275,7 +4271,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5078638979202084724">Afegeix totes les pestanyes a les adreces d'interès</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5079010647467150187">Afegeix una VPN integrada...</translation>
-<translation id="5079950360618752063">Utilitza la contrasenya suggerida</translation>
 <translation id="508059534790499809">Actualitza un tiquet de Kerberos</translation>
 <translation id="5084328598860513926">El flux de proveïment s'ha interromput. Torna-ho a provar o contacta amb el propietari o l'administrador del dispositiu. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">S'està comprovant si hi ha actualitzacions</translation>
@@ -4400,7 +4395,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5206215183583316675">Vols suprimir "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">S'ha produït un error en importar el certificat</translation>
 <translation id="5206562235913517859">L'identificador de la botiga té el format ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament. Tens # contrasenya més en perill. Chrome et recomana que comprovis aquesta contrasenya ara.}other{La contrasenya en perill s'ha canviat correctament. Tens # contrasenyes més en perill. Chrome et recomana que comprovis aquestes contrasenyes ara.}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vol comprovar si fas servir un dispositiu Chrome OS apte.</translation>
 <translation id="5208548918290612795">S'emmagatzemarà el testimoni d'autenticació de: <ph name="WEB_DRIVE" /></translation>
@@ -6227,7 +6221,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6970861306198150268">Comprova que estiguis desant la teva contrasenya actual per a aquest lloc web</translation>
 <translation id="6972180789171089114">Àudio/Vídeo</translation>
 <translation id="6972754398087986839">Comença</translation>
-<translation id="6972887130317925583">La contrasenya en perill s'ha canviat correctament. Pots comprovar les contrasenyes sempre que vulguis a <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Amb permís per enviar finestres emergents i utilitzar redireccions</translation>
 <translation id="6973611239564315524">Hi ha disponible una actualització a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Si Google també és el teu motor de cerca predeterminat, veuràs suggeriments millors i més rellevants per al context</translation>

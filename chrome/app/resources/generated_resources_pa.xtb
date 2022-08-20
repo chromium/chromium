@@ -668,7 +668,6 @@
 <translation id="1621984899599015181">ਸਾਂਝਾਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਕੁਝ ਆਈਟਮਾਂ ਲੁਕੀਆਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="1622054403950683339">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਛੱਡੋ</translation>
 <translation id="1623723619460186680">ਨੀਲੀ ਲਾਈਟ ਘਟਾਉਣਾ</translation>
-<translation id="1624012933569991823">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1624599281783425761">ਤੁਹਾਨੂੰ <ph name="MERCHANT" /> ਦੁਬਾਰਾ ਨਹੀਂ ਦਿਸੇਗਾ</translation>
 <translation id="1624863973697515675">ਇਹ ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ ਹੈ, ਇਸ ਕਰਕੇ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਇਸ ਦਾ ਪ੍ਰਬੰਧਨ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਇਸ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1627276047960621195">ਫ਼ਾਈਲ ਵਰਣਨਕਰਤਾ</translation>
@@ -728,6 +727,7 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> 'ਤੇ <ph name="USERNAME" /> ਦੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਵੇਰਵੇ</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
+<translation id="1678794218766467608">ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਜਾਂ ਕਵਰ ਬੰਦ ਹੋਣ 'ਤੇ ਲਾਕ ਕਰੋ</translation>
 <translation id="1679068421605151609">ਵਿਕਾਸਕਾਰ ਟੂਲਾਂ</translation>
 <translation id="1679810534535368772">ਕੀ ਪੱਕਾ ਤੁਸੀਂ ਬਾਹਰ ਜਾਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="167983332380191032">ਪ੍ਰਬੰਧਨ ਸੇਵਾ ਨੇ HTTP ਗੜਬੜ ਕੋਡ ਭੇਜਿਆ।</translation>
@@ -993,7 +993,6 @@
 <translation id="1897120393475391208">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="1900305421498694955">Google Play ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਸ਼ਾਇਦ ਬਾਹਰੀ ਸਟੋਰੇਜ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਪੜ੍ਹਨ ਅਤੇ ਲਿਖਣ ਲਈ ਪੂਰੇ ਫ਼ਾਈਲ ਸਿਸਟਮ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇ। ਡੀਵਾਈਸ 'ਤੇ ਬਣਾਈਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰ ਬਾਹਰੀ ਡਰਾਈਵ ਵਰਤਣ ਵਾਲੇ ਹਰ ਵਿਅਕਤੀ ਨੂੰ ਦਿਸਦੇ ਹਨ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;ਸਾਰੇ ਚੁਣੋ</translation>
-<translation id="1901396183631570154">Chrome ਇਹਨਾਂ ਪਾਸਵਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਇਹਨਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1903995858055162096">ਕੀ ਇਹ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਨਹੀਂ ਹੈ? <ph name="BEGIN_LINK" />ਮਹਿਮਾਨ ਮੋਡ<ph name="END_LINK" /> ਵਰਤੋ।</translation>
 <translation id="1904580727789512086">ਉਹ URL ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਗਏ ਹੋ</translation>
 <translation id="1905375423839394163">Chromebook ਡੀਵਾਈਸ ਦਾ ਨਾਮ</translation>
@@ -1631,7 +1630,6 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ ਲਈ Windows ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="2477065602824695373">ਕਿਉਂਕਿ ਤੁਸੀਂ ਕਈ ਸਵਿੱਚਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਹੈ, ਇਸ ਲਈ 'ਸਵੈ-ਸਕੈਨ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" ਲਈ ਮੀਡੀਆ-ਫਾਈਲ ਅਨੁਮਤੀਆਂ</translation>
-<translation id="248003956660572823">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ</translation>
 <translation id="2480868415629598489">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕੀਤੇ ਗਏ ਡਾਟੇ ਨੂੰ ਸੋਧੋ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2482895651873876648">ਟੈਬ ਨੂੰ <ph name="GROUP_NAME" /> ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ - <ph name="GROUP_CONTENTS" /></translation>
@@ -1993,7 +1991,6 @@
 <translation id="2813094189969465044">ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ</translation>
 <translation id="281390819046738856">ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="2814489978934728345">ਇਹ ਸਫ਼ਾ ਲੋਡ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
-<translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2815693974042551705">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ</translation>
 <translation id="2816319641769218778">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2816628817680324566">ਕੀ ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਦੀ ਪਛਾਣ ਕਰਨ ਦੇਣੀ ਹੈ?</translation>
@@ -3809,6 +3806,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> ਕਿਸੇ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4589713469967853491">ਲੌਗਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਫਲਤਾਪੂਰਕ ਲਿਖਿਆ ਗਿਆ।</translation>
 <translation id="4590324241397107707">ਡਾਟਾਬੇਸ ਸਟੋਰੇਜ</translation>
+<translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4592891116925567110">ਸਟਾਈਲਸ ਚਿੱਤਰਕਾਰੀ ਸੰਬੰਧੀ ਐਪ</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> ਤੇ ਜਾਓ</translation>
 <translation id="4594577641390224176">ਕੀ ਪੰਨੇ ਸੰਬੰਧੀ ਸਿਸਟਮ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
@@ -4292,7 +4290,6 @@
 <translation id="5078638979202084724">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
 <translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5079010647467150187">ਅੰਦਰ-ਮੌਜੂਦ VPN ਸ਼ਾਮਲ ਕਰੋ...</translation>
-<translation id="5079950360618752063">ਸੁਝਾਏ ਗਏ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="508059534790499809">Kerberos ਟਿਕਟ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="5084328598860513926">ਪ੍ਰੋਵੀਜ਼ਨਿੰਗ ਦੇ ਵਹਾਅ ਵਿੱਚ ਵਿਘਨ ਪੈ ਗਿਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਮਾਲਕ ਜਾਂ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="5085162214018721575">ਅਪਡੇਟਾਂ ਦੀ ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -4368,6 +4365,7 @@
 <translation id="5155327081870541046">ਪਤਾ ਬਾਰ ਵਿੱਚ, ਉਸ ਸਾਈਟ ਦਾ ਸ਼ਾਰਟਕੱਟ ਦਾਖਲ ਕਰੋ ਜਿਸਨੂੰ ਤੁਸੀਂ ਖੋਜਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ "@bookmarks"। ਫਿਰ, ਆਪਣਾ ਤਰਜੀਹੀ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ ਅਤੇ ਆਪਣਾ ਖੋਜ ਸ਼ਬਦ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="5156638757840305347">ਕਰਸਰ ਦਿਸਣ ਜਾਂ ਹਿਲਜੁਲ ਹੋਣ 'ਤੇ ਉਜਾਗਰ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="5157635116769074044">ਸਟਾਰਟ ਸਕ੍ਰੀਨ ਲਈ ਇਹ ਸਫ਼ਾ ਪਿਨ ਕਰੋ...</translation>
+<translation id="5158206172605340248">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਮੀਨੂ ਖਾਰਜ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5159094275429367735">Crostini ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="5159419673777902220">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਐਕਸਟੈਂਸ਼ਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5159643365935452998">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -4417,7 +4415,6 @@
 <translation id="5206215183583316675">ਕੀ "<ph name="CERTIFICATE_NAME" />" ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="520621735928254154">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਆਯਾਤ ਗੜਬੜ</translation>
 <translation id="5206562235913517859">ਵਿਕਰੇਤਾ-ਸਟੋਰ ਆਈਡੀ ABC-1234 ਫਾਰਮੈਟ ਵਿੱਚ ਹੈ</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ। ਤੁਹਾਡੇ ਕੋਲ # ਹੋਰ ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ। Chrome ਹੁਣੇ ਇਸ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।}one{ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ। ਤੁਹਾਡੇ ਕੋਲ # ਹੋਰ ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਹੈ। Chrome ਹੁਣੇ ਇਸ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।}other{ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ। ਤੁਹਾਡੇ ਕੋਲ # ਹੋਰ ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਹਨ। Chrome ਹੁਣੇ ਇਹਨਾਂ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।}}</translation>
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ਸੇਵਾ ਇਹ ਜਾਂਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ ਕਿ ਕੀ ਤੁਸੀਂ ਯੋਗ ChromeOS ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> ਪ੍ਰਮਾਣੀਕਰਨ ਟੋਕਨ ਨੂੰ ਸਟੋਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -6249,7 +6246,6 @@
 <translation id="6970861306198150268">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਆਪਣਾ ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="6972180789171089114">ਆਡੀਓ /ਵੀਡੀਓ</translation>
 <translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
-<translation id="6972887130317925583">ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ। ਕਿਸੇ ਵੀ ਵੇਲੇ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="697312151395002334">ਪੌਪ-ਅੱਪ ਭੇਜਣ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) ਦਾ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="69739764870135975">ਜੇ Google ਹੀ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਬਿਹਤਰ ਅਤੇ ਸੰਦਰਭੀ ਤੌਰ 'ਤੇ ਢੁਕਵੇਂ ਸੁਝਾਅ ਦੇਖੋਗੇ</translation>
@@ -6501,6 +6497,7 @@
 <translation id="7235716375204803342">ਸਰਗਰਮੀਆਂ ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...</translation>
 <translation id="7235737137505019098">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਕਿਸੇ ਵੀ ਹੋਰ ਖਾਤੇ ਲਈ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7235873936132740888">ਜਦੋਂ ਤੁਸੀਂ ਵਿਸ਼ੇਸ਼ ਕਿਸਮਾਂ ਦੇ ਲਿੰਕਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ, ਤਾਂ ਸਾਈਟਾਂ ਵਿਸ਼ੇਸ਼ ਕਾਰਜਾਂ ਨੂੰ ਸੰਭਾਲ ਸਕਦੀਆਂ ਹਨ , ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੇ ਈਮੇਲ ਕਲਾਇੰਟ ਵਿੱਚ ਨਵਾਂ ਸੰਦੇਸ਼ ਬਣਾਉਣਾ ਜਾਂ ਤੁਹਾਡੇ ਆਨਲਾਈਨ ਕੈਲੰਡਰ ਵਿੱਚ ਨਵੇਂ ਇਵੈਂਟਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ</translation>
+<translation id="7238609589076576185">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ਨੇ ਟ੍ਰਾਂਸਫ਼ਰ ਰੱਦ ਕਰ ਦਿੱਤਾ</translation>
 <translation id="7240339475467890413">ਨਵੇਂ ਹੌਟਸਪੌਟ ਨਾਲ ਕਨੈਕਟ ਕਰੀਏ?</translation>
 <translation id="7241389281993241388">ਕਿਰਪਾ ਕਰਕੇ ਕਲਾਈਂਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਆਯਾਤ ਕਰਨ ਲਈ <ph name="TOKEN_NAME" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -7341,6 +7338,7 @@
 <translation id="8030852056903932865">ਮਨਜ਼ੂਰ ਕਰੋ</translation>
 <translation id="8032244173881942855">ਟੈਬ ਕਾਸਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।</translation>
 <translation id="8032569120109842252">ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="8033023935541439900">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਮੀਨੂ ਖੁੱਲ੍ਹਾ ਹੈ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਦਬਾਓ ਅਤੇ ਦਾਖਲ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="8033827949643255796">ਚੁਣਿਆ</translation>
 <translation id="8033958968890501070">ਸਮਾਂ-ਸਮਾਪਤੀ</translation>
 <translation id="8035059678007243127">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਪੰਨਾ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

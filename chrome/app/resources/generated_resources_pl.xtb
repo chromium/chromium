@@ -666,7 +666,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1621984899599015181">Opcjami udostępniania zarządza Twoja organizacja. Niektóre elementy mogą być ukryte.</translation>
 <translation id="1622054403950683339">Zapomnij sieć Wi-Fi</translation>
 <translation id="1623723619460186680">Redukcja niebieskiego światła</translation>
-<translation id="1624012933569991823">Ustawienia</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> nie pojawi się ponownie</translation>
 <translation id="1624863973697515675">Plik jest za duży, dlatego to urządzenie nie może nim zarządzać. Spróbuj go pobrać na inne urządzenie</translation>
 <translation id="1627276047960621195">Deskryptory plików</translation>
@@ -979,7 +978,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1897120393475391208">Użyj silnego hasła</translation>
 <translation id="1900305421498694955">Aplikacje z Google Play mogą wymagać pełnego dostępu do systemu plików, by odczytywać i zapisywać pliki na zewnętrznych urządzeniach pamięci masowej. Pliki i foldery utworzone na urządzeniu są widoczne dla każdej osoby używającej dysku zewnętrznego. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Zaznacz &amp;wszystko</translation>
-<translation id="1901396183631570154">Chrome nie może zapisać tych haseł na Twoim koncie Google. Możesz je jednak zapisać na tym urządzeniu.</translation>
 <translation id="1903995858055162096">To nie Twoje urządzenie? Użyj <ph name="BEGIN_LINK" />trybu gościa<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="1905375423839394163">Nazwa Chromebooka</translation>
@@ -1603,7 +1601,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2476974672882258506">Aby odinstalować <ph name="PARALLELS_DESKTOP" />, zamknij system Windows.</translation>
 <translation id="2477065602824695373">Automatyczne skanowanie zostało wyłączone, bo masz skonfigurowanych kilka przełączników.</translation>
 <translation id="2478176599153288112">Uprawnienia pliku multimedialnego dla rozszerzenia „<ph name="EXTENSION" />”</translation>
-<translation id="248003956660572823">Hasła nie zostały zapisane</translation>
 <translation id="2480868415629598489">Modyfikowanie danych, które kopiujesz i wklejasz</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2482895651873876648">Karta została przeniesiona do grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1965,7 +1962,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2813094189969465044">Kontrola rodzicielska</translation>
 <translation id="281390819046738856">Nie udało się podpisać żądania.</translation>
 <translation id="2814489978934728345">Zatrzymaj ładowanie strony</translation>
-<translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Folder zakładek</translation>
 <translation id="2816319641769218778">Aby zapisywać hasła na swoim koncie Google, włącz synchronizację.</translation>
 <translation id="2816628817680324566">Zezwolić tej stronie na zidentyfikowanie klucza bezpieczeństwa?</translation>
@@ -4265,7 +4261,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5078638979202084724">Dodaj wszystkie karty do zakładek</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5079010647467150187">Dodaj wbudowaną sieć VPN…</translation>
-<translation id="5079950360618752063">Użyj sugerowanego hasła</translation>
 <translation id="508059534790499809">Odświeżanie zgłoszenia Kerberos</translation>
 <translation id="5084328598860513926">Proces obsługi administracyjnej został przerwany. Spróbuj jeszcze raz albo skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Sprawdzanie dostępności aktualizacji</translation>
@@ -4391,7 +4386,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5206215183583316675">Usunąć „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Błąd importowania certyfikatu</translation>
 <translation id="5206562235913517859">Identyfikator sklepu sprzedawcy ma format ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasło. Chrome zaleca, by jak najszybciej je sprawdzić.}few{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}many{Zmieniono przejęte hasło. Masz jeszcze # przejętych haseł. Chrome zaleca, by jak najszybciej je sprawdzić.}other{Zmieniono przejęte hasło. Masz jeszcze # przejętego hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> chce sprawdzić, czy używasz odpowiedniego urządzenia z Chrome OS.</translation>
 <translation id="5208548918290612795">Przechowywanie tokena uwierzytelniającego usługi <ph name="WEB_DRIVE" /></translation>
@@ -6220,7 +6214,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6970861306198150268">Upewnij się, że zapisujesz bieżące hasło do witryny</translation>
 <translation id="6972180789171089114">Audio/wideo</translation>
 <translation id="6972754398087986839">Rozpocznij</translation>
-<translation id="6972887130317925583">Zmieniono przejęte hasło. Hasło możesz sprawdzić w dowolnym momencie, wybierając <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Zezwolono na wysyłanie wyskakujących okienek i używanie przekierowań</translation>
 <translation id="6973611239564315524">Dostępne jest uaktualnienie do Debiana 10 (Buster)</translation>
 <translation id="69739764870135975">Jeśli Google jest Twoją domyślną wyszukiwarką, zobaczysz lepiej dopasowane sugestie</translation>

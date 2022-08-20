@@ -661,7 +661,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1621984899599015181">Freigabeoptionen werden von deiner Organisation verwaltet. Einige Elemente sind möglicherweise ausgeblendet.</translation>
 <translation id="1622054403950683339">WLAN löschen</translation>
 <translation id="1623723619460186680">Reduzierung von blauem Licht</translation>
-<translation id="1624012933569991823">Einstellungen</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> wird nicht mehr angezeigt</translation>
 <translation id="1624863973697515675">Diese Datei ist zu groß für dein Gerät. Du kannst versuchen, sie auf einem anderen Gerät herunterzuladen.</translation>
 <translation id="1627276047960621195">Dateideskriptoren</translation>
@@ -976,7 +975,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1897120393475391208">Starkes Passwort verwenden</translation>
 <translation id="1900305421498694955">Google Play-Apps benötigen möglicherweise vollständigen Zugriff auf dein Dateisystem, um auf externen Speichergeräten Dateien lesen und schreiben zu können. Dateien und Ordner, die auf dem Gerät erstellt werden, sind für alle Nutzer des externen Speichergeräts sichtbar. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;Alles auswählen</translation>
-<translation id="1901396183631570154">Chrome konnte diese Passwörter nicht in deinem Google-Konto speichern. Du kannst sie aber auf diesem Gerät speichern.</translation>
 <translation id="1903995858055162096">Nicht dein Gerät? <ph name="BEGIN_LINK" />Gastmodus<ph name="END_LINK" /> verwenden.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1905375423839394163">Name des Chromebooks</translation>
@@ -1611,7 +1609,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2476974672882258506">Bitte Windows herunterfahren, um <ph name="PARALLELS_DESKTOP" /> zu deinstallieren.</translation>
 <translation id="2477065602824695373">Da du mehrere Schalter eingerichtet hast, wurde der automatische Scan deaktiviert.</translation>
 <translation id="2478176599153288112">Mediendatei-Berechtigungen für "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Passwörter nicht gespeichert</translation>
 <translation id="2480868415629598489">Daten ändern, die du kopierst und einfügst</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2482895651873876648">Tab wurde in die folgende Gruppe verschoben: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1972,7 +1969,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2813094189969465044">Jugendschutzeinstellungen</translation>
 <translation id="281390819046738856">Die Anfrage konnte nicht signiert werden.</translation>
 <translation id="2814489978934728345">Seite nicht weiter laden</translation>
-<translation id="281504910091592009">Gespeicherte Passwörter in meinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> ansehen und verwalten</translation>
 <translation id="2815693974042551705">Lesezeichenordner</translation>
 <translation id="2816319641769218778">Aktiviere die Synchronisierung, um Passwörter in deinem Google-Konto zu speichern.</translation>
 <translation id="2816628817680324566">Zulassen, dass diese Website deinen Sicherheitsschlüssel identifiziert?</translation>
@@ -4269,7 +4265,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5079010647467150187">Integriertes VPN hinzufügen…</translation>
-<translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="508059534790499809">Kerberos-Ticket aktualisieren</translation>
 <translation id="5084328598860513926">Bereitstellung wurde unterbrochen. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Suche nach Updates...</translation>
@@ -4394,7 +4389,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5206215183583316675">"<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="520621735928254154">Fehler beim Importieren des Zertifikats</translation>
 <translation id="5206562235913517859">Geschäfts-ID des Händlers hat das Format „ABC-1234“</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Das gehackte Passwort wurde erfolgreich geändert. Du hast # weiteres gehacktes Passwort. Chrome empfiehlt, dieses Passwort jetzt zu prüfen.}other{Das gehackte Passwort wurde erfolgreich geändert. Du hast # weitere gehackte Passwörter. Chrome empfiehlt, diese Passwörter jetzt zu prüfen.}}</translation>
 <translation id="5207949376430453814">Textcursor hervorheben</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> möchte überprüfen, ob du ein unterstütztes Chrome OS-Gerät verwendest.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" />-Authentifizierungs-Token speichern</translation>
@@ -6215,7 +6209,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6970861306198150268">Speichere dein aktuelles Passwort für diese Website</translation>
 <translation id="6972180789171089114">Audio/Video</translation>
 <translation id="6972754398087986839">Erste Schritte</translation>
-<translation id="6972887130317925583">Das gehackte Passwort wurde erfolgreich geändert. Du kannst deine Passwörter jederzeit in den <ph name="SETTINGS" /> prüfen.</translation>
 <translation id="697312151395002334">Dürfen Pop-ups senden und Weiterleitungen verwenden</translation>
 <translation id="6973611239564315524">Ein Upgrade auf Debian 10 (Buster) ist verfügbar</translation>
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>

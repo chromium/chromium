@@ -665,7 +665,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1621984899599015181">Opțiunile de distribuire sunt gestionate de organizația ta. Este posibil ca unele elemente să fie ascunse.</translation>
 <translation id="1622054403950683339">Elimină rețeaua Wi-Fi</translation>
 <translation id="1623723619460186680">Reducerea luminii albastre</translation>
-<translation id="1624012933569991823">Setări</translation>
 <translation id="1624599281783425761">Nu vei mai vedea <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Acest fișier este prea mare pentru a fi gestionat de dispozitiv. Încearcă să-l descarci pe alt dispozitiv</translation>
 <translation id="1627276047960621195">Descriptorii fișierelor</translation>
@@ -981,7 +980,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1897120393475391208">Folosește o parolă puternică</translation>
 <translation id="1900305421498694955">Aplicațiile din Google Play pot necesita acces deplin la sistemul de fișiere pentru a citi și a scrie fișiere pe dispozitive de stocare externe. Fișierele și dosarele create pe dispozitiv sunt vizibile oricărei persoane care folosește unitatea externă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Select&amp;ează tot</translation>
-<translation id="1901396183631570154">Chrome nu a putut salva parolele în Contul Google. Însă le poți salva pe acest dispozitiv.</translation>
 <translation id="1903995858055162096">Nu este dispozitivul tău? Folosește <ph name="BEGIN_LINK" />modul pentru invitați<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="1905375423839394163">Numele dispozitivului Chromebook</translation>
@@ -1616,7 +1614,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2476974672882258506">Închide Windows pentru a dezinstala <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Întrucât ai configurat mai multe comutatoare, scanarea automată a fost dezactivată.</translation>
 <translation id="2478176599153288112">Permisiuni privind fișierele media pentru „<ph name="EXTENSION" />”</translation>
-<translation id="248003956660572823">Parolele nu au fost salvate</translation>
 <translation id="2480868415629598489">Modifică datele pe care le copiezi și le inserezi</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2482895651873876648">Fila a fost mutată în grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1978,7 +1975,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2813094189969465044">Control parental</translation>
 <translation id="281390819046738856">Solicitarea nu a putut fi semnată.</translation>
 <translation id="2814489978934728345">Oprește încărcarea acestei pagini</translation>
-<translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Dosar de marcaje</translation>
 <translation id="2816319641769218778">Activează sincronizarea ca să salvezi parolele în Contul tău Google.</translation>
 <translation id="2816628817680324566">Permiți site-ului să identifice cheia de securitate?</translation>
@@ -4277,7 +4273,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5078638979202084724">Marchează toate filele</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5079010647467150187">Adaugă un VPN încorporat…</translation>
-<translation id="5079950360618752063">Folosește parola sugerată</translation>
 <translation id="508059534790499809">Actualizează un tichet Kerberos</translation>
 <translation id="5084328598860513926">Fluxul de provizionare a fost întrerupt. Încearcă din nou sau contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Se caută actualizări</translation>
@@ -4402,7 +4397,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5206215183583316675">Ștergi „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Eroare la importul certificatului</translation>
 <translation id="5206562235913517859">Codul magazinului comerciantului este în format ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Parola compromisă a fost schimbată. Mai ai # parolă compromisă. Chrome recomandă să verifici acum parola.}few{Parola compromisă a fost schimbată. Mai ai # parole compromise. Chrome recomandă să verifici acum parolele.}other{Parola compromisă a fost schimbată. Mai ai # de parole compromise. Chrome recomandă să verifici acum parolele.}}</translation>
 <translation id="5207949376430453814">Evidențiază cursorul pentru text</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> dorește să verifice dacă folosești un dispozitiv cu sistemul de operare Chrome eligibil.</translation>
 <translation id="5208548918290612795">Stocarea indicativului de autentificare <ph name="WEB_DRIVE" /></translation>
@@ -6233,7 +6227,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6970861306198150268">Salvează parola actuală pentru acest site</translation>
 <translation id="6972180789171089114">Audio/Video</translation>
 <translation id="6972754398087986839">Începe</translation>
-<translation id="6972887130317925583">Parola compromisă a fost schimbată. Verifică parolele oricând în <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Au permisiunea de a afișa ferestre pop-up și de a folosi redirecționări</translation>
 <translation id="6973611239564315524">Este disponibil un upgrade la Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>

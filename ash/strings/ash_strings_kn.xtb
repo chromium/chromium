@@ -671,6 +671,7 @@
 <translation id="479989351350248267">ಹುಡುಕಾಡಿ</translation>
 <translation id="4804818685124855865">ಡಿಸ್‌ಕನೆಕ್ಟ್</translation>
 <translation id="4814539958450445987">ಲಾಗಿನ್ ಪರದೆ</translation>
+<translation id="481455355267255546">ಮುಂದಿನದು</translation>
 <translation id="4831034276697007977">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಆಫ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4849058404725798627">ಕೀಬೋರ್ಡ್‌ ಫೋಕಸ್‌ ಮೂಲಕ ವಿಷಯವನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="485592688953820832">ಯಾವುದೇ ಕ್ರಮ ಕೈಗೊಳ್ಳಬೇಡಿ (ವಿರಾಮಗೊಳಿಸಿ)</translation>
@@ -1014,6 +1015,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6757237461819837179">ಯಾವುದೇ ಮೀಡಿಯಾ ಪ್ಲೇ ಆಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6777216307882431711">ಸಂಪರ್ಕಿತ USB-C ಸಾಧನಗಳನ್ನು ಚಾರ್ಜ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="6786750046913594791">ಫೋಲ್ಡರ್ ಮುಚ್ಚಿರಿ</translation>
+<translation id="6787595647772650851">ಕೊನೆಯ ಸೆಶನ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6801878137098616817">ಇತ್ತೀಚೆಗೆ ಎಡಿಟ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="6803622936009808957">ಯಾವುದೇ ಬೆಂಬಲಿತ ಪರಿಹಾರಗಳು ಕಂಡುಬರದ ಕಾರಣ ಪ್ರದರ್ಶನಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಲಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ವಿಸ್ತರಿತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
@@ -1262,6 +1264,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8214996719228530800">Canary ಚಾನಲ್</translation>
 <translation id="8219451629189078428">ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ Chromebook ಆನ್‌ನಲ್ಲಿ ಇರಬೇಕಾಗುತ್ತದೆ ಮತ್ತು ವಿದ್ಯುತ್ ಸಂಪರ್ಕ ಹೊಂದಿರಬೇಕಾಗುತ್ತದೆ. ನಿಮ್ಮ Chromebook ಮತ್ತು ವಿದ್ಯುತ್ ಔಟ್‌ಲೆಟ್ ಎರಡಕ್ಕೂ ಚಾರ್ಜರ್ ಅಥವಾ ಅಡಾಪ್ಟರ್ ಕೇಬಲ್‌ಗಳನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಪ್ಲಗ್ ಇನ್ ಮಾಡಲಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನಿಮ್ಮ Chromebook ಅನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ.</translation>
 <translation id="8236042855478648955">ವಿರಾಮದ ಸಮಯ</translation>
+<translation id="8246282815785366524">ಮರಳಿ ಸುಸ್ವಾಗತ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ಆ್ಯಪ್</translation>
 <translation id="8255234195843591763">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ರೀಸೆಟ್ ಮಾಡಿ</translation>

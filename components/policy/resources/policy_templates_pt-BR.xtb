@@ -1123,6 +1123,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2058055310819710697">Ativar o modo de desenvolvedor para apps isolados</translation>
 <translation id="2061123930713023976">Permitir capturas de pacotes de rede para depuração</translation>
 <translation id="2061810934846663491">Configurar os nomes de domínio obrigatórios para hosts de acesso remoto</translation>
+<translation id="2062632109797189011">Reativar a API window.webkitStorageInfo descontinuada</translation>
 <translation id="2069350366303315077">Definir a política como "Ativada" faz com que o <ph name="PRODUCT_NAME" /> aplique sessões de visitante e impeça logins de perfis. Logins de visitante são perfis do <ph name="PRODUCT_NAME" /> em que as janelas estão no modo de navegação anônima.
 
       Se a política for definida como "Desativada", não for definida ou se o modo visitante for desativado (pela <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), o uso de perfis novos e existentes será permitido.</translation>
@@ -1890,6 +1891,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada" ou não for definida, as informações de status do Android não serão informadas pelos dispositivos registrados.</translation>
 <translation id="288923520817177650">Permitir a criação de sessões <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> da <ph name="WEBXR_API_NAME_SHORT" /></translation>
+<translation id="2889842394011108075">A window.webkitStorageInfo vai ficar disponível.</translation>
 <translation id="2890645751406497668">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos USB com determinados IDs de fornecedores e produtos.</translation>
 <translation id="2891049933730408118">A definição da política especifica em quais origens permitir todos os esquemas de autenticação HTTP ao quais o <ph name="PRODUCT_NAME" /> oferece suporte, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
 
@@ -3547,6 +3549,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4700190441681139987">Não permitir o acesso de nenhum site aos sensores</translation>
 <translation id="4703402283970867140">Ativar modelo de escurecimento inteligente para aumentar o tempo que a tela permanece ativa</translation>
 <translation id="4704958130749494760">Permitir automaticamente que os sites se conectem a dispositivos seriais USB.</translation>
+<translation id="471360812659157054">A window.webkitStorageInfo não vai ficar disponível.</translation>
 <translation id="4722122254122249791">Ativar o isolamento de sites para origens específicas</translation>
 <translation id="4723829699367336876">Habilitar passagem de firewall a partir do cliente de acesso remoto</translation>
 <translation id="4725528134735324213">Ativar o Android Backup Service</translation>
@@ -6746,6 +6749,11 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
+<translation id="8102504778644322990">Da versão M106 em diante, a API window.webkitStorageInfo não padrão vai ser removida.
+      Esta política reativa essa API até a versão M107.
+      Se a política for ativada, a API window.webkitStorageInfo vai ficar disponível.
+      Se ela for desativada ou deixada sem definição, a API não vai ficar disponível.
+      </translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>

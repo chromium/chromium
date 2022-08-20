@@ -670,7 +670,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1621984899599015181">Možnosti za deljenje z drugimi upravlja vaša organizacija. Nekateri elementi so morda skriti.</translation>
 <translation id="1622054403950683339">Pozaba omrežja Wi-Fi</translation>
 <translation id="1623723619460186680">Zmanjšanje modre svetlobe</translation>
-<translation id="1624012933569991823">Nastavitve</translation>
 <translation id="1624599281783425761">Ponudnik <ph name="MERCHANT" /> ne bo več prikazan.</translation>
 <translation id="1624863973697515675">Ta datoteka je prevelika, da bi jo lahko naprava upravljala. Poskusite jo prenesti v drugi napravi.</translation>
 <translation id="1627276047960621195">Deskriptorji datotek</translation>
@@ -995,7 +994,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1897120393475391208">Uporabite zapleteno geslo</translation>
 <translation id="1900305421498694955">Aplikacije v Googlu Play za branje in pisanje datotek v zunanjih napravah za shranjevanje morda zahtevajo popoln dostop do datotečnega sistema. Datoteke in mape, ustvarjene v tej napravi, so vidne vsem, ki uporabljajo zunanji pogon. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Izberi &amp;vse</translation>
-<translation id="1901396183631570154">Chromu ni uspelo shraniti teh gesel v računu Google. Še vedno jih lahko shranite v tej napravi.</translation>
 <translation id="1903995858055162096">Ni vaša naprava? Uporabite <ph name="BEGIN_LINK" />način za goste<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
 <translation id="1905375423839394163">Ime Chromebooka</translation>
@@ -1633,7 +1631,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2476974672882258506">Zaustavite sistem Windows, če želite odmestiti program <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Ker ste nastavili več stikal, je samodejno iskanje izklopljeno.</translation>
 <translation id="2478176599153288112">Dovoljenja za predstavnostne datoteke za razširitev »<ph name="EXTENSION" />«</translation>
-<translation id="248003956660572823">Gesla niso bila shranjena</translation>
 <translation id="2480868415629598489">Spreminjanje podatkov, ki jih kopirate in prilepite</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2482895651873876648">Zavihek je premaknjen v skupino <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
@@ -1995,7 +1992,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2813094189969465044">Starševski nadzor</translation>
 <translation id="281390819046738856">Zahteve ni bilo mogoče podpisati.</translation>
 <translation id="2814489978934728345">Ustavite nalaganje te strani</translation>
-<translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Mapa z zaznamki</translation>
 <translation id="2816319641769218778">Če želite shraniti gesla v račun Google, vklopite sinhronizacijo.</translation>
 <translation id="2816628817680324566">Dovolite, da to spletno mesto prepozna vaš varnostni ključ?</translation>
@@ -4295,7 +4291,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5078638979202084724">Dodaj vse zavihke med zaznamke</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5079010647467150187">Dodaj vgrajeno omrežje VPN …</translation>
-<translation id="5079950360618752063">Uporabi predlagano geslo</translation>
 <translation id="508059534790499809">Osvežitev kartončka za Kerberos</translation>
 <translation id="5084328598860513926">Potek omogočanja uporabe je bil prekinjen. Poskusite znova ali se obrnite na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Preverjanje, ali so na voljo posodobitve</translation>
@@ -4420,7 +4415,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5206215183583316675">Želite izbrisati »<ph name="CERTIFICATE_NAME" />«?</translation>
 <translation id="520621735928254154">Napaka pri uvozu potrdila</translation>
 <translation id="5206562235913517859">ID trgovine prodajalca je v obliki ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženo geslo. Chrome priporoča, da preverite to geslo.}one{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženo geslo. Chrome priporoča, da preverite ta gesla.}two{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženi gesli. Chrome priporoča, da preverite ta gesla.}few{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogrožena gesla. Chrome priporoča, da preverite ta gesla.}other{Ogroženo geslo je bilo uspešno spremenjeno. Imate še # ogroženih gesel. Chrome priporoča, da preverite ta gesla.}}</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi preveriti, ali uporabljate primerno napravo s sistemom Chrome OS.</translation>
 <translation id="5208548918290612795">Shranjevanje žetona za preverjanje za <ph name="WEB_DRIVE" /></translation>
@@ -6257,7 +6251,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6970861306198150268">Poskrbite, da boste shranili trenutno geslo za to spletno mesto.</translation>
 <translation id="6972180789171089114">Zvok/video</translation>
 <translation id="6972754398087986839">Začnite</translation>
-<translation id="6972887130317925583">Ogroženo geslo je bilo uspešno spremenjeno. Svoja gesla lahko kadar koli preverite v aplikaciji <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Dovoljeno je pošiljanje pojavnih oken in uporaba preusmeritev</translation>
 <translation id="6973611239564315524">Na voljo je nadgradnja na Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Če je Google tudi vaš privzeti iskalnik, vam bomo prikazovali boljše predloge, ki so primernejši kontekstu.</translation>

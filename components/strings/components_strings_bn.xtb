@@ -913,6 +913,7 @@
 <translation id="3427342743765426898">&amp;সম্পাদনাকে আবার করুন</translation>
 <translation id="342781501876943858">Chromium-এর নীতি অনুযায়ী আপনার পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates সার্ভারের এক বা একাধিক টেমপ্লেট ইউআরআই সঠিক নয় এবং ব্যবহার করা যাবে না।</translation>
+<translation id="3431216045099978607">ফুল স্ক্রিন থেকে বেরিয়ে এসে ডাউনলোড দেখতে |<ph name="ACCELERATOR" />| প্রেস করুন।</translation>
 <translation id="3431636764301398940">এই ডিভাইসে এই কার্ডটি সেভ করুন</translation>
 <translation id="3432601291244612633">পৃষ্ঠা বন্ধ করুন</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
@@ -1940,6 +1941,7 @@
 <translation id="6254436959401408446">এই পৃষ্ঠাটি খোলার জন্য পর্যাপ্ত মেমরি নেই</translation>
 <translation id="6259156558325130047">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
+<translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" />-এর নীতির মান কপি করুন</translation>
 <translation id="6266934640124581640">হালকা টিল</translation>

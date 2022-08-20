@@ -666,7 +666,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1621984899599015181">Opcijama za dijeljenje upravlja vaša organizacija. Neke su stavke možda skrivene.</translation>
 <translation id="1622054403950683339">Zaboravljanje Wi-Fi mreže</translation>
 <translation id="1623723619460186680">Redukcija plavog svjetla</translation>
-<translation id="1624012933569991823">Postavke</translation>
 <translation id="1624599281783425761">Nećete više vidjeti trgovca <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Ova je datoteka prevelika da bi vaš uređaj njome mogao upravljati. Pokušajte je preuzeti na drugom uređaju</translation>
 <translation id="1627276047960621195">Deskriptori datoteke</translation>
@@ -982,7 +981,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1897120393475391208">Koristite snažnu zaporku</translation>
 <translation id="1900305421498694955">Aplikacije s Google Playa mogu zatražiti potpuni pristup sustavu datoteka radi čitanja i zapisivanja datoteka na vanjskim uređajima za pohranu. Datoteke i mape izrađene na uređaju vidljive su svima koji upotrebljavaju vanjski disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Odaberi &amp;sve</translation>
-<translation id="1901396183631570154">Chrome nije mogao spremiti ove zaporke na vaš Google račun. I dalje ih možete spremiti na ovaj uređaj.</translation>
 <translation id="1903995858055162096">Nije vaš uređaj? Upotrijebite <ph name="BEGIN_LINK" />način rada za goste<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1905375423839394163">Naziv Chromebook uređaja</translation>
@@ -1618,7 +1616,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Budući da ste postavili više prekidača, automatsko skeniranje je isključeno.</translation>
 <translation id="2478176599153288112">Dozvole medijske datoteke za proširenje "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Zaporke nisu spremljene</translation>
 <translation id="2480868415629598489">izmjenjivati podatke koje kopirate i lijepite</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2482895651873876648">Kartica je premještena u grupu <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1980,7 +1977,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2813094189969465044">Roditeljski nadzor</translation>
 <translation id="281390819046738856">Zahtjev nije bilo moguće potpisati.</translation>
 <translation id="2814489978934728345">Prekini učitavanje ove stranice</translation>
-<translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Mapa oznaka</translation>
 <translation id="2816319641769218778">Da biste spremili zaporke na Google račun, uključite sinkronizaciju.</translation>
 <translation id="2816628817680324566">Želite li dopustiti ovoj web-lokaciji identifikaciju vašeg sigurnosnog ključa?</translation>
@@ -4279,7 +4275,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5078638979202084724">Označi sve kartice</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5079010647467150187">Dodavanje ugrađenog VPN-a...</translation>
-<translation id="5079950360618752063">Upotrijebite predloženu zaporku</translation>
 <translation id="508059534790499809">Osvježite Kerberosov tiket</translation>
 <translation id="5084328598860513926">Prekinuo se tijek davanja pristupa. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Provjera ažuriranja</translation>
@@ -4404,7 +4399,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5206215183583316675">Želite li izbrisati "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Pogreška pri uvozu certifikata</translation>
 <translation id="5206562235913517859">ID za maloprodaju je u formatu ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženu zaporku. Chrome preporučuje da odmah provjerite tu zaporku.}one{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženu zaporku. Chrome preporučuje da odmah provjerite te zaporke.}few{Uspješno ste promijenili ugroženu zaporku. Imate još # ugrožene zaporke. Chrome preporučuje da odmah provjerite te zaporke.}other{Uspješno ste promijenili ugroženu zaporku. Imate još # ugroženih zaporki. Chrome preporučuje da odmah provjerite te zaporke.}}</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi provjeriti upotrebljavate li uređaj s Chrome OS-om koji ispunjava kriterije.</translation>
 <translation id="5208548918290612795">Pohranjivanje oznake za autentifikaciju za <ph name="WEB_DRIVE" /></translation>
@@ -6233,7 +6227,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6970861306198150268">Pazite da spremate trenutačnu zaporku za ovu web-lokaciju</translation>
 <translation id="6972180789171089114">Audiozapisi/videozapisi</translation>
 <translation id="6972754398087986839">Početak upotrebe</translation>
-<translation id="6972887130317925583">Uspješno ste promijenili ugroženu zaporku. Zaporke uvijek možete provjeriti u odjeljku <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Dopušteno je slanje skočnih prozora i upotreba preusmjeravanja</translation>
 <translation id="6973611239564315524">Dostupna je nadogradnja na Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ako vam je Google i zadana tražilica, prikazivat će vam se bolji, kontekstualno relevantni prijedlozi</translation>

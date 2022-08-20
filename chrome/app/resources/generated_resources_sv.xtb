@@ -667,7 +667,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1621984899599015181">Delningsalternativ hanteras av organisationen. Vissa objekt kan vara dolda.</translation>
 <translation id="1622054403950683339">Glöm det här wifi-nätverket</translation>
 <translation id="1623723619460186680">Reducering av blått ljust</translation>
-<translation id="1624012933569991823">Inställningar</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> visas inte igen</translation>
 <translation id="1624863973697515675">Den här filen är för stor för enheten att hantera. Försök att ladda ned den på en annan enhet</translation>
 <translation id="1627276047960621195">Filbeskrivningar</translation>
@@ -992,7 +991,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1897120393475391208">Använd ett starkt lösenord</translation>
 <translation id="1900305421498694955">Appar från Google Play kan behöva fullständig åtkomst till filsystemet för att kunna läsa och skriva filer på externa lagringsenheter. Alla som använder den externa enheten kan se filer och mappar som skapats på den. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Välj &amp;alla</translation>
-<translation id="1901396183631570154">Chrome kunde inte spara lösenorden i Google-kontot. Du kan fortfarande spara dem på den här enheten.</translation>
 <translation id="1903995858055162096">Är det inte din enhet? Använd <ph name="BEGIN_LINK" />gästläget<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Webbadresserna du besöker sparas i Google-kontot</translation>
 <translation id="1905375423839394163">Chromebook-enhetens namn</translation>
@@ -1630,7 +1628,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2476974672882258506">Avsluta Windows för att avinstallera <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Eftersom du har konfigurerat flera brytare har automatisk genomsökning inaktiverats.</translation>
 <translation id="2478176599153288112">Mediefilsbehörigheter för <ph name="EXTENSION" /></translation>
-<translation id="248003956660572823">Lösenorden har inte sparats</translation>
 <translation id="2480868415629598489">Ändra data som du kopierar och klistrar in</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2482895651873876648">Fliken flyttades till gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1992,7 +1989,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2813094189969465044">Föräldrakontroller</translation>
 <translation id="281390819046738856">Begäran kunde inte signeras.</translation>
 <translation id="2814489978934728345">Sluta ladda den här sidan</translation>
-<translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Bokmärkesmapp</translation>
 <translation id="2816319641769218778">Aktivera synkronisering om du vill spara lösenord i Google-kontot.</translation>
 <translation id="2816628817680324566">Vill du tillåta webbplatsen att identifiera din säkerhetsnyckel?</translation>
@@ -4292,7 +4288,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5078638979202084724">Skapa bokmärken för alla flikar</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5079010647467150187">Lägg till inbyggt VPN …</translation>
-<translation id="5079950360618752063">Använd det föreslagna lösenordet</translation>
 <translation id="508059534790499809">Uppdatera en Kerberos-biljett</translation>
 <translation id="5084328598860513926">Administrationsflödet avbröts. Försök igen eller kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Söker efter uppdateringar</translation>
@@ -4417,7 +4412,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5206215183583316675">Vill du radera <ph name="CERTIFICATE_NAME" />?</translation>
 <translation id="520621735928254154">Fel vid import av certifikat</translation>
 <translation id="5206562235913517859">Id:n för återförsäljarbutiker har formatet ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Det utsatta lösenordet har ändrats. Det finns # utsatt lösenord till. Du rekommenderas att kontrollera detta lösenord nu.}other{Det utsatta lösenordet har ändrats. Det finns # utsatta lösenord till. Du rekommenderas att kontrollera dessa lösenord nu.}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kontrollera om du använder en Chrome OS-enhet som uppfyller villkoren.</translation>
 <translation id="5208548918290612795">Autentiseringstoken sparas för <ph name="WEB_DRIVE" /></translation>
@@ -6245,7 +6239,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6970861306198150268">Se till att spara ditt nuvarande lösenord för den här webbplatsen</translation>
 <translation id="6972180789171089114">Ljud/video</translation>
 <translation id="6972754398087986839">Komma igång</translation>
-<translation id="6972887130317925583">Det utsatta lösenordet har ändrats. Du kan kontrollera dina lösenord när du vill i <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Får öppna popup-fönster och använda omdirigering</translation>
 <translation id="6973611239564315524">En uppgradering till Debian 10 (Buster) är tillgänglig</translation>
 <translation id="69739764870135975">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>

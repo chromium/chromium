@@ -664,7 +664,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1621984899599015181">Chaguo za kushiriki zinadhibitiwa na shirika lako. Huenda baadhi ya vipengee vimefichwa.</translation>
 <translation id="1622054403950683339">Sahau mtandao wa Wi-Fi</translation>
 <translation id="1623723619460186680">Upunguzaji wa mwanga wa buluu</translation>
-<translation id="1624012933569991823">Mipangilio</translation>
 <translation id="1624599281783425761">Hutaona <ph name="MERCHANT" /> tena</translation>
 <translation id="1624863973697515675">Faili hii ni kubwa mno kudhibitiwa na kifaa chako. Jaribu kuipakua kwa kutumia kifaa kingine</translation>
 <translation id="1627276047960621195">Vifafanuzi Faili</translation>
@@ -988,7 +987,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1897120393475391208">Tumia nenosiri thabiti</translation>
 <translation id="1900305421498694955">Huenda programu kwenye Google Play zikahitaji ufikiaji kamili wa mfumo wa faili ili kusoma na kuandika faili kwenye vifaa vya hifadhi ya nje. Faili na folda mpya zinazoongezwa kwenye kifaa huonekana kwa mtu yeyote anayetumia hifadhi ya nje. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Chagua &amp;yote</translation>
-<translation id="1901396183631570154">Chrome imeshindwa kuhifadhi manenosiri haya kwenye Akaunti yako ya Google. Bado unaweza kuyahifadhi kwenye kifaa hiki.</translation>
 <translation id="1903995858055162096">Je, hiki si kifaa chako? Tumia <ph name="BEGIN_LINK" />hali ya Wageni<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL unazotembelea huhifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1905375423839394163">Jina la kifaa cha Chromebook</translation>
@@ -1627,7 +1625,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2476974672882258506">Zima Windows ili uondoe <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Kwa vile umeweka mipangilio ya swichi nyingi, kipengele cha kuchanganua kiotomatiki kimezimwa.</translation>
 <translation id="2478176599153288112">Ruhusa za Faili ya Maudhui kwa "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Manenosiri hayajahifadhiwa</translation>
 <translation id="2480868415629598489">Badilisha data unayonakili na kubandika</translation>
 <translation id="2482878487686419369">Arifa</translation>
 <translation id="2482895651873876648">Kichupo kimewekwa kwenye kikundi kiitwacho <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -1989,7 +1986,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2813094189969465044">Vidhibiti vya wazazi</translation>
 <translation id="281390819046738856">Imeshindwa kutia sahihi ombi.</translation>
 <translation id="2814489978934728345">Simamisha upakiaji wa ukurasa huu</translation>
-<translation id="281504910091592009">Angalia na udhibiti manenosiri yaliyohifadhiwa kwenye <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Folda ya alamisho</translation>
 <translation id="2816319641769218778">Ili uhifadhi manenosiri kwenye Akaunti ya Google, washa usawazishaji.</translation>
 <translation id="2816628817680324566">Ungependa kuruhusu tovuti hii itambue ufunguo wako wa usalama?</translation>
@@ -4287,7 +4283,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5078638979202084724">Alamisha vichupo vyote</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
 <translation id="5079010647467150187">Ongeza VPN iliyojumuishwa ndani...</translation>
-<translation id="5079950360618752063">Tumia nenosiri linalopendekezwa</translation>
 <translation id="508059534790499809">Onyesha upya tiketi ya Kerberos</translation>
 <translation id="5084328598860513926">Utaratibu wa kuweka mipangilio umekatizwa. Tafadhali jaribu tena au uwasiliane na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Inatafuta visasishi</translation>
@@ -4412,7 +4407,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5206215183583316675">Ungependa kufuta "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Hitilafu ya Kuleta Cheti</translation>
 <translation id="5206562235913517859">Kitambulisho cha duka la muuzaji wa rejareja kina muundo wa ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Imebadilisha nenosiri lililoathiriwa. Una nenosiri # zaidi lililoathiriwa. Chrome inapendekeza ukague nenosiri hili sasa.}other{Imebadilisha nenosiri lililoathiriwa. Una manenosiri # zaidi yaliyoathiriwa. Chrome inapendekeza ukague manenosiri haya sasa.}}</translation>
 <translation id="5207949376430453814">Angazia kareti ya maandishi</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> inataka kuthibitisha kama unatumia kifaa kinachostahiki cha Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="5208548918290612795">Kuhifadhi Tokeni ya Uthibitishaji ya <ph name="WEB_DRIVE" /></translation>
@@ -6240,7 +6234,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6970861306198150268">Hakikisha kwamba unahifadhi nenosiri la sasa unalotumia kwenye tovuti hii</translation>
 <translation id="6972180789171089114">Sauti/Video</translation>
 <translation id="6972754398087986839">Anza</translation>
-<translation id="6972887130317925583">Umebadilisha nenosiri lililoathiriwa. Kagua manenosiri yako wakati wowote katika <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Zinazoruhusiwa kutuma madirisha ibukizi na kukuelekeza kwingine</translation>
 <translation id="6973611239564315524">Sasisho la Debian 10 (Buster) linapatikana</translation>
 <translation id="69739764870135975">Ikiwa Google pia ni mtambo wako chaguomsingi wa kutafuta, utaona mapendekezo bora, yanayofaa kulingana na muktadha</translation>

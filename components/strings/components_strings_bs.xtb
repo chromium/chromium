@@ -911,7 +911,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3427342743765426898">&amp;Poništi uređivanje</translation>
 <translation id="342781501876943858">Chromium preporučuje ponovno postavljanje lozinke ukoliko ste je iskoristili na drugim web lokacijama.</translation>
 <translation id="3428151540071562330">Jedan ili više URI-ja šablona servera DnsOverHttpsTemplates su nevažeći i neće se koristiti.</translation>
-<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| da biste zatvorili prikaz na cijelom zaslonu i vidjeli preuzimanje.</translation>
+<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| da izađete iz prikaza preko cijelog ekrana i vidite preuzimanje.</translation>
 <translation id="3431636764301398940">Sačuvaj ovu karticu na ovaj uređaj</translation>
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
@@ -1940,6 +1940,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6254436959401408446">Nema dovoljno memorije za otvaranje ove stranice</translation>
 <translation id="6259156558325130047">Ponovi p&amp;reuređivanje</translation>
 <translation id="6263376278284652872">Oznake domene <ph name="DOMAIN" /></translation>
+<translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6264485186158353794">Nazad na sigurno</translation>
 <translation id="6265794661083428563">Kopirajte vrijednost pravila <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Svijetlotirkiznoplava</translation>

@@ -664,7 +664,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1621984899599015181">Paylaşım seçeneklerini kuruluşunuz yönetir. Bazı ürünler gizlenmiş olabilir.</translation>
 <translation id="1622054403950683339">Kablosuz ağı unut</translation>
 <translation id="1623723619460186680">Mavi ışık azaltma</translation>
-<translation id="1624012933569991823">Ayarlar</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> adlı satıcıyı bir daha görmeyeceksiniz</translation>
 <translation id="1624863973697515675">Bu dosya, cihazınız tarafından yönetilemeyecek kadar büyük. Başka bir cihazda indirmeyi deneyin.</translation>
 <translation id="1627276047960621195">Dosya Açıklayıcıları</translation>
@@ -980,7 +979,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1897120393475391208">Güçlü şifre kullan</translation>
 <translation id="1900305421498694955">Google Play uygulamaları, harici depolama cihazlarında bulunan dosyaları ve klasörleri okuyup yazmak için tam dosya sistemi erişim izni gerektirebilir. Cihazda oluşturulan dosyalar ve klasörler, harici sürücüyü kullanan herkes tarafından görülebilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Tümünü &amp;seç</translation>
-<translation id="1901396183631570154">Chrome bu şifreleri Google Hesabınıza kaydedemedi. Yine de bu cihaza kaydedebilirsiniz.</translation>
 <translation id="1903995858055162096">Sizin cihazınız değil mi? <ph name="BEGIN_LINK" />Misafir modunu<ph name="END_LINK" /> kullanın.</translation>
 <translation id="1904580727789512086">Ziyaret ettiğiniz URL'ler Google Hesabınıza kaydedilir</translation>
 <translation id="1905375423839394163">Chromebook cihaz adı</translation>
@@ -1613,7 +1611,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> yüklemesini kaldırmak için Windows'u kapatın.</translation>
 <translation id="2477065602824695373">Birden fazla anahtar ayarladığınız için otomatik tarama özelliği kapatıldı.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" için Medya Dosya İzinleri</translation>
-<translation id="248003956660572823">Şifreler kaydedilmedi</translation>
 <translation id="2480868415629598489">Kopyaladığınız ve yapıştırdığınız verileri değiştirme</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2482895651873876648">Sekme, <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> grubuna taşındı</translation>
@@ -1975,7 +1972,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2813094189969465044">Ebeveyn denetimleri</translation>
 <translation id="281390819046738856">İstek imzalanamadı.</translation>
 <translation id="2814489978934728345">Bu sayfayı yüklemeyi durdur</translation>
-<translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Hesabınızdaki<ph name="END_LINK" /> kayıtlı şifrelerinizi görüntüleyin ve yönetin.</translation>
 <translation id="2815693974042551705">Yer işareti klasörü</translation>
 <translation id="2816319641769218778">Şifreleri Google Hesabınıza kaydetmek için senkronizasyonu açın.</translation>
 <translation id="2816628817680324566">Bu sitenin güvenlik anahtarınızı tanımlamasına izin verilsin mi?</translation>
@@ -4274,7 +4270,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5078638979202084724">Tüm sekmelere yer işareti koy</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5079010647467150187">Yerleşik VPN ekleyin...</translation>
-<translation id="5079950360618752063">Önerilen şifreyi kullan</translation>
 <translation id="508059534790499809">Kerberos biletini yenile</translation>
 <translation id="5084328598860513926">Yükleme akışı kesintiye uğradı. Lütfen tekrar deneyin veya cihaz sahibi ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Güncellemeler denetleniyor</translation>
@@ -4399,7 +4394,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5206215183583316675">"<ph name="CERTIFICATE_NAME" />" adlı sertifika silinsin mi?</translation>
 <translation id="520621735928254154">Sertifika İçe Aktarma Hatası</translation>
 <translation id="5206562235913517859">Perakendeci mağaza kimliği, ABC-1234 biçimindedir</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Güvenliği ihlal edilmiş şifre değiştirildi. Güvenliği ihlal edilmiş # şifreniz daha var. Chrome, bu şifreyi hemen kontrol etmenizi öneriyor.}other{Güvenliği ihlal edilmiş şifre değiştirildi. Güvenliği ihlal edilmiş # şifreniz daha var. Chrome, bu şifreleri hemen kontrol etmenizi öneriyor.}}</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> uygun bir ChromeOS cihazı kullanıp kullanmadığınızı kontrol etmek istiyor.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> Kimlik Doğrulama Jetonunu Saklama</translation>
@@ -6228,7 +6222,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6970861306198150268">Bu sitede kullandığınız şifreyi kaydettiğinizden emin olun</translation>
 <translation id="6972180789171089114">Ses/Video</translation>
 <translation id="6972754398087986839">Başlarken</translation>
-<translation id="6972887130317925583">Güvenliği ihlal edilmiş şifre değiştirildi. Şifrelerinizi <ph name="SETTINGS" /> üzerinden her zaman kontrol edebilirsiniz.</translation>
 <translation id="697312151395002334">Pop-up'lar gönderip yönlendirmeler kullanmasına izin verilen siteler</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) sürümüne geçiş yapılabilir</translation>
 <translation id="69739764870135975">Google'ı varsayılan arama motorunuz olarak da kullanıyorsanız bağlamla daha alakalı, daha iyi öneriler görürsünüz</translation>

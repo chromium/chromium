@@ -667,7 +667,6 @@
 <translation id="1621984899599015181">공유 옵션은 조직에서 관리합니다. 일부 항목이 표시되지 않을 수 있습니다.</translation>
 <translation id="1622054403950683339">Wi-Fi 네트워크 삭제</translation>
 <translation id="1623723619460186680">블루라이트 줄이기</translation>
-<translation id="1624012933569991823">설정</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" />이(가) 다시 표시되지 않음</translation>
 <translation id="1624863973697515675">이 기기에서 관리하기에 너무 큰 파일입니다. 다른 기기에서 다운로드해 보세요</translation>
 <translation id="1627276047960621195">파일 설명자</translation>
@@ -992,7 +991,6 @@
 <translation id="1897120393475391208">안전한 비밀번호를 사용하세요.</translation>
 <translation id="1900305421498694955">Google Play의 앱이 외부 저장장치에 있는 파일을 읽고 쓰기 위해 전체 파일 시스템 액세스 권한을 요구할 수도 있습니다. 이 기기에서 생성된 파일 및 폴더는 외장 드라이브를 사용하는 모든 사람이 볼 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">전체 선택(&amp;A)</translation>
-<translation id="1901396183631570154">Chrome에서 이 비밀번호를 Google 계정에 저장할 수 없습니다. 이 기기에는 여전히 비밀번호를 저장할 수 있습니다.</translation>
 <translation id="1903995858055162096">본인의 기기가 아닌가요? <ph name="BEGIN_LINK" />게스트 모드<ph name="END_LINK" />를 사용하세요.</translation>
 <translation id="1904580727789512086">내가 방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="1905375423839394163">Chromebook 기기 이름</translation>
@@ -1631,7 +1629,6 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />을 제거하려면 Windows를 종료하세요.</translation>
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
-<translation id="248003956660572823">비밀번호가 저장되지 않음</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
@@ -1993,7 +1990,6 @@
 <translation id="2813094189969465044">자녀 보호 기능</translation>
 <translation id="281390819046738856">요청을 서명할 수 없습니다.</translation>
 <translation id="2814489978934728345">해당 페이지 로드 중지</translation>
-<translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2815693974042551705">북마크 폴더</translation>
 <translation id="2816319641769218778">Google 계정에 비밀번호를 저장하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2816628817680324566">이 사이트에서 보안 키를 식별하도록 허용할까요?</translation>
@@ -4291,7 +4287,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5079010647467150187">기본 제공 VPN 추가...</translation>
-<translation id="5079950360618752063">추천 비밀번호 사용</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5084328598860513926">프로비저닝 흐름이 중단되었습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5085162214018721575">업데이트를 확인하는 중</translation>
@@ -4416,7 +4411,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5206215183583316675">'<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="520621735928254154">인증서 가져오기 오류</translation>
 <translation id="5206562235913517859">소매업체 매장 ID 형식: ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}other{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 인증 토큰을 저장하는 중</translation>
@@ -6244,7 +6238,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6970861306198150268">사이트의 현재 비밀번호를 저장해 두시기 바랍니다.</translation>
 <translation id="6972180789171089114">오디오/비디오</translation>
 <translation id="6972754398087986839">시작하기</translation>
-<translation id="6972887130317925583">유출된 비밀번호를 변경했습니다. 비밀번호는 언제든지 <ph name="SETTINGS" />에서 확인할 수 있습니다.</translation>
 <translation id="697312151395002334">팝업 전송 및 리디렉션 사용이 허용됨</translation>
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
 <translation id="69739764870135975">Google이 기본 검색엔진이기도 하면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>

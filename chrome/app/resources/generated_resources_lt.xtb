@@ -670,7 +670,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1621984899599015181">Bendrinimo parinktis valdo jūsų organizacija. Kai kurie elementai gali būti paslėpti.</translation>
 <translation id="1622054403950683339">Pamiršti „Wi-Fi“ tinklą</translation>
 <translation id="1623723619460186680">Mėlynos šviesos slopinimas</translation>
-<translation id="1624012933569991823">Nustatymai</translation>
 <translation id="1624599281783425761">Nebematysite „<ph name="MERCHANT" />“</translation>
 <translation id="1624863973697515675">Šis failas per didelis, kad jį būtų galima tvarkyti jūsų įrenginyje. Pabandykite atsisiųsti į kitą įrenginį</translation>
 <translation id="1627276047960621195">Failų deskriptoriai</translation>
@@ -995,7 +994,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1897120393475391208">Naudokite sudėtingą slaptažodį</translation>
 <translation id="1900305421498694955">Programose iš „Google Play“ gali būti prašoma leidimo pasiekti visas failų sistemos funkcijas, kad būtų galima nuskaityti ir įrašyti failus išoriniuose saugyklos įrenginiuose. Įrenginyje sukurtus failus ir aplankus gali matyti visi, naudojantys išorinį diską. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Pasirinkti &amp;viską</translation>
-<translation id="1901396183631570154">„Chrome“ nepavyko išsaugoti šių slaptažodžių „Google“ paskyroje. Vis tiek galite juos išsaugoti šiame įrenginyje.</translation>
 <translation id="1903995858055162096">Ne jūsų įrenginys? Naudokite <ph name="BEGIN_LINK" />svečio režimą<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="1905375423839394163">„Chromebook“ įrenginio pavadinimas</translation>
@@ -1633,7 +1631,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2476974672882258506">Išjunkite „Windows“, kad pašalintumėte „<ph name="PARALLELS_DESKTOP" />“.</translation>
 <translation id="2477065602824695373">Kadangi nustatėte kelis jungiklius, automatinis nuskaitymas buvo išjungtas.</translation>
 <translation id="2478176599153288112">Medijos failo leidimai, susiję su plėtiniu „<ph name="EXTENSION" />“</translation>
-<translation id="248003956660572823">Slaptažodžiai neišsaugoti</translation>
 <translation id="2480868415629598489">Keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2482895651873876648">Skirtukas perkeltas į grupę „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
@@ -1995,7 +1992,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2813094189969465044">Tėvų kontrolė</translation>
 <translation id="281390819046738856">Nepavyko pasirašyti užklausos.</translation>
 <translation id="2814489978934728345">Nutraukti šio puslapio įkėlimą</translation>
-<translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Žymių aplankas</translation>
 <translation id="2816319641769218778">Jei norite, kad slaptažodžiai būtų išsaugomi „Google“ paskyroje, įjunkite sinchronizavimą.</translation>
 <translation id="2816628817680324566">Leisti šiai svetainei identifikuoti jūsų saugos raktą?</translation>
@@ -4295,7 +4291,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5078638979202084724">Žymėti visus skirtukus</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5079010647467150187">Pridėti įtaisytąjį VPN...</translation>
-<translation id="5079950360618752063">Naudoti siūlomą slaptažodį</translation>
 <translation id="508059534790499809">Atnaujinti „Kerberos“ bilietą</translation>
 <translation id="5084328598860513926">Pertraukta aprūpinimo eiga. Bandykite dar kartą arba susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Ieškoma naujinių</translation>
@@ -4420,7 +4415,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5206215183583316675">Ištrinti „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Sertifikato importavimo klaida</translation>
 <translation id="5206562235913517859">Mažmenininko parduotuvės ID ABC-1234 formatu</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šį slaptažodį dabar.}one{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}few{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistus slaptažodžius. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}many{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeisto slaptažodžio. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}other{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistų slaptažodžių. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}}</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="520840839826327499">„<ph name="SERVICE_NAME" />“ nori patikrinti, ar naudojate tinkamą „Chrome“ OS įrenginį.</translation>
 <translation id="5208548918290612795">Saugomas „<ph name="WEB_DRIVE" />“ autentifikavimo prieigos raktas</translation>
@@ -6255,7 +6249,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6970861306198150268">Įsitikinkite, kad išsaugojote dabartinį šios svetainės slaptažodį</translation>
 <translation id="6972180789171089114">Garso / vaizdo įrašai</translation>
 <translation id="6972754398087986839">Darbo pradžia</translation>
-<translation id="6972887130317925583">Pažeistas slaptažodis sėkmingai pakeistas. Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="SETTINGS" />“.</translation>
 <translation id="697312151395002334">Leidžiama siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>
 <translation id="6973611239564315524">Galima naujovinti į „Debian 10 (Buster)“</translation>
 <translation id="69739764870135975">Jei „Google“ taip pat yra jūsų numatytasis paieškos variklis, matysite geresnius, kontekstą atitinkančius pasiūlymus</translation>

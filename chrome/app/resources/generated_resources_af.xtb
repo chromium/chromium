@@ -667,7 +667,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1621984899599015181">Jou organisasie bestuur opsies om te deel. Sommige items word dalk versteek.</translation>
 <translation id="1622054403950683339">Vergeet Wi-Fi-netwerk</translation>
 <translation id="1623723619460186680">Dowwer blou lig</translation>
-<translation id="1624012933569991823">Instellings</translation>
 <translation id="1624599281783425761">Jy sal <ph name="MERCHANT" /> nie weer sien nie</translation>
 <translation id="1624863973697515675">Hierdie lêers is te groot vir jou toestel om te bestuur. Probeer dit op ’n ander toestel aflaai</translation>
 <translation id="1627276047960621195">Lêerbeskrywers</translation>
@@ -992,7 +991,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1897120393475391208">Gebruik sterk wagwoord</translation>
 <translation id="1900305421498694955">Programme van Google Play af moet dalk volle toegang tot lêerstelsels hê om lêers op eksterne bergingtoestelle te lees en te skryf. Enigiemand wat die eksterne skyf gebruik, kan lêers en vouers sien wat op die toestel geskep is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Kies almal</translation>
-<translation id="1901396183631570154">Chrome kon nie hierdie wagwoorde in jou Google-rekening stoor nie. Jy kan hulle steeds op hierdie toestel stoor.</translation>
 <translation id="1903995858055162096">Nie jou toestel nie? Gebruik <ph name="BEGIN_LINK" />Gasmodus<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="1905375423839394163">Chromebook-toestelnaam</translation>
@@ -1630,7 +1628,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2476974672882258506">Skakel Windows af om <ph name="PARALLELS_DESKTOP" /> te deïnstalleer.</translation>
 <translation id="2477065602824695373">Outoskandeer is afgeskakel aangesien jy veelvuldige skakelaars opgestel het.</translation>
 <translation id="2478176599153288112">Medialêer-toestemmings vir "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Wagwoorde is nie gestoor nie</translation>
 <translation id="2480868415629598489">Verander data wat jy kopieer en plak</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2482895651873876648">Oortjie is geskuif na groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1992,7 +1989,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2813094189969465044">Ouerkontroles</translation>
 <translation id="281390819046738856">Versoek kon nie onderteken word nie.</translation>
 <translation id="2814489978934728345">Hou op om hierdie bladsy te laai</translation>
-<translation id="281504910091592009">Bekyk en bestuur gestoorde wagwoorde in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Boekmerkvouer</translation>
 <translation id="2816319641769218778">Skakel sinkronisering aan om wagwoorde in jou Google-rekening te stoor.</translation>
 <translation id="2816628817680324566">Laat hierdie werf toe om jou sekuriteitsleutel te identifiseer?</translation>
@@ -4292,7 +4288,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5078638979202084724">Boekmerk alle oortjies</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5079010647467150187">Voeg ingeboude VPN by …</translation>
-<translation id="5079950360618752063">Gebruik voorgestelde wagwoord</translation>
 <translation id="508059534790499809">Herlaai 'n Kerberos-kaartjie</translation>
 <translation id="5084328598860513926">Voorsieningvloei is onderbreek. Probeer weer of kontak jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Gaan tans na vir opdaterings …</translation>
@@ -4417,7 +4412,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5206215183583316675">Vee "<ph name="CERTIFICATE_NAME" />" uit?</translation>
 <translation id="520621735928254154">Sertifikaatinvoerfout</translation>
 <translation id="5206562235913517859">Kleinhandelwinkel-ID is ABC-1234-formaat</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Die gekompromitteerde wagwoord is suksesvol verander. Jy het nog # gekompromitteerde wagwoord. Chrome beveel aan dat jy hierdie wagwoord nou nagaan.}other{Die gekompromitteerde wagwoord is suksesvol verander. Jy het nog # gekompromitteerde wagwoorde. Chrome beveel aan dat jy hierdie wagwoorde nou nagaan.}}</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> wil kyk of jy ’n geskikte Chrome-bedryfstelseltoestel gebruik.</translation>
 <translation id="5208548918290612795">Berg tans <ph name="WEB_DRIVE" />-stawingstoken</translation>
@@ -5303,6 +5297,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
 <translation id="6066794465984119824">Prenthuts is nie gestel nie</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>
+<translation id="6070311415473175157">Kies prent-area om te deursoek</translation>
 <translation id="6071181508177083058">bevestig wagwoord</translation>
 <translation id="6071576563962215370">Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> word nie op hierdie toestel toegelaat nie. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
@@ -6246,7 +6241,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6970861306198150268">Maak seker jy stoor jou huidige wagwoord vir hierdie werf</translation>
 <translation id="6972180789171089114">Oudio/Video</translation>
 <translation id="6972754398087986839">Kom aan die gang</translation>
-<translation id="6972887130317925583">Die gekompromitteerde wagwoord is suksesvol verander. Gaan jou wagwoorde enige tyd na in <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Mag opspringers stuur en herleidings gebruik</translation>
 <translation id="6973611239564315524">'n Opgradering na Debian 10 (Buster) is beskikbaar</translation>
 <translation id="69739764870135975">As Google ook jou versteksoekenjin is, sal jy beter, kontekstueel relevante voorstelle sien</translation>
@@ -7134,6 +7128,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7842692330619197998">Besoek g.co/ChromeEnterpriseAccount as jy 'n nuwe rekening moet skep.</translation>
 <translation id="78427265591841839">Deursoek enige deel van die bladsy met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Deïnstalleer Linux</translation>
+<translation id="7842851769217535639">Kies enige deel van die bladsy om te deursoek</translation>
 <translation id="7843786652787044762">Meld op <ph name="WEB_DRIVE" /> aan</translation>
 <translation id="7844992432319478437">Dateer tans verskilvergelyking op</translation>
 <translation id="7846634333498149051">Sleutelbord</translation>
@@ -7190,6 +7185,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7893008570150657497">Gaan vanaf jou rekenaar by foto's, musiek en ander media in</translation>
 <translation id="7893153962594818789">Bluetooth is af op hierdie <ph name="DEVICE_TYPE" />. Voer jou wagwoord in en skakel Bluetooth aan.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Verstek)</translation>
+<translation id="7896292361319775586">Stoor <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Moenie werwe toelaat om outomaties veelvuldige lêers af te laai nie</translation>
 <translation id="7897900149154324287">In die toekoms moet jy seker maak dat jy jou verwyderbare toestel in die Lêersprogram verwyder voor jy dit uitprop. Anders kan jy dalk data verloor.</translation>
 <translation id="7898725031477653577">Vertaal altyd</translation>
@@ -8326,6 +8322,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="899403249577094719">Netscape-sertifikaatbasis se URL</translation>
 <translation id="899657321862108550">Jou Chrome, oral</translation>
 <translation id="899676909165543803">Die vingerafdruksensor is die sleutel onder regs op jou sleutelbord. Raak met enige vinger liggies daaraan.</translation>
+<translation id="8998078711690114234">Hierdie soort lêer kan gevaarlik wees. Stoor hierdie lêer net as jy <ph name="ORIGIN" /> vertrou</translation>
 <translation id="8999560016882908256">Afdelingsinsboufout: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Koppeling aan toestelbestuurbediener het om <ph name="FAILURE_TIME" /> met status "<ph name="STATUS_TEXT" />" misluk</translation>
 <translation id="9003647077635673607">Laat op alle webwerwe toe</translation>

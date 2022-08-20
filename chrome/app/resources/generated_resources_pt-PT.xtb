@@ -664,7 +664,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1621984899599015181">As opções para partilhar são geridas pela sua entidade. Alguns itens podem estar ocultos.</translation>
 <translation id="1622054403950683339">Esquecer rede Wi-Fi</translation>
 <translation id="1623723619460186680">Redução da luz azul</translation>
-<translation id="1624012933569991823">Definições</translation>
 <translation id="1624599281783425761">Não irá ver <ph name="MERCHANT" /> novamente.</translation>
 <translation id="1624863973697515675">Este ficheiro é demasiado grande para o seu dispositivo gerir. Tente transferi-lo noutro dispositivo</translation>
 <translation id="1627276047960621195">Descritores de ficheiros</translation>
@@ -980,7 +979,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1897120393475391208">Usar palavra-passe forte</translation>
 <translation id="1900305421498694955">As aplicações do Google Play podem necessitar de acesso completo ao sistema de ficheiros para ler e gravar ficheiros em dispositivos de armazenamento externos. Os ficheiros e as pastas criados no dispositivo são visíveis para qualquer pessoa que utilize a unidade externa. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar tudo</translation>
-<translation id="1901396183631570154">O Chrome não conseguiu guardar estas palavras-passe na sua Conta Google. Ainda pode guardá-las neste dispositivo.</translation>
 <translation id="1903995858055162096">Este não é o seu dispositivo? Utilize o <ph name="BEGIN_LINK" />modo convidado<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1905375423839394163">Nome do dispositivo do Chromebook</translation>
@@ -1615,7 +1613,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2476974672882258506">Encerre o Windows para desinstalar o <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Uma vez que configurou vários interruptores, a análise automática foi desativada.</translation>
 <translation id="2478176599153288112">Autorizações de ficheiros multimédia para "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Palavras-passe não guardadas</translation>
 <translation id="2480868415629598489">Modificar os dados que copia e cola</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2482895651873876648">Separador movido para o grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1977,7 +1974,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2813094189969465044">Controlo parental</translation>
 <translation id="281390819046738856">Não foi possível assinar o pedido.</translation>
 <translation id="2814489978934728345">Parar de carregar esta página</translation>
-<translation id="281504910091592009">Veja e faça a gestão das palavras-passe guardadas na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="2815693974042551705">Pasta de marcadores</translation>
 <translation id="2816319641769218778">Para guardar palavras-passe na sua Conta Google, ative a sincronização.</translation>
 <translation id="2816628817680324566">Permitir que este site veja a sua chave de segurança?</translation>
@@ -4277,7 +4273,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5078638979202084724">Adicionar todos os separadores aos marcadores</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5079010647467150187">Adicionar VPN incorporada…</translation>
-<translation id="5079950360618752063">Utilizar palavra-passe sugerida</translation>
 <translation id="508059534790499809">Atualize uma permissão Kerberos</translation>
 <translation id="5084328598860513926">O fluxo de Administração de contas foi interrompido. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">A verificar existência de atualizações</translation>
@@ -4402,7 +4397,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5206215183583316675">Eliminar "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Erro de importação do certificado</translation>
 <translation id="5206562235913517859">O ID da loja do retalhista deve estar no formato ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Alterou com êxito a palavra-passe comprometida. Tem mais # palavra-passe comprometida. O Chrome recomenda que verifique agora esta palavra-passe.}other{Alterou com êxito a palavra-passe comprometida. Tem mais # palavras-passe comprometidas. O Chrome recomenda que verifique agora estas palavras-passe.}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="520840839826327499">O <ph name="SERVICE_NAME" /> quer verificar se está a usar um dispositivo com ChromeOS elegível.</translation>
 <translation id="5208548918290612795">Armazenamento do símbolo de autenticação do <ph name="WEB_DRIVE" /></translation>
@@ -6232,7 +6226,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6970861306198150268">Certifique-se de que está a guardar a sua palavra-passe atual para este site</translation>
 <translation id="6972180789171089114">Áudio/Vídeo</translation>
 <translation id="6972754398087986839">Começar</translation>
-<translation id="6972887130317925583">Alterou com êxito a palavra-passe comprometida. Verifique as suas palavras-passe em qualquer altura em <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Com autorização para enviar pop-ups e utilizar redirecionamentos</translation>
 <translation id="6973611239564315524">Está disponível uma atualização para a versão Debian 10 (Buster).</translation>
 <translation id="69739764870135975">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>

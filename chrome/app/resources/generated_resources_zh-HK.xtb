@@ -667,7 +667,6 @@
 <translation id="1621984899599015181">共用選項由您的機構管理。系統可能會隱藏部分項目。</translation>
 <translation id="1622054403950683339">移除 Wi-Fi 網絡</translation>
 <translation id="1623723619460186680">減少藍光</translation>
-<translation id="1624012933569991823">設定</translation>
 <translation id="1624599281783425761">您將不會再看到 <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">此檔案太大，您的裝置無法管理。請嘗試下載至其他裝置</translation>
 <translation id="1627276047960621195">檔案描述符</translation>
@@ -992,7 +991,6 @@
 <translation id="1897120393475391208">使用安全性強的密碼</translation>
 <translation id="1900305421498694955">Google Play 應用程式可能會要求取得檔案系統的完整存取權，以讀取和寫入外部儲存裝置上的檔案。外置磁碟的任何使用者都能見到在此裝置上建立的檔案和資料夾。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">全部選取(&amp;A)</translation>
-<translation id="1901396183631570154">Chrome 無法將以下這些密碼儲存在您的 Google 帳戶中，不過您仍可將密碼儲存在此裝置上。</translation>
 <translation id="1903995858055162096">這不是您的裝置嗎？使用<ph name="BEGIN_LINK" />訪客模式<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1905375423839394163">Chromebook 裝置名稱</translation>
@@ -1630,7 +1628,6 @@
 <translation id="2476974672882258506">關閉 Windows 即可解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">由於您已設定多個按鈕裝置，因此自動掃瞄已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
-<translation id="248003956660572823">密碼未儲存</translation>
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
@@ -1992,7 +1989,6 @@
 <translation id="2813094189969465044">家長監控設定</translation>
 <translation id="281390819046738856">無法簽署要求。</translation>
 <translation id="2814489978934728345">停止載入這個網頁</translation>
-<translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2815693974042551705">書籤資料夾</translation>
 <translation id="2816319641769218778">如要將密碼儲存至 Google 帳戶，請開啟同步功能。</translation>
 <translation id="2816628817680324566">要允許此網站辨識您的安全密鑰嗎？</translation>
@@ -4292,7 +4288,6 @@
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5079010647467150187">新增內置 VPN…</translation>
-<translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">檢查更新</translation>
@@ -4417,7 +4412,6 @@
 <translation id="5206215183583316675">要刪除「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="520621735928254154">憑證匯入錯誤</translation>
 <translation id="5206562235913517859">零售商商店 ID 為 ABC-1234 格式</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{已成功變更被盜用的密碼。您還有 # 個被盜用的密碼。Chrome 建議您立即檢查此密碼。}other{已成功變更被盜用的密碼。您還有 # 個被盜用的密碼。Chrome 建議您立即檢查這些密碼。}}</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想檢查您是否使用符合資格的 Chrome OS 裝置。</translation>
 <translation id="5208548918290612795">儲存「<ph name="WEB_DRIVE" />」驗證憑證</translation>
@@ -6244,7 +6238,6 @@
 <translation id="6970861306198150268">請確保要儲存此網站目前的密碼</translation>
 <translation id="6972180789171089114">音訊/影片</translation>
 <translation id="6972754398087986839">開始使用</translation>
-<translation id="6972887130317925583">已成功變更被盜用的密碼。您可隨時在「<ph name="SETTINGS" />」中檢查密碼。</translation>
 <translation id="697312151395002334">已允許傳送彈出式視窗和使用重新導向</translation>
 <translation id="6973611239564315524">可以升級至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>

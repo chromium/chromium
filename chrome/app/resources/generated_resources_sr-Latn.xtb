@@ -663,7 +663,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1621984899599015181">Opcijama za deljenje upravlja organizacija. Neke stavke će možda biti skrivene.</translation>
 <translation id="1622054403950683339">Zaboravi WiFi mrežu</translation>
 <translation id="1623723619460186680">Smanjivanje plavog svetla</translation>
-<translation id="1624012933569991823">Podešavanja</translation>
 <translation id="1624599281783425761">Neće vam se više prikazivati korpa prodavca <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Ovaj fajl je prevelik da bi uređaj upravljao njim. Probajte da ga preuzmete na drugom uređaju</translation>
 <translation id="1627276047960621195">Deskriptori datoteka</translation>
@@ -979,7 +978,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1897120393475391208">Koristite jaku lozinku</translation>
 <translation id="1900305421498694955">Aplikacijama sa Google Play-a će možda trebati potpuni pristup sistemu datoteka da bi čitale i upisivale datoteke na spoljnim memorijskim uređajima. Datoteke i direktorijumi napravljeni na uređaju su vidljivi svima koji koriste spoljni disk. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Izaberi &amp;sve</translation>
-<translation id="1901396183631570154">Chrome nije uspeo da sačuva lozinke na Google nalogu. Još uvek možete da ih sačuvate na ovom uređaju.</translation>
 <translation id="1903995858055162096">Ovo nije vaš uređaj? Koristite <ph name="BEGIN_LINK" />režim gosta<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>
 <translation id="1905375423839394163">Naziv Chromebook uređaja</translation>
@@ -1614,7 +1612,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2476974672882258506">Isključite Windows da biste deinstalirali <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Pošto ste podesili više prekidača, automatsko skeniranje je isključeno.</translation>
 <translation id="2478176599153288112">Dozvole za medijske datoteke za „<ph name="EXTENSION" />“</translation>
-<translation id="248003956660572823">Lozinke nisu sačuvane</translation>
 <translation id="2480868415629598489">Menjanje podataka koje prekopirate</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2482895651873876648">Kartica je premeštena u grupu <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1976,7 +1973,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2813094189969465044">Roditeljski nadzor</translation>
 <translation id="281390819046738856">Potpisivanje zahteva nije uspelo.</translation>
 <translation id="2814489978934728345">Prekinite učitavanje ove stranice</translation>
-<translation id="281504910091592009">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Folder za obeleživače</translation>
 <translation id="2816319641769218778">Da biste sačuvali lozinke na Google nalogu, uključite sinhronizaciju.</translation>
 <translation id="2816628817680324566">Želite da dozvolite ovom sajtu da identifikuje bezbednosni ključ?</translation>
@@ -4275,7 +4271,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5078638979202084724">Obeležavanje svih kartica</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
 <translation id="5079010647467150187">Dodaj ugrađeni VPN…</translation>
-<translation id="5079950360618752063">Koristite predloženu lozinku</translation>
 <translation id="508059534790499809">Osveži Kerberos tiket</translation>
 <translation id="5084328598860513926">Tok dodele je prekinut. Probajte ponovo ili se obratite vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Traženje ažuriranja</translation>
@@ -4400,7 +4395,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5206215183583316675">Želite li da izbrišete „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Greška pri uvozu sertifikata</translation>
 <translation id="5206562235913517859">ID prodavca-prodavnice je u formatu ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Promenili ste ugroženu lozinku. Imate još # ugroženu lozinku. Chrome vam preporučuje da odmah proverite ovu lozinku.}one{Promenili ste ugroženu lozinku. Imate još # ugroženu lozinku. Chrome vam preporučuje da odmah proverite ove lozinke.}few{Promenili ste ugroženu lozinku. Imate još # ugrožene lozinke. Chrome vam preporučuje da odmah proverite ove lozinke.}other{Promenili ste ugroženu lozinku. Imate još # ugroženih lozinki. Chrome vam preporučuje da odmah proverite ove lozinke.}}</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi da proveri da li koristite Chrome OS uređaj koji ispunjava uslove.</translation>
 <translation id="5208548918290612795">Čuvanje <ph name="WEB_DRIVE" /> tokena za potvrdu identiteta</translation>
@@ -6233,7 +6227,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6970861306198150268">Uverite se da čuvate aktuelnu lozinku za ovaj sajt</translation>
 <translation id="6972180789171089114">Audio/video</translation>
 <translation id="6972754398087986839">Započnimo</translation>
-<translation id="6972887130317925583">Promenili ste ugroženu lozinku. Proverite lozinke u bilo kom trenutku u odeljku <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Dozvoljeno im je da šalju iskačuće prozore i da koriste preusmeravanja</translation>
 <translation id="6973611239564315524">Dostupna je nadogradnja na Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ako vam je Google i podrazumevani pretraživač, videćete bolje, kontekstualno relevantne predloge</translation>

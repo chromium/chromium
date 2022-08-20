@@ -661,7 +661,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1621984899599015181">Tu organización administra las opciones de uso compartido. Es posible que algunos elementos estén ocultos.</translation>
 <translation id="1622054403950683339">Olvidar la red Wi-Fi</translation>
 <translation id="1623723619460186680">Reducción de la luz azul</translation>
-<translation id="1624012933569991823">Configuración</translation>
 <translation id="1624599281783425761">No se volverá a mostrar <ph name="MERCHANT" />.</translation>
 <translation id="1624863973697515675">Este archivo es demasiado grande para que tu dispositivo pueda administrarlo. Intenta descargarlo en otro dispositivo.</translation>
 <translation id="1627276047960621195">Descriptores de archivos</translation>
@@ -977,7 +976,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1897120393475391208">Usar una contraseña segura</translation>
 <translation id="1900305421498694955">Es posible que las apps de Google Play necesiten acceder a todo el sistema de archivos para leer y escribir archivos en dispositivos externos de almacenamiento. Cualquier persona que use la unidad externa podrá ver los archivos y carpetas creados en este dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
-<translation id="1901396183631570154">Chrome no pudo guardar estas contraseñas en tu Cuenta de Google. De todos modos puedes guardarlas en este dispositivo.</translation>
 <translation id="1903995858055162096">¿No es tu dispositivo? Usa el <ph name="BEGIN_LINK" />Modo de invitado<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1905375423839394163">Nombre de la Chromebook</translation>
@@ -1612,7 +1610,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2476974672882258506">Para desinstalar <ph name="PARALLELS_DESKTOP" />, debes cerrar Windows.</translation>
 <translation id="2477065602824695373">Dado que configuraste varios interruptores, se desactivó el escaneo automático.</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">No se guardaron las contraseñas</translation>
 <translation id="2480868415629598489">Modificar los datos copiados y pegados</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2482895651873876648">Se movió la pestaña al grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -1974,7 +1971,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2813094189969465044">Controles parentales</translation>
 <translation id="281390819046738856">La solicitud no se pudo firmar.</translation>
 <translation id="2814489978934728345">Interrumpir la carga de esta página</translation>
-<translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Carpeta de favoritos</translation>
 <translation id="2816319641769218778">Para guardar contraseñas en tu Cuenta de Google, activa la sincronización.</translation>
 <translation id="2816628817680324566">¿Quieres permitir que este sitio identifique tu llave de seguridad?</translation>
@@ -4273,7 +4269,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5078638979202084724">Agregar a favoritos todas las pestañas</translation>
 <translation id="5078796286268621944">Número de PIN incorrecto</translation>
 <translation id="5079010647467150187">Agregar VPN integrada…</translation>
-<translation id="5079950360618752063">Usar la contraseña sugerida</translation>
 <translation id="508059534790499809">Actualizar un ticket de Kerberos</translation>
 <translation id="5084328598860513926">Se interrumpió el flujo de aprovisionamiento. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Buscando actualizaciones...</translation>
@@ -4398,7 +4393,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5206215183583316675">¿Deseas borrar el certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Error en la importación de certificado</translation>
 <translation id="5206562235913517859">La ID de la tienda minorista está en formato ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Cambiaste correctamente la contraseña hackeada. Tienes # contraseña hackeada más. Chrome te recomienda revisar esta contraseña ahora.}other{Cambiaste correctamente la contraseña hackeada. Tienes # contraseñas hackeadas más. Chrome te recomienda revisar estas contraseñas ahora.}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás usando un dispositivo apto para Chrome OS.</translation>
 <translation id="5208548918290612795">Almacenamiento del token de autenticación de <ph name="WEB_DRIVE" /></translation>
@@ -6226,7 +6220,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6970861306198150268">Asegúrate de guardar la contraseña actual para este sitio</translation>
 <translation id="6972180789171089114">Audio/video</translation>
 <translation id="6972754398087986839">Comenzar</translation>
-<translation id="6972887130317925583">Cambiaste correctamente la contraseña hackeada. Puedes revisar las contraseñas en cualquier momento, en <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Puede enviar ventanas emergentes y usar redireccionamientos</translation>
 <translation id="6973611239564315524">Hay disponible una actualización a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás sugerencias mejores y relevantes según el contexto</translation>

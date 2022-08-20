@@ -668,7 +668,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1621984899599015181">Pinapamahalaan ng iyong organisasyon ang mga opsyon para sa pagbabahagi. Posibleng nakatago ang ilang item.</translation>
 <translation id="1622054403950683339">Kalimutan ang Wi-Fi network</translation>
 <translation id="1623723619460186680">Pag-dim sa blue light</translation>
-<translation id="1624012933569991823">Mga Setting</translation>
 <translation id="1624599281783425761">Hindi mo na makikita ulit ang <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Masyadong malaki ang file na ito para pamahalaan ng iyong device. Subukan itong i-download sa ibang device</translation>
 <translation id="1627276047960621195">Mga Descriptor ng File</translation>
@@ -993,7 +992,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1897120393475391208">Gumamit ng malakas na password</translation>
 <translation id="1900305421498694955">Puwedeng mangailangan ang mga app mula sa Google Play ng kumpletong access sa system ng file para mag-read at mag-write ng mga file sa mga external na storage device. Nakikita ng sinumang gumagamit ng external na drive ang mga file at folder na ginawa sa device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Piliin ang &amp;lahat</translation>
-<translation id="1901396183631570154">Hindi ma-save ng Chrome ang mga password na ito sa iyong Google Account. Mase-save mo pa rin ang mga ito sa device na ito.</translation>
 <translation id="1903995858055162096">Hindi iyo ang device? Gamitin ang <ph name="BEGIN_LINK" />Guest mode<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1905375423839394163">Pangalan ng Chromebook device</translation>
@@ -1631,7 +1629,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2476974672882258506">I-shut down ang Windows para ma-uninstall ang <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Dahil nagtalaga ka ng maraming switch, na-off ang awtomatikong pag-scan.</translation>
 <translation id="2478176599153288112">Mga Pahintulot sa Media-File para sa "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Hindi na-save ang mga password</translation>
 <translation id="2480868415629598489">Baguhin ang data na kinokopya at pine-paste mo</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2482895651873876648">Inilipat ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -1993,7 +1990,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2813094189969465044">Mga kontrol ng magulang</translation>
 <translation id="281390819046738856">Hindi malagdaan ang kahilingan.</translation>
 <translation id="2814489978934728345">Ihinto ang pagkarga sa pahinang ito</translation>
-<translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Folder ng bookmark</translation>
 <translation id="2816319641769218778">Para mag-save ng mga password sa iyong Google Account, i-on ang pag-sync.</translation>
 <translation id="2816628817680324566">Payagan ang site na ito na makilala ang iyong security key?</translation>
@@ -4293,7 +4289,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5078638979202084724">I-bookmark ang lahat ng mga tab</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5079010647467150187">Magdagdag ng built-in na VPN...</translation>
-<translation id="5079950360618752063">Gamitin ang iminumungkahing password</translation>
 <translation id="508059534790499809">I-refresh ang ticket ng Kerberos</translation>
 <translation id="5084328598860513926">Naantala ang daloy ng pag-provision. Pakisubukan ulit o makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Tumitingin ng mga update</translation>
@@ -4418,7 +4413,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5206215183583316675">I-delete ang "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Error sa Pag-import ng Certificate</translation>
 <translation id="5206562235913517859">Ang retailer-store ID ay nasa format na ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang password na ito.}one{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang mga password na ito.}other{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang mga password na ito.}}</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="520840839826327499">Gustong suriin ng <ph name="SERVICE_NAME" /> kung gumagamit ka ng kwalipikadong ChromeOS device.</translation>
 <translation id="5208548918290612795">Token ng Pag-authenticate sa <ph name="WEB_DRIVE" /> sa Pag-store</translation>
@@ -6248,7 +6242,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6970861306198150268">Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito</translation>
 <translation id="6972180789171089114">Audio/Video</translation>
 <translation id="6972754398087986839">Magsimula</translation>
-<translation id="6972887130317925583">Napalitan ang nakompromisong password. Suriin ang iyong mga password anumang oras sa <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Pinapayagang magpadala ng mga pop-up at gumamit ng mga pag-redirect</translation>
 <translation id="6973611239564315524">May available na pag-upgrade sa Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Kung Google din ang iyong default na search engine, makakakita ka ng mga suhestyong mas maganda at nauugnay sa konteksto</translation>

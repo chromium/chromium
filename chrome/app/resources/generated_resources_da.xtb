@@ -668,7 +668,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1621984899599015181">Delingsindstilingerne administreres af din organisation. Nogle elementer er muligvis skjult.</translation>
 <translation id="1622054403950683339">Glem Wi-Fi-netværk</translation>
 <translation id="1623723619460186680">Reduktion af blåt lys</translation>
-<translation id="1624012933569991823">Indstillinger</translation>
 <translation id="1624599281783425761"><ph name="MERCHANT" /> vises ikke igen</translation>
 <translation id="1624863973697515675">Denne fil er for stor til, at den kan administreres af din enhed. Prøv at downloade den på en anden enhed</translation>
 <translation id="1627276047960621195">Filbeskrivelser</translation>
@@ -993,7 +992,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1897120393475391208">Brug en stærk adgangskode</translation>
 <translation id="1900305421498694955">Apps fra Google Play skal muligvis have fuld adgang til filsystemet for at læse og skrive filer på eksterne lagerenheder. De filer og mapper, som oprettes på enheden, er synlige for alle, der bruger det eksterne drev. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Vælg &amp;alle</translation>
-<translation id="1901396183631570154">Chrome kunne ikke gemme disse adgangskoder på din Google-konto. Du kan stadig gemme dem på denne enhed.</translation>
 <translation id="1903995858055162096">Er det ikke din enhed? Brug <ph name="BEGIN_LINK" />Gæstetilstand<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="1905375423839394163">Navn på Chromebook-enhed</translation>
@@ -1631,7 +1629,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2476974672882258506">Luk Windows ned for at afinstallere <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Automatisk scanning er blevet deaktiveret, da du har konfigureret flere kontakter.</translation>
 <translation id="2478176599153288112">Mediefiltilladelser for "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Adgangskoderne blev ikke gemt</translation>
 <translation id="2480868415629598489">Redigere data, du kopierer og indsætter</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2482895651873876648">Fanen blev flyttet til gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -1993,7 +1990,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2813094189969465044">Børnesikring</translation>
 <translation id="281390819046738856">Anmodningen kunne ikke signeres.</translation>
 <translation id="2814489978934728345">Stop indlæsning af denne side</translation>
-<translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Bogmærkemappe</translation>
 <translation id="2816319641769218778">Du skal aktivere synkronisering for at gemme adgangskoder på din Google-konto.</translation>
 <translation id="2816628817680324566">Vil du tillade, at dette website identificerer din sikkerhedsnøgle?</translation>
@@ -4293,7 +4289,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5078638979202084724">Tilføj alle faner som bogmærker</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5079010647467150187">Tilføj indbygget VPN…</translation>
-<translation id="5079950360618752063">Brug den foreslåede adgangskode</translation>
 <translation id="508059534790499809">Opdater en Kerberos-billet</translation>
 <translation id="5084328598860513926">Provisioneringsflowet blev afbrudt. Prøv igen, eller kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Søger efter opdateringer</translation>
@@ -4418,7 +4413,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5206215183583316675">Vil du slette "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Fejl ved import af certifikat</translation>
 <translation id="5206562235913517859">Forhandler-id'et skal angives i formatet ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Den kompromitterede adgangskode blev ændret. Du har # anden kompromitteret adgangskode. Chrome anbefaler, at du tjekker denne adgangskode nu.}one{Den kompromitterede adgangskode blev ændret. Du har # anden kompromitteret adgangskode. Chrome anbefaler, at du tjekker denne adgangskode nu.}other{Den kompromitterede adgangskode blev ændret. Du har # andre kompromitterede adgangskoder. Chrome anbefaler, at du tjekker disse adgangskoder nu.}}</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vil gerne tjekke, om du bruger en kvalificeret Chrome OS-enhed.</translation>
 <translation id="5208548918290612795">Gemmer godkendelsestoken for <ph name="WEB_DRIVE" /></translation>
@@ -6249,7 +6243,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6970861306198150268">Sørg for at gemme din aktuelle adgangskode til dette website</translation>
 <translation id="6972180789171089114">Lyd/video</translation>
 <translation id="6972754398087986839">Kom godt i gang</translation>
-<translation id="6972887130317925583">Den kompromitterede adgangskode er blevet ændret. Du kan til enhver tid tjekke dine adgangskoder i <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Har tilladelse til at sende pop op-vinduer og bruge omdirigeringer</translation>
 <translation id="6973611239564315524">Der er en tilgængelig opdatering til Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>

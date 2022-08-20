@@ -914,6 +914,7 @@
 <translation id="3427342743765426898">&amp;တည်းဖြတ်မှု ပြန်လုပ်ရန်</translation>
 <translation id="342781501876943858">အခြားဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chromium က အကြံပြုပါသည်။</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates ဆာဗာ နမူနာပုံစံ URI များအနက် တစ်ခုနှင့်အထက် မှားနေသဖြင့် အသုံးပြုမည်မဟုတ်ပါ။</translation>
+<translation id="3431216045099978607">ဖန်သားပြင် အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| ကို နှိပ်ပါ။</translation>
 <translation id="3431636764301398940">ဤကဒ်ကို ဤစက်ပစ္စည်းတွင် သိမ်းရန်</translation>
 <translation id="3432601291244612633">စာမျက်နှာကို ပိတ်ရန်</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
@@ -1940,6 +1941,7 @@
 <translation id="6254436959401408446">ဤစာမျက်နှာကို ဖွင့်ရန် မှတ်ဉာဏ် အလုံအလောက်မရှိပါ</translation>
 <translation id="6259156558325130047">&amp;ပြန်လည်မှာယူမှုကို ပြန်လုပ်ရန်</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> စာညှပ်များ</translation>
+<translation id="6264376385120300461">မည်သို့ပင်ဖြစ်စေ ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="6264485186158353794">လုံခြုံရာ နောက်သို့</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> မူဝါဒ သတ်မှတ်ချက်ကို မိတ္တူကူးရန်</translation>
 <translation id="6266934640124581640">စိမ်းပြာဖျော့</translation>

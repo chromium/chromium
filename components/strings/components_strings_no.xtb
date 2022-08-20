@@ -911,6 +911,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3427342743765426898">&amp;Endre likevel</translation>
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="3428151540071562330">Én eller flere av URI-ene for DnsOverHttpsTemplates-tjenermaler er ugyldige og blir ikke brukt.</translation>
+<translation id="3431216045099978607">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
 <translation id="3431636764301398940">Lagre dette kortet på denne enheten</translation>
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
@@ -1939,6 +1940,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6254436959401408446">Det er ikke nok minne til å åpne denne siden</translation>
 <translation id="6259156558325130047">&amp;Omorganiser likevel</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bokmerker</translation>
+<translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>
 <translation id="6265794661083428563">Kopiér verdien av <ph name="POLICY_NAME" />-regelen</translation>
 <translation id="6266934640124581640">Lys blågrønn</translation>

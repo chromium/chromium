@@ -661,7 +661,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1621984899599015181">Opsionet për shpërndarjen menaxhohen nga organizata jote. Disa artikuj mund të jenë të fshehur.</translation>
 <translation id="1622054403950683339">Harroje rrjetin Wi-Fi</translation>
 <translation id="1623723619460186680">Reduktimi i dritës blu</translation>
-<translation id="1624012933569991823">Cilësimet</translation>
 <translation id="1624599281783425761">Nuk do ta shohësh më <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Ky skedar është shumë i madh për t'u menaxhuar nga pajisja jote. Provo ta shkarkosh atë në një pajisje tjetër</translation>
 <translation id="1627276047960621195">Përshkruesit e skedarëve</translation>
@@ -977,7 +976,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1897120393475391208">Përdor një fjalëkalim i fortë</translation>
 <translation id="1900305421498694955">Aplikacionet nga Google Play mund të kërkojnë qasje të plotë të sistemit të skedarëve për të lexuar dhe për të shkruar te skedarët në pajisjet e jashtme të hapësirës ruajtëse. Skedarët dhe dosjet e krijuara në pajisje janë të dukshme për këdo që përdor diskun e jashtëm. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Zgjidhi &amp;të gjitha</translation>
-<translation id="1901396183631570154">Chrome nuk mund t'i ruante këto fjalëkalime në "Llogarinë tënde të Google". Mund t'i ruash ato ende në këtë pajisje.</translation>
 <translation id="1903995858055162096">Nuk është pajisja jote? Përdor <ph name="BEGIN_LINK" />Modalitetin "vizitor"<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1905375423839394163">Emri i pajisjes Chromebook</translation>
@@ -1613,7 +1611,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2476974672882258506">Fike sistemin Windows për ta çinstaluar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Duke qenë se ke konfiguruar shumë çelësa, skanimi automatik është çaktivizuar.</translation>
 <translation id="2478176599153288112">Lejet e skedarëve të medias për "<ph name="EXTENSION" />"</translation>
-<translation id="248003956660572823">Fjalëkalimet nuk u ruajtën</translation>
 <translation id="2480868415629598489">Modifiko të dhënat që kopjon dhe ngjit</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2482895651873876648">Tasti u zhvendos në grupin <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -1975,7 +1972,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2813094189969465044">Kontrollet prindërore</translation>
 <translation id="281390819046738856">Kërkesa nuk mund të nënshkruhej.</translation>
 <translation id="2814489978934728345">Ndalo ngarkimin e kësaj faqeje</translation>
-<translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Dosja e faqeshënuesve</translation>
 <translation id="2816319641769218778">Për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", aktivizo sinkronizimin.</translation>
 <translation id="2816628817680324566">Dëshiron që ky sajt të identifikojë çelësin tënd të sigurisë?</translation>
@@ -4274,7 +4270,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5078638979202084724">Regjistroji të gjitha skedat në faqeshënues</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5079010647467150187">Shto VPN-në e integruar...</translation>
-<translation id="5079950360618752063">Përdor fjalëkalimin e sugjeruar</translation>
 <translation id="508059534790499809">Rifresko një biletë Kerberos</translation>
 <translation id="5084328598860513926">Fluksi i përgatitjes u ndërpre. Provo përsëri ose kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Po kontrollon për përditësime</translation>
@@ -4399,7 +4394,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5206215183583316675">Të fshihet "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Gabim në importimin e certifikatës</translation>
 <translation id="5206562235913517859">ID-ja e dyqanit të shitjes me pakicë është në formatin ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Fjalëkalimi i komprometuar u ndryshua me sukses. Ke edhe # fjalëkalim tjetër të komprometuar. Chrome rekomandon që ta kontrollosh këtë fjalëkalim tani.}other{Fjalëkalimi i komprometuar u ndryshua me sukses. Ke edhe # fjalëkalime të tjera të komprometuara. Chrome rekomandon që t'i kontrollosh këto fjalëkalime tani.}}</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> dëshiron të kontrollojë nëse po përdor një pajisje të përshtatshme me ChromeOS.</translation>
 <translation id="5208548918290612795">Ruajtja e kodit të vërtetimit të <ph name="WEB_DRIVE" /></translation>
@@ -6227,7 +6221,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="6970861306198150268">Sigurohu që po ruan fjalëkalimin aktual për këtë sajt</translation>
 <translation id="6972180789171089114">Audio/Video</translation>
 <translation id="6972754398087986839">Fillo</translation>
-<translation id="6972887130317925583">Fjalëkalimi i komprometuar u ndryshua me sukses. Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Lejohen të dërgojnë dritare kërcyese dhe të përdorin ridrejtimet</translation>
 <translation id="6973611239564315524">Ofrohet një përmirësim në Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Nëse Google është gjithashtu motori yt i parazgjedhur i kërkimit, do të shohësh sugjerime më të mira dhe të përshtatshme me kontekstin</translation>

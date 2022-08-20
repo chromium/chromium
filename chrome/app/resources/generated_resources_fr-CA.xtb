@@ -665,7 +665,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1621984899599015181">Les options de partage sont gérées par votre organisation. Certains éléments peuvent être masqués.</translation>
 <translation id="1622054403950683339">Oublier le réseau Wi-Fi</translation>
 <translation id="1623723619460186680">Réduction de la lumière bleue</translation>
-<translation id="1624012933569991823">Paramètres</translation>
 <translation id="1624599281783425761">Vous ne verrez plus <ph name="MERCHANT" /></translation>
 <translation id="1624863973697515675">Ce fichier est trop volumineux pour être géré par votre appareil. Essayez de le télécharger sur un autre appareil</translation>
 <translation id="1627276047960621195">Descripteurs de fichier</translation>
@@ -725,6 +724,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1676902103953506022">Authentifiant pour <ph name="USERNAME" /> sur <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Impossible d'ajouter <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
+<translation id="1678794218766467608">Verrouiller en mode Veille ou lorsque le couvercle est fermé</translation>
 <translation id="1679068421605151609">Outils pour développeurs</translation>
 <translation id="1679810534535368772">Voulez-vous vraiment quitter cette fenêtre?</translation>
 <translation id="167983332380191032">Le service de gestion a envoyé une erreur HTTP.</translation>
@@ -981,7 +981,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1897120393475391208">Utilisez un mot de passe fort</translation>
 <translation id="1900305421498694955">Les applications de Google Play peuvent exiger un accès complet au système de fichiers pour lire et écrire des fichiers sur des périphériques de stockage externe. Les fichiers et les dossiers créés sur le périphérique sont visibles par tout utilisateur du disque externe. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;Tout sélectionner</translation>
-<translation id="1901396183631570154">Chrome n'a pas pu enregistrer ces mots de passe dans votre compte Google. Vous pouvez quand même les enregistrer sur cet appareil.</translation>
 <translation id="1903995858055162096">Ce n'est pas votre appareil? Utilisez le <ph name="BEGIN_LINK" />mode Invité<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1905375423839394163">Nom du Chromebook</translation>
@@ -1616,7 +1615,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2476974672882258506">Éteignez Windows pour désinstaller <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Comme vous avez configuré plusieurs commutateurs, la recherche automatique a été désactivée.</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour « <ph name="EXTENSION" /> »</translation>
-<translation id="248003956660572823">Mots de passe non enregistrés</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez et collez</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Onglet déplacé vers le groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
@@ -1979,7 +1977,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2813094189969465044">Contrôles parentaux</translation>
 <translation id="281390819046738856">La demande n'a pas pu être signée.</translation>
 <translation id="2814489978934728345">Arrêter le chargement de cette page</translation>
-<translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
 <translation id="2815693974042551705">Dossier de favoris</translation>
 <translation id="2816319641769218778">Pour enregistrer des mots de passe dans votre compte Google, activez la synchronisation.</translation>
 <translation id="2816628817680324566">Autoriser ce site à reconnaître votre clé de sécurité?</translation>
@@ -3795,6 +3792,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4586275095964870617">L'adresse <ph name="URL" /> n'a pas pu être ouverte dans un navigateur secondaire. Veuillez communiquer avec votre administrateur système.</translation>
 <translation id="4589713469967853491">Les journaux ont été écrits dans le répertoire Téléchargements.</translation>
 <translation id="4590324241397107707">Stockage de base de données</translation>
+<translation id="459204634473266369">Aucun appareil enregistré dans <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Application de dessin avec stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
 <translation id="4594577641390224176">Vous recherchez la page à propos du système? Consultez</translation>
@@ -4278,7 +4276,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5079010647467150187">Ajouter un RPV intégré…</translation>
-<translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="508059534790499809">Actualiser un ticket Kerberos</translation>
 <translation id="5084328598860513926">Le flux d'approvisionnement a été interrompu. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Recherche de mises à jour...</translation>
@@ -4354,6 +4351,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5155327081870541046">Dans la barre d'adresse, entrez le raccourci pour le site que vous voulez rechercher comme « @favoris ». Ensuite, appuyez sur votre raccourci-clavier favori et entrez votre terme de recherche.</translation>
 <translation id="5156638757840305347">Le curseur est mis en évidence lorsqu'il apparaît ou se déplace</translation>
 <translation id="5157635116769074044">Épingler cette page à l'écran de démarrage...</translation>
+<translation id="5158206172605340248">Menu des accents fermé.</translation>
 <translation id="5159094275429367735">Configurer Crostini</translation>
 <translation id="5159419673777902220">Ton parent a désactivé les autorisations pour les extensions</translation>
 <translation id="5159643365935452998">Vérifier l'effacement automatique des données</translation>
@@ -4403,7 +4401,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5206215183583316675">Supprimer « <ph name="CERTIFICATE_NAME" /> »?</translation>
 <translation id="520621735928254154">Erreur d'importation du certificat</translation>
 <translation id="5206562235913517859">L'identifiant du magasin-détaillant est au format ABC-1234</translation>
-<translation id="5206787458656075734">{COUNT,plural, =1{Le mot de passe compromis a été changé. Vous avez # autre mot de passe compromis. Chrome recommande de vérifier ce mot de passe maintenant.}one{Le mot de passe compromis a été changé. Vous avez # autre mot de passe compromis. Chrome recommande de vérifier ce mot de passe maintenant.}other{Le mot de passe compromis a été changé. Vous avez # autres mots de passe compromis. Chrome recommande de vérifier ces mots de passe maintenant.}}</translation>
 <translation id="5207949376430453814">Mettre le point d'insertion de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS admissible.</translation>
 <translation id="5208548918290612795">Stockage du jeton d'authentification <ph name="WEB_DRIVE" /></translation>
@@ -6234,7 +6231,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6970861306198150268">Assurez-vous que vous enregistrez votre mot de passe actuel pour ce site</translation>
 <translation id="6972180789171089114">Audio/Vidéo</translation>
 <translation id="6972754398087986839">Démarrer</translation>
-<translation id="6972887130317925583">Le mot de passe compromis a été changé. Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="SETTINGS" />.</translation>
 <translation id="697312151395002334">Autorisés à afficher des fenêtres contextuelles et à utiliser des redirections</translation>
 <translation id="6973611239564315524">Une mise à jour de Debian 10 (Buster) est offerte</translation>
 <translation id="69739764870135975">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
@@ -6486,6 +6482,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7235716375204803342">Récupération des activités en cours…</translation>
 <translation id="7235737137505019098">Votre clé de sécurité n'a pas suffisamment d'espace libre pour qu'on y enregistre des comptes supplémentaires.</translation>
 <translation id="7235873936132740888">Les sites peuvent traiter des tâches particulières lorsque vous cliquez sur certains types de liens (ils peuvent, par exemple, créer un courriel à l'aide de votre client de messagerie ou ajouter des événements dans votre agenda en ligne)</translation>
+<translation id="7238609589076576185">Accent inséré.</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> a annulé le transfert</translation>
 <translation id="7240339475467890413">Connexion au nouveau point d'accès sans fil?</translation>
 <translation id="7241389281993241388">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour importer le certificat de client.</translation>
@@ -7327,6 +7324,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8030852056903932865">Approuver</translation>
 <translation id="8032244173881942855">Impossible de diffuser l'onglet.</translation>
 <translation id="8032569120109842252">Suivi</translation>
+<translation id="8033023935541439900">Menu des accents ouvert. Appuyez sur la flèche vers la gauche ou vers la droite pour naviguer, et appuyez sur la touche Entrée pour en insérer un.</translation>
 <translation id="8033827949643255796">caractère sélectionné</translation>
 <translation id="8033958968890501070">Délai dépassé</translation>
 <translation id="8035059678007243127">Page de navigation privée de la mise en cache complète bidirectionnelle : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
