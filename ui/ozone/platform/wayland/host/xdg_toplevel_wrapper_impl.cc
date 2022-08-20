@@ -17,6 +17,7 @@
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
+#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -269,15 +270,20 @@ void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
 
-  bool is_maximized =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  bool is_fullscreen =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
-  bool is_activated =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
-
   surface->wayland_window_->HandleAuraToplevelConfigure(
-      x, y, width, height, is_maximized, is_fullscreen, is_activated);
+      x, y, width, height,
+      {
+          .is_maximized =
+              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
+          .is_fullscreen =
+              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
+          .is_activated =
+              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
+          .is_snapped_primary = CheckIfWlArrayHasValue(
+              states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
+          .is_snapped_secondary = CheckIfWlArrayHasValue(
+              states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
+      });
 }
 
 // static

@@ -3189,10 +3189,38 @@ TEST_P(WaylandWindowTest, InitialBounds) {
   testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, 0, gfx::Rect(10, 10, 200, 200), &delegate_2);
-  toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, false, false, true);
+  toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, {false, false, true});
   toplevel->HandleSurfaceConfigure(2);
   static_cast<WaylandToplevelWindow*>(toplevel.get())->ApplyPendingBounds();
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), toplevel->GetBoundsInDIP());
+}
+
+TEST_P(WaylandWindowTest, PrimarySnappedState) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, 0, gfx::Rect(0, 0, 200, 200), &delegate_2);
+  toplevel->HandleAuraToplevelConfigure(0, 0, 100, 200,
+                                        {.is_maximized = false,
+                                         .is_fullscreen = false,
+                                         .is_activated = true,
+                                         .is_snapped_primary = true});
+  toplevel->HandleSurfaceConfigure(2);
+  static_cast<WaylandToplevelWindow*>(toplevel.get())->ApplyPendingBounds();
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 200), toplevel->GetBoundsInDIP());
+}
+
+TEST_P(WaylandWindowTest, SecondarySnappedState) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, 0, gfx::Rect(0, 0, 200, 200), &delegate_2);
+  toplevel->HandleAuraToplevelConfigure(100, 0, 100, 200,
+                                        {.is_maximized = false,
+                                         .is_fullscreen = false,
+                                         .is_activated = true,
+                                         .is_snapped_secondary = true});
+  toplevel->HandleSurfaceConfigure(2);
+  static_cast<WaylandToplevelWindow*>(toplevel.get())->ApplyPendingBounds();
+  EXPECT_EQ(gfx::Rect(100, 0, 100, 200), toplevel->GetBoundsInDIP());
 }
 
 namespace {

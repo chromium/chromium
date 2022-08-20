@@ -15,8 +15,16 @@
 #include "ui/compositor/layer.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/layout/layout_provider.h"
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+
+namespace {
+
+bool ShouldHaveRoundedCorners(chromeos::WindowStateType window_state) {
+  return window_state == chromeos::WindowStateType::kNormal ||
+         window_state == chromeos::WindowStateType::kDefault ||
+         window_state == chromeos::WindowStateType::kFloated;
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros, public:
@@ -50,7 +58,9 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
       view->GetWidget()->GetWindowBoundsInScreen().size();
 
   std::vector<gfx::Rect> opaque_region;
-  if (showing_frame) {
+  if (showing_frame &&
+      ShouldHaveRoundedCorners(browser_view_->GetNativeWindow()->GetProperty(
+          chromeos::kWindowStateTypeKey))) {
     const float corner_radius = chromeos::kTopCornerRadiusWhenRestored;
     GetContentWindow()->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));

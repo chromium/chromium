@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/events/event.h"
@@ -20,6 +21,29 @@
 #include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+chromeos::WindowStateType ToChromeosWindowStateType(
+    ui::PlatformWindowState state) {
+  switch (state) {
+    case ui::PlatformWindowState::kUnknown:
+      return chromeos::WindowStateType::kDefault;
+    case ui::PlatformWindowState::kMaximized:
+      return chromeos::WindowStateType::kMaximized;
+    case ui::PlatformWindowState::kMinimized:
+      return chromeos::WindowStateType::kMinimized;
+    case ui::PlatformWindowState::kNormal:
+      return chromeos::WindowStateType::kNormal;
+    case ui::PlatformWindowState::kFullScreen:
+      return chromeos::WindowStateType::kFullscreen;
+    case ui::PlatformWindowState::kSnappedPrimary:
+      return chromeos::WindowStateType::kPrimarySnapped;
+    case ui::PlatformWindowState::kSnappedSecondary:
+      return chromeos::WindowStateType::kSecondarySnapped;
+  }
+}
+
+}  // namespace
 namespace views {
 
 DesktopWindowTreeHostLacros::DesktopWindowTreeHostLacros(
@@ -68,6 +92,15 @@ void DesktopWindowTreeHostLacros::InitModalType(ui::ModalType modal_type) {
 void DesktopWindowTreeHostLacros::OnClosed() {
   DestroyNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnClosed();
+}
+void DesktopWindowTreeHostLacros::OnWindowStateChanged(
+    ui::PlatformWindowState old_window_show_state,
+    ui::PlatformWindowState new_window_show_state) {
+  DesktopWindowTreeHostPlatform::OnWindowStateChanged(old_window_show_state,
+                                                      new_window_show_state);
+  GetContentWindow()->SetProperty(
+      chromeos::kWindowStateTypeKey,
+      ToChromeosWindowStateType(new_window_show_state));
 }
 
 void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(

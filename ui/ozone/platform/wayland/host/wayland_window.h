@@ -224,13 +224,19 @@ class WaylandWindow : public PlatformWindow,
                                        bool is_maximized,
                                        bool is_fullscreen,
                                        bool is_activated);
+
+  struct WindowStates {
+    bool is_maximized = false;
+    bool is_fullscreen = false;
+    bool is_activated = false;
+    bool is_snapped_primary = false;
+    bool is_snapped_secondary = false;
+  };
   virtual void HandleAuraToplevelConfigure(int32_t x,
                                            int32_t y,
                                            int32_t width,
                                            int32_t height,
-                                           bool is_maximized,
-                                           bool is_fullscreen,
-                                           bool is_activated);
+                                           const WindowStates& window_states);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
   // The final size of the Wayland surface is determined by the buffer size in
   // px that the Chromium compositor renders at. If the window changes a

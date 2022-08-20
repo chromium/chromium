@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/wayland/host/xdg_activation.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/platform_window_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -41,6 +42,12 @@ namespace ui {
 
 namespace {
 bool decorations_allowed_for_test_ = true;
+
+bool ShouldSetBounds(PlatformWindowState state) {
+  return state == PlatformWindowState::kNormal ||
+         state == PlatformWindowState::kSnappedPrimary ||
+         state == PlatformWindowState::kSnappedSecondary;
+}
 }
 
 constexpr int kVisibleOnAllWorkspaces = -1;
@@ -354,31 +361,37 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
                                                     bool is_maximized,
                                                     bool is_fullscreen,
                                                     bool is_activated) {
-  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip, is_maximized,
-                              is_fullscreen, is_activated);
+  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip,
+                              {
+                                  .is_maximized = is_maximized,
+                                  .is_fullscreen = is_fullscreen,
+                                  .is_activated = is_activated,
+                              });
 }
 
-void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
-                                                        int32_t y,
-                                                        int32_t width_dip,
-                                                        int32_t height_dip,
-                                                        bool is_maximized,
-                                                        bool is_fullscreen,
-                                                        bool is_activated) {
+void WaylandToplevelWindow::HandleAuraToplevelConfigure(
+    int32_t x,
+    int32_t y,
+    int32_t width_dip,
+    int32_t height_dip,
+    const WindowStates& window_states) {
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
-  if (state_ == PlatformWindowState::kMinimized && !is_activated) {
+  if (state_ == PlatformWindowState::kMinimized &&
+      !window_states.is_activated) {
     state_ = PlatformWindowState::kMinimized;
-  } else if (is_fullscreen) {
+  } else if (window_states.is_fullscreen) {
     state_ = PlatformWindowState::kFullScreen;
-  } else if (is_maximized) {
+  } else if (window_states.is_maximized) {
     state_ = PlatformWindowState::kMaximized;
+  } else if (window_states.is_snapped_primary) {
+    state_ = PlatformWindowState::kSnappedPrimary;
+  } else if (window_states.is_snapped_secondary) {
+    state_ = PlatformWindowState::kSnappedSecondary;
   } else {
     state_ = PlatformWindowState::kNormal;
   }
-
-  const bool is_normal = state_ == PlatformWindowState::kNormal;
 
   bool did_send_delegate_notification = !!requested_window_show_state_count_;
   if (requested_window_show_state_count_)
@@ -387,8 +400,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   const bool did_window_show_state_change = old_state != state_;
 
   // Update state before notifying delegate.
-  const bool did_active_change = is_active_ != is_activated;
-  is_active_ = is_activated;
+  const bool did_active_change = is_active_ != window_states.is_activated;
+  is_active_ = window_states.is_activated;
 
   // Rather than call SetBounds here for every configure event, just save the
   // most recent bounds, and have WaylandConnection call ApplyPendingBounds
@@ -408,12 +421,12 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
     // TODO(crbug.com/3651999): Change SetDecorationInsets to take DIP.
-    if (is_normal && frame_insets_px()) {
+    if (ShouldSetBounds(state_) && frame_insets_px()) {
       bounds_dip.Inset(
           -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
       bounds_dip.set_origin({x, y});
     }
-  } else if (is_normal) {
+  } else if (ShouldSetBounds(state_)) {
     bounds_dip = !restored_size_dip().IsEmpty() ? gfx::Rect(restored_size_dip())
                                                 : GetBoundsInDIP();
   }
@@ -877,7 +890,7 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
   // window has just become normal and store the current bounds if it is
   // either going out of normal state or simply changes the state and we don't
   // have any meaningful value stored.
-  if (GetPlatformWindowState() == PlatformWindowState::kNormal) {
+  if (ShouldSetBounds(GetPlatformWindowState())) {
     SetRestoredBoundsInDIP({});
   } else if (GetRestoredBoundsInDIP().IsEmpty()) {
     SetRestoredBoundsInDIP(GetBoundsInDIP());

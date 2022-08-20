@@ -530,13 +530,12 @@ void WaylandWindow::HandleToplevelConfigure(int32_t widht,
       << "Only shell toplevels must receive HandleToplevelConfigure calls.";
 }
 
-void WaylandWindow::HandleAuraToplevelConfigure(int32_t x,
-                                                int32_t y,
-                                                int32_t width,
-                                                int32_t height,
-                                                bool is_maximized,
-                                                bool is_fullscreen,
-                                                bool is_activated) {
+void WaylandWindow::HandleAuraToplevelConfigure(
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height,
+    const WindowStates& window_states) {
   NOTREACHED()
       << "Only shell toplevels must receive HandleAuraToplevelConfigure calls.";
 }

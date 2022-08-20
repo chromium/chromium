@@ -838,7 +838,10 @@ component("views") {
           "widget/desktop_aura/window_event_filter_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.h",
         ]
-        deps += [ "//ui/base:hit_test" ]
+        deps += [
+          "//chromeos/ui/base",
+          "//ui/base:hit_test",
+        ]
       }
       if (is_linux || is_chromeos_lacros || is_fuchsia) {
         public += [

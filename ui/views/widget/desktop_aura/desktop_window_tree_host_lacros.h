@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,6 +59,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
 
   // PlatformWindowDelegate:
   void OnClosed() override;
+  void OnWindowStateChanged(
+      ui::PlatformWindowState old_window_show_state,
+      ui::PlatformWindowState new_window_show_state) override;
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(

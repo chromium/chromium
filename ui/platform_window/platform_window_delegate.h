@@ -34,6 +34,10 @@ enum class PlatformWindowState {
   kMinimized,
   kNormal,
   kFullScreen,
+
+  // Currently, only used by ChromeOS.
+  kSnappedPrimary,
+  kSnappedSecondary,
 };
 
 enum class PlatformWindowOcclusionState {
