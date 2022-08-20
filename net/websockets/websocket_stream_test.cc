@@ -202,6 +202,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     write_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] = 6 * 1024 * 1024;
     write_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
         kSpdyMaxHeaderListSize;
+    write_settings[spdy::SETTINGS_ENABLE_PUSH] = 0;
     frames_.push_back(spdy_util_.ConstructSpdySettings(write_settings));
     AddWrite(&frames_.back());
 
