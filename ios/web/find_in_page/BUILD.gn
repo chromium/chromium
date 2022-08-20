@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//ios/web/public/js_messaging/compile_ts.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("find_in_page") {
@@ -53,11 +52,12 @@ optimize_ts("find_in_page_js") {
   ]
 }
 
-optimize_js("find_in_page_event_listeners_js") {
+optimize_ts("find_in_page_event_listeners_js") {
   visibility = [ ":find_in_page" ]
 
-  primary_script = "resources/find_in_page_event_listeners.js"
-  sources = [ "resources/find_in_page_event_listeners.js" ]
+  sources = [ "resources/find_in_page_event_listeners.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("find_in_page_unittests") {

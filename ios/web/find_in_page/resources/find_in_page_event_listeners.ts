@@ -2,6 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Requires |__gCrWeb.findInPage.stop| from find_in_page.js
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
-window.addEventListener('pagehide', __gCrWeb.findInPage.stop);
+window.addEventListener('pagehide', gCrWeb.findInPage.stop);
