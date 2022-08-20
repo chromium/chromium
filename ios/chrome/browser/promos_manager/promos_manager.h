@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 
+class PromosManagerTest;
+
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams interested in displaying promos should
 // leverage this manager.
@@ -54,6 +56,12 @@ class PromosManager {
   int LastSeenDay(
       promos_manager::Promo promo,
       std::vector<promos_manager::Impression>& sorted_impressions) const;
+
+  // Allow unit tests to access private methods.
+  friend class PromosManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsLastSeenDayForPromo);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsSentinelForNonExistentPromo);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
