@@ -284,11 +284,13 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
  private:
   // Must be called at the beginning of every state change action function.
-  void BeforeStateChangeAction(const char* function);
+  // Returns if the test should continue.
+  bool BeforeStateChangeAction(const char* function);
   // Must be called at the end of every state change action function.
   void AfterStateChangeAction();
   // Must be called at the beginning of every state check action function.
-  void BeforeStateCheckAction(const char* function);
+  // Returns if the test should continue.
+  bool BeforeStateCheckAction(const char* function);
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 
@@ -390,6 +392,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
   // enabled. Triage.
   raw_ptr<Browser, DegradeToNoOpWhenMTE> app_browser_ = nullptr;
+
+  bool in_tear_down_ = false;
 
   std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
   base::ScopedObservation<web_app::WebAppInstallManager,
