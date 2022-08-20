@@ -372,6 +372,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetTitle(model_->title(GetPassKey()));
 
+  SetSubtitle(model_->subtitle(GetPassKey()));
+
   if (!model_->main_image(GetPassKey()).IsEmpty())
     SetMainImage(model_->main_image(GetPassKey()));
 

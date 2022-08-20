@@ -135,6 +135,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    Builder& SetSubtitle(std::u16string subtitle) {
+      model_->subtitle_ = std::move(subtitle);
+      return *this;
+    }
+
     Builder& SetBannerImage(ImageModel banner,
                             ImageModel dark_mode_banner = ImageModel()) {
       model_->banner_ = std::move(banner);
@@ -377,6 +382,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return title_;
   }
 
+  const std::u16string& subtitle(base::PassKey<DialogModelHost>) const {
+    return subtitle_;
+  }
+
   const ImageModel& main_image(base::PassKey<DialogModelHost>) const {
     return main_image_;
   }
@@ -446,6 +455,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   bool close_on_deactivate_ = true;
   std::string internal_name_;
   std::u16string title_;
+  std::u16string subtitle_;
   ImageModel icon_;
   ImageModel dark_mode_icon_;
 

@@ -145,6 +145,17 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void OnAnchorBoundsChanged();
 
   //////////////////////////////////////////////////////////////////////////////
+  // Subtitle:
+  //
+  // Bubbles have an optional a Subtitle label under the Title.
+  // This subtitle label is represented in BubbleFrameView.
+
+  // This method is virtual for BubbleFrameViewUnitTest purposes.
+  // Not intended to be overridden in production.
+  virtual std::u16string GetSubtitle() const;
+  void SetSubtitle(const std::u16string& subtitle);
+
+  //////////////////////////////////////////////////////////////////////////////
   // Miscellaneous bubble behaviors:
   //
 
@@ -388,6 +399,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
   ui::ImageModel main_image_;
+  std::u16string subtitle_;
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;

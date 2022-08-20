@@ -17,6 +17,7 @@ AskGoogleForSuggestionsDialogTest.*
 AssistantOnboardingViewBrowserTest.InvokeUi_*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
+BubbleFrameViewBrowserTest.*
 ChromeLabsUiTest.*
 ConfirmBubbleTest.*
 ContentAnalysysDialogUiTest.*

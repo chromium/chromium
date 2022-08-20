@@ -106,10 +106,12 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       footnote_margins_(content_margins_),
       title_icon_(AddChildView(std::make_unique<ImageView>())),
       main_image_(AddChildView(std::make_unique<ImageView>())),
-      default_title_(CreateDefaultTitleLabel(std::u16string()).release()) {
+      default_title_(AddChildView(CreateDefaultTitleLabel(std::u16string()))),
+      subtitle_(AddChildView(
+          CreateLabelWithContext(std::u16string(), style::CONTEXT_LABEL))) {
   default_title_->SetVisible(false);
-  AddChildView(default_title_.get());
   main_image_->SetVisible(false);
+  subtitle_->SetVisible(false);
 
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
@@ -157,11 +159,7 @@ BubbleFrameView::~BubbleFrameView() = default;
 // static
 std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
     const std::u16string& title_text) {
-  auto title = std::make_unique<Label>(title_text, style::CONTEXT_DIALOG_TITLE);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetCollapseWhenHidden(true);
-  title->SetMultiLine(true);
-  return title;
+  return CreateLabelWithContext(title_text, style::CONTEXT_DIALOG_TITLE);
 }
 
 // static
@@ -336,6 +334,7 @@ void BubbleFrameView::UpdateWindowTitle() {
     default_title_->SetVisible(delegate->ShouldShowWindowTitle() &&
                                !delegate->GetWindowTitle().empty());
     default_title_->SetText(delegate->GetWindowTitle());
+    UpdateSubtitle();
   }  // custom_title_'s updates are handled by its creator.
   InvalidateLayout();
 }
@@ -357,6 +356,20 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   custom_title_ = title_view.get();
   // Keep the title after the icon for focus order.
   AddChildViewAt(title_view.release(), GetIndexOf(title_icon_).value() + 1);
+}
+
+void BubbleFrameView::UpdateSubtitle() {
+  if (!subtitle_)
+    return;
+  views::BubbleDialogDelegate* const bubble_delegate =
+      GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  if (!bubble_delegate)
+    return;
+  // Subtitle anchors and margins rely heavily on Title being visible.
+  subtitle_->SetVisible(!bubble_delegate->GetSubtitle().empty() &&
+                        default_title_->GetVisible());
+  subtitle_->SetText(bubble_delegate->GetSubtitle());
+  InvalidateLayout();
 }
 
 void BubbleFrameView::UpdateMainImage() {
@@ -539,11 +552,23 @@ void BubbleFrameView::Layout() {
 
   main_image_->SetBounds(0, 0, main_image_->GetPreferredSize().width(),
                          main_image_->GetPreferredSize().height());
+
+  // Set the Subtitle bounds only if it's visible.
+  // The width of the Subtitle will match the Title so in cases where the Title
+  // is not visible, the Subtitle will also not be visible
+  if (subtitle_->GetVisible()) {
+    const int subtitle_preferred_height =
+        subtitle_->GetHeightForWidth(title_available_width);
+    const int subtitle_label_y = bounds.y() + title_height;
+    subtitle_->SetBounds(title_label_x, subtitle_label_y, title_available_width,
+                         subtitle_preferred_height);
+  }
 }
 
 void BubbleFrameView::OnThemeChanged() {
   NonClientFrameView::OnThemeChanged();
   UpdateWindowTitle();
+  UpdateSubtitle();
   ResetWindowControls();
   UpdateWindowIcon();
   UpdateMainImage();
@@ -1000,9 +1025,17 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
       frame_width - GetTitleLabelInsetsFromFrame().width());
   const int title_height =
       std::max(icon_height, label_height) + title_margins_.height();
+  const int subtitle_height =
+      subtitle_->GetVisible()
+          ? subtitle_->GetHeightForWidth(frame_width -
+                                         GetTitleLabelInsetsFromFrame().width())
+          : 0;
+
   return content_margins_ +
-         gfx::Insets::TLBR(std::max(title_height + header_height, close_height),
-                           GetMainImageLeftInsets(), 0, 0);
+         gfx::Insets::TLBR(
+             std::max(title_height + header_height + subtitle_height,
+                      close_height),
+             GetMainImageLeftInsets(), 0, 0);
 }
 
 int BubbleFrameView::GetHeaderHeightForFrameWidth(int frame_width) const {
@@ -1026,6 +1059,17 @@ int BubbleFrameView::GetMainImageLeftInsets() const {
     return 0;
   return main_image_->GetPreferredSize().width() -
          main_image_->GetBorder()->GetInsets().right();
+}
+
+// static
+std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContext(
+    const std::u16string& label_text,
+    style::TextContext text_context) {
+  auto label = std::make_unique<Label>(label_text, text_context);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetCollapseWhenHidden(true);
+  label->SetMultiLine(true);
+  return label;
 }
 
 BEGIN_METADATA(BubbleFrameView, NonClientFrameView)

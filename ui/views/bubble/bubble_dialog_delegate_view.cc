@@ -891,6 +891,19 @@ void BubbleDialogDelegate::SizeToContents() {
   GetWidget()->SetBounds(bubble_bounds);
 }
 
+std::u16string BubbleDialogDelegate::GetSubtitle() const {
+  return subtitle_;
+}
+
+void BubbleDialogDelegate::SetSubtitle(const std::u16string& subtitle) {
+  if (subtitle_ == subtitle)
+    return;
+  subtitle_ = subtitle;
+  BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view)
+    frame_view->UpdateSubtitle();
+}
+
 void BubbleDialogDelegate::UpdateColorsFromTheme() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);

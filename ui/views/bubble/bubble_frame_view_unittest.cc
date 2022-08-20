@@ -929,10 +929,17 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     SizeToContents();
   }
 
+  void ChangeSubtitle(const std::u16string& subtitle) {
+    subtitle_ = subtitle;
+    GetBubbleFrameView()->UpdateSubtitle();
+    SizeToContents();
+  }
+
   // BubbleDialogDelegateView:
   using BubbleDialogDelegateView::SetAnchorView;
   using BubbleDialogDelegateView::SizeToContents;
   std::u16string GetWindowTitle() const override { return title_; }
+  std::u16string GetSubtitle() const override { return subtitle_; }
   bool ShouldShowWindowTitle() const override { return !title_.empty(); }
   bool ShouldShowCloseButton() const override { return should_show_close_; }
   void SetShouldShowCloseButton(bool should_show_close) {
@@ -950,6 +957,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
  private:
   std::u16string title_;
+  std::u16string subtitle_;
   bool should_show_close_ = false;
 };
 
@@ -1125,7 +1133,7 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCasesWithHeader) {
       frame->GetCloseButtonForTesting()->height() +
       LayoutProvider::Get()->GetDistanceMetric(DISTANCE_CLOSE_BUTTON_MARGIN);
 
-  // Set a header view that is 1 dip smaller smaller than the close button.
+  // Set a header view that is 1 dip smaller than the close button.
   frame->SetHeaderView(
       std::make_unique<StaticSizedView>(gfx::Size(10, close_margin - 1)));
 
@@ -1160,6 +1168,56 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCasesWithHeader) {
   EXPECT_EQ(min_bubble_height + 1, bubble->GetWindowBoundsInScreen().height());
 
   // When |anchor| goes out of scope it should take |bubble| with it.
+}
+
+// Layout tests with Subtitle label.
+// This will test adding a Subtitle and wrap-around case for Subtitle.
+TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
+  test::TestLayoutProvider provider;
+  auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();
+  TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
+  TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
+  delegate->SetAnchorView(anchor.widget().GetContentsView());
+
+  Widget* bubble =
+      BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
+  bubble->Show();
+
+  // Even though the bubble has default margins, the dialog view should have
+  // been given its preferred size.
+  EXPECT_FALSE(delegate->margins().IsEmpty());
+  EXPECT_EQ(delegate->size(), delegate->GetPreferredSize());
+
+  // Add title to bubble frame view.
+  delegate->ChangeTitle(u"This is a title");
+
+  int min_bubble_height = bubble->GetWindowBoundsInScreen().height();
+  EXPECT_LT(delegate->GetPreferredSize().height(), min_bubble_height);
+
+  // Add a short subtitle to guarantee a one-line addition.
+  // Line height can vary depending on the platform so check
+  // boundary where the height diff is between 12 and 18.
+  // (12 < single_line_height < 18)
+  std::u16string subtitle(1, 'j');
+  delegate->ChangeSubtitle(subtitle);
+  int line_height_diff =
+      bubble->GetWindowBoundsInScreen().height() - min_bubble_height;
+  EXPECT_GT(line_height_diff, 12);
+  EXPECT_LT(line_height_diff, 18);
+
+  // Set the new min bubble height with a Subtitle added.
+  min_bubble_height = bubble->GetWindowBoundsInScreen().height();
+  // Grow the subtitle incrementally until word wrap is required.
+  while (bubble->GetWindowBoundsInScreen().height() == min_bubble_height) {
+    subtitle += u" j";
+    delegate->ChangeSubtitle(subtitle);
+  }
+
+  // Subtitle wrap should have increased by one line.
+  line_height_diff =
+      bubble->GetWindowBoundsInScreen().height() - min_bubble_height;
+  EXPECT_GT(line_height_diff, 12);
+  EXPECT_LT(line_height_diff, 18);
 }
 
 TEST_F(BubbleFrameViewTest, LayoutWithIcon) {

@@ -69,6 +69,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // label. If there is an existing title view it will be deleted.
   void SetTitleView(std::unique_ptr<View> title_view);
 
+  // Updates the subtitle label from the BubbleDialogDelegate.
+  void UpdateSubtitle();
+
   // Signals that the main image may have changed and needs to be fetched again.
   void UpdateMainImage();
 
@@ -255,6 +258,11 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   int GetMainImageLeftInsets() const;
 
+  // Helper method to create a label with text style
+  static std::unique_ptr<Label> CreateLabelWithContext(
+      const std::u16string& label_text,
+      style::TextContext text_context);
+
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;
 
@@ -278,7 +286,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // ownership. Otherwise |default_title_| is used.
   raw_ptr<Label> default_title_ = nullptr;
   raw_ptr<View> custom_title_ = nullptr;
-
+  raw_ptr<Label> subtitle_ = nullptr;
   // The optional close button (the X).
   raw_ptr<Button> close_ = nullptr;
 
