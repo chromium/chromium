@@ -242,6 +242,9 @@ void ShellSurface::SetFullscreen(bool fullscreen) {
   // state doesn't change.
   ScopedConfigure scoped_configure(this, true);
   widget_->SetFullscreen(fullscreen);
+
+  if (root_surface())
+    root_surface()->OnFullscreenStateChanged(fullscreen);
 }
 
 void ShellSurface::SetPopup() {

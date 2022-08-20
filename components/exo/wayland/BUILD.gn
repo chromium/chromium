@@ -30,6 +30,8 @@ source_set("wayland") {
     "wayland_display_output.h",
     "wayland_display_util.cc",
     "wayland_display_util.h",
+    "wayland_dmabuf_feedback_manager.cc",
+    "wayland_dmabuf_feedback_manager.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
     "wayland_pointer_delegate.cc",
@@ -63,6 +65,8 @@ source_set("wayland") {
     "zcr_stylus.h",
     "zcr_vsync_feedback.cc",
     "zcr_vsync_feedback.h",
+    "zwp_linux_dmabuf.cc",
+    "zwp_linux_dmabuf.h",
     "zwp_linux_explicit_synchronization.cc",
     "zwp_linux_explicit_synchronization.h",
   ]
@@ -72,6 +76,7 @@ source_set("wayland") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//build/config/linux/libdrm",
     "//components/exo",
     "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
@@ -92,6 +97,7 @@ source_set("wayland") {
     "//third_party/wayland-protocols:keyboard_configuration_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
@@ -117,30 +123,19 @@ source_set("wayland") {
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/events/devices:devices",
+    "//ui/gfx/linux:drm",
+    "//ui/ozone",
     "//ui/views",
     "//ui/wm:wm",
     "//ui/wm/public",
   ]
 
-  if (use_ozone) {
-    sources += [
-      "zwp_linux_dmabuf.cc",
-      "zwp_linux_dmabuf.h",
-    ]
-
+  if (is_chromeos_ash) {
     deps += [
-      "//build/config/linux/libdrm",
-      "//third_party/wayland-protocols:linux_dmabuf_protocol",
-      "//ui/ozone",
+      "//ash",
+      "//ash/public/cpp",
+      "//chromeos/ui/base",
     ]
-
-    if (is_chromeos_ash) {
-      deps += [
-        "//ash",
-        "//ash/public/cpp",
-        "//chromeos/ui/base",
-      ]
-    }
   }
 
   if (use_xkbcommon) {

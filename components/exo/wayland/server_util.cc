@@ -36,6 +36,10 @@ base::flat_map<wl_display*, SecurityDelegate*> g_display_security_map;
 
 }  // namespace
 
+void SetImplementation(wl_resource* resource, const void* implementation) {
+  wl_resource_set_implementation(resource, implementation, nullptr, nullptr);
+}
+
 uint32_t TimeTicksToMilliseconds(base::TimeTicks ticks) {
   return (ticks - base::TimeTicks()).InMilliseconds();
 }

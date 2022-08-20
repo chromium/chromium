@@ -360,6 +360,10 @@ target(link_target_type, "gles2_sources") {
     "//ui/gl/init",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//build/config/linux/libdrm" ]
+  }
+
   # If statically linked against ANGLE, link against angle:translator which is already included with ANGLE.
   if (use_static_angle) {
     deps += [ "//third_party/angle:translator" ]
