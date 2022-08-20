@@ -127,6 +127,11 @@ void BluetoothSocketFloss::Disconnect(base::OnceClosure callback) {
   // If this is a connecting socket, simply close self.
   if (connecting_socket_info_.is_valid()) {
     BluetoothSocketNet::Disconnect(std::move(callback));
+
+    // Note: Adapter needs to be cleared here or BluetoothSocketNet will be
+    // holding a weak pointer and try to destroy a scoped_refptr in a the socket
+    // thread.
+    adapter_ = nullptr;
     return;
   }
 

@@ -223,6 +223,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // Service which implements the SocketManager interface.
   std::string service_name_;
 
+  // Map of listening sockets to callbacks.
+  std::unordered_map<SocketId,
+                     std::pair<ConnectionStateChanged, ConnectionAccepted>>
+      listening_sockets_to_callbacks_;
+
+  // Map of connection sockets that haven't completed.
+  std::unordered_map<SocketId, ConnectionCompleted>
+      connecting_sockets_to_callbacks_;
+
  private:
   template <typename R, typename... Args>
   void CallSocketMethod(ResponseCallback<R> callback,
@@ -238,15 +247,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // All socket api calls require callback id since callbacks must take
   // ownership of the file descriptors. A value of zero is invalid.
   CallbackId callback_id_ = 0;
-
-  // Map of listening sockets to callbacks.
-  std::unordered_map<SocketId,
-                     std::pair<ConnectionStateChanged, ConnectionAccepted>>
-      listening_sockets_to_callbacks_;
-
-  // Map of connection sockets that haven't completed.
-  std::unordered_map<SocketId, ConnectionCompleted>
-      connecting_sockets_to_callbacks_;
 
   base::WeakPtrFactory<FlossSocketManager> weak_ptr_factory_{this};
 };
