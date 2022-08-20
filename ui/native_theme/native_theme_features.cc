@@ -41,10 +41,10 @@ bool IsOverlayScrollbarEnabled() {
 }
 
 bool IsFluentScrollbarEnabled() {
-// Currently, the feature is only supported on Windows.
+// Currently, the feature is only supported on Windows. Please see more details
+// here: https://crbug.com/1353432.
 #if BUILDFLAG(IS_WIN)
-  return IsOverlayScrollbarEnabled() &&
-         base::FeatureList::IsEnabled(features::kFluentScrollbar);
+  return base::FeatureList::IsEnabled(features::kFluentScrollbar);
 #else
   return false;
 #endif

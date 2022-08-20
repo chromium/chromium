@@ -116,6 +116,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableFencedFrames(bool);
   BLINK_PLATFORM_EXPORT static bool IsFencedFramesEnabled();
   BLINK_PLATFORM_EXPORT static void EnableFileSystem(bool);
+  BLINK_PLATFORM_EXPORT static void EnableFluentScrollbars(bool);
   BLINK_PLATFORM_EXPORT static void EnableGenericSensorExtraClasses(bool);
   BLINK_PLATFORM_EXPORT static void EnableImplicitRootScroller(bool);
   BLINK_PLATFORM_EXPORT static void EnableLazyFrameLoading(bool);

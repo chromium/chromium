@@ -124,6 +124,11 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
     return ScrollbarTheme::GetTheme();
   }
 
+  float ScaleFromDIP() const override { return scale_from_dip_; }
+  void SetScaleFromDIP(float scale_from_dip) {
+    scale_from_dip_ = scale_from_dip;
+  }
+
   using ScrollableArea::ClearNeedsPaintInvalidationForScrollControls;
   using ScrollableArea::HorizontalScrollbarNeedsPaintInvalidation;
   using ScrollableArea::ShowNonMacOverlayScrollbars;
@@ -143,6 +148,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   ScrollOffset scroll_offset_;
   ScrollOffset maximum_scroll_offset_;
   Member<MockPlatformChromeClient> chrome_client_;
+  float scale_from_dip_ = 1.f;
 };
 
 }  // namespace blink

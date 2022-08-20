@@ -8,6 +8,7 @@ namespace blink {
 
 static bool g_mock_scrollbars_enabled = false;
 static bool g_overlay_scrollbars_enabled = false;
+static bool g_fluent_scrollbars_enabled = false;
 
 void ScrollbarThemeSettings::SetMockScrollbarsEnabled(bool flag) {
   g_mock_scrollbars_enabled = flag;
@@ -23,6 +24,14 @@ void ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(bool flag) {
 
 bool ScrollbarThemeSettings::OverlayScrollbarsEnabled() {
   return g_overlay_scrollbars_enabled;
+}
+
+void ScrollbarThemeSettings::SetFluentScrollbarsEnabled(bool flag) {
+  g_fluent_scrollbars_enabled = flag;
+}
+
+bool ScrollbarThemeSettings::FluentScrollbarsEnabled() {
+  return g_fluent_scrollbars_enabled;
 }
 
 }  // namespace blink

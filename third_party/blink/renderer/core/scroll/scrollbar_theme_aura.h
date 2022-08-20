@@ -76,6 +76,7 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   bool SupportsDragSnapBack() const override;
   bool ShouldSnapBackToDragOrigin(const Scrollbar&,
                                   const WebMouseEvent&) override;
+  virtual gfx::Size ButtonSize(const Scrollbar&) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, ButtonSizeHorizontal);
@@ -83,7 +84,6 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeAuraTest, NoButtonsReturnsSize0);
 
   virtual bool HasScrollbarButtons(ScrollbarOrientation) const;
-  gfx::Size ButtonSize(const Scrollbar&);
 };
 
 }  // namespace blink

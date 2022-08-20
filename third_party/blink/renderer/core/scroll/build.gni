@@ -57,6 +57,8 @@ if (use_aura) {
   blink_core_sources_scroll += [
     "scrollbar_theme_aura.cc",
     "scrollbar_theme_aura.h",
+    "scrollbar_theme_fluent.cc",
+    "scrollbar_theme_fluent.h",
   ]
 }
 
@@ -67,3 +69,7 @@ blink_core_tests_scroll = [
   "scrollbar_test_suite.h",
   "scrollbar_theme_overlay_test.cc",
 ]
+
+if (use_aura) {
+  blink_core_tests_scroll += [ "scrollbar_theme_fluent_unittest.cc" ]
+}

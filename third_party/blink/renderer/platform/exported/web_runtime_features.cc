@@ -353,6 +353,10 @@ void WebRuntimeFeatures::EnableOverlayScrollbars(bool enable) {
   ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableFluentScrollbars(bool enable) {
+  ScrollbarThemeSettings::SetFluentScrollbarsEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableSharedArrayBuffer(bool enable) {
   RuntimeEnabledFeatures::SetSharedArrayBufferEnabled(enable);
 }

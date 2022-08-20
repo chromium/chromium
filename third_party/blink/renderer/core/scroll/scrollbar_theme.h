@@ -260,6 +260,9 @@ class CORE_EXPORT ScrollbarTheme {
   static bool MockScrollbarsEnabled() {
     return ScrollbarThemeSettings::MockScrollbarsEnabled();
   }
+  static bool FluentScrollbarsEnabled() {
+    return ScrollbarThemeSettings::FluentScrollbarsEnabled();
+  }
 
  private:
   // Must be implemented to return the correct theme subclass.

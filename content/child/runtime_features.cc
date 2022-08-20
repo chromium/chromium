@@ -557,6 +557,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
+  WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
 
   // TODO(rodneyding): This is a rare case for a stable feature
   // Need to investigate more to determine whether to refactor it.

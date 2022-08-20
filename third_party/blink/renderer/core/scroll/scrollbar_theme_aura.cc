@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -140,6 +141,9 @@ inline float Proportion(EScrollbarWidth scrollbar_width) {
 ScrollbarTheme& ScrollbarTheme::NativeTheme() {
   if (OverlayScrollbarsEnabled())
     return ScrollbarThemeOverlay::GetInstance();
+
+  if (FluentScrollbarsEnabled())
+    return ScrollbarThemeFluent::GetInstance();
 
   DEFINE_STATIC_LOCAL(ScrollbarThemeAura, theme, ());
   return theme;
@@ -379,7 +383,7 @@ bool ScrollbarThemeAura::HasScrollbarButtons(
               .IsEmpty();
 }
 
-gfx::Size ScrollbarThemeAura::ButtonSize(const Scrollbar& scrollbar) {
+gfx::Size ScrollbarThemeAura::ButtonSize(const Scrollbar& scrollbar) const {
   if (!HasScrollbarButtons(scrollbar.Orientation()))
     return gfx::Size(0, 0);
 
