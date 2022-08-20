@@ -109,7 +109,9 @@ class SideSearchTabContentsHelper
     return side_panel_initiated_redirect_info_;
   }
 
-  bool returned_to_previous_srp() const { return returned_to_previous_srp_; }
+  int returned_to_previous_srp_count() const {
+    return returned_to_previous_srp_count_;
+  }
 
   bool toggled_open() const { return toggled_open_; }
   void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
@@ -164,11 +166,11 @@ class SideSearchTabContentsHelper
   // The last Google search URL encountered by this tab contents.
   absl::optional<GURL> last_search_url_;
 
-  // Whether the last search url was the result of the user navigating back
-  // to the previously visisted search url. Used to detect cases where the
-  // side search panel would be of use to the user and thus could benefit
-  // of IPH promo.
-  bool returned_to_previous_srp_ = false;
+  // Counts the number of times the user has returned to the `last_search_url_`
+  // via back navigation. This is used to detect cases where the side search
+  // panel would be of use to the user and is used to show an IPH promo and
+  // automatically trigger the side panel.
+  int returned_to_previous_srp_count_ = 0;
 
   // A flag to track whether the current tab has its side panel toggled open.
   // Only used with the kSideSearchStatePerTab flag.

@@ -81,8 +81,21 @@ void SideSearchBrowserTest::AppendTab(Browser* browser, const GURL& url) {
 }
 
 void SideSearchBrowserTest::NavigateActiveTab(Browser* browser,
-                                              const GURL& url) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+                                              const GURL& url,
+                                              bool is_renderer_initiated) {
+  if (is_renderer_initiated) {
+    // Navigate from a link and wait for loading to finish.
+    content::TestNavigationObserver observer(
+        browser->tab_strip_model()->GetActiveWebContents());
+    NavigateParams params(browser, url,
+                          ui::PageTransition::PAGE_TRANSITION_LINK);
+    params.initiator_origin = url::Origin();
+    params.is_renderer_initiated = true;
+    ui_test_utils::NavigateToURL(&params);
+    observer.WaitForNavigationFinished();
+  } else {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+  }
 }
 
 content::WebContents* SideSearchBrowserTest::GetActiveSidePanelWebContents(

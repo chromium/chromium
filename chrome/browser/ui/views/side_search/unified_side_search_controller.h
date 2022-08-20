@@ -22,6 +22,7 @@
 #include "ui/views/view.h"
 
 class BrowserView;
+class Profile;
 
 // Responsible for managing the WebContents hosted in the browser's side panel
 // for Side Search. Created immediately following the creation of the tab's
@@ -64,6 +65,7 @@ class UnifiedSideSearchController
 
  private:
   BrowserView* GetBrowserView() const;
+  Profile* GetProfile();
 
   // Create a WebView to host the side search WebContents.
   std::unique_ptr<views::View> GetSideSearchView();
@@ -78,6 +80,11 @@ class UnifiedSideSearchController
   void UpdateSidePanel();
 
   void UpdateSidePanelRegistry(bool is_available);
+
+  // True if the side panel should be automatically triggered after a navigation
+  // defined by `navigation_handle`.
+  bool ShouldAutomaticallyTriggerAfterNavigation(
+      content::NavigationHandle* navigation_handle);
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

@@ -73,6 +73,9 @@ extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchDSESupport;
 extern const base::Feature kClobberAllSideSearchSidePanels;
 
+extern const base::Feature kSideSearchAutoTriggering;
+extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
+
 extern const base::Feature kSideSearchPageActionLabelAnimation;
 
 enum class kSideSearchLabelAnimationTypeOption {

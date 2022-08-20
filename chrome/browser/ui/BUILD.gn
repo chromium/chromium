@@ -4920,6 +4920,8 @@ static_library("ui") {
       "views/side_search/side_search_browser_controller.h",
       "views/side_search/side_search_icon_view.cc",
       "views/side_search/side_search_icon_view.h",
+      "views/side_search/side_search_views_utils.cc",
+      "views/side_search/side_search_views_utils.h",
       "views/side_search/unified_side_search_controller.cc",
       "views/side_search/unified_side_search_controller.h",
       "views/side_search/unified_side_search_helper.cc",

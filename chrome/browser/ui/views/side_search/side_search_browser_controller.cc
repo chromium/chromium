@@ -642,7 +642,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
   // Once the anchor element is visible, maybe show promo for the toolbar
   // button.
   if (toolbar_button_ && can_show_side_panel_for_page &&
-      tab_contents_helper->returned_to_previous_srp()) {
+      tab_contents_helper->returned_to_previous_srp_count() > 0) {
     browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHSideSearchFeature);
   }
