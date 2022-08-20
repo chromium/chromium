@@ -357,6 +357,9 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      cell_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
+
   // We never paint diagonals at the joins.  We simply let the border with the
   // highest precedence paint on top of borders with lower precedence.
   if (before_.value) {
@@ -366,8 +369,7 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
         before_.outer_width + before_.inner_width);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kTop, before_.value->GetColor(),
-        CollapsedBorderStyle(before_.value->Style()),
-        BorderPaintAutoDarkMode(cell_.StyleRef(), before_.value->GetColor()));
+        CollapsedBorderStyle(before_.value->Style()), auto_dark_mode);
   }
   if (after_.value) {
     gfx::Rect edge_rect(rect.x() - after_.begin_outset,
@@ -376,8 +378,7 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
                         after_.inner_width + after_.outer_width);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kBottom, after_.value->GetColor(),
-        CollapsedBorderStyle(after_.value->Style()),
-        BorderPaintAutoDarkMode(cell_.StyleRef(), after_.value->GetColor()));
+        CollapsedBorderStyle(after_.value->Style()), auto_dark_mode);
   }
   if (start_.value) {
     gfx::Rect edge_rect(
@@ -386,8 +387,7 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
         rect.height() + start_.begin_outset + start_.end_outset);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kLeft, start_.value->GetColor(),
-        CollapsedBorderStyle(start_.value->Style()),
-        BorderPaintAutoDarkMode(cell_.StyleRef(), start_.value->GetColor()));
+        CollapsedBorderStyle(start_.value->Style()), auto_dark_mode);
   }
   if (end_.value) {
     gfx::Rect edge_rect(rect.right() - end_.inner_width,
@@ -396,8 +396,7 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
                         rect.height() + end_.begin_outset + end_.end_outset);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kRight, end_.value->GetColor(),
-        CollapsedBorderStyle(end_.value->Style()),
-        BorderPaintAutoDarkMode(cell_.StyleRef(), end_.value->GetColor()));
+        CollapsedBorderStyle(end_.value->Style()), auto_dark_mode);
   }
 }
 

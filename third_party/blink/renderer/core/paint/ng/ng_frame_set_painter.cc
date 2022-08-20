@@ -82,8 +82,8 @@ void NGFrameSetPainter::PaintBorders(const PaintInfo& paint_info,
       layout_data->has_border_color
           ? style.VisitedDependentColor(GetCSSPropertyBorderLeftColor())
           : kBorderFillColor;
-  auto auto_dark_mode = BorderPaintAutoDarkMode(style, border_fill_color);
-
+  auto auto_dark_mode =
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground);
   size_t children_count = box_fragment_.Children().size();
   const Vector<LayoutUnit>& row_sizes = layout_data->row_sizes;
   const Vector<LayoutUnit>& col_sizes = layout_data->col_sizes;
@@ -125,15 +125,12 @@ void NGFrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
   // with a little bit of the fill color showing through.
   if (border_rect.height() < 3)
     return;
-  const ComputedStyle& style = box_fragment_.Style();
   context.FillRect(
       gfx::Rect(border_rect.origin(), gfx::Size(border_rect.width(), 1)),
-      kBorderStartEdgeColor,
-      BorderPaintAutoDarkMode(style, kBorderStartEdgeColor));
+      kBorderStartEdgeColor, auto_dark_mode);
   context.FillRect(gfx::Rect(border_rect.x(), border_rect.bottom() - 1,
                              border_rect.width(), 1),
-                   kBorderEndEdgeColor,
-                   BorderPaintAutoDarkMode(style, kBorderEndEdgeColor));
+                   kBorderEndEdgeColor, auto_dark_mode);
 }
 
 void NGFrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
@@ -151,15 +148,12 @@ void NGFrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
   // with a little bit of the fill color showing through.
   if (border_rect.width() < 3)
     return;
-  const ComputedStyle& style = box_fragment_.Style();
   context.FillRect(
       gfx::Rect(border_rect.origin(), gfx::Size(1, border_rect.height())),
-      kBorderStartEdgeColor,
-      BorderPaintAutoDarkMode(style, kBorderStartEdgeColor));
+      kBorderStartEdgeColor, auto_dark_mode);
   context.FillRect(gfx::Rect(border_rect.right() - 1, border_rect.y(), 1,
                              border_rect.height()),
-                   kBorderEndEdgeColor,
-                   BorderPaintAutoDarkMode(style, kBorderEndEdgeColor));
+                   kBorderEndEdgeColor, auto_dark_mode);
 }
 
 }  // namespace blink
