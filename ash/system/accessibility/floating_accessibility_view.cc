@@ -97,7 +97,8 @@ std::string GetDescriptionForMovedToPosition(FloatingMenuPosition position) {
 
 bool IsKioskImeButtonEnabled() {
   return Shell::Get()->session_controller()->IsRunningInAppMode() &&
-         base::FeatureList::IsEnabled(features::kKioskEnableImeButton);
+         base::FeatureList::IsEnabled(features::kKioskEnableImeButton) &&
+         Shell::Get()->ime_controller()->GetVisibleImes().size() > 1;
 }
 
 }  // namespace
@@ -176,6 +177,7 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
     AddChildView(std::move(ime_button_container));
     AddChildView(CreateSeparator());
   }
+
   AddChildView(std::move(feature_buttons_container));
   AddChildView(std::move(tray_button_container));
   AddChildView(CreateSeparator());
