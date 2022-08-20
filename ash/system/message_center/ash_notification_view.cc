@@ -251,7 +251,14 @@ BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
 
 void AshNotificationView::AddedToWidget() {
-  widget_observation_.Observe(GetWidget());
+  // crbug/1337661: We need to abort animations in a grouped parent view when
+  // it's widget is being destroyed. By default when a widget is destroyed, all
+  // current animations are forced to finish. The grouped notification removal
+  // animation triggers an additional resize animation when it is finished. This
+  // needs to be aborted explicitly to prevent a crash. We do not need to this
+  // observation for grouped notification views.
+  if (!is_grouped_child_view_)
+    widget_observation_.Observe(GetWidget());
 }
 
 void AshNotificationView::Layout() {
@@ -395,7 +402,10 @@ const char AshNotificationView::kViewClassName[] = "AshNotificationView";
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
-    : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
+    : NotificationViewBase(notification),
+      is_grouped_parent_view_(notification.group_parent()),
+      is_grouped_child_view_(notification.group_child()),
+      shown_in_popup_(shown_in_popup) {
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
@@ -1341,8 +1351,8 @@ void AshNotificationView::OnNotificationRemoved(
 }
 
 void AshNotificationView::OnWidgetClosing(views::Widget* widget) {
-  AbortAllAnimations();
   widget_observation_.Reset();
+  AbortAllAnimations();
 }
 
 void AshNotificationView::OnWidgetDestroying(views::Widget* widget) {
