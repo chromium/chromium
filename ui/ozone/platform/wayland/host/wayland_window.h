@@ -450,24 +450,24 @@ class WaylandWindow : public PlatformWindow,
   // requested size by the Wayland compositor. When this is set in SetBounds(),
   // delegate_->OnBoundsChanged() is called and updates current_surface_size in
   // Viz. However, it is not guaranteed that the next arriving frame will match
-  // |bounds_px_|.
-  // gfx::Rect bounds_px_;
-
+  // |bounds_dip_|.
   gfx::Rect bounds_dip_;
   gfx::Size size_px_;
 
   // The size presented by the gpu process. This is the visible size of the
-  // window, which can be different from |bounds_px_| due to renderers taking
-  // time to produce a compositor frame.
+  // window, which can be different from |bounds_dip_| * scale due to renderers
+  // taking time to produce a compositor frame.
   // The rough flow of size changes:
   //   Wayland compositor -> xdg_surface.configure()
   //   -> WaylandWindow::SetBounds() -> IPC -> DisplayPrivate::Resize()
   //   -> OutputSurface::SwapBuffers() -> WaylandWindow::UpdateVisualSize()
   //   -> xdg_surface.ack_configure() -> Wayland compositor.
   gfx::Size visual_size_px_;
+
   // Margins between edges of the surface and the window geometry (i.e., the
   // area of the window that is visible to the user as the actual window).  The
   // areas outside the geometry are used to draw client-side window decorations.
+  // TODO(crbug.com/1306688): Use DIP for frame insets.
   absl::optional<gfx::Insets> frame_insets_px_;
 
   bool has_touch_focus_ = false;

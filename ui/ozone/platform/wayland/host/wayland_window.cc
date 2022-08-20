@@ -298,14 +298,14 @@ void WaylandWindow::PrepareForShutdown() {
 }
 
 void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
-  // TODO(crbug.com/): This is currently used only by unit tests.
+  // TODO(crbug.com/1306688): This is currently used only by unit tests.
   // Figure out how to migrate to test only methods.
   auto bounds_dip = delegate_->ConvertRectToDIP(bounds_px);
   SetBoundsInDIP(bounds_dip);
 }
 
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {
-  // TODO(crbug.com/): This is currently used only by unit tests.
+  // TODO(crbug.com/1306688): This is currently used only by unit tests.
   // Figure out how to migrate to test only methods.
   return delegate_->ConvertRectToPixels(bounds_dip_);
 }

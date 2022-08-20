@@ -198,7 +198,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
   if (schedule_redraw_) {
-    delegate()->OnDamageRect(gfx::Rect{{0, 0}, size_px()});
+    delegate()->OnDamageRect(gfx::Rect{size_px()});
     schedule_redraw_ = false;
   }
   ProcessPendingBoundsDip(serial);
@@ -253,7 +253,7 @@ bool WaylandPopup::IsSurfaceConfigured() {
 void WaylandPopup::SetWindowGeometry(gfx::Rect bounds_dip) {
   DCHECK(shell_popup_);
   gfx::Point p;
-  // TODO(crbug.com/1306688): Use DIP for frame_sets.
+  // TODO(crbug.com/1306688): Use DIP for frame insets.
   if (frame_insets_px() && !frame_insets_px()->IsEmpty()) {
     p = gfx::ScaleToRoundedPoint(
         {frame_insets_px()->left(), frame_insets_px()->top()},
