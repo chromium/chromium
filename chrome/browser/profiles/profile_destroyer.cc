@@ -53,6 +53,14 @@ DestroyerSet& PendingDestroyers() {
 
 // static
 void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
+  DestroyProfileWhenAppropriateWithTimeout(profile,
+                                           base::Seconds(kTimerDelaySeconds));
+}
+
+// static
+void ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout(
+    Profile* const profile,
+    base::TimeDelta timeout) {
   if (!profile)  // profile might have been reset in ResetPendingDestroyers();
     return;
 
@@ -96,7 +104,7 @@ void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
     // The instance will destroy itself once all (non-spare) render process
     // hosts referring to it are properly terminated. This happens in the two
     // "final" state: Retry() and Timeout().
-    new ProfileDestroyer(profile, profile_hosts);
+    new ProfileDestroyer(profile, profile_hosts, timeout);
     return;
   }
 
@@ -219,8 +227,12 @@ void ProfileDestroyer::ResetPendingDestroyers(Profile* const profile) {
   }
 }
 
-ProfileDestroyer::ProfileDestroyer(Profile* const profile, const HostSet& hosts)
-    : profile_(profile), profile_ptr_(reinterpret_cast<uint64_t>(profile)) {
+ProfileDestroyer::ProfileDestroyer(Profile* const profile,
+                                   const HostSet& hosts,
+                                   base::TimeDelta timeout)
+    : profile_(profile),
+      timeout_(timeout),
+      profile_ptr_(reinterpret_cast<uint64_t>(profile)) {
   TRACE_EVENT("shutdown", "ProfileDestroyer::ProfileDestroyer",
               [&](perfetto::EventContext ctx) {
                 auto* proto =
@@ -236,8 +248,8 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, const HostSet& hosts)
   DCHECK(observations_.IsObservingAnySource());
 
   // We don't want to wait for RenderProcessHost to be destroyed longer than
-  // kTimerDelaySeconds.
-  timer_.Start(FROM_HERE, base::Seconds(kTimerDelaySeconds),
+  // timeout.
+  timer_.Start(FROM_HERE, timeout,
                base::BindOnce(&ProfileDestroyer::Timeout,
                               weak_ptr_factory_.GetWeakPtr()));
 }
@@ -305,7 +317,7 @@ void ProfileDestroyer::Timeout() {
 }
 
 void ProfileDestroyer::Retry() {
-  DestroyProfileWhenAppropriate(profile_);
+  DestroyProfileWhenAppropriateWithTimeout(profile_, timeout_);
   delete this;  // Final state.
 }
 
