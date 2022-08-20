@@ -99,6 +99,13 @@ void RegisterUserRunAtStartup(const std::wstring& run_value_name,
 // `run_value_name`.
 bool UnregisterUserRunAtStartup(const std::wstring& run_value_name);
 
+// Loads the typelib and typeinfo for all interfaces from updater.exe. Logs on
+// failure.
+// If the typelib loads successfully, logs the registry entries for the typelib.
+// TODO(crbug.com/1341471) - revert the CL that introduced the check after the
+// bug is resolved.
+void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_SETUP_SETUP_UTIL_H_

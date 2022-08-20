@@ -301,7 +301,13 @@ bool ComServerApp::SwapInNewVersion() {
     AddComServerWorkItems(updater_path, false, list.get());
   }
 
-  return list->Do();
+  if (list->Do()) {
+    CheckComInterfaceTypeLib(updater_scope(), true);
+    CheckComInterfaceTypeLib(updater_scope(), false);
+    return true;
+  }
+
+  return false;
 }
 
 bool ComServerApp::MigrateLegacyUpdaters(

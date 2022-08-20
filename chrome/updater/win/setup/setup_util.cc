@@ -7,21 +7,25 @@
 #include <regstr.h>
 #include <shlobj.h>
 #include <windows.h>
+#include <wrl/client.h>
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
@@ -377,6 +381,50 @@ bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
 
   return installer::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
                                         run_value_name);
+}
+
+void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
+  for (const auto& iid : GetInterfaces(is_internal)) {
+    base::FilePath typelib_path;
+    CHECK(base::PathService::Get(base::DIR_EXE, &typelib_path));
+    typelib_path = typelib_path.Append(GetExecutableRelativePath())
+                       .Append(GetComTypeLibResourceIndex(iid));
+
+    Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+    if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
+        FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::LoadTypeLib failed: " << typelib_path
+                 << ": " << std::hex << hr;
+      return;
+    }
+
+    Microsoft::WRL::ComPtr<ITypeInfo> type_info;
+    if (HRESULT hr = type_lib->GetTypeInfoOfGuid(iid, &type_info); FAILED(hr)) {
+      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
+                 << ": " << std::hex << hr
+                 << ": IID: " << base::win::WStringFromGUID(iid);
+      return;
+    }
+
+    const HKEY root = UpdaterScopeToHKeyRoot(scope);
+    const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+
+    std::wstring val;
+    const std::wstring typelib_reg_path_win32 =
+        typelib_reg_path + L"\\1.0\\0\\win32";
+    const std::wstring typelib_reg_path_win64 =
+        typelib_reg_path + L"\\1.0\\0\\win64";
+
+    for (const auto& path : {typelib_reg_path_win32, typelib_reg_path_win64}) {
+      CHECK_EQ(
+          base::win::RegKey(root, path.c_str(), KEY_READ).ReadValue(L"", &val),
+          ERROR_SUCCESS)
+          << ": " << root << ": " << path << ": "
+          << base::win::WStringFromGUID(iid);
+      VLOG(1) << __func__ << ": " << path << ": " << val << ": "
+              << base::win::WStringFromGUID(iid);
+    }
+  }
 }
 
 }  // namespace updater
