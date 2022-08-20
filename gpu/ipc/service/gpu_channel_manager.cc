@@ -30,6 +30,9 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
+#endif
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -368,6 +371,10 @@ GpuChannelManager::GpuChannelManager(
     gr_shader_cache_.emplace(gpu_preferences.gpu_program_cache_size, this);
     gr_shader_cache_->CacheClientIdOnDisk(gpu::kDisplayCompositorClientId);
   }
+#if BUILDFLAG(USE_DAWN)
+  dawn_caching_interface_factory_ =
+      std::make_unique<webgpu::DawnCachingInterfaceFactory>();
+#endif
 }
 
 GpuChannelManager::~GpuChannelManager() {
@@ -528,7 +535,9 @@ void GpuChannelManager::OnDiskCacheHandleDestoyed(
       break;
     }
     case gpu::GpuDiskCacheType::kDawnWebGPU: {
-      // TODO(dawn:549) Implement cache destruction for Dawn.
+#if BUILDFLAG(USE_DAWN)
+      dawn_caching_interface_factory_->ReleaseHandle(handle);
+#endif
       break;
     }
   }
@@ -576,8 +585,16 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
       break;
     }
     case gpu::GpuDiskCacheType::kDawnWebGPU: {
-      // TODO(dawn:549) Implement populating cache for Dawn.
-      NOTREACHED();
+#if BUILDFLAG(USE_DAWN)
+      std::unique_ptr<gpu::webgpu::DawnCachingInterface>
+          dawn_caching_interface =
+              dawn_caching_interface_factory_->CreateInstance(handle);
+      if (!dawn_caching_interface) {
+        return;
+      }
+      dawn_caching_interface->StoreData(key.data(), key.size(), data.data(),
+                                        data.size());
+#endif
       break;
     }
   }

@@ -7,11 +7,14 @@
 #include <string>
 #include <string_view>
 
+#include "gpu/command_buffer/service/mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu::webgpu {
 namespace {
+
+using ::testing::StrictMock;
 
 class DawnCachingInterfaceTest : public testing::Test {
  protected:
@@ -24,6 +27,7 @@ class DawnCachingInterfaceTest : public testing::Test {
 
   DawnCachingInterfaceFactory factory_;
   gpu::GpuDiskCacheHandle handle_ = kDawnHandle;
+  StrictMock<MockDecoderClient> decoder_client_mock_;
 };
 
 TEST_F(DawnCachingInterfaceTest, LoadNonexistentSize) {
@@ -112,6 +116,17 @@ TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
     EXPECT_EQ(0u,
               handle_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
   }
+}
+
+TEST_F(DawnCachingInterfaceTest, StoreTriggersHostSide) {
+  auto dawn_caching_interface =
+      factory_.CreateInstance(handle_, &decoder_client_mock_);
+
+  EXPECT_CALL(decoder_client_mock_,
+              CacheBlob(gpu::GpuDiskCacheType::kDawnWebGPU, std::string(kKey),
+                        std::string(kData)));
+  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
+                                    kDataSize);
 }
 
 }  // namespace

@@ -8,6 +8,8 @@
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
@@ -24,6 +26,14 @@ class Outputter;
 
 namespace webgpu {
 
+class DawnCachingInterfaceFactory;
+
+// Options specifically passed for Dawn caching;
+struct DawnCacheOptions {
+  DawnCachingInterfaceFactory* caching_interface_factory = nullptr;
+  absl::optional<GpuDiskCacheHandle> handle = {};
+};
+
 class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                                        public CommonDecoder {
  public:
@@ -34,7 +44,8 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
       MemoryTracker* memory_tracker,
       gles2::Outputter* outputter,
       const GpuPreferences& gpu_preferences,
-      scoped_refptr<SharedContextState> shared_context_state);
+      scoped_refptr<SharedContextState> shared_context_state,
+      const DawnCacheOptions& dawn_cache_options = {});
 
   WebGPUDecoder(const WebGPUDecoder&) = delete;
   WebGPUDecoder& operator=(const WebGPUDecoder&) = delete;

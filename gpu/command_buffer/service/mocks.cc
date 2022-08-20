@@ -70,6 +70,9 @@ void AsyncAPIMock::SetToken(unsigned int command,
   command_buffer_service_->SetToken(args->token);
 }
 
+MockDecoderClient::MockDecoderClient() = default;
+MockDecoderClient::~MockDecoderClient() = default;
+
 namespace gles2 {
 
 MockShaderTranslator::MockShaderTranslator() = default;
@@ -84,5 +87,3 @@ MockMemoryTracker::~MockMemoryTracker() = default;
 
 }  // namespace gles2
 }  // namespace gpu
-
-

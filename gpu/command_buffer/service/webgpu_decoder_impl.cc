@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
@@ -85,13 +86,15 @@ WGPUAdapterType PowerPreferenceToDawnAdapterType(
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
-  WebGPUDecoderImpl(DecoderClient* client,
-                    CommandBufferServiceBase* command_buffer_service,
-                    SharedImageManager* shared_image_manager,
-                    MemoryTracker* memory_tracker,
-                    gles2::Outputter* outputter,
-                    const GpuPreferences& gpu_preferences,
-                    scoped_refptr<SharedContextState> shared_context_state);
+  WebGPUDecoderImpl(
+      DecoderClient* client,
+      CommandBufferServiceBase* command_buffer_service,
+      SharedImageManager* shared_image_manager,
+      MemoryTracker* memory_tracker,
+      gles2::Outputter* outputter,
+      const GpuPreferences& gpu_preferences,
+      scoped_refptr<SharedContextState> shared_context_state,
+      std::unique_ptr<DawnCachingInterface> dawn_caching_interface_factory);
 
   WebGPUDecoderImpl(const WebGPUDecoderImpl&) = delete;
   WebGPUDecoderImpl& operator=(const WebGPUDecoderImpl&) = delete;
@@ -940,10 +943,27 @@ WebGPUDecoder* CreateWebGPUDecoderImpl(
     MemoryTracker* memory_tracker,
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
-    scoped_refptr<SharedContextState> shared_context_state) {
-  return new WebGPUDecoderImpl(
-      client, command_buffer_service, shared_image_manager, memory_tracker,
-      outputter, gpu_preferences, std::move(shared_context_state));
+    scoped_refptr<SharedContextState> shared_context_state,
+    const DawnCacheOptions& dawn_cache_options) {
+  // Construct a Dawn caching interface if the Dawn configurations enables it.
+  // If a handle was set, pass the relevant handle and DecoderClient so that
+  // writing to disk is enabled. Otherwise pass an incognito in-memory version.
+  std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface =
+      nullptr;
+  if (auto* caching_interface_factory =
+          dawn_cache_options.caching_interface_factory) {
+    if (dawn_cache_options.handle) {
+      dawn_caching_interface = caching_interface_factory->CreateInstance(
+          *dawn_cache_options.handle, client);
+    } else {
+      dawn_caching_interface = caching_interface_factory->CreateInstance();
+    }
+  }
+
+  return new WebGPUDecoderImpl(client, command_buffer_service,
+                               shared_image_manager, memory_tracker, outputter,
+                               gpu_preferences, std::move(shared_context_state),
+                               std::move(dawn_caching_interface));
 }
 
 WebGPUDecoderImpl::WebGPUDecoderImpl(
@@ -953,7 +973,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     MemoryTracker* memory_tracker,
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
-    scoped_refptr<SharedContextState> shared_context_state)
+    scoped_refptr<SharedContextState> shared_context_state,
+    std::unique_ptr<DawnCachingInterface> dawn_caching_interface)
     : WebGPUDecoder(client, command_buffer_service, outputter),
       shared_context_state_(std::move(shared_context_state)),
       gr_context_type_(gpu_preferences.gr_context_type),
@@ -961,7 +982,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               memory_tracker)),
-      dawn_platform_(new DawnPlatform()),
+      dawn_platform_(new DawnPlatform(std::move(dawn_caching_interface))),
       dawn_instance_(
           DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),

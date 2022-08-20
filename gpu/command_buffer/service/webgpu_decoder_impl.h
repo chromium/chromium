@@ -24,6 +24,7 @@ class Outputter;
 
 namespace webgpu {
 
+struct DawnCacheOptions;
 class WebGPUDecoder;
 
 GPU_GLES2_EXPORT WebGPUDecoder* CreateWebGPUDecoderImpl(
@@ -33,7 +34,8 @@ GPU_GLES2_EXPORT WebGPUDecoder* CreateWebGPUDecoderImpl(
     MemoryTracker* memory_tracker,
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
-    scoped_refptr<SharedContextState> shared_context_state);
+    scoped_refptr<SharedContextState> shared_context_state,
+    const DawnCacheOptions& dawn_cache_options);
 
 }  // namespace webgpu
 }  // namespace gpu

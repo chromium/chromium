@@ -15,7 +15,11 @@
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "net/disk_cache/disk_cache.h"
 
-namespace gpu::webgpu {
+namespace gpu {
+
+class DecoderClient;
+
+namespace webgpu {
 
 class DawnCachingInterfaceFactory;
 
@@ -55,10 +59,16 @@ class GPU_GLES2_EXPORT DawnCachingInterface
 
   // Constructor is private because creation of interfaces should be deferred to
   // the factory.
-  explicit DawnCachingInterface(ScopedDiskCacheBackend backend);
+  explicit DawnCachingInterface(ScopedDiskCacheBackend backend,
+                                DecoderClient* decoder_client = nullptr);
 
   // Caching interface owns a reference to the backend.
   ScopedDiskCacheBackend backend_ = nullptr;
+
+  // Decoder client provides ability to store cache entries to persistent disk.
+  // The client is not owned by this class and needs to be valid throughout the
+  // interfaces lifetime.
+  raw_ptr<DecoderClient> decoder_client_ = nullptr;
 };
 
 // Factory class for producing and managing DawnCachingInterfaces.
@@ -78,7 +88,8 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory {
   // necessary. For handle based instances, the factory keeps a reference to the
   // backend until ReleaseHandle below is called.
   std::unique_ptr<DawnCachingInterface> CreateInstance(
-      const gpu::GpuDiskCacheHandle& handle);
+      const gpu::GpuDiskCacheHandle& handle,
+      DecoderClient* decoder_client = nullptr);
 
   // Returns a pointer to a DawnCachingInterface that owns the in memory
   // backend. This is used for incognito cases where the cache should not be
@@ -108,6 +119,7 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory {
   std::map<gpu::GpuDiskCacheHandle, ScopedDiskCacheBackend> backends_;
 };
 
-}  // namespace gpu::webgpu
+}  // namespace webgpu
+}  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_DAWN_CACHING_INTERFACE_H_

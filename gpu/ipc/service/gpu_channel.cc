@@ -1032,6 +1032,15 @@ void GpuChannel::ReleaseSysmemBufferCollection(
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+absl::optional<gpu::GpuDiskCacheHandle> GpuChannel::GetCacheHandleForType(
+    gpu::GpuDiskCacheType type) {
+  auto it = caches_.find(type);
+  if (it == caches_.end()) {
+    return {};
+  }
+  return it->second;
+}
+
 void GpuChannel::RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle) {
   gpu::GpuDiskCacheType type = gpu::GetHandleType(handle);
 
@@ -1049,11 +1058,11 @@ void GpuChannel::RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle) {
 void GpuChannel::CacheBlob(gpu::GpuDiskCacheType type,
                            const std::string& key,
                            const std::string& shader) {
-  auto it = caches_.find(type);
-  if (it == caches_.end()) {
+  auto handle = GetCacheHandleForType(type);
+  if (!handle) {
     return;
   }
-  gpu_channel_manager_->delegate()->StoreBlobToDisk(it->second, key, shader);
+  gpu_channel_manager_->delegate()->StoreBlobToDisk(*handle, key, shader);
 }
 
 uint64_t GpuChannel::GetMemoryUsage() const {

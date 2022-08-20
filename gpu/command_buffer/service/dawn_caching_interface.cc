@@ -8,14 +8,16 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace gpu::webgpu {
 
-DawnCachingInterface::DawnCachingInterface(ScopedDiskCacheBackend backend)
-    : backend_(std::move(backend)) {}
+DawnCachingInterface::DawnCachingInterface(ScopedDiskCacheBackend backend,
+                                           DecoderClient* decoder_client)
+    : backend_(std::move(backend)), decoder_client_(decoder_client) {}
 
 DawnCachingInterface::~DawnCachingInterface() = default;
 
@@ -71,7 +73,12 @@ void DawnCachingInterface::StoreData(const void* key,
           static_cast<const char*>(value));
   entry->WriteData(0, 0, buffer.get(), value_size, base::DoNothing(), false);
 
-  // TODO(dawn:549) Send the blob to be stored on disk.
+  // Send the cache entry to be stored on the host-side if applicable.
+  if (decoder_client_) {
+    std::string value_str(static_cast<const char*>(value), value_size);
+    decoder_client_->CacheBlob(gpu::GpuDiskCacheType::kDawnWebGPU, key_str,
+                               value_str);
+  }
 }
 
 DawnCachingInterfaceFactory::DawnCachingInterfaceFactory(BackendFactory factory)
@@ -107,18 +114,21 @@ DawnCachingInterfaceFactory::CreateDefaultInMemoryBackend() {
 
 std::unique_ptr<DawnCachingInterface>
 DawnCachingInterfaceFactory::CreateInstance(
-    const gpu::GpuDiskCacheHandle& handle) {
+    const gpu::GpuDiskCacheHandle& handle,
+    DecoderClient* decoder_client) {
   DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU);
 
   if (const auto it = backends_.find(handle); it != backends_.end()) {
-    return base::WrapUnique(new DawnCachingInterface(it->second));
+    return base::WrapUnique(
+        new DawnCachingInterface(it->second, decoder_client));
   }
 
   ScopedDiskCacheBackend backend = backend_factory_.Run();
   if (backend->data.get() != nullptr) {
     backends_[handle] = backend;
   }
-  return base::WrapUnique(new DawnCachingInterface(std::move(backend)));
+  return base::WrapUnique(
+      new DawnCachingInterface(std::move(backend), decoder_client));
 }
 
 std::unique_ptr<DawnCachingInterface>
