@@ -650,8 +650,9 @@ void DragDropController::Drop(aura::Window* target,
   // TODO(https://crbug.com/1160925): Avoid nested RunLoop in exo
   // DataDevice::GetDropCallback() - remove the block below when it is fixed.
   if (!window_tracker.Contains(drag_window_) ||
-      !window_tracker.Contains(drag_window_->parent()))
+      !window_tracker.Contains(drag_window_->parent())) {
     ui::Event::DispatcherApi(&e).set_target(nullptr);
+  }
 
   for (aura::client::DragDropClientObserver& observer : observers_)
     observer.OnDragCompleted(e);
