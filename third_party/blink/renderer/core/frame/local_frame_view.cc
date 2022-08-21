@@ -1709,8 +1709,8 @@ void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
     // content background from the previous page while rendering is blocked in
     // the new page, but for cross process navigations we would paint the
     // default background (typically white) while the rendering is blocked.
-    GetFrame().DidChangeBackgroundColor(SkColor(BaseBackgroundColor()),
-                                        true /* color_adjust */);
+    GetFrame().DidChangeBackgroundColor(
+        BaseBackgroundColor().ToSkColorDeprecated(), true /* color_adjust */);
   }
 
   if (auto* layout_view = GetLayoutView())
@@ -1995,7 +1995,8 @@ Color LocalFrameView::DocumentBackgroundColor() {
     // TODO(https://crbug.com/1351544): The DarkModeFilter operate on SkColor4f,
     // and DocumentBackgroundColor should return an SkColor4f.
     doc_bg = Color::FromSkColor(EnsureDarkModeFilter().InvertColorIfNeeded(
-        SkColor(doc_bg), DarkModeFilter::ElementRole::kBackground));
+        doc_bg.ToSkColorDeprecated(),
+        DarkModeFilter::ElementRole::kBackground));
   }
   if (blend_with_base)
     return result.Blend(doc_bg);

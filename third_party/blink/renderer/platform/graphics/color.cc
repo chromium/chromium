@@ -480,7 +480,7 @@ bool Color::SetNamedColor(const String& name) {
   return found_color;
 }
 
-Color::operator SkColor() const {
+SkColor Color::ToSkColorDeprecated() const {
   return SkColorSetARGB(Alpha(), Red(), Green(), Blue());
 }
 

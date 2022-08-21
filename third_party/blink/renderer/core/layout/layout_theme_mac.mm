@@ -141,8 +141,9 @@ Color LayoutThemeMac::FocusRingColor(
     return Color::FromRGBA(0x10, 0x10, 0x10, 0xFF);
   }
 
-  SkColor keyboard_focus_indicator = SkColor(
-      GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme));
+  SkColor keyboard_focus_indicator =
+      GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme)
+          .ToSkColorDeprecated();
   Color focus_ring = Color::FromSkColor(
       ui::NativeTheme::GetInstanceForWeb()->FocusRingColorForBaseColor(
           keyboard_focus_indicator));

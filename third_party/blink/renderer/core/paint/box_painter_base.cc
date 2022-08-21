@@ -177,7 +177,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         style.ForceDark()
             ? Color::FromSkColor(
                   context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      SkColor(resolved_shadow_color),
+                      resolved_shadow_color.ToSkColorDeprecated(),
                       DarkModeFilter::ElementRole::kBackground))
             : resolved_shadow_color;
 
@@ -329,7 +329,7 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
         style.ForceDark()
             ? Color::FromSkColor(
                   context.GetDarkModeFilter()->InvertColorIfNeeded(
-                      SkColor(resolved_shadow_color),
+                      resolved_shadow_color.ToSkColorDeprecated(),
                       DarkModeFilter::ElementRole::kBackground))
             : resolved_shadow_color;
 

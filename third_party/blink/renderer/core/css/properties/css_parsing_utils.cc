@@ -1686,13 +1686,13 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
   // below.
 
   SkColor resolved_background_color =
-      static_cast<SkColor>(ResolveColor(background_color));
+      ResolveColor(background_color).ToSkColorDeprecated();
   int highest_contrast_index = -1;
   float highest_contrast_ratio = 0;
   for (unsigned i = 0; i < colors_to_compare_against.size(); i++) {
     float contrast_ratio = color_utils::GetContrastRatio(
         resolved_background_color,
-        static_cast<SkColor>(ResolveColor(colors_to_compare_against[i])));
+        ResolveColor(colors_to_compare_against[i]).ToSkColorDeprecated());
     if (target_contrast.has_value()) {
       if (contrast_ratio >= target_contrast.value()) {
         highest_contrast_ratio = contrast_ratio;

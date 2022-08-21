@@ -96,7 +96,7 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
     }
     const cssvalue::CSSColor& css_color =
         To<cssvalue::CSSColor>(override_pair.Second());
-    return static_cast<SkColor>(css_color.Value());
+    return css_color.Value().ToSkColorDeprecated();
   };
 
   Vector<FontPalette::FontPaletteOverride> return_overrides;

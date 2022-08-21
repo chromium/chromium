@@ -71,7 +71,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
     : stroke_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
       fill_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
       shadow_blur_(0.0),
-      shadow_color_(Color::kTransparent),
+      shadow_color_(SK_ColorTRANSPARENT),
       global_alpha_(1.0),
       line_dash_offset_(0.0),
       unparsed_font_(defaultFont),

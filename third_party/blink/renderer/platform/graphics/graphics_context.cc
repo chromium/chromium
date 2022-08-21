@@ -97,7 +97,7 @@ Color DarkModeColor(GraphicsContext& context,
     // TODO(https://crbug.com/1351544): DarkModeFilter should operate on
     // SkColor4f, not SkColor.
     return Color::FromSkColor(context.GetDarkModeFilter()->InvertColorIfNeeded(
-        SkColor(color), auto_dark_mode.role));
+        color.ToSkColorDeprecated(), auto_dark_mode.role));
   }
   return color;
 }

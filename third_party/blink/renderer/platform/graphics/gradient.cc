@@ -103,19 +103,21 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     // with a stop at (0 + epsilon).
     pos.push_back(WebCoreDoubleToSkScalar(0));
     if (color_filter_) {
-      colors.push_back(
-          color_filter_->filterColor(SkColor(stops_.front().color)));
+      colors.push_back(color_filter_->filterColor(
+          stops_.front().color.ToSkColorDeprecated()));
     } else {
-      colors.push_back(SkColor(stops_.front().color));
+      colors.push_back(stops_.front().color.ToSkColorDeprecated());
     }
   }
 
   for (const auto& stop : stops_) {
     pos.push_back(WebCoreDoubleToSkScalar(stop.stop));
-    if (color_filter_)
-      colors.push_back(color_filter_->filterColor(SkColor(stop.color)));
-    else
-      colors.push_back(SkColor(stop.color));
+    if (color_filter_) {
+      colors.push_back(
+          color_filter_->filterColor(stop.color.ToSkColorDeprecated()));
+    } else {
+      colors.push_back(stop.color.ToSkColorDeprecated());
+    }
   }
 
   // Copy the last stop to 1.0 if needed. See comment above about this float

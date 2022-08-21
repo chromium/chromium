@@ -539,8 +539,9 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
     Color search_field_text_color =
         cancel_button_object.StyleRef().VisitedDependentColor(
             GetCSSPropertyColor());
-    bool text_is_dark = color_utils::GetRelativeLuminance(
-                            SkColor(search_field_text_color)) < 0.5;
+    bool text_is_dark =
+        color_utils::GetRelativeLuminance(
+            search_field_text_color.ToSkColorDeprecated()) < 0.5;
     color_scheme_adjusted_cancel_image =
         text_is_dark ? cancel_image_hc_light_mode : cancel_image_dark_mode;
     color_scheme_adjusted_cancel_pressed_image =
