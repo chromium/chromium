@@ -1171,7 +1171,7 @@
 // Sets the y content offset of the NTP collection view.
 - (void)setContentOffset:(CGFloat)offset {
   self.collectionView.contentOffset = CGPointMake(0, offset);
-  self.scrolledIntoFeed = offset >= -[self offsetWhenScrolledIntoFeed];
+  self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   if (self.feedHeaderViewController) {
     [self.feedHeaderViewController toggleBackgroundBlur:self.scrolledIntoFeed
                                                animated:NO];
