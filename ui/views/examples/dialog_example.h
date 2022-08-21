@@ -48,7 +48,8 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
                          Textfield** member,
                          std::u16string label,
                          std::u16string value,
-                         Label** created_label = nullptr);
+                         Label** created_label = nullptr,
+                         bool pad_last_col = false);
   void AddCheckbox(View* parent, Checkbox** member, Label* label);
 
   // Checkbox callback
