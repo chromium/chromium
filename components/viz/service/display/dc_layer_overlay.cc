@@ -331,6 +331,42 @@ gfx::Rect CalculateOccludingDamageRect(
   return occluding_damage_rect;
 }
 
+bool IsFullScreenLetterboxing(const QuadList::Iterator& it,
+                              QuadList::ConstIterator quad_list_end,
+                              const gfx::RectF& display_rect) {
+  bool is_fullscreen = false;
+
+  // Two cases are considered as fullscreen letterboxing:
+  // 1. If the quad beneath the overlay quad is DrawQuad::Material::kSolidColor
+  // with black, and it covers the display size.
+  // 2. If the quad beneath the overlay quad is
+  // DrawQuad::Material::kTiledContent, and it touches two sides of the screen,
+  // while starting at display origin (0, 0).
+  // For YouTube with F11 page fullscreen mode, the kTiledContent beneath the
+  // overlay does not touch the right edge due to the existing of a scrolling
+  // bar.
+  auto beneath_overlay_it = it;
+  beneath_overlay_it++;
+
+  if (beneath_overlay_it != quad_list_end) {
+    if (beneath_overlay_it->material == DrawQuad::Material::kSolidColor &&
+        SolidColorDrawQuad::MaterialCast(*beneath_overlay_it)->color ==
+            SkColors::kBlack) {
+      gfx::RectF black_background_rect =
+          ClippedQuadRectangleF(*beneath_overlay_it);
+      is_fullscreen = (black_background_rect == display_rect);
+    } else if (beneath_overlay_it->material ==
+               DrawQuad::Material::kTiledContent) {
+      gfx::RectF tiled_rect = ClippedQuadRectangleF(*beneath_overlay_it);
+      is_fullscreen = (tiled_rect.origin() == display_rect.origin() &&
+                       (tiled_rect.width() == display_rect.width() ||
+                        tiled_rect.height() == display_rect.height()));
+    }
+  }
+
+  return is_fullscreen;
+}
+
 void RecordVideoDCLayerResult(DCLayerResult result,
                               gfx::ProtectedVideoType protected_video_type) {
   switch (protected_video_type) {
@@ -679,7 +715,7 @@ void DCLayerOverlayProcessor::Process(
     SurfaceDamageRectList surface_damage_rect_list,
     DCLayerOverlayList* dc_layer_overlays,
     bool is_video_capture_enabled,
-    bool is_video_fullscreen_mode) {
+    bool is_page_fullscreen_mode) {
   bool this_frame_has_occluding_damage_rect = false;
   processed_yuv_overlay_count_ = 0;
   surface_damage_rect_list_ = std::move(surface_damage_rect_list);
@@ -895,7 +931,7 @@ void DCLayerOverlayProcessor::Process(
     UpdateDCLayerOverlays(display_rect, render_pass, it,
                           quad_rectangle_in_target_space, occluding_damage_rect,
                           is_overlay, &prev_it, &prev_index, damage_rect,
-                          dc_layer_overlays, is_video_fullscreen_mode);
+                          dc_layer_overlays, is_page_fullscreen_mode);
   }
 
   // Update previous frame state after processing root pass. If there is no
@@ -978,12 +1014,16 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     size_t* new_index,
     gfx::Rect* damage_rect,
     DCLayerOverlayList* dc_layer_overlays,
-    bool is_video_fullscreen_mode) {
+    bool is_page_fullscreen_mode) {
   // Record the result first before ProcessForOverlay().
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
   DCLayerOverlay dc_layer;
-  dc_layer.is_video_fullscreen_mode = is_video_fullscreen_mode;
+  dc_layer.is_video_fullscreen_mode =
+      is_page_fullscreen_mode
+          ? IsFullScreenLetterboxing(it, render_pass->quad_list.end(),
+                                     display_rect)
+          : false;
   switch (it->material) {
     case DrawQuad::Material::kYuvVideoContent:
       FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),

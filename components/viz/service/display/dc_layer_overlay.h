@@ -103,7 +103,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                        SurfaceDamageRectList surface_damage_rect_list,
                        DCLayerOverlayList* dc_layer_overlays,
                        bool is_video_capture_enabled,
-                       bool is_video_fullscreen_mode);
+                       bool is_page_fullscreen_mode);
   void ClearOverlayState();
   // This is the damage contribution due to previous frame's overlays which can
   // be empty.
@@ -134,7 +134,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                              size_t* new_index,
                              gfx::Rect* damage_rect,
                              DCLayerOverlayList* dc_layer_overlays,
-                             bool is_video_fullscreen_mode);
+                             bool is_page_fullscreen_mode);
 
   // Returns an iterator to the element after |it|.
   QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,

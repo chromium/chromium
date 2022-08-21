@@ -49,8 +49,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Sets |is_video_capture_enabled_|.
   void SetIsVideoCaptureEnabled(bool enabled) override;
 
-  // Sets |is_video_fullscreen_mode_|.
-  void SetIsVideoFullscreen(bool enabled) override;
+  // Sets |is_page_fullscreen_mode_|.
+  void SetIsPageFullscreen(bool enabled) override;
 
   void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
@@ -93,7 +93,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   bool is_video_capture_enabled_ = false;
 
-  bool is_video_fullscreen_mode_ = false;
+  bool is_page_fullscreen_mode_ = false;
 };
 
 }  // namespace viz
