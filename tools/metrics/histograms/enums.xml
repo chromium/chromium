@@ -95542,6 +95542,11 @@ would be helpful to identify which type is being sent.
   <int value="157" label="(0b10011101) stale owner auth (TPM2.0)"/>
 </enum>
 
+<enum name="TPMPowerWashResult">
+  <int value="0" label="TPM Clear Success"/>
+  <int value="1" label="TPM Clear Failed"/>
+</enum>
+
 <enum name="TPMResponseCode">
   <int value="0" label="TPM_RC_SUCCESS"/>
   <int value="16" label="TPM_RC_PP"/>

@@ -1387,6 +1387,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.TPM.PowerWashResult" enum="TPMPowerWashResult"
+    expires_after="2023-02-18">
+  <owner>chenyian@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Report if TPM clear is success or not after a power wash. TPM should not be
+    owned after the power wash.
+  </summary>
+</histogram>
+
 <histogram name="Platform.TPM.TimeToTakeOwnership" units="ms"
     expires_after="2023-02-12">
   <owner>yich@google.com</owner>
