@@ -57,7 +57,8 @@ class ScopedCheckExpectation {
 // Macro which expects a CHECK to fire with a certain message. If msg starts
 // with "=~", it's interpreted as a regular expression.
 // Example: EXPECT_CHECK("Check failed: false.", CHECK(false));
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
+    !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 #define EXPECT_CHECK(msg, check_expr) \
   do {                                \
     EXPECT_CHECK_DEATH(check_expr);   \
@@ -353,11 +354,9 @@ TEST_F(CheckTest, ConfigurableDCheckFeature) {
 struct StructWithOstream {
   bool operator==(const StructWithOstream& o) const { return &o == this; }
 };
-#if !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
 std::ostream& operator<<(std::ostream& out, const StructWithOstream&) {
   return out << "ostream";
 }
-#endif
 
 struct StructWithToString {
   bool operator==(const StructWithToString& o) const { return &o == this; }
@@ -370,12 +369,10 @@ struct StructWithToStringAndOstream {
   }
   std::string ToString() const { return "ToString"; }
 };
-#if !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
 std::ostream& operator<<(std::ostream& out,
                          const StructWithToStringAndOstream&) {
   return out << "ostream";
 }
-#endif
 
 struct StructWithToStringNotStdString {
   struct PseudoString {};
@@ -385,12 +382,10 @@ struct StructWithToStringNotStdString {
   }
   PseudoString ToString() const { return PseudoString(); }
 };
-#if !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
 std::ostream& operator<<(std::ostream& out,
                          const StructWithToStringNotStdString::PseudoString&) {
   return out << "ToString+ostream";
 }
-#endif
 
 TEST_F(CheckTest, OstreamVsToString) {
   StructWithOstream a, b;
