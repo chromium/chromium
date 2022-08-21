@@ -146,6 +146,11 @@ class ThreadState::IncrementalMarkingScheduler {
   }
 
   void ScheduleTask() {
+    // Avoid posting non-deterministic runnables when recording/replaying.
+    if (recordreplay::IsRecordingOrReplaying()) {
+      return;
+    }
+
     // Reassigning to the task will cancel the currently scheduled one.
     task_ = PostNonNestableCancellableTask(
         *ThreadScheduler::Current()->V8TaskRunner(), FROM_HERE,
@@ -487,11 +492,6 @@ void ThreadState::PerformConcurrentSweep(base::JobDelegate* job) {
 
 void ThreadState::StartIncrementalMarking(BlinkGC::GCReason reason) {
   DCHECK(CheckThread());
-  if (recordreplay::IsRecordingOrReplaying()) {
-    // Avoid posting non-deterministic runnables when recording/replaying.
-    // This gets triggered even when disabling incremental GC within V8...
-    return;
-  }
   // Schedule an incremental GC only when no GC is scheduled. Otherwise, already
   // scheduled GCs should be prioritized.
   if (GetGCState() != kNoGCScheduled) {
