@@ -23,14 +23,6 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
         mContentView = contentView;
     }
 
-    /**
-     * Sets the screen to show on the bottom sheet.
-     * @param screenType A {@link ScreenType} specifying the screen to show.
-     */
-    void updateCurrentScreen(int screenType) {
-        // TODO(crbug.com/1334642): Implement.
-    }
-
     @Override
     public View getContentView() {
         return mContentView;
@@ -54,7 +46,7 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
 
     @Override
     public int getPriority() {
-        return BottomSheetContent.ContentPriority.HIGH;
+        return ContentPriority.HIGH;
     }
 
     @Override
@@ -69,19 +61,19 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
 
     @Override
     public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
+        return HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
         // TODO(crbug.com/1334642): Implement.
-        return HeightMode.DEFAULT;
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override
     public float getHalfHeightRatio() {
         // TODO(crbug.com/1334642): Implement.
-        return BottomSheetContent.HeightMode.DEFAULT;
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override

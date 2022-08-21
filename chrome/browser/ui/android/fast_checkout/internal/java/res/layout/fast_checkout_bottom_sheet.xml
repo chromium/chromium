@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<ViewFlipper
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:paddingLeft="@dimen/fast_checkout_sheet_margin"
+  android:paddingRight="@dimen/fast_checkout_sheet_margin"
+  android:measureAllChildren="false" >
+
+    <include
+        android:id="@+id/fast_checkout_home_screen_sheet"
+        layout="@layout/fast_checkout_home_screen_sheet" />
+    <!-- TODO(crbug.com/1334642): Create views for the remaining 2 screens. -->
+</ViewFlipper>

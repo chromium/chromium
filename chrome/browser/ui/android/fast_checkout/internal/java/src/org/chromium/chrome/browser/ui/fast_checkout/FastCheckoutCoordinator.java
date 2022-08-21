@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.widget.ViewFlipper;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
@@ -23,17 +23,13 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
             FastCheckoutComponent.Delegate delegate) {
         mMediator.initialize(delegate, mModel, sheetController);
 
-        LinearLayout rootView = new LinearLayout(context);
-        rootView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        rootView.setOrientation(LinearLayout.VERTICAL);
-
+        ViewFlipper rootView = (ViewFlipper) LayoutInflater.from(context).inflate(
+                R.layout.fast_checkout_bottom_sheet, null);
         mContent = new FastCheckoutSheetContent(rootView);
 
-        // TODO(crbug.com/1334642): Create views for all 3 screens.
         mModel.addObserver((source, propertyKey) -> {
             if (FastCheckoutModel.CURRENT_SCREEN == propertyKey) {
-                mContent.updateCurrentScreen(mModel.get(FastCheckoutModel.CURRENT_SCREEN));
+                rootView.setDisplayedChild(mModel.get(FastCheckoutModel.CURRENT_SCREEN));
             } else if (FastCheckoutModel.VISIBLE == propertyKey) {
                 // Dismiss the sheet if it can't be immediately shown.
                 boolean visibilityChangeSuccessful =

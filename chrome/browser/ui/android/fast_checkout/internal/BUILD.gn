@@ -37,6 +37,15 @@ android_resources("java_resources") {
     ":java_strings_grd",
     "//ui/android:ui_java_resources",
   ]
+  sources = [
+    "java/res/drawable-v24/fast_checkout_item_background_bottom.xml",
+    "java/res/drawable-v24/fast_checkout_item_background_top.xml",
+    "java/res/drawable/fast_checkout_item_background_bottom.xml",
+    "java/res/drawable/fast_checkout_item_background_top.xml",
+    "java/res/layout/fast_checkout_bottom_sheet.xml",
+    "java/res/layout/fast_checkout_home_screen_sheet.xml",
+    "java/res/values/dimens.xml",
+  ]
   custom_package = "org.chromium.chrome.browser.ui.fast_checkout"
 }
 
