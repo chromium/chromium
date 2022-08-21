@@ -1,6 +1,7 @@
 package com.ark.browser.tab.core;
 
 import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
 
@@ -23,14 +24,14 @@ public class PageGroupImpl implements IPageGroup {
 //        }
 //
 //        index = Math.min(index, mPageInfoList.size() - 1);
-//        Log.d(TAG, "load pageSize=" + mPageInfoList.size() + " index=" + index);
+//        ArkLogger.d(TAG, "load pageSize=" + mPageInfoList.size() + " index=" + index);
 //    }
 
     public PageGroupImpl(List<IPage> pages) {
         mPageInfoList.clear();
         this.mPageInfoList.addAll(pages);
         index = Math.min(index, mPageInfoList.size() - 1);
-        Log.d(TAG, "load pageSize=" + mPageInfoList.size() + " index=" + index);
+        ArkLogger.d(TAG, "load pageSize=" + mPageInfoList.size() + " index=" + index);
     }
 
 //    @Override

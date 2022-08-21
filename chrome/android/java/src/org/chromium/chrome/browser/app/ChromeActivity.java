@@ -42,6 +42,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.PowerMonitor;
@@ -117,6 +118,7 @@ import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -130,6 +132,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorProfileSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -547,13 +550,60 @@ public abstract class ChromeActivity
                 });
 
                 EditText etUrl = findViewById(R.id.et_url);
+                etUrl.setMaxLines(2);
                 TextView tvGo = findViewById(R.id.tv_go);
                 tvGo.setOnClickListener(v -> {
                     Tab tab = getActivityTab();
                     if (tab != null) {
+                        String url = etUrl.getText().toString();
+                        if (TextUtils.equals(url, tab.getUrl().getSpec())) {
+                            Toast.makeText(ContextUtils.getApplicationContext(), "same url!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         LoadUrlParams params = new LoadUrlParams(etUrl.getText().toString()
                                 , PageTransition.LINK);
                         tab.loadUrl(params);
+                    }
+                });
+
+                mTabModelSelectorSupplier.addObserver(new Callback<TabModelSelector>() {
+                    @Override
+                    public void onResult(TabModelSelector tabModelSelector) {
+                        tabModelSelector.addObserver(new TabModelSelectorObserver() {
+
+                            private final EmptyTabObserver observer = new EmptyTabObserver() {
+
+                                @Override
+                                public void onPageLoadStarted(Tab tab, GURL url) {
+                                    etUrl.setText(tab.getUrl().getSpec());
+                                }
+
+                                @Override
+                                public void onPageLoadFinished(Tab tab, GURL url) {
+                                    etUrl.setText(tab.getUrl().getSpec());
+                                }
+                            };
+
+                            @Override
+                            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                                onTabChanged(getActivityTab());
+                            }
+
+                            @Override
+                            public void onChange() {
+                                onTabChanged(getActivityTab());
+                            }
+
+                            private void onTabChanged(Tab tab) {
+                                if (tab != null) {
+                                    if (!tab.hasObserver(observer)) {
+                                        tab.addObserver(observer);
+                                    }
+                                    etUrl.setText(tab.getUrl().getSpec());
+                                }
+                            }
+
+                        });
                     }
                 });
 

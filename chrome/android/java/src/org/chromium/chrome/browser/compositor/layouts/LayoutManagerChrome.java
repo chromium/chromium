@@ -41,9 +41,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         implements OverviewModeBehavior, ChromeAccessibilityUtil.Observer {
     // Layouts
 
-    // Event Filter Handlers
-    private final SwipeHandler mToolbarSwipeHandler;
-
     /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
@@ -69,9 +66,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         mOverviewModeObservers = new ObserverList<OverviewModeObserver>();
 
-        // Build Event Filter Handlers
-        mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
-
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
             @Override
@@ -95,11 +89,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
             mSceneOverlays.get(i).getVirtualViews(views);
         }
-    }
-
-    @Override
-    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
-        return new ToolbarSwipeHandler(supportSwipeDown);
     }
 
     @Override

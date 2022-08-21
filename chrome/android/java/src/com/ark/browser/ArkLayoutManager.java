@@ -16,10 +16,10 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -47,20 +46,9 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -80,6 +68,9 @@ import java.util.Map;
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
 public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider {
+
+    private static final String TAG = "ArkLayoutManager";
+
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -288,6 +279,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
      * cascades the changes to the tabs.
      */
     public void onUpdate() {
+        ArkLogger.e("ArkLayoutManager", "onUpdate");
         TraceEvent.begin("LayoutDriver:onUpdate");
         onUpdate(time(), FRAME_DELTA_TIME_MS);
         TraceEvent.end("LayoutDriver:onUpdate");
@@ -301,6 +293,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
      */
     @VisibleForTesting
     boolean onUpdate(long timeMs, long dtMs) {
+        ArkLogger.e("ArkLayoutManager", "onUpdate timeMs=" + timeMs
+                + " dtMs=" + dtMs + " mUpdateRequested=" + mUpdateRequested);
         if (!mUpdateRequested) {
             mFrameRequestSupplier.set(timeMs);
             return false;
@@ -347,12 +341,13 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         mStaticLayout = new ArkStaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
                 tabContentManager);
 
+
 //        setNextLayout(null, true);
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
 
-        startShowing(mStaticLayout, true);
+        startShowing(mStaticLayout, false);
     }
 
     @Override
@@ -534,13 +529,18 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     @Override
     public void initLayoutTabFromHost(final int tabId) {
+        ArkLogger.e(TAG, "initLayoutTabFromHost tabId=" + tabId + " getActiveLayout=" + getActiveLayout());
         if (getActiveLayout() == null) return;
 
         Tab tab = PageCacheManager.getInstance().findPage(tabId);
+        ArkLogger.e(TAG, "initLayoutTabFromHost tab=" + tab);
         if (tab == null) return;
 
         LayoutTab layoutTab = mTabCache.get(tabId);
-        if (layoutTab == null) return;
+        ArkLogger.e(TAG, "initLayoutTabFromHost layoutTab=" + layoutTab);
+        if (layoutTab == null) {
+            layoutTab = createLayoutTab(tabId, false, -1, -1);
+        }
 
         GURL url = tab.getUrl();
         boolean isNativePage =
@@ -641,6 +641,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     @Override
     public void requestUpdate() {
+        ArkLogger.d(TAG, "requestUpdate");
         requestUpdate(null);
     }
 
@@ -687,13 +688,14 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     @Override
     public void showLayout(int layoutType, boolean animate) {
-        Layout activeLayout = getActiveLayout();
-        if (activeLayout != null && !activeLayout.isStartingToHide()) {
-            setNextLayout(getLayoutForType(layoutType), animate);
-            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
-        } else {
-            startShowing(getLayoutForType(layoutType), animate);
-        }
+//        Layout activeLayout = getActiveLayout();
+//        if (activeLayout != null && !activeLayout.isStartingToHide()) {
+//            setNextLayout(getLayoutForType(layoutType), animate);
+//            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
+//        } else {
+//            startShowing(getLayoutForType(layoutType), animate);
+//        }
+        startShowing(mStaticLayout, false);
     }
 
     /**
@@ -835,11 +837,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     private @Orientation int getOrientation() {
         return mHost.getWidth() > mHost.getHeight() ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
-    }
-
-    @VisibleForTesting
-    public LayoutTab getLayoutTabForTesting(int tabId) {
-        return mTabCache.get(tabId);
     }
 
     // LayoutStateProvider implementation.

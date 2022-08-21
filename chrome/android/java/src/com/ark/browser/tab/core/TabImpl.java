@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -79,7 +80,7 @@ public class TabImpl implements ITab {
 
     @Override
     public void exitFloatingTabInfo() {
-        Log.d(TAG, "exitFloatingTabInfo mFloatingTabInfo=" + mFloatingTab + " this=" + this);
+        ArkLogger.d(TAG, "exitFloatingTabInfo mFloatingTabInfo=" + mFloatingTab + " this=" + this);
         if (mFloatingTab == null) {
             return;
         }
@@ -107,10 +108,10 @@ public class TabImpl implements ITab {
 
         ITabGroup tabList = TabListManager.getInstance().getTabList(tabInfo.isIncognito());
         TabInfo currentTabInfo = tabList.getCurrentTabInfo();
-        Log.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
+        ArkLogger.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
         if (currentTabInfo != null
                 && TextUtils.equals(currentTabInfo.getTabInfoId(), getTabInfo().getTabInfoId())) {
-            Log.d(TAG, "exitFloatingTabInfo tab=" + getCurrentPageInfo());
+            ArkLogger.d(TAG, "exitFloatingTabInfo tab=" + getCurrentPageInfo());
             TabListManager.getInstance().selectTab(this);
         }
 

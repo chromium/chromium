@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package com.ark.browser.tab;
 
 import android.graphics.Rect;
 import android.util.SparseIntArray;
@@ -13,6 +13,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabViewManager;
+import org.chromium.chrome.browser.tab.TabViewProvider;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -29,7 +33,7 @@ import java.util.PriorityQueue;
  *        {@link Tab#getTabViewManager#removeTabViewProvider} to add and remove their
  *        {@link TabViewProvider}.
  */
-public class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> {
+public class ArkTabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> {
     /**
      * A prioritized list of all {@link TabViewProvider.Type}s, from most important to least
      * important. The {@link TabViewProvider} with the highest priority will always be shown first,
@@ -54,12 +58,12 @@ public class TabViewManagerImpl implements TabViewManager, Comparator<TabViewPro
     }
 
     private PriorityQueue<TabViewProvider> mTabViewProviders;
-    private TabImpl mTab;
+    private ArkTabImpl mTab;
     private View mCurrentView;
     private DestroyableObservableSupplier<Rect> mMarginSupplier;
     private final Rect mViewMargins = new Rect();
 
-    public TabViewManagerImpl(TabImpl tab) {
+    public ArkTabViewManagerImpl(ArkTabImpl tab) {
         mTab = tab;
         mTabViewProviders = new PriorityQueue<>(PRIORITIZED_TAB_VIEW_PROVIDER_TYPES.length, this);
     }
@@ -71,7 +75,77 @@ public class TabViewManagerImpl implements TabViewManager, Comparator<TabViewPro
         }
 
         mMarginSupplier =
-                new BrowserControlsMarginSupplier(mTab.getActivity().getBrowserControlsManager());
+                new BrowserControlsMarginSupplier(new BrowserControlsStateProvider() {
+                    @Override
+                    public void addObserver(Observer obs) {
+
+                    }
+
+                    @Override
+                    public void removeObserver(Observer obs) {
+
+                    }
+
+                    @Override
+                    public int getTopControlsHeight() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getTopControlsMinHeight() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getTopControlOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getTopControlsMinHeightOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getBottomControlsHeight() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getBottomControlsMinHeight() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getBottomControlsMinHeightOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean shouldAnimateBrowserControlsHeightChanges() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getBottomControlOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public float getBrowserControlHiddenRatio() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getContentOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public float getTopVisibleContentOffset() {
+                        return 0;
+                    }
+                });
         mMarginSupplier.addObserver(this::updateViewMargins);
         // Update margins immediately if available rather than waiting for a posted notification.
         // Waiting for a posted notification could allow a layout pass to occur before the margins

@@ -18,7 +18,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
     private static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
             TabBrowserControlsOffsetHelper.class;
 
-    private TabImpl mTab;
+    private Tab mTab;
 
     private int mTopControlsOffset;
     private int mBottomControlsOffset;
@@ -45,7 +45,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
     }
 
     private TabBrowserControlsOffsetHelper(Tab tab) {
-        mTab = (TabImpl) tab;
+        mTab = tab;
         tab.addObserver(this);
     }
 
@@ -63,7 +63,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      *                                   changing as a result of an in-progress min-height change
      *                                   animation in the renderer.
      */
-    void setTopOffset(int topControlsOffset, int contentOffset, int topControlsMinHeightOffset) {
+    public void setTopOffset(int topControlsOffset, int contentOffset, int topControlsMinHeightOffset) {
         if (mOffsetInitialized && topControlsOffset == mTopControlsOffset
                 && mContentOffset == contentOffset
                 && mTopControlsMinHeightOffset == topControlsMinHeightOffset) {
@@ -82,7 +82,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      *                                      may be changing as a result of an in-progress min-height
      *                                      change animation in the renderer.
      */
-    void setBottomOffset(int bottomControlsOffset, int bottomControlsMinHeightOffset) {
+    public void setBottomOffset(int bottomControlsOffset, int bottomControlsMinHeightOffset) {
         if (mOffsetInitialized && mBottomControlsOffset == bottomControlsOffset
                 && mBottomControlsMinHeightOffset == bottomControlsMinHeightOffset) {
             return;

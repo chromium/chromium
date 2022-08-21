@@ -81,7 +81,7 @@ public class TabUtils {
     }
 
     public static Tab fromWebContents(WebContents webContents) {
-        return TabImplJni.get().fromWebContents(webContents);
+        return TabJni.get().fromWebContents(webContents);
     }
 
     /**

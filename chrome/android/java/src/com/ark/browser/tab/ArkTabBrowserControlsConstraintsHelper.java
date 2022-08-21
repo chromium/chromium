@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package com.ark.browser.tab;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -11,6 +11,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelperJni;
+import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -19,11 +24,11 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Manages the state of tab browser controls.
  */
-public class TabBrowserControlsConstraintsHelper implements UserData {
-    private static final Class<TabBrowserControlsConstraintsHelper> USER_DATA_KEY =
-            TabBrowserControlsConstraintsHelper.class;
+public class ArkTabBrowserControlsConstraintsHelper implements UserData {
+    private static final Class<ArkTabBrowserControlsConstraintsHelper> USER_DATA_KEY =
+            ArkTabBrowserControlsConstraintsHelper.class;
 
-    private final TabImpl mTab;
+    private final ArkTabImpl mTab;
     private final Callback<Integer> mConstraintsChangedCallback;
 
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
@@ -31,10 +36,10 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     public static void createForTab(Tab tab) {
         tab.getUserDataHost().setUserData(
-                USER_DATA_KEY, new TabBrowserControlsConstraintsHelper(tab));
+                USER_DATA_KEY, new ArkTabBrowserControlsConstraintsHelper(tab));
     }
 
-    public static TabBrowserControlsConstraintsHelper get(Tab tab) {
+    public static ArkTabBrowserControlsConstraintsHelper get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -76,8 +81,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     }
 
     /** Constructor */
-    private TabBrowserControlsConstraintsHelper(Tab tab) {
-        mTab = (TabImpl) tab;
+    private ArkTabBrowserControlsConstraintsHelper(Tab tab) {
+        mTab = (ArkTabImpl) tab;
         mConstraintsChangedCallback = (constraints) -> updateEnabledState();
         mTab.addObserver(new EmptyTabObserver() {
             @Override
@@ -122,7 +127,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 updateAfterRendererProcessSwitch(tab, true);
             }
         });
-        if (mTab.isInitialized() && !TabImpl.isDetached(mTab)) updateVisibilityDelegate();
+        if (mTab.isInitialized() && !ArkTabImpl.isDetached(mTab)) updateVisibilityDelegate();
     }
 
     @Override
@@ -130,7 +135,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         if (mNativeTabBrowserControlsConstraintsHelper != 0) {
             TabBrowserControlsConstraintsHelperJni.get().onDestroyed(
                     mNativeTabBrowserControlsConstraintsHelper,
-                    TabBrowserControlsConstraintsHelper.this);
+                    ArkTabBrowserControlsConstraintsHelper.this);
         }
     }
 
@@ -175,11 +180,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         if (mNativeTabBrowserControlsConstraintsHelper == 0) {
             mNativeTabBrowserControlsConstraintsHelper =
                     TabBrowserControlsConstraintsHelperJni.get().init(
-                            TabBrowserControlsConstraintsHelper.this);
+                            ArkTabBrowserControlsConstraintsHelper.this);
         }
         TabBrowserControlsConstraintsHelperJni.get().updateState(
                 mNativeTabBrowserControlsConstraintsHelper,
-                TabBrowserControlsConstraintsHelper.this, mTab.getWebContents(), constraints,
+                ArkTabBrowserControlsConstraintsHelper.this, mTab.getWebContents(), constraints,
                 current, animate);
     }
 
@@ -189,17 +194,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     }
 
     @VisibleForTesting
-    public static void setForTesting(Tab tab, TabBrowserControlsConstraintsHelper helper) {
+    public static void setForTesting(Tab tab, ArkTabBrowserControlsConstraintsHelper helper) {
         tab.getUserDataHost().setUserData(USER_DATA_KEY, helper);
-    }
-
-    @NativeMethods
-    public interface Natives {
-        long init(Object caller);
-        void onDestroyed(long nativeTabBrowserControlsConstraintsHelper,
-                         Object caller);
-        void updateState(long nativeTabBrowserControlsConstraintsHelper,
-                         Object caller, WebContents webContents, int contraints,
-                int current, boolean animate);
     }
 }

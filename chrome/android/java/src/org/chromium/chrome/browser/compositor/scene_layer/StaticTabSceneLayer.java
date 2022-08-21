@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -38,6 +39,7 @@ public class StaticTabSceneLayer extends SceneLayer {
      * @param model         The {@link PropertyModel} to use.
      */
     public void update(PropertyModel model) {
+        Log.e("StaticTabSceneLayer", "update model=" + model);
         if (model == null) {
             return;
         }

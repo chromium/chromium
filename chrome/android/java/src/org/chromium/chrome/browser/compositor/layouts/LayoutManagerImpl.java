@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -397,6 +398,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      */
     @VisibleForTesting
     boolean onUpdate(long timeMs, long dtMs) {
+        Log.e("LayoutManagerImpl", "onUpdate timeMs=" + timeMs
+                + " dtMs=" + dtMs + " mUpdateRequested=" + mUpdateRequested);
         if (!mUpdateRequested) {
             mFrameRequestSupplier.set(timeMs);
             return false;
@@ -845,6 +848,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     @Override
     public void requestUpdate() {
+        Log.d("LayoutManagerImpl", "requestUpdate");
         requestUpdate(null);
     }
 
@@ -1015,15 +1019,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      */
     public void getVirtualViews(List<VirtualView> views) {
         // Nothing to do here yet.
-    }
-
-    /**
-     * Creates a {@link SwipeHandler} instance.
-     * @param supportSwipeDown Whether or not to the handler should support swipe down gesture.
-     * @return The {@link SwipeHandler} cerated.
-     */
-    public SwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
-        return null;
     }
 
     /**

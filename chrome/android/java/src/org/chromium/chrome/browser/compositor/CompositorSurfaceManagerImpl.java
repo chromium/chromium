@@ -89,12 +89,13 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // attaching and detaching can cause surfaceCreated / surfaceDestroyed callbacks without
         // View.hasParent being up to date.
         public void attachTo(ViewGroup parent, FrameLayout.LayoutParams lp) {
+            Log.e(TAG, "SurfaceState : attach to parent : %d", format);
             mParent = parent;
             mParent.addView(surfaceView, lp);
         }
 
         public void detachFromParent() {
-            Log.i(TAG, "SurfaceState : detach from parent : %d", format);
+            Log.e(TAG, "SurfaceState : detach from parent : %d", format);
             final ViewGroup parent = mParent;
             // Since removeView can call surfaceDestroyed before returning, be sure that isAttached
             // will return false.
@@ -159,7 +160,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
     @Override
     public void requestSurface(int format) {
-        Log.i(TAG, "Transitioning to surface with format: %d", format);
+        Log.e(TAG, "Transitioning to surface with format: %d", format);
         mRequestedByClient = (format == PixelFormat.TRANSLUCENT) ? mTranslucent : mOpaque;
 
         // If destruction is pending, then we must wait for it to complete.  When we're notified
@@ -256,6 +257,8 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         SurfaceState state = getStateForHolder(holder);
         assert state != null;
 
+        Log.e(TAG, "surfaceChanged format: %d", state.format);
+
         // If this is the surface that the client currently cares about, then notify the client.
         // Note that surfaceChanged is guaranteed to come only after surfaceCreated.  Also, if the
         // client has requested a different surface but hasn't gotten it yet, then skip this.
@@ -284,7 +287,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // Note that |createPending| might not be set, if Android destroyed and recreated this
         // surface on its own.
 
-        Log.i(TAG, "surfaceCreated format: %d", state.format);
+        Log.e(TAG, "surfaceCreated format: %d", state.format);
         if (state != mRequestedByClient) {
             // Surface is created, but it's not the one that's been requested most recently.  Just
             // destroy it again.
@@ -378,6 +381,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
     @Override
     public void setVisibility(int visibility) {
+        Log.e(TAG, "setVisibility visibility=" + visibility);
         mTranslucent.surfaceView.setVisibility(visibility);
         mOpaque.surfaceView.setVisibility(visibility);
     }
@@ -402,6 +406,8 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
      * Attach |state| to |mParentView| immedaitely.
      */
     private void attachSurfaceNow(SurfaceState state) {
+        Log.e(TAG, "attachSurfaceNow isAttached=" + state.isAttached()
+                + " destroyPending=" + state.destroyPending);
         if (state.isAttached()) return;
 
         // If there is a destroy in-flight for this surface, then do nothing.

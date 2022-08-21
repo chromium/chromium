@@ -17,6 +17,7 @@ import android.os.Parcelable;
 import android.view.Surface;
 import android.view.ViewStructure;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -222,10 +223,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     @Override
     public void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
-            InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
-            InternalsHolder internalsHolder) {
-        assert internalsHolder != null;
-
+                           InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
+                           @NonNull InternalsHolder internalsHolder) {
+        Log.e(TAG, "initialize");
         mProductVersion = productVersion;
 
         WebContentsInternalsImpl internals;
@@ -243,6 +243,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         }
 
         mInitialized = true;
+        Log.e(TAG, "initialize mInitialized=" + mInitialized);
 
         setViewAndroidDelegate(viewDelegate);
         setTopLevelNativeWindow(windowAndroid);
@@ -875,6 +876,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     @Override
     public void setSize(int width, int height) {
+        Log.e(TAG, "setSize width=" + width + " height=" + height);
         checkNotDestroyed();
         WebContentsImplJni.get().setSize(mNativeWebContentsAndroid, width, height);
     }

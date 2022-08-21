@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -20,7 +21,7 @@ import org.chromium.url.GURL;
 public class TabFavicon extends TabWebContentsUserData {
     private static final Class<TabFavicon> USER_DATA_KEY = TabFavicon.class;
 
-    private final TabImpl mTab;
+    private final Tab mTab;
     private final long mNativeTabFavicon;
 
     /**
@@ -34,7 +35,7 @@ public class TabFavicon extends TabWebContentsUserData {
     private int mFaviconHeight;
     private GURL mFaviconUrl;
 
-    static TabFavicon from(Tab tab) {
+    public static TabFavicon from(Tab tab) {
         TabFavicon favicon = get(tab);
         if (favicon == null) {
             favicon = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabFavicon(tab));
@@ -58,8 +59,8 @@ public class TabFavicon extends TabWebContentsUserData {
 
     private TabFavicon(Tab tab) {
         super(tab);
-        mTab = (TabImpl) tab;
-        Resources resources = mTab.getThemedApplicationContext().getResources();
+        mTab = tab;
+        Resources resources = ContextUtils.getApplicationContext().getResources();
         mIdealFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         mNativeTabFavicon = TabFaviconJni.get().init(TabFavicon.this);
     }

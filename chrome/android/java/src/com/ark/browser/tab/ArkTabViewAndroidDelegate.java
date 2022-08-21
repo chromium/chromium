@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package com.ark.browser.tab;
 
 import android.view.ViewGroup;
 
@@ -10,6 +10,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -22,9 +26,9 @@ import org.chromium.ui.dragdrop.DropDataContentProvider;
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
  */
-public class TabViewAndroidDelegate extends ViewAndroidDelegate {
+public class ArkTabViewAndroidDelegate extends ViewAndroidDelegate {
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
-    private final TabImpl mTab;
+    private final ArkTabImpl mTab;
 
     /**
      * The inset for the bottom of the Visual Viewport in pixels, or 0 for no insetting.
@@ -35,9 +39,9 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     /** The inset supplier the observer is currently attached to. */
     private ObservableSupplier<Integer> mCurrentInsetSupplier;
 
-    public TabViewAndroidDelegate(Tab tab, ContentView containerView) {
+    public ArkTabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);
-        mTab = (TabImpl) tab;
+        mTab = (ArkTabImpl) tab;
         containerView.addOnDragListener(getDragStateTracker());
         if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
             int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(

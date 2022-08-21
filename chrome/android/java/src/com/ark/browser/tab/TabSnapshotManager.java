@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
@@ -47,7 +48,7 @@ public class TabSnapshotManager {
                 THUMBNAIL_DIRECTORY_NAME, Context.MODE_PRIVATE).getPath();
         long maxMemory = Runtime.getRuntime().maxMemory() / 6;
         // 89478485
-        Log.d("TabThumbnailManager", "maxMemory=" + maxMemory);
+        ArkLogger.d("TabThumbnailManager", "maxMemory=" + maxMemory);
         mBitmapCache = new LruCache<Integer, Bitmap>((int) maxMemory) {
             @Override
             protected int sizeOf(Integer key, Bitmap value) {
@@ -70,7 +71,7 @@ public class TabSnapshotManager {
         if (tab == null) {
             return;
         }
-        Log.d("TabThumbnailManager", "cacheTab tab=" + tab.getId());
+        ArkLogger.d("TabThumbnailManager", "cacheTab tab=" + tab.getId());
         synchronized (snapshotTasks) {
             int tabId = tab.getId();
             SnapshotTask task = snapshotTasks.get(tabId);

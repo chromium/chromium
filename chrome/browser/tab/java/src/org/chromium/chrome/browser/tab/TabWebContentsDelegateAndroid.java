@@ -17,7 +17,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * Returns whether the page should resume accepting requests for the new window. This is
      * used when window creation is asynchronous and the navigations need to be delayed.
      */
-    protected abstract boolean shouldResumeRequestsForCreatedWindow();
+    public abstract boolean shouldResumeRequestsForCreatedWindow();
 
     /**
      * Creates a new tab with the already-created WebContents. The tab for the added
@@ -29,7 +29,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @param userGesture {@code true} if opened by user gesture.
      * @return {@code true} if new tab was created successfully with a give WebContents.
      */
-    protected abstract boolean addNewContents(WebContents sourceWebContents,
+    public abstract boolean addNewContents(WebContents sourceWebContents,
             WebContents webContents, int disposition, Rect initialPosition, boolean userGesture);
 
     /**
@@ -37,20 +37,20 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * Overlay mode means that we are currently using AndroidOverlays to display video, and
      * that the compositor's surface should support alpha and not be marked as opaque.
      */
-    protected abstract void setOverlayMode(boolean useOverlayMode);
+    public abstract void setOverlayMode(boolean useOverlayMode);
 
     /**
      * Provides info on web preferences for viewing downloaded media.
      * @return enabled Whether embedded media experience should be enabled.
      */
-    protected boolean shouldEnableEmbeddedMediaExperience() {
+    public boolean shouldEnableEmbeddedMediaExperience() {
         return false;
     }
 
     /**
      * @return web preferences for enabling Picture-in-Picture.
      */
-    protected boolean isPictureInPictureEnabled() {
+    public boolean isPictureInPictureEnabled() {
         return false;
     }
 
@@ -58,14 +58,14 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @return Night mode enabled/disabled for this Tab. To be used to propagate
      *         the preferred color scheme to the renderer.
      */
-    protected boolean isNightModeEnabled() {
+    public boolean isNightModeEnabled() {
         return false;
     }
 
     /**
      * @return True if auto-darkening may be applied to web contents per Chrome browser settings.
      */
-    protected boolean isForceDarkWebContentEnabled() {
+    public boolean isForceDarkWebContentEnabled() {
         return false;
     }
 
@@ -73,7 +73,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * Return true if app banners are to be permitted in this tab. May need to be overridden.
      * @return true if app banners are permitted, and false otherwise.
      */
-    protected boolean canShowAppBanners() {
+    public boolean canShowAppBanners() {
         return true;
     }
 
@@ -81,7 +81,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @return the WebAPK manifest scope. This gives frames within the scope increased privileges
      * such as autoplaying media unmuted.
      */
-    protected String getManifestScope() {
+    public String getManifestScope() {
         return null;
     }
 
@@ -89,7 +89,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * Checks if the associated tab is currently presented in the context of custom tabs.
      * @return true if this is currently a custom tab.
      */
-    protected boolean isCustomTab() {
+    public boolean isCustomTab() {
         return false;
     }
 

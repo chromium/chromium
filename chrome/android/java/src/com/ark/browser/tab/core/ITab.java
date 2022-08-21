@@ -2,6 +2,7 @@ package com.ark.browser.tab.core;
 
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.Tab;
@@ -119,7 +120,7 @@ public interface ITab {
     default int indexOfPage(int pageId) {
         int id = getCurrentPageId();
         if (pageId == id) {
-            Log.d("ITab", "getTabIndexById return index=" + getPageGroup().getIndex());
+            ArkLogger.d("ITab", "getTabIndexById return index=" + getPageGroup().getIndex());
             return getTabInfo().getPageIndex();
         }
         for (int j = 0; j < getPageSize(); j++) {

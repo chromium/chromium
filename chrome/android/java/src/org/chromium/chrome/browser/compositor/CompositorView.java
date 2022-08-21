@@ -17,6 +17,7 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
@@ -74,10 +75,6 @@ public class CompositorView
     private boolean mPreloadedResources;
     private Runnable mDrawingFinishedCallback;
 
-    // True while the compositor view is in VR Browser mode (obsolescent), or in a WebXR
-    // "immersive-ar" session with DOM Overlay enabled. This disables SurfaceControl while active.
-    private boolean mIsInXr;
-
     private boolean mIsSurfaceControlEnabled;
     private boolean mSelectionHandlesActive;
 
@@ -104,7 +101,7 @@ public class CompositorView
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
-                    && mCompositorSurfaceManager != null && !mIsInXr
+                    && mCompositorSurfaceManager != null
                     && mNativeCompositorView != 0) {
                 mNeedsReset = true;
             }
@@ -221,9 +218,10 @@ public class CompositorView
      */
     @Override
     public void onSelectionHandlesStateChanged(boolean active) {
+        Log.e(TAG, "onSelectionHandlesStateChanged active=" + active);
         // If the feature is disabled or we're in Vr mode, we are already rendering directly to the
         // SurfaceView.
-        if (!mIsSurfaceControlEnabled || mIsInXr) return;
+        if (!mIsSurfaceControlEnabled) return;
 
         if (mSelectionHandlesActive == active) return;
         mSelectionHandlesActive = active;
@@ -250,6 +248,7 @@ public class CompositorView
 
         // Trigger the creation of a new SurfaceView. CompositorSurfaceManager will handle caching
         // the old one during the transition.
+        Log.e(TAG, "onSelectionHandlesStateChanged---->requestSurface getSurfacePixelFormat");
         mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
     }
 
@@ -271,6 +270,7 @@ public class CompositorView
      * Should be called for cleanup when the CompositorView instance is no longer used.
      */
     public void shutDown() {
+        Log.e(TAG, "shutDown");
         mCompositorSurfaceManager.shutDown();
         if (mScreenStateReceiver != null) {
             mScreenStateReceiver.shutDown();
@@ -350,30 +350,11 @@ public class CompositorView
         // We do know that if we do get one, then it will be for the surface that we just requested.
     }
 
-    /**
-     * Enables/disables immersive AR overlay mode, a variant of overlay video mode.
-     * @param enabled Whether to enter or leave overlay immersive ar mode.
-     */
-    public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
-        // Disable SurfaceControl for the duration of the session. This works around a black
-        // screen after activating the screen keyboard (IME), see https://crbug.com/1166248.
-        mIsInXr = enabled;
-
-        if (domSurfaceNeedsConfiguring) {
-            setOverlayVideoMode(enabled);
-        }
-
-        CompositorViewJni.get().setOverlayImmersiveArMode(
-                mNativeCompositorView, CompositorView.this, enabled);
-        // Entering or exiting AR mode can leave SurfaceControl in a confused state, especially if
-        // the screen keyboard (IME) was activated, see https://crbug.com/1166248 and
-        // https://crbug.com/1169822. Reset the surface manager at session start and exit to work
-        // around this.
-        mCompositorSurfaceManager.shutDown();
-        createCompositorSurfaceManager();
-    }
-
     private int getSurfacePixelFormat() {
+        Log.e(TAG, "getSurfacePixelFormat mOverlayVideoEnabled=" + mOverlayVideoEnabled
+                + " mAlwaysTranslucent=" + mAlwaysTranslucent
+                + " mIsSurfaceControlEnabled=" + mIsSurfaceControlEnabled
+                + " canUseSurfaceControl()=" + canUseSurfaceControl());
         if (mOverlayVideoEnabled || mAlwaysTranslucent) {
             return PixelFormat.TRANSLUCENT;
         }
@@ -393,11 +374,12 @@ public class CompositorView
     }
 
     private boolean canUseSurfaceControl() {
-        return !mIsInXr && !mSelectionHandlesActive;
+        return !mSelectionHandlesActive;
     }
 
     @Override
     public void surfaceRedrawNeededAsync(Runnable drawingFinished) {
+        Log.e(TAG, "surfaceRedrawNeededAsync");
         // Do not hold onto more than one draw callback, to prevent deadlock.
         // See https://crbug.com/1174273 and https://crbug.com/1223299 for more details.
         //
@@ -433,6 +415,7 @@ public class CompositorView
     public void surfaceChanged(Surface surface, int format, int width, int height) {
         if (mNativeCompositorView == 0) return;
 
+        Log.e(TAG, "surfaceChanged format=" + format);
         CompositorViewJni.get().surfaceChanged(mNativeCompositorView, CompositorView.this, format,
                 width, height, canUseSurfaceControl(), surface);
         mRenderHost.onSurfaceResized(width, height);
@@ -441,6 +424,7 @@ public class CompositorView
     @Override
     public void surfaceCreated(Surface surface) {
         if (mNativeCompositorView == 0) return;
+        Log.e(TAG, "surfaceCreated surface=" + surface);
 
         mFramesUntilHideBackground = 2;
         mHaveSwappedFramesSinceSurfaceCreated = false;
@@ -452,6 +436,7 @@ public class CompositorView
     @Override
     public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed) {
         if (mNativeCompositorView == 0) return;
+        Log.e(TAG, "surfaceDestroyed androidSurfaceDestroyed=" + androidSurfaceDestroyed + " surface=" + surface);
 
         // When we switch from Chrome to other app we can't detach child surface controls because it
         // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
@@ -470,6 +455,7 @@ public class CompositorView
 
     @Override
     public void unownedSurfaceDestroyed() {
+        Log.e(TAG, "unownedSurfaceDestroyed");
         CompositorViewJni.get().evictCachedBackBuffer(mNativeCompositorView, CompositorView.this);
     }
 
@@ -490,6 +476,7 @@ public class CompositorView
     }
 
     public void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
+        Log.e(TAG, "onPhysicalBackingSizeChanged width=" + width + " height=" + height);
         CompositorViewJni.get().onPhysicalBackingSizeChanged(
                 mNativeCompositorView, CompositorView.this, webContents, width, height);
     }
@@ -515,11 +502,13 @@ public class CompositorView
 
     @CalledByNative
     private void onCompositorLayout() {
+        Log.e(TAG, "onCompositorLayout");
         mRenderHost.onCompositorLayout();
     }
 
     @CalledByNative
     private void recreateSurface() {
+        Log.e(TAG, "recreateSurface");
         mCompositorSurfaceManager.recreateSurface();
     }
 
@@ -527,6 +516,7 @@ public class CompositorView
      * Request compositor view to render a frame.
      */
     public void requestRender() {
+        Log.e(TAG, "requestRender");
         if (mNativeCompositorView != 0) {
             CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
         }
@@ -554,11 +544,13 @@ public class CompositorView
 
     @CalledByNative
     private void didSwapFrame(int pendingFrameCount) {
+        Log.e(TAG, "didSwapFrame pendingFrameCount=" + pendingFrameCount);
         mRenderHost.didSwapFrame(pendingFrameCount);
     }
 
     @CalledByNative
     private void didSwapBuffers(boolean swappedCurrentSize) {
+        Log.e(TAG, "didSwapBuffers swappedCurrentSize=" + swappedCurrentSize);
         // If we're in the middle of a surface swap, then see if we've received a new frame yet for
         // the new surface before hiding the outgoing surface.
         if (mFramesUntilHideBackground > 1) {
@@ -646,6 +638,7 @@ public class CompositorView
         SceneLayer sceneLayer = provider.getUpdatedActiveSceneLayer(mTabContentManager,
                 mResourceManager, provider.getBrowserControlsManager());
 
+        Log.e(TAG, "finalizeLayers sceneLayer=" + sceneLayer);
         CompositorViewJni.get().setSceneLayer(
                 mNativeCompositorView, CompositorView.this, sceneLayer);
 
@@ -656,6 +649,7 @@ public class CompositorView
 
     @Override
     public void setWillNotDraw(boolean willNotDraw) {
+        Log.e(TAG, "setWillNotDraw willNotDraw=" + willNotDraw);
         mCompositorSurfaceManager.setWillNotDraw(willNotDraw);
     }
 
@@ -670,6 +664,7 @@ public class CompositorView
 
     @Override
     public void setVisibility(int visibility) {
+        Log.e(TAG, "setVisibility visibility=" + visibility);
         super.setVisibility(visibility);
         // Also set the visibility on any child SurfaceViews, since that hides the surface as
         // well. Otherwise, the surface is kept, which can interfere with VR.
@@ -689,43 +684,6 @@ public class CompositorView
         updateNeedsDidSwapBuffersCallback();
     }
 
-    /**
-     * Replaces the surface manager and swaps the window the compositor is attached to as tab
-     * reparenting doesn't handle replacing of the window the compositor uses.
-     *
-     * @param vrCompositorSurfaceManager The surface manager for VR.
-     * @param window The VR WindowAndroid to switch to.
-     */
-    public void replaceSurfaceManagerForVr(
-            CompositorSurfaceManager vrCompositorSurfaceManager, WindowAndroid window) {
-        mIsInXr = true;
-
-        mCompositorSurfaceManager.shutDown();
-        CompositorViewJni.get().setCompositorWindow(
-                mNativeCompositorView, CompositorView.this, window);
-        mCompositorSurfaceManager = vrCompositorSurfaceManager;
-        mCompositorSurfaceManager.requestSurface(PixelFormat.OPAQUE);
-        CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
-        setWindowAndroid(window);
-    }
-
-    /**
-     * Restores the non-VR surface manager and passes back control over the surface(s) to it.
-     * Also restores the non-VR WindowAndroid.
-     *
-     * @param windowToRestore The non-VR WindowAndroid to restore.
-     */
-    public void onExitVr(WindowAndroid windowToRestore) {
-        mIsInXr = false;
-
-        if (mNativeCompositorView == 0) return;
-        setWindowAndroid(windowToRestore);
-        mCompositorSurfaceManager.shutDown();
-        CompositorViewJni.get().setCompositorWindow(
-                mNativeCompositorView, CompositorView.this, mWindowAndroid);
-        createCompositorSurfaceManager();
-    }
-
     private void createCompositorSurfaceManager() {
         mCompositorSurfaceManager = new CompositorSurfaceManagerImpl(this, this);
         mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
@@ -738,6 +696,7 @@ public class CompositorView
      * should be called when changing to a valid tab.
      */
     public void onTabChanged() {
+        Log.e(TAG, "onTabChanged");
         CompositorViewJni.get().onTabChanged(mNativeCompositorView, CompositorView.this);
     }
 

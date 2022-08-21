@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab;
+package com.ark.browser.tab;
 
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
@@ -13,11 +13,18 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabGestureStateListener;
+import org.chromium.chrome.browser.tab.TabWebContentsUserData;
+import org.chromium.chrome.browser.tab.TrustedCdn;
+
 /**
  * Helper class that initializes various tab UserData objects.
  */
-public final class TabHelpers {
-    private TabHelpers() {}
+public final class ArkTabHelpers {
+    private ArkTabHelpers() {}
 
     /**
      * Creates Tab helper objects upon Tab creation.
@@ -25,13 +32,12 @@ public final class TabHelpers {
      * @param parentTab {@link Tab} parent tab
      */
     public static void initTabHelpers(Tab tab, Tab parentTab) {
-        TabUma.createForTab(tab);
         TabDistillabilityProvider.createForTab(tab);
-        InterceptNavigationDelegateTabHelper.createForTab(tab);
+        ArkInterceptNavigationDelegateTabHelper.createForTab(tab);
         ContextualSearchTabHelper.createForTab(tab);
         MediaSessionTabHelper.createForTab(tab);
         TaskTabHelper.createForTab(tab, parentTab);
-        TabBrowserControlsConstraintsHelper.createForTab(tab);
+        ArkTabBrowserControlsConstraintsHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
         AutofillAssistantTabHelper.createForTab(tab);
 
@@ -50,7 +56,7 @@ public final class TabHelpers {
         // have a valid infobar container, no need to recreate one.
         InfoBarContainer.from(tab);
 
-        TabWebContentsObserver.from(tab);
+        ArkTabWebContentsObserver.from(tab);
         SwipeRefreshHandler.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);

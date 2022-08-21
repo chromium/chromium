@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.layouts;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -119,10 +120,12 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
     }
 
     private void pushUpdate() {
+        Log.e("CompositorModelChangeProcessor", "pushUpdate model=" + mModel);
         mViewBinder.bind(mModel, mView, null);
     }
 
     private void onPropertyChanged(PropertyObservable<PropertyKey> model, PropertyKey propertyKey) {
+        Log.e("CompositorModelChangeProcessor", "onPropertyChanged propertyKey=" + propertyKey);
         assert model == mModel;
 
         mFrameSupplier.request();

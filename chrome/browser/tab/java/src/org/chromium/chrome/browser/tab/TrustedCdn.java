@@ -101,7 +101,7 @@ public class TrustedCdn extends TabWebContentsUserData {
         return null;
     }
 
-    static TrustedCdn from(@NonNull Tab tab) {
+    public static TrustedCdn from(@NonNull Tab tab) {
         TrustedCdn trustedCdn = get(tab);
         if (trustedCdn == null) {
             trustedCdn = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TrustedCdn(tab));

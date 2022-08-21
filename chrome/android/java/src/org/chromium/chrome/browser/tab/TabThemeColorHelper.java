@@ -18,7 +18,7 @@ public class TabThemeColorHelper extends EmptyTabObserver {
     private final Tab mTab;
     private final Callback mUpdateCallback;
 
-    TabThemeColorHelper(Tab tab, Callback<Integer> updateCallback) {
+    public TabThemeColorHelper(Tab tab, Callback<Integer> updateCallback) {
         mTab = tab;
         mUpdateCallback = updateCallback;
         tab.addObserver(this);

@@ -613,6 +613,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     @CalledByNative
     private void onSelectionHandlesStateChanged(boolean active) {
+        Log.e(TAG, "onSelectionHandlesStateChanged active=" + active);
         mSelectionHandlesActive = active;
         for (SelectionHandlesObserver observer : mSelectionHandlesObservers) {
             observer.onSelectionHandlesStateChanged(active);

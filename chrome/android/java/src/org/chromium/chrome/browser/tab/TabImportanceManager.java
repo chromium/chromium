@@ -20,7 +20,7 @@ public class TabImportanceManager {
     private static final List<Tab> sImportantTabs = new ArrayList<>(2);
     public static void tabShown(Tab shownTab) {
         ThreadUtils.assertOnUiThread();
-        ((TabImpl) shownTab).setImportance(ChildProcessImportance.MODERATE);
+        shownTab.setImportance(ChildProcessImportance.MODERATE);
         // Shown tabs should always be important, but hidden tabs should only be normal if there's
         // at least one important tab for two reasons:
         // 1. We could be switching between tabs within the same process and don't want the process
@@ -28,7 +28,7 @@ public class TabImportanceManager {
         // 2. We want the most recently used tab to stay alive.
         Iterator<Tab> it = sImportantTabs.iterator();
         while (it.hasNext()) {
-            TabImpl importantTab = (TabImpl) it.next();
+            Tab importantTab = it.next();
             if (importantTab.isHidden()) {
                 importantTab.setImportance(ChildProcessImportance.NORMAL);
                 it.remove();

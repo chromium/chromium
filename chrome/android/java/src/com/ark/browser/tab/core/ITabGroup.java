@@ -3,11 +3,13 @@ package com.ark.browser.tab.core;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabSnapshotManager;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ContextUtils;
@@ -26,7 +28,7 @@ import java.util.List;
 public interface ITabGroup {
 
 
-    void init(WindowAndroid nativeWindow);
+    void init(ArkWindowAndroid nativeWindow);
 
     default String getTag() {
         return getClass().getSimpleName();
@@ -38,7 +40,7 @@ public interface ITabGroup {
 
     public int getCount();
 
-    public WindowAndroid getWindowAndroid();
+    public ArkWindowAndroid getWindowAndroid();
 
     List<ITab> getTabInfoList();
 
@@ -173,11 +175,11 @@ public interface ITabGroup {
 
     default IPage getCurrentPage() {
         ITab tab = getCurrentTab();
-        Log.d(getClass().getSimpleName(), "getCurrentPage tab=" + tab);
+        ArkLogger.d(getClass().getSimpleName(), "getCurrentPage tab=" + tab);
         if (tab == null) {
             return null;
         }
-        Log.d(getClass().getSimpleName(), "getCurrentPage tab.getCurrentPage=" + tab.getCurrentPage());
+        ArkLogger.d(getClass().getSimpleName(), "getCurrentPage tab.getCurrentPage=" + tab.getCurrentPage());
         return tab.getCurrentPage();
     }
 
@@ -252,7 +254,7 @@ public interface ITabGroup {
     }
 
     default boolean selectTabInfo(ITab iTab, IPage page) {
-        Log.d(getTag(), "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
+        ArkLogger.e(getTag(), "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
         if (page == null) {
             return false;
         }
@@ -261,7 +263,7 @@ public interface ITabGroup {
         ITab currentTab = getCurrentTab();
         if (currentTab != null) {
             lastId = currentTab.getCurrentPageId();
-            Log.d(getTag(), "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
+            ArkLogger.e(getTag(), "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
             if (lastId != page.getId()) {
                 Tab lastTab = PageCacheManager.getInstance().findPage(lastId);
                 if (lastTab != null && !lastTab.needsReload()) {
@@ -280,7 +282,7 @@ public interface ITabGroup {
         int finalLastId = lastId;
         ThreadPool.executeIO(() -> {
             Tab tab = PageCacheManager.getInstance().findPage(page.getId());
-            Log.d(getTag(), "selectTabInfo tab=" + tab);
+            ArkLogger.e(getTag(), "selectTabInfo tab=" + tab);
             TabState state = null;
 
 
@@ -298,7 +300,7 @@ public interface ITabGroup {
                     }
                 }
 //                innerTab.setImportance(ChildProcessImportance.IMPORTANT);
-                innerTab.show(TabSelectionType.FROM_USER);
+//                innerTab.show(TabSelectionType.FROM_USER);
 
                 onIndexChanged(indexOf(iTab));
                 iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
@@ -307,10 +309,10 @@ public interface ITabGroup {
 
 
                 for (TabInfoObserver obs : getObservers()) {
-                    Log.d(getTag(), "selectTabInfo obs=" + obs);
+                    ArkLogger.d(getTag(), "selectTabInfo obs=" + obs);
                     obs.didSelectTab(page, TabSelectionType.FROM_USER, finalLastId);
                 }
-                Log.d(getTag(), "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
+                ArkLogger.e(getTag(), "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
             });
         });
 
@@ -390,7 +392,7 @@ public interface ITabGroup {
     public boolean moveToNewTab(IPage page);
 
     default boolean removePage(Tab tab) {
-        Log.d(getClass().getSimpleName(), "closeTab tab=" + tab);
+        ArkLogger.d(getClass().getSimpleName(), "closeTab tab=" + tab);
         if (tab == null) {
             return false;
         }
@@ -407,7 +409,7 @@ public interface ITabGroup {
 
         boolean result;
 
-        Log.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + manager.getPageSize());
+        ArkLogger.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + manager.getPageSize());
         if (nextPage == null) {
             removeTab(manager);
             result = getTabInfoList().remove(manager);
@@ -423,7 +425,7 @@ public interface ITabGroup {
 
             int i = manager.indexOfPage(tab.getId());
 
-            Log.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
+            ArkLogger.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
             if (i >= 0) {
                 IPage pageInfo = manager.getPageGroup().getPageInfoList().remove(i);
                 pageInfo.remove();

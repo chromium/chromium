@@ -4,10 +4,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.core.TabGroupImpl;
+import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
@@ -45,13 +47,13 @@ public class TabListManager {
         tabInfoObserver = new EmptyTabInfoObserver() {
             @Override
             public void didAddTab(IPage page, @TabLaunchType int type) {
-                Log.d(TAG, "didAddTab");
+                ArkLogger.d(TAG, "didAddTab");
                 notifyChanged();
             }
 
             @Override
             public void didSelectTab(IPage page, @TabSelectionType int type, int lastId) {
-                Log.d(TAG, "didSelectTab");
+                ArkLogger.d(TAG, "didSelectTab");
                 notifyChanged();
             }
 
@@ -74,7 +76,7 @@ public class TabListManager {
         return mLoaded;
     }
 
-    public void restore(WindowAndroid nativeWindow, Callback<Void> callback) {
+    public void restore(ArkWindowAndroid nativeWindow, Callback<Void> callback) {
 
         tabLists[0] = new TabGroupImpl(nativeWindow, false);
         tabLists[1] = new TabGroupImpl(nativeWindow, true);
@@ -229,13 +231,10 @@ public class TabListManager {
     }
 
     public void notifyChanged() {
-        long tempTime = System.currentTimeMillis();
-        long time;
+        ArkLogger.d(TAG, "notifyChanged size=" + mObservers.size());
         for (TabManagerObserver listener : mObservers) {
+            ArkLogger.d(TAG, "notifyChanged listener=" + listener);
             listener.onChange();
-            time = System.currentTimeMillis();
-            Log.d(TAG, "notifyChanged deltaTime=" + (time - tempTime) + " listener=" + listener);
-            tempTime = time;
         }
     }
 
@@ -267,14 +266,17 @@ public class TabListManager {
     }
 
     public boolean openNewPage(@NonNull Tab parent, @TabLaunchType int type, String url) {
-        Log.d("TabListManager", "openNewPage url=" + url + " type=" + type);
+        ArkLogger.d("TabListManager", "openNewPage url=" + url + " type=" + type);
 
         ITabGroup tabList = getTabList(parent.isIncognito());
         return tabList.openNewPage(parent, type, url);
     }
 
     public void addObserver(TabManagerObserver observer) {
-        if (!mObservers.hasObserver(observer)) mObservers.addObserver(observer);
+        ArkLogger.e(TAG, "addObserver hasObserver=" + mObservers.hasObserver(observer));
+        if (!mObservers.hasObserver(observer)) {
+            mObservers.addObserver(observer);
+        }
     }
 
     public void removeObserver(TabManagerObserver observer) {

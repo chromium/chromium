@@ -183,6 +183,7 @@ public class ImeAdapterImpl
      * @return {@link ImeAdapter} object.
      */
     public static ImeAdapterImpl fromWebContents(WebContents webContents) {
+        Log.e(TAG, "fromWebContents");
         return ((WebContentsImpl) webContents)
                 .getOrSetUserData(ImeAdapterImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }

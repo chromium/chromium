@@ -75,6 +75,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
         @TabCreationState
         Integer creationState = ((TabImpl) tab).getCreationState();
+
         if (creationState != null) {
             tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabUma(tab, creationState));
         }

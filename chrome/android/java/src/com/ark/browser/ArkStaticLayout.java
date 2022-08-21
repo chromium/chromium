@@ -10,7 +10,10 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Handler;
 
-import androidx.annotation.VisibleForTesting;
+import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.core.IPage;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -26,8 +29,11 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -144,9 +150,57 @@ public class ArkStaticLayout extends Layout {
 
         mSceneLayer = new StaticTabSceneLayer();
         mSceneLayer.setTabContentManager(mTabContentManager);
+        setTabContentManager(mTabContentManager);
 
         mMcp = CompositorModelChangeProcessor.create(
                 mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
+
+        TabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onPageLoadFinished(Tab tab, GURL url) {
+                if (mIsActive) unstallImmediately(tab.getId());
+            }
+            @Override
+            public void onShown(Tab tab, @TabSelectionType int type) {
+                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
+                    setStaticTab(tab);
+                } else {
+                    updateStaticTab(tab);
+                }
+            }
+
+            @Override
+            public void onContentChanged(Tab tab) {
+                updateStaticTab(tab);
+            }
+
+            @Override
+            public void onBackgroundColorChanged(Tab tab, int color) {
+                updateStaticTab(tab);
+            }
+
+            @Override
+            public void onDidChangeThemeColor(Tab tab, int color) {
+                updateStaticTab(tab);
+            }
+        };
+
+        TabListManager.getInstance().getTabList(false).addObserver(new TabInfoObserver() {
+            @Override
+            public void didSelectTab(IPage page, int type, int lastId) {
+
+            }
+
+            @Override
+            public void didCloseTab(int tabId, boolean incognito) {
+
+            }
+
+            @Override
+            public void didAddTab(IPage pageInfo, int type) {
+                pageInfo.getNativePage().addObserver(observer);
+            }
+        });
     }
 
     @Override
@@ -203,7 +257,7 @@ public class ArkStaticLayout extends Layout {
     }
 
     public void setStaticTab(Tab tab) {
-        assert tab != null;
+        ArkLogger.e(TAG, "setStaticTab tab=" + tab);
 
         if (mModel.get(LayoutTab.TAB_ID) == tab.getId() && !mModel.get(LayoutTab.SHOULD_STALL)) {
             setPostHideState();
@@ -233,6 +287,7 @@ public class ArkStaticLayout extends Layout {
     }
 
     private void updateStaticTab(Tab tab) {
+        ArkLogger.e(TAG, "updateStaticTab tab=" + tab);
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
         mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);

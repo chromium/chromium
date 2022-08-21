@@ -32,13 +32,13 @@ import org.chromium.url.GURL;
 /**
  * Implementation class of {@link TabWebContentsDelegateAndroid}.
  */
-final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid {
-    private final TabImpl mTab;
+public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid {
+    private final Tab mTab;
     private final TabWebContentsDelegateAndroid mDelegate;
     private final Handler mHandler;
     private final Runnable mCloseContentsRunnable;
 
-    public TabWebContentsDelegateAndroidImpl(TabImpl tab, TabWebContentsDelegateAndroid delegate) {
+    public TabWebContentsDelegateAndroidImpl(Tab tab, TabWebContentsDelegateAndroid delegate) {
         mTab = tab;
         mDelegate = delegate;
         mHandler = new Handler();
@@ -97,13 +97,13 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     @Override
-    protected boolean shouldResumeRequestsForCreatedWindow() {
+    public boolean shouldResumeRequestsForCreatedWindow() {
         return mDelegate.shouldResumeRequestsForCreatedWindow();
     }
 
     @CalledByNative
     @Override
-    protected boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
+    public boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
             int disposition, Rect initialPosition, boolean userGesture) {
         return mDelegate.addNewContents(
                 sourceWebContents, webContents, disposition, initialPosition, userGesture);
@@ -130,12 +130,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void loadingStateChanged(boolean shouldShowLoadingUI) {
-        boolean isLoading = mTab.getWebContents() != null && mTab.getWebContents().isLoading();
-        if (isLoading) {
-            mTab.onLoadStarted(shouldShowLoadingUI);
-        } else {
-            mTab.onLoadStopped();
-        }
+        mTab.loadingStateChanged(shouldShowLoadingUI);
         mDelegate.loadingStateChanged(shouldShowLoadingUI);
     }
 
@@ -262,13 +257,13 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     @Override
-    protected void setOverlayMode(boolean useOverlayMode) {
+    public void setOverlayMode(boolean useOverlayMode) {
         mDelegate.setOverlayMode(useOverlayMode);
     }
 
     @CalledByNative
     @Override
-    protected boolean shouldEnableEmbeddedMediaExperience() {
+    public boolean shouldEnableEmbeddedMediaExperience() {
         return mDelegate.shouldEnableEmbeddedMediaExperience();
     }
 
@@ -277,7 +272,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected boolean isPictureInPictureEnabled() {
+    public boolean isPictureInPictureEnabled() {
         return mDelegate.isPictureInPictureEnabled();
     }
 
@@ -287,7 +282,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected boolean isNightModeEnabled() {
+    public boolean isNightModeEnabled() {
         return mDelegate.isNightModeEnabled();
     }
 
@@ -296,7 +291,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected boolean isForceDarkWebContentEnabled() {
+    public boolean isForceDarkWebContentEnabled() {
         return mDelegate.isForceDarkWebContentEnabled();
     }
 
@@ -306,7 +301,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected boolean canShowAppBanners() {
+    public boolean canShowAppBanners() {
         return mDelegate.canShowAppBanners();
     }
 
@@ -321,7 +316,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected String getManifestScope() {
+    public String getManifestScope() {
         return mDelegate.getManifestScope();
     }
 
@@ -331,7 +326,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected boolean isCustomTab() {
+    public boolean isCustomTab() {
         return mDelegate.isCustomTab();
     }
 
@@ -372,7 +367,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onRendererUnresponsive(WebContents webContents);
         void onRendererResponsive(WebContents webContents);
         void showFramebustBlockInfoBar(WebContents webContents, String url);

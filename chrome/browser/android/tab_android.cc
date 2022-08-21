@@ -19,7 +19,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/layer.h"
-#include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/tab_printer.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "chrome/browser/tab/jni_headers/Tab_jni.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/android/infobars/infobar_container_android.h"
@@ -114,7 +114,7 @@ TabAndroid* TabAndroid::FromWebContents(
 }
 
 TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
-  return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
+  return reinterpret_cast<TabAndroid*>(Java_Tab_getNativePtr(env, obj));
 }
 
 std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
@@ -122,7 +122,7 @@ std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
     const ScopedJavaLocalRef<jobjectArray>& obj_array) {
   std::vector<TabAndroid*> tab_native_ptrs;
   ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
-      Java_TabImpl_getAllNativePtrs(env, obj_array);
+      Java_Tab_getAllNativePtrs(env, obj_array);
   if (j_tabs_ptr.is_null())
     return tab_native_ptrs;
 
@@ -146,13 +146,13 @@ TabAndroid::TabAndroid(JNIEnv* env, const JavaRef<jobject>& obj)
       session_window_id_(SessionID::InvalidValue()),
       content_layer_(cc::Layer::Create()),
       synced_tab_delegate_(new browser_sync::SyncedTabDelegateAndroid(this)) {
-  Java_TabImpl_setNativePtr(env, obj, reinterpret_cast<intptr_t>(this));
+  Java_Tab_setNativePtr(env, obj, reinterpret_cast<intptr_t>(this));
 }
 
 TabAndroid::~TabAndroid() {
   GetContentLayer()->RemoveAllChildren();
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabImpl_clearNativePtr(env, weak_java_tab_.get(env));
+  Java_Tab_clearNativePtr(env, weak_java_tab_.get(env));
 }
 
 base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() {
@@ -166,23 +166,23 @@ scoped_refptr<cc::Layer> TabAndroid::GetContentLayer() const {
 
 int TabAndroid::GetAndroidId() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_getId(env, weak_java_tab_.get(env));
+  return Java_Tab_getId(env, weak_java_tab_.get(env));
 }
 
 int TabAndroid::GetLaunchType() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_getLaunchType(env, weak_java_tab_.get(env));
+  return Java_Tab_getLaunchType(env, weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsNativePage() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_isNativePage(env, weak_java_tab_.get(env));
+  return Java_Tab_isNativePage(env, weak_java_tab_.get(env));
 }
 
 std::u16string TabAndroid::GetTitle() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_title =
-      Java_TabImpl_getTitle(env, weak_java_tab_.get(env));
+      Java_Tab_getTitle(env, weak_java_tab_.get(env));
   return java_title ? base::android::ConvertJavaStringToUTF16(java_title)
                     : std::u16string();
 }
@@ -190,13 +190,13 @@ std::u16string TabAndroid::GetTitle() const {
 GURL TabAndroid::GetURL() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
-      env, Java_TabImpl_getUrl(env, weak_java_tab_.get(env)));
+      env, Java_Tab_getUrl(env, weak_java_tab_.get(env)));
   return std::move(*gurl);
 }
 
 bool TabAndroid::IsUserInteractable() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_isUserInteractable(env, weak_java_tab_.get(env));
+  return Java_Tab_isUserInteractable(env, weak_java_tab_.get(env));
 }
 
 Profile* TabAndroid::GetProfile() const {
@@ -213,7 +213,7 @@ sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
 void TabAndroid::DeleteFrozenNavigationEntries(
     const WebContentsState::DeletionPredicate& predicate) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabImpl_deleteNavigationEntriesFromFrozenState(
+  Java_Tab_deleteNavigationEntriesFromFrozenState(
       env, weak_java_tab_.get(env), reinterpret_cast<intptr_t>(&predicate));
 }
 
@@ -239,7 +239,7 @@ std::unique_ptr<content::WebContents> TabAndroid::SwapWebContents(
       old_contents, new_contents.get());
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabImpl_swapWebContents(env, weak_java_tab_.get(env),
+  Java_Tab_swapWebContents(env, weak_java_tab_.get(env),
                                new_contents->GetJavaWebContents(),
                                did_start_load, did_finish_load);
   DCHECK_EQ(web_contents_, new_contents);
@@ -249,12 +249,12 @@ std::unique_ptr<content::WebContents> TabAndroid::SwapWebContents(
 
 bool TabAndroid::IsCustomTab() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_isCustomTab(env, weak_java_tab_.get(env));
+  return Java_Tab_isCustomTab(env, weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsHidden() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
+  return Java_Tab_isHidden(env, weak_java_tab_.get(env));
 }
 
 void TabAndroid::AddObserver(Observer* observer) {
@@ -420,7 +420,7 @@ void TabAndroid::SetDevToolsAgentHost(
   devtools_host_ = std::move(host);
 }
 
-base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
+base::android::ScopedJavaLocalRef<jobject> JNI_Tab_FromWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   base::android::ScopedJavaLocalRef<jobject> jtab;
@@ -434,14 +434,14 @@ base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
   return jtab;
 }
 
-static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
+static jboolean JNI_Tab_HandleNonNavigationAboutURL(
     JNIEnv* env,
     const JavaParamRef<jobject>& jurl) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return HandleNonNavigationAboutURL(*url);
 }
 
-static void JNI_TabImpl_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+static void JNI_Tab_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   TRACE_EVENT0("native", "TabAndroid::Init");
   // This will automatically bind to the Java object and pass ownership there.
   new TabAndroid(env, obj);

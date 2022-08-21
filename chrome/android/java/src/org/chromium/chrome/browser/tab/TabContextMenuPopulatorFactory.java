@@ -15,7 +15,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
  * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating
  * {@link TabContextMenuPopulator} which is able to handle observer notifications.
  */
-class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
+public class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final ContextMenuPopulatorFactory mPopulatorFactory;
     private final Tab mTab;
 

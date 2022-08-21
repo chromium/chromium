@@ -5,13 +5,13 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
+import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
+import com.ark.browser.utils.ArkLogger;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -115,14 +115,15 @@ public class PageCacheManager {
 
     @UiThread
     @NonNull
-    public Tab createLivePageByType(int index, @NonNull WindowAndroid nativeWindow, @NonNull ITab tabInfo,
+    public Tab createLivePageByType(int index, @NonNull ArkWindowAndroid nativeWindow, @NonNull ITab tabInfo,
                                     @TabLaunchType int type) {
         long start = System.currentTimeMillis();
 
-        Tab tab = TabBuilder.createLiveTab(false)
+        Tab tab = ArkTabBuilder.createLiveTab(false)
                 .setIncognito(tabInfo.getTabInfo().isIncognito())
                 .setLaunchType(type)
                 .setWindow(nativeWindow)
+                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         putPage(tab);
 
@@ -133,19 +134,21 @@ public class PageCacheManager {
 //        tab.initialize(null, false, false);
 //        putPage(tab);
 //        tab.getPageInfo().save();
-        Log.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
+        ArkLogger.d(TAG, "createLivePageByType create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }
 
     @UiThread
     @NonNull
-    public Tab createLivePage(@NonNull WindowAndroid nativeWindow, @NonNull PageInfo pageInfo) {
+    public Tab createLivePage(@NonNull ArkWindowAndroid nativeWindow, @NonNull PageInfo pageInfo) {
         long start = System.currentTimeMillis();
 
+        ArkLogger.e(TAG, "createLivePage");
 
-        Tab tab = TabBuilder.createLiveTab(false)
+        Tab tab = ArkTabBuilder.createLiveTab(false)
                 .setIncognito(pageInfo.isIncognito())
                 .setWindow(nativeWindow)
+                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
         params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
@@ -159,23 +162,24 @@ public class PageCacheManager {
 //        params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
 //        tab.loadUrl(params);
 //        putPage(tab);
-        Log.d(TAG, "createLivePage create tab deltaTime=" + (System.currentTimeMillis() - start));
+        ArkLogger.d(TAG, "createLivePage create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }
 
     @UiThread
     @NonNull
-    public Tab createFrozenPageFromState(@NonNull WindowAndroid nativeWindow, @NonNull PageInfo pageInfo,
+    public Tab createFrozenPageFromState(@NonNull ArkWindowAndroid nativeWindow, @NonNull PageInfo pageInfo,
                                          @NonNull TabState state) {
         long start = System.currentTimeMillis();
-        Tab tab = TabBuilder.createFromFrozenState()
+        Tab tab = ArkTabBuilder.createFromFrozenState()
                 .setTabState(state)
                 .setWindow(nativeWindow)
+                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
 //        tab = Tab.createFrozenTabFromState(pageInfo, nativeWindow, state);
 //        tab.initialize(null, true, true);
         putPage(tab);
-        Log.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));
+        ArkLogger.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
     }
 

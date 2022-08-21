@@ -28,9 +28,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
@@ -38,12 +41,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -51,15 +52,13 @@ import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvi
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -93,6 +92,9 @@ public class ArkCompositorViewHolder extends FrameLayout
                    BrowserControlsStateProvider.Observer, InsetObserverView.WindowInsetObserver,
                    TabObscuringHandler.Observer,
                    ViewGroup.OnHierarchyChangeListener {
+
+    private static final String TAG = "ArkCompositorViewHolder";
+
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
 
     /**
@@ -304,14 +306,6 @@ public class ArkCompositorViewHolder extends FrameLayout
         internalInit();
     }
 
-    @Override
-    public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
-        View activeView = getContentView();
-        if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
-        return ApiHelperForN.onResolvePointerIcon(activeView, event, pointerIndex);
-    }
-
     /**
      * Creates a {@link CompositorView}.
      * @param c     The Context to create this {@link CompositorView} in.
@@ -323,7 +317,50 @@ public class ArkCompositorViewHolder extends FrameLayout
         internalInit();
     }
 
+    @Override
+    public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
+        View activeView = getContentView();
+        if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
+        return ApiHelperForN.onResolvePointerIcon(activeView, event, pointerIndex);
+    }
+
     private void internalInit() {
+        TabListManager.getInstance().addObserver(new TabManagerObserver() {
+            @Override
+            public void onChange() {
+                Tab tab = getCurrentTab();
+                ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
+                if (tab != null) {
+                    mLayoutManager.initLayoutTabFromHost(tab.getId());
+                }
+
+                setTab(tab);
+            }
+        });
+
+        TabListManager.getInstance().getTabList(false).addObserver(new TabInfoObserver() {
+            @Override
+            public void didSelectTab(IPage page, int type, int lastId) {
+                mLayoutManager.initLayoutTabFromHost(page.getId());
+            }
+
+            @Override
+            public void didCloseTab(int tabId, boolean incognito) {
+
+            }
+
+            @Override
+            public void didAddTab(IPage pageInfo, int type) {
+                mLayoutManager.initLayoutTabFromHost(pageInfo.getId());
+                Tab tab = pageInfo.getNativePage();
+                if (tab != null) {
+                    tab.addObserver(mTabObserver);
+                }
+            }
+        });
+
+
         mEventOffsetHandler =
                 new EventOffsetHandler(new EventOffsetHandler.EventOffsetHandlerDelegate() {
                     // Cache objects that should not be created frequently.
@@ -528,19 +565,22 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
         }
+        if (mCallback != null) {
+            mCallback.onShutDown();
+        }
     }
 
-    /**
-     * This is called when the native library are ready.
-     */
-    public void onNativeLibraryReady(
-            WindowAndroid windowAndroid, TabContentManager tabContentManager) {
-        mCompositorView.initNativeCompositor(
-                SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
-
-        mApplicationBottomInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
-        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
-    }
+//    /**
+//     * This is called when the native library are ready.
+//     */
+//    public void onNativeLibraryReady(
+//            WindowAndroid windowAndroid, TabContentManager tabContentManager) {
+//        mCompositorView.initNativeCompositor(
+//                SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
+//
+//        mApplicationBottomInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
+//        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
+//    }
 
     /**
      * Perform any initialization necessary for showing a reparented tab.
@@ -733,6 +773,7 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     @VisibleForTesting
     void setSize(WebContents webContents, View view, int w, int h) {
+        ArkLogger.d(TAG, "setSize w=" + w + " h=" + h + " webContents=" + webContents + " view=" + view);
         if (webContents == null || view == null) return;
 
         // The view size takes into account of the browser controls whose height
@@ -957,10 +998,9 @@ public class ArkCompositorViewHolder extends FrameLayout
         TraceEvent.begin("CompositorViewHolder:updateContentViewChildrenDimension");
         ViewGroup view = getContentView();
         if (view != null) {
-            assert mBrowserControlsManager != null;
             float topViewsTranslation = getOverlayTranslateY();
-            float bottomMargin =
-                    BrowserControlsUtils.getBottomContentOffset(mBrowserControlsManager);
+            float bottomMargin = mBrowserControlsManager == null ? 0f
+                    : BrowserControlsUtils.getBottomContentOffset(mBrowserControlsManager);
             applyTranslationToTopChildViews(view, topViewsTranslation);
             applyMarginToFullscreenChildViews(view, topViewsTranslation, bottomMargin);
             updateViewportSize();
@@ -1020,6 +1060,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     @Override
     public void onCompositorLayout() {
         TraceEvent.begin("CompositorViewHolder:layout");
+        ArkLogger.e(TAG, "onCompositorLayout");
         if (mLayoutManager != null) {
             mLayoutManager.onUpdate();
             mCompositorView.finalizeLayers(mLayoutManager, false);
@@ -1069,6 +1110,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public void requestRender() {
+        ArkLogger.e(TAG, "requestRender");
         requestRender(null);
     }
 
@@ -1176,6 +1218,9 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public FullscreenManager getFullscreenManager() {
+        if (mBrowserControlsManager == null) {
+            return null;
+        }
         return mBrowserControlsManager.getFullscreenManager();
     }
 
@@ -1223,6 +1268,9 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public float getOverlayTranslateY() {
+        if (mBrowserControlsManager == null) {
+            return 0f;
+        }
         return mBrowserControlsManager.getTopVisibleContentOffset();
     }
 
@@ -1296,6 +1344,8 @@ public class ArkCompositorViewHolder extends FrameLayout
                 updateViewportSize();
             }
 
+            ArkLogger.e(TAG, "updateContentOverlayVisibility addView");
+
             // CompositorView always has index of 0.
             // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
             addView(mView, 1);
@@ -1319,6 +1369,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     private void setTab(Tab tab) {
+
         // The StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup() is only true when
         // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
         // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
@@ -1328,6 +1379,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
         View newView = tab != null ? tab.getView() : null;
+        ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
         if (mView == newView) return;
 
         // TODO(dtrainor): Look into changing this only if the views differ, but still parse the
@@ -1353,6 +1405,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mTabVisible != null) {
             initializeTab(mTabVisible);
             mLayoutManager.onPageSelected(mTabVisible);
+            mTabVisible.show(TabSelectionType.FROM_USER);
         }
 
         if (mOnscreenContentProvider == null) {
@@ -1361,6 +1414,8 @@ public class ArkCompositorViewHolder extends FrameLayout
         } else {
             mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
+
+        mLayoutManager.showLayout(LayoutType.BROWSING, false);
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1385,6 +1440,7 @@ public class ArkCompositorViewHolder extends FrameLayout
                     webContents, mCompositorView.getWidth(), mCompositorView.getHeight());
             onControlsResizeViewChanged(webContents, mControlsResizeView);
         }
+        ArkLogger.d(TAG, "initializeTab tab=" + tab + " view=" + tab.getView());
         if (tab.getView() == null) return;
 
         // TextView with compound drawables in the NTP gets a wrong width when measure/layout is
@@ -1447,6 +1503,19 @@ public class ArkCompositorViewHolder extends FrameLayout
         boolean needsSwapCallback = !mOnCompositorLayoutCallbacks.isEmpty()
                 || !mDidSwapFrameCallbacks.isEmpty() || !mDidSwapBuffersCallbacks.isEmpty();
         mCompositorView.setRenderHostNeedsDidSwapBuffersCallback(needsSwapCallback);
+    }
+
+
+
+    private TabDelegateFactory mTabDelegateFactory;
+
+    public TabDelegateFactory getTabDelegateFactory() {
+        if (mTabDelegateFactory == null) {
+            mTabDelegateFactory = new ArkTabDelegateFactory(
+                    getBrowserControlsManager(), getFullscreenManager(),
+                    () -> ArkCompositorViewHolder.this);
+        }
+        return mTabDelegateFactory;
     }
 
 

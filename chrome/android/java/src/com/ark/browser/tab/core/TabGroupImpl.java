@@ -2,12 +2,14 @@ package com.ark.browser.tab.core;
 
 import android.text.TextUtils;
 
+import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageInfoManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoManager;
 import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -29,7 +31,7 @@ public class TabGroupImpl implements ITabGroup {
 
     private final List<ITab> mTabList = new ArrayList<>();
 
-    private final WindowAndroid nativeWindow;
+    private final ArkWindowAndroid nativeWindow;
 
     private final ObserverList<TabInfoObserver> mObservers;
 
@@ -37,14 +39,14 @@ public class TabGroupImpl implements ITabGroup {
 
     protected int index = ITab.INVALID_TAB_INDEX;
 
-    public TabGroupImpl(WindowAndroid nativeWindow, boolean incognito) {
+    public TabGroupImpl(ArkWindowAndroid nativeWindow, boolean incognito) {
         this.nativeWindow = nativeWindow;
         this.mObservers = new ObserverList<>();
         this.incognito = incognito;
     }
 
     @Override
-    public void init(WindowAndroid nativeWindow) {
+    public void init(ArkWindowAndroid nativeWindow) {
         long start = System.currentTimeMillis();
         this.index = ITab.INVALID_TAB_INDEX;
         this.mTabList.clear();
@@ -81,7 +83,7 @@ public class TabGroupImpl implements ITabGroup {
 //            Log.d(TAG, "restore deltaTime=" + (System.currentTimeMillis() - startTime));
         }
 
-        Log.d(TAG, "load deltaTime=" + (System.currentTimeMillis() - start));
+        ArkLogger.d(TAG, "load deltaTime=" + (System.currentTimeMillis() - start));
 
         allPages.clear();
         pageListMap.clear();
@@ -103,7 +105,7 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public WindowAndroid getWindowAndroid() {
+    public ArkWindowAndroid getWindowAndroid() {
         return nativeWindow;
     }
 
@@ -127,12 +129,12 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public ITab cloneTab(ITab tab) {
-        Log.d(TAG, "cloneTab");
+        ArkLogger.d(TAG, "cloneTab");
         if (tab != null) {
             ITab cloneTab = tab.cloneTab();
             int index = indexOf(tab) + 1;
             int position = tab.getTabInfo().getPosition() + 1;
-            Log.d(TAG, "cloneTab index=" + index);
+            ArkLogger.d(TAG, "cloneTab index=" + index);
             mTabList.add(index, cloneTab);
             cloneTab.getTabInfo().setPosition(position);
             cloneTab.getTabInfo().save();
@@ -159,7 +161,7 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
-        Log.d(TAG, "openNewTab url=" + loadUrlParams.getUrl() + " type=" + type);
+        ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl() + " type=" + type);
 
 
         ITab newTab = new TabImpl();
@@ -167,7 +169,7 @@ public class TabGroupImpl implements ITabGroup {
         if (currentTab != null) {
             int index = indexOf(currentTab);
             int position = currentTab.getTabInfo().getPosition();
-            Log.d(TAG, "openNewTab currentPosition=" + position + " index=" + index);
+            ArkLogger.d(TAG, "openNewTab currentPosition=" + position + " index=" + index);
 
             mTabList.add(++index, newTab);
             newTab.getTabInfo().setPosition(++position);
@@ -179,7 +181,7 @@ public class TabGroupImpl implements ITabGroup {
             mTabList.add(newTab);
         }
 
-        Log.d(TAG, "openNewTab newPos=" + newTab.getTabInfo().getPosition());
+        ArkLogger.d(TAG, "openNewTab newPos=" + newTab.getTabInfo().getPosition());
 
 
         loadUrlParams.setUrl(UrlFormatter.fixupUrl(loadUrlParams.getUrl()).getValidSpecOrEmpty());
@@ -190,6 +192,7 @@ public class TabGroupImpl implements ITabGroup {
 
 //        PageInfo pageInfo = page.getPageInfo();
         PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageId(page.getId());
         pageInfo.setUrl(page.getUrl().toString());
         pageInfo.setTitle(page.getTitle());
         pageInfo.setIncognito(page.isIncognito());
@@ -199,7 +202,7 @@ public class TabGroupImpl implements ITabGroup {
         for (TabInfoObserver obs : getObservers()) {
             obs.didAddTab(newPage, type);
         }
-        Log.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
+        ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
         page.loadUrl(loadUrlParams);
         selectTabInfo(newTab, newPage);
     }
@@ -221,7 +224,7 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
-        Log.d(TAG, "openNewPage url=" + url + " type=" + type);
+        ArkLogger.d(TAG, "openNewPage url=" + url + " type=" + type);
 
         int parentId = parent.getId();
         // The parent tab was already closed.  Do not open child tabs.
@@ -234,13 +237,13 @@ public class TabGroupImpl implements ITabGroup {
         }
 
         int index = manager.indexOfPage(parentId);
-        Log.d(TAG, "openNewPage index=" + index);
+        ArkLogger.d(TAG, "openNewPage index=" + index);
         if (index == ITab.INVALID_TAB_INDEX) {
             return false;
         }
 
         PageInfo parentPageInfo = manager.getPageInfoAt(index);
-        Log.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
+        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
         if (parentPageInfo == null) {
             return false;
         }
@@ -262,7 +265,7 @@ public class TabGroupImpl implements ITabGroup {
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
         params.setTransitionType(type);
         params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
-        Log.d(TAG, "openNewPage params=" + params);
+        ArkLogger.d(TAG, "openNewPage params=" + params);
         tab.loadUrl(params);
 
 
@@ -306,13 +309,13 @@ public class TabGroupImpl implements ITabGroup {
 //            pageRemoved.clear();
 //        }
 
-        Log.d(TAG, "openNewPage end");
+        ArkLogger.d(TAG, "openNewPage end");
         return true;
     }
 
     @Override
     public boolean moveToNewTab(IPage page) {
-        Log.d(TAG, "moveToNewTab");
+        ArkLogger.d(TAG, "moveToNewTab");
         ITab tabInfo = getTabInfoById(page.getId());
         if (tabInfo != null && tabInfo.removePage(page)) {
             TabInfo newTabInfo = TabInfo.create();
@@ -364,6 +367,7 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public void onIndexChanged(int index) {
+        ArkLogger.e(TAG, "onIndexChanged index=" + index);
         this.index = index;
 //        PrefsHelper.with().putInt("tab_index", index);
     }
@@ -377,7 +381,7 @@ public class TabGroupImpl implements ITabGroup {
         TabInfo next;
         List<TabInfo> changes = new ArrayList<>();
 
-        Log.d(TAG, "saveTabPosition count=" + getCount() + " i=" + i + " pos=" + pos);
+        ArkLogger.d(TAG, "saveTabPosition count=" + getCount() + " i=" + i + " pos=" + pos);
         while ((next = getTabInfoAt(++i)) != null && pos >= next.getPosition()) {
             next.setPosition(++pos);
 //            next.update();
@@ -400,7 +404,7 @@ public class TabGroupImpl implements ITabGroup {
                 break;
             }
         }
-        Log.d(TAG, "saveTabPosition dt=" + (System.currentTimeMillis() - start) + " size=" + changes.size());
+        ArkLogger.d(TAG, "saveTabPosition dt=" + (System.currentTimeMillis() - start) + " size=" + changes.size());
 
         if (changes.isEmpty()) {
             return;

@@ -11,9 +11,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,6 +59,8 @@ public interface Tab extends TabLifecycle {
 
     /** Returns if the given {@link TabObserver} is present. */
     boolean hasObserver(TabObserver observer);
+
+    ObserverList.RewindableIterator<TabObserver>  getTabObservers();
 
     /**
      * @return {@link UserDataHost} that manages {@link UserData} objects attached to.
@@ -112,6 +120,7 @@ public interface Tab extends TabLifecycle {
     /**
      * @return The id representing this tab.
      */
+    @CalledByNative
     int getId();
 
     /**
@@ -123,6 +132,7 @@ public interface Tab extends TabLifecycle {
      * @return The URL that is loaded in the current tab. This may not be the same as
      *         the last committed URL if a new navigation is in progress.
      */
+    @CalledByNative
     GURL getUrl();
 
     /**
@@ -134,6 +144,7 @@ public interface Tab extends TabLifecycle {
     /**
      * @return The tab title.
      */
+    @CalledByNative
     String getTitle();
 
     /**
@@ -146,6 +157,7 @@ public interface Tab extends TabLifecycle {
     /**
      * @return Whether or not the {@link Tab} represents a {@link NativePage}.
      */
+    @CalledByNative
     boolean isNativePage();
 
     /**
@@ -165,6 +177,7 @@ public interface Tab extends TabLifecycle {
      *         May change over time, for instance, to {@code FROM_RESTORE} during
      *         tab restoration.
      */
+    @CalledByNative
     @TabLaunchType
     int getLaunchType();
 
@@ -199,6 +212,7 @@ public interface Tab extends TabLifecycle {
      *         view owned by the Tab to be visible and in a state where the user can interact
      *         with it (i.e. not in something like the phone tab switcher).
      */
+    @CalledByNative
     boolean isUserInteractable();
 
     /**
@@ -284,6 +298,79 @@ public interface Tab extends TabLifecycle {
     /**
      * @return true if the {@link Tab} is a custom tab.
      */
+    @CalledByNative
     boolean isCustomTab();
+
+    public void loadingStateChanged(boolean shouldShowLoadingUI);
+
+    void updateTitle();
+
+    void handleRendererResponsiveStateChanged(boolean isResponsive);
+
+    void setImportance(@ChildProcessImportance int importance);
+
+
+
+
+
+    /**
+     * @return The native pointer representing the native side of this {@link TabImpl} object.
+     */
+    @CalledByNative
+    long getNativePtr();
+
+    @CalledByNative
+    void clearNativePtr();
+
+    @CalledByNative
+    void setNativePtr(long nativePtr);
+
+    @CalledByNative
+    static long[] getAllNativePtrs(Tab[] tabsArray) {
+        if (tabsArray == null) return null;
+
+        long[] tabsPtrArray = new long[tabsArray.length];
+        for (int i = 0; i < tabsArray.length; i++) {
+            tabsPtrArray[i] = tabsArray[i].getNativePtr();
+        }
+        return tabsPtrArray;
+    }
+
+    @CalledByNative
+    void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad);
+
+    /**
+     * TODO native implementation
+     * @param predicate
+     */
+    @CalledByNative
+    void deleteNavigationEntriesFromFrozenState(long predicate);
+
+    @CalledByNative
+    @Override
+    boolean isHidden();
+
+
+
+
+    @NativeMethods
+    interface Natives {
+        Tab fromWebContents(WebContents webContents);
+        void init(Tab caller);
+        void destroy(long nativeTabAndroid);
+        void initWebContents(long nativeTabAndroid, boolean incognito, boolean isBackgroundTab,
+                             WebContents webContents, int parentTabId,
+                             TabWebContentsDelegateAndroid delegate,
+                             ContextMenuPopulatorFactory contextMenuPopulatorFactory);
+        void updateDelegates(long nativeTabAndroid, TabWebContentsDelegateAndroid delegate,
+                             ContextMenuPopulatorFactory contextMenuPopulatorFactory);
+        void destroyWebContents(long nativeTabAndroid);
+        void releaseWebContents(long nativeTabAndroid);
+        void onPhysicalBackingSizeChanged(
+                long nativeTabAndroid, WebContents webContents, int width, int height);
+        void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
+        void loadOriginalImage(long nativeTabAndroid);
+        boolean handleNonNavigationAboutURL(GURL url);
+    }
 
 }

@@ -25,7 +25,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  */
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // Layouts
-    private SimpleAnimationLayout mSimpleAnimationLayout;
+//    private SimpleAnimationLayout mSimpleAnimationLayout;
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
@@ -48,21 +48,21 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         // Build Layouts
-        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
+//        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
 
         super.init(selector, creator, dynamicResourceLoader);
 
         // Initialize Layouts
         TabContentManager tabContentManager = mTabContentManagerSupplier.get();
         assert tabContentManager != null;
-        mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
+//        mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
     }
 
     @Override
     protected Layout getLayoutForType(int layoutType) {
-        if (layoutType == LayoutType.SIMPLE_ANIMATION) {
-            return mSimpleAnimationLayout;
-        }
+//        if (layoutType == LayoutType.SIMPLE_ANIMATION) {
+//            return mSimpleAnimationLayout;
+//        }
         return super.getLayoutForType(layoutType);
     }
 
@@ -91,8 +91,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // Allow the foreground layout to animate the tab closing.
             getActiveLayout().onTabClosing(time(), id);
         } else if (animationsEnabled() && !hasExplicitNextLayout()) {
-            startShowing(mSimpleAnimationLayout, false);
-            getActiveLayout().onTabClosing(time(), id);
+//            startShowing(mSimpleAnimationLayout, false);
+//            getActiveLayout().onTabClosing(time(), id);
         }
     }
 
@@ -126,18 +126,18 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // smoothly.
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {
-            if (!overviewVisible()) {
-                if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
-                    setNextLayout(mSimpleAnimationLayout, true);
-                    // The method Layout#doneHiding() will automatically show the next layout.
-                    getActiveLayout().doneHiding();
-                } else {
-                    startShowing(mSimpleAnimationLayout, false);
-                }
-            }
-            if (getActiveLayout() != null) {
-                getActiveLayout().onTabCreating(sourceId);
-            }
+//            if (!overviewVisible()) {
+//                if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
+//                    setNextLayout(mSimpleAnimationLayout, true);
+//                    // The method Layout#doneHiding() will automatically show the next layout.
+//                    getActiveLayout().doneHiding();
+//                } else {
+//                    startShowing(mSimpleAnimationLayout, false);
+//                }
+//            }
+//            if (getActiveLayout() != null) {
+//                getActiveLayout().onTabCreating(sourceId);
+//            }
         }
     }
 

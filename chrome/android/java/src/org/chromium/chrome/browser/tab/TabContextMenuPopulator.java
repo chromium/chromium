@@ -21,7 +21,7 @@ import java.util.List;
 public class TabContextMenuPopulator implements ContextMenuPopulator {
     @Nullable
     private final ContextMenuPopulator mPopulator;
-    private final TabImpl mTab;
+    private final Tab mTab;
 
     /**
      * Constructs an instance of a {@link ContextMenuPopulator} and delegate calls to
@@ -31,7 +31,7 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
      */
     public TabContextMenuPopulator(ContextMenuPopulator populator, Tab tab) {
         mPopulator = populator;
-        mTab = (TabImpl) tab;
+        mTab = tab;
     }
 
     @Override

@@ -7,9 +7,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -19,17 +22,27 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeSessionState;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,10 +60,50 @@ public class BrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
+    public void onPauseWithNative() {
+        super.onPauseWithNative();
+    }
+
+    @Override
+    public void onStartWithNative() {
+        super.onStartWithNative();
+        ChromeActivitySessionTracker.getInstance().onStartWithNative();
+        ChromeCachedFlags.getInstance().cacheNativeFlags();
+    }
+
+    @Override
+    public void onResumeWithNative() {
+        super.onResumeWithNative();
+        Tab tab = getActivityTab();
+        if (tab != null) {
+            WebContents webContents = tab.getWebContents();
+
+            // For picture-in-picture mode / auto-darken web contents.
+            if (webContents != null) webContents.notifyRendererPreferenceUpdate();
+        }
+
+        ChromeSessionState.setIsInMultiWindowMode(
+                MultiWindowUtils.getInstance().isInMultiWindowMode(this));
+
+        ChromeSessionState.setDarkModeState(false, false);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
+
         if (mViewHolder != null) {
             mViewHolder.onStart();
+        }
+        Tab tab = getActivityTab();
+        if (tab != null) {
+            if (tab.isHidden()) {
+                tab.show(TabSelectionType.FROM_USER);
+            } else {
+                // The visible Tab's renderer process may have died after the activity was
+                // paused. Ensure that it's restored appropriately.
+                tab.loadIfNeeded();
+            }
         }
     }
 
@@ -59,6 +112,14 @@ public class BrowserActivity extends AsyncInitializationActivity {
         super.onStop();
         if (mViewHolder != null) {
             mViewHolder.onStop();
+        }
+        onActivityHidden();
+    }
+
+    private void onActivityHidden() {
+        Tab tab = getActivityTab();
+        if (tab != null) {
+            tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         }
     }
 
@@ -155,8 +216,26 @@ public class BrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(this, true, null);
+    protected ArkWindowAndroid createWindowAndroid() {
+        return new ArkWindowAndroid(this, true, null) {
+
+            @Override
+            public TabDelegateFactory getTabDelegateFactory() {
+                return getCompositorViewHolder().getTabDelegateFactory();
+            }
+
+            @Override
+            public ArkCompositorViewHolder getCompositorViewHolder() {
+                return mViewHolder;
+            }
+
+        };
+    }
+
+    @Nullable
+    @Override
+    public ArkWindowAndroid getWindowAndroid() {
+        return (ArkWindowAndroid) super.getWindowAndroid();
     }
 
     /**
@@ -164,7 +243,7 @@ public class BrowserActivity extends AsyncInitializationActivity {
      * this method without calling super need to call {@link #onInitialLayoutInflationComplete()}.
      */
     protected void doLayoutInflation() {
-        Log.e(TAG, "doLayoutInflation");
+        ArkLogger.e(TAG, "doLayoutInflation");
         try (TraceEvent te = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
             // Allow disk access for the content view and toolbar container setup.
             // On certain android devices this setup sequence results in disk writes outside
@@ -235,13 +314,17 @@ public class BrowserActivity extends AsyncInitializationActivity {
     }
 
     public Tab getActivityTab() {
+        IPage page = TabListManager.getInstance().getCurrentPage();
+        if (page != null) {
+            return page.getNativePage();
+        }
         return null;
     }
 
 
 
     private void setupCompositorContentPostNative() {
-        Log.e(TAG, "setupCompositorContentPostNative");
+        ArkLogger.e(TAG, "setupCompositorContentPostNative");
         try (TraceEvent e = TraceEvent.scoped(
                 "BrowserActivity.setupCompositorContentPostNative")) {
             mViewHolder.setFocusable(false);
@@ -271,6 +354,7 @@ public class BrowserActivity extends AsyncInitializationActivity {
                     TabListManager.getInstance().onDestroy();
                 }
             });
+            mViewHolder.setBrowserControlsManager(new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP));
         }
     }
 
