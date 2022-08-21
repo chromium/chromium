@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">Məkan blok edildi</translation>
 <translation id="2042213636306070719">Qab 7</translation>
 <translation id="204357726431741734">Google Hesabınızda saxlanılan parollardan istifadə etmək üçün daxil olun</translation>
+<translation id="2048261947532620704">Səhifə tərcümə edilir</translation>
 <translation id="205212645995975601">Kabab və qrill</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindəki səhifələr tərcümə edilməyəcək.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Bu kontrol aktiv olduqda və status "aktiv" olduğu zaman Chrome axtarış fəaliyyətinizin ən çox bənzədiyi çox iştirakçısı olan qrupu, yaxud "kohortu" müəyyən edir. Reklamçılar qrup üçün reklamlar seçə bilər və axtarış fəaliyyətiniz cihazınızda məxfi saxlanılır. Qrupunuz hər gün yenilənir.}=1{Bu kontrol aktiv olduqda və status "aktiv" olduğu zaman Chrome axtarış fəaliyyətinizin ən çox bənzədiyi çox iştirakçısı olan qrupu, yaxud "kohortu" müəyyən edir. Reklamçılar qrup üçün reklamlar seçə bilər və axtarış fəaliyyətiniz cihazınızda məxfi saxlanılır. Qrupunuz hər gün yenilənir.}other{Bu kontrol aktiv olduqda və status "aktiv" olduğu zaman Chrome axtarış fəaliyyətinizin ən çox bənzədiyi çox iştirakçısı olan qrupu, yaxud "kohortu" müəyyən edir. Reklamçılar qrup üçün reklamlar seçə bilər və axtarış fəaliyyətiniz cihazınızda məxfi saxlanılır. Qrupunuz {NUM_DAYS} gündən bir yenilənir.}}</translation>
@@ -2053,6 +2054,7 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> idarə edilmir</translation>
 <translation id="6592952801936330159">"Sayt ayarlarının idarə edin" düyməsi, Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="6596325263575161958">Şifrələmə variantları</translation>
+<translation id="6599642189720630047">İzlənilən Məhsullar</translation>
 <translation id="6609880536175561541">Prc7 (Zərf)</translation>
 <translation id="6611723696964473273">İqtisadiyyat xəbərləri</translation>
 <translation id="6612010098632894193">Onlayn video</translation>

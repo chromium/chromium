@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Padidinti garsumą</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
+<translation id="1561927818299383735">fono spalva</translation>
 <translation id="1565038567006703504">Nepavyksta atnaujinti įrenginio „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1567064801249837505">Albumai</translation>
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
@@ -437,6 +438,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Iš naujo vykdyti veiksmų sekas</translation>
 <translation id="5286252187236914003">L2TP / „IPsec“</translation>
+<translation id="5286263799730375393">apšvietimo spalva</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="5300814202279832142">Perkelti langą į darbalaukį</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5903200662178656908">Įrenginį sudaro klaviatūra ir pelė.</translation>
+<translation id="5907649332524363701">klavišo spalva</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6760706756348334449">Sumažinti garsumą</translation>
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
+<translation id="6791471867139427246">klaviatūros šviesos spalva</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
@@ -643,6 +647,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Paklauskite ekspertų „Chromebook“ pagalbos forume</translation>
+<translation id="7311368985037279727">klaviatūros spalva</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami „Google“ paiešką.</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>

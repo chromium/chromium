@@ -5296,6 +5296,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6065289257230303064">Тастыктама объектисинин каталог атрибуттары</translation>
 <translation id="6066794465984119824">Сүрөттүн хеши жөндөлгөн жок</translation>
 <translation id="6069464830445383022">Chromebook'ка Google аккаунтуңуз менен киресиз</translation>
+<translation id="6070311415473175157">Издөө үчүн сүрөт аймагын тандаңыз</translation>
 <translation id="6071181508177083058">сырсөздү ырастоо</translation>
 <translation id="6071576563962215370">Тутум түзмөктү орнотуу убагында анын атрибуттарын кулпулай албай койду.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> колдонмосун бул түзмөктө пайдаланууга болбойт. Администраторуңуз менен байланышыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
@@ -7126,6 +7127,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7842692330619197998">Жаңы аккаунтту түзүү үчүн g.co/ChromeEnterpriseAccount дарегине өтүңүз.</translation>
 <translation id="78427265591841839">Барактын бир бөлүгүн <ph name="VISUAL_SEARCH_PROVIDER" /> менен издөө</translation>
 <translation id="784273751836026224">Linux'ту чыгарып салуу</translation>
+<translation id="7842851769217535639">Издөө үчүн барактын каалаган бөлүгүн тандаңыз</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" /> кызматына кирүү</translation>
 <translation id="7844992432319478437">Айырма жаңыртылууда</translation>
 <translation id="7846634333498149051">Баскычтоп</translation>
@@ -7182,6 +7184,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7893008570150657497">Сүрөттөрдү, музыканы жана башка медиа файлдарын компьютериңиз аркылуу колдонуу мүмкүнчүлүгүн алыңыз</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> түзмөгүндөгү Bluetooth өчүк. Сырсөзүңүздү киргизип туруп, Bluetooth'ду күйгүзүңүз.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Демейки)</translation>
+<translation id="7896292361319775586"><ph name="FILE" /> файлы сакталсынбы?</translation>
 <translation id="789722939441020330">Сайттар бир нече файлды автоматтык түрдө жүктөп ала албасын</translation>
 <translation id="7897900149154324287">Кийинки жолу тышкы дискти түзмөктөн сууруп алаардан мурун, аны Файлдар колдонмосунан чыгарыңыз. Болбосо, дайындарды жоготуп алышыңыз мүмкүн.</translation>
 <translation id="7898725031477653577">Ар дайым которуу</translation>
@@ -8318,6 +8321,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="899403249577094719">Netscape тастыктама негизинин URL</translation>
 <translation id="899657321862108550">Chrome'ду бардык жерде ала жүрүңүз</translation>
 <translation id="899676909165543803">Манжа изинин сенсору баскычтобуңуздун төмөнкү оң жагында жайгашкан. Ага манжаңыздын бирөө менен акырын тийип коюңуз.</translation>
+<translation id="8998078711690114234">Мындай файл түрү кооптуу болушу мүмкүн. <ph name="ORIGIN" /> булагына ишенсеңиз гана бул файлды сактаңыз</translation>
 <translation id="8999560016882908256">Бөлүмдүн синтаксис катасы: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Түзмөктөрдү башкаргычтын серверине туташуу <ph name="FAILURE_TIME" /> ишке ашпай калды (<ph name="STATUS_TEXT" />)</translation>
 <translation id="9003647077635673607">Бардык вебсайттарда уруксат берүү</translation>

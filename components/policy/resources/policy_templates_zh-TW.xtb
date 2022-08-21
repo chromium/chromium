@@ -1093,6 +1093,7 @@
 <translation id="2058055310819710697">啟用已隔離應用程式的開發人員模式</translation>
 <translation id="2061123930713023976">允許針對網路封包擷取作業進行偵錯</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
+<translation id="2062632109797189011">重新啟用已淘汰的 window.webkitStorageInfo API</translation>
 <translation id="2069350366303315077">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會強制執行訪客工作階段，並禁止使用者登入設定檔。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，視窗會以無痕模式開啟。
 
       如果將這項政策設為停用或不設定，或是透過 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 停用瀏覽器訪客模式，系統會允許使用新的設定檔和現有設定檔。</translation>
@@ -1858,6 +1859,7 @@
 
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報 Android 狀態資訊</translation>
 <translation id="288923520817177650">允許建立 <ph name="WEBXR_API_NAME_SHORT" /> 的 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段</translation>
+<translation id="2889842394011108075">系統將開放使用 window.webkitStorageInfo。</translation>
 <translation id="2890645751406497668">自動授予權限給這些網站，以連結至指定廠商和產品 ID 的 USB 裝置。</translation>
 <translation id="2891049933730408118">你可以透過這項政策指定哪些來源允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證機制 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。
 
@@ -2109,6 +2111,7 @@
 <translation id="3118552207903834734">允許使用者設定裝置主機名稱</translation>
 <translation id="3122082892722698079">控管可使用不安全內容的例外網站</translation>
 <translation id="3128072319047570212">Keygen 設定</translation>
+<translation id="3131703464330936425">不允許行動數據漫遊服務</translation>
 <translation id="3135820765957090754">如果啟用這項設定，使用者將可在搭載 <ph name="PRODUCT_OS_NAME" /> 的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。使用者必須完成設定流程來明確選擇要啟用這項功能，才能同步 Wi-Fi 網路設定。
 
       如果停用這項設定，使用者就無法同步 Wi-Fi 網路設定。
@@ -2529,6 +2532,7 @@
 <translation id="35668690622495904">
           呼叫不會因為來源結構定義未列入許可清單而遭到拒絕 (但仍可能基於其他原因而遭拒絕)。</translation>
 <translation id="3568762199045490351">逾時 0 毫秒的 JavaScript setTimeout() 將會延遲到 1 毫秒。</translation>
+<translation id="3574450691573438824">停用裝置系統記錄上傳功能</translation>
 <translation id="3575011234198230041">HTTP 驗證</translation>
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
@@ -2649,6 +2653,7 @@
       如果未設定，系統會套用 3 小時的預設間隔。</translation>
 <translation id="3756011779061588474">封鎖開發人員模式</translation>
 <translation id="3756516139200532906">允許受管理的使用者設定裝置主機名稱</translation>
+<translation id="3756737071958233151">啟用裝置系統記錄上傳功能</translation>
 <translation id="3758089716224084329">允許你指定 <ph name="PRODUCT_NAME" /> 使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
 
       如果你決定完全不使用 Proxy 伺服器，一律採用直接連線，系統會忽略其他所有選項。
@@ -2694,6 +2699,7 @@
 
       注意：如果是 <ph name="MS_AD_NAME" /> 管理的裝置，這項政策支援將 <ph name="MACHINE_NAME_VARIABLE" /> 擴充為 <ph name="MS_AD_NAME" /> 電腦名稱或其子字串。舉例來說，如果電腦名稱為 <ph name="MACHINE_NAME_EXAMPLE" />，系統將以第 6 個字元後的 4 個字元取代 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />，也就是 <ph name="MACHINE_NAME_PART_EXAMPLE" />。字元序數是從 0 開始計算。</translation>
 <translation id="377044054160169374">強制干預濫用行為</translation>
+<translation id="3777833753656885744">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用認證流程</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準連接埠</translation>
 <translation id="378495749480642482">設定使用者前往的網站是否能透過 <ph name="WEBXR_API_NAME" /> 建立沉浸式擴增實境工作階段。
@@ -3486,6 +3492,7 @@
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
 <translation id="4704958130749494760">自動授權網站連線至 USB 序列裝置。</translation>
+<translation id="471360812659157054">window.webkitStorageInfo 將無法使用。</translation>
 <translation id="4722122254122249791">為指定來源啟用網站隔離</translation>
 <translation id="4723829699367336876">允許遠端存取用戶端穿越防火牆</translation>
 <translation id="4725528134735324213">啟用 Android 備份服務</translation>
@@ -4214,6 +4221,7 @@
 
       版本切換不適用這項政策。</translation>
 <translation id="5519331583722582543">布林值標記，表示螢幕小鍵盤是否能透過手寫辨識技術提供輸入功能。</translation>
+<translation id="5519619299971727565">停用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5521875416764302911">禁止使用者登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
@@ -4234,6 +4242,7 @@
 
       如果未指定這項政策，則系統不會修改變異版本種子網址。</translation>
 <translation id="5561811616825571914">在登入畫面自動為這些網站選取用戶端憑證</translation>
+<translation id="5563240289883266691">啟用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5565178130821694365">每兩天 (48 小時) 須輸入一次密碼</translation>
 <translation id="5566210228171064229">不論是否使用 PIN 碼，都允許列印</translation>
 <translation id="5572971233886879856">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。這項設定僅適用於 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策。
@@ -4743,6 +4752,7 @@
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>
 <translation id="6158324314836466367">企業線上應用程式商店名稱 (已不適用)</translation>
+<translation id="6164441518097008843">限制只有清單中的使用者才能登入</translation>
 <translation id="6169768162756928771">GAIA 使用者身分管理設定</translation>
 <translation id="6172896675583897796">如果將這項政策設為啟用，Google 助理將可存取畫面內容，並將該項資料傳送給伺服器。如果將這項政策設為停用，Google 助理無法存取畫面內容。
 
@@ -4811,6 +4821,19 @@
      這項政策的用途是讓企業能彈性停用音訊沙箱，避免安全性軟體的設定干擾沙箱運作。</translation>
 <translation id="624818583115864448">通訊埠 554 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="6252773211180267325">允許使用者執行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="6255671003289033162">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      透過這項政策，你可以指定要讓哪些網址加入認證流程，以接收裝置傳送的信號。
+
+      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      網址必須採用 HTTPS 架構，例如「https://example.com」。
+
+      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      就 ChromeOS 而言，與這項政策相關的是遠端認證，其中的憑證會自動產生並上傳至裝置管理伺服器。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
@@ -4855,6 +4878,7 @@
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
+<translation id="6287128640500683781">允許任何使用者登入</translation>
 <translation id="6287310684159482272">Cookie 設定</translation>
 <translation id="6299147100249359151">允許政策範圍偵測。</translation>
 <translation id="6300871921951390976">必須將這項政策設為 True，使用者才可變更裝置的發布版本。如果將這項政策設為 False 或不設定，使用者就不可變更版本。
@@ -5631,6 +5655,7 @@
 <translation id="7007283257527015835">布林值標記，表示是否應將通訊協定處理常式設為預設值。</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
 <translation id="7010006999849135962">針對遠端存取主機啟用無 PIN 碼驗證機制</translation>
+<translation id="7016587686120059767">停用訪客模式</translation>
 <translation id="7016736684656067099">如果將這項政策設為 1，所有網站皆可顯示圖片。如果將這項政策設為 2，所有網站都無法顯示圖片。
 
       如果不設定，所有網站皆可顯示圖片，但使用者可以變更這項設定。</translation>
@@ -5638,6 +5663,7 @@
 
       如果將這項政策設為停用，當 Chrome 分頁改以其他瀏覽器開啟後，<ph name="PRODUCT_NAME" /> 將關閉該分頁，即使該分頁是最後一個分頁也一樣。這會導致 <ph name="PRODUCT_NAME" /> 完全關閉。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7021590945154530517">啟用裝置健康狀態監控功能</translation>
 <translation id="7025332601572838001">設定第一次執行 CCT 時的《服務條款》相關行為</translation>
 <translation id="7026351325994257733">允許在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。</translation>
 <translation id="7027057540229843762">使用淺色主題</translation>
@@ -5900,6 +5926,7 @@
       如果將這項政策設為停用或不設定，支援平台會忽略 KDC 政策，只遵循 <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 政策。
 
       <ph name="MS_WIN_NAME" /> 一律遵循 KDC 政策。</translation>
+<translation id="7273785848231509306">一律不顯示使用者名稱和相片</translation>
 <translation id="7274077256421167535">啟用 USB 電力共享功能</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7275689301063927473">預設拒絕對所有網站授予本機字型權限</translation>
@@ -5920,6 +5947,19 @@
 <translation id="7323896582714668701"><ph name="PRODUCT_NAME" /> 額外命令列參數</translation>
 <translation id="7325801934761922681">禁止 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="7326394567531622570">與 Wipe (值 2) 類似，但會嘗試保留登入憑證，因此使用者不必重新登入。</translation>
+<translation id="7328028920258952696">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      你可以透過這項政策指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
+
+      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      網址必須採用 HTTPS 架構，例如「https://example.com」。
+
+      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      這項政策只會影響登入畫面和螢幕鎖定畫面上的認證流程。如要變更工作階段中認證流程，請使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="7331962793961469250">設為 True 時，新分頁上將不會顯示「Chrome 線上應用程式商店」應用程式的宣傳資訊。將這個選項設為 False 或不設定選項時，新分頁上會顯示「Chrome 線上應用程式商店」應用程式的宣傳資訊</translation>
 <translation id="7332963785317884918">這項政策已被取代。<ph name="PRODUCT_OS_NAME" /> 將一律使用「RemoveLRU」清理策略。
 
@@ -6508,6 +6548,7 @@
 <translation id="7974114691960514888">系統不再支援這項政策。連線至遠端用戶時，啟用 STUN 使用量和轉送伺服器。如果啟用這項設定，那麼即使遠端主機電腦被防火牆隔開，這台電腦也能發現遠端主機電腦並建立連結。如果停用這項設定，並且外傳 UDP 連結遭到防火牆篩選，則這台電腦只會與當地網路內的主機電腦建立連線。</translation>
 <translation id="7976157349247117979">「<ph name="PRODUCT_NAME" />」目的地名稱</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
+<translation id="7986473886676689183">啟用 Android 報告功能</translation>
 <translation id="7991022023019679916">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定 AC 供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會關閉螢幕。
@@ -6593,6 +6634,8 @@
 <translation id="8091982561085048989">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。<ph name="PRODUCT_OS_NAME" /> 76 以上版本支援這個標記。</translation>
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
+<translation id="8102504778644322990">自 M106 起，非標準 API window.webkitStorageInfo 將遭到移除。這項政策會重新啟用這個 API，直到 M107 推出為止。如果將這項政策設為啟用，系統將開放使用 window.webkitStorageInfo API。如果將這項政策設為停用或不設定，window.webkitStorageInfo API 就無法使用。
+      </translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
 <translation id="8114382167597081590">不強制執行 YouTube 嚴格篩選模式</translation>
@@ -6676,6 +6719,7 @@
 <translation id="8164687848393015214">如果將這項政策設為啟用，系統會將監控網路封包 (<ph name="HEARTBEATS_TERM" />) 傳送到可監控上線狀態的管理伺服器，讓伺服器偵測裝置是否處於離線狀態。
 
       如果將這項政策設為停用或不設定，系統不會傳送任何封包。</translation>
+<translation id="8169452762291746260">停用裝置健康狀態監控功能</translation>
 <translation id="8171924760436219650">在登入畫面上將滑鼠的主要按鈕切換為右鍵</translation>
 <translation id="8173864651667424191">在 PDF 文件的列印預覽畫面中，「以圖片形式列印」是預設選項 (如果有)。</translation>
 <translation id="8176035528522326671">僅允許企業使用者成為多重設定檔的主要使用者 (受企業管理的使用者的預設行為)</translation>
@@ -6926,6 +6970,7 @@
 
        這項政策將在 <ph name="PRODUCT_NAME" /> 第 95 版中移除。</translation>
 <translation id="8427466947904008809">允許 CRD 執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
+<translation id="8428635849021776523">停用 Android 報告功能</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8433769814000220721">啟用推薦內容</translation>
 <translation id="843609873781525167">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會在啟動時檢查其是否為預設瀏覽器，並在情況允許時自動登錄。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 一律不會檢查其是否為預設瀏覽器，且會停用設定這個選項的使用者控制項。
@@ -7522,6 +7567,7 @@
 <translation id="9073405975862312795">如果將這項政策設為啟用或不設定，已註冊的裝置會回報使用者的裝置使用時間範圍。
 
       如果將這項政策設為停用，已註冊的裝置不會記錄或回報活動時間。</translation>
+<translation id="9076477053438828079">一律顯示使用者名稱和相片</translation>
 <translation id="9077227880520270584">裝置本機帳戶自動登入計時器</translation>
 <translation id="9079531125758468956">不允許在第一次執行時匯入書籤</translation>
 <translation id="9084985621503260744">指定會影響電源管理的視訊活動</translation>

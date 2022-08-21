@@ -671,6 +671,7 @@
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
+<translation id="481455355267255546">即將到來的活動</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4849058404725798627">醒目顯示鍵盤焦點所在物件</translation>
 <translation id="485592688953820832">不執行任何動作 (暫停)</translation>
@@ -1012,6 +1013,7 @@
 <translation id="6757237461819837179">目前未播放任何媒體</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6786750046913594791">關閉資料夾</translation>
+<translation id="6787595647772650851">還原上一個工作階段</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
@@ -1260,6 +1262,7 @@
 <translation id="8214996719228530800">Canary 版</translation>
 <translation id="8219451629189078428">在這段期間內，你的 Chromebook 需要保持開啟並接上電源。請確認充電器或變壓器電源線已完全插入 Chromebook 和電源插座。請勿將 Chromebook 關機。</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
+<translation id="8246282815785366524">歡迎回來，<ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
 <translation id="8255234195843591763">重設以更新</translation>

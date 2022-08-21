@@ -726,6 +726,7 @@
 <translation id="1676902103953506022">喺 <ph name="DOMAIN" />上面顯示 <ph name="USERNAME" /> 嘅憑證詳情</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
+<translation id="1678794218766467608">進入休眠模式或蓋上保護蓋時鎖定</translation>
 <translation id="1679068421605151609">開發人員工具</translation>
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">裝置管理服務已傳送 HTTP 錯誤。</translation>
@@ -3805,6 +3806,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">數據庫儲存空間</translation>
+<translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" /> (&amp;G)</translation>
 <translation id="4594577641390224176">要查看系統的「關於」頁面嗎？請前往</translation>
@@ -4363,6 +4365,7 @@
 <translation id="5155327081870541046">在網址列輸入您想搜尋網站的捷徑，例如「例如「@bookmarks」)，然後按下您偏好的鍵盤快速鍵，並輸入搜尋字詞。</translation>
 <translation id="5156638757840305347">游標在顯示或移動時會突顯</translation>
 <translation id="5157635116769074044">將網頁固定到 [開始] 螢幕…</translation>
+<translation id="5158206172605340248">重音符號選單已關閉。</translation>
 <translation id="5159094275429367735">設定 Crostini</translation>
 <translation id="5159419673777902220">您的家長已停用擴充程式權限</translation>
 <translation id="5159643365935452998">檢查自動資料清除設定</translation>
@@ -6489,6 +6492,7 @@
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可在您點擊特定類型的連結時處理特殊工作，例如在電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
+<translation id="7238609589076576185">已插入重音符號。</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> 已取消傳送</translation>
 <translation id="7240339475467890413">要連線至新熱點嗎？</translation>
 <translation id="7241389281993241388">請登入 <ph name="TOKEN_NAME" /> 以匯入用戶端憑證。</translation>
@@ -7331,6 +7335,7 @@
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032244173881942855">無法投放分頁。</translation>
 <translation id="8032569120109842252">追蹤中</translation>
+<translation id="8033023935541439900">重音符號選單已開啟。按向左鍵或向右鍵即可移動位置，按下 Enter 鍵即可插入重音符號。</translation>
 <translation id="8033827949643255796">已選取</translation>
 <translation id="8033958968890501070">逾時</translation>
 <translation id="8035059678007243127">向前/返回快取中的無痕頁面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>

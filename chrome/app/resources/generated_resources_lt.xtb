@@ -729,6 +729,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1676902103953506022">Išsamūs <ph name="USERNAME" /> prisijungimo duomenys <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Nepavyko pridėti <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
+<translation id="1678794218766467608">Užrakinti miego režimu arba uždarius dangtelį</translation>
 <translation id="1679068421605151609">Kūrėjo įrankiai</translation>
 <translation id="1679810534535368772">Ar tikrai norite išeiti?</translation>
 <translation id="167983332380191032">Tvarkymo paslauga išsiuntė HTTP klaidą.</translation>
@@ -3808,6 +3809,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4586275095964870617">Nepavyko atidaryti <ph name="URL" /> alternatyvioje naršyklėje. Susisiekite su sistemos administratoriumi.</translation>
 <translation id="4589713469967853491">Žurnalai sėkmingai įrašyti kataloge „Atsisiuntimai“.</translation>
 <translation id="4590324241397107707">Duomenų atmintinė</translation>
+<translation id="459204634473266369">Jokie įrenginiai neišsaugoti adresu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Piešimo rašikliu programa</translation>
 <translation id="4593021220803146968">&amp;Eiti į <ph name="URL" /></translation>
 <translation id="4594577641390224176">Ieškote sistemos puslapio „Apie“? Apsilankykite adresu</translation>
@@ -4366,6 +4368,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5155327081870541046">Adreso juostoje įveskite svetainės, kurios norite ieškoti, šaukinį, pvz., „@bookmarks“. Tada paspauskite norimą spartųjį klavišą ir įveskite paieškos terminą.</translation>
 <translation id="5156638757840305347">Žymeklis paryškinamas, kai parodomas arba judinamas</translation>
 <translation id="5157635116769074044">Prisegti šį puslapį pradžios ekrane...</translation>
+<translation id="5158206172605340248">Atsisakyta kirčio ženklų meniu.</translation>
 <translation id="5159094275429367735">Nustatyti „Crostini“</translation>
 <translation id="5159419673777902220">Vienas iš tėvų išjungė plėtinio leidimus</translation>
 <translation id="5159643365935452998">Automatinio duomenų išvalymo peržiūra</translation>
@@ -6500,6 +6503,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7235716375204803342">Renkamos veiklos...</translation>
 <translation id="7235737137505019098">Saugos rakte nepakanka vietos jokioms kitoms paskyroms.</translation>
 <translation id="7235873936132740888">„Google“ svetainės gali atlikti specialias užduotis, kai spustelite konkrečių tipų nuorodas, pvz., sukurti naują pranešimą el. pašto programoje ar pridėti naujų įvykių interneto kalendoriuje</translation>
+<translation id="7238609589076576185">Kirčio ženklas įterptas.</translation>
 <translation id="7239108166256782787">„<ph name="DEVICE_NAME" />“ atšaukė perkėlimą</translation>
 <translation id="7240339475467890413">Prisijungti prie naujo viešosios interneto prieigos taško?</translation>
 <translation id="7241389281993241388">Jei norite importuoti programos sertifikatą, prisijunkite prie „<ph name="TOKEN_NAME" />“.</translation>
@@ -7340,6 +7344,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8030852056903932865">Patvirtinti</translation>
 <translation id="8032244173881942855">Nepavyko perduoti skirtuko.</translation>
 <translation id="8032569120109842252">Stebima</translation>
+<translation id="8033023935541439900">Atidarytas kirčio ženklų meniu. Norėdami naršyti, spauskite rodyklę kairėn arba dešinėn, norėdami įvesti – „Enter“.</translation>
 <translation id="8033827949643255796">pasirinkta</translation>
 <translation id="8033958968890501070">Skirtojo laiko pabaiga</translation>
 <translation id="8035059678007243127">Ilgalaikis viso inkognito puslapio saugojimas talpykloje: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
