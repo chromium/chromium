@@ -68,6 +68,14 @@ enum class MessageType {
   kInfoLabelFocus,
 };
 
+// Position type enum.
+enum class PositionType {
+  // Default position type.
+  kDefault = 0,
+  // Dependent position type which x or y value depend on the other one.
+  kDependent = 1,
+};
+
 }  // namespace input_overlay
 }  // namespace arc
 

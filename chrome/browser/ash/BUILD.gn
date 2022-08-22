@@ -333,8 +333,6 @@ source_set("ash") {
     "arc/input_overlay/actions/action_move.h",
     "arc/input_overlay/actions/action_tap.cc",
     "arc/input_overlay/actions/action_tap.h",
-    "arc/input_overlay/actions/dependent_position.cc",
-    "arc/input_overlay/actions/dependent_position.h",
     "arc/input_overlay/actions/input_element.cc",
     "arc/input_overlay/actions/input_element.h",
     "arc/input_overlay/actions/position.cc",

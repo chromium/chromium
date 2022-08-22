@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 
-#include "chrome/browser/ash/arc/input_overlay/actions/dependent_position.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/base_event_utils.h"
@@ -62,9 +61,9 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value) {
 
   std::unique_ptr<Position> pos;
   if (*type == kPosition) {
-    pos = std::make_unique<Position>();
+    pos = std::make_unique<Position>(PositionType::kDefault);
   } else if (*type == kDependentPosition) {
-    pos = std::make_unique<DependentPosition>();
+    pos = std::make_unique<Position>(PositionType::kDependent);
   } else {
     LOG(ERROR) << "There is position with unknown type: " << *type;
     return nullptr;

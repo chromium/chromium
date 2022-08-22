@@ -6,20 +6,41 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
 
 #include "base/values.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace arc {
 namespace input_overlay {
-// This is the base position for location. It includes anchor point
-// and the vector from the anchor point to the target position.
+
+// Returns true if there is no value of |key| or there is positive value of the
+// |key|.
+bool ParsePositiveFraction(const base::Value& value,
+                           const char* key,
+                           absl::optional<float>* output);
+
+// Position class for touch point.
 class Position {
  public:
-  Position();
+  explicit Position(PositionType type);
   Position(const Position&);
   Position& operator=(const Position&);
-  virtual ~Position();
+  ~Position();
+
+  bool ParseFromJson(const base::Value& value);
+  // Return the position coords in |content_bounds|. |content_bounds| is bounds
+  // excluding caption if the caption shows.
+  gfx::PointF CalculatePosition(const gfx::RectF& content_bounds) const;
+
+  const gfx::PointF& anchor() const { return anchor_; }
+  const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }
+  absl::optional<float> x_on_y() const { return x_on_y_; }
+  absl::optional<float> y_on_x() const { return y_on_x_; }
+  absl::optional<float> aspect_ratio() const { return aspect_ratio_; }
+
+ private:
+  friend class PositionTest;
 
   // Json value format:
   // {
@@ -35,16 +56,29 @@ class Position {
   // "max_x": 50, // Optional.
   // "max_y": 50 // Optional.
   // }
-  virtual bool ParseFromJson(const base::Value& value);
-  // Return the position coords in |content_bounds| which excludes the caption
-  // if the caption shows.
-  virtual gfx::PointF CalculatePosition(const gfx::RectF& content_bounds) const;
+  bool ParseDefaultFromJson(const base::Value& value);
+  // Parse position from Json.
+  // Json value format:
+  // {
+  //   "type": "dependent-position",
+  //   "anchor": [, ],
+  //   "anchor_to_target": [, ],
+  //   "x_on_y": 1.5, // Can be null for width-dependent position.
+  //   "y_on_x": 2 // Can be null for height-dependent position.
+  //   "aspect_ratio": 1.5 // Can be null for height- or width-dependent
+  //                       // position.
+  // }
+  bool ParseDependentFromJson(const base::Value& value);
 
-  const gfx::PointF& anchor() const { return anchor_; }
-  const gfx::Vector2dF& anchor_to_target() const { return anchor_to_target_; }
+  gfx::PointF CalculateDefaultPosition(const gfx::RectF& content_bounds) const;
+  gfx::PointF CalculateDependentPosition(
+      const gfx::RectF& content_bounds) const;
 
- private:
-  friend class PositionTest;
+  // kDefault: only |anchor_|, |anchor_to_target_|, |max_x_| and |max_y_| are
+  // used for calculating position. kDependent: including above kDefault,
+  // |x_on_y_|, |y_on_x_| and |aspect_ratio_| are also involved for calculating
+  // position.
+  PositionType position_type_;
 
   // Default anchor_ is (0, 0). Anchor is the point position where the UI
   // position is relative to. For example, a UI may be always relative to the
@@ -56,6 +90,24 @@ class Position {
   gfx::Vector2dF anchor_to_target_;
   absl::optional<int> max_x_;
   absl::optional<int> max_y_;
+
+  // Below is for dependent position.
+  // This is for height-dependent position.
+  // The length on the direction X to the anchor depends on the direction Y to
+  // the anchor. If both x_on_y_ and y_on_x_ are not set, x_on_y_ is set to
+  // default -1.
+  absl::optional<float> x_on_y_;
+
+  // This is for width-dependent position.
+  // The length on the direction Y to the anchor depends on the direction X to
+  // the anchor.
+  absl::optional<float> y_on_x_;
+
+  // The is for aspect-ratio-dependent position. Both x_on_y_ and y_on_x_ should
+  // be set if aspect_ratio_ is set. If the window aspect ratio >=
+  // aspect_ratio_, it becomes height-dependent position. Otherwise, it is
+  // width-dependent position.
+  absl::optional<float> aspect_ratio_;
 };
 
 }  // namespace input_overlay
