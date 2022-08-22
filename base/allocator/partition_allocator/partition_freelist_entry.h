@@ -13,13 +13,16 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/sys_byteorder.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "build/build_config.h"
+
+#if !defined(ARCH_CPU_BIG_ENDIAN)
+#include "base/allocator/partition_allocator/reverse_bytes.h"
+#endif  // !defined(ARCH_CPU_BIG_ENDIAN)
 
 namespace partition_alloc::internal {
 
@@ -71,7 +74,7 @@ class EncodedPartitionFreelistEntryPtr {
 #if defined(ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~address;
 #else
-    uintptr_t transformed = base::ByteSwapUintPtrT(address);
+    uintptr_t transformed = ReverseBytes(address);
 #endif
     return transformed;
   }
