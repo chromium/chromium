@@ -12,7 +12,8 @@ bool ReadUint16PrefixedStringPiece(base::StringPiece* payload,
   if (payload->size() < 2) {
     return false;
   }
-  uint16_t length = (static_cast<uint16_t>((*payload)[0]) << 8) + (*payload)[1];
+  const uint16_t length = (static_cast<uint16_t>((*payload)[0]) << 8) +
+                          (static_cast<uint8_t>((*payload)[1]));
   payload->remove_prefix(2);
 
   if (payload->size() < length) {
