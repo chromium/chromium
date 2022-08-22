@@ -166,6 +166,9 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      "printers_authorization_servers", "Printers Authorization Servers",
      sync_pb::EntitySpecifics::kPrintersAuthorizationServerFieldNumber,
      ModelTypeForHistograms::kPrintersAuthorizationServers},
+    {CONTACT_INFO, "CONTACT_INFO", "contact_info", "Contact Info",
+     sync_pb::EntitySpecifics::kContactInfoFieldNumber,
+     ModelTypeForHistograms::kContactInfo},
     // ---- Proxy types ----
     {PROXY_TABS, "", "", "Proxy tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
@@ -177,11 +180,11 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(40 == syncer::GetNumModelTypes(),
+static_assert(41 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(40 == syncer::GetNumModelTypes(),
+static_assert(41 == syncer::GetNumModelTypes(),
               "When adding a new type, update kAllocatorDumpNameAllowlist in "
               "base/trace_event/memory_infra_background_allowlist.cc.");
 
@@ -309,6 +312,9 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case HISTORY:
       specifics->mutable_history();
       break;
+    case CONTACT_INFO:
+      specifics->mutable_contact_info();
+      break;
   }
 }
 
@@ -328,7 +334,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type) {
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(40 == syncer::GetNumModelTypes(),
+  static_assert(41 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -407,6 +413,8 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return HISTORY;
   if (specifics.has_printers_authorization_server())
     return PRINTERS_AUTHORIZATION_SERVERS;
+  if (specifics.has_contact_info())
+    return CONTACT_INFO;
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -414,13 +422,15 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(40 == syncer::GetNumModelTypes(),
+  static_assert(41 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();
   // Wallet data is not encrypted since it actually originates on the server.
   encryptable_user_types.Remove(AUTOFILL_WALLET_DATA);
   encryptable_user_types.Remove(AUTOFILL_WALLET_OFFER);
+  // Similarly, contact info is not encrypted since it originates on the server.
+  encryptable_user_types.Remove(CONTACT_INFO);
   // Commit-only types are never encrypted since they are consumed server-side.
   encryptable_user_types.RemoveAll(CommitOnlyTypes());
   // Other types that are never encrypted because consumed server-side.

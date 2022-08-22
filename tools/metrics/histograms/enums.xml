@@ -93914,6 +93914,7 @@ would be helpful to identify which type is being sent.
   <int value="50" label="Workspace Desk"/>
   <int value="51" label="History"/>
   <int value="52" label="Printers Authorization Servers"/>
+  <int value="53" label="Contact info"/>
 </enum>
 
 <enum name="SyncModelTypeStoreInitResult">

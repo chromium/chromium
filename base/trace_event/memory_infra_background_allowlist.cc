@@ -273,6 +273,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "sync/0x?/model_type/AUTOFILL_WALLET",
     "sync/0x?/model_type/AUTOFILL_WALLET_OFFER",
     "sync/0x?/model_type/BOOKMARK",
+    "sync/0x?/model_type/CONTACT_INFO",
     "sync/0x?/model_type/DEVICE_INFO",
     "sync/0x?/model_type/DICTIONARY",
     "sync/0x?/model_type/EXTENSION",

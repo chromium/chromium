@@ -69,6 +69,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
+    case CONTACT_INFO:
     case THEMES:
     case TYPED_URLS:
     case EXTENSIONS:
@@ -118,6 +119,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case PASSWORDS:         // chrome.browsingData API.
     case AUTOFILL:          // chrome.browsingData API.
     case AUTOFILL_PROFILE:  // chrome.browsingData API.
+    case CONTACT_INFO:      // chrome.browsingData API.
     // All the remaining types are not affected by any extension js API.
     case USER_EVENTS:
     case SESSIONS:
