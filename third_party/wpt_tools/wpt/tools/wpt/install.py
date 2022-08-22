@@ -55,6 +55,8 @@ def get_parser():
                         "(only with --download-only)")
     parser.add_argument('-d', '--destination',
                         help='filesystem directory to place the component')
+    parser.add_argument('--revision', default=None,
+                        help='Chromium revision to install from snapshots')
     return parser
 
 
@@ -86,12 +88,16 @@ def run(venv, **kwargs):
             raise argparse.ArgumentError(None,
                                          "No --destination argument, and no default for the environment")
 
+    if kwargs["revision"] is not None and browser != "chromium":
+        raise argparse.ArgumentError(None, "--revision flag cannot be used for non-Chromium browsers.")
+
     install(browser, kwargs["component"], destination, channel, logger=logger,
-            download_only=kwargs["download_only"], rename=kwargs["rename"])
+            download_only=kwargs["download_only"], rename=kwargs["rename"],
+            revision=kwargs["revision"])
 
 
 def install(name, component, destination, channel="nightly", logger=None, download_only=False,
-            rename=None):
+            rename=None, revision=None):
     if logger is None:
         import logging
         logger = logging.getLogger("install")
@@ -106,6 +112,9 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
     kwargs = {}
     if download_only and rename:
         kwargs["rename"] = rename
+    if revision:
+        kwargs["revision"] = revision
+
     path = getattr(browser_cls(logger), method)(dest=destination, channel=channel, **kwargs)
     if path:
         logger.info('Binary %s as %s', "downloaded" if download_only else "installed", path)

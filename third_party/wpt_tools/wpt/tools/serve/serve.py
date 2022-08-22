@@ -569,7 +569,6 @@ class RoutesBuilder:
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
-            ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
@@ -960,10 +959,6 @@ def _make_subdomains_product(s: Set[str], depth: int = 2) -> Set[str]:
     return {".".join(x) for x in chain(*(product(s, repeat=i) for i in range(1, depth+1)))}
 
 
-def _make_origin_policy_subdomains(limit: int) -> Set[str]:
-    return {"op%d" % x for x in range(1,limit+1)}
-
-
 _subdomains = {"www",
                "www1",
                "www2",
@@ -973,12 +968,6 @@ _subdomains = {"www",
 _not_subdomains = {"nonexistent"}
 
 _subdomains = _make_subdomains_product(_subdomains)
-
-# Origin policy subdomains need to not be reused by any other tests, since origin policies have
-# origin-wide impacts like installing a CSP or Feature Policy that could interfere with features
-# under test.
-# See https://github.com/web-platform-tests/rfcs/pull/44.
-_subdomains |= _make_origin_policy_subdomains(99)
 
 _not_subdomains = _make_subdomains_product(_not_subdomains)
 
