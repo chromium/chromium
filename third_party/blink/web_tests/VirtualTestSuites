@@ -535,12 +535,6 @@
     "args": ["--enable-features=IncognitoFileSystemContextForTesting"]
   },
   {
-    "prefix": "file-handling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-features=NativeFileSystemAPI,FileHandlingAPI"]
-  },
-  {
     "prefix": "controls-refresh-hc",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme"],
