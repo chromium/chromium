@@ -1042,7 +1042,8 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
+      !rules_manager->GetDlpFilesController()) {
     return RespondNow(WithArguments(base::Value::List()));
   }
 
@@ -1071,8 +1072,9 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
     return RespondNow(Error("File URL was invalid"));
   }
 
-  files_controller_ = std::make_unique<policy::DlpFilesController>();
-  files_controller_->GetDisallowedTransfers(
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
+  files_controller->GetDisallowedTransfers(
       source_urls_, destination_url_,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnGetDisallowedFiles,
@@ -1129,7 +1131,8 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
+      !rules_manager->GetDlpFilesController()) {
     return RespondNow(WithArguments(base::Value::List()));
   }
 
@@ -1150,8 +1153,9 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
     source_urls_.push_back(file_system_url);
   }
 
-  files_controller_ = std::make_unique<policy::DlpFilesController>();
-  files_controller_->GetDlpMetadata(
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
+  files_controller->GetDlpMetadata(
       source_urls_,
       base::BindOnce(
           &FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata,
@@ -1191,7 +1195,8 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
+      !rules_manager->GetDlpFilesController()) {
     return RespondNow(WithArguments(base::Value::List()));
   }
 
@@ -1199,8 +1204,8 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::unique_ptr<policy::DlpFilesController> files_controller =
-      std::make_unique<policy::DlpFilesController>();
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
   const std::vector<policy::DlpFilesController::DlpFileRestrictionDetails>
       dlp_restriction_details =
           files_controller->GetDlpRestrictionDetails(params->source_url);

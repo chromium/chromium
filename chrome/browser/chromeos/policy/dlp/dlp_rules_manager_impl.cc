@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -431,9 +432,8 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
                           base::Unretained(this)));
   OnPolicyUpdate();
 
-  if (!IsReportingEnabled())
-    return;
-  reporting_manager_ = std::make_unique<DlpReportingManager>();
+  if (IsReportingEnabled())
+    reporting_manager_ = std::make_unique<DlpReportingManager>();
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
@@ -444,6 +444,12 @@ bool DlpRulesManagerImpl::IsReportingEnabled() const {
 DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
   return reporting_manager_.get();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DlpFilesController* DlpRulesManagerImpl::GetDlpFilesController() const {
+  return files_controller_.get();
+}
+#endif
 
 std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
                                                      Restriction restriction,
@@ -499,6 +505,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   dst_pattterns_mapping_.clear();
   src_conditions_.clear();
   dst_conditions_.clear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  files_controller_ = nullptr;
+#endif
 
   if (!base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy)) {
     return;
@@ -615,6 +624,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    files_controller_ = std::make_unique<DlpFilesController>(*this);
+#endif
   } else if (DlpScopedFileAccessDelegate::HasInstance()) {
     DlpScopedFileAccessDelegate::DeleteInstance();
   }

@@ -21,6 +21,10 @@ namespace policy {
 
 class DlpReportingManager;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DlpFilesController;
+#endif
+
 class DlpRulesManagerImpl : public DlpRulesManager {
  public:
   using RuleId = int;
@@ -54,6 +58,11 @@ class DlpRulesManagerImpl : public DlpRulesManager {
       Restriction restriction) const override;
   bool IsReportingEnabled() const override;
   DlpReportingManager* GetReportingManager() const override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DlpFilesController* GetDlpFilesController() const override;
+#endif
+
   std::string GetSourceUrlPattern(const GURL& source_url,
                                   Restriction restriction,
                                   Level level) const override;
@@ -107,6 +116,11 @@ class DlpRulesManagerImpl : public DlpRulesManager {
 
   // System-wide singleton instantiated when required by rules configuration.
   std::unique_ptr<DlpReportingManager> reporting_manager_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // System-wide singleton instantiated when there are rules involving files.
+  std::unique_ptr<DlpFilesController> files_controller_;
+#endif
 };
 
 }  // namespace policy

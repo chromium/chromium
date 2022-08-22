@@ -74,8 +74,16 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
     return;
   }
 
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  DCHECK(rules_manager);
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
+
   bool restricted =
-      dlp_files_controller_.IsDlpPolicyMatched(request.source_url());
+      files_controller
+          ? files_controller->IsDlpPolicyMatched(request.source_url())
+          : false;
 
   dlp::IsDlpPolicyMatchedResponse response_proto;
   response_proto.set_restricted(restricted);
@@ -113,13 +121,24 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
 
-  dlp_files_controller_.IsFilesTransferRestricted(
-      profile, source_urls, request.destination_url(),
-      policy::DlpWarnDialog::FilesAction::kTransfer,
-      base::BindOnce(
-          &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
-          weak_ptr_factory_.GetWeakPtr(), method_call,
-          std::move(response_sender)));
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  DCHECK(rules_manager);
+  policy::DlpFilesController* files_controller =
+      rules_manager->GetDlpFilesController();
+
+  if (files_controller) {
+    files_controller->IsFilesTransferRestricted(
+        profile, source_urls, request.destination_url(),
+        policy::DlpWarnDialog::FilesAction::kTransfer,
+        base::BindOnce(
+            &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
+            weak_ptr_factory_.GetWeakPtr(), method_call,
+            std::move(response_sender)));
+  } else {
+    RespondWithRestrictedFilesTransfer(method_call, std::move(response_sender),
+                                       std::vector<GURL>());
+  }
 }
 
 void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(

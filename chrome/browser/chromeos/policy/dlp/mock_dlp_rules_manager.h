@@ -51,6 +51,10 @@ class MockDlpRulesManager : public DlpRulesManager {
 
   MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_CONST_METHOD0(GetDlpFilesController, DlpFilesController*());
+#endif
+
   MOCK_CONST_METHOD3(GetSourceUrlPattern,
                      std::string(const GURL& source_url,
                                  Restriction restriction,

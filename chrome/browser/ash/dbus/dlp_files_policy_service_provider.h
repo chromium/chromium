@@ -9,9 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
+
+class GURL;
 
 namespace dbus {
 class MethodCall;
@@ -52,10 +53,6 @@ class DlpFilesPolicyServiceProvider
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender,
       const std::vector<GURL>& restricted_sources);
-
-  // DlpFilesController is responsible for checking whether any of the selected
-  // files is restricted according to the DataLeakPrevention policy.
-  policy::DlpFilesController dlp_files_controller_;
 
   base::WeakPtrFactory<DlpFilesPolicyServiceProvider> weak_ptr_factory_{this};
 };

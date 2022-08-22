@@ -81,7 +81,7 @@ class DlpFilesController {
   using IsFilesTransferRestrictedCallback =
       base::OnceCallback<void(const std::vector<GURL>&)>;
 
-  DlpFilesController();
+  explicit DlpFilesController(const DlpRulesManager& rules_manager);
   DlpFilesController(const DlpFilesController& other) = delete;
   DlpFilesController& operator=(const DlpFilesController& other) = delete;
 
@@ -143,7 +143,9 @@ class DlpFilesController {
       dlp::CheckFilesTransferResponse response);
   void ReturnDlpMetadata(std::vector<absl::optional<ino_t>> inodes,
                          GetDlpMetadataCallback result_callback,
-                         const dlp::GetFilesSourcesResponse response);
+                         const ::dlp::GetFilesSourcesResponse response);
+
+  const DlpRulesManager& rules_manager_;
 
   // Is used for creating and showing the warning dialog.
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;

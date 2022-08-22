@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -17,6 +18,10 @@ class GURL;
 namespace policy {
 
 class DlpReportingManager;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DlpFilesController;
+#endif
 
 // DlpRulesManager parses the rules set by DataLeakPreventionRulesList policy
 // and serves as an available service which can be queried anytime about the
@@ -160,6 +165,13 @@ class DlpRulesManager : public KeyedService {
   // serverside. Should always return a nullptr if reporting is disabled (see
   // IsReportingEnabled).
   virtual DlpReportingManager* GetReportingManager() const = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the files controller that is used to perform DLP checks on files.
+  // Should always return a nullptr if there are no file restrictions (and thus
+  // the DLP daemon is not active).
+  virtual DlpFilesController* GetDlpFilesController() const = 0;
+#endif
 
   // Returns the URL pattern that `source_url` is matched against. The returned
   // URL pattern should be configured in a policy rule with the same

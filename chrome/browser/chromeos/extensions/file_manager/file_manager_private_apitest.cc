@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -718,12 +719,19 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
+
+    files_controller_ =
+        std::make_unique<policy::DlpFilesController>(*mock_rules_manager_);
+    ON_CALL(*mock_rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(files_controller_.get()));
+
     return dlp_rules_manager;
   }
 
  protected:
   base::ScopedTempDir drive_path_;
   policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
+  std::unique_ptr<policy::DlpFilesController> files_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

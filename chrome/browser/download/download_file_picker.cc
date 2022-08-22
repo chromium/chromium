@@ -22,6 +22,8 @@
 #include "ui/aura/window.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #endif
@@ -116,13 +118,25 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
           : nullptr;
   if (web_contents && !path.empty()) {
     DCHECK(download_item_);
-    dlp_files_controller_.emplace();
-    dlp_files_controller_->IsFilesTransferRestricted(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        {download_item_->GetURL()}, path.value(),
-        policy::DlpWarnDialog::FilesAction::kDownload,
-        base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
-                       base::Unretained(this), path));
+
+    policy::DlpFilesController* files_controller = nullptr;
+    policy::DlpRulesManager* rules_manager =
+        policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+
+    if (rules_manager)
+      files_controller = rules_manager->GetDlpFilesController();
+
+    if (files_controller) {
+      files_controller->IsFilesTransferRestricted(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+          {download_item_->GetURL()}, path.value(),
+          policy::DlpWarnDialog::FilesAction::kDownload,
+          base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
+                         base::Unretained(this), path));
+    } else {
+      CompleteFileSelection(path, std::vector<GURL>());
+    }
+
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -135,7 +149,6 @@ void DownloadFilePicker::CompleteFileSelection(
     const std::vector<GURL>& restricted_sources) {
   base::FilePath selected_path(path);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  dlp_files_controller_.reset();
   if (!restricted_sources.empty())
     selected_path.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

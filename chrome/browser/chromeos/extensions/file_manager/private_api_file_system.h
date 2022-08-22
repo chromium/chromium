@@ -313,7 +313,6 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
 
   Profile* profile_ = nullptr;
 
-  std::unique_ptr<policy::DlpFilesController> files_controller_;
   std::vector<storage::FileSystemURL> source_urls_;
   storage::FileSystemURL destination_url_;
 };
@@ -337,7 +336,6 @@ class FileManagerPrivateInternalGetDlpMetadataFunction
   void OnGetDlpMetadata(
       std::vector<policy::DlpFilesController::DlpFileMetadata> dlp_metadata);
 
-  std::unique_ptr<policy::DlpFilesController> files_controller_;
   std::vector<storage::FileSystemURL> source_urls_;
 };
 

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
+#include <memory>
 
+#include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -100,6 +102,10 @@ class DlpFilesPolicyServiceProviderTest
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
+
+    files_controller_ =
+        std::make_unique<policy::DlpFilesController>(*mock_rules_manager_);
+
     return dlp_rules_manager;
   }
 
@@ -113,6 +119,8 @@ class DlpFilesPolicyServiceProviderTest
 
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;
   ServiceProviderTestHelper dbus_service_test_helper_;
+
+  std::unique_ptr<policy::DlpFilesController> files_controller_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -131,6 +139,10 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
       IsRestrictedByAnyRule(GURL(kExampleUrl),
                             policy::DlpRulesManager::Restriction::kFiles))
       .WillOnce(testing::Return(level));
+
+  EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
+      .Times(::testing::AnyNumber())
+      .WillOnce(::testing::Return(files_controller_.get()));
 
   auto response =
       CallDlpFilesPolicyServiceMethod<dlp::IsDlpPolicyMatchedResponse>(
