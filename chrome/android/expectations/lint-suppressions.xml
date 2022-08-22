@@ -288,7 +288,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
 
     <!-- TODO(https://crbug.com/1332596): Remove unused resources when UX is finalized. -->
-    <ignore regexp="The resource `R.string.search_resumption_module_subtitle` appears to be unused"/>
+    <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>
 
     <!-- TODO(https://crbug.com/1324357): Remove the following 2 lines after the bug is resolved. -->
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>

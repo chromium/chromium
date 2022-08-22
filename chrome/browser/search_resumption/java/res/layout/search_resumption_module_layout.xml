@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:text="@string/search_resumption_module_title_short"
+            android:text="@string/search_resumption_module_subtitle"
             android:textAlignment="viewStart"
             android:layout_toStartOf="@+id/header_option"
             android:layout_alignParentStart="true"
