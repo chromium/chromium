@@ -6547,9 +6547,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PageLoadMetricsClientsMedia" separator="."
     ordering="prefix">
+  <obsolete>
+    Removed in favor of Clients.MediaPageLoad2, which includes samples from
+    prerendered pages.
+  </obsolete>
   <suffix name="Clients.MediaPageLoad"
       label="PageLoadMetrics for page loads that involved playing a media
              element."/>
+  <affected-histogram name="PageLoad.Experimental.Bytes.Cache"/>
+  <affected-histogram name="PageLoad.Experimental.Bytes.Cache2"/>
+  <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
+  <affected-histogram name="PageLoad.Experimental.Bytes.Total"/>
+  <affected-histogram name="PageLoad.Experimental.Bytes.Total2"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="PageLoadMetricsClientsMedia2" separator="."
+    ordering="prefix">
+  <suffix name="Clients.MediaPageLoad2"
+      label="PageLoadMetrics for page loads that involved playing a media
+             element. Includes samples from prerendered pages"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Cache"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Cache2"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>

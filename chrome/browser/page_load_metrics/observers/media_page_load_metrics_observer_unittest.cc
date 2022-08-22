@@ -104,11 +104,11 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaNotPlayed) {
                  false /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network", 0);
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network", 0);
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache", 0);
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache", 0);
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total", 0);
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total", 0);
 }
 
 TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {
@@ -121,13 +121,13 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {
                  false /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
 
@@ -141,13 +141,13 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedAppBackground) {
                  true /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
 
@@ -167,13 +167,13 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInSubframe) {
                  false /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
 
@@ -193,12 +193,12 @@ TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayedInFencedFrame) {
                  false /* simulate_app_background */);
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Network",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network",
       static_cast<int>(network_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Cache",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache",
       static_cast<int>(cache_bytes_ / 1024), 1);
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.MediaPageLoad.Experimental.Bytes.Total",
+      "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total",
       static_cast<int>((network_bytes_ + cache_bytes_) / 1024), 1);
 }
