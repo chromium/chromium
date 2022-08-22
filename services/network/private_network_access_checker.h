@@ -83,8 +83,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // This instance will behave as if newly constructed once more. In addition,
   // resets this instance's target IP address space to `kUnknown.
   //
-  // This should be called upon following a redirect.
-  void ResetForRedirect();
+  // This should be called upon following a redirect or after a cache result
+  // blocked without preflight because we'll try fetching from the network.
+  void Reset();
 
   // Returns the client security state that applies to the current request.
   // May return nullptr.

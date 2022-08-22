@@ -3304,6 +3304,15 @@ int HttpCache::Transaction::DoConnectedCallback() {
 
 int HttpCache::Transaction::DoConnectedCallbackComplete(int result) {
   if (result != OK) {
+    if (result ==
+        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY) {
+      DoomInconsistentEntry();
+      UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
+      TransitionToState(reading_ ? STATE_SEND_REQUEST
+                                 : STATE_HEADERS_PHASE_CANNOT_PROCEED);
+      return OK;
+    }
+
     if (result == ERR_INCONSISTENT_IP_ADDRESS_SPACE) {
       DoomInconsistentEntry();
     } else {
