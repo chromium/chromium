@@ -200,6 +200,7 @@ public class BrowserAccessibilityState {
         ArrayList<String> runningServiceNames = new ArrayList<String>();
         int i = 0;
         for (AccessibilityServiceInfo service : services) {
+            if (service == null) continue;
             sEventTypeMask |= service.eventTypes;
             sFeedbackTypeMask |= service.feedbackType;
             sFlagsMask |= service.flags;
