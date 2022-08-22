@@ -394,6 +394,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   MockAutofillClient autofill_client_{
       std::make_unique<MockPersonalDataManager>()};
   std::unique_ptr<MockVirtualCardEnrollmentManager>

@@ -389,6 +389,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
 
   bool autofill_across_iframes_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;
+  test::AutofillEnvironment autofill_environment_;
 
   std::unique_ptr<TestAutofillClient> test_autofill_client_;
   std::unique_ptr<ContentAutofillRouter> router_;

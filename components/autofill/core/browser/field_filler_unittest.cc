@@ -146,6 +146,7 @@ class AutofillFieldFillerTest : public testing::Test {
   AutofillProfile* address() { return &address_; }
 
  private:
+  test::AutofillEnvironment autofill_environment_;
   CreditCard credit_card_;
   AutofillProfile address_;
 };
@@ -543,7 +544,8 @@ struct AutofillPhoneFieldFillerTestCase : public AutofillFieldFillerTestCase {
 };
 
 class PhoneNumberTest
-    : public testing::TestWithParam<AutofillPhoneFieldFillerTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<AutofillPhoneFieldFillerTestCase> {
  public:
   PhoneNumberTest() { CountryNames::SetLocaleString("en-US"); }
 };
@@ -604,7 +606,8 @@ INSTANTIATE_TEST_SUITE_P(
                                          u"+886123456789"}));
 
 class ExpirationYearTest
-    : public testing::TestWithParam<AutofillFieldFillerTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<AutofillFieldFillerTestCase> {
  public:
   ExpirationYearTest() { CountryNames::SetLocaleString("en-US"); }
 };
@@ -669,7 +672,8 @@ struct FillUtilExpirationDateTestCase {
 };
 
 class ExpirationDateTest
-    : public testing::TestWithParam<FillUtilExpirationDateTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<FillUtilExpirationDateTestCase> {
  public:
   ExpirationDateTest() { CountryNames::SetLocaleString("en-US"); }
 };
@@ -868,7 +872,8 @@ struct FillSelectTestCase {
 };
 
 class AutofillSelectWithStatesTest
-    : public testing::TestWithParam<FillSelectTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<FillSelectTestCase> {
  public:
   AutofillSelectWithStatesTest() {
     CountryNames::SetLocaleString("en-US");
@@ -1029,7 +1034,8 @@ struct FillWithExpirationMonthTestCase {
 };
 
 class AutofillSelectWithExpirationMonthTest
-    : public testing::TestWithParam<FillWithExpirationMonthTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<FillWithExpirationMonthTestCase> {
  public:
   AutofillSelectWithExpirationMonthTest() {
     CountryNames::SetLocaleString("en-US");
@@ -1652,7 +1658,8 @@ struct FillStateTextTestCase {
 };
 
 class AutofillStateTextTest
-    : public testing::TestWithParam<FillStateTextTestCase> {
+    : public AutofillFieldFillerTest,
+      public testing::WithParamInterface<FillStateTextTestCase> {
  public:
   AutofillStateTextTest() { CountryNames::SetLocaleString("en-US"); }
 };

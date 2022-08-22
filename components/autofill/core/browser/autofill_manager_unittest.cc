@@ -269,6 +269,7 @@ class AutofillManagerTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   NiceMock<MockAutofillClient> client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;

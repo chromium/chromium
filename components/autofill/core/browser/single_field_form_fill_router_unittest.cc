@@ -79,6 +79,7 @@ class SingleFieldFormFillRouterTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;

@@ -215,6 +215,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
 
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;

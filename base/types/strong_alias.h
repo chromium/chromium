@@ -76,6 +76,8 @@ namespace base {
 template <typename TagType, typename UnderlyingType>
 class StrongAlias {
  public:
+  using underlying_type = UnderlyingType;
+
   constexpr StrongAlias() = default;
   constexpr explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
   constexpr explicit StrongAlias(UnderlyingType&& v) noexcept

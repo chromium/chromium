@@ -74,6 +74,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     return testPromoCodeOfferData.GetPromoCode();
   }
 
+  test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   FormFieldData test_field_;

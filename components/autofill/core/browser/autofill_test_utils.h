@@ -71,27 +71,60 @@ using FormGroupValues = std::vector<FormGroupValue>;
 
 using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;
 
+// AutofillEnvironment encapsulates global state for test data that should
+// be reset automatically after each test.
+class AutofillEnvironment {
+ public:
+  static AutofillEnvironment& GetCurrent(const base::Location& = FROM_HERE);
+
+  AutofillEnvironment();
+  AutofillEnvironment(const AutofillEnvironment&) = delete;
+  AutofillEnvironment& operator=(const AutofillEnvironment&) = delete;
+  ~AutofillEnvironment();
+
+  LocalFrameToken NextLocalFrameToken();
+  FormRendererId NextFormRendererId();
+  FieldRendererId NextFieldRendererId();
+
+ private:
+  static AutofillEnvironment* current_instance_;
+
+  // Use some distinct 64 bit numbers to start the counters.
+  uint64_t local_frame_token_counter_high_ = 0xAAAAAAAAAAAAAAAA;
+  uint64_t local_frame_token_counter_low_ = 0xBBBBBBBBBBBBBBBB;
+  FormRendererId::underlying_type form_renderer_id_counter_ = 10;
+  FieldRendererId::underlying_type field_renderer_id_counter_ = 10;
+};
+
 // Creates non-empty LocalFrameToken. If `randomize` is false, the
 // LocalFrameToken is stable across multiple calls.
 LocalFrameToken MakeLocalFrameToken(
     RandomizeFrame randomize = RandomizeFrame(false));
 
 // Creates new, pairwise distinct FormRendererIds.
-FormRendererId MakeFormRendererId();
+inline FormRendererId MakeFormRendererId() {
+  return AutofillEnvironment::GetCurrent().NextFormRendererId();
+}
 
 // Creates new, pairwise distinct FieldRendererIds.
-FieldRendererId MakeFieldRendererId();
+inline FieldRendererId MakeFieldRendererId() {
+  return AutofillEnvironment::GetCurrent().NextFieldRendererId();
+}
 
 // Creates new, pairwise distinct FormGlobalIds. If `randomize` is true, the
 // LocalFrameToken is generated randomly, otherwise it is stable across multiple
 // calls.
-FormGlobalId MakeFormGlobalId(
-    RandomizeFrame randomize_frame = RandomizeFrame(false));
+inline FormGlobalId MakeFormGlobalId(
+    RandomizeFrame randomize = RandomizeFrame(false)) {
+  return {MakeLocalFrameToken(randomize), MakeFormRendererId()};
+}
 
 // Creates new, pairwise distinct FieldGlobalIds. If `randomize` is true, the
 // LocalFrameToken is generated randomly, otherwise it is stable.
-FieldGlobalId MakeFieldGlobalId(
-    RandomizeFrame randomize_frame = RandomizeFrame(false));
+inline FieldGlobalId MakeFieldGlobalId(
+    RandomizeFrame randomize = RandomizeFrame(false)) {
+  return {MakeLocalFrameToken(randomize), MakeFieldRendererId()};
+}
 
 // Returns a copy of `form` with cleared values.
 FormData WithoutValues(FormData form);

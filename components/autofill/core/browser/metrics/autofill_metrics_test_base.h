@@ -127,6 +127,7 @@ class AutofillMetricsBaseTest : public testing::Test {
 
   const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
   raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;

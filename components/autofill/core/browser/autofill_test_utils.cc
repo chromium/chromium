@@ -74,30 +74,49 @@ std::string GetRandomCardNumber() {
 
 }  // namespace
 
+AutofillEnvironment* AutofillEnvironment::current_instance_ = nullptr;
+
+AutofillEnvironment& AutofillEnvironment::GetCurrent(
+    const base::Location& location) {
+  CHECK(current_instance_)
+      << location.ToString() << " "
+      << "tried to access the current AutofillEnvironment, but none "
+         "exists. Add an autofill::test::AutofillEnvironment member to "
+         "test your test fixture.";
+  return *current_instance_;
+}
+
+AutofillEnvironment::AutofillEnvironment() {
+  CHECK(!current_instance_) << "An autofill::test::AutofillEnvironment has "
+                               "already been registered.";
+  current_instance_ = this;
+}
+
+AutofillEnvironment::~AutofillEnvironment() {
+  CHECK_EQ(current_instance_, this);
+  current_instance_ = nullptr;
+}
+
+LocalFrameToken AutofillEnvironment::NextLocalFrameToken() {
+  return LocalFrameToken(base::UnguessableToken::Deserialize(
+      ++local_frame_token_counter_high_, ++local_frame_token_counter_low_));
+}
+
+FormRendererId AutofillEnvironment::NextFormRendererId() {
+  return FormRendererId(++form_renderer_id_counter_);
+}
+
+FieldRendererId AutofillEnvironment::NextFieldRendererId() {
+  return FieldRendererId(++field_renderer_id_counter_);
+}
+
 LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
   if (*randomize) {
-    return LocalFrameToken(base::UnguessableToken::Create());
+    return LocalFrameToken(
+        AutofillEnvironment::GetCurrent().NextLocalFrameToken());
   } else {
     return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
   }
-}
-
-FormRendererId MakeFormRendererId() {
-  static uint32_t counter = 10;
-  return FormRendererId(counter++);
-}
-
-FieldRendererId MakeFieldRendererId() {
-  static uint32_t counter = 10;
-  return FieldRendererId(counter++);
-}
-
-FormGlobalId MakeFormGlobalId(RandomizeFrame randomize) {
-  return {MakeLocalFrameToken(randomize), MakeFormRendererId()};
-}
-
-FieldGlobalId MakeFieldGlobalId(RandomizeFrame randomize) {
-  return {MakeLocalFrameToken(randomize), MakeFieldRendererId()};
 }
 
 FormData WithoutValues(FormData form) {

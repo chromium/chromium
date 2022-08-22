@@ -229,6 +229,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
   Profile* current_profile() { return active_browser_->profile(); }
 
+  test::AutofillEnvironment autofill_environment_;
   raw_ptr<Browser> active_browser_;
 };
 

@@ -8553,6 +8553,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
   }
 
  protected:
+  test::AutofillEnvironment autofill_environment_;
   std::vector<std::unique_ptr<FormStructure>> owned_forms_;
   std::vector<FormStructure*> forms_;
 };
@@ -9699,7 +9700,7 @@ class AutofillMetricsFunnelTest : public AutofillMetricsTest,
                                   public testing::WithParamInterface<int> {
  public:
   AutofillMetricsFunnelTest() = default;
-  ~AutofillMetricsFunnelTest() = default;
+  ~AutofillMetricsFunnelTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,

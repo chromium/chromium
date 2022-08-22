@@ -794,6 +794,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;

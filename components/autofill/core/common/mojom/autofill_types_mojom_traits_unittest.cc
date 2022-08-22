@@ -182,6 +182,7 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
 
  private:
   base::test::TaskEnvironment task_environment_;
+  test::AutofillEnvironment autofill_environment_;
 
   mojo::ReceiverSet<TypeTraitsTest> receivers_;
 };
@@ -287,7 +288,7 @@ std::vector<Section> SectionTestCases() {
   FormFieldData field;
   field.name = u"from_field_name";
   field.host_frame = test::MakeLocalFrameToken();
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.unique_renderer_id = FieldRendererId(123);
   s.SetPrefixFromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
 
