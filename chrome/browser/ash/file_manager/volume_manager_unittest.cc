@@ -1203,6 +1203,7 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[0].type);
 
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("mtp:model");
+  ASSERT_TRUE(volume);
   EXPECT_EQ(VOLUME_TYPE_MTP, volume->type());
 
   // Non MTP events from storage monitor are ignored.
@@ -1215,7 +1216,7 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
             observer.events()[1].type);
 
-  EXPECT_FALSE(volume.get());
+  EXPECT_FALSE(volume);
 
   volume_manager()->RemoveObserver(&observer);
 }

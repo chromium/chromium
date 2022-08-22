@@ -1627,43 +1627,46 @@ void VolumeManager::OnRemovableStorageDetached(
   if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id()))
     return;
 
-  for (const auto& mounted_volume : mounted_volumes_) {
-    if (mounted_volume->source_path().value() != info.location())
-      continue;
-
-    // Unmount the MTP storage device in files app.
-    const std::string volume_id = mounted_volume->volume_id();
-    DoUnmountEvent(*mounted_volume);
-
-    // Remove the MTP storage device from chrome::storage.
-    const std::string fsid = GetMountPointNameForMediaStorage(info);
-    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-    mount_points->RevokeFileSystem(fsid);
-
-    // Remove the MTP storage device from the MTPDeviceMapService.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
-                       base::Unretained(MTPDeviceMapService::GetInstance()),
-                       fsid));
-
-    // The fusebox_mounter_ is enabled by a chrome flag.
-    if (!fusebox_mounter_)
+  Volumes::const_iterator it = mounted_volumes_.begin();
+  for (const Volumes::const_iterator end = mounted_volumes_.end();; ++it) {
+    if (it == end)
       return;
-
-    // Unmount the fusebox MTP storage device in files app.
-    base::WeakPtr<Volume> volume = FindVolumeById(util::kFuseBox + volume_id);
-    if (volume.get())
-      DoUnmountEvent(*volume.get());
-
-    // Remove the fusebox MTP storage device from chrome::storage.
-    mount_points->RevokeFileSystem(util::kFuseBox + fsid);
-
-    // Detach the fusebox MTP storage device from the fusebox daemon.
-    std::string subdir = FuseBoxMTPSubdir(info.device_id());
-    fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
-    return;
+    DCHECK(*it);
+    if ((*it)->source_path().value() == info.location())
+      break;
   }
+
+  // Unmount the MTP storage device in files app.
+  const std::string volume_id = (*it)->volume_id();
+  DoUnmountEvent(std::move(it));
+
+  // Remove the MTP storage device from chrome::storage.
+  const std::string fsid = GetMountPointNameForMediaStorage(info);
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RevokeFileSystem(fsid);
+
+  // Remove the MTP storage device from the MTPDeviceMapService.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
+                     base::Unretained(MTPDeviceMapService::GetInstance()),
+                     fsid));
+
+  // The fusebox_mounter_ is enabled by a chrome flag.
+  if (!fusebox_mounter_)
+    return;
+
+  // Unmount the fusebox MTP storage device in files app.
+  if (base::WeakPtr<Volume> volume = FindVolumeById(util::kFuseBox + volume_id))
+    DoUnmountEvent(*volume);
+
+  // Remove the fusebox MTP storage device from chrome::storage.
+  mount_points->RevokeFileSystem(util::kFuseBox + fsid);
+
+  // Detach the fusebox MTP storage device from the fusebox daemon.
+  fusebox_mounter_->DetachStorage(FuseBoxMTPSubdir(info.device_id()),
+                                  base::DoNothing());
 }
 
 void VolumeManager::OnDocumentsProviderRootAdded(
