@@ -1638,6 +1638,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ImportEntryStatus"
+    enum="PasswordManagerImportEntryStatus" expires_after="2023-02-01">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Tracks the individual status of a single password entry from the provided
+    CSV File after it has been processed in the Passwords Import flow in
+    settings UI. Recorded when a single entry has been processed and checked for
+    errors or missing fields. Recording occurs within password settings.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ImportFileSize" units="bytes"
     expires_after="2023-02-01">
   <owner>eliaskh@chromium.org</owner>
@@ -1646,6 +1658,17 @@ chromium-metrics-reviews@google.com.
     The size of the CSV file (to import passwords from) selected by a user in
     bytes. Recorded when the user tries to import passwords from a CSV file. The
     user has chosen the file, but the file hasn't been read yet.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ImportResultsStatus"
+    enum="PasswordManagerImportResultsStatus" expires_after="2023-02-01">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Tracks the final outcome status of importing a CSV File to Chrome Password
+    Manager in settings UI. Recorded when the import flow finishes within
+    password settings. This can be either successfuly or due to an error.
   </summary>
 </histogram>
 

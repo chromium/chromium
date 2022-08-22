@@ -76044,6 +76044,33 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="No Matching HTTPS, HSTS enabled"/>
 </enum>
 
+<enum name="PasswordManagerImportEntryStatus">
+  <int value="0" label="None"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Missing password"/>
+  <int value="3" label="Missing URL"/>
+  <int value="4" label="Invalid URL"/>
+  <int value="5" label="Non-ASCII URL"/>
+  <int value="6" label="Long URL"/>
+  <int value="7" label="Long password"/>
+  <int value="8" label="Long username"/>
+  <int value="9" label="Conflict profile"/>
+  <int value="10" label="Conflict account"/>
+</enum>
+
+<enum name="PasswordManagerImportResultsStatus">
+  <int value="0" label="None"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="I/O error"/>
+  <int value="4" label="Bad format"/>
+  <int value="5" label="Dismissed"/>
+  <int value="6" label="Chosen file exceeds max file size"/>
+  <int value="7" label="Import already active"/>
+  <int value="8" label="Import already active"/>
+  <int value="9" label="Number of allowed passwords exceeded"/>
+</enum>
+
 <enum name="PasswordManagerMatchedFormType">
   <int value="0" label="Exact match"/>
   <int value="1" label="Public suffix match">

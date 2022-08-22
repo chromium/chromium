@@ -14,27 +14,28 @@ struct ImportEntry {
   // Matches api::passwords_private::ImportEntryStatus.
   enum Status {
     // Should not be used.
-    NONE,
+    NONE = 0,
     // Any other error state.
-    UNKNOWN_ERROR,
+    UNKNOWN_ERROR = 1,
     // Missing password field.
-    MISSING_PASSWORD,
+    MISSING_PASSWORD = 2,
     // Missing url field.
-    MISSING_URL,
+    MISSING_URL = 3,
     // Bad url formatting.
-    INVALID_URL,
+    INVALID_URL = 4,
     // URL contains non-ASCII chars.
-    NON_ASCII_URL,
+    NON_ASCII_URL = 5,
     // URL is too long.
-    LONG_URL,
+    LONG_URL = 6,
     // Password is too long.
-    LONG_PASSWORD,
+    LONG_PASSWORD = 7,
     // Username is too long.
-    LONG_USERNAME,
+    LONG_USERNAME = 8,
     // Credential is already stored in profile store.
-    CONFLICT_PROFILE,
+    CONFLICT_PROFILE = 9,
     // Credential is already stored in account store.
-    CONFLICT_ACCOUNT
+    CONFLICT_ACCOUNT = 10,
+    kMaxValue = CONFLICT_ACCOUNT
   };
 
   // The status of parsing for individual row that represents a credential
@@ -60,23 +61,24 @@ struct ImportResults {
   // Matches api::passwords_private::ImportResultsStatus.
   enum Status {
     // Should not be used.
-    NONE,
+    NONE = 0,
     // Any other error state.
-    UNKNOWN_ERROR,
+    UNKNOWN_ERROR = 1,
     // Data was fully or partially imported.
-    SUCCESS,
+    SUCCESS = 2,
     // Failed to read provided file.
-    IO_ERROR,
+    IO_ERROR = 3,
     // Header is missing, invalid or could not be read.
-    BAD_FORMAT,
+    BAD_FORMAT = 4,
     // File selection dismissed.
-    DISMISSED,
+    DISMISSED = 5,
     // Size of the chosen file exceeds the limit.
-    MAX_FILE_SIZE,
+    MAX_FILE_SIZE = 6,
     // User has already started the import flow in a different window.
-    IMPORT_ALREADY_ACTIVE,
+    IMPORT_ALREADY_ACTIVE = 7,
     // User tried to import too many passwords from one file.
-    NUM_PASSWORDS_EXCEEDED
+    NUM_PASSWORDS_EXCEEDED = 8,
+    kMaxValue = NUM_PASSWORDS_EXCEEDED
   };
 
   // General status of the triggered password import process.
