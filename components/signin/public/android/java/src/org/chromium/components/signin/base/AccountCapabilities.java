@@ -80,6 +80,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isAllowedForMachineLearning capability value.
+     */
+    public @Tribool int isAllowedForMachineLearning() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
+    }
+
+    /**
      * @return canRunChromePrivacySandboxTrials capability value.
      */
     public @Tribool int canRunChromePrivacySandboxTrials() {

@@ -8,6 +8,3 @@
   const char cpp_label[] = name;
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
-
-const char kIsAllowedForMachineLearningCapabilityName[] =
-    "accountcapabilities/g42tslldmfya";

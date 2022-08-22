@@ -10,8 +10,4 @@
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
 
-// TODO(https://crbug.com/1352081): move this capability to
-// account_capabilities_list.h once it's ready.
-extern const char kIsAllowedForMachineLearningCapabilityName[];
-
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
