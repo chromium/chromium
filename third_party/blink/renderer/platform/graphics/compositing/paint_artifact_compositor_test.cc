@@ -1114,8 +1114,8 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
 }
 
 TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
-  auto scroll_state =
-      ScrollState1(PropertyTreeState::Root(), CompositingReason::kNone);
+  auto scroll_state = ScrollState1(PropertyTreeState::Root(),
+                                   CompositingReason::kNoCompositingReason);
   TestPaintArtifact artifact;
   CreateScrollableChunk(artifact, scroll_state);
   artifact.Chunk(scroll_state)
@@ -1306,9 +1306,10 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollableLayerOrder) {
 TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   auto scroll_state_a = ScrollState1();
   auto& scroll_a = *scroll_state_a.Transform().ScrollNode();
-  auto scroll_state_b = ScrollState2(
-      scroll_state_a.GetPropertyTreeState(), CompositingReason::kNone,
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  auto scroll_state_b =
+      ScrollState2(scroll_state_a.GetPropertyTreeState(),
+                   CompositingReason::kNoCompositingReason,
+                   cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 
   TestPaintArtifact artifact;
   CreateScrollableChunk(artifact, scroll_state_a);

@@ -920,7 +920,7 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   const LocalFrame& frame = frame_view_->GetFrame();
   if (frame.OwnerLayoutObject() && frame.IsCrossOriginToParentOrOuterDocument())
     return CompositingReason::kIFrame;
-  return CompositingReason::kNone;
+  return CompositingReason::kNoCompositingReason;
 }
 
 void LayoutView::UpdateMarkersAndCountersAfterStyleChange(

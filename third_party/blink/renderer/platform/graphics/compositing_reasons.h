@@ -111,7 +111,7 @@ class PLATFORM_EXPORT CompositingReason {
   static String ToString(CompositingReasons);
 
   enum : CompositingReasons {
-    kNone = 0,
+    kNoCompositingReason = 0,
     kAll = ~static_cast<CompositingReasons>(0),
 #define V(name) k##name = UINT64_C(1) << kE##name,
     FOR_EACH_COMPOSITING_REASON(V)

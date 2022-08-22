@@ -204,7 +204,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     } flags = {false, true, false, false, false, false};
     BackfaceVisibility backface_visibility = BackfaceVisibility::kInherited;
     unsigned rendering_context_id = 0;
-    CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
+    CompositingReasons direct_compositing_reasons =
+        CompositingReason::kNoCompositingReason;
     CompositorElementId compositor_element_id;
     std::unique_ptr<CompositorStickyConstraint> sticky_constraint;
     std::unique_ptr<AnchorScrollContainersData> anchor_scroll_containers_data;
@@ -353,7 +354,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool HasDirectCompositingReasons() const {
-    return DirectCompositingReasons() != CompositingReason::kNone;
+    return DirectCompositingReasons() !=
+           CompositingReason::kNoCompositingReason;
   }
 
   bool HasDirectCompositingReasonsOtherThan3dTransform() const {

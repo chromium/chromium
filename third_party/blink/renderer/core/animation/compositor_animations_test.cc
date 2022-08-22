@@ -2098,7 +2098,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
-  UpdateDummyTransformNode(properties, CompositingReason::kNone);
+  UpdateDummyTransformNode(properties, CompositingReason::kNoCompositingReason);
   EXPECT_TRUE(
       CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
       CompositorAnimations::kTargetHasInvalidCompositingState);
@@ -2133,7 +2133,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
-  UpdateDummyEffectNode(properties, CompositingReason::kNone);
+  UpdateDummyEffectNode(properties, CompositingReason::kNoCompositingReason);
   EXPECT_TRUE(
       CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
       CompositorAnimations::kTargetHasInvalidCompositingState);

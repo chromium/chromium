@@ -111,7 +111,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     float opacity = 1;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
     // === End of effects ===
-    CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
+    CompositingReasons direct_compositing_reasons =
+        CompositingReason::kNoCompositingReason;
     CompositorElementId compositor_element_id;
 
     // An identifier for a document transition shared element. `id.valid()`
@@ -207,7 +208,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   gfx::RectF MapRect(const gfx::RectF& input_rect) const;
 
   bool HasDirectCompositingReasons() const {
-    return state_.direct_compositing_reasons != CompositingReason::kNone;
+    return state_.direct_compositing_reasons !=
+           CompositingReason::kNoCompositingReason;
   }
   bool RequiresCompositingForBackdropFilterMask() const {
     return state_.direct_compositing_reasons &

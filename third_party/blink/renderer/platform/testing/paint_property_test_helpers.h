@@ -36,7 +36,8 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateOpacityEffect(
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
     float opacity,
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
@@ -50,7 +51,8 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateOpacityEffect(
 inline scoped_refptr<EffectPaintPropertyNode> CreateOpacityEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     float opacity,
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   return CreateOpacityEffect(parent, parent.Unalias().LocalTransformSpace(),
                              parent.Unalias().OutputClip(), opacity,
                              compositing_reasons);
@@ -75,7 +77,8 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateFilterEffect(
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
     CompositorFilterOperations filter,
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
@@ -89,7 +92,8 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateFilterEffect(
 inline scoped_refptr<EffectPaintPropertyNode> CreateFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     CompositorFilterOperations filter,
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   return CreateFilterEffect(parent, parent.Unalias().LocalTransformSpace(),
                             parent.Unalias().OutputClip(), filter,
                             compositing_reasons);
@@ -234,7 +238,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const TransformationMatrix& matrix,
     const gfx::Point3F& origin = gfx::Point3F(),
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   TransformPaintPropertyNode::State state{{matrix, origin}};
   state.direct_compositing_reasons = compositing_reasons;
   return TransformPaintPropertyNode::Create(parent, std::move(state));
@@ -257,7 +262,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     float offset_x,
     float offset_y,
     const ScrollPaintPropertyNode& scroll,
-    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason) {
   TransformPaintPropertyNode::State state{gfx::Vector2dF(offset_x, offset_y)};
   state.direct_compositing_reasons = compositing_reasons;
   state.scroll = &scroll;
@@ -271,7 +277,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
     const ClipPaintPropertyNode* overflow_clip,
-    CompositingReasons compositing_reasons = CompositingReason::kNone,
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
   const auto* parent_scroll_translation = &parent.Unalias();
@@ -324,7 +331,8 @@ inline RefCountedPropertyTreeState CreateScrollTranslationState(
     float offset_y,
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
-    CompositingReasons compositing_reasons = CompositingReason::kNone,
+    CompositingReasons compositing_reasons =
+        CompositingReason::kNoCompositingReason,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
   RefCountedPropertyTreeState state(PropertyTreeState::Root());

@@ -228,7 +228,7 @@ CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
   if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering())
     return CompositingReason::kVideo;
 
-  return CompositingReason::kNone;
+  return CompositingReason::kNoCompositingReason;
 }
 
 }  // namespace blink

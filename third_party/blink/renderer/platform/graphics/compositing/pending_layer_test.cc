@@ -169,7 +169,8 @@ TEST(PendingLayerTest, MergeSparseInNonCompositedEffect) {
   TestPaintArtifact artifact;
   auto t1 = Create2DTranslation(t0(), 20, 25);
   auto t2 = Create2DTranslation(t0(), 1000, 1000);
-  auto e1 = CreateOpacityEffect(e0(), 1.0f, CompositingReason::kNone);
+  auto e1 =
+      CreateOpacityEffect(e0(), 1.0f, CompositingReason::kNoCompositingReason);
   artifact.Chunk(*t1, c0(), *e1).Bounds(gfx::Rect(0, 0, 30, 40));
   artifact.Chunk(*t2, c0(), *e1).Bounds(gfx::Rect(0, 0, 50, 60));
   PaintChunkSubset chunks(artifact.Build());

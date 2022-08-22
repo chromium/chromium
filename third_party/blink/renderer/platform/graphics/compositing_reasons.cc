@@ -139,7 +139,7 @@ std::vector<const char*> CompositingReason::ShortNames(
 #undef V
 
   std::vector<const char*> result;
-  if (reasons == kNone)
+  if (reasons == kNoCompositingReason)
     return result;
   for (auto& map : kCompositingReasonsStringMap) {
     if (reasons & map.reason)
@@ -151,7 +151,7 @@ std::vector<const char*> CompositingReason::ShortNames(
 std::vector<const char*> CompositingReason::Descriptions(
     CompositingReasons reasons) {
   std::vector<const char*> result;
-  if (reasons == kNone)
+  if (reasons == kNoCompositingReason)
     return result;
   for (auto& map : kCompositingReasonsStringMap) {
     if (reasons & map.reason)

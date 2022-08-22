@@ -528,7 +528,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   CompositingReasons GetCompositingReasons() const {
     // TODO(pdr): Remove this.
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
   }
 
   void UpdateDescendantDependentFlags();

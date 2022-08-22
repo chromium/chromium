@@ -32,7 +32,7 @@ static bool ShouldPreferCompositingForLayoutView(
     return object &&
            CompositingReasonFinder::
                    DirectReasonsForPaintPropertiesExceptScrolling(*object) !=
-               CompositingReason::kNone;
+               CompositingReason::kNoCompositingReason;
   };
   if (has_direct_compositing_reasons(
           layout_view.GetFrame()->OwnerLayoutObject()))
@@ -58,12 +58,12 @@ static CompositingReasons BackfaceInvisibility3DAncestorReason(
         return CompositingReason::kBackfaceInvisibility3DAncestor;
     }
   }
-  return CompositingReason::kNone;
+  return CompositingReason::kNoCompositingReason;
 }
 
 static CompositingReasons CompositingReasonsForWillChange(
     const ComputedStyle& style) {
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
   if (style.SubtreeWillChangeContents())
     return reasons;
 
@@ -84,7 +84,7 @@ static CompositingReasons CompositingReasonsForWillChange(
 
   // kWillChangeOther is needed only when none of the explicit kWillChange*
   // reasons are set.
-  if (reasons == CompositingReason::kNone &&
+  if (reasons == CompositingReason::kNoCompositingReason &&
       style.HasWillChangeCompositingHint())
     reasons |= CompositingReason::kWillChangeOther;
 
@@ -97,7 +97,7 @@ static CompositingReasons CompositingReasonsFor3DTransform(
   // may have transforms, but the layoutObject may be an inline that doesn't
   // support them.
   if (!layout_object.HasTransformRelatedProperty())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
   return CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
       layout_object.StyleRef());
 }
@@ -123,7 +123,7 @@ static CompositingReasons CompositingReasonsFor3DSceneLeaf(
     // A LayoutNGBR is both IsText() and IsForElement(), but we shouldn't
     // produce compositing reasons if IsText() is true.  Since we only need
     // this for objects that have interesting descendants, we can just return.
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
   }
 
   if (layout_object.IsForElement() && !layout_object.StyleRef().Preserves3D()) {
@@ -134,14 +134,14 @@ static CompositingReasons CompositingReasonsFor3DSceneLeaf(
     }
   }
 
-  return CompositingReason::kNone;
+  return CompositingReason::kNoCompositingReason;
 }
 
 static CompositingReasons DirectReasonsForSVGChildPaintProperties(
     const LayoutObject& object) {
   DCHECK(object.IsSVGChild());
   if (object.IsText())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
   // Even though SVG doesn't support 3D transforms, it might be the leaf of a 3D
   // scene that contains it.
@@ -164,12 +164,12 @@ static CompositingReasons DirectReasonsForSVGChildPaintProperties(
 static CompositingReasons CompositingReasonsForViewportScrollEffect(
     const LayoutObject& layout_object) {
   if (!layout_object.IsBox())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
   // The viewport scroll effect should never apply to objects inside an
   // embedded frame tree.
   if (!layout_object.GetFrame()->Tree().Top().IsOutermostMainFrame())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
   DCHECK_EQ(layout_object.GetFrame()->IsMainFrame(),
             layout_object.GetFrame()->IsOutermostMainFrame());
@@ -181,12 +181,12 @@ static CompositingReasons CompositingReasonsForViewportScrollEffect(
   if (!layout_object.GetFrame()->IsMainFrame() &&
       layout_object.GetFrame()->GetDocument() !=
           controller.GlobalRootScroller())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
   if (!To<LayoutBox>(layout_object).IsFixedToView())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
   // This ensures that the scroll_translation_for_fixed will be initialized in
   // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
   // turn ensures that a TransformNode is created (for fixed elements) in cc.
@@ -207,7 +207,7 @@ CompositingReasons
 CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
     const LayoutObject& object) {
   if (object.GetDocument().Printing())
-    return CompositingReason::kNone;
+    return CompositingReason::kNoCompositingReason;
 
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
@@ -282,7 +282,7 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
   DCHECK_EQ(reasons_except_scrolling,
             DirectReasonsForPaintPropertiesExceptScrolling(object));
 
-  if (reasons_except_scrolling != CompositingReason::kNone)
+  if (reasons_except_scrolling != CompositingReason::kNoCompositingReason)
     return true;
 
   if (object.StyleRef().WillChangeScrollPosition())
@@ -322,7 +322,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 CompositingReasons
 CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
     const ComputedStyle& style) {
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
 
   if (Platform::Current()->IsLowEndDevice()) {
     // Don't composite "trivial" 3D transforms such as translateZ(0).
@@ -365,7 +365,7 @@ static bool ObjectTypeSupportsCompositedTransformAnimation(
 
 CompositingReasons CompositingReasonFinder::CompositingReasonsForAnimation(
     const LayoutObject& object) {
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
   const auto& style = object.StyleRef();
   if (style.SubtreeWillChangeContents())
     return reasons;
@@ -407,7 +407,7 @@ bool CompositingReasonFinder::RequiresCompositingForRootScroller(
 CompositingReasons
 CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
     const PaintLayer& layer) {
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
   // Don't promote fixed position elements that are descendants of a non-view
   // container, e.g. transformed elements.  They will stay fixed wrt the
   // container rather than the enclosing frame.
