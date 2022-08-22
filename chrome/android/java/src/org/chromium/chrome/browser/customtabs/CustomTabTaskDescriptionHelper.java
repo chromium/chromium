@@ -170,7 +170,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
                 }
 
                 @Override
-                public void onFaviconUpdated(Tab tab, Bitmap icon) {
+                public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
                     if (icon == null) return;
                     updateFavicon(icon);
                 }

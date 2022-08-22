@@ -96,8 +96,8 @@ public class MediaNotificationTestTabHolder {
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.titleWasSet(title);
     }
 
-    public void simulateFaviconUpdated(Bitmap icon) {
-        mMediaSessionTabHelper.mTabObserver.onFaviconUpdated(mTab, icon);
+    public void simulateFaviconUpdated(Bitmap icon, GURL iconUrl) {
+        mMediaSessionTabHelper.mTabObserver.onFaviconUpdated(mTab, icon, iconUrl);
     }
 
     public void simulateMediaSessionStateChanged(boolean isControllable, boolean isSuspended) {

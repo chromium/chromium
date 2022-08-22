@@ -14,6 +14,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -85,8 +86,10 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabFavicon_onFaviconAvailable(env, jobj_,
-                                     gfx::ConvertToJavaBitmap(favicon));
+  ScopedJavaLocalRef<jobject> j_icon_url =
+      url::GURLAndroid::FromNativeGURL(env, icon_url);
+  Java_TabFavicon_onFaviconAvailable(
+      env, jobj_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
 }
 
 static jlong JNI_TabFavicon_Init(JNIEnv* env,

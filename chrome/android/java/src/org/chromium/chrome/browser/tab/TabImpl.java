@@ -1467,7 +1467,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private void notifyFaviconChanged() {
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) {
-            observers.next().onFaviconUpdated(this, null);
+            observers.next().onFaviconUpdated(this, null, null);
         }
     }
 

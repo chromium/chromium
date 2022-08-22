@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.url.GURL;
 
 /**
  * A widget that shows a single row of the {@link AccessibilityTabModelListView} list.
@@ -441,7 +442,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         }
 
         @Override
-        public void onFaviconUpdated(Tab tab, Bitmap icon) {
+        public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
             updateFavicon();
             notifyTabUpdated(tab);
         }

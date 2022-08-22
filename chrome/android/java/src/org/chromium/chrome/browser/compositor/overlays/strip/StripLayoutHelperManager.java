@@ -655,7 +655,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
 
             @Override
-            public void onFaviconUpdated(Tab tab, Bitmap icon) {
+            public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
                 updateTitleForTab(tab);
             }
         };

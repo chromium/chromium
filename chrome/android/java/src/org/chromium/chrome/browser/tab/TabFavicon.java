@@ -35,7 +35,8 @@ public class TabFavicon extends TabWebContentsUserData {
     private Bitmap mFavicon;
     private int mFaviconWidth;
     private int mFaviconHeight;
-    private GURL mFaviconUrl;
+    // The URL of the tab when mFavicon was fetched.
+    private GURL mFaviconTabUrl;
 
     static TabFavicon from(Tab tab) {
         TabFavicon favicon = get(tab);
@@ -91,7 +92,7 @@ public class TabFavicon extends TabWebContentsUserData {
         if (mTab.isNativePage() || mTab.getWebContents() == null) return null;
 
         // Use the cached favicon only if the page wasn't changed.
-        if (mFavicon != null && mFaviconUrl != null && mFaviconUrl.equals(mTab.getUrl())) {
+        if (mFavicon != null && mFaviconTabUrl != null && mFaviconTabUrl.equals(mTab.getUrl())) {
             return mFavicon;
         }
 
@@ -129,10 +130,10 @@ public class TabFavicon extends TabWebContentsUserData {
 
     @CalledByNative
     @VisibleForTesting
-    void onFaviconAvailable(Bitmap icon) {
+    void onFaviconAvailable(Bitmap icon, GURL iconUrl) {
         if (icon == null) return;
-        GURL url = mTab.getUrl();
-        boolean pageUrlChanged = !url.equals(mFaviconUrl);
+        GURL currentTabUrl = mTab.getUrl();
+        boolean pageUrlChanged = !currentTabUrl.equals(mFaviconTabUrl);
         // This method will be called multiple times if the page has more than one favicon.
         // We are trying to use the |mIdealFaviconSize|x|mIdealFaviconSize| DP icon here, or the
         // first one larger than that received. Bitmap.createScaledBitmap will return the original
@@ -141,17 +142,17 @@ public class TabFavicon extends TabWebContentsUserData {
             mFavicon = Bitmap.createScaledBitmap(icon, mIdealFaviconSize, mIdealFaviconSize, true);
             mFaviconWidth = icon.getWidth();
             mFaviconHeight = icon.getHeight();
-            mFaviconUrl = url;
+            mFaviconTabUrl = currentTabUrl;
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
                 RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-                while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon);
+                while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
             }
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) return;
         // TODO(yfriedman): Remove this code after ANDROID_SCROLL_OPTIMIZATIONS is fully rolled out.
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon);
+        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
     }
 
     @NativeMethods

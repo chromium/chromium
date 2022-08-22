@@ -101,11 +101,15 @@ public class TabFaviconTest {
         return image;
     }
 
+    private void onFaviconAvailable(Bitmap bitmap) {
+        mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+    }
+
     @Test
     public void testOnFaviconAvailable_ReturnsBitmap() {
         Assert.assertNull(TabFavicon.getBitmap(mTab));
 
-        mTabFavicon.onFaviconAvailable(makeBitmap(1, Color.GREEN));
+        onFaviconAvailable(makeBitmap(1, Color.GREEN));
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
         Assert.assertNotNull(bitmap);
         Assert.assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
@@ -113,10 +117,10 @@ public class TabFaviconTest {
 
     @Test
     public void testOnFaviconAvailable_IdealSize() {
-        mTabFavicon.onFaviconAvailable(makeBitmap(1, Color.RED));
-        mTabFavicon.onFaviconAvailable(makeBitmap(IDEAL_SIZE, Color.GREEN));
-        mTabFavicon.onFaviconAvailable(makeBitmap(IDEAL_SIZE / 2, Color.YELLOW));
-        mTabFavicon.onFaviconAvailable(makeBitmap(IDEAL_SIZE * 2, Color.BLUE));
+        onFaviconAvailable(makeBitmap(1, Color.RED));
+        onFaviconAvailable(makeBitmap(IDEAL_SIZE, Color.GREEN));
+        onFaviconAvailable(makeBitmap(IDEAL_SIZE / 2, Color.YELLOW));
+        onFaviconAvailable(makeBitmap(IDEAL_SIZE * 2, Color.BLUE));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
         Assert.assertNotNull(bitmap);
@@ -128,8 +132,8 @@ public class TabFaviconTest {
         // Inspired from https://crbug.com/1352674. Some pages purposefully switch favicons to try
         // to update the current favicon. This will typically result in the same sized favicon being
         // sent. So it's important that we update in this case.
-        mTabFavicon.onFaviconAvailable(makeBitmap(1, Color.RED));
-        mTabFavicon.onFaviconAvailable(makeBitmap(1, Color.GREEN));
+        onFaviconAvailable(makeBitmap(1, Color.RED));
+        onFaviconAvailable(makeBitmap(1, Color.GREEN));
 
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
         Assert.assertNotNull(bitmap);
