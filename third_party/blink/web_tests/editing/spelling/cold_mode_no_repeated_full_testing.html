@@ -50,11 +50,11 @@ const step3 = sample => spellcheck_test(
     () => {
       let recheckedTextLength =
           internals.spellCheckedTextLength(sample.document) - checkedTextLengthBefore;
-      assert_less_than_equal(recheckedTextLength, text.length);
+      assert_equals(recheckedTextLength, 0);
     },
     `<div contenteditable>${checkedMarkup.repeat(n)}</div>`,
     {
-      title: 'Step 3: Spell checker does not recheck more than one line',
+      title: 'Step 3: Spell checker does not recheck a fully-checked contenteditable on selection move',
       callback: step4,
     }
 );
@@ -62,12 +62,41 @@ const step3 = sample => spellcheck_test(
 const step4 = sample => spellcheck_test(
     sample,
     () => {
+      checkedTextLengthBefore =
+        internals.spellCheckedTextLength(sample.document);
+      sample.selection.modify('extend', 'forward', 'line');
+      sample.document.execCommand('delete')
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n - 1)}</div>`,
+    {
+      title: 'Step 4: Minor modification - delete one paragraph of text',
+      callback: step5,
+    }
+);
+
+const step5 = sample => spellcheck_test(
+    sample,
+    () => {
+      let recheckedTextLength =
+          internals.spellCheckedTextLength(sample.document) - checkedTextLengthBefore;
+      assert_less_than_equal(recheckedTextLength, text.length);
+    },
+    `<div contenteditable>${checkedMarkup.repeat(n - 1)}</div>`,
+    {
+      title: 'Step 5: Hot mode does not recheck more than one paragraph',
+      callback: step6,
+    }
+);
+
+const step6 = sample => spellcheck_test(
+    sample,
+    () => {
       const document = sample.document;
       document.execCommand('InsertText', false, (text + '\n').repeat(n));
     },
-    `<div contenteditable>${checkedMarkup.repeat(n * 2)}</div>`,
+    `<div contenteditable>${checkedMarkup.repeat(n * 2 - 1)}</div>`,
     {
-      title: 'Step 4: Spell checker rechecks text in full after significant changes',
+      title: 'Step 6: Spell checker rechecks text in full after significant changes',
       needsFullCheck: true,
     }
 );

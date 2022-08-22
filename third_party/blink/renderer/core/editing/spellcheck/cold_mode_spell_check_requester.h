@@ -42,8 +42,11 @@ class ColdModeSpellCheckRequester
   // Called when document is detached or spellchecking is globally disabled.
   void Deactivate();
 
-  bool FullyChecked() const;
+  bool FullyCheckedCurrentRootEditable() const;
 
+  bool HasFullyChecked(const Element& element) const {
+    return fully_checked_root_editables_.Contains(&element);
+  }
   void RemoveFromFullyChecked(const Element& element) {
     fully_checked_root_editables_.erase(&element);
   }
@@ -65,7 +68,7 @@ class ColdModeSpellCheckRequester
 
   // Returns true if there's anything remaining to check, false otherwise
   bool RequestCheckingForNextChunk();
-  void SetHasFullyChecked();
+  void SetHasFullyCheckedCurrentRootEditable();
 
   // The window this cold mode checker belongs to.
   const Member<LocalDOMWindow> window_;

@@ -48,7 +48,9 @@ class CORE_EXPORT IdleSpellCheckController final
 
   // Transit to HotModeRequested, if possible. Called by operations that need
   // spell checker to follow up.
-  void SetNeedsInvocation();
+  void RespondToChangedSelection();
+  void RespondToChangedContents();
+  void RespondToChangedEnablement();
 
   // Cleans everything up and makes the callback inactive. Should be called when
   // document is detached or spellchecking is globally disabled.
@@ -78,11 +80,15 @@ class CORE_EXPORT IdleSpellCheckController final
   // Returns whether spell checking is globally enabled.
   bool IsSpellCheckingEnabled() const;
 
+  // Called by RespondTo*() functions to transit to HotModeRequested state.
+  void SetNeedsInvocation();
+
   // Called at idle time as entrance function.
   void Invoke(IdleDeadline*);
 
   // Functions for hot mode.
   void HotModeInvocation(IdleDeadline*);
+  bool NeedsHotModeCheckingUnderCurrentSelection() const;
 
   // Transit to ColdModeTimerStarted, if possible. Sets up a timer, and requests
   // cold mode invocation if no critical operation occurs before timer firing.
@@ -97,12 +103,16 @@ class CORE_EXPORT IdleSpellCheckController final
 
   void DisposeIdleCallback();
 
-  State state_;
+  State state_ = State::kInactive;
   int idle_callback_handle_;
-  uint64_t last_processed_undo_step_sequence_;
+  uint64_t last_processed_undo_step_sequence_ = 0;
   const Member<ColdModeSpellCheckRequester> cold_mode_requester_;
   Member<SpellCheckRequester> spell_check_requeseter_;
   TaskHandle cold_mode_timer_;
+
+  bool needs_invocation_for_changed_selection_ = false;
+  bool needs_invocation_for_changed_contents_ = false;
+  bool needs_invocation_for_changed_enablement_ = false;
 
   friend class IdleSpellCheckControllerTest;
 };

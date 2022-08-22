@@ -51,7 +51,7 @@ ColdModeSpellCheckRequester::ColdModeSpellCheckRequester(LocalDOMWindow& window)
       last_chunk_index_(kInvalidChunkIndex),
       needs_more_invocation_for_testing_(false) {}
 
-bool ColdModeSpellCheckRequester::FullyChecked() const {
+bool ColdModeSpellCheckRequester::FullyCheckedCurrentRootEditable() const {
   if (needs_more_invocation_for_testing_) {
     needs_more_invocation_for_testing_ = false;
     return false;
@@ -124,8 +124,8 @@ void ColdModeSpellCheckRequester::RequestFullChecking(
   }
 
   while (deadline->timeRemaining() > 0) {
-    if (FullyChecked() || !RequestCheckingForNextChunk()) {
-      SetHasFullyChecked();
+    if (FullyCheckedCurrentRootEditable() || !RequestCheckingForNextChunk()) {
+      SetHasFullyCheckedCurrentRootEditable();
       return;
     }
   }
@@ -145,7 +145,7 @@ void ColdModeSpellCheckRequester::Deactivate() {
   fully_checked_root_editables_.clear();
 }
 
-void ColdModeSpellCheckRequester::SetHasFullyChecked() {
+void ColdModeSpellCheckRequester::SetHasFullyCheckedCurrentRootEditable() {
   DCHECK(root_editable_);
   DCHECK(!fully_checked_root_editables_.Contains(root_editable_));
 
@@ -161,7 +161,7 @@ void ColdModeSpellCheckRequester::SetHasFullyChecked() {
 
 bool ColdModeSpellCheckRequester::RequestCheckingForNextChunk() {
   DCHECK(root_editable_);
-  DCHECK(!FullyChecked());
+  DCHECK(!FullyCheckedCurrentRootEditable());
 
   const EphemeralRange remaining_range(remaining_check_range_);
   const int remaining_length = TextIterator::RangeLength(
