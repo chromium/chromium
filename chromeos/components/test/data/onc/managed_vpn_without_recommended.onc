@@ -4,6 +4,7 @@
   "StaticIPConfig": {
     "Type": "IPv4",
     "IPAddress": "127.0.0.1",
+    "NameServers": [  ],
     "RoutingPrefix": 32
   },
   "VPN": {

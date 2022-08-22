@@ -20,12 +20,22 @@
      "Effective": "UserPolicy",
      "UserSetting": "Static"
    },
+   "NameServersConfigType": {
+      "DeviceEditable": true,
+      "DevicePolicy": "DHCP",
+      "UserEditable": true,
+      "UserPolicy": "DHCP"
+   },
    "StaticIPConfig": {
       "IPAddress": {
          "DevicePolicy": "127.0.0.1",
          "Effective": "UserPolicy",
          "UserPolicy": "127.0.0.1",
          "UserSetting": "1.2.3.4"
+      },
+      "NameServers": {
+         "Effective": "UserPolicy",
+         "UserPolicy": [  ]
       },
       "RoutingPrefix": {
          "Effective": "UserPolicy",
@@ -84,7 +94,9 @@
          "ClientCertPattern": {
             "EnrollmentURI": {
                "DeviceEditable": true,
-               "UserEditable": true
+               "DevicePolicy": [  ],
+               "UserEditable": true,
+               "UserPolicy": [  ]
             },
             "IssuerCARef": {
                "DeviceEditable": true,
@@ -101,8 +113,10 @@
          },
          "Password": {
             "DeviceEditable": true,
+            "DevicePolicy": "",
             "Effective": "UserSetting",
             "UserEditable": true,
+            "UserPolicy": "",
             "UserSetting": "users password"
          },
          "Port": {

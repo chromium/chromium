@@ -23,5 +23,10 @@
     "IPsec": {
       "PSK": "sharedkey"
     }
-  }
+  },
+  // We explicitly do not provide a policy value for this property, but still
+  // consider it recommended, to verify that we still provide the correct
+  // default (which is different than the default value for a string) in the
+  // final augmented ONC.
+  "Recommended": [ "NameServersConfigType" ]
 }

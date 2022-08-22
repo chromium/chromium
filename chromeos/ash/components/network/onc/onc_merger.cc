@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::onc {
 namespace {
@@ -55,6 +58,17 @@ void MarkRecommendedFieldnames(const base::Value& policy, base::Value* result) {
     if (value.is_string())
       result->SetBoolKey(value.GetString(), true);
   }
+}
+
+// Returns the default value for ONC field specified by |field|.
+base::Value GetDefaultValue(const OncFieldSignature* field) {
+  if (field->default_value_setter)
+    return field->default_value_setter();
+
+  DCHECK(field->value_signature);
+
+  // Return the default base::Value for the field type.
+  return base::Value(field->value_signature->onc_type);
 }
 
 // Returns a dictionary which contains |true| at each path that is editable by
@@ -427,13 +441,32 @@ class MergeToAugmented : public MergeToEffective {
       augmented_value.SetKey(::onc::kAugmentationSharedSetting,
                              values.shared_setting->Clone());
     }
+
+    base::Value::Dict& augmented_value_dict = augmented_value.GetDict();
+
     if (HasUserPolicy() && values.user_editable) {
       augmented_value.SetKey(::onc::kAugmentationUserEditable,
                              base::Value(true));
+
+      // Ensure that a property that is editable and has a user policy (which
+      // indicates that the policy recommends a value) always has the
+      // appropriate default user policy value provided.
+      if (!augmented_value_dict.Find(::onc::kAugmentationUserPolicy)) {
+        augmented_value_dict.Set(::onc::kAugmentationUserPolicy,
+                                 GetDefaultValue(field));
+      }
     }
     if (HasDevicePolicy() && values.device_editable) {
       augmented_value.SetKey(::onc::kAugmentationDeviceEditable,
                              base::Value(true));
+
+      // Ensure that a property that is editable and has a device policy (which
+      // indicates that the policy recommends a value) always has the
+      // appropriate default device policy value provided.
+      if (!augmented_value_dict.Find(::onc::kAugmentationDevicePolicy)) {
+        augmented_value_dict.Set(::onc::kAugmentationDevicePolicy,
+                                 GetDefaultValue(field));
+      }
     }
     if (!augmented_value.DictEmpty())
       return augmented_value;
