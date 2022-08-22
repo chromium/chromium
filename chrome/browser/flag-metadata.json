@@ -550,7 +550,7 @@
   },
   {
     "name": "autofill-parse-iban-fields",
-    "owners": [ "nakulvaidya@google.com", "jsaul@google.com", "vishwasuppoor@google.com" ],
+    "owners": [ "jsaul@google.com", "vishwasuppoor@google.com" ],
     "expiry_milestone": 112
   },
   {
@@ -560,7 +560,7 @@
   },
   {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
-    "owners": [ "nakulvaidya@google.com", "jsaul@google.com", "alexandertekle@google.com" ],
+    "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
     "expiry_milestone": 120
   },
   {
