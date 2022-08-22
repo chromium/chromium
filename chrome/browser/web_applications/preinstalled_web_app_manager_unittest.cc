@@ -51,8 +51,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/path_service.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #endif

@@ -47,8 +47,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-
 namespace chromeos {
 
 namespace {

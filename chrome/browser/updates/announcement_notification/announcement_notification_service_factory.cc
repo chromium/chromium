@@ -19,8 +19,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate_android.h"
-#else
-#include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // static
