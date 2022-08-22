@@ -811,7 +811,8 @@ public class PageInfoViewTest {
         final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(() -> {
             return new WebContentsObserver(sActivityTestRule.getWebContents()) {
                 @Override
-                public void didStartNavigation(NavigationHandle navigationHandle) {
+                public void didStartNavigationInPrimaryMainFrame(
+                        NavigationHandle navigationHandle) {
                     if (navigationHandle.getUrl().getHost().equals("www.example.com")) {
                         onDidStartNavigationHelper.notifyCalled();
                     }

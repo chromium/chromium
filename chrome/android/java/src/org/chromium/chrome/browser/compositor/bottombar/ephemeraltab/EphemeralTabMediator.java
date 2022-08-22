@@ -96,8 +96,8 @@ public class EphemeralTabMediator {
             }
 
             @Override
-            public void didStartNavigation(NavigationHandle navigation) {
-                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                if (!navigation.isSameDocument()) {
                     GURL url = navigation.getUrl();
                     if (url.equals(mCurrentUrl)) return;
 
@@ -114,6 +114,11 @@ public class EphemeralTabMediator {
                     mFaviconLoader.loadFavicon(
                             url, (drawable) -> onFaviconAvailable(drawable), mProfile);
                 }
+            }
+
+            @Override
+            public void didStartNavigationNoop(NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override

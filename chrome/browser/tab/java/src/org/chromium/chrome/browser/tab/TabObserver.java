@@ -208,12 +208,19 @@ public interface TabObserver {
     // WebContentsObserver methods ---------------------------------------------------------
 
     /**
-     * Called when a navigation is started in the WebContents.
+     * Called when a navigation in the primary main frame is started in the WebContents.
      * @param tab The notifying {@link Tab}.
      * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
      *                         Its lifetime end at the end of onDidFinishNavigation().
      */
-    void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle);
+    void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle);
+
+    /**
+     * TODO(crbug.com/1337446) Remove when NotifyJavaSupriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didStartNavigation in only the primary main
+     * frame vs calling it in all frames.
+     */
+    void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle);
 
     /**
      * Called when a navigation is redirected in the WebContents.

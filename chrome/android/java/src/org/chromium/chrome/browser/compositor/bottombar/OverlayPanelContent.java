@@ -374,12 +374,17 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didStartNavigation(NavigationHandle navigation) {
-                        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+                    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (!navigation.isSameDocument()) {
                             String url = navigation.getUrl().getSpec();
                             mContentDelegate.onMainFrameLoadStarted(
                                     url, !TextUtils.equals(url, mLoadedUrl));
                         }
+                    }
+
+                    @Override
+                    public void didStartNavigationNoop(NavigationHandle navigation) {
+                        if (!navigation.isInPrimaryMainFrame()) return;
                     }
 
                     @Override

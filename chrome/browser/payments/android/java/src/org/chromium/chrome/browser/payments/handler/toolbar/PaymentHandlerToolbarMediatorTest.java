@@ -72,10 +72,9 @@ public class PaymentHandlerToolbarMediatorTest {
                 .getSecurityIconContentDescription(Mockito.anyInt());
 
         NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
-        Mockito.when(navigation.isInPrimaryMainFrame()).thenReturn(true);
         Mockito.when(navigation.isSameDocument()).thenReturn(false);
 
-        mMediator.didStartNavigation(navigation);
+        mMediator.didStartNavigationInPrimaryMainFrame(navigation);
 
         Assert.assertEquals(123, mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON));
         Assert.assertEquals("this is content description.",

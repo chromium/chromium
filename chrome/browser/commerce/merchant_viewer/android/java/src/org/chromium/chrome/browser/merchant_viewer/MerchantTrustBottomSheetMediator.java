@@ -91,15 +91,20 @@ public class MerchantTrustBottomSheetMediator {
             }
 
             @Override
-            public void didStartNavigation(NavigationHandle navigation) {
+            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                 mMetrics.recordNavigateLinkOnBottomSheet();
-                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()
-                        && (navigation.getUrl() != null)) {
+                if (!navigation.isSameDocument() && (navigation.getUrl() != null)) {
                     GURL url = navigation.getUrl();
                     if (url.equals(mCurrentUrl)) return;
                     mCurrentUrl = url;
                     loadFavicon(url);
                 }
+            }
+
+            @Override
+            public void didStartNavigationNoop(NavigationHandle navigation) {
+                mMetrics.recordNavigateLinkOnBottomSheet();
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override

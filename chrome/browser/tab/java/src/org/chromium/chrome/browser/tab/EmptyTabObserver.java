@@ -96,7 +96,11 @@ public class EmptyTabObserver implements TabObserver {
     public void onUpdateUrl(Tab tab, GURL url) {}
 
     @Override
-    public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {}
+    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
+    }
+
+    @Override
+    public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {}
 
     @Override
     public void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {}

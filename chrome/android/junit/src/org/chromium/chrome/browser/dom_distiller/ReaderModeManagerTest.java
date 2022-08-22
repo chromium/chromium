@@ -260,7 +260,7 @@ public class ReaderModeManagerTest {
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
 
         // Distiller entry should have been removed.
@@ -279,7 +279,7 @@ public class ReaderModeManagerTest {
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_DISTILLER_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
 
         assertEquals("Distillation should have started.", DistillationStatus.STARTED,
@@ -297,7 +297,7 @@ public class ReaderModeManagerTest {
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
         when(mNavigationHandle.getUrl()).thenReturn(MOCK_URL);
 
-        mWebContentsObserver.didStartNavigation(mNavigationHandle);
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
 
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,

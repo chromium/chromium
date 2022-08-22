@@ -259,7 +259,8 @@ public class MerchantTrustBottomSheetMediatorTest {
 
         assertNull(mToolbarModel.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
 
-        mWebContentsObserverCaptor.getValue().didStartNavigation(mMockNavigationHandle);
+        mWebContentsObserverCaptor.getValue().didStartNavigationInPrimaryMainFrame(
+                mMockNavigationHandle);
         verify(mMockMetrics, times(1)).recordNavigateLinkOnBottomSheet();
         verify(mMockFaviconHelper, times(1))
                 .getLocalFaviconImageForURL(any(Profile.class), any(GURL.class), anyInt(),

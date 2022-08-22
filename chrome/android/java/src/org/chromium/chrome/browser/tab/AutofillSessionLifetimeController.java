@@ -38,8 +38,8 @@ import org.chromium.content_public.browser.NavigationHandle;
  * 3. when browser-initiated navigation occurs:
  *    As opposed to renderer-initiated navigation (e.g., submitting a form), navigation initiated by
  *    browser controls should never trigger save UI. In order to cancel the session before web
- *    content views become invisible, we have to use onDidStartNavigation rather than one of the
- *    later events.
+ *    content views become invisible, we have to use onDidStartNavigationInPrimaryMainFrame rather
+ *    than one of the later events.
  */
 public class AutofillSessionLifetimeController implements DestroyObserver {
     private Activity mActivity;
@@ -52,9 +52,9 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
         mActivity = activity;
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
-            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (navigationHandle.isInPrimaryMainFrame()
-                        && !navigationHandle.isRendererInitiated()) {
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isRendererInitiated()) {
                     ApiHelperForO.cancelAutofillSession(mActivity);
                 }
             }
