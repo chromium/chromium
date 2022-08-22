@@ -437,7 +437,7 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
                                    int label_id,
                                    const gfx::VectorIcon& icon)
     : Button(std::move(callback)), icon_(icon) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
 
@@ -449,6 +449,9 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
   image_ = AddChildView(std::make_unique<views::ImageView>());
   image_->SetPreferredSize(
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
+
+  // Shrink the label if needed so the icon fits.
+  layout_manager->SetFlexForView(label_, 1);
 
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
