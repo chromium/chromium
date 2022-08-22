@@ -76,7 +76,10 @@ void MergeDuplicateVisitIntoCanonicalVisit(
       std::max(canonical_visit.annotated_visit.visit_row.visit_time,
                duplicate_visit.annotated_visit.visit_row.visit_time);
 
-  canonical_visit.duplicate_visits.push_back(std::move(duplicate_visit));
+  canonical_visit.duplicate_visits.push_back(
+      {duplicate_visit.annotated_visit.visit_row.visit_id,
+       duplicate_visit.annotated_visit.url_row.url(),
+       duplicate_visit.annotated_visit.visit_row.visit_time});
 }
 
 void SortClusters(std::vector<history::Cluster>* clusters) {

@@ -77,7 +77,8 @@ TEST_F(SingleVisitClusterFinalizerTest,
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
-  visit2.duplicate_visits = {visit};
+  visit2.duplicate_visits = {
+      testing::ClusterVisitToDuplicateClusterVisit(visit)};
 
   history::Cluster cluster;
   cluster.visits = {visit2};

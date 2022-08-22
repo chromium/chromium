@@ -41,7 +41,8 @@ TEST_F(MetricsClusterFinalizerTest, ContainsSearch) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit2.engagement_score = 25.0;
   visit2.annotated_visit.content_annotations.search_terms = u"bar";
 
@@ -67,7 +68,8 @@ TEST_F(MetricsClusterFinalizerTest, DoesNotContainSearch) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit2.engagement_score = 25.0;
 
   history::Cluster cluster;

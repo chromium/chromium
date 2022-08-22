@@ -127,9 +127,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
   visit_mojom->raw_visit_data = mojom::RawVisitData::New(
       annotated_visit.url_row.url(), annotated_visit.visit_row.visit_time);
   for (const auto& duplicate : visit.duplicate_visits) {
-    visit_mojom->duplicates.push_back(mojom::RawVisitData::New(
-        duplicate.annotated_visit.url_row.url(),
-        duplicate.annotated_visit.visit_row.visit_time));
+    visit_mojom->duplicates.push_back(
+        mojom::RawVisitData::New(duplicate.url, duplicate.visit_time));
   }
 
   visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());

@@ -52,7 +52,7 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeExactSimilarVisit) {
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 1.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
   const auto& actual_canonical_visit = cluster.visits.at(0);
   // Make sure total foreground duration is updated correctly even if some don't
   // have the field populated.
@@ -124,7 +124,7 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, MergesAnnotations) {
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 1.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
   const auto& actual_canonical_visit = cluster.visits.at(0);
   EXPECT_TRUE(actual_canonical_visit.annotated_visit.context_annotations
                   .omnibox_url_copied);

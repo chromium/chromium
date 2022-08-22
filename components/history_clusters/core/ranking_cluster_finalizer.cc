@@ -121,16 +121,6 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
     base::flat_map<history::VisitID, VisitScores>& url_visit_scores) {
   float max_score = -1.0;
   for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
-    // Only canonical visits should have scores > 0.0.
-    for (auto& duplicate_visit : visit.duplicate_visits) {
-      // Check that no individual scores have been given a visit that is not
-      // canonical a score.
-      DCHECK(url_visit_scores.find(
-                 duplicate_visit.annotated_visit.visit_row.visit_id) ==
-             url_visit_scores.end());
-      duplicate_visit.score = 0.0;
-    }
-
     // Determine the max score to use for normalizing all the scores.
     auto visit_scores_it =
         url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
@@ -144,7 +134,7 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
   if (max_score <= 0.0)
     return;
 
-  // Now normalize the score by `max_score` so they values are all between 0
+  // Now normalize the score by `max_score` so the values are all between 0
   // and 1.
   for (history::ClusterVisit& visit : base::Reversed(cluster.visits)) {
     visit.score = visit.score / max_score;

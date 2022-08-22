@@ -121,9 +121,9 @@ void HistoryClustersBridge::ClustersQueryDone(
       std::vector<ScopedJavaLocalRef<jobject>> duplicated_visit_urls;
       for (const auto& duplicate : visit.duplicate_visits) {
         duplicated_visit_timestamps.push_back(
-            duplicate.annotated_visit.visit_row.visit_time.ToInternalValue());
-        duplicated_visit_urls.push_back(url::GURLAndroid::FromNativeGURL(
-            env, duplicate.annotated_visit.url_row.url()));
+            duplicate.visit_time.ToInternalValue());
+        duplicated_visit_urls.push_back(
+            url::GURLAndroid::FromNativeGURL(env, duplicate.url));
       }
 
       const ScopedJavaLocalRef<jobject>& j_cluster_visit =

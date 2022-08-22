@@ -11,17 +11,17 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
-namespace history_clusters {
-namespace testing {
+namespace history_clusters::testing {
 
 // A helper object that contains the elements to validate that
 // the result visits of clusters are correct.
 class VisitResult {
  public:
-  VisitResult(int visit_id,
-              float score,
-              const std::vector<VisitResult>& duplicate_visits = {},
-              std::u16string search_terms = u"");
+  VisitResult(
+      int visit_id,
+      float score,
+      const std::vector<history::DuplicateClusterVisit>& duplicate_visits = {},
+      std::u16string search_terms = u"");
   explicit VisitResult(const history::ClusterVisit& visit);
   VisitResult(const VisitResult& other);
   ~VisitResult();
@@ -35,7 +35,7 @@ class VisitResult {
 
   const int visit_id_;
   const float score_;
-  std::vector<VisitResult> duplicate_visits_;
+  std::vector<history::DuplicateClusterVisit> duplicate_visits_;
   const std::u16string search_terms_;
 };
 
@@ -59,7 +59,9 @@ history::ClusterVisit CreateClusterVisit(
     absl::optional<GURL> normalized_url = absl::nullopt,
     float score = 1.0);
 
-}  // namespace testing
-}  // namespace history_clusters
+history::DuplicateClusterVisit ClusterVisitToDuplicateClusterVisit(
+    history::ClusterVisit cluster_visit);
+
+}  // namespace history_clusters::testing
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_

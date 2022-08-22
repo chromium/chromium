@@ -4,18 +4,27 @@
 
 #include "components/history_clusters/core/clustering_test_utils.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 
-namespace history_clusters {
-namespace testing {
+namespace history_clusters::testing {
 
-VisitResult::VisitResult(int visit_id,
-                         float score,
-                         const std::vector<VisitResult>& duplicate_visits,
-                         std::u16string search_terms)
+std::vector<history::VisitID> ExtractDuplicateVisitIds(
+    std::vector<history::DuplicateClusterVisit> duplicate_visits) {
+  std::vector<history::VisitID> ids;
+  base::ranges::transform(duplicate_visits, std::back_inserter(ids),
+                          [](const auto& visit) { return visit.visit_id; });
+  return ids;
+}
+
+VisitResult::VisitResult(
+    int visit_id,
+    float score,
+    const std::vector<history::DuplicateClusterVisit>& duplicate_visits,
+    std::u16string search_terms)
     : visit_id_(visit_id),
       score_(score),
       duplicate_visits_(duplicate_visits),
@@ -23,33 +32,24 @@ VisitResult::VisitResult(int visit_id,
 VisitResult::VisitResult(const history::ClusterVisit& visit)
     : visit_id_(visit.annotated_visit.visit_row.visit_id),
       score_(visit.score),
-      search_terms_(visit.annotated_visit.content_annotations.search_terms) {
-  for (const auto& duplicate : visit.duplicate_visits) {
-    duplicate_visits_.emplace_back(duplicate);
-  }
-}
+      duplicate_visits_(visit.duplicate_visits),
+      search_terms_(visit.annotated_visit.content_annotations.search_terms) {}
 
 VisitResult::VisitResult(const VisitResult& other) = default;
 VisitResult::~VisitResult() = default;
 
 std::string VisitResult::ToString() const {
-  std::string duplicate_visits_string = "{}";
-  if (!duplicate_visits_.empty()) {
-    std::vector<std::string> duplicate_visits_strings;
-    for (const auto& dup_visit : duplicate_visits_) {
-      // In case of multiple layers of nesting, indent inner layers a bit more.
-      std::string dup_visit_string = dup_visit.ToString();
-      base::ReplaceChars(dup_visit_string, "\n", "\n  ", &dup_visit_string);
-      duplicate_visits_strings.push_back(dup_visit_string);
-    }
-    duplicate_visits_string = base::StringPrintf(
-        "{\n  %s\n}",
-        base::JoinString(duplicate_visits_strings, "\n  ").c_str());
-  }
+  std::vector<std::string> duplicate_visits_strings;
+  base::ranges::transform(duplicate_visits_,
+                          std::back_inserter(duplicate_visits_strings),
+                          [&](const auto& duplicate_visit) {
+                            return std::to_string(duplicate_visit.visit_id);
+                          });
   return base::StringPrintf(
-      "VisitResult(visit_id=%d, score=%f, duplicate_visits=%s, "
+      "VisitResult(visit_id=%d, score=%f, duplicate_visits=[%s], "
       "search_terms=%s)",
-      visit_id_, score_, duplicate_visits_string.c_str(),
+      visit_id_, score_,
+      base::JoinString(duplicate_visits_strings, ",  ").c_str(),
       base::UTF16ToUTF8(search_terms_).c_str());
 }
 
@@ -62,8 +62,22 @@ bool VisitResult::operator==(const VisitResult& rhs) const {
   constexpr const double kScoreTolerance = 1e-6;
   return visit_id_ == rhs.visit_id_ &&
          abs(score_ - rhs.score_) <= kScoreTolerance &&
-         duplicate_visits_ == rhs.duplicate_visits_ &&
+         ExtractDuplicateVisitIds(duplicate_visits_) ==
+             ExtractDuplicateVisitIds(rhs.duplicate_visits_) &&
          search_terms_ == rhs.search_terms_;
+}
+
+std::vector<std::vector<testing::VisitResult>> ToVisitResults(
+    const std::vector<history::Cluster>& clusters) {
+  std::vector<std::vector<testing::VisitResult>> clusters_results;
+  for (const auto& cluster : clusters) {
+    std::vector<testing::VisitResult> visit_results;
+    for (const auto& visit : cluster.visits) {
+      visit_results.push_back(testing::VisitResult(visit));
+    }
+    clusters_results.push_back(visit_results);
+  }
+  return clusters_results;
 }
 
 history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
@@ -93,18 +107,11 @@ history::ClusterVisit CreateClusterVisit(
   return cluster_visit;
 }
 
-std::vector<std::vector<testing::VisitResult>> ToVisitResults(
-    const std::vector<history::Cluster>& clusters) {
-  std::vector<std::vector<testing::VisitResult>> clusters_results;
-  for (const auto& cluster : clusters) {
-    std::vector<testing::VisitResult> visit_results;
-    for (const auto& visit : cluster.visits) {
-      visit_results.push_back(testing::VisitResult(visit));
-    }
-    clusters_results.push_back(visit_results);
-  }
-  return clusters_results;
+history::DuplicateClusterVisit ClusterVisitToDuplicateClusterVisit(
+    history::ClusterVisit cluster_visit) {
+  return {cluster_visit.annotated_visit.visit_row.visit_id,
+          cluster_visit.annotated_visit.url_row.url(),
+          cluster_visit.annotated_visit.visit_row.visit_time};
 }
 
-}  // namespace testing
-}  // namespace history_clusters
+}  // namespace history_clusters::testing

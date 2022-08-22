@@ -106,10 +106,8 @@ std::string GetDebugJSONForClusters(
       debug_visit.Set("site_engagement_score", visit.engagement_score);
 
       base::Value::List debug_duplicate_visits;
-      for (const auto& duplicate_visit : visit.duplicate_visits) {
-        debug_duplicate_visits.Append(static_cast<int>(
-            duplicate_visit.annotated_visit.visit_row.visit_id));
-      }
+      for (const auto& duplicate_visit : visit.duplicate_visits)
+        debug_duplicate_visits.Append(duplicate_visit.url.spec());
       debug_visit.Set("duplicate_visits", std::move(debug_duplicate_visits));
 
       debug_visits.Append(std::move(debug_visit));

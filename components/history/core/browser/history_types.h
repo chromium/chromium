@@ -816,6 +816,19 @@ struct AnnotatedVisit {
   VisitSource source;
 };
 
+// `ClusterVisit` tracks duplicate visits to propagate deletes. Only the
+// duplicate's URL and visit time are needed to delete it, hence doesn't contain
+// all the information contained in e.g. `ClusterVisit`.
+struct DuplicateClusterVisit {
+  VisitID visit_id;
+
+  // Not persisted; derived from visit_id.
+  GURL url;
+
+  // Not persisted; derived from visit_id.
+  base::Time visit_time;
+};
+
 // An `AnnotatedVisit` associated with some other metadata from clustering.
 struct ClusterVisit {
   ClusterVisit();
@@ -838,9 +851,9 @@ struct ClusterVisit {
 
   // A list of visits that have been de-duplicated into this visit. The parent
   // visit is considered the best visit among all the duplicates, and the worse
-  // visits are now contained here.
-  // TODO(manukh): Persist to db.
-  std::vector<ClusterVisit> duplicate_visits;
+  // visits are now contained here. Used for deletions; when the parent visit is
+  // deleted, the duplicate visits are deleted as well.
+  std::vector<DuplicateClusterVisit> duplicate_visits;
 
   // The site engagement score of the URL associated with this visit. This
   // should not be used by the UI.

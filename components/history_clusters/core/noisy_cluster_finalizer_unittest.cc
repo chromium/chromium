@@ -45,7 +45,8 @@ TEST_F(NoisyClusterFinalizerTest, FilterHighEngagementClusters) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit2.engagement_score = 25.0;
 
   history::Cluster cluster;
@@ -62,7 +63,8 @@ TEST_F(NoisyClusterFinalizerTest, HideClusterWithOnlyOneInterestingVisit) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit2.engagement_score = 25.0;
 
   history::Cluster cluster;
@@ -85,7 +87,8 @@ TEST_F(NoisyClusterFinalizerTest, KeepClusterWithAtLeastTwoInterestingVisits) {
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://foo.com/")));
-  visit3.duplicate_visits.push_back(visit);
+  visit3.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit3.engagement_score = 5.0;
 
   history::Cluster cluster;

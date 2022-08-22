@@ -38,14 +38,15 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSameURL) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
 
   history::Cluster cluster;
   cluster.visits = {visit2};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsDifferentURLs) {
@@ -73,14 +74,15 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSimilarURL) {
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://example.com/normalized")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
 
   history::Cluster cluster;
   cluster.visits = {visit2};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreMultipleVisitsDifferentDurations) {
@@ -98,7 +100,8 @@ TEST_F(RankingClusterFinalizerTest, ScoreMultipleVisitsDifferentDurations) {
   history::ClusterVisit visit4 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/")));
   visit4.annotated_visit.visit_row.visit_duration = base::Seconds(20);
-  visit4.duplicate_visits.push_back(visit);
+  visit4.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
 
   history::ClusterVisit visit5 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -109,11 +112,12 @@ TEST_F(RankingClusterFinalizerTest, ScoreMultipleVisitsDifferentDurations) {
   history::Cluster cluster;
   cluster.visits = {visit2, visit4, visit5};
   FinalizeCluster(cluster);
-  EXPECT_THAT(testing::ToVisitResults({cluster}),
-              ElementsAre(ElementsAre(
-                  testing::VisitResult(2, 1.0),
-                  testing::VisitResult(4, 1.0, {testing::VisitResult(1, 0.0)}),
-                  testing::VisitResult(10, 0.5))));
+  EXPECT_THAT(
+      testing::ToVisitResults({cluster}),
+      ElementsAre(ElementsAre(
+          testing::VisitResult(2, 1.0),
+          testing::VisitResult(4, 1.0, {history::DuplicateClusterVisit{1}}),
+          testing::VisitResult(10, 0.5))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSameURLBookmarked) {
@@ -124,14 +128,15 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSameURLBookmarked) {
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
-  visit2.duplicate_visits.push_back(visit);
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
 
   history::Cluster cluster;
   cluster.visits = {visit2};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsWithBookmarksAndDuration) {
@@ -219,16 +224,16 @@ TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
       testing::CreateDefaultAnnotatedVisit(
           1, GURL("https://google.com/search?q=whatever#abc")),
       GURL("https://google.com/search?q=whatever"));
-  visit.duplicate_visits = {visit2};
+  visit.duplicate_visits = {
+      testing::ClusterVisitToDuplicateClusterVisit(visit2)};
   visit.annotated_visit.content_annotations.search_terms = u"whatever";
 
   history::Cluster cluster;
   cluster.visits = {visit};
   FinalizeCluster(cluster);
-  EXPECT_THAT(
-      testing::ToVisitResults({cluster}),
-      ElementsAre(ElementsAre(testing::VisitResult(
-          1, 1.0, {testing::VisitResult(2, 0.0, {}, u"bar")}, u"whatever"))));
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  1, 1.0, {history::DuplicateClusterVisit{2}}, u"whatever"))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreVisitsOnHasPageTitle) {

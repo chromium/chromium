@@ -72,7 +72,8 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://baz.com/")));
-  visit3.duplicate_visits.push_back(visit);
+  visit3.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
       {"github", 1},
@@ -144,7 +145,8 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
-  visit3.duplicate_visits.push_back(visit);
+  visit3.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
       {"github", 1}, {"otherentity", 1}, {"baz", 1}, {"search", 1}};

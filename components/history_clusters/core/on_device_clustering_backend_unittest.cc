@@ -291,7 +291,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterTwoVisitsTiedByURL) {
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -318,7 +318,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, DedupeClusters) {
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {testing::VisitResult(1, 0.0)}))));
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
@@ -385,7 +385,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(testing::VisitResult(10, 1.0)),
                   ElementsAre(testing::VisitResult(
-                                  4, 1.0, {testing::VisitResult(1, 0.0)}),
+                                  4, 1.0, {history::DuplicateClusterVisit{1}}),
                               testing::VisitResult(2, 1.0)),
                   ElementsAre(testing::VisitResult(3, 1.0))));
   histogram_tester.ExpectUniqueSample(
@@ -527,7 +527,7 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(
-          testing::VisitResult(4, 1.0, {testing::VisitResult(1, 0.0)}),
+          testing::VisitResult(4, 1.0, {history::DuplicateClusterVisit{1}}),
           testing::VisitResult(2, 1.0), testing::VisitResult(10, 0.5))));
 }
 
@@ -577,7 +577,7 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(testing::VisitResult(10, 1.0)),
                   ElementsAre(testing::VisitResult(
-                                  4, 1.0, {testing::VisitResult(1, 0.0)}),
+                                  4, 1.0, {history::DuplicateClusterVisit{1}}),
                               testing::VisitResult(2, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
@@ -704,10 +704,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
-      ElementsAre(
-          ElementsAre(testing::VisitResult(3, 1.0, {}, u"nometadata")),
-          ElementsAre(testing::VisitResult(
-              2, 1.0, {testing::VisitResult(1, 0.0, {}, u"foo")}, u"foo"))));
+      ElementsAre(ElementsAre(testing::VisitResult(3, 1.0, {}, u"nometadata")),
+                  ElementsAre(testing::VisitResult(
+                      2, 1.0, {history::DuplicateClusterVisit{1}}, u"foo"))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
   ASSERT_EQ(cluster.visits.size(), 1u);
@@ -743,14 +742,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   EXPECT_THAT(better_visit.annotated_visit.content_annotations.model_annotations
                   .visibility_score,
               FloatEq(0.5));
-  // The second visit should have a normalized URL, but be the worse duplicate.
-  EXPECT_EQ(cluster2.visits.at(0).duplicate_visits.at(0).normalized_url,
-            GURL("http://default-engine.com/?q=foo"));
-  EXPECT_THAT(cluster2.visits.at(0)
-                  .duplicate_visits.at(0)
-                  .annotated_visit.content_annotations.model_annotations
-                  .visibility_score,
-              FloatEq(0.5));
+  // The second visit should have a URL.
+  EXPECT_EQ(cluster2.visits.at(0).duplicate_visits.at(0).url,
+            GURL("http://default-engine.com/?q=foo&otherstuff"));
   // Cluster should have 3 keywords.
   EXPECT_THAT(
       cluster2.GetKeywords(),
