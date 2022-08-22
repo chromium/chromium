@@ -332,17 +332,21 @@ class DiskMountManagerImpl : public DiskMountManager,
   // DiskMountManager override.
   // Corresponding disk should be added to the manager before this is called.
   bool AddMountPointForTest(const MountPoint& mount_point) override {
-    if (mount_points_.find(mount_point.mount_path) != mount_points_.end()) {
-      LOG(ERROR) << "Attempt to add a duplicate mount point";
-      return false;
-    }
     if (mount_point.mount_type == MountType::kDevice &&
-        disks_.find(mount_point.source_path) == disks_.end()) {
-      LOG(ERROR) << "Device mount points must have a disk entry";
+        disks_.count(mount_point.source_path) == 0) {
+      LOG(ERROR) << "Device mount point '" << mount_point.mount_path
+                 << "' should have a disk entry '" << mount_point.source_path
+                 << "'";
       return false;
     }
 
-    mount_points_.insert(mount_point);
+    const auto [it, ok] = mount_points_.insert(mount_point);
+    if (!ok) {
+      LOG(ERROR) << "Attempt to add a duplicate mount point '"
+                 << mount_point.mount_path << "'";
+      return false;
+    }
+
     return true;
   }
 
@@ -454,9 +458,9 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // CrosDisksClient::Observer override.
   void OnMountCompleted(const MountEntry& entry) override {
-    auto iter = deferred_mount_events_.find(entry.source_path);
-    if (iter != deferred_mount_events_.end()) {
-      iter->second.push_back(entry);
+    if (const auto it = deferred_mount_events_.find(entry.source_path);
+        it != deferred_mount_events_.end()) {
+      it->second.push_back(entry);
       return;
     }
 
@@ -538,25 +542,25 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (error == MountError::kPathNotMounted ||
         error == MountError::kInvalidPath) {
       // The path was already unmounted by something else.
+      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
       error = MountError::kNone;
     }
 
-    if (const MountPoints::const_iterator mp_it =
+    if (const MountPoints::const_iterator mount_point =
             mount_points_.find(mount_path);
-        mp_it != mount_points_.end()) {
-      const MountPoint& mp = *mp_it;
-      NotifyMountStatusUpdate(UNMOUNTING, error, mp);
+        mount_point != mount_points_.end()) {
+      NotifyMountStatusUpdate(UNMOUNTING, error, *mount_point);
 
       if (error == MountError::kNone) {
-        if (const Disks::iterator disk_it = disks_.find(mp.source_path);
-            disk_it != disks_.end()) {
-          Disk* const disk = disk_it->get();
-          DCHECK(disk);
-          disk->clear_mount_path();
-          disk->set_mounted(false);
+        if (const Disks::const_iterator disk =
+                disks_.find(mount_point->source_path);
+            disk != disks_.end()) {
+          DCHECK(*disk);
+          (*disk)->clear_mount_path();
+          (*disk)->set_mounted(false);
         }
 
-        mount_points_.erase(mp_it);
+        mount_points_.erase(mount_point);
       }
     }
 
