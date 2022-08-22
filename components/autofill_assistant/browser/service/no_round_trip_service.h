@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_OFFLINE_SERVICE_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_OFFLINE_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_NO_ROUND_TRIP_SERVICE_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_NO_ROUND_TRIP_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -44,16 +44,16 @@ struct LocalScriptStore {
 
 // An offline version of the service that fetches all actions at once and then
 // serves scripts without roundtrips.
-class OfflineService : public Service {
+class NoRoundTripService : public Service {
  public:
   // Convenience method for creating an offline service.
-  static std::unique_ptr<OfflineService> Create(
+  static std::unique_ptr<NoRoundTripService> Create(
       const LocalScriptStore& script_store);
 
-  explicit OfflineService(const LocalScriptStore& script_store);
-  OfflineService(const OfflineService&) = delete;
-  OfflineService& operator=(const OfflineService&) = delete;
-  ~OfflineService() override;
+  explicit NoRoundTripService(const LocalScriptStore& script_store);
+  NoRoundTripService(const NoRoundTripService&) = delete;
+  NoRoundTripService& operator=(const NoRoundTripService&) = delete;
+  ~NoRoundTripService() override;
 
   // Return the SupportsSite response from the local script store.
   void GetScriptsForUrl(
@@ -109,4 +109,4 @@ class OfflineService : public Service {
   const LocalScriptStore script_store_;
 };
 }  // namespace autofill_assistant
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_OFFLINE_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_NO_ROUND_TRIP_SERVICE_H_

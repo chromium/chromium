@@ -1,10 +1,10 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/autofill_assistant/browser/service/offline_service.h"
+#include "components/autofill_assistant/browser/service/no_round_trip_service.h"
 
 #include <memory>
-#include "components/autofill_assistant/browser/service/offline_service.h"
+#include "components/autofill_assistant/browser/service/no_round_trip_service.h"
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -24,9 +24,9 @@ using ::testing::SaveArg;
 namespace {
 const char kFakeUrl[] = "https://www.example.com";
 
-class OfflineServiceTest : public testing::Test {
+class NoRoundTripServiceTest : public testing::Test {
  protected:
-  ~OfflineServiceTest() override = default;
+  ~NoRoundTripServiceTest() override = default;
 
   base::MockCallback<ServiceRequestSender::ResponseCallback>
       mock_response_callback_;
@@ -37,13 +37,13 @@ class OfflineServiceTest : public testing::Test {
       GetNoRoundtripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript>
       routines_;
 
-  OfflineService GetService() {
-    return OfflineService(
+  NoRoundTripService GetService() {
+    return NoRoundTripService(
         LocalScriptStore(routines_, domain_, supports_site_response_));
   }
 };
 
-TEST_F(OfflineServiceTest, WithRightUrlGetScriptsSucceeds) {
+TEST_F(NoRoundTripServiceTest, WithRightUrlGetScriptsSucceeds) {
   domain_ = "example.com";
   supports_site_response_.add_scripts()->set_path("test_path");
 
@@ -55,7 +55,7 @@ TEST_F(OfflineServiceTest, WithRightUrlGetScriptsSucceeds) {
                                 mock_response_callback_.Get());
 }
 
-TEST_F(OfflineServiceTest, WithWrongUrlGetScriptsFails) {
+TEST_F(NoRoundTripServiceTest, WithWrongUrlGetScriptsFails) {
   domain_ = "example.com";
   supports_site_response_.add_scripts()->set_path("test_path");
 
@@ -67,7 +67,7 @@ TEST_F(OfflineServiceTest, WithWrongUrlGetScriptsFails) {
                                 mock_response_callback_.Get());
 }
 
-TEST_F(OfflineServiceTest, WithExistingPathGetActionsSucceeds) {
+TEST_F(NoRoundTripServiceTest, WithExistingPathGetActionsSucceeds) {
   domain_ = "example.com";
   routines_.resize(1);
   routines_[0].mutable_routine()->set_path("script_path");
@@ -83,7 +83,7 @@ TEST_F(OfflineServiceTest, WithExistingPathGetActionsSucceeds) {
                           "", mock_response_callback_.Get());
 }
 
-TEST_F(OfflineServiceTest, GetActionsFailsGivenWrongPath) {
+TEST_F(NoRoundTripServiceTest, GetActionsFailsGivenWrongPath) {
   domain_ = "example.com";
   routines_.resize(1);
   routines_[0].mutable_routine()->set_path("script_path");
@@ -95,7 +95,7 @@ TEST_F(OfflineServiceTest, GetActionsFailsGivenWrongPath) {
                           "", "", mock_response_callback_.Get());
 }
 
-TEST_F(OfflineServiceTest, GetNextActionsReturnsEmptyResponse) {
+TEST_F(NoRoundTripServiceTest, GetNextActionsReturnsEmptyResponse) {
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "", _));
 
   const std::vector<ProcessedActionProto> processed_actions;
@@ -105,7 +105,7 @@ TEST_F(OfflineServiceTest, GetNextActionsReturnsEmptyResponse) {
                               mock_response_callback_.Get());
 }
 
-TEST_F(OfflineServiceTest, GetUserDataFails) {
+TEST_F(NoRoundTripServiceTest, GetUserDataFails) {
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_METHOD_NOT_ALLOWED, "", _));
   const UserData user_data;

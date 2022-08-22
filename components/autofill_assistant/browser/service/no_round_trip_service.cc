@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/service/offline_service.h"
+#include "components/autofill_assistant/browser/service/no_round_trip_service.h"
 
 #include <memory>
 #include <string>
@@ -28,22 +28,22 @@ LocalScriptStore::LocalScriptStore(LocalScriptStore&&) = default;
 LocalScriptStore::~LocalScriptStore() = default;
 
 // static
-std::unique_ptr<OfflineService> OfflineService::Create(
+std::unique_ptr<NoRoundTripService> NoRoundTripService::Create(
     const LocalScriptStore& script_store) {
-  return std::make_unique<OfflineService>(script_store);
+  return std::make_unique<NoRoundTripService>(script_store);
 }
 
-OfflineService::OfflineService(const LocalScriptStore& script_store)
+NoRoundTripService::NoRoundTripService(const LocalScriptStore& script_store)
     : script_store_(script_store) {}
 
-OfflineService::~OfflineService() = default;
+NoRoundTripService::~NoRoundTripService() = default;
 
-void OfflineService::SetScriptStoreConfig(
+void NoRoundTripService::SetScriptStoreConfig(
     const ScriptStoreConfig& script_store_config) {
   script_store_config_ = script_store_config;
 }
 
-void OfflineService::GetScriptsForUrl(
+void NoRoundTripService::GetScriptsForUrl(
     const GURL& url,
     const TriggerContext& trigger_context,
     ServiceRequestSender::ResponseCallback callback) {
@@ -60,7 +60,7 @@ void OfflineService::GetScriptsForUrl(
   std::move(callback).Run(status, supports_site_response_str, response_info);
 }
 
-void OfflineService::GetActions(
+void NoRoundTripService::GetActions(
     const std::string& script_path,
     const GURL& url,
     const TriggerContext& trigger_context,
@@ -88,7 +88,7 @@ void OfflineService::GetActions(
   std::move(callback).Run(net::HTTP_BAD_REQUEST, "", response_info);
 }
 
-void OfflineService::GetNextActions(
+void NoRoundTripService::GetNextActions(
     const TriggerContext& trigger_context,
     const std::string& previous_global_payload,
     const std::string& previous_script_payload,
@@ -96,35 +96,35 @@ void OfflineService::GetNextActions(
     const RoundtripTimingStats& timing_stats,
     const RoundtripNetworkStats& network_stats,
     ServiceRequestSender::ResponseCallback callback) {
-  VLOG(1) << __func__ << "called in OfflineService, returning empty list";
+  VLOG(1) << __func__ << "called in NoRoundTripService, returning empty list";
   std::move(callback).Run(net::HTTP_OK, "",
                           ServiceRequestSender::ResponseInfo());
 }
 
-void OfflineService::GetUserData(
+void NoRoundTripService::GetUserData(
     const CollectUserDataOptions& options,
     uint64_t run_id,
     const UserData* user_data,
     ServiceRequestSender::ResponseCallback callback) {
-  LOG(ERROR) << __func__ << "not available in OfflineService";
+  LOG(ERROR) << __func__ << "not available in NoRoundTripService";
   std::move(callback).Run(net::HTTP_METHOD_NOT_ALLOWED, "",
                           ServiceRequestSender::ResponseInfo());
 }
 
-void OfflineService::SetDisableRpcSigning(bool disable_rpc_signing) {
-  LOG(WARNING) << __func__ << "not available in OfflineService";
+void NoRoundTripService::SetDisableRpcSigning(bool disable_rpc_signing) {
+  LOG(WARNING) << __func__ << "not available in NoRoundTripService";
 }
 
-void OfflineService::UpdateAnnotateDomModelContext(int64_t model_version) {
-  LOG(WARNING) << __func__ << "not available in OfflineService";
+void NoRoundTripService::UpdateAnnotateDomModelContext(int64_t model_version) {
+  LOG(WARNING) << __func__ << "not available in NoRoundTripService";
 }
 
-void OfflineService::UpdateJsFlowLibraryLoaded(
+void NoRoundTripService::UpdateJsFlowLibraryLoaded(
     const bool js_flow_library_loaded) {
-  LOG(WARNING) << __func__ << "not available in OfflineService";
+  LOG(WARNING) << __func__ << "not available in NoRoundTripService";
 }
 
-void OfflineService::ReportProgress(
+void NoRoundTripService::ReportProgress(
     const std::string& token,
     const std::string& payload,
     ServiceRequestSender::ResponseCallback callback) {}
