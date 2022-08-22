@@ -357,6 +357,13 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   response_head_->load_timing.service_worker_respond_with_settled =
       fetch_event_timing_->respond_with_settled_time;
 
+  // TODO(crbug.com/1342408): remove the following DCHECK if this is not
+  // in the culprit path.
+  // As far as I investigated, `response_start` should not be set
+  // while `service_worker_respond_with_settled` is set here.
+  // DCHECK to ensure my understanding is correct.
+  DCHECK(response_head_->response_start.is_null());
+
   // Make the navigated page inherit the SSLInfo from its controller service
   // worker's script. This affects the HTTPS padlock, etc, shown by the
   // browser. See https://crbug.com/392409 for details about this design.
