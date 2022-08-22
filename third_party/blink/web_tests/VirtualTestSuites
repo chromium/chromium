@@ -130,15 +130,6 @@
              "--disable-blink-features=DecodeJpeg420ImagesToYUV"]
   },
   {
-    "prefix": "v8-off-thread-finalization",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/scripting-1",
-      "fast/dom"
-    ],
-    "args": ["--enable-features=V8OffThreadFinalization,SmallScriptStreaming,SharedArrayBuffer"]
-  },
-  {
     "prefix": "exotic-color-space",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images"],
