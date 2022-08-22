@@ -5934,7 +5934,7 @@
   {
     "name": "sim-lock-policy",
     "owners": [ "hsuregan@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "single-ntp",
