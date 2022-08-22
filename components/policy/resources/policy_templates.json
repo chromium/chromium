@@ -31976,28 +31976,72 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
             'items': {
               'type': 'object',
               'properties': {
-                'owner': { 'type': 'string' },
+                'owner': {
+                  'type': 'string'
+                },
                 'members': {
                   'type': 'array',
-                  'items': { 'type': 'string' }
+                  'items': {
+                    'type': 'string'
+                  }
                 },
+                'serviceSites': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string'
+                  }
+                },
+                'ccTLDs': {
+                  'type': 'object',
+                  'additionalProperties': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string'
+                    }
+                  }
+                }
               },
-              'required': ['owner', 'members']
-            },
+              'required': [
+                'owner',
+                'members'
+              ]
+            }
           },
           'additions': {
             'type': 'array',
             'items': {
               'type': 'object',
               'properties': {
-                'owner': { 'type': 'string' },
+                'owner': {
+                  'type': 'string'
+                },
                 'members': {
                   'type': 'array',
-                  'items': { 'type': 'string' }
+                  'items': {
+                    'type': 'string'
+                  }
                 },
+                'serviceSites': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string'
+                  }
+                },
+                'ccTLDs': {
+                  'type': 'object',
+                  'additionalProperties': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string'
+                    }
+                  }
+                }
               },
-              'required': ['owner', 'members']
-            },
+              'required': [
+                'owner',
+                'members'
+              ]
+            }
           }
         }
       },
@@ -32006,13 +32050,33 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
         'replacements': [
           {
             "owner": "https://owner1.test",
-            "members": ["https://member1.test", "https://member2.test"]
+            "members": [
+              "https://member1.test"
+            ],
+            "serviceSites": [
+              "https://owner1-content.test"
+            ],
+            "ccTLDs": {
+              "https://owner1.test": [
+                "https://owner1.co.uk"
+              ]
+            }
           }
         ],
         'additions': [
           {
             "owner": "https://owner2.test",
-            "members": ["https://member3.test"]
+            "members": [
+              "https://member2.test"
+            ],
+            "serviceSites": [
+              "https://owner2-content.test"
+            ],
+            "ccTLDs": {
+              "https://member2.test": [
+                "https://member2.com"
+              ]
+            }
           }
         ]
       },
@@ -32027,11 +32091,12 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
       'desc': '''This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
 
       Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
-      A First-Party Set consists of an owner and one or more member sites. All sites in a First-Party Set must
-      be a registrable domain served over HTTPS, regardless of whether it is an owner or member site.
-      Each site in a First-Party Set must also be unique, meaning a site cannot be both owner and member, nor
-      listed more than once as a member of a First-Party Set.
-      See https://github.com/privacycg/first-party-sets for more information on First-Party Sets.
+      A First-Party Set must contain an owner site and one or more member sites.
+      A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
+      See https: //github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+      All sites in a First-Party Set must be a registrable domain served over HTTPS. Each site in a First-Party Set must also be unique,
+      meaning a site cannot be listed more than once in a First-Party Set.
 
       When this policy is given an empty dictionary, the browser uses the public list of First-Party Sets.
 
