@@ -136,6 +136,10 @@ ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
 // representing ideal smoothness of >= 60 frames per second.
 ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
 
+// Records counts for the visible holding space `items` specified.
+ASH_PUBLIC_EXPORT void RecordVisibleItemCounts(
+    const std::vector<const HoldingSpaceItem*>& items);
+
 }  // namespace holding_space_metrics
 }  // namespace ash
 

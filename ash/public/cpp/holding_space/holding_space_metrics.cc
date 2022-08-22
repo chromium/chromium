@@ -7,8 +7,10 @@
 #include <map>
 #include <string>
 
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 
@@ -42,7 +44,7 @@ constexpr size_t kExtensionsSize =
 
 // Returns the string representation of the specified `action`. Note that these
 // values are persisted to histograms so should remain unchanged.
-std::string ItemActionToString(ItemAction action) {
+std::string ToString(ItemAction action) {
   switch (action) {
     case ItemAction::kCancel:
       return "Cancel";
@@ -69,41 +71,6 @@ std::string ItemActionToString(ItemAction action) {
   return std::string();
 }
 
-// Returns the string representation of the specified `type`. Note that these
-// values are persisted to histograms so should remain unchanged.
-std::string ItemTypeToString(HoldingSpaceItem::Type type) {
-  switch (type) {
-    case HoldingSpaceItem::Type::kArcDownload:
-      return "ArcDownload";
-    case HoldingSpaceItem::Type::kDiagnosticsLog:
-      return "DiagnosticsLog";
-    case HoldingSpaceItem::Type::kDownload:
-      return "Download";
-    case HoldingSpaceItem::Type::kDriveSuggestion:
-      return "DriveSuggestion";
-    case HoldingSpaceItem::Type::kLacrosDownload:
-      return "LacrosDownload";
-    case HoldingSpaceItem::Type::kLocalSuggestion:
-      return "LocalSuggestion";
-    case HoldingSpaceItem::Type::kNearbyShare:
-      return "NearbyShare";
-    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
-      return "PhoneHubCameraRoll";
-    case HoldingSpaceItem::Type::kPinnedFile:
-      return "PinnedFile";
-    case HoldingSpaceItem::Type::kPrintedPdf:
-      return "PrintedPdf";
-    case HoldingSpaceItem::Type::kScan:
-      return "Scan";
-    case HoldingSpaceItem::Type::kScreenRecording:
-      return "ScreenRecording";
-    case HoldingSpaceItem::Type::kScreenshot:
-      return "Screenshot";
-  }
-  NOTREACHED();
-  return std::string();
-}
-
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
@@ -125,6 +92,28 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
   return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
 }
 
+// Records either the total or visible counts of `items` as appropriate..
+void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items,
+                      bool visible) {
+  constexpr char kTotalCount[] = "HoldingSpace.Item.TotalCount";
+  constexpr char kVisibleCount[] = "HoldingSpace.Item.Count";
+  const char* prefix = visible ? kVisibleCount : kTotalCount;
+
+  base::UmaHistogramCounts1000(base::StrCat({prefix, ".All"}), items.size());
+
+  std::map<HoldingSpaceItem::Type, int> counts_by_type;
+  for (const HoldingSpaceItem* item : items)
+    ++counts_by_type[item->type()];
+
+  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue);
+       ++i) {
+    const auto type = static_cast<HoldingSpaceItem::Type>(i);
+    base::UmaHistogramCounts1000(
+        base::StrCat({prefix, ".", holding_space_util::ToString(type)}),
+        counts_by_type[type]);
+  }
+}
+
 // Metrics ---------------------------------------------------------------------
 
 void RecordPodAction(PodAction action) {
@@ -141,7 +130,7 @@ void RecordFilesAppChipAction(FilesAppChipAction action) {
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
                       ItemAction action) {
-  const std::string action_string = ItemActionToString(action);
+  const std::string action_string = ToString(action);
 
   for (const HoldingSpaceItem* item : items) {
     base::UmaHistogramEnumeration("HoldingSpace.Item.Action.All", action);
@@ -154,19 +143,7 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
 }
 
 void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
-  base::UmaHistogramCounts1000("HoldingSpace.Item.Count.All", items.size());
-
-  std::map<HoldingSpaceItem::Type, int> counts_by_type;
-  for (const HoldingSpaceItem* item : items)
-    ++counts_by_type[item->type()];
-
-  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue);
-       ++i) {
-    const auto type = static_cast<HoldingSpaceItem::Type>(i);
-    base::UmaHistogramCounts1000(
-        "HoldingSpace.Item.Count." + ItemTypeToString(type),
-        counts_by_type[type]);
-  }
+  RecordItemCounts(items, /*visible=*/false);
 }
 
 void RecordItemFailureToLaunch(HoldingSpaceItem::Type type,
@@ -218,6 +195,11 @@ void RecordPodResizeAnimationSmoothness(int smoothness) {
   DCHECK_LE(smoothness, 100);
   base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
                                smoothness);
+}
+
+void RecordVisibleItemCounts(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  RecordItemCounts(items, /*visible=*/true);
 }
 
 }  // namespace ash::holding_space_metrics

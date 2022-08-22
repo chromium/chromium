@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_metrics_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
@@ -405,6 +406,10 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
+      this, &holding_space_model_));
+
+  // The `HoldingSpaceMetricsDelegate` records metrics.
+  delegates_.push_back(std::make_unique<HoldingSpaceMetricsDelegate>(
       this, &holding_space_model_));
 
   // The `HoldingSpacePersistenceDelegate` manages holding space persistence.

@@ -358,7 +358,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   // Record visible holding space items.
   std::vector<const HoldingSpaceItem*> visible_items;
   FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
-  holding_space_metrics::RecordItemCounts(visible_items);
+  holding_space_metrics::RecordVisibleItemCounts(visible_items);
 
   shelf_observation_.Observe(holding_space_tray_->shelf());
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());

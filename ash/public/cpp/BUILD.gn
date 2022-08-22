@@ -447,6 +447,7 @@ source_set("unit_tests") {
     "holding_space/holding_space_item_unittest.cc",
     "holding_space/holding_space_model_unittest.cc",
     "holding_space/holding_space_progress_unittest.cc",
+    "holding_space/holding_space_util_unittest.cc",
     "metrics_util_unittest.cc",
     "pagination/pagination_model_unittest.cc",
     "power_utils_unittest.cc",

@@ -71,4 +71,36 @@ bool ExecuteInProgressCommand(const HoldingSpaceItem* item,
   return false;
 }
 
+// NOTE: These values are persisted to histograms and must remain unchanged.
+std::string ToString(HoldingSpaceItem::Type type) {
+  switch (type) {
+    case HoldingSpaceItem::Type::kArcDownload:
+      return "ArcDownload";
+    case HoldingSpaceItem::Type::kDiagnosticsLog:
+      return "DiagnosticsLog";
+    case HoldingSpaceItem::Type::kDownload:
+      return "Download";
+    case HoldingSpaceItem::Type::kDriveSuggestion:
+      return "DriveSuggestion";
+    case HoldingSpaceItem::Type::kLacrosDownload:
+      return "LacrosDownload";
+    case HoldingSpaceItem::Type::kLocalSuggestion:
+      return "LocalSuggestion";
+    case HoldingSpaceItem::Type::kNearbyShare:
+      return "NearbyShare";
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+      return "PhoneHubCameraRoll";
+    case HoldingSpaceItem::Type::kPinnedFile:
+      return "PinnedFile";
+    case HoldingSpaceItem::Type::kPrintedPdf:
+      return "PrintedPdf";
+    case HoldingSpaceItem::Type::kScan:
+      return "Scan";
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return "ScreenRecording";
+    case HoldingSpaceItem::Type::kScreenshot:
+      return "Screenshot";
+  }
+}
+
 }  // namespace ash::holding_space_util

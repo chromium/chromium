@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -1050,6 +1051,16 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
 // when restoring from persistence, existence of backing files is verified and
 // any stale holding space items are removed.
 TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
+  // Verify expected histograms.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    histogram_tester.ExpectTotalCount(
+        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
+                           holding_space_util::ToString(type).c_str()),
+        0);
+  }
+
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -1141,6 +1152,18 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
   EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
+
+  // Verify expected histograms after "waiting" for metrics debounce.
+  task_environment()->FastForwardBy(base::Seconds(30));
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Item.TotalCount.All",
+      secondary_holding_space_model->items().size(), 1);
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    histogram_tester.ExpectBucketCount(
+        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
+                           holding_space_util::ToString(type).c_str()),
+        /*sample=*/1, /*expected_count=*/1);
+  }
 }
 
 // Verifies that items from volumes that are not immediately mounted during
@@ -2280,6 +2303,16 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   ASSERT_EQ(0u, model->items().size());
 
+  // Verify expected histograms.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    histogram_tester.ExpectTotalCount(
+        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
+                           holding_space_util::ToString(type).c_str()),
+        0);
+  }
+
   // Create a test mount point.
   std::unique_ptr<ScopedTestMountPoint> mount_point =
       ScopedTestMountPoint::CreateAndMountDownloads(profile);
@@ -2313,6 +2346,16 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
            .bitmap(),
       *item->image().GetImageSkia().bitmap()));
 
+  // Verify expected histograms after "waiting" for metrics debounce.
+  task_environment()->FastForwardBy(base::Seconds(30));
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 1, 1);
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    histogram_tester.ExpectBucketCount(
+        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
+                           holding_space_util::ToString(type).c_str()),
+        /*sample=*/type == GetType() ? 1 : 0, /*expected_count=*/1);
+  }
+
   // Attempt to add a holding space item of the same type and `file_path`.
   AddItem(profile, GetType(), file_path);
 
@@ -2323,6 +2366,16 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Remove the holding space item.
   GetService(profile)->RemoveItem(id);
   EXPECT_TRUE(model->items().empty());
+
+  // Verify expected histograms after "waiting" for metrics debounce.
+  task_environment()->FastForwardBy(base::Seconds(30));
+  histogram_tester.ExpectBucketCount("HoldingSpace.Item.TotalCount.All", 0, 1);
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    histogram_tester.ExpectBucketCount(
+        base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
+                           holding_space_util::ToString(type).c_str()),
+        /*sample=*/0, /*expected_count=*/type == GetType() ? 1 : 2);
+  }
 }
 
 TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {

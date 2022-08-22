@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,6 +35,9 @@ ASH_PUBLIC_EXPORT bool SupportsInProgressCommand(
 ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
     const HoldingSpaceItem* item,
     HoldingSpaceCommandId command_id);
+
+// Returns the string representation of the specified holding space item `type`.
+ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
 
 }  // namespace holding_space_util
 }  // namespace ash

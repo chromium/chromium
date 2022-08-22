@@ -178,6 +178,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.Item.TotalCount.{type}" units="items"
+    expires_after="2022-10-10">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the total count of all items of a specific type in holding space on
+    startup and as additions/removals take place. Note that this histogram is
+    emitted no more than once every 5 seconds. {type}
+  </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
     expires_after="2023-02-12">
   <owner>dmblack@google.com</owner>
