@@ -29,21 +29,28 @@
   flex-direction: column;
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
 h1 {
   color: var(--cr-primary-text-color);
   font-size: 4rem;
   margin-bottom: 40px;
   margin-top: 16px;
+  order: 2;
   text-align: center;
 }
 
-h2 {
+.subheading {
   color: var(--cr-secondary-text-color);
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 2.25rem;
   margin: 0;
   opacity: 0.8;
+  order: 1;
   text-align: center;
 }
 

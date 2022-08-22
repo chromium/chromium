@@ -19,8 +19,10 @@
   <onboarding-background id="background" class="fade-in">
   </onboarding-background>
   <div id="text">
-    <h2 class="fade-in">$i18n{landingDescription}</h2>
-    <h1 class="fade-in" tabindex="-1">$i18n{landingTitle}</h1>
+    <div class="header">
+      <h1 class="fade-in" tabindex="-1">$i18n{landingTitle}</h1>
+      <div class="subheading fade-in">$i18n{landingDescription}</div>
+    </div>
     <cr-button class="action-button fade-in" on-click="onNewUserClick_">
       $i18n{landingNewUser}
     </cr-button>

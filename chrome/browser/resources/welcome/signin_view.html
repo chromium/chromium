@@ -14,8 +14,10 @@
   <onboarding-background id="background" class="fade-in">
   </onboarding-background>
   <div id="text">
-    <h2>$i18n{signInSubHeader}</h2>
-    <h1 tabindex="-1">$i18n{signInHeader}</h1>
+    <div class="header">
+      <h1 tabindex="-1">$i18n{signInHeader}</h1>
+      <div class="subheading">$i18n{signInSubHeader}</div>
+    </div>
     <cr-button class="action-button" on-click="onSignInClick_">
       $i18n{signIn}
     </cr-button>
