@@ -66,7 +66,7 @@ AttributionHost::AttributionHost(WebContents* web_contents)
 }
 
 AttributionHost::~AttributionHost() {
-  DCHECK_EQ(0u, navigation_impression_origins_.size());
+  DCHECK_EQ(0u, navigation_source_origins_.size());
 }
 
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
@@ -105,15 +105,15 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
           ->frame_tree()
           ->root()
           ->current_origin();
-  navigation_impression_origins_.emplace(navigation_handle->GetNavigationId(),
-                                         initiator_root_frame_origin);
+  navigation_source_origins_.emplace(navigation_handle->GetNavigationId(),
+                                     initiator_root_frame_origin);
 }
 
 void AttributionHost::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   auto it =
-      navigation_impression_origins_.find(navigation_handle->GetNavigationId());
-  if (it == navigation_impression_origins_.end())
+      navigation_source_origins_.find(navigation_handle->GetNavigationId());
+  if (it == navigation_source_origins_.end())
     return;
 
   DCHECK(navigation_handle->GetImpression());
@@ -133,7 +133,7 @@ void AttributionHost::DidRedirectNavigation(
   if (!data_host_manager)
     return;
 
-  const url::Origin& impression_origin = it->second;
+  const url::Origin& source_origin = it->second;
 
   const std::vector<GURL>& redirect_chain =
       navigation_handle->GetRedirectChain();
@@ -150,7 +150,7 @@ void AttributionHost::DidRedirectNavigation(
 
   data_host_manager->NotifyNavigationRedirectRegistation(
       navigation_handle->GetImpression()->attribution_src_token, source_header,
-      std::move(reporting_origin), impression_origin);
+      std::move(reporting_origin), source_origin);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -166,15 +166,14 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager) {
-    DCHECK(navigation_impression_origins_.empty());
+    DCHECK(navigation_source_origins_.empty());
     if (navigation_handle->GetImpression())
       RecordRegisterImpressionAllowed(false);
     return;
   }
 
-  ScopedMapDeleter<NavigationImpressionOriginMap>
-      navigation_impression_origin_it(&navigation_impression_origins_,
-                                      navigation_handle->GetNavigationId());
+  ScopedMapDeleter<NavigationSourceOriginMap> navigation_source_origin_it(
+      &navigation_source_origins_, navigation_handle->GetNavigationId());
 
   // Separate from above because we need to clear the navigation related state
   if (!navigation_handle->HasCommitted()) {
@@ -191,12 +190,12 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   // If we were not able to access the impression origin, ignore the
   // navigation.
-  if (!navigation_impression_origin_it) {
+  if (!navigation_source_origin_it) {
     MaybeNotifyFailedSourceNavigation(navigation_handle);
     return;
   }
-  const url::Origin& impression_origin =
-      (*navigation_impression_origin_it.get())->second;
+  const url::Origin& source_origin =
+      (*navigation_source_origin_it.get())->second;
 
   DCHECK(navigation_handle->GetImpression());
   const blink::Impression& impression = *(navigation_handle->GetImpression());
@@ -209,7 +208,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
       navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
 
   data_host_manager->NotifyNavigationForDataHost(
-      impression.attribution_src_token, impression_origin, destination_origin);
+      impression.attribution_src_token, source_origin, destination_origin);
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(

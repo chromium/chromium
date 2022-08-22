@@ -32,7 +32,7 @@ class CONTENT_EXPORT CommonSourceInfo {
       AttributionSourceType source_type);
 
   CommonSourceInfo(uint64_t source_event_id,
-                   url::Origin impression_origin,
+                   url::Origin source_origin,
                    url::Origin conversion_origin,
                    url::Origin reporting_origin,
                    base::Time impression_time,
@@ -53,7 +53,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   uint64_t source_event_id() const { return source_event_id_; }
 
-  const url::Origin& impression_origin() const { return impression_origin_; }
+  const url::Origin& source_origin() const { return source_origin_; }
 
   const url::Origin& conversion_origin() const { return conversion_origin_; }
 
@@ -83,15 +83,15 @@ class CONTENT_EXPORT CommonSourceInfo {
   // that we avoid unnecessary copies of |conversion_origin_|.
   net::SchemefulSite ConversionDestination() const;
 
-  // Returns the schemeful site of |impression_origin|.
+  // Returns the schemeful site of |source_origin|.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
-  // that we avoid unnecessary copies of |impression_origin_|.
-  net::SchemefulSite ImpressionSite() const;
+  // that we avoid unnecessary copies of |source_origin_|.
+  net::SchemefulSite SourceSite() const;
 
  private:
   uint64_t source_event_id_;
-  url::Origin impression_origin_;
+  url::Origin source_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
   base::Time impression_time_;

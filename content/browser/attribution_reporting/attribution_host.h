@@ -69,8 +69,8 @@ class CONTENT_EXPORT AttributionHost
   //
   // A flat_map is used as the number of ongoing impression navigations is
   // expected to be very small in a given WebContents.
-  using NavigationImpressionOriginMap = base::flat_map<int64_t, url::Origin>;
-  NavigationImpressionOriginMap navigation_impression_origins_;
+  using NavigationSourceOriginMap = base::flat_map<int64_t, url::Origin>;
+  NavigationSourceOriginMap navigation_source_origins_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
 

@@ -151,8 +151,8 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindInt64(1, *source.source_id());
-  statement.BindString(2, common_info.ImpressionSite().Serialize());
-  statement.BindString(3, SerializeOrigin(common_info.impression_origin()));
+  statement.BindString(2, common_info.SourceSite().Serialize());
+  statement.BindString(3, SerializeOrigin(common_info.source_origin()));
   statement.BindString(4, common_info.ConversionDestination().Serialize());
   statement.BindString(5, SerializeOrigin(common_info.conversion_origin()));
   statement.BindString(6, SerializeOrigin(common_info.reporting_origin()));
@@ -189,7 +189,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
   statement.BindString(0, common_info.ConversionDestination().Serialize());
-  statement.BindString(1, common_info.ImpressionSite().Serialize());
+  statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(3, min_timestamp);
 
@@ -232,7 +232,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
       db->GetCachedStatement(SQL_FROM_HERE, kSourceAllowedSql));
 
   const CommonSourceInfo& common_info = source.common_info();
-  statement.BindString(0, common_info.ImpressionSite().Serialize());
+  statement.BindString(0, common_info.SourceSite().Serialize());
   statement.BindString(1, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(2, common_info.impression_time());
 
@@ -306,7 +306,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
       "AND time>?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindInt(0, static_cast<int>(scope));
-  statement.BindString(1, common_info.ImpressionSite().Serialize());
+  statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, common_info.ConversionDestination().Serialize());
   statement.BindTime(3, min_timestamp);
 

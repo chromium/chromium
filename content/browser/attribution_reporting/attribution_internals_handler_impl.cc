@@ -59,7 +59,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
     Attributability attributability,
     const std::vector<uint64_t>& dedup_keys) {
   return attribution_internals::mojom::WebUISource::New(
-      source.source_event_id(), source.impression_origin(),
+      source.source_event_id(), source.source_origin(),
       source.ConversionDestination().Serialize(), source.reporting_origin(),
       source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.source_type(), source.priority(),

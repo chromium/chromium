@@ -1696,7 +1696,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   base::RunLoop run_loop;
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
-      blink::StorageKey(source.common_info().impression_origin()), now, now,
+      blink::StorageKey(source.common_info().source_origin()), now, now,
       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -1718,10 +1718,9 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
 
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
-  partition->ClearData(
-      StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-      blink::StorageKey(source.common_info().impression_origin()), now, now,
-      run_loop.QuitClosure());
+  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
+                       blink::StorageKey(source.common_info().source_origin()),
+                       now, now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(GetAttributionReportsForTesting(attribution_manager).empty());
 }
@@ -1738,7 +1737,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
         GURL(base::StringPrintf("https://www.%d.test/", i)));
     auto source = SourceBuilder(now)
                       .SetExpiry(base::Days(2))
-                      .SetImpressionOrigin(origin)
+                      .SetSourceOrigin(origin)
                       .SetReportingOrigin(origin)
                       .SetConversionOrigin(origin)
                       .Build();
@@ -1768,7 +1767,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
     auto conv = url::Origin::Create(
         GURL(base::StringPrintf("https://conv-%d.com/", i)));
     attribution_manager->HandleSource(SourceBuilder(now)
-                                          .SetImpressionOrigin(impression)
+                                          .SetSourceOrigin(impression)
                                           .SetReportingOrigin(reporter)
                                           .SetConversionOrigin(conv)
                                           .SetExpiry(base::Days(2))

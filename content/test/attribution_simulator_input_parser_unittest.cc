@@ -175,7 +175,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetSourceType(AttributionSourceType::kNavigation)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://a.r.test")))
-                   .SetImpressionOrigin(
+                   .SetSourceOrigin(
                        url::Origin::Create(GURL("https://a.s.test")))
                    .SetSourceEventId(123)
                    .SetConversionOrigin(
@@ -189,7 +189,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .SetSourceType(AttributionSourceType::kEvent)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://b.r.test")))
-                   .SetImpressionOrigin(
+                   .SetSourceOrigin(
                        url::Origin::Create(GURL("https://b.s.test")))
                    .SetSourceEventId(0)  // default
                    .SetConversionOrigin(
@@ -204,7 +204,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
                       url::Origin::Create(GURL("https://c.r.test")))
-                  .SetImpressionOrigin(
+                  .SetSourceOrigin(
                       url::Origin::Create(GURL("https://c.s.test")))
                   .SetSourceEventId(789)
                   .SetConversionOrigin(
@@ -224,7 +224,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
                       url::Origin::Create(GURL("https://c.r.test")))
-                  .SetImpressionOrigin(
+                  .SetSourceOrigin(
                       url::Origin::Create(GURL("https://c.s.test")))
                   .SetSourceEventId(789)
                   .SetConversionOrigin(

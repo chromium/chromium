@@ -369,7 +369,7 @@ TEST_F(AttributionStorageTest,
 
   auto new_impression =
       SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://other.test/")))
+          .SetSourceOrigin(url::Origin::Create(GURL("https://other.test/")))
           .Build();
   storage()->StoreSource(new_impression);
 
@@ -528,21 +528,21 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
   delegate()->set_max_sources_per_origin(2);
-  storage()->StoreSource(SourceBuilder()
-                             .SetImpressionOrigin(url::Origin::Create(
-                                 GURL("https://foo.a.example")))
-                             .SetSourceEventId(3)
-                             .Build());
-  storage()->StoreSource(SourceBuilder()
-                             .SetImpressionOrigin(url::Origin::Create(
-                                 GURL("https://foo.a.example")))
-                             .SetSourceEventId(5)
-                             .Build());
-  storage()->StoreSource(SourceBuilder()
-                             .SetImpressionOrigin(url::Origin::Create(
-                                 GURL("https://bar.a.example")))
-                             .SetSourceEventId(7)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceOrigin(url::Origin::Create(GURL("https://foo.a.example")))
+          .SetSourceEventId(3)
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceOrigin(url::Origin::Create(GURL("https://foo.a.example")))
+          .SetSourceEventId(5)
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceOrigin(url::Origin::Create(GURL("https://bar.a.example")))
+          .SetSourceEventId(7)
+          .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
@@ -552,7 +552,7 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
   // limit of 2.
   EXPECT_EQ(storage()
                 ->StoreSource(SourceBuilder()
-                                  .SetImpressionOrigin(url::Origin::Create(
+                                  .SetSourceOrigin(url::Origin::Create(
                                       GURL("https://foo.a.example")))
                                   .SetSourceEventId(9)
                                   .Build())
@@ -561,11 +561,11 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
 
   // This impression should be stored, because its origin hasn't hit the limit
   // of 2.
-  storage()->StoreSource(SourceBuilder()
-                             .SetImpressionOrigin(url::Origin::Create(
-                                 GURL("https://bar.a.example")))
-                             .SetSourceEventId(11)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceOrigin(url::Origin::Create(GURL("https://bar.a.example")))
+          .SetSourceEventId(11)
+          .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u),
@@ -639,9 +639,8 @@ TEST_F(AttributionStorageTest, ClearDataOutsideRange_NoDelete) {
   auto impression = SourceBuilder(now).Build();
   storage()->StoreSource(impression);
 
-  storage()->ClearData(
-      now + base::Minutes(10), now + base::Minutes(20),
-      GetMatcher(impression.common_info().impression_origin()));
+  storage()->ClearData(now + base::Minutes(10), now + base::Minutes(20),
+                       GetMatcher(impression.common_info().source_origin()));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
@@ -669,9 +668,8 @@ TEST_F(AttributionStorageTest, ClearDataImpressionConversion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  storage()->ClearData(
-      now - base::Minutes(20), now + base::Minutes(20),
-      GetMatcher(impression.common_info().impression_origin()));
+  storage()->ClearData(now - base::Minutes(20), now + base::Minutes(20),
+                       GetMatcher(impression.common_info().source_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
@@ -685,7 +683,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
     storage()->StoreSource(SourceBuilder(now)
                                .SetExpiry(base::Days(30))
-                               .SetImpressionOrigin(origin)
+                               .SetSourceOrigin(origin)
                                .SetReportingOrigin(origin)
                                .SetConversionOrigin(origin)
                                .Build());
@@ -729,9 +727,8 @@ TEST_F(AttributionStorageTest, ClearDataWithImpressionOutsideRange) {
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
-  storage()->ClearData(
-      base::Time::Now(), base::Time::Now(),
-      GetMatcher(impression.common_info().impression_origin()));
+  storage()->ClearData(base::Time::Now(), base::Time::Now(),
+                       GetMatcher(impression.common_info().source_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
@@ -756,9 +753,8 @@ TEST_F(AttributionStorageTest, ClearDataRangeBetweenEvents) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  storage()->ClearData(
-      start + base::Minutes(1), start + base::Minutes(10),
-      GetMatcher(impression.common_info().impression_origin()));
+  storage()->ClearData(start + base::Minutes(1), start + base::Minutes(10),
+                       GetMatcher(impression.common_info().source_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(expected_report));
@@ -782,8 +778,8 @@ TEST_F(AttributionStorageTest, ClearDataWithMultiTouch) {
 
   // Only the first impression should overlap with this time range, but all the
   // impressions should share the origin.
-  storage()->ClearData(
-      start, start, GetMatcher(impression1.common_info().impression_origin()));
+  storage()->ClearData(start, start,
+                       GetMatcher(impression1.common_info().source_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
 }
 
@@ -1073,14 +1069,13 @@ TEST_F(AttributionStorageTest,
        MaxDestinationsPerSource_ScopedToSourceSiteAndReportingOrigin) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(3);
 
-  const auto store_source = [&](const char* impression_origin,
+  const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
                                 const char* destination_origin) {
     return storage()
         ->StoreSource(
             SourceBuilder()
-                .SetImpressionOrigin(
-                    url::Origin::Create(GURL(impression_origin)))
+                .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
                 .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
                 .SetConversionOrigin(
                     url::Origin::Create(GURL(destination_origin)))
@@ -1122,14 +1117,13 @@ TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
 
   const base::TimeDelta expiry = base::Milliseconds(5);
 
-  const auto store_source = [&](const char* impression_origin,
+  const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
                                 const char* destination_origin) {
     return storage()
         ->StoreSource(
             SourceBuilder()
-                .SetImpressionOrigin(
-                    url::Origin::Create(GURL(impression_origin)))
+                .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
                 .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
                 .SetConversionOrigin(
                     url::Origin::Create(GURL(destination_origin)))

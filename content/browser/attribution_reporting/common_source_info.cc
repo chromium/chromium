@@ -34,7 +34,7 @@ base::Time CommonSourceInfo::GetExpiryTime(
 }
 
 CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
-                                   url::Origin impression_origin,
+                                   url::Origin source_origin,
                                    url::Origin conversion_origin,
                                    url::Origin reporting_origin,
                                    base::Time impression_time,
@@ -45,7 +45,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    absl::optional<uint64_t> debug_key,
                                    AttributionAggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
-      impression_origin_(std::move(impression_origin)),
+      source_origin_(std::move(source_origin)),
       conversion_origin_(std::move(conversion_origin)),
       reporting_origin_(std::move(reporting_origin)),
       impression_time_(impression_time),
@@ -59,7 +59,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.
   DCHECK_GT(expiry_time, impression_time);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(impression_origin_));
+  DCHECK(network::IsOriginPotentiallyTrustworthy(source_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(conversion_origin_));
 }
@@ -79,8 +79,8 @@ net::SchemefulSite CommonSourceInfo::ConversionDestination() const {
   return net::SchemefulSite(conversion_origin_);
 }
 
-net::SchemefulSite CommonSourceInfo::ImpressionSite() const {
-  return net::SchemefulSite(impression_origin_);
+net::SchemefulSite CommonSourceInfo::SourceSite() const {
+  return net::SchemefulSite(source_origin_);
 }
 
 }  // namespace content

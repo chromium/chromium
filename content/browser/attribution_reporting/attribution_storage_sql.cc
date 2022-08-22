@@ -302,7 +302,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
 
   StoredSource::Id source_id(statement.ColumnInt64(col++));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(col++));
-  url::Origin impression_origin =
+  url::Origin source_origin =
       DeserializePotentiallyTrustworthyOrigin(statement.ColumnString(col++));
   url::Origin conversion_origin =
       DeserializePotentiallyTrustworthyOrigin(statement.ColumnString(col++));
@@ -321,7 +321,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<AttributionAggregationKeys> aggregation_keys =
       AttributionAggregationKeys::Deserialize(statement.ColumnString(col++));
 
-  if (impression_origin.opaque() || conversion_origin.opaque() ||
+  if (source_origin.opaque() || conversion_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
       !attribution_logic.has_value() || num_conversions < 0 ||
       aggregatable_budget_consumed < 0 || !aggregation_keys.has_value()) {
@@ -344,7 +344,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   return StoredSourceData{
       .source = StoredSource(
           CommonSourceInfo(
-              source_event_id, std::move(impression_origin),
+              source_event_id, std::move(source_origin),
               std::move(conversion_origin), std::move(reporting_origin),
               impression_time, expiry_time, *source_type, priority,
               std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
@@ -541,9 +541,9 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   const CommonSourceInfo& common_info = source.common_info();
 
-  const std::string serialized_impression_origin =
-      SerializePotentiallyTrustworthyOrigin(common_info.impression_origin());
-  if (!HasCapacityForStoringSource(serialized_impression_origin)) {
+  const std::string serialized_source_origin =
+      SerializePotentiallyTrustworthyOrigin(common_info.source_origin());
+  if (!HasCapacityForStoringSource(serialized_source_origin)) {
     return StoreSourceResult(
         StorableSource::Result::kInsufficientSourceCapacity);
   }
@@ -632,7 +632,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(delegate_->SanitizeSourceEventId(
                              common_info.source_event_id())));
-  statement.BindString(1, serialized_impression_origin);
+  statement.BindString(1, serialized_source_origin);
   statement.BindString(2, SerializePotentiallyTrustworthyOrigin(
                               common_info.conversion_origin()));
   statement.BindString(3, serialized_conversion_destination);
@@ -642,7 +642,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindInt(7, SerializeSourceType(common_info.source_type()));
   statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
   statement.BindInt64(9, common_info.priority());
-  statement.BindString(10, common_info.ImpressionSite().Serialize());
+  statement.BindString(10, common_info.SourceSite().Serialize());
   statement.BindInt(11, num_conversions);
   statement.BindBool(12, event_level_active);
   statement.BindBool(13, aggregatable_active);
@@ -2090,7 +2090,7 @@ bool AttributionStorageSql::CreateSchema() {
   // |attribution_logic| corresponds to the
   // |StoredSource::AttributionLogic| enum.
   // |source_site| is used to optimize the lookup of sources;
-  // |CommonSourceInfo::ImpressionSite| is always derived from the origin.
+  // |CommonSourceInfo::SourceSite| is always derived from the origin.
   // |filter_data| is a serialized `AttributionFilterData` used for source
   // matching.
   //
@@ -2368,7 +2368,7 @@ AttributionStorageSql::HasCapacityForUniqueDestinationLimitForPendingSource(
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
-  statement.BindString(0, source.common_info().ImpressionSite().Serialize());
+  statement.BindString(0, source.common_info().SourceSite().Serialize());
   statement.BindString(1, SerializePotentiallyTrustworthyOrigin(
                               source.common_info().reporting_origin()));
   statement.BindTime(2, source.common_info().impression_time());

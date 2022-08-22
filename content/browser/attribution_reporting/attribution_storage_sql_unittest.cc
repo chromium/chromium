@@ -331,7 +331,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(
           std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().impression_origin())));
+          blink::StorageKey(source.common_info().source_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -383,7 +383,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
       base::Time::Now(), base::Time::Now(),
       base::BindRepeating(
           std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().impression_origin())));
+          blink::StorageKey(source.common_info().source_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -581,7 +581,7 @@ TEST_F(AttributionStorageSqlTest,
       .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = std::numeric_limits<int64_t>::max(),
   });
-  const url::Origin impression_origin =
+  const url::Origin source_origin =
       url::Origin::Create(GURL("https://sub.impression.example/"));
   const url::Origin reporting_origin =
       url::Origin::Create(GURL("https://a.example/"));
@@ -589,7 +589,7 @@ TEST_F(AttributionStorageSqlTest,
       url::Origin::Create(GURL("https://b.example/"));
   storage()->StoreSource(SourceBuilder()
                              .SetExpiry(base::Days(30))
-                             .SetImpressionOrigin(impression_origin)
+                             .SetSourceOrigin(source_origin)
                              .SetReportingOrigin(reporting_origin)
                              .SetConversionOrigin(conversion_origin)
                              .Build());
@@ -606,10 +606,9 @@ TEST_F(AttributionStorageSqlTest,
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(
       storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
-  storage()->ClearData(
-      base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                          blink::StorageKey(impression_origin)));
+  storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                       base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                                           blink::StorageKey(source_origin)));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -633,7 +632,7 @@ TEST_F(AttributionStorageSqlTest,
       .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
       .max_attributions = std::numeric_limits<int64_t>::max(),
   });
-  const url::Origin impression_origin =
+  const url::Origin source_origin =
       url::Origin::Create(GURL("https://b.example/"));
   const url::Origin reporting_origin =
       url::Origin::Create(GURL("https://a.example/"));
@@ -641,7 +640,7 @@ TEST_F(AttributionStorageSqlTest,
       url::Origin::Create(GURL("https://sub.impression.example/"));
   storage()->StoreSource(SourceBuilder()
                              .SetExpiry(base::Days(30))
-                             .SetImpressionOrigin(impression_origin)
+                             .SetSourceOrigin(source_origin)
                              .SetReportingOrigin(reporting_origin)
                              .SetConversionOrigin(conversion_origin)
                              .Build());

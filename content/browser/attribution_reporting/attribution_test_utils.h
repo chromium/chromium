@@ -438,7 +438,7 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceEventId(uint64_t source_event_id);
 
-  SourceBuilder& SetImpressionOrigin(url::Origin origin);
+  SourceBuilder& SetSourceOrigin(url::Origin origin);
 
   SourceBuilder& SetConversionOrigin(url::Origin domain);
 
@@ -477,7 +477,7 @@ class SourceBuilder {
   uint64_t source_event_id_ = 123;
   base::Time impression_time_;
   base::TimeDelta expiry_;
-  url::Origin impression_origin_;
+  url::Origin source_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
   AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
@@ -737,7 +737,7 @@ MATCHER_P(SourceEventIdIs, matcher, "") {
 }
 
 MATCHER_P(ImpressionOriginIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().impression_origin(),
+  return ExplainMatchResult(matcher, arg.common_info().source_origin(),
                             result_listener);
 }
 

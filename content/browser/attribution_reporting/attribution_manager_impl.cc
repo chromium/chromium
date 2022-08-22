@@ -302,7 +302,7 @@ bool AttributionManagerImpl::IsReportAllowed(
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::ConversionMeasurementOperation::kReport,
-      &common_info.impression_origin(), &common_info.conversion_origin(),
+      &common_info.source_origin(), &common_info.conversion_origin(),
       &common_info.reporting_origin());
 }
 
@@ -510,7 +510,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
       bool allowed = IsOperationAllowed(
           manager->storage_partition_.get(),
           ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          &common_info.impression_origin(),
+          &common_info.source_origin(),
           /*destination_origin=*/nullptr, &common_info.reporting_origin());
       RecordRegisterImpressionAllowed(allowed);
       if (!allowed) {

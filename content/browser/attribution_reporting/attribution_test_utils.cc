@@ -35,7 +35,7 @@ using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::Property;
 
-const char kDefaultImpressionOrigin[] = "https://impression.test/";
+const char kDefaultSourceOrigin[] = "https://impression.test/";
 const char kDefaultTriggerOrigin[] = "https://sub.conversion.test/";
 const char kDefaultReportOrigin[] = "https://report.test/";
 
@@ -469,7 +469,7 @@ bool SourceObserver::WaitForNavigationWithNoImpression() {
 SourceBuilder::SourceBuilder(base::Time time)
     : impression_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
-      impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
+      source_origin_(url::Origin::Create(GURL(kDefaultSourceOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultTriggerOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
@@ -493,8 +493,8 @@ SourceBuilder& SourceBuilder::SetSourceEventId(uint64_t source_event_id) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetImpressionOrigin(url::Origin origin) {
-  impression_origin_ = std::move(origin);
+SourceBuilder& SourceBuilder::SetSourceOrigin(url::Origin origin) {
+  source_origin_ = std::move(origin);
   return *this;
 }
 
@@ -562,11 +562,11 @@ SourceBuilder& SourceBuilder::SetAggregationKeys(
 }
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(
-      source_event_id_, impression_origin_, conversion_origin_,
-      reporting_origin_, impression_time_,
-      /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      filter_data_, debug_key_, aggregation_keys_);
+  return CommonSourceInfo(source_event_id_, source_origin_, conversion_origin_,
+                          reporting_origin_, impression_time_,
+                          /*expiry_time=*/impression_time_ + expiry_,
+                          source_type_, priority_, filter_data_, debug_key_,
+                          aggregation_keys_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -783,7 +783,7 @@ bool operator==(const AttributionFilterData& a,
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
-    return std::make_tuple(source.source_event_id(), source.impression_origin(),
+    return std::make_tuple(source.source_event_id(), source.source_origin(),
                            source.conversion_origin(),
                            source.reporting_origin(), source.impression_time(),
                            source.expiry_time(), source.source_type(),
@@ -1103,7 +1103,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_event_id=" << source.source_event_id()
-             << ",impression_origin=" << source.impression_origin()
+             << ",source_origin=" << source.source_origin()
              << ",conversion_origin=" << source.conversion_origin()
              << ",reporting_origin=" << source.reporting_origin()
              << ",impression_time=" << source.impression_time()

@@ -253,25 +253,25 @@ namespace {
 const char kLocalHost[] = "http://localhost";
 
 struct OriginTrustworthyChecksTestCase {
-  const char* impression_origin;
+  const char* source_origin;
   const char* conversion_origin;
   bool impression_expected;
 };
 
 const OriginTrustworthyChecksTestCase kOriginTrustworthyChecksTestCases[] = {
-    {.impression_origin = kLocalHost,
+    {.source_origin = kLocalHost,
      .conversion_origin = kLocalHost,
      .impression_expected = true},
-    {.impression_origin = "http://127.0.0.1",
+    {.source_origin = "http://127.0.0.1",
      .conversion_origin = "http://127.0.0.1",
      .impression_expected = true},
-    {.impression_origin = kLocalHost,
+    {.source_origin = kLocalHost,
      .conversion_origin = "http://insecure.com",
      .impression_expected = true},
-    {.impression_origin = "http://insecure.com",
+    {.source_origin = "http://insecure.com",
      .conversion_origin = kLocalHost,
      .impression_expected = true},
-    {.impression_origin = "https://secure.com",
+    {.source_origin = "https://secure.com",
      .conversion_origin = "https://secure.com",
      .impression_expected = true},
 };
@@ -289,7 +289,7 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost)
       .Times(test_case.impression_expected);
 
-  contents()->NavigateAndCommit(GURL(test_case.impression_origin));
+  contents()->NavigateAndCommit(GURL(test_case.source_origin));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(test_case.conversion_origin), main_rfh());
 

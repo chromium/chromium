@@ -58,20 +58,20 @@ struct RateLimitRow {
   }
 
   RateLimitRow(RateLimitScope scope,
-               std::string impression_origin,
+               std::string source_origin,
                std::string conversion_origin,
                std::string reporting_origin,
                base::Time time,
                base::TimeDelta source_expiry = base::Milliseconds(30))
       : scope(scope),
-        impression_origin(std::move(impression_origin)),
+        source_origin(std::move(source_origin)),
         conversion_origin(std::move(conversion_origin)),
         reporting_origin(std::move(reporting_origin)),
         time(time),
         source_expiry(source_expiry) {}
 
   RateLimitScope scope;
-  std::string impression_origin;
+  std::string source_origin;
   std::string conversion_origin;
   std::string reporting_origin;
   base::Time time;
@@ -83,7 +83,7 @@ struct RateLimitRow {
     auto source_time = scope == RateLimitScope::kSource ? time : base::Time();
     auto builder = SourceBuilder(source_time);
 
-    builder.SetImpressionOrigin(url::Origin::Create(GURL(impression_origin)));
+    builder.SetSourceOrigin(url::Origin::Create(GURL(source_origin)));
     builder.SetConversionOrigin(url::Origin::Create(GURL(conversion_origin)));
     builder.SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)));
     builder.SetExpiry(source_expiry);
@@ -100,9 +100,8 @@ struct RateLimitRow {
 
 bool operator==(const RateLimitRow& a, const RateLimitRow& b) {
   const auto tie = [](const RateLimitRow& row) {
-    return std::make_tuple(row.scope, row.impression_origin,
-                           row.conversion_origin, row.reporting_origin,
-                           row.time);
+    return std::make_tuple(row.scope, row.source_origin, row.conversion_origin,
+                           row.reporting_origin, row.time);
   };
   return tie(a) == tie(b);
 }
@@ -117,7 +116,7 @@ std::ostream& operator<<(std::ostream& out, const RateLimitScope scope) {
 }
 
 std::ostream& operator<<(std::ostream& out, const RateLimitRow& row) {
-  return out << "{" << row.scope << "," << row.impression_origin << ","
+  return out << "{" << row.scope << "," << row.source_origin << ","
              << row.conversion_origin << "," << row.reporting_origin << ","
              << row.time << "}";
 }
@@ -144,7 +143,7 @@ class RateLimitTableTest : public testing::Test {
       rows.emplace_back(
           statement.ColumnInt64(0),
           RateLimitRow(static_cast<RateLimitScope>(statement.ColumnInt(1)),
-                       /*impression_origin=*/statement.ColumnString(2),
+                       /*source_origin=*/statement.ColumnString(2),
                        /*conversion_origin=*/statement.ColumnString(3),
                        /*reporting_origin=*/statement.ColumnString(4),
                        statement.ColumnTime(5)));
@@ -329,7 +328,7 @@ namespace {
 // The following loop iterations are *not* independent: Each one depends on
 // the correct handling of the previous one.
 const struct {
-  const char* impression_origin;
+  const char* source_origin;
   const char* conversion_origin;
   const char* reporting_origin;
   RateLimitResult expected;
@@ -378,7 +377,7 @@ TEST_F(RateLimitTableTest, SourceAllowedForReportingOriginLimit) {
   const base::Time now = base::Time::Now();
 
   for (const auto& rate_limit : kReportingOriginRateLimitsToAdd) {
-    auto row = RateLimitRow::Source(rate_limit.impression_origin,
+    auto row = RateLimitRow::Source(rate_limit.source_origin,
                                     rate_limit.conversion_origin,
                                     rate_limit.reporting_origin, now);
 
@@ -414,7 +413,7 @@ TEST_F(RateLimitTableTest, AttributionAllowedForReportingOriginLimit) {
   const base::Time now = base::Time::Now();
 
   for (const auto& rate_limit : kReportingOriginRateLimitsToAdd) {
-    auto row = RateLimitRow::Attribution(rate_limit.impression_origin,
+    auto row = RateLimitRow::Attribution(rate_limit.source_origin,
                                          rate_limit.conversion_origin,
                                          rate_limit.reporting_origin, now);
 
@@ -639,7 +638,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
       &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetImpressionOrigin(url::Origin::Create(
+                                       .SetSourceOrigin(url::Origin::Create(
                                            GURL("https://s1.test")))
                                        .BuildStored())
                 .SetTime(base::Time::Now())
@@ -649,7 +648,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
       &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetImpressionOrigin(url::Origin::Create(
+                                       .SetSourceOrigin(url::Origin::Create(
                                            GURL("https://s2.test")))
                                        .BuildStored())
                 .SetTime(base::Time::Now())
@@ -663,7 +662,7 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
 
   ASSERT_TRUE(table_.AddRateLimitForAttribution(
       &db_, AttributionInfoBuilder(SourceBuilder()
-                                       .SetImpressionOrigin(url::Origin::Create(
+                                       .SetSourceOrigin(url::Origin::Create(
                                            GURL("https://s3.test")))
                                        .BuildStored())
                 .SetTime(base::Time::Now())
@@ -673,8 +672,8 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   ASSERT_THAT(
       GetRateLimitRows(),
       ElementsAre(
-          Pair(_, Field(&RateLimitRow::impression_origin, "https://s2.test")),
-          Pair(_, Field(&RateLimitRow::impression_origin, "https://s3.test"))));
+          Pair(_, Field(&RateLimitRow::source_origin, "https://s2.test")),
+          Pair(_, Field(&RateLimitRow::source_origin, "https://s3.test"))));
 }
 
 TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
@@ -689,25 +688,22 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_,
-      SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://s1.test")))
-          .BuildStored()));
+      &db_, SourceBuilder()
+                .SetSourceOrigin(url::Origin::Create(GURL("https://s1.test")))
+                .BuildStored()));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_,
-      SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://s2.test")))
-          .SetExpiry(base::Minutes(5))
-          .BuildStored()));
+      &db_, SourceBuilder()
+                .SetSourceOrigin(url::Origin::Create(GURL("https://s2.test")))
+                .SetExpiry(base::Minutes(5))
+                .BuildStored()));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_,
-      SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://s3.test")))
-          .BuildStored()));
+      &db_, SourceBuilder()
+                .SetSourceOrigin(url::Origin::Create(GURL("https://s3.test")))
+                .BuildStored()));
 
   // No row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(3));
@@ -716,19 +712,18 @@ TEST_F(RateLimitTableTest, AddRateLimitSource_DeletesExpiredRows) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   ASSERT_TRUE(table_.AddRateLimitForSource(
-      &db_,
-      SourceBuilder()
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://s4.test")))
-          .BuildStored()));
+      &db_, SourceBuilder()
+                .SetSourceOrigin(url::Origin::Create(GURL("https://s4.test")))
+                .BuildStored()));
 
   // The first row should be expired at this point. The second row is not
   // expired since the source is not expired yet.
   ASSERT_THAT(
       GetRateLimitRows(),
       ElementsAre(
-          Pair(_, Field(&RateLimitRow::impression_origin, "https://s2.test")),
-          Pair(_, Field(&RateLimitRow::impression_origin, "https://s3.test")),
-          Pair(_, Field(&RateLimitRow::impression_origin, "https://s4.test"))));
+          Pair(_, Field(&RateLimitRow::source_origin, "https://s2.test")),
+          Pair(_, Field(&RateLimitRow::source_origin, "https://s3.test")),
+          Pair(_, Field(&RateLimitRow::source_origin, "https://s4.test"))));
 }
 
 TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
