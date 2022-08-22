@@ -50384,6 +50384,21 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="Open()"/>
 </enum>
 
+<enum name="InferredLabelSource">
+  <int value="0" label="No label"/>
+  <int value="1" label="&lt;label&gt; sibling/ancestor"/>
+  <int value="2" label="&lt;p&gt; sibling"/>
+  <int value="3" label="&lt;div&gt; ancestor"/>
+  <int value="4" label="&lt;td&gt; sibling"/>
+  <int value="5" label="&lt;dt&gt; sibling"/>
+  <int value="6" label="&lt;li&gt; ancestor"/>
+  <int value="7" label="placeholder attribute"/>
+  <int value="8" label="aria-label attribute"/>
+  <int value="9" label="Text node sibling (includes &lt;b&gt;, etc)"/>
+  <int value="10" label="value attribute"/>
+  <int value="11" label="&lt;label&gt; for attribute"/>
+</enum>
+
 <enum name="InfoBarClosingStates">
   <int value="0" label="Accepted survey"/>
   <int value="1" label="Tapped close button"/>

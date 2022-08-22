@@ -198,6 +198,7 @@ struct FormFieldData {
     kAriaLabel,
     kCombined,  // Combined with various elements.
     kValue,     // label is the value of element.
+    kFor,       // Derived from the "for" attribute of a label element.
   };
 
   mojo_base.mojom.String16 label;

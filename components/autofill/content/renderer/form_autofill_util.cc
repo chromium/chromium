@@ -1338,6 +1338,9 @@ void MatchLabelsAndFields(
     const WebElement& form_or_fieldset,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      features::kAutofillImprovedLabelForInference));
+
   static base::NoDestructor<WebString> kLabel("label");
   static base::NoDestructor<WebString> kFor("for");
   static base::NoDestructor<WebString> kHidden("hidden");
@@ -1373,12 +1376,15 @@ void MatchLabelsAndFields(
       continue;
 
     std::u16string label_text = FindChildText(label);
+    if (label_text.empty())
+      continue;
 
     // Concatenate labels because some sites might have multiple label
     // candidates.
-    if (!field_data->label.empty() && !label_text.empty())
+    if (!field_data->label.empty())
       field_data->label += u" ";
     field_data->label += label_text;
+    field_data->label_source = FormFieldData::LabelSource::kFor;
     base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
   }
 }
@@ -1516,6 +1522,11 @@ bool FormOrFieldsetsToFormData(
     FormFieldData& field = form->fields[field_index++];
     if (field.label.empty())
       InferLabelForElement(control_element, field.label, field.label_source);
+    // At this point, label-for and heuristic label inference has happened and
+    // `field.label_source` is set appropriately. In case no label was found,
+    // it is set to kUnknown.
+    base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
+                                  field.label_source);
     TruncateString(&field.label, kMaxDataLength);
 
     if (optional_field && *form_control_element == control_element) {
@@ -1961,6 +1972,8 @@ void WebFormControlElementToFormField(
   if (base::FeatureList::IsEnabled(
           features::kAutofillImprovedLabelForInference)) {
     field->label = GetAssignedLabel(element);
+    if (!field->label.empty())
+      field->label_source = FormFieldData::LabelSource::kFor;
   }
   if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
                                        "presentation")) {
