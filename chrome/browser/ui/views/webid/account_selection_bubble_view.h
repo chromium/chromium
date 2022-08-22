@@ -48,7 +48,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // Returns a View containing the logo of the identity provider and the title
   // of the bubble, properly formatted.
   std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
-                                                bool has_icon);
+                                                bool show_icon);
 
   void CloseBubble();
 
@@ -67,6 +67,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       base::span<const content::IdentityRequestAccount> accounts);
+
+  // Creates a row containing the IDP icon as well as the IDP ETLD+1. Used in
+  // the multi IDP scenario, when the user is selecting from multiple accounts.
+  std::unique_ptr<views::View> CreateIdpHeaderRow();
 
   // Returns a View containing information about an account: the picture for the
   // account on the left, and information about the account on the right.
@@ -124,6 +128,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // account and navigates to the privacy policy / terms of service page.
   const std::vector<content::IdentityRequestAccount> account_list_;
 
+  // The image for the IDP icon. Stored so that it can be reused upon pressing
+  // the back button after choosing an account on the multi IDP chooser.
+  gfx::ImageSkia idp_image_;
+
   // The TabStripModel of the current browser. We need this in order to show the
   // privacy policy and terms of service urls when the user clicks on the links.
   const raw_ptr<TabStripModel> tab_strip_model_;
@@ -132,22 +140,28 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
       on_account_selected_callback_;
 
   // View containing the logo of the identity provider and the title.
-  raw_ptr<views::View> header_view_{nullptr};
+  raw_ptr<views::View> header_view_ = nullptr;
 
-  // View containing the header icon.
-  raw_ptr<views::ImageView> header_icon_view_{nullptr};
+  // View containing the header IDP icon, if one needs to be used.
+  raw_ptr<views::ImageView> header_icon_view_ = nullptr;
+
+  // View containing the IDP icon if the icon is used in the account chooser.
+  raw_ptr<views::ImageView> multi_idp_icon_view_ = nullptr;
 
   // View containing the back button.
-  raw_ptr<views::ImageButton> back_button_{nullptr};
+  raw_ptr<views::ImageButton> back_button_ = nullptr;
 
   // View containing the bubble title.
-  raw_ptr<views::Label> title_label_{nullptr};
+  raw_ptr<views::Label> title_label_ = nullptr;
 
   // View containing the continue button.
-  raw_ptr<views::MdTextButton> continue_button_{nullptr};
+  raw_ptr<views::MdTextButton> continue_button_ = nullptr;
 
   // Used to differentiate UI dismissal scenarios.
-  bool verify_sheet_shown_{false};
+  bool verify_sheet_shown_ = false;
+
+  // Whether the IDP metadata contains an IDP icon.
+  bool has_idp_icon_ = false;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

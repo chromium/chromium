@@ -111,7 +111,7 @@ class HoverButton : public views::LabelButton {
                            NotifyClickExecutesAction);
   FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
                            UpdatesToDisplayCorrectActionTitle);
-  FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest, MultipleAccounts);
+  friend class AccountSelectionBubbleViewTest;
   friend class PageInfoBubbleViewBrowserTest;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
