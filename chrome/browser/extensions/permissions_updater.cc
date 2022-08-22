@@ -17,7 +17,6 @@
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/permissions.h"
@@ -53,16 +52,6 @@ namespace extensions {
 namespace permissions = api::permissions;
 
 namespace {
-
-std::unique_ptr<PermissionsUpdater::Delegate>& GetDelegateWrapper() {
-  static base::NoDestructor<std::unique_ptr<PermissionsUpdater::Delegate>>
-      delegate_wrapper;
-  return *delegate_wrapper;
-}
-
-PermissionsUpdater::Delegate* GetDelegate() {
-  return GetDelegateWrapper().get();
-}
 
 // A helper class to watch profile lifetime.
 class PermissionsUpdaterShutdownNotifierFactory
@@ -240,12 +229,6 @@ PermissionsUpdater::PermissionsUpdater(content::BrowserContext* browser_context,
     : browser_context_(browser_context), init_flag_(init_flag) {}
 
 PermissionsUpdater::~PermissionsUpdater() {}
-
-// static
-void PermissionsUpdater::SetPlatformDelegate(
-    std::unique_ptr<Delegate> delegate) {
-  GetDelegateWrapper() = std::move(delegate);
-}
 
 void PermissionsUpdater::GrantOptionalPermissions(
     const Extension& extension,
@@ -575,9 +558,6 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   std::unique_ptr<const PermissionSet> granted_permissions =
       permissions_manager->GetEffectivePermissionsToGrant(*extension,
                                                           *desired_permissions);
-
-  if (GetDelegate())
-    GetDelegate()->InitializePermissions(extension, &granted_permissions);
 
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
     // Set the desired permissions in prefs.

@@ -69,7 +69,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
-#include "chrome/browser/chromeos/extensions/permissions_updater_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -177,9 +176,6 @@ bool GetUserLockAttributes(const user_manager::User* user,
 // during logout (the browser process is destroyed during logout), ie. they are
 // not freed and they leak but that is fine.
 void SetPublicAccountDelegates() {
-  extensions::PermissionsUpdater::SetPlatformDelegate(
-      std::make_unique<extensions::PermissionsUpdaterDelegateChromeOS>());
-
   extensions::ExtensionTabUtil::SetPlatformDelegate(
       std::make_unique<extensions::ExtensionTabUtilDelegateChromeOS>());
 
@@ -294,7 +290,6 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 
 // static
 void ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting() {
-  extensions::PermissionsUpdater::SetPlatformDelegate(nullptr);
   extensions::ExtensionTabUtil::SetPlatformDelegate(nullptr);
   extensions::ActiveTabPermissionGranter::SetPlatformDelegate(nullptr);
 }

@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/common/chrome_paths.h"
@@ -71,31 +70,6 @@ void AddPattern(URLPatternSet* extent, const std::string& pattern) {
   int schemes = URLPattern::SCHEME_ALL;
   extent->AddPattern(URLPattern(schemes, pattern));
 }
-
-class PermissionsUpdaterTestDelegate : public PermissionsUpdater::Delegate {
- public:
-  PermissionsUpdaterTestDelegate() {}
-
-  PermissionsUpdaterTestDelegate(const PermissionsUpdaterTestDelegate&) =
-      delete;
-  PermissionsUpdaterTestDelegate& operator=(
-      const PermissionsUpdaterTestDelegate&) = delete;
-
-  ~PermissionsUpdaterTestDelegate() override {}
-
-  // PermissionsUpdater::Delegate
-  void InitializePermissions(
-      const Extension* extension,
-      std::unique_ptr<const PermissionSet>* granted_permissions) override {
-    // Remove the cookie permission.
-    APIPermissionSet api_permission_set =
-        (*granted_permissions)->apis().Clone();
-    api_permission_set.erase(APIPermissionID::kCookie);
-    *granted_permissions = std::make_unique<PermissionSet>(
-        std::move(api_permission_set), ManifestPermissionSet(), URLPatternSet(),
-        URLPatternSet());
-  }
-};
 
 }  // namespace
 
@@ -396,34 +370,6 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     updater.SetDefaultPolicyHostRestrictions(default_policy_blocked_hosts,
                                              default_policy_allowed_hosts);
   }
-}
-
-// Test that the permissions updater delegate works - in this test it removes
-// the cookies permission.
-TEST_F(PermissionsUpdaterTest, Delegate) {
-  InitializeEmptyExtensionService();
-
-  ListBuilder required_permissions;
-  required_permissions.Append("tabs").Append("management").Append("cookies");
-  scoped_refptr<const Extension> extension =
-      CreateExtensionWithOptionalPermissions(
-          std::make_unique<base::ListValue>(), required_permissions.Build(),
-          "My Extension");
-
-  PermissionsUpdater::SetPlatformDelegate(
-      std::make_unique<PermissionsUpdaterTestDelegate>());
-  PermissionsUpdater updater(profile());
-  updater.InitializePermissions(extension.get());
-
-  EXPECT_TRUE(
-      extension->permissions_data()->HasAPIPermission(APIPermissionID::kTab));
-  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
-      APIPermissionID::kManagement));
-  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
-      APIPermissionID::kCookie));
-
-  // Unset the delegate.
-  PermissionsUpdater::SetPlatformDelegate(nullptr);
 }
 
 TEST_F(PermissionsUpdaterTest,
