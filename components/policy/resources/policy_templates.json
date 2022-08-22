@@ -24993,7 +24993,7 @@
 
       For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https: //cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
     },
     {
       'name': 'DeviceLoginScreenContextAwareAccessSignalsAllowlist',
@@ -25025,7 +25025,7 @@
 
       This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https: //cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
     },
     {
       'name': 'DeviceQuickFixBuildToken',
@@ -30583,10 +30583,10 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'tags': [],
       'desc': '''
 Default behavior (Policy unset)
-When an account is added in the content area a small dialog may appear asking the user to create a new profile.  This dialog is dismissable.
+When an account is added in the content area a small dialog may appear asking the user to create a new profile. This dialog is dismissable.
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph>
-If a user signs into a Google service for the first time in a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browser, a dialog will appear asking the user to create a new profile for their enterprise account. The user may click Cancel and get signed out, or Continue to create a new profile. Any existing browsing data will not be added to the new profile.   The newly created profile is allowed to have secondary accounts, for example the user can sign into another account in the content area.
+If a user signs into a Google service for the first time in a <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browser, a dialog will appear asking the user to create a new profile for their enterprise account. The user may click Cancel and get signed out, or Continue to create a new profile. Any existing browsing data will not be added to the new profile. The newly created profile is allowed to have secondary accounts, for example the user can sign into another account in the content area.
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT">'primary_account_strict'</ph>
 This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph> except the newly created profile is not allowed to have secondary accounts.
@@ -30633,7 +30633,8 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
       'desc': '''
       Setting the policy to Enabled (True) lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> asks for managed users' consent prior to sharing device signals on unmanaged devices in order to gain access.
 
-      Setting the policy to Disabled (False) or leaving it unset disallows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from collecting device signals
+      Setting the policy to Disabled (False) or leaving it unset disallows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from collecting device signals.
+
       Examples of device signals include (but are not limited to) OS information, registry, file presesnce.''',
     },
     {
@@ -32711,8 +32712,10 @@ This policy has no effect if the option to keep existing browsing data is not av
       'id': 1002,
       'caption': '''Force persistent quota to be enabled''',
       'tags': [],
-      'desc': '''Starting M106 persistent quota will no longer be supported. This policy will re-enable persistent quota functionality until M107.
+      'desc': '''Starting in M106 persistent quota will no longer be supported. This policy will re-enable persistent quota functionality until M107.
+
       If this policy is set to enabled, webkitRequestFileSystem with persistent type will operate with persistent quota.
+
       If this policy is unset or disabled, webkitRequestFileSystem with persistent type will operate with temporary quota.
       ''',
     },
