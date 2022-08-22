@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -166,6 +167,12 @@ void ShowCreateChromeAppShortcutsDialog(
   CreateShortcutsForWebApp(web_app::SHORTCUT_CREATION_BY_USER,
                            web_app::ShortcutLocations(), profile, app_id,
                            base::BindOnce(std::move(close_callback)));
+  // Also inform AppShimRegistry about the created shortcut. For anything other
+  // than default apps this is a no-op, as you can't create shortcuts without
+  // the app already having been installed (at which point AppShimRegistry would
+  // have been informed). But for default apps this is required to make sure the
+  // created shortcut opens the app in the correct profile.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id, profile->GetPath());
 }
 
 }  // namespace chrome

@@ -80,7 +80,13 @@ void AppShimRegistry::OnAppInstalledForProfile(const std::string& app_id,
   if (installed_profiles.count(profile))
     return;
   installed_profiles.insert(profile);
-  SetAppInfo(app_id, &installed_profiles, nullptr);
+  // Also add the profile to the last active profiles. This way the next time
+  // the app is launched, it will at least launch in the most recently
+  // installed profile.
+  std::set<base::FilePath> last_active_profiles =
+      GetLastActiveProfilesForApp(app_id);
+  last_active_profiles.insert(profile);
+  SetAppInfo(app_id, &installed_profiles, &last_active_profiles);
 }
 
 bool AppShimRegistry::OnAppUninstalledForProfile(

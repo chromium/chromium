@@ -152,8 +152,10 @@ void OsIntegrationManager::Start() {
   // been registered).
   std::vector<AppId> app_ids = registrar_->GetAppIds();
   for (const auto& app_id : app_ids) {
-    AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
-                                                     profile_->GetPath());
+    if (!registrar_->WasInstalledByDefaultOnly(app_id)) {
+      AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                       profile_->GetPath());
+    }
   }
 #endif
   file_handler_manager_->Start();
