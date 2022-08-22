@@ -353,10 +353,6 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 # Failures in fuchsia-chrome browser
 crbug.com/1295076 [ fuchsia fuchsia-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
-# Crashes on gpu-fyi-win10-nvidia-rel-32
-crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
 crbug.com/1213542 [ renderer-skia-gl linux nvidia-0x1cb3 ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 crbug.com/1213542 [ renderer-skia-gl linux nvidia-0x2184 passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
