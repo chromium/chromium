@@ -33,6 +33,10 @@ declare_args() {
   # unconditionally enabled on all platforms.
   builtin_cert_verifier_policy_supported = is_mac
 
+  # Enables the build to have logging enabled by default.
+  # This is intended for use only in developer builds.
+  chrome_enable_logging_by_default = is_debug
+
   # Platforms where the ChromeRootStoreEnabled enterprise policy is
   # supported. This must must match the supported_on/future_on list of the
   # policy in policy_templates.json and be a subset of the
@@ -77,6 +81,12 @@ declare_args() {
 
   # optimize_webui was moved to ui/base/ui_features.gni
 }
+
+# Logging must be disabled by default in all official builds (including special
+# DCHECK-enabled builds). Logging is enabled by default for debug builds, and
+# may be selectively enabled by default for release builds.
+assert(!chrome_enable_logging_by_default || !is_official_build,
+       "Logging must be disabled by default in Official builds")
 
 # Enables supervision for Family Link users.
 # Supervision is only supported on Chrome OS and Android.

@@ -48,6 +48,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -134,21 +135,25 @@ void SuppressDialogs() {
 LoggingDestination DetermineLoggingDestination(
     const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_FUCHSIA)
-  // On Fuchsia, the default logging mode is the system log in both debug and
-  // release mode.
+  // Fuchsia provides a system log that can be filtered for logs from specific
+  // components (e.g. Chrome), and which is easier to access than logs in a
+  // file in the component's namespace would be, so always use the system log
+  // by default.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_SYSTEM_DEBUG_LOG;
-#elif NDEBUG
+#elif defined(NDEBUG)
+  // In Release builds, log only to the log file.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_FILE;
 #else
+  // In Debug builds log to all destinations, for ease of discovery.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_ALL;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#ifdef NDEBUG
-  bool enable_logging = false;
-  const char* kInvertLoggingSwitch = switches::kEnableLogging;
-#else
+#if BUILDFLAG(CHROME_ENABLE_LOGGING_BY_DEFAULT)
   bool enable_logging = true;
-  const char* kInvertLoggingSwitch = switches::kDisableLogging;
+  const char* const kInvertLoggingSwitch = switches::kDisableLogging;
+#else
+  bool enable_logging = false;
+  const char* const kInvertLoggingSwitch = switches::kEnableLogging;
 #endif
 
   if (command_line.HasSwitch(kInvertLoggingSwitch))
