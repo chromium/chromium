@@ -41,7 +41,8 @@ class PreviewModeClient : public PDFEngine::Client {
   void UpdateCursor(ui::mojom::CursorType cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
-  void NotifySelectedFindResultChanged(int current_find_index) override;
+  void NotifySelectedFindResultChanged(int current_find_index,
+                                       bool final_result) override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   void Alert(const std::string& message) override;

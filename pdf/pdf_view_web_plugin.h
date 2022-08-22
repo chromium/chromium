@@ -133,7 +133,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                             bool final_update) = 0;
 
     // Notify the web plugin container about the selected find result in plugin.
-    virtual void ReportFindInPageSelection(int identifier, int index) = 0;
+    virtual void ReportFindInPageSelection(int identifier,
+                                           int index,
+                                           bool final_update) = 0;
 
     // Notify the web plugin container about find result tickmarks.
     virtual void ReportFindInPageTickmarks(
@@ -278,7 +280,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
-  void NotifySelectedFindResultChanged(int current_find_index) override;
+  void NotifySelectedFindResultChanged(int current_find_index,
+                                       bool final_result) override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   void Beep() override;

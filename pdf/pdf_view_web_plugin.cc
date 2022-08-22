@@ -841,12 +841,14 @@ void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
       kFindResultCooldown);
 }
 
-void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
+void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index,
+                                                       bool final_result) {
   if (find_identifier_ == -1 || !client_->PluginContainer())
     return;
 
   DCHECK_GE(current_find_index, -1);
-  client_->ReportFindInPageSelection(find_identifier_, current_find_index + 1);
+  client_->ReportFindInPageSelection(find_identifier_, current_find_index + 1,
+                                     final_result);
 }
 
 void PdfViewWebPlugin::CaretChanged(const gfx::Rect& caret_rect) {
