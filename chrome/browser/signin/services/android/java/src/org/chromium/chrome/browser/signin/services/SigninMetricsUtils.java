@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
@@ -13,10 +14,26 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Util methods for signin metrics logging.
  */
 public class SigninMetricsUtils {
+    /** Used to record Signin.AddAccountState histogram. Do not change existing values. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({State.REQUESTED, State.STARTED, State.SUCCEEDED, State.FAILED, State.CANCELLED,
+            State.NULL_ACCOUNT_NAME, State.NUM_STATES})
+    public @interface State {
+        int REQUESTED = 0;
+        int STARTED = 1;
+        int SUCCEEDED = 2;
+        int FAILED = 3;
+        int CANCELLED = 4;
+        int NULL_ACCOUNT_NAME = 5;
+        int NUM_STATES = 6;
+    }
     /**
      * Logs a {@link ProfileAccountManagementMetrics} for a given {@link GAIAServiceType}.
      */
@@ -54,6 +71,12 @@ public class SigninMetricsUtils {
         if (accessPoint != SigninAccessPoint.SETTINGS_SYNC_OFF_ROW) {
             SigninMetricsUtilsJni.get().logSigninUserActionForAccessPoint(accessPoint);
         }
+    }
+
+    /** Logs Signin.AddAccountState histogram. */
+    public static void logAddAccountStateHistogram(@State int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.AddAccountState", state, State.NUM_STATES);
     }
 
     @VisibleForTesting

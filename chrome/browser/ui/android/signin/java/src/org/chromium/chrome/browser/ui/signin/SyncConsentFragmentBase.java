@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
@@ -217,6 +218,7 @@ public abstract class SyncConsentFragmentBase
 
     /**
      * Called if signinAndEnableSync() succeeds.
+     *
      * @param settingsClicked Whether the user requested to see their sync settings
      */
     protected abstract void closeAndMaybeOpenSyncSettings(boolean settingsClicked);
@@ -446,8 +448,8 @@ public abstract class SyncConsentFragmentBase
     }
 
     /**
-     * Account picker is hidden if there are no accounts on the device. Also, accept button
-     * becomes "Add account" button in this case.
+     * Account picker is hidden if there are no accounts on the device. Also, accept button becomes
+     * "Add account" button in this case.
      */
     private void setHasAccounts(boolean hasAccounts) {
         assert mSigninView != null;
@@ -703,16 +705,17 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void addAccount() {
         mIsAccountAdditionInProgress = true;
+        SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
         mAccountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {
             if (intent != null) {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
                 return;
             }
 
             // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
             // instead.
-            // TODO(https://crbug.com/1351315): Add histogram to check if this flow is triggered
-            // in user devices.
+            SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
             SigninUtils.openSettingsForAllAccounts(getActivity());
             mIsAccountAdditionInProgress = false;
             if (showTangibleSyncConsentView()) {
@@ -732,15 +735,20 @@ public abstract class SyncConsentFragmentBase
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ACCOUNT_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK && data != null) {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
                 String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 if (addedAccountName != null) {
                     mSelectedAccountName = addedAccountName;
+                } else {
+                    SigninMetricsUtils.logAddAccountStateHistogram(State.NULL_ACCOUNT_NAME);
                 }
+            } else {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
             }
             if (showTangibleSyncConsentView()) {
                 mIsAccountAdditionInProgress = false;
-                mAccountManagerFacade.getAccounts().then(this::updateAccounts);
             }
+            mAccountManagerFacade.getAccounts().then(this::updateAccounts);
         }
     }
 

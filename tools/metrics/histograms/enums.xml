@@ -89140,6 +89140,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Managed account"/>
 </enum>
 
+<enum name="SigninAndroidAddAccountState">
+  <int value="0" label="Requested"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Succeeded"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Cancelled"/>
+  <int value="5" label="Returned null account name"/>
+</enum>
+
 <enum name="SigninChoice">
   <obsolete>
     Removed in M91 since the data is not monitored.
