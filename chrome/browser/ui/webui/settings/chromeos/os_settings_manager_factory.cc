@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
 namespace settings {
@@ -38,9 +36,9 @@ OsSettingsManagerFactory* OsSettingsManagerFactory::GetInstance() {
 }
 
 OsSettingsManagerFactory::OsSettingsManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "OsSettingsManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(
       local_search_service::LocalSearchServiceProxyFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
@@ -81,11 +79,6 @@ KeyedService* OsSettingsManagerFactory::BuildServiceInstanceFor(
 
 bool OsSettingsManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
-}
-
-content::BrowserContext* OsSettingsManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace settings

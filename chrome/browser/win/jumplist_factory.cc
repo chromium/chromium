@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/win/jumplist.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 JumpList* JumpListFactory::GetForProfile(Profile* profile) {
@@ -22,10 +21,7 @@ JumpListFactory* JumpListFactory::GetInstance() {
   return base::Singleton<JumpListFactory>::get();
 }
 
-JumpListFactory::JumpListFactory()
-    : BrowserContextKeyedServiceFactory(
-          "JumpList",
-          BrowserContextDependencyManager::GetInstance()) {
+JumpListFactory::JumpListFactory() : ProfileKeyedServiceFactory("JumpList") {
   DependsOn(TabRestoreServiceFactory::GetInstance());
   DependsOn(TopSitesFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());

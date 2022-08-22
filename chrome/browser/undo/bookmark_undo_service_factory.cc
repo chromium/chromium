@@ -5,7 +5,6 @@
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/undo/bookmark_undo_service.h"
 
 // static
@@ -28,10 +27,7 @@ BookmarkUndoServiceFactory* BookmarkUndoServiceFactory::GetInstance() {
 }
 
 BookmarkUndoServiceFactory::BookmarkUndoServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "BookmarkUndoService",
-        BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("BookmarkUndoService") {}
 
 BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() {
 }

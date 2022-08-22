@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_SETTINGS_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,7 +15,7 @@ namespace settings {
 
 class OsSettingsManager;
 
-class OsSettingsManagerFactory : public BrowserContextKeyedServiceFactory {
+class OsSettingsManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static OsSettingsManager* GetForProfile(Profile* profile);
   static OsSettingsManagerFactory* GetInstance();
@@ -33,8 +33,6 @@ class OsSettingsManagerFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace settings

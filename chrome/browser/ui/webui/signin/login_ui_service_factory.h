@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class LoginUIService;
 class Profile;
@@ -14,7 +14,7 @@ class Profile;
 // Singleton that owns all LoginUIServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated LoginUIService.
-class LoginUIServiceFactory : public BrowserContextKeyedServiceFactory {
+class LoginUIServiceFactory : public ProfileKeyedServiceFactory {
  public:
   LoginUIServiceFactory(const LoginUIServiceFactory&) = delete;
   LoginUIServiceFactory& operator=(const LoginUIServiceFactory&) = delete;

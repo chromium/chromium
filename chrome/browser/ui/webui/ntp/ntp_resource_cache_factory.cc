@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 NTPResourceCache* NTPResourceCacheFactory::GetForProfile(Profile* profile) {
@@ -23,9 +21,9 @@ NTPResourceCacheFactory* NTPResourceCacheFactory::GetInstance() {
 }
 
 NTPResourceCacheFactory::NTPResourceCacheFactory()
-    : BrowserContextKeyedServiceFactory(
-        "NTPResourceCache",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "NTPResourceCache",
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ThemeServiceFactory::GetInstance());
 }
@@ -35,9 +33,4 @@ NTPResourceCacheFactory::~NTPResourceCacheFactory() {}
 KeyedService* NTPResourceCacheFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new NTPResourceCache(static_cast<Profile*>(profile));
-}
-
-content::BrowserContext* NTPResourceCacheFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

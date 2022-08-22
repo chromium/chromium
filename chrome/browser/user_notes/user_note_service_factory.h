@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_USER_NOTES_USER_NOTE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_USER_NOTES_USER_NOTE_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 #include <memory>
 
@@ -20,7 +20,7 @@ class UserNoteService;
 
 // Factory to get or create a UserNoteService instance for the current browser
 // context.
-class UserNoteServiceFactory : public BrowserContextKeyedServiceFactory {
+class UserNoteServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static UserNoteService* GetForContext(content::BrowserContext* context);
 
@@ -41,8 +41,6 @@ class UserNoteServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
   std::unique_ptr<UserNoteService> service_for_testing_;

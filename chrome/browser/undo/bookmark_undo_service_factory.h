@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UNDO_BOOKMARK_UNDO_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BookmarkUndoService;
 class Profile;
 
-class BookmarkUndoServiceFactory : public BrowserContextKeyedServiceFactory {
+class BookmarkUndoServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static BookmarkUndoService* GetForProfile(Profile* profile);
 

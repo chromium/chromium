@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -46,9 +45,7 @@ std::vector<std::string> GetSyncedServicePrefNames() {
 }  // namespace
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UnifiedConsentService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("UnifiedConsentService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }

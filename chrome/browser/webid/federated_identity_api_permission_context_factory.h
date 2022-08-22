@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class FederatedIdentityApiPermissionContext;
 
 // Factory to get or create an instance of FederatedIdentityApiPermissionContext
 // from a Profile.
 class FederatedIdentityApiPermissionContextFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static FederatedIdentityApiPermissionContext* GetForProfile(
       content::BrowserContext* profile);
@@ -26,8 +26,6 @@ class FederatedIdentityApiPermissionContextFactory
   ~FederatedIdentityApiPermissionContextFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

@@ -6,10 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 FederatedIdentitySharingPermissionContext*
@@ -29,20 +27,14 @@ FederatedIdentitySharingPermissionContextFactory::GetInstance() {
 
 FederatedIdentitySharingPermissionContextFactory::
     FederatedIdentitySharingPermissionContextFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "FederatedIdentitySharingPermissionContext",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 FederatedIdentitySharingPermissionContextFactory::
     ~FederatedIdentitySharingPermissionContextFactory() = default;
-
-content::BrowserContext*
-FederatedIdentitySharingPermissionContextFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
 
 KeyedService*
 FederatedIdentitySharingPermissionContextFactory::BuildServiceInstanceFor(
