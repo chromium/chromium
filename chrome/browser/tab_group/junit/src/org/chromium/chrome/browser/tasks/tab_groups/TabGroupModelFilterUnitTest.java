@@ -1042,4 +1042,12 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.closeTab(mTab1);
         mTabGroupModelFilter.indexOf(mTab1);
     }
+
+    @Test
+    public void testGetTotalTabCount() {
+        assertThat("Should have 4 group tabs", mTabGroupModelFilter.getCount(), equalTo(4));
+
+        int totalTabCount = mTabGroupModelFilter.getTotalTabCount();
+        assertThat("Should have 6 total tabs", totalTabCount, equalTo(6));
+    }
 }
