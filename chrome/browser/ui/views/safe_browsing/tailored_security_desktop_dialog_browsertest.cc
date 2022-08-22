@@ -36,7 +36,7 @@ views::Widget* ShowTailoredSecurityEnabledDialog(Browser* browser) {
       views::test::AnyWidgetTestPasskey{},
       safe_browsing::kTailoredSecurityNoticeDialog);
   safe_browsing::ShowEnabledDialogForWebContents(
-      browser->tab_strip_model()->GetActiveWebContents());
+      browser, browser->tab_strip_model()->GetActiveWebContents());
 
   return waiter.WaitIfNeededAndGet();
 }
@@ -46,7 +46,7 @@ views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
       views::test::AnyWidgetTestPasskey{},
       safe_browsing::kTailoredSecurityNoticeDialog);
   safe_browsing::ShowDisabledDialogForWebContents(
-      browser->tab_strip_model()->GetActiveWebContents());
+      browser, browser->tab_strip_model()->GetActiveWebContents());
 
   return waiter.WaitIfNeededAndGet();
 }
@@ -109,10 +109,10 @@ class TailoredSecurityDesktopDialogTest
     const std::string& actual_name = name.substr(0, name.find("/"));
     if (actual_name == "enabledDialog") {
       safe_browsing::ShowEnabledDialogForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser(), browser()->tab_strip_model()->GetActiveWebContents());
     } else if (actual_name == "disabledDialog") {
       safe_browsing::ShowDisabledDialogForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser(), browser()->tab_strip_model()->GetActiveWebContents());
     } else {
       FAIL() << "No dialog case defined for this string: " << name;
     }

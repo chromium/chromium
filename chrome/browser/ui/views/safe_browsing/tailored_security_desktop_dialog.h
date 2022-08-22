@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_DESKTOP_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_DESKTOP_DIALOG_H_
 
+#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/view.h"
 
@@ -20,10 +21,14 @@ static constexpr char kTailoredSecurityNoticeDialog[] =
     "TailoredSecurityNoticeDialog";
 
 // Creates and shows a dialog for when Tailored Security is enabled.
-void ShowEnabledDialogForWebContents(content::WebContents* web_contents);
+// TODO(crbug/1353914): remove unnecessary references to `web_contents`.
+void ShowEnabledDialogForWebContents(Browser* browser,
+                                     content::WebContents* web_contents);
 
 // Creates and shows a dialog for when Tailored Security is disabled.
-void ShowDisabledDialogForWebContents(content::WebContents* web_contents);
+// TODO(crbug/1353914): remove unnecessary references to `web_contents`.
+void ShowDisabledDialogForWebContents(Browser* browser,
+                                      content::WebContents* web_contents);
 
 }  // namespace safe_browsing
 

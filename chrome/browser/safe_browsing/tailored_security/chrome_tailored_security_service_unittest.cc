@@ -70,7 +70,8 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
   // ChromeTailoredSecurityService:
   // This method is overridden so we can detect the number of times that the
   // dialog has been requested to be shown and what the last value was.
-  void DisplayDesktopDialog(content::WebContents* web_contents,
+  void DisplayDesktopDialog(Browser* browser,
+                            content::WebContents* web_contents,
                             bool show_enable_dialog) override {
     previous_show_enable_dialog_value_ = show_enable_dialog;
     times_display_desktop_dialog_called_++;

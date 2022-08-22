@@ -13,6 +13,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"
 #endif
 
+class Browser;
 class Profile;
 namespace content {
 class WebContents;
@@ -33,7 +34,8 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   // Shows a dialog on the provided `web_contents`. If `show_enable_dialog` is
   // true, display the enabled dialog; otherwise show the disabled dialog. This
   // method is virtual to support testing.
-  virtual void DisplayDesktopDialog(content::WebContents* web_contents,
+  virtual void DisplayDesktopDialog(Browser* browser,
+                                    content::WebContents* web_contents,
                                     bool show_enable_dialog);
 #endif
 
