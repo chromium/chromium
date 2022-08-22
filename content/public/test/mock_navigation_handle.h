@@ -211,6 +211,7 @@ class MockNavigationHandle : public NavigationHandle {
   base::SafeRef<NavigationHandle> GetSafeRef() override {
     return weak_factory_.GetSafeRef();
   }
+  MOCK_METHOD(bool, ExistingDocumentWasDiscarded, (), (const));
 
   CommitDeferringCondition* GetCommitDeferringConditionForTesting() override {
     return nullptr;

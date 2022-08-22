@@ -345,6 +345,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
             kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName));
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
+    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+        kv.second.get(), PageLoad::kWasDiscardedName));
   }
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> pagevisit_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -2916,4 +2918,20 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
             result_metrics[0].begin()->first);
   EXPECT_FALSE(result_metrics[0].begin()->second);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, TestWasDiscarded) {
+  web_contents()->SetWasDiscarded(true);
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kWasDiscardedName, 1);
 }

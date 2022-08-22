@@ -394,6 +394,7 @@ class CONTENT_EXPORT NavigationRequest
   const base::android::JavaRef<jobject>& GetJavaNavigationHandle() override;
 #endif
   base::SafeRef<NavigationHandle> GetSafeRef() override;
+  bool ExistingDocumentWasDiscarded() const override;
 
   // mojom::NavigationRendererCancellationListener implementation
   void RendererCancellationWindowEnded() override;
