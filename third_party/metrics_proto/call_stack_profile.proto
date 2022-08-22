@@ -152,11 +152,11 @@ message CallStackProfile {
   // The stack samples collected for this profile.
   repeated StackSample stack_sample = 9;
 
-  // Time of the first sample relative to Chrome start. This value may be
-  // imprecise or wrong for Windows clients without high-resolution
-  // TimeTicks. TODO(wittman): Clarify the actual properties of this value for
-  // clients without high-resolution TimeTicks once we understand what they are.
-  optional int64 profile_start_time_offset_ms = 10;
+  // Time of the profile relative to the start of the process being profiled.
+  // For CPU profiles, this is the time of the first sample. For Heap profiles
+  // whose samples don't have defined times, it is the time the profile is
+  // collected.
+  optional int64 profile_time_offset_ms = 10;
 
   // Duration of this profile.
   optional int32 profile_duration_ms = 3;
