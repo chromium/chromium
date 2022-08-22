@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/process/process_metrics.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
@@ -225,11 +224,13 @@ HeapProfilerController::SnapshotParams::SnapshotParams(
     base::TimeDelta mean_interval,
     bool use_random_interval,
     scoped_refptr<StoppedFlag> stopped,
-    ProcessType process_type)
+    ProcessType process_type,
+    base::TimeTicks profiler_creation_time)
     : mean_interval(mean_interval),
       use_random_interval(use_random_interval),
       stopped(std::move(stopped)),
-      process_type(process_type) {}
+      process_type(process_type),
+      profiler_creation_time(profiler_creation_time) {}
 
 HeapProfilerController::SnapshotParams::~SnapshotParams() = default;
 
@@ -286,7 +287,7 @@ void HeapProfilerController::StartIfEnabled() {
   SnapshotParams params(
       /*mean_interval=*/base::Minutes(interval),
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
-      process_type_);
+      process_type_, creation_time_);
   ScheduleNextSnapshot(std::move(params));
 }
 
@@ -313,12 +314,16 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
   if (params.stopped->data.IsSet())
     return;
   RecordUmaSnapshotInterval(previous_interval, "Taken", params.process_type);
-  RetrieveAndSendSnapshot(params.process_type);
+  RetrieveAndSendSnapshot(
+      params.process_type,
+      base::TimeTicks::Now() - params.profiler_creation_time);
   ScheduleNextSnapshot(std::move(params));
 }
 
 // static
-void HeapProfilerController::RetrieveAndSendSnapshot(ProcessType process_type) {
+void HeapProfilerController::RetrieveAndSendSnapshot(
+    ProcessType process_type,
+    base::TimeDelta time_since_profiler_creation) {
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   constexpr char kSamplesPerSnapshotHistogramName[] =
@@ -336,7 +341,8 @@ void HeapProfilerController::RetrieveAndSendSnapshot(ProcessType process_type) {
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
       process_type, metrics::CallStackProfileParams::Thread::kUnknown,
-      metrics::CallStackProfileParams::Trigger::kPeriodicHeapCollection);
+      metrics::CallStackProfileParams::Trigger::kPeriodicHeapCollection,
+      time_since_profiler_creation);
   metrics::CallStackProfileBuilder profile_builder(params);
 
   heap_profiling::SampleMap merged_samples =

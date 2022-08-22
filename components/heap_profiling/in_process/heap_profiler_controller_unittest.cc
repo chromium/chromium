@@ -91,6 +91,12 @@ class HeapProfilerControllerTest : public ::testing::Test {
     EXPECT_EQ(sampled_profile.trigger_event(),
               metrics::SampledProfile::PERIODIC_HEAP_COLLECTION);
     EXPECT_EQ(sampled_profile.process(), expected_process_);
+    // The mock clock should not have advanced since the sample was recorded, so
+    // the collection time can be compared exactly.
+    const base::TimeDelta expected_time_offset =
+        task_environment_.NowTicks() - profiler_creation_time_;
+    EXPECT_EQ(sampled_profile.call_stack_profile().profile_time_offset_ms(),
+              expected_time_offset.InMilliseconds());
     sample_received_ = true;
   }
 
@@ -166,6 +172,7 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
     ASSERT_EQ(HeapProfilerController::GetProfilingEnabled(),
               HeapProfilerController::ProfilingEnabled::kNoController);
+    profiler_creation_time_ = task_environment_.NowTicks();
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
     controller_->SuppressRandomnessForTesting();
@@ -213,6 +220,11 @@ class HeapProfilerControllerTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   mojo::SelfOwnedReceiverRef<metrics::mojom::CallStackProfileCollector>
       child_profile_collector_;
+
+  // The creation time of the HeapProfilerController, saved so that
+  // RecordSampleReceived() can test that SampledProfile::ms_after_login() in
+  // that sample is a delta from the creation time.
+  base::TimeTicks profiler_creation_time_;
 
   // Expected process type in a sample.
   metrics::Process expected_process_ = metrics::Process::UNKNOWN_PROCESS;
