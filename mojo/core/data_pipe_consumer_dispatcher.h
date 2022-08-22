@@ -17,6 +17,7 @@
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watcher_set.h"
+#include "mojo/public/c/system/data_pipe.h"
 
 namespace mojo {
 namespace core {

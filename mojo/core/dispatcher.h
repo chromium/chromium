@@ -13,26 +13,29 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
-#include "base/synchronization/lock.h"
+#include "base/strings/string_piece_forward.h"
 #include "mojo/core/handle_signals_state.h"
-#include "mojo/core/ports/name.h"
-#include "mojo/core/ports/port_ref.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"
-#include "mojo/public/c/system/buffer.h"
-#include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/platform/platform_handle.h"
+
+struct MojoDuplicateBufferHandleOptions;
+struct MojoReadDataOptions;
+struct MojoSharedBufferInfo;
+struct MojoWriteDataOptions;
 
 namespace mojo {
+
+class PlatformHandle;
+
 namespace core {
 
 namespace ports {
+class PortRef;
 class UserMessageEvent;
+struct PortName;
 }
 
 class Dispatcher;
