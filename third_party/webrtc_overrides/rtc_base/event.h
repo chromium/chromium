@@ -33,19 +33,7 @@ class RTC_EXPORT Event {
   // Wait for the event to become signaled, for the specified duration. To wait
   // indefinitely, pass kForever.
   bool Wait(webrtc::TimeDelta give_up_after);
-  // TODO(bugs.webrtc.org/13756): Remove after millisec-based Wait is removed.
-  bool Wait(int give_up_after_ms) {
-    // SocketServer users can get here with SocketServer::kForever which is -1.
-    // Mirror the definition here to avoid dependence.
-    constexpr int kForeverMs = -1;
-    return Wait(give_up_after_ms == kForeverMs
-                    ? kForever
-                    : webrtc::TimeDelta::Millis(give_up_after_ms));
-  }
-  // TODO(bugs.webrtc.org/13756): De-template this after millisec-based Wait is
-  // removed.
-  template <class T, class U>
-  bool Wait(T give_up_after, U /*warn_after*/) {
+  bool Wait(webrtc::TimeDelta give_up_after, webrtc::TimeDelta /*warn_after*/) {
     return Wait(give_up_after);
   }
 
