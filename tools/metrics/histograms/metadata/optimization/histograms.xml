@@ -51,6 +51,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
   <variant name="SegmentationShare" summary="Segmentation: Share user"/>
+  <variant name="SegmentationShoppingUser"
+      summary="Segmentation: Shopping user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
 </variants>

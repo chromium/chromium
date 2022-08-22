@@ -73,6 +73,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ContextualPageActionPriceTracking";
     case proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER:
       return "TextClassifier";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER:
+      return "SegmentationShoppingUser";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

@@ -14,6 +14,8 @@ package segmentation_platform.proto;
 // OptimizationTarget. If the segment only uses default model, then the segment
 // should have a value higher than `MAX_OPTIMIZATION_TARGET`.
 enum SegmentId {
+  reserved 20;
+  
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
@@ -53,8 +55,10 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
   // Target for price tracking action when shown as a contextual page action.
   OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
+  // Target for smart text selection and entity extraction.
+  OPTIMIZATION_TARGET_TEXT_CLASSIFIER = 19;
   // Target for segmentation: Determine users who are interested in shopping.
-  OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 19;
+  OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 21;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
