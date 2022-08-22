@@ -31,6 +31,7 @@ TEST_F(AssistantZeroStateViewUnittest, Theme) {
       /*enabled_features=*/{}, /*disabled_features=*/{
           chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
           features::kProductivityLauncher});
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
 
   ShowAssistantUi();
 

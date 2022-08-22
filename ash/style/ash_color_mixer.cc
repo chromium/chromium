@@ -386,9 +386,20 @@ void AddAshColorMixer(ui::ColorProvider* provider,
         cros_tokens::kColorPrimaryLight};
     mixer[kColorAshSuggestionChipViewTextView] = {
         cros_tokens::kColorSecondaryLight};
+    mixer[kColorAshAssistantQueryHighConfidenceLabel] = {
+        cros_tokens::kColorPrimaryLight};
+    mixer[kColorAshAssistantQueryLowConfidenceLabel] = {
+        cros_tokens::kColorSecondaryLight};
+    mixer[kColorAshAssistantTextColorPrimary] = {
+        cros_tokens::kColorPrimaryLight};
   } else {
     mixer[kColorAshAssistantGreetingEnabled] = {cros_tokens::kColorPrimary};
     mixer[kColorAshSuggestionChipViewTextView] = {cros_tokens::kColorSecondary};
+    mixer[kColorAshAssistantQueryHighConfidenceLabel] = {
+        cros_tokens::kColorPrimary};
+    mixer[kColorAshAssistantQueryLowConfidenceLabel] = {
+        cros_tokens::kColorSecondary};
+    mixer[kColorAshAssistantTextColorPrimary] = {cros_tokens::kColorPrimary};
   }
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {

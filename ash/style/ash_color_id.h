@@ -95,7 +95,10 @@ namespace ash {
   E_CPONLY(kColorAshInkDropOpaqueColor) \
   /* Colors for Google Assistant */ \
   E_CPONLY(kColorAshAssistantGreetingEnabled) \
-  E_CPONLY(kColorAshSuggestionChipViewTextView)
+  E_CPONLY(kColorAshSuggestionChipViewTextView) \
+  E_CPONLY(kColorAshAssistantQueryHighConfidenceLabel) \
+  E_CPONLY(kColorAshAssistantQueryLowConfidenceLabel) \
+  E_CPONLY(kColorAshAssistantTextColorPrimary)
 
 #include "ui/color/color_id_macros.inc"
 

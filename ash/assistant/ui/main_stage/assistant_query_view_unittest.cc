@@ -84,6 +84,8 @@ TEST_F(AssistantQueryViewUnittest, Theme) {
       /*enabled_features=*/{}, /*disabled_features=*/{
           chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
           features::kProductivityLauncher});
+  // Colors depend on feature flags. Cache needs to be cleared.
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
 
   ShowAssistantUi();
 

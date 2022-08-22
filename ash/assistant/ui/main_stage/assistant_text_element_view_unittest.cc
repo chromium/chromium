@@ -64,6 +64,7 @@ TEST_F(AssistantTextElementViewTest, DarkAndLightModeFlagOff) {
       /*enabled_features=*/{}, /*disabled_features=*/{
           chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
           features::kProductivityLauncher});
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
 
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   AssistantTextElementView* text_element_view = widget->SetContentsView(
