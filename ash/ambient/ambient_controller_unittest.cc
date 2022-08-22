@@ -23,11 +23,16 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/callback.h"
+#include "base/location.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
@@ -43,11 +48,51 @@
 #include "ui/events/types/event_type.h"
 
 namespace ash {
+namespace {
 
 using chromeos::assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
+
+class AmbientUiVisibilityBarrier : public AmbientUiModelObserver {
+ public:
+  explicit AmbientUiVisibilityBarrier(AmbientUiVisibility target_visibility)
+      : target_visibility_(target_visibility) {
+    observation_.Observe(AmbientUiModel::Get());
+  }
+  AmbientUiVisibilityBarrier(const AmbientUiVisibilityBarrier&) = delete;
+  AmbientUiVisibilityBarrier& operator=(const AmbientUiVisibilityBarrier&) =
+      delete;
+  ~AmbientUiVisibilityBarrier() override = default;
+
+  void WaitWithTimeout(base::TimeDelta timeout) {
+    if (AmbientUiModel::Get()->ui_visibility() == target_visibility_)
+      return;
+
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, timeout);
+    base::RunLoop run_loop;
+    run_loop_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override {
+    if (visibility == target_visibility_ && run_loop_quit_closure_) {
+      // Post task so that any existing tasks get run before WaitWithTimeout()
+      // completes.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(run_loop_quit_closure_));
+    }
+  }
+
+  const AmbientUiVisibility target_visibility_;
+  base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver> observation_{
+      this};
+  base::RepeatingClosure run_loop_quit_closure_;
+};
+
+}  // namespace
 
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
@@ -778,6 +823,65 @@ TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
   CloseAmbientScreen();
 }
 
+TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithLockScreen) {
+  // Simulate failures to download FIFE urls. Ambient mode should close and
+  // remember the old failure.
+  SetDownloadPhotoData("");
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  ASSERT_FALSE(ambient_controller()->IsShown());
+  UnlockScreen();
+
+  // Now simulate FIFE downloads starting to work again. The device should be
+  // able to enter ambient mode.
+  ClearDownloadPhotoData();
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithDimmedScreen) {
+  GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
+  SetPowerStateCharging();
+
+  // Simulate failures to download FIFE urls. Ambient mode should close and
+  // remember the old failure.
+  SetDownloadPhotoData("");
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/false, /*is_off=*/false);
+
+  // Usually would enter ambient mode when the screen is dimmed, but this time
+  // it shouldn't because of the previous image failures.
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_FALSE(ambient_controller()->IsShown());
+
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/false, /*is_off=*/false);
+
+  // Now simulate FIFE downloads starting to work again. The device should be
+  // able to enter ambient mode.
+  ClearDownloadPhotoData();
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  // Closes ambient for clean-up.
+  CloseAmbientScreen();
+}
+
 TEST_F(AmbientControllerTest, ShouldHideAmbientScreenWhenDisplayIsOff) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
   EXPECT_FALSE(ambient_controller()->IsShown());
@@ -875,6 +979,18 @@ TEST_F(AmbientControllerTest,
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, HandlesPhotoDownloadOutage) {
+  SetDownloadPhotoData("");
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+  AmbientUiVisibilityBarrier ambient_closed_barrier(
+      AmbientUiVisibility::kClosed);
+  ambient_closed_barrier.WaitWithTimeout(base::Seconds(15));
+  EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
 TEST_P(AmbientControllerTestForAnyTheme, HideCursor) {

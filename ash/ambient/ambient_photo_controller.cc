@@ -304,9 +304,11 @@ void AmbientPhotoController::TryReadPhotoFromCache() {
       LOG(WARNING) << "Failed to read from cache";
       ambient_backend_model_.AddImageFailure();
       // Do not refresh image if image loading has failed repeatedly, or there
-      // are no more topics to retry.
+      // are no more topics to retry. Note |ambient_topic_queue_| may be null
+      // if AddImageFailure() ultimately led to an AmbientBackendModelObserver
+      // calling StopScreenUpdate().
       if (ambient_backend_model_.ImageLoadingFailed() ||
-          ambient_topic_queue_->IsEmpty()) {
+          !ambient_topic_queue_ || ambient_topic_queue_->IsEmpty()) {
         LOG(WARNING) << "Not attempting image refresh";
         return;
       }
