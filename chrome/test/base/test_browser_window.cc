@@ -237,6 +237,10 @@ bool TestBrowserWindow::IsLocationBarVisible() const {
   return false;
 }
 
+bool TestBrowserWindow::IsBorderlessModeEnabled() const {
+  return false;
+}
+
 ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
     content::WebContents* contents,
     translate::TranslateStep step,

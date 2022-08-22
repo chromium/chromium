@@ -620,6 +620,10 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows an Incognito history disclaimer dialog.
   virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
 
+  // Returns true when the borderless mode should be displayed instead
+  // of a full titlebar. This is only supported for desktop web apps.
+  virtual bool IsBorderlessModeEnabled() const = 0;
+
  protected:
   friend class BrowserCloseManager;
   friend class BrowserView;

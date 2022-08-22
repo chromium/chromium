@@ -143,6 +143,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsToolbarVisible() const override;
   bool IsLocationBarVisible() const override;
   bool IsToolbarShowing() const override;
+  bool IsBorderlessModeEnabled() const override;
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}

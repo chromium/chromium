@@ -1986,10 +1986,10 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
       return blink::mojom::DisplayMode::kWindowControlsOverlay;
     }
 
-    // TODO(crbug.com/1325830): Add check for the Window Management API
-    // permission status.
-    if (app_controller_ && app_controller_->AppUsesBorderlessMode())
+    if (app_controller_ && app_controller_->AppUsesBorderlessMode() &&
+        window_->IsBorderlessModeEnabled()) {
       return blink::mojom::DisplayMode::kBorderless;
+    }
 
     return blink::mojom::DisplayMode::kStandalone;
   }

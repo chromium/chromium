@@ -405,10 +405,6 @@ class BrowserView : public BrowserWindow,
   // of a full titlebar. This is only supported for desktop web apps.
   bool IsWindowControlsOverlayEnabled() const;
 
-  // Returns true when the borderless mode should be displayed instead
-  // of a full titlebar. This is only supported for desktop web apps.
-  bool IsBorderlessModeEnabled() const;
-
   // Enable or disable the window controls overlay and notify the browser frame
   // view of the update.
   void ToggleWindowControlsOverlayEnabled();
@@ -519,6 +515,7 @@ class BrowserView : public BrowserWindow,
   bool IsToolbarVisible() const override;
   bool IsToolbarShowing() const override;
   bool IsLocationBarVisible() const override;
+  bool IsBorderlessModeEnabled() const override;
 
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
