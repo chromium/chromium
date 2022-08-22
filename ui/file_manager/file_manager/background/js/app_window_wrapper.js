@@ -4,10 +4,7 @@
 
 import './app_windows.js';
 
-import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-
 import {openWindow} from '../../common/js/api.js';
-import {appUtil} from '../../common/js/app_util.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {xfm} from '../../common/js/xfm.js';
@@ -306,12 +303,6 @@ export class AppWindowWrapper {
     this.window_ = null;
     this.openingOrOpened_ = false;
 
-    // Updates preferences.
-    if (contentWindow.saveOnExit) {
-      contentWindow.saveOnExit.forEach(entry => {
-        appUtil.AppCache.update(entry.key, entry.value);
-      });
-    }
     xfm.storage.local.remove(this.id_);  // Forget the persisted state.
 
     // Remove the window from the set.
@@ -354,83 +345,3 @@ AppWindowWrapper.makeGeometryKey = url => {
  * @const
  */
 AppWindowWrapper.SHIFT_DISTANCE = 40;
-
-/**
- * Wrapper for a singleton app window.
- *
- * In addition to the AppWindowWrapper requirements the app scripts should
- * have |reload| method that re-initializes the app based on a changed
- * |window.appState|.
- */
-export class SingletonAppWindowWrapper extends AppWindowWrapper {
-  /**
-   * @param {string} url App window content url.
-   * @param {Object|function()} options Options object or a function to return
-   *     it.
-   */
-  constructor(url, options) {
-    super(url, url, options);
-  }
-
-  /**
-   * Open the window.
-   *
-   * Activates an existing window or creates a new one.
-   *
-   * @param {!FilesAppState} appState App state.
-   * @param {boolean} reopen True if the launching is triggered automatically.
-   *     False otherwise.
-   * @return {Promise} Resolved when the window is launched.
-   */
-  async launch(appState, reopen) {
-    // If the window is not opened yet, just call the parent method.
-    if (!this.openingOrOpened_) {
-      return super.launch(appState, reopen);
-    }
-
-    // The lock is used to wait until the window is opened and set in
-    // this.window_.
-    const unlock = await this.getLaunchLock();
-
-    try {
-      // If the window is already opened, reload the window.
-      this.window_.contentWindow.appState = appState;
-      this.window_.contentWindow.appReopen = reopen;
-      if (!this.window_.contentWindow.reload) {
-        // Currently the queue is not made to wait for window loading after
-        // creating window. Therefore contentWindow might not have the reload()
-        // function ready yet. This happens when launching the same app twice
-        // quickly. See crbug.com/789226.
-        console.warn('Window reload requested before loaded. Skiping.');
-      } else {
-        this.window_.contentWindow.reload();
-      }
-    } finally {
-      unlock();
-    }
-  }
-
-  /**
-   * Reopen a window if its state is saved in the local xfm.storage.
-   * @param {function()=} opt_callback Completion callback.
-   */
-  async reopen(opt_callback) {
-    const items = await xfm.storage.local.getAsync(this.id_);
-    const value = /** @type {string} */ (items[this.id_]);
-    if (!value) {
-      opt_callback && opt_callback();
-      return;  // No app state persisted.
-    }
-
-    let appState;
-    try {
-      appState = assertInstanceof(JSON.parse(value), Object);
-    } catch (e) {
-      console.error('Corrupt launch data for ' + this.id_, value);
-      opt_callback && opt_callback();
-      return;
-    }
-    await this.launch(appState, true);
-    opt_callback && opt_callback();
-  }
-}

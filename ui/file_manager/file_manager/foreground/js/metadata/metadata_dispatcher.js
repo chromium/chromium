@@ -10,11 +10,6 @@ import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_pa
 import {MetadataParser} from './metadata_parser.js';
 import {MpegParser} from './mpeg_parser.js';
 
-// All of these scripts could be imported with a single call to importScripts,
-// but then load and compile time errors would all be reported from the same
-// line. Note: update component_extension_resources.grd when adding new parsers.
-
-
 /**
  * Dispatches metadata requests to the correct parser.
  * @implements {MetadataParserLogger}

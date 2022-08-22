@@ -116,23 +116,6 @@ util.htmlEscape = str => {
 };
 
 /**
- * @param {string} str String to unescape.
- * @return {string} Unescaped string.
- */
-util.htmlUnescape = str => {
-  return str.replace(/&(lt|gt|amp);/g, entity => {
-    switch (entity) {
-      case '&lt;':
-        return '<';
-      case '&gt;':
-        return '>';
-      case '&amp;':
-        return '&';
-    }
-  });
-};
-
-/**
  * Remove a file or a directory.
  * @param {Entry} entry The entry to remove.
  * @param {function()} onSuccess The success callback.
@@ -226,29 +209,6 @@ util.bytesToString = (bytes, addedPrecision = 0) => {
 util.getKeyModifiers = event => {
   return (event.ctrlKey ? 'Ctrl-' : '') + (event.altKey ? 'Alt-' : '') +
       (event.shiftKey ? 'Shift-' : '') + (event.metaKey ? 'Meta-' : '');
-};
-
-/**
- * @typedef {?{
- *   scaleX: number,
- *   scaleY: number,
- *   rotate90: number
- * }}
- */
-util.Transform;
-
-/**
- * @param {Element} element Element to transform.
- * @param {util.Transform} transform Transform object,
- *                           contains scaleX, scaleY and rotate90 properties.
- */
-util.applyTransform = (element, transform) => {
-  // The order of rotate and scale matters.
-  element.style.transform = transform ?
-      'rotate(' + transform.rotate90 * 90 + 'deg)' +
-          'scaleX(' + transform.scaleX + ') ' +
-          'scaleY(' + transform.scaleY + ') ' :
-      '';
 };
 
 /**

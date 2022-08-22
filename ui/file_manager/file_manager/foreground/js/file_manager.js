@@ -405,14 +405,6 @@ export class FileManager extends EventTarget {
     this.initBackgroundPagePromise_ = null;
 
     /**
-     * Flags async retrieved once at startup and can be used to switch behaviour
-     * on sync functions.
-     * @dict
-     * @private
-     */
-    this.commandLineFlags_ = {};
-
-    /**
      * Whether Drive is enabled. Retrieved from user preferences.
      * @private {?boolean}
      */
@@ -967,7 +959,7 @@ export class FileManager extends EventTarget {
 
       this.launchParams_ = new LaunchParam(params);
     } else {
-      // Used by the select dialog only.
+      // Used by the select dialog and SWA.
       let json = {};
       if (location.search) {
         const query = location.search.substr(1);

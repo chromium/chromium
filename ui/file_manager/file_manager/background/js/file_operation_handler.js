@@ -69,7 +69,7 @@ export class FileOperationHandler {
    * @param {!chrome.fileManagerPrivate.ProgressStatus} event
    * @private
    */
-  async onIOTaskProgressStatus_(event) {
+  onIOTaskProgressStatus_(event) {
     if (event.type === chrome.fileManagerPrivate.IOTaskType.TRASH) {
       if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
         this.showRestoreTrashToast_(event);

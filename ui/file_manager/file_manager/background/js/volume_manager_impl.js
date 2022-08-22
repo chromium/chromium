@@ -105,10 +105,10 @@ export class VolumeManagerImpl extends EventTarget {
    * Adds new volume info from the given volumeMetadata. If the corresponding
    * volume info has already been added, the volumeMetadata is ignored.
    * @param {!VolumeInfo} volumeInfo
-   * @return {!Promise<!VolumeInfo>}
+   * @return {!VolumeInfo}
    * @private
    */
-  async addVolumeInfo_(volumeInfo) {
+  addVolumeInfo_(volumeInfo) {
     const volumeType = volumeInfo.volumeType;
 
     // We don't show Downloads and Drive on volume list if they have
@@ -193,7 +193,7 @@ export class VolumeManagerImpl extends EventTarget {
           volumeInfo = await volumeManagerUtil.createVolumeInfo(volumeMetadata);
           // Add addVolumeInfo_() changes the VolumeInfoList which propagates
           // to the foreground.
-          await this.addVolumeInfo_(volumeInfo);
+          this.addVolumeInfo_(volumeInfo);
           console.debug(`Initialized volume #${idx} ${volumeId}'`);
         } catch (error) {
           console.warn(`Error initiliazing #${idx} ${volumeId}: ${error}`);
@@ -267,7 +267,7 @@ export class VolumeManagerImpl extends EventTarget {
               this.finishRequest_(requestKey, status);
               throw (error);
             }
-            await this.addVolumeInfo_(volumeInfo);
+            this.addVolumeInfo_(volumeInfo);
             this.finishRequest_(requestKey, status, volumeInfo);
             return;
           }
