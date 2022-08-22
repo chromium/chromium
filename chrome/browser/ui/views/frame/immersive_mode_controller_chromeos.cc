@@ -30,7 +30,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/ash/window_pin_util.h"
-#include "chromeos/ui/base/window_state_type.h"
 #else
 #include "chrome/browser/ui/lacros/window_properties.h"
 #endif

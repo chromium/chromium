@@ -56,8 +56,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
-#else
-#include "chrome/browser/themes/theme_properties.h"
 #endif
 
 namespace {

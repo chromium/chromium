@@ -291,9 +291,6 @@
 #undef LoadAccelerators
 #endif
 
-#include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
-#include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
