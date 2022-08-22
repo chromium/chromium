@@ -6,9 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/services/libassistant/callback_utils.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
-#include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/external_services/action_args.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 

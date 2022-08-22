@@ -79,8 +79,8 @@ component("lib") {
   if (enable_cros_libassistant) {
     deps += [
       "//chromeos/ash/services/assistant/public/cpp",
-      "//chromeos/services/libassistant",
-      "//chromeos/services/libassistant:loader",
+      "//chromeos/ash/services/libassistant",
+      "//chromeos/ash/services/libassistant:loader",
     ]
   } else {
     sources +=

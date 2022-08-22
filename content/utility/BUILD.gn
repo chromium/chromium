@@ -113,8 +113,8 @@ source_set("utility") {
     ]
   }
 
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/libassistant:sandbox_hook" ]
+  if (is_chromeos_ash && enable_cros_libassistant) {
+    deps += [ "//chromeos/ash/services/libassistant:sandbox_hook" ]
   }
 
   # PAC execution is done in process on Android.

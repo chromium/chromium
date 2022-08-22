@@ -27,9 +27,6 @@ source_set("unit_tests") {
   ]
 
   if (enable_cros_libassistant) {
-    deps += [
-      "//chromeos/services/libassistant:unit_tests",
-      "//chromeos/services/libassistant/grpc:unit_tests",
-    ]
+    deps += [ "//chromeos/services/libassistant/grpc:unit_tests" ]
   }
 }
