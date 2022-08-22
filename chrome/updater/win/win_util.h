@@ -81,19 +81,6 @@ class ProcessFilterName : public base::ProcessFilter {
 // NO_ERROR to E_FAIL.
 HRESULT HRESULTFromLastError();
 
-// Returns an HRESULT with a custom facility code representing an updater error.
-// The updater error should be a small positive or a small negative 16-bit
-// integral value.
-template <typename Error>
-HRESULT HRESULTFromUpdaterError(Error error) {
-  constexpr ULONG kSeverityError = 0x80000000;
-  constexpr ULONG kCustomerBit = 0x20000000;
-  constexpr ULONG kFacilityOmaha = 67;
-  return static_cast<HRESULT>(kSeverityError | kCustomerBit |
-                              (kFacilityOmaha << 16) |
-                              static_cast<ULONG>(error));
-}
-
 // Checks whether a process is running with the image |executable|. Returns true
 // if a process is found.
 bool IsProcessRunning(const wchar_t* executable);

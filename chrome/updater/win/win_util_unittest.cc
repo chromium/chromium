@@ -29,23 +29,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-namespace {
-
-// Converts an unsigned long integral to an HRESULT to avoid the
-// warning about a narrowing conversion.
-HRESULT MakeHRESULT(unsigned long x) {
-  return static_cast<HRESULT>(x);
-}
-
-}  // namespace
-
-TEST(WinUtil, HRESULTFromUpdaterError) {
-  EXPECT_EQ(HRESULTFromUpdaterError(0), MakeHRESULT(0xa0430000L));
-  EXPECT_EQ(HRESULTFromUpdaterError(ERROR_ACCESS_DENIED),
-            MakeHRESULT(0xa0430005));
-  EXPECT_EQ(HRESULTFromUpdaterError(-1), -1);
-  EXPECT_EQ(HRESULTFromUpdaterError(-10), -10);
-}
 
 TEST(WinUtil, GetDownloadProgress) {
   EXPECT_EQ(GetDownloadProgress(0, 50), 0);
