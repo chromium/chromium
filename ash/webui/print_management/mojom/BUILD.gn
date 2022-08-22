@@ -10,6 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "printing_manager.mojom" ]
 
+  webui_module_path = "/ash/webui/print_management"
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

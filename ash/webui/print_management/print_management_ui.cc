@@ -123,8 +123,8 @@ PrintManagementUI::PrintManagementUI(
                                          kAshPrintManagementResourcesSize);
   SetUpWebUIDataSource(html_source, resources, IDR_PRINT_MANAGEMENT_INDEX_HTML);
 
-  html_source->AddResourcePath("printing_manager.mojom-lite.js",
-                               IDR_PRINTING_MANAGER_MOJO_LITE_JS);
+  html_source->AddResourcePath("printing_manager.mojom-webui.js",
+                               IDR_PRINTING_MANAGER_MOJO_WEBUI_JS);
 
   AddPrintManagementStrings(html_source);
 }

@@ -9,10 +9,6 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import './print_job_clear_history_dialog.js';
 import './print_job_entry.js';
 import './print_management_fonts_css.js';
@@ -25,19 +21,20 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
+import {ActivePrintJobState, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;
 const METADATA_NOT_STORED = 0;
 
 /**
- * @typedef {Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
+ * @typedef {Array<!PrintJobInfo>}
  */
 let PrintJobInfoArr;
 
 /**
- * @param {!ash.printing.printingManager.mojom.PrintJobInfo} first
- * @param {!ash.printing.printingManager.mojom.PrintJobInfo} second
+ * @param {!PrintJobInfo} first
+ * @param {!PrintJobInfo} second
  * @return {number}
  */
 function comparePrintJobsReverseChronologically(first, second) {
@@ -45,8 +42,8 @@ function comparePrintJobsReverseChronologically(first, second) {
 }
 
 /**
- * @param {!ash.printing.printingManager.mojom.PrintJobInfo} first
- * @param {!ash.printing.printingManager.mojom.PrintJobInfo} second
+ * @param {!PrintJobInfo} first
+ * @param {!PrintJobInfo} second
  * @return {number}
  */
 function comparePrintJobsChronologically(first, second) {
@@ -152,9 +149,7 @@ class PrintManagementElement extends PrintManagementElementBase {
       /**
        * Receiver responsible for observing print job updates notification
        * events.
-       * @private {
-       *   ?ash.printing.printingManager.mojom.PrintJobsObserverReceiver
-       * }
+       * @private {?PrintJobsObserverReceiver}
        */
       printJobsObserverReceiver_: {type: Object},
     };
@@ -197,13 +192,11 @@ class PrintManagementElement extends PrintManagementElementBase {
 
   /** @private */
   startObservingPrintJobs_() {
-    this.printJobsObserverReceiver_ =
-        new ash.printing.printingManager.mojom.PrintJobsObserverReceiver(
-            /**
-             * @type {!ash.printing.printingManager.mojom.
-             *        PrintJobsObserverInterface}
-             */
-            (this));
+    this.printJobsObserverReceiver_ = new PrintJobsObserverReceiver(
+        /**
+         * @type {!PrintJobsObserverInterface}
+         */
+        (this));
     this.mojoInterfaceProvider_.observePrintJobs(
         this.printJobsObserverReceiver_.$.bindNewPipeAndPassRemote())
         .then(() => {
@@ -230,15 +223,15 @@ class PrintManagementElement extends PrintManagementElementBase {
   }
 
   /**
-   * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
+   * Overrides PrintJobsObserverInterface
    */
   onAllPrintJobsDeleted() {
     this.getPrintJobs_();
   }
 
   /**
-   * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
-   * @param {!ash.printing.printingManager.mojom.PrintJobInfo} job
+   * Overrides PrintJobsObserverInterface
+   * @param {!PrintJobInfo} job
    */
   onPrintJobUpdate(job) {
     // Only update ongoing print jobs.
@@ -257,7 +250,7 @@ class PrintManagementElement extends PrintManagementElementBase {
     }
 
     if (job.activePrintJobInfo.activeState ===
-        ash.printing.printingManager.mojom.ActivePrintJobState.kDocumentDone) {
+        ActivePrintJobState.kDocumentDone) {
       // This print job is now completed, next step is to update the history
       // list with the recently stored print job.
       this.getPrintJobs_();

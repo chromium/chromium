@@ -5,27 +5,25 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './icons.js';
 import './print_management_fonts_css.js';
 import './print_management_shared_css.js';
-import './printing_manager.mojom-lite.js';
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
+import {PrinterErrorCode, PrintJobCompletionStatus, PrintJobInfo} from './printing_manager.mojom-webui.js';
 
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
 
@@ -49,7 +47,7 @@ const ICON_CLASS_MAP = new Map([
 
 /**
  * Converts a mojo time to a JS time.
- * @param {!mojoBase.mojom.Time} mojoTime
+ * @param {!Time} mojoTime
  * @return {!Date}
  */
 function convertMojoTimeToJS(mojoTime) {
@@ -185,7 +183,7 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
 
   static get properties() {
     return {
-      /** @type {!ash.printing.printingManager.mojom.PrintJobInfo} */
+      /** @type {!PrintJobInfo} */
       jobEntry: {
         type: Object,
       },
@@ -372,7 +370,7 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
 
   /**
    * Converts utf16 to a readable string.
-   * @param {!mojoBase.mojom.String16} arr
+   * @param {!String16} arr
    * @return {string}
    * @private
    */
@@ -383,7 +381,7 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
   /**
    * Converts mojo time to JS time. Returns "Today" if |mojoTime| is at the
    * current day.
-   * @param {!mojoBase.mojom.Time} mojoTime
+   * @param {!Time} mojoTime
    * @return {string}
    * @private
    */
@@ -403,19 +401,18 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
 
   /**
    * Returns the corresponding completion status from |mojoCompletionStatus|.
-   * @param {!ash.printing.printingManager.mojom.PrintJobCompletionStatus}
+   * @param {!PrintJobCompletionStatus}
    *     mojoCompletionStatus
    * @return {string}
    * @private
    */
   convertStatusToString_(mojoCompletionStatus) {
     switch (mojoCompletionStatus) {
-      case ash.printing.printingManager.mojom.PrintJobCompletionStatus.kFailed:
+      case PrintJobCompletionStatus.kFailed:
         return this.getFailedStatusString_(this.jobEntry.printerErrorCode);
-      case ash.printing.printingManager.mojom.PrintJobCompletionStatus
-          .kCanceled:
+      case PrintJobCompletionStatus.kCanceled:
         return loadTimeData.getString('completionStatusCanceled');
-      case ash.printing.printingManager.mojom.PrintJobCompletionStatus.kPrinted:
+      case PrintJobCompletionStatus.kPrinted:
         return loadTimeData.getString('completionStatusPrinted');
       default:
         assertNotReached();
@@ -518,38 +515,36 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
   }
 
   /**
-   * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
+   * @param {!PrinterErrorCode}
    *     mojoPrinterErrorCode
    * @return {string}
    * @private
    */
   getFailedStatusString_(mojoPrinterErrorCode) {
     switch (mojoPrinterErrorCode) {
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kNoError:
+      case PrinterErrorCode.kNoError:
         return loadTimeData.getString('completionStatusPrinted');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
+      case PrinterErrorCode.kPaperJam:
         return loadTimeData.getString('paperJam');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
+      case PrinterErrorCode.kOutOfPaper:
         return loadTimeData.getString('outOfPaper');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
+      case PrinterErrorCode.kOutOfInk:
         return loadTimeData.getString('outOfInk');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
+      case PrinterErrorCode.kDoorOpen:
         return loadTimeData.getString('doorOpen');
-      case ash.printing.printingManager.mojom.PrinterErrorCode
-          .kPrinterUnreachable:
+      case PrinterErrorCode.kPrinterUnreachable:
         return loadTimeData.getString('printerUnreachable');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing:
+      case PrinterErrorCode.kTrayMissing:
         return loadTimeData.getString('trayMissing');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
+      case PrinterErrorCode.kOutputFull:
         return loadTimeData.getString('outputFull');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kStopped:
+      case PrinterErrorCode.kStopped:
         return loadTimeData.getString('stopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed:
+      case PrinterErrorCode.kFilterFailed:
         return loadTimeData.getString('filterFailed');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
+      case PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterError');
-      case ash.printing.printingManager.mojom.PrinterErrorCode
-          .kClientUnauthorized:
+      case PrinterErrorCode.kClientUnauthorized:
         return loadTimeData.getString('clientUnauthorized');
       default:
         assertNotReached();
@@ -558,7 +553,7 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
   }
 
   /**
-   * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
+   * @param {!PrinterErrorCode}
    *     mojoPrinterErrorCode
    * @return {string}
    * @private
@@ -569,31 +564,29 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     }
 
     switch (mojoPrinterErrorCode) {
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kNoError:
+      case PrinterErrorCode.kNoError:
         return '';
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
+      case PrinterErrorCode.kPaperJam:
         return loadTimeData.getString('paperJamStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
+      case PrinterErrorCode.kOutOfPaper:
         return loadTimeData.getString('outOfPaperStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
+      case PrinterErrorCode.kOutOfInk:
         return loadTimeData.getString('outOfInkStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
+      case PrinterErrorCode.kDoorOpen:
         return loadTimeData.getString('doorOpenStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing:
+      case PrinterErrorCode.kTrayMissing:
         return loadTimeData.getString('trayMissingStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
+      case PrinterErrorCode.kOutputFull:
         return loadTimeData.getString('outputFullStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kStopped:
+      case PrinterErrorCode.kStopped:
         return loadTimeData.getString('stoppedGeneric');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed:
+      case PrinterErrorCode.kFilterFailed:
         return loadTimeData.getString('filterFailed');
-      case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
+      case PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterErrorStopped');
-      case ash.printing.printingManager.mojom.PrinterErrorCode
-          .kClientUnauthorized:
+      case PrinterErrorCode.kClientUnauthorized:
         return loadTimeData.getString('clientUnauthorized');
-      case ash.printing.printingManager.mojom.PrinterErrorCode
-          .kPrinterUnreachable:
+      case PrinterErrorCode.kPrinterUnreachable:
         assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');
       default:

@@ -12,6 +12,13 @@ assert(is_chromeos_ash)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/ash/webui/print_management/mojom/",
+                root_build_dir),
+      ]
   deps = [
     ":mojo_interface_provider",
     ":print_job_clear_history_dialog",
@@ -29,7 +36,7 @@ js_library("icons") {
 js_library("print_job_entry") {
   deps = [
     ":icons",
-    "//ash/webui/print_management/mojom:mojom_js_library_for_compile",
+    "//ash/webui/print_management/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -63,7 +70,7 @@ js_library("print_job_clear_history_dialog") {
 
 js_library("mojo_interface_provider") {
   deps = [
-    "//ash/webui/print_management/mojom:mojom_js_library_for_compile",
+    "//ash/webui/print_management/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -77,4 +84,10 @@ html_to_js("web_components") {
     "print_management.js",
     "print_management_shared_css.js",
   ]
+}
+
+copy("copy_webui_mojo") {
+  deps = [ "../mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ash/webui/print_management/mojom/printing_manager.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

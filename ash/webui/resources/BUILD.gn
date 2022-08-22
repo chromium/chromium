@@ -271,7 +271,7 @@ grit("print_management_resources") {
       "//ash/webui/print_management/resources/print_management_resources.grd"
 
   deps = [
-    "//ash/webui/print_management/mojom:mojom_js",
+    "//ash/webui/print_management/resources:copy_webui_mojo",
     "//ash/webui/print_management/resources:web_components",
   ]
 

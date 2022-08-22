@@ -2,39 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import './printing_manager.mojom-lite.js';
+import {PrintingMetadataProvider, PrintingMetadataProviderInterface} from './printing_manager.mojom-webui.js';
 
 /**
- * @type {
- *    ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
- * }
+ * @type {?PrintingMetadataProviderInterface}
  */
 let metadataProvider = null;
 
 /**
- * @param {
- *    !ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
- * } testProvider
+ * @param {!PrintingMetadataProviderInterface} testProvider
  */
 export function setMetadataProviderForTesting(testProvider) {
   metadataProvider = testProvider;
 }
 
 /**
- * @return {
- *    !ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
- * }
+ * @return {!PrintingMetadataProviderInterface}
  */
 export function getMetadataProvider() {
   if (metadataProvider) {
     return metadataProvider;
   }
-  metadataProvider =
-      ash.printing.printingManager.mojom.PrintingMetadataProvider.getRemote();
+  metadataProvider = PrintingMetadataProvider.getRemote();
   return metadataProvider;
 }
