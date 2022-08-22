@@ -11789,18 +11789,23 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       document_associated_data_.emplace(*this);
     }
 
-    // This may only be done after creating the DocumentAssociatedData for the
-    // new document, if appropriate, since `fenced_frame_urls_map` hangs off of
-    // that.
-    if (navigation_request->pending_ad_components_map()) {
-      navigation_request->pending_ad_components_map()->ExportToMapping(
-          GetPage().fenced_frame_urls_map());
-    }
+    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+        fenced_frame_properties = navigation_request->fenced_frame_properties();
+    if (fenced_frame_properties) {
+      // This may only be done after creating the DocumentAssociatedData for the
+      // new document, if appropriate, since `fenced_frame_urls_map` hangs off
+      // of that.
+      if (fenced_frame_properties->pending_ad_components_map.has_value()) {
+        fenced_frame_properties->pending_ad_components_map->ExportToMapping(
+            GetPage().fenced_frame_urls_map());
+      }
 
-    if (navigation_request->ad_auction_data()) {
-      AdAuctionDocumentData::CreateForCurrentDocument(
-          this, navigation_request->ad_auction_data()->interest_group_owner,
-          navigation_request->ad_auction_data()->interest_group_name);
+      if (fenced_frame_properties->ad_auction_data.has_value()) {
+        AdAuctionDocumentData::CreateForCurrentDocument(
+            this,
+            fenced_frame_properties->ad_auction_data->interest_group_owner,
+            fenced_frame_properties->ad_auction_data->interest_group_name);
+      }
     }
 
     // Continue observing the events for the committed navigation.

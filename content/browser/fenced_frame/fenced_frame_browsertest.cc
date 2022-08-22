@@ -2132,9 +2132,9 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_TRUE(url_mapping.HasObserverForTesting(urn_uuid, request));
 
-  auto* budget_metadata =
+  auto budget_metadata =
       fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_FALSE(budget_metadata);
+  EXPECT_FALSE(budget_metadata.has_value());
 
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
@@ -2151,10 +2151,10 @@ IN_PROC_BROWSER_TEST_P(
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 
   budget_metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_TRUE(budget_metadata);
-  EXPECT_EQ(budget_metadata->origin,
+  EXPECT_TRUE(budget_metadata.has_value());
+  EXPECT_EQ((*budget_metadata)->origin,
             url::Origin::Create(GURL("https://bar.com")));
-  EXPECT_DOUBLE_EQ(budget_metadata->budget_to_charge, 2.0);
+  EXPECT_DOUBLE_EQ((*budget_metadata)->budget_to_charge, 2.0);
 }
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
@@ -2223,8 +2223,9 @@ IN_PROC_BROWSER_TEST_P(
   observer.Wait();
   EXPECT_EQ(observer.last_net_error_code(), net::ERR_BLOCKED_BY_RESPONSE);
 
-  auto* metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_FALSE(metadata);
+  // Despite the error, the budget metadata should be valid.
+  auto metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
+  EXPECT_TRUE(metadata);
 }
 
 IN_PROC_BROWSER_TEST_P(

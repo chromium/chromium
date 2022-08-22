@@ -2053,14 +2053,29 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
   if (frame_tree_node_->IsFencedFrameRoot()) {
     if (blink::features::IsFencedFramesMPArchBased()) {
       // Once ShadowDOM and loading urns in iframes are disabled, this should
-      // be the only case that remains.
+      // be the only case that remains. The other cases are a bit hacky, but we
+      // expect them to go away soon.
       return is_embedder_initiated_fenced_frame_opaque_url_navigation_;
     } else {
-      return blink::IsValidUrnUuidURL(common_params_->url);
+      // In ShadowDOM, embedder-initiated navigations can take different paths
+      // for local or remote Frames, so we detect it here.
+      // Any urn:uuid navigation is assumed to be initiated by the embedder,
+      // even though we know this is not necessarily the case in ShadowDOM.
+      // But it is true in all intended use cases.
+      is_embedder_initiated_fenced_frame_navigation_ =
+          blink::IsValidUrnUuidURL(common_params_->url);
+      return is_embedder_initiated_fenced_frame_navigation_;
     }
   } else if (!frame_tree_node_->IsMainFrame() &&
              blink::features::IsAllowURNsInIframeEnabled()) {
-    return blink::IsValidUrnUuidURL(common_params_->url);
+    // In iframes, we want to ensure that fenced frame properties are respected
+    // after urn navigations.
+    // Any urn:uuid navigation is assumed to be initiated by the embedder,
+    // even though we know this is not necessarily the case in iframes.
+    // But it is true in all intended use cases.
+    is_embedder_initiated_fenced_frame_navigation_ =
+        blink::IsValidUrnUuidURL(common_params_->url);
+    return is_embedder_initiated_fenced_frame_navigation_;
   }
   return false;
 }
@@ -2071,26 +2086,15 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
   if (properties) {
-    // The URN mapping can happen on regular iframes if the feature
-    // `AllowURNsInIframes` is enabled. We will ignore the leakage via iframe,
-    // and will only track the shared storage budget for fenced frame.
-    if (frame_tree_node_->IsFencedFrameRoot()) {
-      shared_storage_budget_metadata_ =
-          GetFencedFrameURLMap().GetSharedStorageBudgetMetadata(
-              common_params_->url);
-    }
-
-    fenced_frame_properties_ = properties;
     common_params_->url = properties->mapped_url;
     commit_params_->original_url = properties->mapped_url;
-    ad_auction_data_ = properties->ad_auction_data;
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components
     // directly.
-    pending_ad_components_map_ = properties->pending_ad_components_map;
     if (!properties->reporting_metadata.metadata.empty()) {
       commit_params_->fenced_frame_reporting_metadata =
           properties->reporting_metadata.Clone();
     }
+    fenced_frame_properties_ = properties;
   } else {
     if (frame_tree_node_->IsFencedFrameRoot() &&
         frame_tree_node_->frame_tree()->IsFencedFramesMPArchBased()) {
@@ -4948,9 +4952,10 @@ void NavigationRequest::CommitNavigation() {
 
   // If this is a result of an ad auction, need to pass its ad component URLs to
   // the renderer.
-  if (pending_ad_components_map_) {
+  if (fenced_frame_properties_ &&
+      fenced_frame_properties_->pending_ad_components_map) {
     commit_params_->ad_auction_components =
-        pending_ad_components_map_->GetURNs();
+        fenced_frame_properties_->pending_ad_components_map->GetURNs();
   }
 
   if (!IsSameDocument()) {
@@ -6112,48 +6117,6 @@ void NavigationRequest::DidCommitNavigation(
   // installs a new set of inner fenced frame properties.
   if (is_embedder_initiated_fenced_frame_navigation_) {
     frame_tree_node()->set_fenced_frame_properties(fenced_frame_properties_);
-  }
-
-  // Same-document navigations won't affect budget metadata.
-  if (!DidEncounterError() && !IsSameDocument()) {
-    FencedFrameURLMapping::SharedStorageBudgetMetadata*
-        original_budget_metadata =
-            frame_tree_node()->shared_storage_budget_metadata();
-    if (original_budget_metadata) {
-      // Clear the previous shared_storage_budget_metadata on the
-      // `FrameTreeNode` if this navigation is not initiated from itself. In
-      // this case (including the case when `initiator_render_frame_host` is
-      // gone), this navigation had to be initiated from outside the fenced
-      // frame because a frame inside a fenced frame is not allowed to navigate
-      // ancestors, so the previous knowledge from inside the fenced frame can
-      // never be transferred.
-      RenderFrameHostImpl* initiator_render_frame_host = nullptr;
-      if (GetInitiatorFrameToken()) {
-        initiator_render_frame_host = RenderFrameHostImpl::FromFrameToken(
-            GetInitiatorProcessID(), GetInitiatorFrameToken().value());
-      }
-
-      if (!initiator_render_frame_host ||
-          initiator_render_frame_host->frame_tree_node() !=
-              render_frame_host_->frame_tree_node()) {
-        // The policy of disallowing a frame inside a fenced frame to navigate
-        // ancestors should've already been enforced in BeginNavigation().
-        CHECK(!initiator_render_frame_host ||
-              !initiator_render_frame_host->IsNestedWithinFencedFrame());
-
-        render_frame_host_->frame_tree_node()
-            ->set_shared_storage_budget_metadata(nullptr);
-      }
-    }
-
-    // If this is a load to a new URN, update the shared_storage_budget_metadata
-    // on the `FrameTreeNode`. Note that explicit clearing of budget metadata
-    // above is still needed for cases where a fenced frame is navigated from a
-    // URN to a non-URN URL.
-    if (shared_storage_budget_metadata_) {
-      frame_tree_node()->set_shared_storage_budget_metadata(
-          shared_storage_budget_metadata_);
-    }
   }
 
   // It should be kept in sync with the check in

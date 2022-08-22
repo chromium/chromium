@@ -928,13 +928,9 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
-  const absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>&
-  pending_ad_components_map() const {
-    return pending_ad_components_map_;
-  }
-
-  const absl::optional<AdAuctionData>& ad_auction_data() const {
-    return ad_auction_data_;
+  const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+  fenced_frame_properties() const {
+    return fenced_frame_properties_;
   }
 
   void RenderFallbackContentForObjectTag();
@@ -2082,20 +2078,18 @@ class CONTENT_EXPORT NavigationRequest
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;
 
-  // Only for fenced frames based on MPArch:
   // Indicates that this navigation is an embedder-initiated navigation of a
   // fenced frame root. That is to say, the navigation is caused by a `src`
   // attribute mutation on the <fencedframe> element, which cannot be performed
   // from inside the fenced frame tree.
-  const bool is_embedder_initiated_fenced_frame_navigation_ = false;
+  // TODO(crbug.com/1262022): Make this `const` again once ShadowDOM is gone.
+  bool is_embedder_initiated_fenced_frame_navigation_ = false;
 
-  // Only for fenced frames based on MPArch:
   // Indicates that this navigation is to an opaque url (urn:uuid). This value
   // may only be true when `is_embedder_initiated_fenced_frame_navigation` is
   // true.
   const bool is_embedder_initiated_fenced_frame_opaque_url_navigation_ = false;
 
-  // Only for fenced frames based on MPArch:
   // Indicates that the target of this navigation is the root of a fenced frame
   // tree whose most recent embedder-initiated navigation was to an opaque URL
   // (urn:uuid). The most recent navigation may be the current
@@ -2114,27 +2108,6 @@ class CONTENT_EXPORT NavigationRequest
   // fenced frame properties.
   absl::optional<FencedFrameURLMapping::FencedFrameProperties>
       fenced_frame_properties_;
-
-  // If this navigation is a load in a fenced frame of a URN URL that resulted
-  // from an interest group auction, this contains some information about the
-  // auction that should be attached to the renderer as AdAuctionDocumentData.
-  absl::optional<AdAuctionData> ad_auction_data_;
-
-  // If this navigation is a load in a fenced frame of a URN URL that resulted
-  // from an interest group auction, this contains the ad component URLs
-  // associated with that auction's winning bid, and the corresponding URNs that
-  // will be mapped to them.
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-      pending_ad_components_map_;
-
-  // If this navigation is a load in a fenced frame of a URN URL that resulted
-  // from a shared storage url selection operation, this contains the metadata
-  // for shared storage budget charging. A non-null pointer will stay valid
-  // during the `FencedFrameURLMapping`'s (thus the page's) lifetime, and a page
-  // will outlive any NavigationRequest occurring in fenced frames in the page,
-  // thus it's safe for this NavigationRequest to store this pointer.
-  raw_ptr<FencedFrameURLMapping::SharedStorageBudgetMetadata>
-      shared_storage_budget_metadata_ = nullptr;
 
   // Prerender2:
   // The type to trigger prerendering. The value is valid only when Prerender2

@@ -160,8 +160,12 @@ FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
     : mapped_url(map_info.mapped_url),
       ad_auction_data(map_info.ad_auction_data),
       pending_ad_components_map(absl::nullopt),
-      shared_storage_budget_metadata(map_info.shared_storage_budget_metadata),
+      shared_storage_budget_metadata(absl::nullopt),
       reporting_metadata(map_info.reporting_metadata) {
+  if (map_info.shared_storage_budget_metadata) {
+    shared_storage_budget_metadata =
+        &map_info.shared_storage_budget_metadata.value();
+  }
   if (map_info.ad_component_urls) {
     pending_ad_components_map =
         PendingAdComponentsMap(*map_info.ad_component_urls);
@@ -262,8 +266,8 @@ void FencedFrameURLMapping::RemoveObserverForURN(
 void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     const GURL& urn_uuid,
     const SharedStorageURNMappingResult& mapping_result) {
-  auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(it != pending_urn_uuid_to_url_map_.end());
+  auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
 
   DCHECK(!IsMapped(urn_uuid));
 
@@ -289,17 +293,19 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 
-  std::set<raw_ptr<MappingResultObserver>>& observers = it->second;
+  std::set<raw_ptr<MappingResultObserver>>& observers = pending_it->second;
 
   absl::optional<FencedFrameProperties> properties = absl::nullopt;
-  if (config)
-    properties = FencedFrameProperties(*config);
+  auto final_it = urn_uuid_to_url_map_.find(urn_uuid);
+  if (final_it != urn_uuid_to_url_map_.end()) {
+    properties = FencedFrameProperties(final_it->second);
+  }
 
   for (raw_ptr<MappingResultObserver> observer : observers) {
     observer->OnFencedFrameURLMappingComplete(properties);
   }
 
-  pending_urn_uuid_to_url_map_.erase(it);
+  pending_urn_uuid_to_url_map_.erase(pending_it);
 }
 
 FencedFrameURLMapping::SharedStorageBudgetMetadata*

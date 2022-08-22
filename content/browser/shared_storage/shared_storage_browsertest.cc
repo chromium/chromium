@@ -2392,6 +2392,13 @@ IN_PROC_BROWSER_TEST_P(
       JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
   top_navigation_observer.Wait();
 
+  // In ShadowDOM, transparent URL navigations don't reset the shared storage
+  // budget metadata for implementation convenience.
+  if (GetParam() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    return;
+  }
+
   // No budget withdrawal as the initial fenced frame was navigated away by its
   // parent before it triggers a top navigation.
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin), kBudgetAllowed);

@@ -43,7 +43,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // the `FencedFrameURLMapping`.
   struct CONTENT_EXPORT SharedStorageBudgetMetadata {
     url::Origin origin;
-    double budget_to_charge = 0;
+    mutable double budget_to_charge = 0;
   };
 
   // The runURLSelectionOperation's url mapping result. It contains the mapped
@@ -161,8 +161,12 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // urn:uuid navigation time according to a fenced frame configuration,
   // specified by `MapInfo` above.
   // Most of these are copied from `MapInfo` directly, but some are generated
-  // by another transformation (e.g. `pending_ad_components_map` generates urn
-  // mappings for the specified `ad_component_urls`).
+  // by another transformation, e.g.:
+  // * We generate urns for the urls in `ad_component_urls` and store them in
+  // `pending_ad_components_map`.
+  // * We generate a pointer to `shared_storage_budget_metadata` and store it in
+  //   `shared_storage_budget_metadata`, because it should only take effect once
+  //   across all fenced frames navigated to a particular configuration.
   // These `FencedFrameProperties` are stored in the fenced frame root
   // `FrameTreeNode`, and live between embedder-initiated fenced frame
   // navigations.
@@ -176,9 +180,26 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     FencedFrameProperties& operator=(FencedFrameProperties&&);
 
     GURL mapped_url;
+
     absl::optional<AdAuctionData> ad_auction_data;
+
+    // urn/url mappings for ad components. These are inserted into the
+    // fenced frame page's urn/url mapping when the urn navigation commits.
     absl::optional<PendingAdComponentsMap> pending_ad_components_map;
-    absl::optional<SharedStorageBudgetMetadata> shared_storage_budget_metadata;
+
+    // This can only be possibly set for the outermost fenced frame root,
+    // because selectURL() is disallowed inside fenced frame, and the URN
+    // generated outside the a fenced frame cannot be recognized from inside,
+    // so a nested fenced frame can never navigate to a shared storage
+    // generated URN.
+    //
+    // This pointer to the outermost page's FencedFrameURLMapping is copied
+    // into the fenced frame root's FrameTreeNode. This is safe because a page
+    // will outlive any NavigationRequest occurring in fenced frames in the
+    // page.
+    absl::optional<raw_ptr<const SharedStorageBudgetMetadata>>
+        shared_storage_budget_metadata;
+
     ReportingMetadata reporting_metadata;
   };
 

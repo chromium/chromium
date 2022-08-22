@@ -532,8 +532,10 @@ class CONTENT_EXPORT FrameTreeNode {
   void set_fenced_frame_properties(
       absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
           fenced_frame_properties) {
-    DCHECK_EQ(fenced_frame_status_,
-              RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
+    // TODO(crbug.com/1262022): Reenable this DCHECK once ShadowDOM and
+    // loading urns in iframes (for FLEDGE OT) are gone.
+    // DCHECK_EQ(fenced_frame_status_,
+    //          RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
     fenced_frame_properties_ = fenced_frame_properties;
   }
 
@@ -542,25 +544,12 @@ class CONTENT_EXPORT FrameTreeNode {
     return fenced_frame_properties_;
   }
 
-  void set_shared_storage_budget_metadata(
-      FencedFrameURLMapping::SharedStorageBudgetMetadata*
-          shared_storage_budget_metadata) {
-    DCHECK_EQ(fenced_frame_status_,
-              RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
-    shared_storage_budget_metadata_ = shared_storage_budget_metadata;
-  }
-
-  FencedFrameURLMapping::SharedStorageBudgetMetadata*
-  shared_storage_budget_metadata() const {
-    return shared_storage_budget_metadata_;
-  }
-
   // Traverse up from this node. The `shared_storage_budget_metadata()` of the
   // first seen node with a non-null budget metadata will be returned (i.e. this
   // node inherits that budget metadata), and this node is expected to be an
   // outermost fenced frame root. Return nullptr if not found (i.e. this node is
   // not subjected to shared storage budgeting).
-  FencedFrameURLMapping::SharedStorageBudgetMetadata*
+  absl::optional<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
   FindSharedStorageBudgetMetadata();
 
   // Accessor to BrowsingContextState for subframes only. Only main frame
@@ -787,25 +776,8 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // If this is a fenced frame resulting from a urn:uuid navigation, this
   // contains all the metadata specifying the resulting context.
-  // TODO(crbug.com/1347953): Replace redundant variables in this file with
-  // accesses to the fields of this object.
   absl::optional<FencedFrameURLMapping::FencedFrameProperties>
       fenced_frame_properties_;
-
-  // If this is a fenced frame resulting from a shared storage url selection
-  // operation, this contains the metadata for shared storage budget charging.
-  // This metadata will persist across self navigations, or be replaced by a new
-  // metadata if this gets navigated to another shared storage generated URN.
-  //
-  // This can only be possibly set for the outermost fenced frame root, because
-  // selectURL() is disallowed inside fenced frame, and the URN generated
-  // outside the a fenced frame cannot be recognized from inside, so a nested
-  // fenced frame can never navigate to a shared storage generated URN.
-  //
-  // This metadata is stored to the outermost page's FencedFrameURLMapping, thus
-  // `shared_storage_budget_metadata_` must outlive `this`.
-  raw_ptr<FencedFrameURLMapping::SharedStorageBudgetMetadata>
-      shared_storage_budget_metadata_ = nullptr;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

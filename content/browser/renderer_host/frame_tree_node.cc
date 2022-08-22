@@ -990,14 +990,15 @@ void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
 }
 
-FencedFrameURLMapping::SharedStorageBudgetMetadata*
+absl::optional<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
 FrameTreeNode::FindSharedStorageBudgetMetadata() {
   FrameTreeNode* node = this;
 
   while (true) {
-    if (node->shared_storage_budget_metadata()) {
+    if (node->fenced_frame_properties_ &&
+        node->fenced_frame_properties_->shared_storage_budget_metadata) {
       DCHECK(node->IsFencedFrameRoot());
-      return node->shared_storage_budget_metadata();
+      return node->fenced_frame_properties_->shared_storage_budget_metadata;
     }
 
     if (node->GetParentOrOuterDocument()) {
@@ -1007,7 +1008,7 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
     }
   }
 
-  return nullptr;
+  return absl::nullopt;
 }
 
 const scoped_refptr<BrowsingContextState>&
