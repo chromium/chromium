@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/trace_event/typed_macros.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
 namespace internal {

@@ -6,6 +6,8 @@
 
 #include <cstring>
 
+#include "mojo/public/cpp/bindings/message.h"
+
 namespace mojo {
 namespace internal {
 
@@ -20,7 +22,7 @@ ProxyToResponder::ProxyToResponder(
 ProxyToResponder::~ProxyToResponder() {
   // If the Callback was dropped then deleting the responder will close
   // the pipe so the calling application knows to stop waiting for a reply.
-  responder_ = nullptr;
+  responder_.reset();
 }
 
 }  // namespace internal
