@@ -99,6 +99,16 @@ class CONTENT_EXPORT PermissionController
   // Sets the permission back to its default for the `origin`.
   virtual void ResetPermission(blink::PermissionType permission,
                                const url::Origin& origin) = 0;
+
+  virtual SubscriptionId SubscribePermissionStatusChange(
+      blink::PermissionType permission,
+      RenderProcessHost* render_process_host,
+      const url::Origin& requesting_origin,
+      const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
+          callback) = 0;
+
+  virtual void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) = 0;
 };
 
 }  // namespace content

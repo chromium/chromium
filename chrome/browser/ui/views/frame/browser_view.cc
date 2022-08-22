@@ -200,12 +200,14 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/command.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -1598,33 +1600,51 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (translate_bubble_controller)
       translate_bubble_controller->CloseBubble();
   }
+
+  // This is only done once when the app is first opened so that there is only
+  // one subscriber per web contents.
+  if (AppUsesBorderlessMode() && !old_contents) {
+    SetWindowPlacementPermissionSubscriptionForBorderlessMode(new_contents);
+  }
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
                                 bool was_active) {
-  if (was_active) {
-    // We need to reset the current tab contents to null before it gets
-    // freed. This is because the focus manager performs some operations
-    // on the selected WebContents when it is removed.
-    web_contents_close_handler_->ActiveTabChanged();
-    if (loading_bar_)
-      loading_bar_->SetWebContents(nullptr);
-    contents_web_view_->SetWebContents(nullptr);
-    infobar_container_->ChangeInfoBarManager(nullptr);
-    app_banner_manager_observation_.Reset();
-    UpdateDevToolsForContents(nullptr, true);
+  DCHECK(contents);
+  if (!was_active)
+    return;
 
-    // We must ensure that we propagate an update to the side search controller
-    // so that it removes the now detached tab WebContents from the side panel's
-    // WebView. This is necessary as BrowserView::OnActiveTabChanged() will fire
-    // for the destination window before the source window is destroyed during a
-    // tab dragging operation which could lead to the dragged WebContents being
-    // added to the destination panel's WebView before it is removed from the
-    // source panel's WebView. Failing to so so can lead to visual artifacts
-    // (see crbug.com/1306793).
-    if (side_search_controller_)
-      side_search_controller_->UpdateSidePanelForContents(contents, nullptr);
+  // This is to unsubscribe the window-placement permission subscriber.
+  if (window_placement_subscription_id_) {
+    contents->GetPrimaryMainFrame()
+        ->GetBrowserContext()
+        ->GetPermissionController()
+        ->UnsubscribePermissionStatusChange(
+            window_placement_subscription_id_.value());
+    window_placement_subscription_id_.reset();
   }
+
+  // We need to reset the current tab contents to null before it gets
+  // freed. This is because the focus manager performs some operations
+  // on the selected WebContents when it is removed.
+  web_contents_close_handler_->ActiveTabChanged();
+  if (loading_bar_)
+    loading_bar_->SetWebContents(nullptr);
+  contents_web_view_->SetWebContents(nullptr);
+  infobar_container_->ChangeInfoBarManager(nullptr);
+  app_banner_manager_observation_.Reset();
+  UpdateDevToolsForContents(nullptr, true);
+
+  // We must ensure that we propagate an update to the side search controller
+  // so that it removes the now detached tab WebContents from the side panel's
+  // WebView. This is necessary as BrowserView::OnActiveTabChanged() will fire
+  // for the destination window before the source window is destroyed during a
+  // tab dragging operation which could lead to the dragged WebContents being
+  // added to the destination panel's WebView before it is removed from the
+  // source panel's WebView. Failing to so so can lead to visual artifacts
+  // (see crbug.com/1306793).
+  if (side_search_controller_)
+    side_search_controller_->UpdateSidePanelForContents(contents, nullptr);
 }
 
 void BrowserView::OnTabRestored(int command_id) {
@@ -2113,6 +2133,27 @@ void BrowserView::UpdateBorderlessModeEnabled() {
     borderless_mode_enabled = false;
   }
 
+  if (auto* web_contents = GetActiveWebContents()) {
+    // Last committed URL is null when PWA is opened from chrome://apps.
+    url::Origin url = url::Origin::Create(web_contents->GetVisibleURL());
+
+    blink::mojom::PermissionStatus status =
+        web_contents->GetPrimaryMainFrame()
+            ->GetBrowserContext()
+            ->GetPermissionController()
+            ->GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::WINDOW_PLACEMENT, url)
+            .status;
+
+    window_placement_permission_granted_ =
+        status == blink::mojom::PermissionStatus::GRANTED;
+  } else {
+    // Defaults to the value of borderless_mode_enabled if web contents are
+    // null. This gets overridden when the app is launched and its web contents
+    // are ready.
+    window_placement_permission_granted_ = borderless_mode_enabled;
+  }
+
   if (borderless_mode_enabled == borderless_mode_enabled_)
     return;
   borderless_mode_enabled_ = borderless_mode_enabled;
@@ -2122,13 +2163,45 @@ void BrowserView::UpdateBorderlessModeEnabled() {
   }
 }
 
+void BrowserView::UpdateWindowPlacementPermission(
+    blink::mojom::PermissionStatus status) {
+  window_placement_permission_granted_ =
+      status == blink::mojom::PermissionStatus::GRANTED;
+
+  // The layout has to update to reflect the borderless mode view change.
+  InvalidateLayout();
+}
+
+void BrowserView::SetWindowPlacementPermissionSubscriptionForBorderlessMode(
+    content::WebContents* web_contents) {
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  auto* controller = rfh->GetBrowserContext()->GetPermissionController();
+
+  // Last committed URL is null when PWA is opened from chrome://apps.
+  url::Origin url = url::Origin::Create(web_contents->GetVisibleURL());
+
+  UpdateWindowPlacementPermission(
+      controller
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::WINDOW_PLACEMENT, url)
+          .status);
+
+  // It is safe to bind base::Unretained(this) because WebContents is
+  // owned by BrowserView.
+  window_placement_subscription_id_ =
+      controller->SubscribePermissionStatusChange(
+          blink::PermissionType::WINDOW_PLACEMENT, rfh->GetProcess(), url,
+          base::BindRepeating(&BrowserView::UpdateWindowPlacementPermission,
+                              base::Unretained(this)));
+}
+
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
   UpdateWindowControlsOverlayEnabled();
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
-  return borderless_mode_enabled_;
+  return borderless_mode_enabled_ && window_placement_permission_granted_;
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {

@@ -70,8 +70,15 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const GURL& requesting_origin,
       const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
           callback);
+  SubscriptionId SubscribePermissionStatusChange(
+      PermissionType permission,
+      RenderProcessHost* render_process_host,
+      const url::Origin& requesting_origin,
+      const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
+          callback) override;
 
-  void UnsubscribePermissionStatusChange(SubscriptionId subscription_id);
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 
  private:
   friend class PermissionControllerImplTest;

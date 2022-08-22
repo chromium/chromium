@@ -65,6 +65,16 @@ class MockPermissionController : public PermissionController {
       override;
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
+
+  MOCK_METHOD4(SubscribePermissionStatusChange,
+               SubscriptionId(blink::PermissionType permission,
+                              RenderProcessHost* render_process_host,
+                              const url::Origin& requesting_origin,
+                              const base::RepeatingCallback<void(
+                                  blink::mojom::PermissionStatus)>& callback));
+
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 };
 
 }  // namespace content

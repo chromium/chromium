@@ -41,6 +41,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -458,7 +459,38 @@ class WebAppFrameToolbarBrowserTest_Borderless
                   .ExtractString(),
               "Borderless");
 
+    EXPECT_EQ(uses_borderless,
+              helper()->browser_view()->AppUsesBorderlessMode());
     return app_id;
+  }
+
+  void GrantWindowPlacementPermission() {
+    auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+    std::string permission_auto_approve_script = R"(
+      const draggable = document.getElementById('draggable');
+      draggable.setAttribute('allow', 'window-placement');
+    )";
+    EXPECT_TRUE(ExecJs(web_contents, permission_auto_approve_script,
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+    permissions::PermissionRequestManager::FromWebContents(web_contents)
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
+
+    EXPECT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
+
+    std::string permission_query_script = R"(
+      navigator.permissions.query({
+        name: 'window-placement'
+      }).then(res => res.state)
+    )";
+    EXPECT_EQ("granted", EvalJs(web_contents, permission_query_script));
+
+    // The permission subscriber doesn't get properly triggered in these tests
+    // so calling this function directly to update the borderless mode related
+    // variables.
+    helper()->browser_view()->UpdateBorderlessModeEnabled();
   }
 
  private:
@@ -467,18 +499,37 @@ class WebAppFrameToolbarBrowserTest_Borderless
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
-                       AppUsesBorderlessMode) {
+                       AppUsesBorderlessModeAndHasWindowPlacementPermission) {
   InstallAndLaunchWebApp(true);
-  ASSERT_TRUE(helper()->browser_view()->AppUsesBorderlessMode());
+  GrantWindowPlacementPermission();
+
+  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_TRUE(helper()
+                  ->browser_view()
+                  ->window_placement_permission_granted_for_testing());
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
   ASSERT_FALSE(
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_Borderless,
+    AppUsesBorderlessModeAndDoesNotHaveWindowPlacementPermission) {
+  InstallAndLaunchWebApp(true);
+  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_FALSE(helper()
+                   ->browser_view()
+                   ->window_placement_permission_granted_for_testing());
+  ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        AppDoesntUseBorderlessMode) {
   InstallAndLaunchWebApp(false);
-  ASSERT_FALSE(helper()->browser_view()->AppUsesBorderlessMode());
+  ASSERT_FALSE(helper()->browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_FALSE(helper()
+                   ->browser_view()
+                   ->window_placement_permission_granted_for_testing());
   ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
   ASSERT_TRUE(
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());

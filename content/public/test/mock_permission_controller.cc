@@ -25,4 +25,7 @@ void MockPermissionController::RequestPermissionsFromCurrentDocument(
 
 void MockPermissionController::ResetPermission(blink::PermissionType permission,
                                                const url::Origin& origin) {}
+
+void MockPermissionController::UnsubscribePermissionStatusChange(
+    SubscriptionId subscription_id) {}
 }  // namespace content

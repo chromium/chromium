@@ -10,6 +10,7 @@
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
@@ -507,6 +508,18 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
   }
   subscriptions_.AddWithID(std::move(subscription), id);
   return id;
+}
+
+PermissionControllerImpl::SubscriptionId
+PermissionControllerImpl::SubscribePermissionStatusChange(
+    PermissionType permission,
+    RenderProcessHost* render_process_host,
+    const url::Origin& requesting_origin,
+    const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
+        callback) {
+  return SubscribePermissionStatusChange(permission, render_process_host,
+                                         /*render_frame_host=*/nullptr,
+                                         requesting_origin.GetURL(), callback);
 }
 
 void PermissionControllerImpl::UnsubscribePermissionStatusChange(
