@@ -47,7 +47,7 @@ class FirstRun {
 
   // Creates the sentinel file that signals that chrome has been configured if
   // the file does not exist yet. Returns SENTINEL_RESULT_SUCCESS if the file
-  // was created. If SENTINEL_RESULT_FILE_ERROR is returned, |error| is set to
+  // was created. If SENTINEL_RESULT_FILE_ERROR is returned, `error` is set to
   // the file system error, if non-nil.
   static SentinelResult CreateSentinel(base::File::Error* error);
 
