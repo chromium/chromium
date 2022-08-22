@@ -43,6 +43,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link PartialCustomTabHandleStrategy}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -608,6 +610,36 @@ public class PartialCustomTabHeightStrategyTest {
         actionMove(handleStrategy, timestamp, INITIAL_HEIGHT + 100);
 
         // Verify the spinner goes invisible.
+        verify(mSpinnerView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void hideSpinnerEarly() {
+        // Test hiding spinner early (500ms after showing) when there is no glitch at
+        // the end of draggin action (only in window-above-navbar version).
+        Assume.assumeTrue("Spinner can be hidden early only in 'window-above-navbar' version",
+                mWindowAboveNavbar);
+
+        disableSpinnerAnimation();
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        long timestamp = SystemClock.uptimeMillis();
+        actionDown(handleStrategy, timestamp, INITIAL_HEIGHT - 100);
+        actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 150);
+
+        // Verify the spinner is visible.
+        verify(mSpinnerView).setVisibility(View.VISIBLE);
+        when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
+        clearInvocations(mSpinnerView);
+
+        long timeOut = PartialCustomTabHeightStrategy.SPINNER_TIMEOUT_MS;
+        shadowOf(Looper.getMainLooper()).idleFor(timeOut, TimeUnit.MILLISECONDS);
+
+        // Verify the spinner goes invisible after the specified timeout.
         verify(mSpinnerView).setVisibility(View.GONE);
     }
 

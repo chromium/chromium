@@ -20,6 +20,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.GestureDetector;
@@ -68,6 +69,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener {
+    @VisibleForTesting
+    static final long SPINNER_TIMEOUT_MS = 500;
     /**
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
@@ -670,6 +673,16 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (!mStopShowingSpinner && mStatus != HeightStatus.TRANSITION && !isSpinnerVisible()
                 && y < mDraggingStartY) {
             showSpinnerView();
+            if (mWindowAboveNavbar) {
+                // We do not have to keep the spinner till the end of dragging action in
+                // 'window-above-navbar' version since it doesn't have the flickering issue at
+                // the end. Keeping it visible up to 500ms is sufficient to hide the initial
+                // glitch that can briefly expose the host app screen at the beginning.
+                new Handler().postDelayed(() -> {
+                    hideSpinnerView();
+                    mStopShowingSpinner = true;
+                }, SPINNER_TIMEOUT_MS);
+            }
         }
         if (isSpinnerVisible()) {
             centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
