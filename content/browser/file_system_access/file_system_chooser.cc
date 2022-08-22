@@ -4,23 +4,18 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -36,6 +31,10 @@ namespace {
 // size and underlying platform all influence how many characters will actually
 // be visible. As such this can be adjusted as needed.
 constexpr int kMaxDescriptionLength = 64;
+// The maximum number of unicode code points the extension of a file is
+// allowed to be. Any longer extensions will be stripped. This value should be
+// kept in sync with the extension length checks in the renderer.
+constexpr int kMaxExtensionLength = 16;
 
 std::string TypeToString(ui::SelectFileDialog::Type type) {
   switch (type) {
@@ -213,6 +212,12 @@ base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
     return base::FilePath();
 
   auto suggested_extension = suggested_name.Extension();
+
+  if (suggested_extension.size() > kMaxExtensionLength) {
+    // Sanitize extensions longer than 16 characters.
+    file_types.include_all_files = true;
+    return suggested_name.RemoveExtension();
+  }
 
   if (file_types.extensions.empty() || suggested_extension.empty()) {
     file_types.include_all_files = true;
