@@ -57,54 +57,9 @@ using file_manager::util::FileDefinition;
 using file_manager::util::FileDefinitionList;
 using storage::FileSystemURL;
 
-namespace file_manager {
-namespace file_browser_handlers {
+namespace file_manager::file_browser_handlers {
+
 namespace {
-
-std::string EscapedUtf8ToLower(const std::string& str) {
-  std::u16string utf16 = base::UTF8ToUTF16(
-      base::UnescapeURLComponent(str, base::UnescapeRule::NORMAL));
-  return base::EscapeUrlEncodedData(
-      base::UTF16ToUTF8(base::i18n::ToLower(utf16)),
-      false /* do not replace space with plus */);
-}
-
-// Finds file browser handlers that can handle the |selected_file_url|.
-FileBrowserHandlerList FindFileBrowserHandlersForURL(
-    Profile* profile,
-    const GURL& selected_file_url) {
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  // In unit-tests, we may not have an ExtensionRegistry.
-  if (!registry)
-    return FileBrowserHandlerList();
-
-  // We need case-insensitive matching, and pattern in the handler is already
-  // in lower case.
-  const GURL lowercase_url(EscapedUtf8ToLower(selected_file_url.spec()));
-
-  FileBrowserHandlerList results;
-  for (const scoped_refptr<const Extension>& extension :
-       registry->enabled_extensions()) {
-    if (profile->IsOffTheRecord() &&
-        !extensions::util::IsIncognitoEnabled(extension->id(), profile))
-      continue;
-    FileBrowserHandler::List* handler_list =
-        FileBrowserHandler::GetHandlers(extension.get());
-    if (!handler_list)
-      continue;
-    for (FileBrowserHandler::List::const_iterator handler_iter =
-             handler_list->begin();
-         handler_iter != handler_list->end(); ++handler_iter) {
-      const FileBrowserHandler* handler = handler_iter->get();
-      if (!handler->MatchesURL(lowercase_url))
-        continue;
-
-      results.push_back(handler);
-    }
-  }
-  return results;
-}
 
 // This class is used to execute a file browser handler task. Here's how this
 // works:
@@ -393,43 +348,4 @@ bool ExecuteFileBrowserHandler(Profile* profile,
   return true;
 }
 
-FileBrowserHandlerList FindFileBrowserHandlers(
-    Profile* profile,
-    const std::vector<GURL>& file_list) {
-  FileBrowserHandlerList common_handlers;
-  for (std::vector<GURL>::const_iterator it = file_list.begin();
-       it != file_list.end(); ++it) {
-    FileBrowserHandlerList handlers =
-        FindFileBrowserHandlersForURL(profile, *it);
-    // If there is nothing to do for one file, the intersection of handlers
-    // for all files will be empty at the end, so no need to check further.
-    if (handlers.empty())
-      return FileBrowserHandlerList();
-
-    // For the very first file, just copy all the elements.
-    if (it == file_list.begin()) {
-      common_handlers = handlers;
-    } else {
-      // For all additional files, find intersection between the accumulated and
-      // file specific set.
-      FileBrowserHandlerList intersection;
-      std::set<const FileBrowserHandler*> common_handler_set(
-          common_handlers.begin(), common_handlers.end());
-
-      for (FileBrowserHandlerList::const_iterator itr = handlers.begin();
-           itr != handlers.end(); ++itr) {
-        if (base::Contains(common_handler_set, *itr))
-          intersection.push_back(*itr);
-      }
-
-      std::swap(common_handlers, intersection);
-      if (common_handlers.empty())
-        return FileBrowserHandlerList();
-    }
-  }
-
-  return common_handlers;
-}
-
-}  // namespace file_browser_handlers
-}  // namespace file_manager
+}  // namespace file_manager::file_browser_handlers

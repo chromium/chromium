@@ -302,13 +302,6 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
 
-// Finds the file browser handler tasks (app/extensions declaring
-// "file_browser_handlers" in manifest.json) that can be used with the
-// given files, appending them to the |result_list|.
-void FindFileBrowserHandlerTasks(Profile* profile,
-                                 const std::vector<GURL>& file_urls,
-                                 std::vector<FullTaskDescriptor>* result_list);
-
 // Callback function type for FindAllTypesOfTasks.
 typedef base::OnceCallback<void(
     std::unique_ptr<std::vector<FullTaskDescriptor>> result)>

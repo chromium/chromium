@@ -765,37 +765,6 @@ bool ExecuteFileTask(Profile* profile,
   return false;
 }
 
-void FindFileBrowserHandlerTasks(Profile* profile,
-                                 const std::vector<GURL>& file_urls,
-                                 std::vector<FullTaskDescriptor>* result_list) {
-  DCHECK(!file_urls.empty());
-  DCHECK(result_list);
-
-  file_browser_handlers::FileBrowserHandlerList common_tasks =
-      file_browser_handlers::FindFileBrowserHandlers(profile, file_urls);
-  if (common_tasks.empty())
-    return;
-
-  const extensions::ExtensionSet& enabled_extensions =
-      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-  for (const FileBrowserHandler* handler : common_tasks) {
-    const std::string extension_id = handler->extension_id();
-    const Extension* extension = enabled_extensions.GetByID(extension_id);
-    DCHECK(extension);
-
-    // TODO(zelidrag): Figure out how to expose icon URL that task defined in
-    // manifest instead of the default extension icon.
-    const GURL icon_url = GetIconURL(profile, *extension);
-
-    result_list->push_back(FullTaskDescriptor(
-        TaskDescriptor(extension_id, file_tasks::TASK_TYPE_FILE_BROWSER_HANDLER,
-                       handler->id()),
-        handler->title(), Verb::VERB_NONE /* no verb for FileBrowserHandler */,
-        icon_url, false /* is_default */, false /* is_generic_file_handler */,
-        false /* is_file_extension_match */));
-  }
-}
-
 void FindExtensionAndAppTasks(
     Profile* profile,
     const std::vector<extensions::EntryInfo>& entries,
