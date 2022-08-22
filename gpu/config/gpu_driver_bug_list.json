@@ -4103,6 +4103,19 @@
       "features": [
         "msaa_is_slow_2"
       ]
-    }    
+    },
+    {
+      "id": 401,
+      "description": "Disable DrDc on PowerVR Rouge* gpus.",
+      "cr_bugs": [1354201],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": ".*Imagination.*",
+      "gl_renderer": ".*PowerVR Rogue.*",
+      "features": [
+        "disable_drdc"
+      ]
+    }
   ]
 }
