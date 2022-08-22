@@ -925,7 +925,7 @@
   {
     "name": "chrome-whats-new-ui",
     "owners": [ "rbpotter" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "chrome-wide-echo-cancellation",
