@@ -143,36 +143,31 @@ void PromiseAggregator::OnAllSettled(v8::Isolate* isolate) {
 
 class WebScriptExecutor : public PausableScriptExecutor::Executor {
  public:
-  WebScriptExecutor(Vector<WebScriptSource>, int32_t world_id);
+  WebScriptExecutor(Vector<WebScriptSource> sources,
+                    ExecuteScriptPolicy execute_script_policy)
+      : sources_(std::move(sources)),
+        execute_script_policy_(execute_script_policy) {}
 
-  Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
+  Vector<v8::Local<v8::Value>> Execute(ScriptState* script_state) override {
+    Vector<v8::Local<v8::Value>> results;
+    for (const auto& source : sources_) {
+      // Note: An error event in an isolated world will never be dispatched to
+      // a foreign world.
+      ScriptEvaluationResult result =
+          ClassicScript::CreateUnspecifiedScript(
+              source, SanitizeScriptErrors::kDoNotSanitize)
+              ->RunScriptOnScriptStateAndReturnValue(script_state,
+                                                     execute_script_policy_);
+      results.push_back(result.GetSuccessValueOrEmpty());
+    }
+
+    return results;
+  }
 
  private:
   Vector<WebScriptSource> sources_;
-  int32_t world_id_;
+  ExecuteScriptPolicy execute_script_policy_;
 };
-
-WebScriptExecutor::WebScriptExecutor(Vector<WebScriptSource> sources,
-                                     int32_t world_id)
-    : sources_(std::move(sources)), world_id_(world_id) {}
-
-Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
-    LocalDOMWindow* window) {
-  Vector<v8::Local<v8::Value>> results;
-  for (const auto& source : sources_) {
-    // Note: An error event in an isolated world will never be dispatched to
-    // a foreign world.
-    ClassicScript* classic_script = ClassicScript::CreateUnspecifiedScript(
-        source, SanitizeScriptErrors::kDoNotSanitize);
-    ScriptEvaluationResult result =
-        world_id_ ? classic_script->RunScriptInIsolatedWorldAndReturnValue(
-                        window, world_id_)
-                  : classic_script->RunScriptAndReturnValue(window);
-    results.push_back(result.GetSuccessValueOrEmpty());
-  }
-
-  return results;
-}
 
 class V8FunctionExecutor : public PausableScriptExecutor::Executor {
  public:
@@ -182,7 +177,7 @@ class V8FunctionExecutor : public PausableScriptExecutor::Executor {
                      int argc,
                      v8::Local<v8::Value> argv[]);
 
-  Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
+  Vector<v8::Local<v8::Value>> Execute(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 
@@ -204,8 +199,8 @@ V8FunctionExecutor::V8FunctionExecutor(v8::Isolate* isolate,
 }
 
 Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
-    LocalDOMWindow* window) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    ScriptState* script_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   Vector<v8::Local<v8::Value>> results;
   v8::Local<v8::Value> single_result;
 
@@ -215,9 +210,9 @@ Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
     args.push_back(args_[i].Get(isolate));
 
   {
-    if (V8ScriptRunner::CallFunction(function_.Get(isolate), window,
-                                     receiver_.Get(isolate), args.size(),
-                                     args.data(), window->GetIsolate())
+    if (V8ScriptRunner::CallFunction(
+            function_.Get(isolate), ExecutionContext::From(script_state),
+            receiver_.Get(isolate), args.size(), args.data(), isolate)
             .ToLocal(&single_result)) {
       results.push_back(single_result);
     }
@@ -235,7 +230,6 @@ void V8FunctionExecutor::Trace(Visitor* visitor) const {
 }  // namespace
 
 void PausableScriptExecutor::CreateAndRun(
-    LocalDOMWindow* window,
     v8::Local<v8::Context> context,
     v8::Local<v8::Function> function,
     v8::Local<v8::Value> receiver,
@@ -251,20 +245,19 @@ void PausableScriptExecutor::CreateAndRun(
   }
   PausableScriptExecutor* executor =
       MakeGarbageCollected<PausableScriptExecutor>(
-          window, script_state,
-          mojom::blink::UserActivationOption::kDoNotActivate,
+          script_state, mojom::blink::UserActivationOption::kDoNotActivate,
           mojom::blink::LoadEventBlockingOption::kDoNotBlock,
           want_result_option, mojom::blink::PromiseResultOption::kDoNotWait,
           std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(
-              window->GetIsolate(), function, receiver, argc, argv));
+              script_state->GetIsolate(), function, receiver, argc, argv));
   executor->Run();
 }
 
 void PausableScriptExecutor::CreateAndRun(
-    LocalDOMWindow* window,
-    scoped_refptr<DOMWrapperWorld> world,
+    ScriptState* script_state,
     Vector<WebScriptSource> sources,
+    ExecuteScriptPolicy execute_script_policy,
     mojom::blink::UserActivationOption user_activation_option,
     mojom::blink::EvaluationTiming evaluation_timing,
     mojom::blink::LoadEventBlockingOption blocking_option,
@@ -272,11 +265,10 @@ void PausableScriptExecutor::CreateAndRun(
     mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback) {
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      window, ToScriptState(window, *world), user_activation_option,
-      blocking_option, want_result_option, promise_result_option,
-      std::move(callback),
+      script_state, user_activation_option, blocking_option, want_result_option,
+      promise_result_option, std::move(callback),
       MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
-                                              world->GetWorldId()));
+                                              execute_script_policy));
   switch (evaluation_timing) {
     case mojom::blink::EvaluationTiming::kAsynchronous:
       executor->RunAsync();
@@ -300,7 +292,6 @@ void PausableScriptExecutor::ContextDestroyed() {
 }
 
 PausableScriptExecutor::PausableScriptExecutor(
-    LocalDOMWindow* window,
     ScriptState* script_state,
     mojom::blink::UserActivationOption user_activation_option,
     mojom::blink::LoadEventBlockingOption blocking_option,
@@ -308,7 +299,7 @@ PausableScriptExecutor::PausableScriptExecutor(
     mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback,
     Executor* executor)
-    : ExecutionContextLifecycleObserver(window),
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       callback_(std::move(callback)),
       user_activation_option_(user_activation_option),
@@ -318,8 +309,10 @@ PausableScriptExecutor::PausableScriptExecutor(
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
-  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
-    window->document()->IncrementLoadEventDelayCount();
+  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock) {
+    if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext()))
+      window->document()->IncrementLoadEventDelayCount();
+  }
 }
 
 PausableScriptExecutor::~PausableScriptExecutor() = default;
@@ -353,18 +346,19 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
 
   start_time_ = base::TimeTicks::Now();
 
-  auto* window = To<LocalDOMWindow>(GetExecutionContext());
   ScriptState::Scope script_scope(script_state_);
 
   if (user_activation_option_ ==
       mojom::blink::UserActivationOption::kActivate) {
     // TODO(mustaq): Need to make sure this is safe. https://crbug.com/1082273
-    LocalFrame::NotifyUserActivation(
-        window->GetFrame(),
-        mojom::blink::UserActivationNotificationType::kWebScriptExec);
+    if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+      LocalFrame::NotifyUserActivation(
+          window->GetFrame(),
+          mojom::blink::UserActivationNotificationType::kWebScriptExec);
+    }
   }
 
-  Vector<v8::Local<v8::Value>> results = executor_->Execute(window);
+  Vector<v8::Local<v8::Value>> results = executor_->Execute(script_state_);
 
   // The script may have removed the frame, in which case contextDestroyed()
   // will have handled the disposal/callback.
@@ -398,10 +392,10 @@ void PausableScriptExecutor::HandleResults(
   if (!script_state_->ContextIsValid())
     return;
 
-  auto* window = To<LocalDOMWindow>(GetExecutionContext());
-
-  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock)
-    window->document()->DecrementLoadEventDelayCount();
+  if (blocking_option_ == mojom::blink::LoadEventBlockingOption::kBlock) {
+    if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext()))
+      window->document()->DecrementLoadEventDelayCount();
+  }
 
   if (callback_) {
     absl::optional<base::Value> value;

@@ -20,24 +20,29 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class ScriptState;
+enum class ExecuteScriptPolicy;
 
+// PausableScriptExecutor executes scripts possibly with various capabilities:
+// - Executes with user activation (`UserActivationOption`, Window only)
+// - Executes sync/async (`EvaluationTiming`)
+// - Delays the load event (`LoadEventBlockingOption`, Window only)
+// - Converts results to `base::Value` (`WantResultOption`)
+// - Waits for promise resolution (`PromiseResultOption`)
 class CORE_EXPORT PausableScriptExecutor final
     : public GarbageCollected<PausableScriptExecutor>,
       public ExecutionContextLifecycleObserver {
  public:
-  static void CreateAndRun(LocalDOMWindow*,
-                           v8::Local<v8::Context>,
+  static void CreateAndRun(v8::Local<v8::Context>,
                            v8::Local<v8::Function>,
                            v8::Local<v8::Value> receiver,
                            int argc,
                            v8::Local<v8::Value> argv[],
                            mojom::blink::WantResultOption,
                            WebScriptExecutionCallback);
-  static void CreateAndRun(LocalDOMWindow*,
-                           scoped_refptr<DOMWrapperWorld>,
+  static void CreateAndRun(ScriptState*,
                            Vector<WebScriptSource>,
+                           ExecuteScriptPolicy,
                            mojom::blink::UserActivationOption,
                            mojom::blink::EvaluationTiming,
                            mojom::blink::LoadEventBlockingOption,
@@ -49,13 +54,12 @@ class CORE_EXPORT PausableScriptExecutor final
    public:
     virtual ~Executor() = default;
 
-    virtual Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) = 0;
+    virtual Vector<v8::Local<v8::Value>> Execute(ScriptState*) = 0;
 
     virtual void Trace(Visitor* visitor) const {}
   };
 
-  PausableScriptExecutor(LocalDOMWindow*,
-                         ScriptState*,
+  PausableScriptExecutor(ScriptState*,
                          mojom::blink::UserActivationOption,
                          mojom::blink::LoadEventBlockingOption,
                          mojom::blink::WantResultOption,

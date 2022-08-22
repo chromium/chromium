@@ -2564,10 +2564,17 @@ void LocalFrame::RequestExecuteScript(
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_behavior) {
   scoped_refptr<DOMWrapperWorld> world;
+  ExecuteScriptPolicy execute_script_policy;
   if (world_id == DOMWrapperWorld::kMainWorldId) {
     world = &DOMWrapperWorld::MainWorld();
+    execute_script_policy =
+        ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled;
   } else {
     world = DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(this), world_id);
+
+    // This is to preserve the existing behavior.
+    execute_script_policy =
+        ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled;
   }
 
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
@@ -2581,9 +2588,9 @@ void LocalFrame::RequestExecuteScript(
                         base::checked_cast<wtf_size_t>(sources.size()));
 
   PausableScriptExecutor::CreateAndRun(
-      DomWindow(), std::move(world), std::move(script_sources), user_gesture,
-      evaluation_timing, blocking_option, want_result_option, promise_behavior,
-      std::move(callback));
+      ToScriptState(DomWindow(), *world), std::move(script_sources),
+      execute_script_policy, user_gesture, evaluation_timing, blocking_option,
+      want_result_option, promise_behavior, std::move(callback));
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {

@@ -1076,8 +1076,7 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
   const auto want_result_option =
       callback ? mojom::blink::WantResultOption::kWantResult
                : mojom::blink::WantResultOption::kNoResult;
-  PausableScriptExecutor::CreateAndRun(GetFrame()->DomWindow(), context,
-                                       function, receiver, argc, argv,
+  PausableScriptExecutor::CreateAndRun(context, function, receiver, argc, argv,
                                        want_result_option, std::move(callback));
 }
 
