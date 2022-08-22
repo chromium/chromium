@@ -5,7 +5,11 @@
 #ifndef MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_ENDPOINT_H_
 #define MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_ENDPOINT_H_
 
+#include "base/command_line.h"
 #include "base/component_export.h"
+#include "base/process/launch.h"
+#include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {
@@ -16,6 +20,20 @@ namespace mojo {
 // PlatformChannelEndpoint.
 class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
  public:
+// Unfortunately base process support code has no unified handle-passing
+// data pipe, so we have this.
+#if BUILDFLAG(IS_WIN)
+  using HandlePassingInfo = base::HandlesToInheritVector;
+#elif BUILDFLAG(IS_FUCHSIA)
+  using HandlePassingInfo = base::HandlesToTransferVector;
+#elif BUILDFLAG(IS_MAC)
+  using HandlePassingInfo = base::MachPortsForRendezvous;
+#elif BUILDFLAG(IS_POSIX)
+  using HandlePassingInfo = base::FileHandleMappingVector;
+#else
+#error "Unsupported platform."
+#endif
+
   PlatformChannelEndpoint();
   PlatformChannelEndpoint(PlatformChannelEndpoint&& other);
   explicit PlatformChannelEndpoint(PlatformHandle handle);
@@ -36,6 +54,34 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
   [[nodiscard]] PlatformHandle TakePlatformHandle() {
     return std::move(handle_);
   }
+
+  // Prepares to pass this endpoint handle to a process that will soon be
+  // launched. Returns a string that can be used in the remote process with
+  // RecoverFromString() (see below). The string can be passed on the new
+  // process's command line.
+  //
+  // NOTE: If this method is called it is important to also call
+  // ProcessLaunchAttempted() on this endpoint *after* attempting to launch
+  // the new process, regardless of whether the attempt succeeded. Failing to do
+  // so can result in leaked handles on some platforms.
+  void PrepareToPass(HandlePassingInfo& info, std::string& value);
+
+  // Like above but modifies `command_line` to include the endpoint string
+  // via the PlatformChannel::kHandleSwitch flag.
+  void PrepareToPass(HandlePassingInfo& info, base::CommandLine& command_line);
+
+  // Like above but adds handle-passing information directly to
+  // `launch_options`, eliminating the potential need for callers to write
+  // platform-specific code to do the same.
+  void PrepareToPass(base::LaunchOptions& options,
+                     base::CommandLine& command_line);
+
+  // Must be called after the corresponding process launch attempt if
+  // PrepareToPass() was called.
+  void ProcessLaunchAttempted();
+
+  [[nodiscard]] static PlatformChannelEndpoint RecoverFromString(
+      base::StringPiece value);
 
  private:
   PlatformHandle handle_;

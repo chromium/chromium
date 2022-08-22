@@ -9,8 +9,10 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/core/channel.h"
@@ -44,6 +46,20 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   Destination destination() const { return destination_; }
   const base::Process& remote_process() const { return remote_process_; }
+
+  // Provides a handle to the remote process on the other end of this transport.
+  // If this is called, it must be before the Transport is activated.
+  void set_remote_process(base::Process process) {
+    DCHECK(!remote_process_.IsValid());
+    remote_process_ = std::move(process);
+  }
+
+  // Takes ownership of the Transport's underlying channel endpoint, effectively
+  // invalidating the transport. May only be called on a Transport which has not
+  // yet been activated.
+  PlatformChannelEndpoint TakeEndpoint() {
+    return std::move(inactive_endpoint_);
+  }
 
   // Activates this transport by creating and starting the underlying Channel
   // instance.
@@ -123,7 +139,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   bool ShouldSerializeProcessHandle(Transport& transmitter) const;
 
   const Destination destination_;
-  const base::Process remote_process_;
+  base::Process remote_process_;
 
   // The channel endpoint which will be used by this Transport to construct and
   // start its underlying Channel instance once activated. Not guarded by a lock

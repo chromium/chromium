@@ -17,6 +17,7 @@ component("embedder_internal") {
   output_name = "mojo_core_embedder_internal"
   public_deps = [ ":impl_for_embedder" ]
   visibility = [
+    ":driver_for_ipcz_tests",
     ":test_sources",
     "//mojo:*",
     "//mojo/core/embedder",
@@ -209,6 +210,17 @@ template("core_impl_source_set") {
 
 core_impl_source_set("impl_for_embedder") {
   for_shared_library = false
+}
+
+source_set("driver_for_ipcz_tests") {
+  testonly = true
+  sources = [ "ipcz_driver/driver_for_ipcz_tests.cc" ]
+  deps = [
+    ":embedder_internal",
+    "//base",
+    "//base/test:test_support",
+    "//third_party/ipcz/src:ipcz_test_support_chromium",
+  ]
 }
 
 if (is_win) {

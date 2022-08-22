@@ -178,10 +178,8 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, HugeNumberOfPortalsClient) {
 
     IpczHandle box = BoxBlob(absl::StrCat(absl::Dec(i)));
     EXPECT_EQ(IPCZ_RESULT_OK, Put(portals[i], "", {&box, 1}));
-  }
 
-  for (size_t i = 0; i < kHugeNumberOfPortalsCount; ++i) {
-    IpczHandle box;
+    box = IPCZ_INVALID_HANDLE;
     EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portals[i], nullptr, {&box, 1}));
     EXPECT_EQ(absl::StrCat(absl::Dec(i)), UnboxBlob(box));
   }

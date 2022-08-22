@@ -4,8 +4,11 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node_messages.h"
+#include "reference_drivers/async_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "test/multinode_test.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +18,16 @@
 namespace ipcz {
 namespace {
 
-using ConnectTestNode = test::TestNode;
+class ConnectTestNode : public test::TestNode {
+ public:
+  void ActivateAndClose(IpczDriverHandle transport) {
+    // Registering any listener callback activates the transport, and
+    // listener destruction closes it.
+    test::TestTransportListener listener(node(), transport);
+    listener.OnError([] {});
+  }
+};
+
 using ConnectTest = test::MultinodeTest<ConnectTestNode>;
 
 MULTINODE_TEST_NODE(ConnectTestNode, BrokerToNonBrokerClient) {
@@ -62,8 +74,7 @@ MULTINODE_TEST(ConnectTest, DisconnectWithoutBrokerHandshake) {
   IpczDriverHandle our_transport;
   auto controller =
       SpawnTestNodeNoConnect<ExpectDisconnectFromBroker>(our_transport);
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
+  ActivateAndClose(our_transport);
   controller->WaitForShutdown();
 }
 
@@ -90,8 +101,7 @@ MULTINODE_TEST(ConnectTest, DisconnectOnBadBrokerMessage) {
       IPCZ_RESULT_OK,
       GetDriver().Transmit(our_transport, kBadMessage, std::size(kBadMessage),
                            nullptr, 0, IPCZ_NO_FLAGS, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
+  ActivateAndClose(our_transport);
 
   // The other node will only shut down once it's observed peer closure on its
   // portal to us; which it should, because we just sent it some garbage.
@@ -160,6 +170,16 @@ MULTINODE_TEST_NODE(ConnectTestNode, NonBrokerToNonBrokerClient) {
 }
 
 MULTINODE_TEST(ConnectTest, NonBrokerToNonBroker) {
+#if BUILDFLAG(IS_ANDROID)
+  // Client nodes launching other client nodes doesn't work for Chromium's
+  // custom test driver on Android. Limit this test to the reference test
+  // drivers there.
+  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
+      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+    return;
+  }
+#endif
+
   IpczHandle c1 = SpawnTestNode<NonBrokerToNonBrokerClient>();
   IpczHandle c2 = SpawnTestNode<NonBrokerToNonBrokerClient>();
 
@@ -234,11 +254,10 @@ MULTINODE_TEST_NODE(ConnectTestNode, FailedNonBrokerReferralClient) {
       SpawnTestNodeNoConnect<FailedNonBrokerReferralReferredClient>(
           our_transport);
 
-  // Disconnect the transport instead of passing to our broker with
-  // ConnectNode(). The referred client should observe disconnection of its
-  // initial portals and terminate itself.
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Close(our_transport, IPCZ_NO_FLAGS, nullptr));
+  // Activate and immediately disconnect the transport instead of passing to our
+  // broker with ConnectNode(). The referred client should observe disconnection
+  // of its initial portals and terminate itself.
+  ActivateAndClose(our_transport);
   controller->WaitForShutdown();
   Close(b);
 }

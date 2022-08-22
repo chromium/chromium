@@ -491,7 +491,7 @@ bool Transport::CanTransmitHandles() const {
 bool Transport::ShouldSerializeProcessHandle(Transport& transmitter) const {
 #if BUILDFLAG(IS_WIN)
   return remote_process_.IsValid() && !remote_process_.is_current() &&
-         destination_ == kToBroker;
+         transmitter.destination() == kToBroker;
 #else
   // We have no need for the process handle on other platforms.
   return false;
