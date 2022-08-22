@@ -4,8 +4,11 @@
 
 #include "base/task/sequence_manager/work_queue.h"
 
+#include <atomic>
+
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_order.h"
@@ -16,6 +19,39 @@
 namespace base {
 namespace sequence_manager {
 namespace internal {
+
+namespace {
+
+const Feature kDifferentWorkQueueCapacities{"DifferentWorkQueueCapacities",
+                                            FEATURE_DISABLED_BY_DEFAULT};
+
+std::atomic<bool> g_different_work_queue_capacities_feature_enabled(false);
+
+}  // namespace
+
+// static
+void WorkQueue::ConfigureCapacityFieldTrial() {
+  g_different_work_queue_capacities_feature_enabled.store(
+      FeatureList::IsEnabled(kDifferentWorkQueueCapacities),
+      std::memory_order_relaxed);
+}
+
+// static
+bool WorkQueue::IsDifferentWorkQueueCapacitiesEnabled() {
+  return g_different_work_queue_capacities_feature_enabled.load(
+      std::memory_order_relaxed);
+}
+
+// static
+size_t WorkQueue::GetStackCapacityChoice() {
+  static const size_t kStackCapacityChoice =
+      IsDifferentWorkQueueCapacitiesEnabled()
+          ? static_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
+                kDifferentWorkQueueCapacities, "StackCapacity",
+                StackCapacity::kDefault))
+          : StackCapacity::kDefault;
+  return kStackCapacityChoice;
+}
 
 WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      const char* name,
@@ -219,14 +255,12 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   return pending_task;
 }
 
-bool WorkQueue::RemoveAllCanceledTasksFromFront() {
-  if (!work_queue_sets_)
-    return false;
-
+template <size_t stack_capacity>
+bool WorkQueue::RemoveAllCancelledTasksFromFrontImpl() {
   // Since task destructors could have a side-effect of deleting this task queue
   // we move cancelled tasks into a temporary container which can be emptied
   // without accessing |this|.
-  StackVector<Task, 8> tasks_to_delete;
+  StackVector<Task, stack_capacity> tasks_to_delete;
 
   while (!tasks_.empty()) {
     const auto& pending_task = tasks_.front();
@@ -254,6 +288,31 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
     task_queue_->TraceQueueSize();
   }
   return !tasks_to_delete->empty();
+}
+
+template bool WorkQueue::RemoveAllCancelledTasksFromFrontImpl<
+    WorkQueue::StackCapacity::kSmall>();
+template bool WorkQueue::RemoveAllCancelledTasksFromFrontImpl<
+    WorkQueue::StackCapacity::kMedium>();
+template bool WorkQueue::RemoveAllCancelledTasksFromFrontImpl<
+    WorkQueue::StackCapacity::kLarge>();
+template bool WorkQueue::RemoveAllCancelledTasksFromFrontImpl<
+    WorkQueue::StackCapacity::kDefault>();
+
+bool WorkQueue::RemoveAllCanceledTasksFromFront() {
+  if (!work_queue_sets_)
+    return false;
+
+  switch (GetStackCapacityChoice()) {
+    case StackCapacity::kSmall:
+      return RemoveAllCancelledTasksFromFrontImpl<StackCapacity::kSmall>();
+    case StackCapacity::kMedium:
+      return RemoveAllCancelledTasksFromFrontImpl<StackCapacity::kMedium>();
+    case StackCapacity::kLarge:
+      return RemoveAllCancelledTasksFromFrontImpl<StackCapacity::kLarge>();
+    default:
+      return RemoveAllCancelledTasksFromFrontImpl<StackCapacity::kDefault>();
+  }
 }
 
 void WorkQueue::AssignToWorkQueueSets(WorkQueueSets* work_queue_sets) {
