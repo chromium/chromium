@@ -87,8 +87,13 @@ const base::Feature kCommerceCoupons{"CommerceCoupons",
 const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_IOS)
+const base::Feature kCommercePriceTracking{"CommercePriceTracking",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+#else
 const base::Feature kCommercePriceTracking{"CommercePriceTracking",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
