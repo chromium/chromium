@@ -18,7 +18,6 @@
 #include "components/browser_watcher/activity_data_names.h"
 #include "components/browser_watcher/activity_report.pb.h"
 #include "components/browser_watcher/activity_tracker_annotation.h"
-#include "components/browser_watcher/extended_crash_reporting.h"
 #include "components/browser_watcher/extended_crash_reporting_metrics.h"
 #include "components/browser_watcher/features.h"
 
