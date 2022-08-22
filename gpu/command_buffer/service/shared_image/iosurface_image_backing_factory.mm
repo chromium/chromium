@@ -125,9 +125,11 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
     // copyTextureForBrowser.
     WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
     internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-    internalDesc.internalUsage = WGPUTextureUsage_CopySrc |
-                                 WGPUTextureUsage_RenderAttachment |
-                                 WGPUTextureUsage_TextureBinding;
+    internalDesc.internalUsage =
+        WGPUTextureUsage_CopySrc | WGPUTextureUsage_TextureBinding;
+    if (wgpu_format_ != WGPUTextureFormat_R8BG8Biplanar420Unorm) {
+      internalDesc.internalUsage |= WGPUTextureUsage_RenderAttachment;
+    }
 
     texture_descriptor.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
