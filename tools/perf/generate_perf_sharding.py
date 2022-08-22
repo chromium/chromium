@@ -352,7 +352,7 @@ def _ValidateShardMaps(args):
         'UNSCHEDULED_{benchmark}'.format(benchmark=benchmark))
 
   for error in errors:
-    print('*', textwrap.fill(error, 70), '\n', file=sys.stderr)
+    print('*', error, '\n', file=sys.stderr)
   if errors:
     return 1
   return 0
