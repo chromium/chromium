@@ -13,6 +13,10 @@
 // Called when `PasswordManagerViewController` is dismissed.
 - (void)PasswordManagerViewControllerDismissed;
 
+// Called when the user has requested that the Password Settings submenu be
+// presented.
+- (void)showPasswordSettingsSubmenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

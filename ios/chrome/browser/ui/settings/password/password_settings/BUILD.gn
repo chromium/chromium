@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_settings") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_settings_coordinator.h",
+    "password_settings_coordinator.mm",
+    "password_settings_coordinator_delegate.h",
+    "password_settings_view_controller.h",
+    "password_settings_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+  ]
+}

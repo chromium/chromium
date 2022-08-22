@@ -414,8 +414,9 @@ bool ShouldShowSettingsUI() {
   if (ShouldShowSettingsUI() && [self allowsAddPassword]) {
     self.shouldShowAddButtonInToolbar = YES;
     self.addButtonInToolbar.enabled = YES;
-  } else {
-    self.shouldShowAddButtonInToolbar = NO;
+  } else if (!ShouldShowSettingsUI()) {
+    self.shouldShowSettingsButtonInToolbar = YES;
+    self.settingsButtonInToolbar.enabled = YES;
   }
 
   [self loadModel];
@@ -723,6 +724,10 @@ bool ShouldShowSettingsUI() {
 
 - (void)addButtonCallback {
   [self.handler showAddPasswordSheet];
+}
+
+- (void)settingsButtonCallback {
+  [self.presentationDelegate showPasswordSettingsSubmenu];
 }
 
 - (void)editButtonPressed {

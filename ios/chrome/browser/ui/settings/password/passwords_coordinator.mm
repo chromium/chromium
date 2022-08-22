@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
@@ -41,6 +43,7 @@
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
+    PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate>
 
@@ -73,6 +76,9 @@
 // Coordinator for passwords in other apps promotion view.
 @property(nonatomic, strong)
     PasswordsInOtherAppsCoordinator* passwordsInOtherAppsCoordinator;
+
+@property(nonatomic, strong)
+    PasswordSettingsCoordinator* passwordSettingsCoordinator;
 
 @end
 
@@ -212,6 +218,15 @@
   [self.delegate passwordsCoordinatorDidRemove:self];
 }
 
+- (void)showPasswordSettingsSubmenu {
+  DCHECK(!self.passwordSettingsCoordinator);
+  self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.passwordSettingsCoordinator.delegate = self;
+  [self.passwordSettingsCoordinator start];
+}
+
 #pragma mark - PasswordIssuesCoordinatorDelegate
 
 - (void)passwordIssuesCoordinatorDidRemove:
@@ -282,6 +297,16 @@
   [self.passwordsInOtherAppsCoordinator stop];
   self.passwordsInOtherAppsCoordinator.delegate = nil;
   self.passwordsInOtherAppsCoordinator = nil;
+}
+
+#pragma mark - PasswordSettingsCoordinatorDelegate
+
+- (void)passwordSettingsCoordinatorDidRemove:
+    (PasswordSettingsCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordSettingsCoordinator, coordinator);
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
 }
 
 #pragma mark Private
