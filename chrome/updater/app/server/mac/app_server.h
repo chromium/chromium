@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/mac/service_delegate.h"

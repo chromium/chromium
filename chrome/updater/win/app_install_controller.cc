@@ -65,7 +65,6 @@
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/ui_util.h"
-#include "chrome/updater/win/win_util.h"
 #pragma clang diagnostic pop
 
 #include "third_party/abseil-cpp/absl/types/optional.h"

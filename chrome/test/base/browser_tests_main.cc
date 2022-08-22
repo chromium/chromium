@@ -17,7 +17,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/test/test_switches.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"  // nogncheck
 #endif
