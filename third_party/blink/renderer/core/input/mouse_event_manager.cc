@@ -772,15 +772,12 @@ bool MouseEventManager::HandleDragDropIfPossible(
   const WebGestureEvent& gesture_event = targeted_event.Event();
   unsigned modifiers = gesture_event.GetModifiers();
 
-  // TODO(mustaq): Suppressing long-tap MouseEvents could break
-  // drag-drop. Will do separately because of the risk. crbug.com/606938.
-  WebMouseEvent mouse_down_event(
-      WebInputEvent::Type::kMouseDown, gesture_event,
-      WebPointerProperties::Button::kLeft, 1,
-      modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
-          WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
-      base::TimeTicks::Now());
-  mouse_down_ = mouse_down_event;
+  mouse_down_ =
+      WebMouseEvent(WebInputEvent::Type::kMouseDown, gesture_event,
+                    WebPointerProperties::Button::kLeft, 1,
+                    modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
+                        WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
+                    base::TimeTicks::Now());
 
   WebMouseEvent mouse_drag_event(
       WebInputEvent::Type::kMouseMove, gesture_event,
@@ -959,8 +956,6 @@ bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
               event.Event().TimeStamp()),
           Vector<WebPointerEvent>(), Vector<WebPointerEvent>());
     }
-    // TODO(crbug.com/708278): If the drag starts with touch the touch cancel
-    // should trigger the release of pointer capture.
   }
 
   mouse_down_may_start_drag_ = false;
@@ -985,12 +980,14 @@ bool MouseEventManager::TryStartDrag(
 
   DragController& drag_controller = frame_->GetPage()->GetDragController();
   if (!drag_controller.PopulateDragDataTransfer(frame_, GetDragState(),
-                                                mouse_down_pos_))
+                                                mouse_down_pos_)) {
     return false;
+  }
 
   if (DispatchDragSrcEvent(event_type_names::kDragstart, mouse_down_) !=
-      WebInputEventResult::kNotHandled)
+      WebInputEventResult::kNotHandled) {
     return false;
+  }
 
   // Dispatching the event could cause |frame_| to be detached.
   if (!frame_->GetPage())
@@ -1021,8 +1018,9 @@ bool MouseEventManager::TryStartDrag(
       DataTransferAccessPolicy::kImageWritable);
 
   if (drag_controller.StartDrag(frame_, GetDragState(), event.Event(),
-                                mouse_down_pos_))
+                                mouse_down_pos_)) {
     return true;
+  }
 
   // Drag was canned at the last minute - we owe m_dragSrc a DRAGEND event
   DispatchDragSrcEvent(event_type_names::kDragend, event.Event());

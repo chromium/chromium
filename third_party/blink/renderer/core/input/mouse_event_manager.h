@@ -238,7 +238,7 @@ class CORE_EXPORT MouseEventManager final
   // remains unchanged.
   Member<Element> mouse_down_element_;
 
-  gfx::Point mouse_down_pos_;  // In our view's coords.
+  gfx::Point mouse_down_pos_;
   base::TimeTicks mouse_down_timestamp_;
   WebMouseEvent mouse_down_;
 

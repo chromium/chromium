@@ -81,10 +81,16 @@ class CORE_EXPORT DragController final
   bool PopulateDragDataTransfer(LocalFrame* src,
                                 const DragState&,
                                 const gfx::Point& drag_origin);
+
+  // The parameter `drag_event` is the event that triggered the drag operation,
+  // and `drag_initiation_location` is the where the drag originated.  The
+  // event's location does NOT match the initiation location for a mouse-drag:
+  // the drag is triggered by a mouse-move event but the initiation location is
+  // that of a mouse-down event.
   bool StartDrag(LocalFrame* src,
                  const DragState&,
                  const WebMouseEvent& drag_event,
-                 const gfx::Point& drag_origin);
+                 const gfx::Point& drag_initiation_location);
 
   DragState& GetDragState();
 
@@ -120,14 +126,11 @@ class CORE_EXPORT DragController final
 
   void MouseMovedIntoDocument(Document*);
 
-  // drag_location and drag_origin should be in the coordinate space of the
-  // LocalFrame's contents.
   void DoSystemDrag(DragImage*,
-                    const gfx::Point& drag_location,
-                    const gfx::Point& drag_origin,
+                    const gfx::Point& drag_obj_location,
+                    const gfx::Point& drag_initiation_location,
                     DataTransfer*,
-                    LocalFrame*,
-                    bool for_link);
+                    LocalFrame*);
 
   Member<Page> page_;
 
