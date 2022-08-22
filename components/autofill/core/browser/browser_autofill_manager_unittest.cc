@@ -183,6 +183,23 @@ class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
   MOCK_METHOD(void, HideTouchToFill, (), (override));
 };
 
+class MockFastCheckoutDelegate : public FastCheckoutDelegate {
+ public:
+  MockFastCheckoutDelegate() = default;
+  MockFastCheckoutDelegate(const MockFastCheckoutDelegate&) = delete;
+  MockFastCheckoutDelegate& operator=(const MockFastCheckoutDelegate&) = delete;
+  ~MockFastCheckoutDelegate() override = default;
+
+  MOCK_METHOD(bool,
+              TryToShowFastCheckout,
+              (const FormFieldData& field),
+              (override));
+  MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
+  MOCK_METHOD(void, HideFastCheckoutUI, (), (override));
+  MOCK_METHOD(void, OnFastCheckoutUIHidden, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
+};
+
 void ExpectFilledField(const char* expected_label,
                        const char* expected_name,
                        const char* expected_value,
@@ -443,6 +460,11 @@ class BrowserAutofillManagerTest : public testing::Test {
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
     browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
         std::move(touch_to_fill_delegate));
+
+    auto fast_checkout_delegate = std::make_unique<MockFastCheckoutDelegate>();
+    fast_checkout_delegate_ = fast_checkout_delegate.get();
+    browser_autofill_manager_->SetFastCheckoutDelegateForTest(
+        std::move(fast_checkout_delegate));
 
     auto test_strike_database = std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
@@ -776,6 +798,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TestAutofillExternalDelegate> external_delegate_;
+  raw_ptr<MockFastCheckoutDelegate> fast_checkout_delegate_;
   raw_ptr<MockTouchToFillDelegateImpl> touch_to_fill_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
@@ -9539,18 +9562,20 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
 }
 
 // Tests that both Autofill popup and TTF are hidden on renderer event.
-TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndTouchToFillOnHidePopup) {
+TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kRendererEvent));
   EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill);
+  EXPECT_CALL(*fast_checkout_delegate_, HideFastCheckoutUI);
   browser_autofill_manager_->OnHidePopup();
 }
 
-// Tests that only Autofill popup is hidden on editing end, but not TTF.
+// Tests that only Autofill popup is hidden on editing end, but not TTF or FC.
 TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kEndEditing));
   EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill).Times(0);
+  EXPECT_CALL(*fast_checkout_delegate_, HideFastCheckoutUI).Times(0);
   browser_autofill_manager_->OnDidEndTextFieldEditing();
 }
 

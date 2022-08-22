@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -445,6 +446,7 @@ BrowserAutofillManager::BrowserAutofillManager(
                       enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
+      fast_checkout_delegate_(std::make_unique<FastCheckoutDelegateImpl>(this)),
       touch_to_fill_delegate_(std::make_unique<TouchToFillDelegateImpl>(this)),
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
@@ -1103,6 +1105,18 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // of |external_delegate_|.
     return;
   }
+
+  if (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
+      (form_element_was_clicked &&
+       fast_checkout_delegate_->TryToShowFastCheckout(field))) {
+    // The Fast Checkout surface is shown, so abort showing regular Autofill UI.
+    // Now the flow is controlled by the `fast_checkout_delegate_` instead
+    // of `external_delegate_`.
+    // In principle, touch_to_fill is prioritized, but the triggering surfaces
+    // are different and the two screens should never coincide.
+    return;
+  }
+
   // Send Autofill suggestions (could be an empty list).
   external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                             autoselect_first_suggestion,
@@ -1407,6 +1421,7 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
   single_field_form_fill_router_->CancelPendingQueries(this);
   client()->HideAutofillPopup(PopupHidingReason::kRendererEvent);
+  fast_checkout_delegate_->HideFastCheckoutUI();
   touch_to_fill_delegate_->HideTouchToFill();
 }
 
@@ -1808,6 +1823,7 @@ void BrowserAutofillManager::Reset() {
   credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
+  fast_checkout_delegate_->Reset();
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
   form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
