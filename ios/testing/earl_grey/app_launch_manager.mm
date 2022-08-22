@@ -252,6 +252,11 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     if (@available(iOS 14, *)) {
       [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
     }
+
+    // Wait for application to settle before continuing on with test.
+    GREYWaitForAppToIdle(@"App failed to idle BEFORE test body started.\n\n"
+                         @"**** Check that the prior test left the app in a"
+                         @"clean state. ****");
   }
 }
 
