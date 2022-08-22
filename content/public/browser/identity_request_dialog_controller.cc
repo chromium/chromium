@@ -50,6 +50,20 @@ IdentityProviderMetadata::~IdentityProviderMetadata() = default;
 IdentityProviderMetadata::IdentityProviderMetadata(
     const IdentityProviderMetadata& other) = default;
 
+IdentityProviderData::IdentityProviderData(
+    const GURL& idp_config_url,
+    base::span<const IdentityRequestAccount> accounts,
+    const IdentityProviderMetadata& idp_metadata,
+    const ClientIdData& client_id_data)
+    : idp_config_url{idp_config_url},
+      accounts{accounts},
+      idp_metadata{idp_metadata},
+      client_id_data{client_id_data} {}
+
+IdentityProviderData::IdentityProviderData(const IdentityProviderData& other) =
+    default;
+IdentityProviderData::~IdentityProviderData() = default;
+
 int IdentityRequestDialogController::GetBrandIconIdealSize() {
   return 0;
 }
@@ -60,10 +74,7 @@ int IdentityRequestDialogController::GetBrandIconMinimumSize() {
 
 void IdentityRequestDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    const GURL& idp_signin_url,
-    base::span<const IdentityRequestAccount> accounts,
-    const IdentityProviderMetadata& idp_metadata,
-    const ClientIdData& client_id_data,
+    const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {

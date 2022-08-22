@@ -22,14 +22,12 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       absl::optional<std::string> selected_account);
   ~FakeIdentityRequestDialogController() override;
 
-  void ShowAccountsDialog(content::WebContents* rp_web_contents,
-                          const GURL& idp_signin_url,
-                          base::span<const IdentityRequestAccount> accounts,
-                          const IdentityProviderMetadata& idp_metadata,
-                          const ClientIdData& client_id_data,
-                          IdentityRequestAccount::SignInMode sign_in_mode,
-                          AccountSelectionCallback on_selected,
-                          DismissCallback dismmiss_callback) override;
+  void ShowAccountsDialog(
+      content::WebContents* rp_web_contents,
+      const std::vector<content::IdentityProviderData>& identity_provider_data,
+      IdentityRequestAccount::SignInMode sign_in_mode,
+      AccountSelectionCallback on_selected,
+      DismissCallback dismmiss_callback) override;
 
  private:
   absl::optional<std::string> selected_account_;

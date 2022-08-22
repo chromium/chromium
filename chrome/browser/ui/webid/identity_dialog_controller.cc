@@ -47,13 +47,19 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 
 void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    const GURL& idp_url,
-    base::span<const content::IdentityRequestAccount> accounts,
-    const content::IdentityProviderMetadata& idp_metadata,
-    const content::ClientIdData& client_data,
+    const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
+  // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
+  // support multiple IDPs.
+  GURL idp_url = identity_provider_data[0].idp_config_url;
+  base::span<const content::IdentityRequestAccount> accounts =
+      identity_provider_data[0].accounts;
+  content::IdentityProviderMetadata idp_metadata =
+      identity_provider_data[0].idp_metadata;
+  content::ClientIdData client_data = identity_provider_data[0].client_id_data;
+
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
   rp_web_contents_ = rp_web_contents;

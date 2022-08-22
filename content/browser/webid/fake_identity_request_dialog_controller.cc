@@ -15,13 +15,14 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
 
 void FakeIdentityRequestDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    const GURL& idp_signin_url,
-    base::span<const IdentityRequestAccount> accounts,
-    const IdentityProviderMetadata& idp_metadata,
-    const ClientIdData& client_id_data,
+    const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
+  // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
+  // support multiple IDPs.
+  base::span<const IdentityRequestAccount> accounts =
+      identity_provider_data[0].accounts;
   DCHECK_GT(accounts.size(), 0ul);
   // Use the provided account, if any. Otherwise use the first one.
   std::move(on_selected)

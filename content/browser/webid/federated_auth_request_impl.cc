@@ -292,7 +292,7 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 }
 
 void FederatedAuthRequestImpl::RequestToken(
-    std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
+    std::vector<IdentityProviderPtr> identity_provider_ptrs,
     bool prefer_auto_sign_in,
     RequestTokenCallback callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
@@ -726,16 +726,21 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                              accounts[0].login_state == LoginState::kSignIn &&
                              !screen_reader_is_on;
       // TODO(cbiesinger): Check that the URLs are valid.
-      ClientIdData data{GURL(client_metadata_.terms_of_service_url),
-                        GURL(client_metadata_.privacy_policy_url)};
+      ClientIdData client_id_data{GURL(client_metadata_.terms_of_service_url),
+                                  GURL(client_metadata_.privacy_policy_url)};
 
       show_accounts_dialog_time_ = base::TimeTicks::Now();
       fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
                                                    start_time_);
 
+      std::vector<IdentityProviderData> identity_providers_data;
+      IdentityProviderData identity_provider_data(
+          identity_provider.config_url, accounts, idp_metadata, client_id_data);
+      identity_providers_data.push_back(identity_provider_data);
+
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, identity_provider.config_url, accounts, idp_metadata,
-          data, is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
+          rp_web_contents, identity_providers_data,
+          is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr(), identity_provider),
           base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,

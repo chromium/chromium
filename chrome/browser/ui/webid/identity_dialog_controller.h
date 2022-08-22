@@ -16,8 +16,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
 
-class GURL;
-
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 using DismissCallback =
@@ -42,10 +40,7 @@ class IdentityDialogController
 
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      const GURL& idp_url,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data,
+      const std::vector<content::IdentityProviderData>& identity_provider_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;

@@ -84,6 +84,20 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   GURL brand_icon_url;
 };
 
+struct CONTENT_EXPORT IdentityProviderData {
+  IdentityProviderData(const GURL& idp_config_url,
+                       base::span<const IdentityRequestAccount> accounts,
+                       const IdentityProviderMetadata& idp_metadata,
+                       const ClientIdData& client_id_data);
+  IdentityProviderData(const IdentityProviderData& other);
+  ~IdentityProviderData();
+
+  GURL idp_config_url;
+  base::span<const IdentityRequestAccount> accounts;
+  IdentityProviderMetadata idp_metadata;
+  ClientIdData client_id_data;
+};
+
 // IdentityRequestDialogController is in interface for control of the UI
 // surfaces that are displayed to intermediate the exchange of ID tokens.
 class CONTENT_EXPORT IdentityRequestDialogController {
@@ -129,10 +143,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // |sign_in_mode| represents whether this is an auto sign in flow.
   virtual void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      const GURL& idp_signin_url,
-      base::span<const IdentityRequestAccount> accounts,
-      const IdentityProviderMetadata& idp_metadata,
-      const ClientIdData& client_id_data,
+      const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback);

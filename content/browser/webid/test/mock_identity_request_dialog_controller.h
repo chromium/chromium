@@ -24,12 +24,9 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD8(ShowAccountsDialog,
+  MOCK_METHOD5(ShowAccountsDialog,
                void(WebContents*,
-                    const GURL&,
-                    base::span<const content::IdentityRequestAccount> accounts,
-                    const IdentityProviderMetadata&,
-                    const ClientIdData&,
+                    const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
                     AccountSelectionCallback,
                     DismissCallback));
