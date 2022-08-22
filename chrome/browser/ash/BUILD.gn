@@ -144,6 +144,8 @@ source_set("ash") {
     "app_mode/web_app/web_kiosk_app_launcher.h",
     "app_mode/web_app/web_kiosk_app_manager.cc",
     "app_mode/web_app/web_kiosk_app_manager.h",
+    "app_mode/web_app/web_kiosk_app_service_launcher.cc",
+    "app_mode/web_app/web_kiosk_app_service_launcher.h",
     "app_restore/app_launch_handler.cc",
     "app_restore/app_launch_handler.h",
     "app_restore/app_restore_arc_task_handler.cc",

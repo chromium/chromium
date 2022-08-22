@@ -9,6 +9,8 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
+#include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
@@ -297,8 +301,16 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
       case KioskAppType::kWebApp:
         // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
         ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
-        app_launcher_ = std::make_unique<WebKioskAppLauncher>(
-            profile, this, *kiosk_app_id_.account_id);
+        // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
+        // Lacros until App Service installation API is available.
+        if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+            !crosapi::browser_util::IsLacrosEnabled()) {
+          app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
+              profile, this, *kiosk_app_id_.account_id);
+        } else {
+          app_launcher_ = std::make_unique<WebKioskAppLauncher>(
+              profile, this, *kiosk_app_id_.account_id);
+        }
         break;
     }
   }

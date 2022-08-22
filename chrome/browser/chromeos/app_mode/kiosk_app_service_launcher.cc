@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/instance.h"
 
 namespace ash {
 
@@ -65,6 +66,32 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void KioskAppServiceLauncher::EnsureAppTypeInitialized(
+    apps::AppType app_type,
+    base::OnceClosure app_type_initialized_callback) {
+  if (app_service_->AppRegistryCache().IsAppTypeInitialized(app_type)) {
+    std::move(app_type_initialized_callback).Run();
+    return;
+  }
+
+  app_type_ = app_type;
+  app_type_initialized_callback_ = std::move(app_type_initialized_callback);
+  app_registry_observation_.Observe(&app_service_->AppRegistryCache());
+}
+
+void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
+    const std::string& app_id,
+    AppLaunchedCallback app_launched_callback,
+    base::OnceClosure app_visible_callback) {
+  app_visible_callback_ = std::move(app_visible_callback);
+  instance_registry_observation_.Observe(&app_service_->InstanceRegistry());
+
+  CheckAndMaybeLaunchApp(app_id, std::move(app_launched_callback));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void KioskAppServiceLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != app_id_ ||
       update.Readiness() != apps::Readiness::kReady) {
@@ -74,10 +101,38 @@ void KioskAppServiceLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   LaunchAppInternal();
 }
 
+void KioskAppServiceLauncher::OnAppTypeInitialized(apps::AppType app_type) {
+  if (app_type == app_type_ && app_type_initialized_callback_.has_value()) {
+    app_registry_observation_.Reset();
+    std::move(app_type_initialized_callback_.value()).Run();
+  }
+}
+
 void KioskAppServiceLauncher::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_observation_.Reset();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void KioskAppServiceLauncher::OnInstanceUpdate(
+    const apps::InstanceUpdate& update) {
+  if (update.AppId() != app_id_ ||
+      !(update.State() & apps::InstanceState::kVisible)) {
+    return;
+  }
+
+  instance_registry_observation_.Reset();
+  if (app_visible_callback_.has_value()) {
+    std::move(app_visible_callback_.value()).Run();
+  }
+}
+
+void KioskAppServiceLauncher::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  instance_registry_observation_.Reset();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void KioskAppServiceLauncher::LaunchAppInternal() {
   SYSLOG(INFO) << "Kiosk app is ready to launch with App Service";
