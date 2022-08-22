@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS getCurrentPosition
-PASS watchPosition
-PASS Media devices properties
-PASS requestMediaKeySystemAccess
-FAIL Battery Status API assert_false: expected false got true
-Harness: the test ran to completion.
-

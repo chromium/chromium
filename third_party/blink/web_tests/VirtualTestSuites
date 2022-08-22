@@ -1246,14 +1246,6 @@
     ]
   },
   {
-    "prefix": "insecure-battery-status-api",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "http/tests/security/powerfulFeatureRestrictions/" ],
-    "args": [
-      "--disable-blink-features=RestrictBatteryStatusToSecureContexts"
-    ]
-  },
-  {
     "prefix": "force-defer-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/battery/#the-navigator-interface
-[SecureContext=RestrictBatteryStatusToSecureContexts, ImplementedAs=BatteryManager]
+[SecureContext, ImplementedAs=BatteryManager]
 partial interface Navigator {
     [CallWith=ScriptState, MeasureAs=BatteryStatusGetBattery] Promise<BatteryManager> getBattery();
 };

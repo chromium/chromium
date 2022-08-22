@@ -1911,10 +1911,6 @@
       name: "RenderPriorityAttribute"
     },
     {
-      name: "RestrictBatteryStatusToSecureContexts",
-      status: "stable",
-    },
-    {
       name: "RestrictGamepadAccess",
       status: "experimental",
     },
