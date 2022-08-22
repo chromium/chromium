@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -35,6 +36,7 @@ IntentChipButton::IntentChipButton(Browser* browser,
                                             base::Unretained(this))),
       browser_(browser),
       delegate_(delegate) {
+  DCHECK(browser);
   SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));

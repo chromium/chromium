@@ -274,7 +274,7 @@ void LocationBarView::Init() {
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
 
-  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  if (browser_ && apps::features::LinkCapturingUiUpdateEnabled()) {
     intent_chip_ =
         AddChildView(std::make_unique<IntentChipButton>(browser_, this));
   }
