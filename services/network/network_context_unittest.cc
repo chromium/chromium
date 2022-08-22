@@ -1559,6 +1559,79 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
   }
 }
+
+TEST_F(NetworkContextTest, P2PHostResolutionWithFamily) {
+  net::NetworkIsolationKey network_isolation_key =
+      net::NetworkIsolationKey::CreateTransient();
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  std::unique_ptr<net::MockHostResolver> resolver =
+      std::make_unique<net::MockHostResolver>();
+  auto& host_resolver = *resolver.get();
+  context_builder->set_host_resolver(std::move(resolver));
+  auto url_request_context = context_builder->Build();
+
+  network_context_remote_.reset();
+  std::unique_ptr<NetworkContext> network_context =
+      std::make_unique<NetworkContext>(
+          network_service_.get(),
+          network_context_remote_.BindNewPipeAndPassReceiver(),
+          url_request_context.get(),
+          std::vector<std::string>() /* cors_exempt_header_list */);
+
+  MockP2PTrustedSocketManagerClient client;
+  mojo::Receiver<network::mojom::P2PTrustedSocketManagerClient> receiver(
+      &client);
+  mojo::Remote<mojom::P2PTrustedSocketManager> trusted_socket_manager;
+  mojo::Remote<mojom::P2PSocketManager> socket_manager;
+  network_context_remote_->CreateP2PSocketManager(
+      network_isolation_key, receiver.BindNewPipeAndPassRemote(),
+      trusted_socket_manager.BindNewPipeAndPassReceiver(),
+      socket_manager.BindNewPipeAndPassReceiver());
+
+  const char kIPv4Hostname[] = "ipv4.test.";
+  net::MockHostResolverBase::RuleResolver::RuleKey ipv4_key;
+  ipv4_key.hostname_pattern = kIPv4Hostname;
+  ipv4_key.query_type = net::DnsQueryType::A;
+  net::IPAddress ipv4_address;
+  ASSERT_TRUE(ipv4_address.AssignFromIPLiteral("1.2.3.4"));
+  host_resolver.rules()->AddRule(ipv4_key, ipv4_address.ToString());
+
+  const char kIPv6Hostname[] = "ipv6.test.";
+  net::MockHostResolverBase::RuleResolver::RuleKey ipv6_key;
+  ipv6_key.hostname_pattern = kIPv6Hostname;
+  ipv6_key.query_type = net::DnsQueryType::AAAA;
+  net::IPAddress ipv6_address;
+  ASSERT_TRUE(ipv6_address.AssignFromIPLiteral("::1234:5678"));
+  host_resolver.rules()->AddRule(ipv6_key, ipv6_address.ToString());
+
+  {
+    base::RunLoop run_loop;
+    std::vector<net::IPAddress> results;
+    // Expect IPv4 address when family passed as AF_INET.
+    socket_manager->GetHostAddressWithFamily(
+        kIPv4Hostname, AF_INET, false /* enable_mdns */,
+        base::BindLambdaForTesting(
+            [&](const std::vector<net::IPAddress>& addresses) {
+              EXPECT_EQ(std::vector<net::IPAddress>{ipv4_address}, addresses);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    std::vector<net::IPAddress> results;
+    // Expect IPv6 address when family passed as AF_INET6.
+    socket_manager->GetHostAddressWithFamily(
+        kIPv6Hostname, AF_INET6, false /* enable_mdns */,
+        base::BindLambdaForTesting(
+            [&](const std::vector<net::IPAddress>& addresses) {
+              EXPECT_EQ(std::vector<net::IPAddress>{ipv6_address}, addresses);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+}
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
 // Test that valid referrers are allowed, while invalid ones result in errors.

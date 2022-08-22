@@ -32,6 +32,7 @@
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class URLRequestContext;
@@ -103,6 +104,11 @@ class P2PSocketManager
       const std::string& host_name,
       bool enable_mdns,
       mojom::P2PSocketManager::GetHostAddressCallback callback) override;
+  void GetHostAddressWithFamily(
+      const std::string& host_name,
+      int address_family,
+      bool enable_mdns,
+      mojom::P2PSocketManager::GetHostAddressCallback callback) override;
   void CreateSocket(P2PSocketType type,
                     const net::IPEndPoint& local_address,
                     const P2PPortRange& port_range,
@@ -120,6 +126,12 @@ class P2PSocketManager
   // address. Since it binds to the "any" address (0.0.0.0 or ::) internally, it
   // retrieves the default local address.
   static net::IPAddress GetDefaultLocalAddress(int family);
+
+  void DoGetHostAddress(
+      const std::string& host_name,
+      absl::optional<int> address_family,
+      bool enable_mdns,
+      mojom::P2PSocketManager::GetHostAddressCallback callback);
 
   void OnAddressResolved(
       DnsRequest* request,

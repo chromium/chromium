@@ -12,11 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/sys_addrinfo.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
@@ -28,6 +30,7 @@
 #include "services/network/p2p/socket.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/media/base/turn_utils.h"
 
@@ -71,6 +74,10 @@ bool HasLocalTld(const std::string& host_name) {
   return EndsWith(host_name, kLocalTld, base::CompareCase::INSENSITIVE_ASCII);
 }
 
+net::DnsQueryType FamilyToDnsQueryType(int family) {
+  return net::AddressFamilyToDnsQueryType(net::ToAddressFamily(family));
+}
+
 }  // namespace
 
 class P2PSocketManager::DnsRequest {
@@ -81,6 +88,7 @@ class P2PSocketManager::DnsRequest {
       : resolver_(host_resolver), enable_mdns_(enable_mdns) {}
 
   void Resolve(const std::string& host_name,
+               absl::optional<int> family,
                const net::NetworkIsolationKey& network_isolation_key,
                DoneCallback done_callback) {
     DCHECK(!done_callback.is_null());
@@ -109,6 +117,9 @@ class P2PSocketManager::DnsRequest {
       host.set_host(host_name_.substr(0, host_name_.size() - 1));
       parameters.source = net::HostResolverSource::MULTICAST_DNS;
 #endif  // ENABLE_MDNS
+    }
+    if (family.has_value()) {
+      parameters.dns_query_type = FamilyToDnsQueryType(family.value());
     }
     request_ = resolver_->CreateRequest(host, network_isolation_key,
                                         net::NetLogWithSource(), parameters);
@@ -301,12 +312,30 @@ void P2PSocketManager::GetHostAddress(
     const std::string& host_name,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
+  DoGetHostAddress(host_name, /*address_family=*/absl::nullopt, enable_mdns,
+                   std::move(callback));
+}
+
+void P2PSocketManager::GetHostAddressWithFamily(
+    const std::string& host_name,
+    int address_family,
+    bool enable_mdns,
+    mojom::P2PSocketManager::GetHostAddressCallback callback) {
+  DoGetHostAddress(host_name, absl::make_optional(address_family), enable_mdns,
+                   std::move(callback));
+}
+
+void P2PSocketManager::DoGetHostAddress(
+    const std::string& host_name,
+    absl::optional<int> address_family,
+    bool enable_mdns,
+    mojom::P2PSocketManager::GetHostAddressCallback callback) {
   auto request = std::make_unique<DnsRequest>(
       url_request_context_->host_resolver(), enable_mdns);
   DnsRequest* request_ptr = request.get();
   dns_requests_.insert(std::move(request));
   request_ptr->Resolve(
-      host_name, network_isolation_key_,
+      host_name, address_family, network_isolation_key_,
       base::BindOnce(&P2PSocketManager::OnAddressResolved,
                      base::Unretained(this), request_ptr, std::move(callback)));
 }
