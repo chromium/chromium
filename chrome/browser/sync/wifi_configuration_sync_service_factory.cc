@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_bridge.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/model/model_type_store_service.h"
 
@@ -45,9 +44,7 @@ bool WifiConfigurationSyncServiceFactory::ShouldRunInProfile(
 }
 
 WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "WifiConfigurationSyncService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("WifiConfigurationSyncService") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

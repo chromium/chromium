@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_WEB_CONTENTS_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_WEB_CONTENTS_ROUTER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,8 +18,7 @@ namespace sync_sessions {
 
 class SyncSessionsWebContentsRouter;
 
-class SyncSessionsWebContentsRouterFactory
-    : public BrowserContextKeyedServiceFactory {
+class SyncSessionsWebContentsRouterFactory : public ProfileKeyedServiceFactory {
  public:
   // Get the SyncSessionsWebContentsRouter service for |profile|, creating one
   // if needed.

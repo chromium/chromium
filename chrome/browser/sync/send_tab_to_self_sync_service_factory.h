@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_SEND_TAB_TO_SELF_SYNC_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_SEND_TAB_TO_SELF_SYNC_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,8 +18,7 @@ namespace send_tab_to_self {
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
 
-class SendTabToSelfSyncServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class SendTabToSelfSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static send_tab_to_self::SendTabToSelfSyncService* GetForProfile(
       Profile* profile);

@@ -48,7 +48,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -199,9 +198,7 @@ SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(Profile* profile) {
 }
 
 SyncServiceFactory::SyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SyncService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SyncService") {
   // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but

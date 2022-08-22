@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -21,7 +21,7 @@ class DeviceInfoSyncService;
 class DeviceInfoTracker;
 }  // namespace syncer
 
-class DeviceInfoSyncServiceFactory : public BrowserContextKeyedServiceFactory {
+class DeviceInfoSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static syncer::DeviceInfoSyncService* GetForProfile(Profile* profile);
   static DeviceInfoSyncServiceFactory* GetInstance();

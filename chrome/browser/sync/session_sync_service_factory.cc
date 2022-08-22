@@ -20,7 +20,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -143,9 +142,7 @@ bool SessionSyncServiceFactory::ShouldSyncURLForTesting(const GURL& url) {
 }
 
 SessionSyncServiceFactory::SessionSyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SessionSyncService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SessionSyncService") {
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());

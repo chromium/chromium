@@ -4,10 +4,8 @@
 
 #include "chrome/browser/sync/bookmark_sync_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
 // static
@@ -23,9 +21,9 @@ BookmarkSyncServiceFactory* BookmarkSyncServiceFactory::GetInstance() {
 }
 
 BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "BookmarkSyncServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
 }
 
@@ -36,9 +34,4 @@ KeyedService* BookmarkSyncServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new sync_bookmarks::BookmarkSyncService(
       BookmarkUndoServiceFactory::GetForProfileIfExists(profile));
-}
-
-content::BrowserContext* BookmarkSyncServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

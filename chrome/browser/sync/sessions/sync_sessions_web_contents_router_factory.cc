@@ -7,8 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-
 namespace sync_sessions {
 
 // static
@@ -25,9 +23,7 @@ SyncSessionsWebContentsRouterFactory::GetInstance() {
 }
 
 SyncSessionsWebContentsRouterFactory::SyncSessionsWebContentsRouterFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SyncSessionsWebContentsRouter",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SyncSessionsWebContentsRouter") {}
 
 SyncSessionsWebContentsRouterFactory::~SyncSessionsWebContentsRouterFactory() =
     default;

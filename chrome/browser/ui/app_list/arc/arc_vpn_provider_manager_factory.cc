@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace app_list {
@@ -25,9 +23,11 @@ ArcVpnProviderManagerFactory* ArcVpnProviderManagerFactory::GetInstance() {
 }
 
 ArcVpnProviderManagerFactory::ArcVpnProviderManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ArcVpnProviderManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          // This matches the logic in ExtensionSyncServiceFactory, which uses
+          // the original browser context.
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
 }
 
@@ -36,13 +36,6 @@ ArcVpnProviderManagerFactory::~ArcVpnProviderManagerFactory() {}
 KeyedService* ArcVpnProviderManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return ArcVpnProviderManager::Create(context);
-}
-
-content::BrowserContext* ArcVpnProviderManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // This matches the logic in ExtensionSyncServiceFactory, which uses the
-  // orginal browser context.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace app_list

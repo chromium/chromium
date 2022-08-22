@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_WIFI_CONFIGURATION_SYNC_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_WIFI_CONFIGURATION_SYNC_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,8 +18,7 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-class WifiConfigurationSyncServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class WifiConfigurationSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ash::sync_wifi::WifiConfigurationSyncService* GetForProfile(
       Profile* profile,

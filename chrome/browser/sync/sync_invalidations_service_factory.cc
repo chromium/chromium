@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 
@@ -27,9 +26,7 @@ SyncInvalidationsServiceFactory::GetInstance() {
 }
 
 SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SyncInvalidationsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SyncInvalidationsService") {
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 }

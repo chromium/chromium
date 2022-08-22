@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/translate/core/browser/translate_model_service.h"
 
 namespace content {
@@ -17,7 +17,7 @@ class Profile;
 
 // LazyInstance that owns all TranslateModelService(s) and associates
 // them with Profiles.
-class TranslateModelServiceFactory : public BrowserContextKeyedServiceFactory {
+class TranslateModelServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the TranslateModelService for the profile.
   //
@@ -37,8 +37,6 @@ class TranslateModelServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

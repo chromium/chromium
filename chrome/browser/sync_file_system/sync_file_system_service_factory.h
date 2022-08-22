@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,7 +18,7 @@ class LocalFileSyncService;
 class RemoteFileSyncService;
 class SyncFileSystemService;
 
-class SyncFileSystemServiceFactory : public BrowserContextKeyedServiceFactory {
+class SyncFileSystemServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SyncFileSystemService* GetForProfile(Profile* profile);
   static SyncFileSystemServiceFactory* GetInstance();

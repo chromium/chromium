@@ -11,11 +11,11 @@
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ArcAppListPrefs;
 
-class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
+class ArcAppListPrefsFactory : public ProfileKeyedServiceFactory {
  public:
   static ArcAppListPrefs* GetForBrowserContext(
       content::BrowserContext* context);
@@ -35,8 +35,6 @@ class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
   ~ArcAppListPrefsFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 
   static bool is_sync_test_;

@@ -8,12 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/driver/sync_service.h"
@@ -39,9 +37,9 @@ syncer::UserEventService* UserEventServiceFactory::GetForProfile(
 }
 
 UserEventServiceFactory::UserEventServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "UserEventService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
@@ -67,11 +65,6 @@ KeyedService* UserEventServiceFactory::BuildServiceInstanceFor(
       std::move(store_factory), std::move(change_processor),
       SessionSyncServiceFactory::GetForProfile(profile)->GetGlobalIdMapper());
   return new syncer::UserEventServiceImpl(std::move(bridge));
-}
-
-content::BrowserContext* UserEventServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace browser_sync
