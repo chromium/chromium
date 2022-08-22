@@ -131,6 +131,7 @@ extern const base::Feature kIPHReadLaterContextMenuFeature;
 extern const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature;
 extern const base::Feature kIPHReadLaterAppMenuBookmarksFeature;
 extern const base::Feature kIPHReadLaterBottomSheetFeature;
+extern const base::Feature kIPHRequestDesktopSiteAppMenuFeature;
 extern const base::Feature kIPHShoppingListMenuItemFeature;
 extern const base::Feature kIPHShoppingListSaveFlowFeature;
 extern const base::Feature kIPHTabGroupsQuicklyComparePagesFeature;
