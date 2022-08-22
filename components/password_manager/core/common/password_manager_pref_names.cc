@@ -94,5 +94,10 @@ const char kPasswordChangeSuccessTrackerFlows[] =
 const char kPasswordChangeSuccessTrackerVersion[] =
     "password_manager.password_change_success_tracker.version";
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kBiometricAuthenticationBeforeFilling[] =
+    "password_manager.biometric_authentication_filling";
+#endif
+
 }  // namespace prefs
 }  // namespace password_manager

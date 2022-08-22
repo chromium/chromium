@@ -164,6 +164,12 @@ extern const char kPasswordChangeSuccessTrackerFlows[];
 // |kPasswordChangeSuccessTrackerFlows|.
 extern const char kPasswordChangeSuccessTrackerVersion[];
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Boolean indicating whether user enabled biometric authentication before
+// filling.
+extern const char kBiometricAuthenticationBeforeFilling[];
+#endif
+
 }  // namespace prefs
 }  // namespace password_manager
 

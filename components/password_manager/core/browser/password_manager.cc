@@ -292,6 +292,11 @@ void PasswordManager::RegisterProfilePrefs(
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);
   registry->RegisterListPref(prefs::kPasswordChangeSuccessTrackerFlows);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,
+                                false);
+#endif
 }
 
 // static
