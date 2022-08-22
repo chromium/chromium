@@ -1918,7 +1918,8 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
     return ClientType::VM_TERMINA;
   } else if (client_type_str == "CRAS_CLIENT_TYPE_CHROME") {
     return ClientType::CHROME;
-  } else if (client_type_str == "CRAS_CLIENT_TYPE_ARC") {
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_ARC" ||
+             client_type_str == "CRAS_CLIENT_TYPE_ARCVM") {
     return ClientType::ARC;
   } else if (client_type_str == "CRAS_CLIENT_TYPE_BOREALIS") {
     return ClientType::VM_BOREALIS;
