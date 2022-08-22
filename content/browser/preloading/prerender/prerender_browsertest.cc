@@ -3340,9 +3340,14 @@ void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
             RenderFrameHost::kNoFrameTreeNodeId);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 // Tests that we will cancel the prerendering if the prerendering page attempts
 // to use plugins.
+//
+// TODO(crbug.com/1205920): This does not cover embedders that override
+// `ContentRendererClient::OverrideCreatePlugin()` (such as for Chrome's PDF
+// viewer), as cancellation depends on the renderer attempting to bind
+// `content::mojom::PepperHost`.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -3392,7 +3397,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
                      EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForRequest(GetUrl("/title1.html"), 1);
 }
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(IS_ANDROID)
 // On Android the Notification constructor throws an exception regardless of
