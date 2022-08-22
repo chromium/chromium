@@ -1762,6 +1762,8 @@ component("ash") {
     "system/unified/notification_icons_controller.h",
     "system/unified/page_indicator_view.cc",
     "system/unified/page_indicator_view.h",
+    "system/unified/quick_settings_view.cc",
+    "system/unified/quick_settings_view.h",
     "system/unified/quiet_mode_feature_pod_controller.cc",
     "system/unified/quiet_mode_feature_pod_controller.h",
     "system/unified/screen_capture_tray_item_view.cc",

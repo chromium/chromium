@@ -13,6 +13,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
+#include "ash/system/unified/quick_settings_view.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -33,6 +34,7 @@ namespace ash {
 class UnifiedSystemTray;
 class UnifiedSystemTrayController;
 class UnifiedSystemTrayView;
+class QuickSettingsView;
 
 // Manages the bubble that contains UnifiedSystemTrayView.
 // Shows the bubble on the constructor, and closes the bubble on the destructor.
@@ -144,6 +146,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   UnifiedSystemTrayView* unified_view() { return unified_view_; }
 
+  QuickSettingsView* quick_settings_view() { return quick_settings_view_; }
+
   UnifiedSystemTrayController* unified_system_tray_controller() {
     return controller_.get();
   }
@@ -175,6 +179,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
+  QuickSettingsView* quick_settings_view_ = nullptr;
 };
 
 }  // namespace ash

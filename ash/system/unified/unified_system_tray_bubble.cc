@@ -6,6 +6,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -51,15 +52,25 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
-
-  unified_view_ = controller_->CreateView();
-  time_to_click_recorder_ =
-      std::make_unique<TimeToClickRecorder>(this, unified_view_);
   int max_height = CalculateMaxHeight();
-  unified_view_->SetMaxHeight(max_height);
-  bubble_view_->SetMaxHeight(max_height);
-  controller_->ResetToCollapsedIfRequired();
-  bubble_view_->AddChildView(unified_view_);
+
+  if (features::IsQsRevampEnabled()) {
+    auto quick_settings_view = controller_->CreateQuickSettingsView();
+    bubble_view_->SetMaxHeight(max_height);
+    quick_settings_view_ =
+        bubble_view_->AddChildView(std::move(quick_settings_view));
+    time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
+        /*delegate=*/this, /*target_view=*/quick_settings_view_);
+  } else {
+    DCHECK(!features::IsQsRevampEnabled());
+    auto unified_view = controller_->CreateUnifiedQuickSettingsView();
+    unified_view->SetMaxHeight(max_height);
+    bubble_view_->SetMaxHeight(max_height);
+    controller_->ResetToCollapsedIfRequired();
+    unified_view_ = bubble_view_->AddChildView(std::move(unified_view));
+    time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
+        /*delegate=*/this, /*target_view=*/unified_view_);
+  }
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
@@ -116,7 +127,7 @@ bool UnifiedSystemTrayBubble::IsBubbleActive() const {
 }
 
 void UnifiedSystemTrayBubble::EnsureCollapsed() {
-  if (!bubble_widget_)
+  if (!bubble_widget_ || quick_settings_view_)
     return;
 
   DCHECK(unified_view_);
@@ -128,13 +139,13 @@ void UnifiedSystemTrayBubble::EnsureExpanded() {
   if (!bubble_widget_)
     return;
 
-  DCHECK(unified_view_);
+  DCHECK(unified_view_ || quick_settings_view_);
   DCHECK(controller_);
   controller_->EnsureExpanded();
 }
 
 void UnifiedSystemTrayBubble::CollapseWithoutAnimating() {
-  if (!bubble_widget_)
+  if (!bubble_widget_ || quick_settings_view_)
     return;
 
   DCHECK(unified_view_);
@@ -144,10 +155,14 @@ void UnifiedSystemTrayBubble::CollapseWithoutAnimating() {
 }
 
 void UnifiedSystemTrayBubble::CollapseMessageCenter() {
+  if (quick_settings_view_)
+    return;
   tray_->CollapseMessageCenter();
 }
 
 void UnifiedSystemTrayBubble::ExpandMessageCenter() {
+  if (quick_settings_view_)
+    return;
   tray_->ExpandMessageCenter();
 }
 
@@ -155,7 +170,7 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   if (!bubble_widget_)
     return;
 
-  DCHECK(unified_view_);
+  DCHECK(unified_view_ || quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowAudioDetailedView();
 }
@@ -171,7 +186,7 @@ void UnifiedSystemTrayBubble::ShowCalendarView(
     bubble_widget_->Activate();
   }
 
-  DCHECK(unified_view_);
+  DCHECK(unified_view_ || quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowCalendarView(show_source, event_source);
 }
@@ -180,7 +195,7 @@ void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {
   if (!bubble_widget_)
     return;
 
-  DCHECK(unified_view_);
+  DCHECK(unified_view_ || quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowNetworkDetailedView(force);
 }
@@ -206,6 +221,9 @@ views::Widget* UnifiedSystemTrayBubble::GetBubbleWidget() const {
 }
 
 int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
+  if (features::IsQsRevampEnabled())
+    return quick_settings_view_->GetCurrentHeight();
+
   return unified_view_->GetCurrentHeight();
 }
 
@@ -224,14 +242,21 @@ int UnifiedSystemTrayBubble::CalculateMaxHeight() const {
 }
 
 bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {
+  if (quick_settings_view_)
+    return false;
   return tray_->FocusMessageCenter(reverse);
 }
 
 void UnifiedSystemTrayBubble::FocusEntered(bool reverse) {
+  if (features::IsQsRevampEnabled())
+    return;
+
   unified_view_->FocusEntered(reverse);
 }
 
 void UnifiedSystemTrayBubble::OnMessageCenterActivated() {
+  if (quick_settings_view_)
+    return;
   // When the message center is activated, we no longer need to reroute key
   // events to this bubble. Otherwise, we interfere with notifications that may
   // require key input like inline replies. See crbug.com/1040738.
@@ -318,11 +343,13 @@ void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
 
 void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
   int max_height = CalculateMaxHeight();
-  unified_view_->SetMaxHeight(max_height);
+  if (!features::IsQsRevampEnabled())
+    unified_view_->SetMaxHeight(max_height);
   bubble_view_->SetMaxHeight(max_height);
   bubble_view_->ChangeAnchorAlignment(tray_->shelf()->alignment());
   bubble_view_->ChangeAnchorRect(tray_->shelf()->GetSystemTrayAnchorRect());
-
+  if (quick_settings_view_)
+    return;
   if (tray_->IsMessageCenterBubbleShown())
     tray_->message_center_bubble()->UpdatePosition();
 }

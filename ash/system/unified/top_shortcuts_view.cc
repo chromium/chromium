@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -240,6 +241,9 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   // container flex occupying all remaining space.
   layout->SetFlexForView(container_, 1);
 
+  if (features::IsQsRevampEnabled())
+    return;
+
   auto* collapse_button_container =
       AddChildView(std::make_unique<views::View>());
   collapse_button_ =
@@ -260,6 +264,8 @@ void TopShortcutsView::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void TopShortcutsView::SetExpandedAmount(double expanded_amount) {
+  if (features::IsQsRevampEnabled())
+    return;
   collapse_button_->SetExpandedAmount(expanded_amount);
 }
 

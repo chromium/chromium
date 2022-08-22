@@ -88,7 +88,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   }
 
   void InitializeView() {
-    view_.reset(controller_->CreateView());
+    view_ = controller_->CreateUnifiedQuickSettingsView();
 
     view_->AddObserver(this);
     OnViewPreferredSizeChanged(view());

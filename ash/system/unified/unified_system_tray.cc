@@ -570,7 +570,12 @@ void UnifiedSystemTray::ShowBubble() {
   // ShowBubbleInternal will be called from UiDelegate.
   if (!bubble_) {
     time_opened_ = base::TimeTicks::Now();
-    ui_delegate_->ui_controller()->ShowMessageCenterBubble();
+
+    if (features::IsQsRevampEnabled())
+      ShowBubbleInternal();
+    else
+      ui_delegate_->ui_controller()->ShowMessageCenterBubble();
+
     Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
   }
 }
@@ -592,6 +597,11 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
+  if (features::IsQsRevampEnabled() &&
+      bubble_->quick_settings_view()->IsDetailedViewShown()) {
+    return bubble_->quick_settings_view()->GetDetailedViewAccessibleName();
+  }
+
   if (bubble_->unified_view()->IsDetailedViewShown())
     return bubble_->unified_view()->GetDetailedViewAccessibleName();
 
@@ -676,8 +686,10 @@ void UnifiedSystemTray::ShowBubbleInternal() {
   bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
   bubble_->unified_system_tray_controller()->AddObserver(this);
 
-  message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
-  message_center_bubble_->ShowBubble();
+  if (!features::IsQsRevampEnabled()) {
+    message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
+    message_center_bubble_->ShowBubble();
+  }
 
   // crbug/1310675 Add observers in `UnifiedSystemTrayBubble` after both bubbles
   // have been completely created, without this the bubbles can be destroyed
