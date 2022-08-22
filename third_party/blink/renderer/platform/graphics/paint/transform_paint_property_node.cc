@@ -6,8 +6,19 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
+
+TransformPaintPropertyNode::TransformAndOrigin::TransformAndOrigin(
+    const AffineTransform& transform) {
+  if (transform.IsIdentityOrTranslation()) {
+    translation_2d_ = gfx::Vector2dF(transform.E(), transform.F());
+  } else {
+    matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(
+        TransformationMatrix(transform), gfx::Point3F());
+  }
+}
 
 PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
     const State& other,
