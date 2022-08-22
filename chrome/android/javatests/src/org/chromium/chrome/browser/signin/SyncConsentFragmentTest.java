@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -234,6 +235,7 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testSyncConsentFragmentNewAccount() throws IOException {
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
@@ -601,6 +603,7 @@ public class SyncConsentFragmentTest {
     public void testSyncConsentFragmentWithDefaultFlow() {
         HistogramDelta settingsHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
                     SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(

@@ -20,6 +20,8 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -41,7 +43,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * a child account in {@link FakeAccountManagerFacade}.
      */
     private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
-    public static final String NEW_ACCOUNT_EMAIL = "new.account@gmail.com";
+
+    /** AddAccountActivityStub intent arguments to set account name and result */
+    private static final String ADDED_ACCOUNT_NAME = "AddedAccountName";
+    private static final String ADD_ACCOUNT_RESULT = "AddAccountResult";
 
     /** An {@link Activity} stub to test add account flow. */
     public static final class AddAccountActivityStub extends Activity {
@@ -49,9 +54,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Intent data = new Intent();
-            // TODO(https://crbug.com/1352486) : Get the account name and result code from callsite.
-            data.putExtra(AccountManager.KEY_ACCOUNT_NAME, NEW_ACCOUNT_EMAIL);
-            setResult(RESULT_OK, data);
+            int result = getIntent().getIntExtra(ADD_ACCOUNT_RESULT, RESULT_CANCELED);
+            String addedAccountName = getIntent().getStringExtra(ADDED_ACCOUNT_NAME);
+            data.putExtra(AccountManager.KEY_ACCOUNT_NAME, addedAccountName);
+            if (result != RESULT_CANCELED && addedAccountName != null) {
+                ((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance())
+                        .addAccount(AccountUtils.createAccountFromName(addedAccountName));
+            }
+            setResult(result, data);
             finish();
         }
     }
@@ -64,6 +74,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     /** Can be used to block {@link #getAccounts()} result. */
     private @Nullable Promise<List<Account>> mBlockedGetAccountsPromise;
+    private @Nullable Intent mAddAccountIntent;
 
     /**
      * Creates an object of FakeAccountManagerFacade.
@@ -137,9 +148,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {
-        Intent addAccountIntent =
-                new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
-        callback.onResult(addAccountIntent);
+        callback.onResult(mAddAccountIntent);
+        mAddAccountIntent = null;
     }
 
     @Override
@@ -216,6 +226,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
             mBlockedGetAccountsPromise = null;
         }
+    }
+
+    /**
+     * Sets the result for the next add account flow.
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
+     */
+    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
+        assert mAddAccountIntent == null : "mAddAccountIntent is already set";
+        mAddAccountIntent =
+                new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
+        mAddAccountIntent.putExtra(ADD_ACCOUNT_RESULT, result);
+        mAddAccountIntent.putExtra(ADDED_ACCOUNT_NAME, newAccountName);
     }
 
     @GuardedBy("mLock")
