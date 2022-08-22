@@ -52,6 +52,17 @@ void SetAXNodeDataId(v8::Isolate* isolate,
   gin::ConvertFromV8(isolate, v8_id, &ax_node_data->id);
 }
 
+void SetAXNodeDataLanguage(v8::Isolate* isolate,
+                           gin::Dictionary* v8_dict,
+                           ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_language;
+  v8_dict->Get("language", &v8_language);
+  std::string language;
+  gin::ConvertFromV8(isolate, v8_language, &language);
+  ax_node_data->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
+                                   language);
+}
+
 void SetAXNodeDataName(v8::Isolate* isolate,
                        gin::Dictionary* v8_dict,
                        ui::AXNodeData* ax_node_data) {
@@ -135,6 +146,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     SetAXNodeDataName(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataHtmlTag(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataLanguage(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);
   }
@@ -224,6 +236,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::BackgroundColor)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
+      .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
@@ -271,6 +284,13 @@ std::string ReadAnythingAppController::GetHtmlTag(ui::AXNodeID ax_node_id) {
   if (!ax_node)
     return std::string();
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+}
+
+std::string ReadAnythingAppController::GetLanguage(ui::AXNodeID ax_node_id) {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  if (!ax_node)
+    return std::string();
+  return ax_node->GetLanguage();
 }
 
 std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {

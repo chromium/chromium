@@ -27,6 +27,9 @@ declare namespace chrome {
     // Returns the HTML tag of the AXNode for the provided AXNodeID.
     function getHtmlTag(nodeId: number): string;
 
+    // Returns the language of the AXNode for the provided AXNodeID.
+    function getLanguage(nodeId: number): string;
+
     // Returns the text content of the AXNode for the provided AXNodeID.
     function getTextContent(nodeId: number): string;
 

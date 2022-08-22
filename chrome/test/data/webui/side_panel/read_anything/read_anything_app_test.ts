@@ -129,6 +129,115 @@ suite('ReadAnythingAppTest', () => {
     assertContainerInnerHTML(expected);
   });
 
+  test('updateContent language childNodeDiffLang', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2 language='en'
+    // ++++staticText name='This is in English' id=3
+    // ++paragraph htmlTag='p' id=4 language='es'
+    // ++++staticText name='Esto es en español' id=5
+    // ++++link htmlTag='a' url='http://www.google.cn/' id=6 language='zh'
+    // ++++++staticText name='This is a link in Chinese' id=7
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          language: 'en',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This is in English',
+        },
+        {
+          id: 4,
+          role: 'paragraph',
+          htmlTag: 'p',
+          language: 'es',
+          childIds: [5, 6],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'Esto es en español',
+        },
+        {
+          id: 6,
+          role: 'link',
+          htmlTag: 'a',
+          language: 'zh',
+          url: 'http://www.google.cn/',
+          childIds: [7],
+        },
+        {
+          id: 7,
+          role: 'staticText',
+          name: 'This is a link in Chinese',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected: string =
+        '<p lang="en">This is in English</p><p lang="es">Esto es en español<a href="http://www.google.cn/" lang="zh">This is a link in Chinese</a></p>';
+    assertContainerInnerHTML(expected);
+  });
+
+  test('updateContent language parentLangSet', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2 language='en'
+    // ++++staticText name='This is in English' id=3
+    // ++++link htmlTag='a' url='http://www.google.cn/' id=4
+    // ++++++staticText name='This link has no language set' id=5
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          language: 'en',
+          childIds: [3, 4],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This is in English',
+        },
+        {
+          id: 4,
+          role: 'link',
+          htmlTag: 'a',
+          url: 'http://www.google.com/',
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'This link has no language set',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2]);
+    const expected: string =
+        '<p lang="en">This is in English<a href="http://www.google.com/">This link has no language set</a></p>';
+    assertContainerInnerHTML(expected);
+  });
+
   test('updateContent heading', () => {
     // Fake chrome.readAnything methods for the following AXTree
     // root htmlTag='#document' id=1

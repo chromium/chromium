@@ -81,6 +81,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (url) {
       element.setAttribute('href', url);
     }
+    const language = chrome.readAnything.getLanguage(nodeId);
+    if (language) {
+      element.setAttribute('lang', language);
+    }
     this.appendChildNodes_(element, nodeId);
     return element;
   }
