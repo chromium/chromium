@@ -33,9 +33,6 @@ class HighlightBorderOverlay : public aura::WindowObserver,
   HighlightBorderOverlay& operator=(const HighlightBorderOverlay&) = delete;
   ~HighlightBorderOverlay() override;
 
-  // Paint a highlight border on the canvas.
-  void PaintBorder(gfx::Canvas* canvas);
-
   // Calculate image source size according to rounded corner radius and border
   // thickness.
   gfx::Size CalculateImageSourceSize() const;
