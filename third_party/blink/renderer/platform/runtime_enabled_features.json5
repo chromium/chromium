@@ -26,8 +26,11 @@
     //   name: "ExampleFeature",
     //   status: {"Android": "stable", "Win": "experimental"},
     // }
-    // "ExampleFeature" will be stable on Android, experimental on Windows
-    // and not enabled on any other platform
+    // "ExampleFeature" will be stable on Android/WebView/WebLayer, experimental
+    // on Windows and not enabled on any other platform.
+    //
+    // Note that the Android status key implies Chrome for Android, WebView and
+    // WebLayer.
     //
     // "stable" features listed here should be rare, as anything which we've
     // shipped stable can have its runtime flag removed soon after.
