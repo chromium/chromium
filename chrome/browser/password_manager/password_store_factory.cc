@@ -14,12 +14,10 @@
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_paths_internal.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -53,9 +51,9 @@ PasswordStoreFactory* PasswordStoreFactory::GetInstance() {
 }
 
 PasswordStoreFactory::PasswordStoreFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactory(
           "PasswordStore",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 }
@@ -117,11 +115,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     DelayReportingPasswordStoreMetrics(profile);
 
   return ps;
-}
-
-content::BrowserContext* PasswordStoreFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool PasswordStoreFactory::ServiceIsNULLWhileTesting() const {

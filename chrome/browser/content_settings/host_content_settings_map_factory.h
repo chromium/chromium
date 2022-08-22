@@ -7,12 +7,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class HostContentSettingsMap;
 
 class HostContentSettingsMapFactory
-    : public RefcountedBrowserContextKeyedServiceFactory {
+    : public RefcountedProfileKeyedServiceFactory {
  public:
   static HostContentSettingsMap* GetForProfile(
       content::BrowserContext* browser_context);
@@ -30,8 +30,6 @@ class HostContentSettingsMapFactory
 
   // RefcountedBrowserContextKeyedServiceFactory methods:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

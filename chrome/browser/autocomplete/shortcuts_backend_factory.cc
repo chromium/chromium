@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/prefs/pref_service.h"
@@ -58,9 +57,7 @@ ShortcutsBackendFactory::BuildProfileNoDatabaseForTesting(
 }
 
 ShortcutsBackendFactory::ShortcutsBackendFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
-        "ShortcutsBackend",
-        BrowserContextDependencyManager::GetInstance()) {
+    : RefcountedProfileKeyedServiceFactory("ShortcutsBackend") {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }

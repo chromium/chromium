@@ -27,7 +27,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -121,9 +120,7 @@ scoped_refptr<history::TopSites> TopSitesFactory::BuildTopSites(
 }
 
 TopSitesFactory::TopSitesFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
-          "TopSites",
-          BrowserContextDependencyManager::GetInstance()) {
+    : RefcountedProfileKeyedServiceFactory("TopSites") {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   // This dependency is only used when the experimental

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -25,7 +25,7 @@ class TopSites;
 class Profile;
 
 // Used for creating and fetching a per-profile instance of the TopSites.
-class TopSitesFactory : public RefcountedBrowserContextKeyedServiceFactory {
+class TopSitesFactory : public RefcountedProfileKeyedServiceFactory {
  public:
   // Get the TopSites service for |profile|, creating one if needed.
   static scoped_refptr<history::TopSites> GetForProfile(Profile* profile);

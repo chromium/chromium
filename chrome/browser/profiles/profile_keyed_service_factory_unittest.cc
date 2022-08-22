@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// This unittest file contains both tests for `ProfileKeyedServiceFactory` and
+// `RefcountedProfileKeyedServiceFactory` for simplicity.
 
 // Testing implementation for interface `ProfileKeyedServiceFactory`.
 // The method `GetProfileToUseForTesting()` is used to test the protected method
@@ -35,6 +39,31 @@ class ProfileKeyedServiceFactoryTest : public ProfileKeyedServiceFactory {
   }
 };
 
+// Similar testing implementation of `ProfileKeyedServiceFactory` but for Ref
+// counted Services `RefcountedProfileKeyedServiceFactory`
+class RefcountedProfileKeyedServiceFactoryTest
+    : public RefcountedProfileKeyedServiceFactory {
+ public:
+  explicit RefcountedProfileKeyedServiceFactoryTest(const char* name)
+      : RefcountedProfileKeyedServiceFactory(name) {}
+  RefcountedProfileKeyedServiceFactoryTest(const char* name,
+                                           const ProfileSelections& selections)
+      : RefcountedProfileKeyedServiceFactory(name, selections) {}
+
+  // Method used for testing only, calls `GetBrowserContextToUse()` for testing.
+  Profile* GetProfileToUseForTesting(Profile* profile) const {
+    return Profile::FromBrowserContext(GetBrowserContextToUse(profile));
+  }
+
+ protected:
+  // Implementation is not for testing.
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
+      content::BrowserContext* context) const override {
+    NOTREACHED();
+    return nullptr;
+  }
+};
+
 class ProfileKeyedServiceFactoryUnittest : public testing::Test {
  public:
   void SetUp() override {
@@ -43,7 +72,8 @@ class ProfileKeyedServiceFactoryUnittest : public testing::Test {
   }
 
  protected:
-  void TestProfileToUse(const ProfileKeyedServiceFactoryTest& factory,
+  template <typename ProfileKeyedServiceFactoryTesting>
+  void TestProfileToUse(const ProfileKeyedServiceFactoryTesting& factory,
                         Profile* given_profile,
                         Profile* expected_profile) {
     EXPECT_EQ(factory.GetProfileToUseForTesting(given_profile),
@@ -149,5 +179,53 @@ TEST_F(ProfileKeyedServiceFactoryUnittest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   TestProfileToUse(factory, system_profile(), nullptr);
   TestProfileToUse(factory, system_profile_otr(), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+}
+
+// Factory using default `ProfileKeyedServiceFactory` constructor
+class DefaultRefcountedFactoryTest
+    : public RefcountedProfileKeyedServiceFactoryTest {
+ public:
+  DefaultRefcountedFactoryTest()
+      : RefcountedProfileKeyedServiceFactoryTest(
+            "DefaultRefcountedFactoryTest") {}
+};
+
+TEST_F(ProfileKeyedServiceFactoryUnittest, DefaultRefcountedFactoryTest) {
+  DefaultRefcountedFactoryTest factory;
+  TestProfileToUse(factory, regular_profile(), regular_profile());
+  TestProfileToUse(factory, incognito_profile(), nullptr);
+
+  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(), nullptr);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  TestProfileToUse(factory, system_profile(), system_profile());
+  TestProfileToUse(factory, system_profile_otr(), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+}
+
+// Factory using predefined `ProfileSelections` built
+class PredefinedRefcountedProfileSelectionsFactoryTest
+    : public RefcountedProfileKeyedServiceFactoryTest {
+ public:
+  PredefinedRefcountedProfileSelectionsFactoryTest()
+      : RefcountedProfileKeyedServiceFactoryTest(
+            "PredefinedRefcountedProfileSelectionsFactoryTest",
+            ProfileSelections::BuildForRegularAndIncognito()) {}
+};
+
+TEST_F(ProfileKeyedServiceFactoryUnittest,
+       PredefinedRefcountedProfileSelectionsFactoryTest) {
+  PredefinedRefcountedProfileSelectionsFactoryTest factory;
+  TestProfileToUse(factory, regular_profile(), regular_profile());
+  TestProfileToUse(factory, incognito_profile(), incognito_profile());
+
+  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile_otr(), guest_profile_otr());
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  TestProfileToUse(factory, system_profile(), system_profile());
+  TestProfileToUse(factory, system_profile_otr(), system_profile_otr());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 }

@@ -47,6 +47,8 @@
 //       : ProfileKeyedServiceFactory("MyDefaultKeyedService") {}
 //   }
 // };
+// Any change to this class should also be reflected on
+// `RefcountedProfileKeyedServiceFactory`.
 class ProfileKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   ProfileKeyedServiceFactory(const ProfileKeyedServiceFactory&) = delete;

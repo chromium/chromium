@@ -1455,6 +1455,8 @@ static_library("browser") {
     "profiles/profile_selections.h",
     "profiles/profiles_state.cc",
     "profiles/profiles_state.h",
+    "profiles/refcounted_profile_keyed_service_factory.cc",
+    "profiles/refcounted_profile_keyed_service_factory.h",
     "profiles/renderer_updater.cc",
     "profiles/renderer_updater.h",
     "profiles/renderer_updater_factory.cc",

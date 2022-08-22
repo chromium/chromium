@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class PluginPrefs;
 class Profile;
 
-class PluginPrefsFactory : public RefcountedBrowserContextKeyedServiceFactory {
+class PluginPrefsFactory : public RefcountedProfileKeyedServiceFactory {
  public:
   static scoped_refptr<PluginPrefs> GetPrefsForProfile(Profile* profile);
 
@@ -35,8 +35,6 @@ class PluginPrefsFactory : public RefcountedBrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory methods:
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
