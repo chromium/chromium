@@ -19,21 +19,20 @@ def IsMetricsProtoPath(input_api, path):
 
 
 def IsReadmeFile(input_api, path):
-  return (input_api.basename(path) == README and
+  return (input_api.os_path.basename(path) == README and
           IsMetricsProtoPath(input_api, path))
 
 
-def IsPresubmitFile(input_api, path):
-  return (input_api.basename(path) == PRESUBMIT and
+def IsImportedFile(input_api, path):
+  return (input_api.os_path.basename(path) != PRESUBMIT and
           IsMetricsProtoPath(input_api, path))
 
 
 def CheckChange(input_api, output_api):
   """Checks that all changes include a README update."""
   paths = [af.AbsoluteLocalPath() for af in input_api.AffectedFiles()]
-  if (any((IsMetricsProtoPath(input_api, p) for p in paths)) and not any(
-      (IsReadmeFile(input_api, p) or IsPresubmitFile(input_api, p)
-       for p in paths))):
+  if (any(IsImportedFile(input_api, p) for p in paths) and not
+      any(IsReadmeFile(input_api, p) for p in paths)):
     return [output_api.PresubmitError(
             'Modifies %s without updating %s. '
             'Changes to these files should originate upstream.' %
