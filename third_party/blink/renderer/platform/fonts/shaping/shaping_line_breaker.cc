@@ -314,57 +314,59 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // look for breaking opportunityes after the end of the sequence.
   // https://www.unicode.org/reports/tr14/#BA
   // TODO(jfernandez): if break-spaces, do special handling.
+  BreakOpportunity break_opportunity;
   const bool use_previous_break_opportunity =
       !IsBreakableSpace(text[candidate_break]) || is_break_after_any_space;
-  BreakOpportunity break_opportunity =
-      use_previous_break_opportunity
-          ? PreviousBreakOpportunity(candidate_break, start)
-          : NextBreakOpportunity(std::max(candidate_break, start + 1), start,
-                                 range_end);
+  if (use_previous_break_opportunity) {
+    break_opportunity = PreviousBreakOpportunity(candidate_break, start);
 
-  // There are no break opportunity before candidate_break, overflow.
-  // Find the next break opportunity after the candidate_break.
-  // TODO: (jfernandez): Maybe also non_hangable_run_end <= start ?
-  result_out->is_overflow = break_opportunity.offset <= start;
-  if (result_out->is_overflow) {
-    DCHECK(use_previous_break_opportunity);
-    if (options & kNoResultIfOverflow)
-      return nullptr;
-    // No need to scan past range_end for a break opportunity.
-    break_opportunity = NextBreakOpportunity(
-        std::max(candidate_break, start + 1), start, range_end);
-  }
-
-  // If we were looking for a next break opportunity and found one that is after
-  // candidate_break but doesn't have a corresponding non-hangable run that
-  // spans to at least candidate_break, that would be an overflow. However,
-  // there might still be break opportunities before candidate_break that we
-  // haven't checked, so we look for them first.
-  if (!use_previous_break_opportunity &&
-      break_opportunity.offset > candidate_break &&
-      (!break_opportunity.non_hangable_run_end ||
-       *break_opportunity.non_hangable_run_end > candidate_break)) {
-    DCHECK(!result_out->is_overflow);
-    BreakOpportunity previous_opportunity =
-        PreviousBreakOpportunity(candidate_break, start);
-    if (previous_opportunity.offset > start) {
-      break_opportunity = previous_opportunity;
-    } else {
-      result_out->is_overflow = true;
+    // Overflow if there are no break opportunity before candidate_break.
+    // Find the next break opportunity after the candidate_break.
+    // TODO: (jfernandez): Maybe also non_hangable_run_end <= start ?
+    result_out->is_overflow = break_opportunity.offset <= start;
+    if (result_out->is_overflow) {
+      DCHECK(use_previous_break_opportunity);
       if (options & kNoResultIfOverflow)
         return nullptr;
+      // No need to scan past range_end for a break opportunity.
+      break_opportunity = NextBreakOpportunity(
+          std::max(candidate_break, start + 1), start, range_end);
     }
-  }
+  } else {
+    break_opportunity = NextBreakOpportunity(
+        std::max(candidate_break, start + 1), start, range_end);
+    DCHECK_GT(break_opportunity.offset, start);
+    DCHECK(!result_out->is_overflow);
 
-  // We don't care whether this result contains only spaces if we
-  // are breaking after any space. We shouldn't early return either
-  // in that case.
-  if (!is_break_after_any_space && break_opportunity.non_hangable_run_end &&
-      break_opportunity.non_hangable_run_end <= start) {
-    // TODO (jfenandez): There may be cases where candidate_break is
-    // not a breakable space but we also want to early return for
-    // triggering the trailing spaces handling
-    if (IsBreakableSpace(text[candidate_break])) {
+    // If we were looking for a next break opportunity and found one that is
+    // after candidate_break but doesn't have a corresponding non-hangable run
+    // that spans to at least candidate_break, that would be an overflow.
+    // However, there might still be break opportunities before candidate_break
+    // that we haven't checked, so we look for them first.
+    if (break_opportunity.offset > candidate_break &&
+        (!break_opportunity.non_hangable_run_end ||
+         *break_opportunity.non_hangable_run_end > candidate_break)) {
+      BreakOpportunity previous_opportunity =
+          PreviousBreakOpportunity(candidate_break, start);
+      if (previous_opportunity.offset > start) {
+        break_opportunity = previous_opportunity;
+      } else {
+        result_out->is_overflow = true;
+        if (options & kNoResultIfOverflow)
+          return nullptr;
+      }
+    }
+
+    // We don't care whether this result contains only spaces if we
+    // are breaking after any space. We shouldn't early return either
+    // in that case.
+    DCHECK(!is_break_after_any_space);
+    DCHECK(IsBreakableSpace(text[candidate_break]));
+    if (break_opportunity.non_hangable_run_end &&
+        break_opportunity.non_hangable_run_end <= start) {
+      // TODO (jfenandez): There may be cases where candidate_break is
+      // not a breakable space but we also want to early return for
+      // triggering the trailing spaces handling
       result_out->has_trailing_spaces = true;
       result_out->break_offset = std::min(range_end, break_opportunity.offset);
       result_out->non_hangable_run_end = break_opportunity.non_hangable_run_end;

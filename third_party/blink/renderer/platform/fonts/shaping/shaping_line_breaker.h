@@ -114,6 +114,7 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
     STACK_ALLOCATED();
 
    public:
+    BreakOpportunity() = default;
     BreakOpportunity(unsigned new_offset, bool hyphenated)
         : offset(new_offset),
           is_hyphenated(hyphenated) {}
@@ -122,9 +123,9 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
           non_hangable_run_end(run_end),
           is_hyphenated(hyphenated) {}
 
-    unsigned offset;
+    unsigned offset = 0;
     absl::optional<unsigned> non_hangable_run_end;
-    bool is_hyphenated;
+    bool is_hyphenated = false;
   };
   BreakOpportunity PreviousBreakOpportunity(unsigned offset,
                                             unsigned start) const;
