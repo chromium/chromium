@@ -338,7 +338,7 @@
     </if>
     <if expr="not chromeos_ash and not chromeos_lacros">
       <message name="IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION" desc="Option allowing the user to access advanced printer settings using the native print system dialog instead of printing through the print preview mechanism. Shortcut key is not translated">
-        Print using system dialog... <ph name="SHORTCUT_KEY">$1<ex>(Ctrl+Alt+P)</ex></ph>
+        Print using system dialog... <ph name="SHORTCUT_KEY">$1<ex>(Shift+Ctrl+P)</ex></ph>
       </message>
     </if>
     <if expr="is_macosx">
@@ -360,8 +360,5 @@
   </message>
   <message name="IDS_PRINT_SPOOL_FAILED_ERROR_TEXT" desc="Text in a messagebox when printing fails because of printer issues.">
     Something went wrong when trying to print.  Please check your printer and try again.
-  </message>
-  <message name="IDS_PRINT_BASIC_SHORTCUT_DEPRECATION_TEXT" desc="Notification to tell users about the deprecation of the Ctrl+Shift+P for printing via the system dialog. Shortcut keys are not translated">
-    This shortcut has changed. Please use <ph name="NEW_SHORTCUT_KEY">$1<ex>(Ctrl+Alt+P)</ex></ph> to print using system dialog.
   </message>
 </grit-part>

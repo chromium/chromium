@@ -104,16 +104,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-// TODO(https://crbug.com/1331331): Clean this up after the deprecation period.
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
-#include "chrome/browser/ui/accelerator_utils.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
-#endif
-
 using WebExposedIsolationLevel =
     content::RenderFrameHost::WebExposedIsolationLevel;
 
@@ -168,28 +158,6 @@ bool CanOpenFile(Browser* browser) {
 
   return true;
 }
-
-#if BUILDFLAG(ENABLE_PRINTING)
-// TODO(https://crbug.com/1331331): Clean this up after the deprecation period.
-void ShowDeprecatedBasicPrintInfoBar(Browser* browser) {
-  ui::AcceleratorProvider* provider =
-      chrome::AcceleratorProviderForBrowser(browser);
-
-  ui::Accelerator accelerator;
-  bool success =
-      provider->GetAcceleratorForCommandId(IDC_BASIC_PRINT, &accelerator);
-  DCHECK(success);
-
-  auto message = l10n_util::GetStringFUTF16(
-      IDS_PRINT_BASIC_SHORTCUT_DEPRECATION_TEXT, accelerator.GetShortcutText());
-  CreateSimpleAlertInfoBar(
-      infobars::ContentInfoBarManager::FromWebContents(
-          browser->tab_strip_model()->GetActiveWebContents()),
-      infobars::InfoBarDelegate::BASIC_PRINT_DEPRECATED_ACCELERATOR_DELEGATE,
-      &vector_icons::kWarningIcon, message,
-      /*auto_expire=*/false, /*should_animate=*/true);
-}
-#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 }  // namespace
 
@@ -614,9 +582,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 
 #if BUILDFLAG(ENABLE_PRINTING)
-    case IDC_BASIC_PRINT_DEPRECATED:
-      ShowDeprecatedBasicPrintInfoBar(browser_);
-      [[fallthrough]];
     case IDC_BASIC_PRINT:
       base::RecordAction(base::UserMetricsAction("Accel_Advanced_Print"));
       BasicPrint(browser_);
@@ -1635,8 +1600,6 @@ void BrowserCommandController::UpdatePrintingState() {
   bool print_enabled = CanPrint(browser_);
   command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
 #if BUILDFLAG(ENABLE_PRINTING)
-  command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT_DEPRECATED,
-                                        CanBasicPrint(browser_));
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,
                                         CanBasicPrint(browser_));
 #endif
