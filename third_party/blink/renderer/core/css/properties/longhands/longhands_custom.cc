@@ -3645,38 +3645,6 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
-const CSSValue* PopUpShowDelay::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeTime(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
-const CSSValue* PopUpShowDelay::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(style.PopUpShowDelay(),
-                                        CSSPrimitiveValue::UnitType::kSeconds);
-}
-
-const CSSValue* PopUpHideDelay::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeTime(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-}
-
-const CSSValue* PopUpHideDelay::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(style.PopUpHideDelay(),
-                                        CSSPrimitiveValue::UnitType::kSeconds);
-}
-
 const CSSValue* Hyphens::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

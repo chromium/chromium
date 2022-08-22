@@ -279,8 +279,6 @@ paint-order: normal
 perspective: none
 perspective-origin: 384.5px 0px
 pointer-events: auto
-pop-up-hide-delay: infinity * 1s
-pop-up-show-delay: 0.5s
 position: static
 position-fallback: none
 r: 0px

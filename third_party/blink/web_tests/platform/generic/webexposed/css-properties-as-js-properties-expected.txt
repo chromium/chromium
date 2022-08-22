@@ -338,8 +338,6 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
-popUpHideDelay
-popUpShowDelay
 position
 positionFallback
 prefix

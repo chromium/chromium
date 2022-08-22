@@ -1525,7 +1525,6 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<Element>>& PopupStack() { return popup_stack_; }
   const HeapVector<Member<Element>>& PopupStack() const { return popup_stack_; }
   bool PopupAutoShowing() const { return !popup_stack_.IsEmpty(); }
-  HeapHashSet<Member<Element>>& AllOpenPopUps() { return all_open_pop_ups_; }
   Element* TopmostPopupAutoOrHint() const;
   HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
     return popups_waiting_to_hide_;
@@ -2353,8 +2352,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // A set of popups for which hidePopUp() has been called, but animations are
   // still running.
   HeapHashSet<Member<Element>> popups_waiting_to_hide_;
-  // A set of all open pop-ups, of all types.
-  HeapHashSet<Member<Element>> all_open_pop_ups_;
 
   // Elements that need to be restyled because a toggle was created on them,
   // or a prior sibling, during the previous restyle.

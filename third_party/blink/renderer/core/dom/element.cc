@@ -2574,8 +2574,6 @@ void Element::showPopUp(ExceptionState& exception_state) {
       document.SetPopupHintShowing(this);
     }
   }
-  DCHECK(!document.AllOpenPopUps().Contains(this));
-  document.AllOpenPopUps().insert(this);
 
   GetPopupData()->setAnimationFinishedListener(nullptr);
   GetPopupData()->setPreviouslyFocusedElement(
@@ -2594,12 +2592,6 @@ void Element::showPopUp(ExceptionState& exception_state) {
   // Make the popup match :top-layer:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kShowing);
   PseudoStateChanged(CSSSelector::kPseudoTopLayer);
-
-  // Queue a delayed hide event, if necessary.
-  if (!GetDocument().HoverElement() ||
-      !IsNodePopUpDescendant(*GetDocument().HoverElement())) {
-    MaybeQueuePopupHideEvent();
-  }
 
   SetPopupFocusOnShow();
 }
@@ -2734,7 +2726,6 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
       document.SetPopupHintShowing(nullptr);
     }
   }
-  document.AllOpenPopUps().erase(this);
   document.PopupsWaitingToHide().insert(this);
 
   bool force_hide = forcing_level == HidePopupForcingLevel::kHideImmediately;
@@ -2929,8 +2920,6 @@ const Element* NearestOpenAncestralPopupRecursive(
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
       recurse_and_update(form_control->popupTargetElement().element);
     }
-    if (auto* hover_popup_element = element->PopupHoverTargetElement())
-      recurse_and_update(hover_popup_element);
     // Include the anchor elements for all showing pop-ups.
     if (anchors_to_popups.Contains(element)) {
       recurse_and_update(anchors_to_popups.at(element));
@@ -3105,181 +3094,6 @@ Element* Element::anchorElement() const {
   if (!IsInTreeScope())
     return nullptr;
   return GetTreeScope().getElementById(anchor_id);  // may be null
-}
-
-Element* Element::PopupHoverTargetElement() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  if (!FastHasAttribute(html_names::kPopuphovertargetAttr))
-    return nullptr;
-  Element* popup_element = GetTreeScope().getElementById(
-      FastGetAttribute(html_names::kPopuphovertargetAttr));
-  if (!popup_element || !popup_element->HasValidPopupAttribute())
-    return nullptr;
-  return popup_element;
-}
-
-// Must be called on an Element that is a pop-up. Returns true if |node| is a
-// descendant of this pop-up. This includes the case where |node| is contained
-// within another pop-up, and the container pop-up is a descendant of this
-// pop_up. For the special case of popup=manual pop-ups, which do not have
-// ancestral relationships, this function checks pure DOM tree descendants of
-// popup=manual pop-ups. This is important for the `pop-up-hide-delay` CSS
-// property, which works for all pop-up types, and needs to keep pop-ups open
-// when a descendant is hovered.
-bool Element::IsNodePopUpDescendant(const Node& node) const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
-  if (PopupType() == PopupValueType::kManual) {
-    for (const Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
-      if (ancestor == this)
-        return true;
-    }
-  } else {
-    for (const Element* ancestor =
-             NearestOpenAncestralPopup(node, /*inclusive*/ true);
-         ancestor; ancestor = NearestOpenAncestralPopup(*ancestor)) {
-      if (ancestor == this)
-        return true;
-    }
-  }
-  return false;
-}
-
-void Element::MaybeQueuePopupHideEvent() {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
-  // If the pop-up isn't showing, or it has an infinite PopUpHideDelay, do
-  // nothing.
-  if (GetPopupData()->visibilityState() == PopupVisibilityState::kHidden)
-    return;
-  if (!GetComputedStyle())
-    return;
-  float hide_delay_seconds = GetComputedStyle()->PopUpHideDelay();
-  // If the value is infinite or NaN, don't hide the pop-up.
-  if (!std::isfinite(hide_delay_seconds))
-    return;
-  // Queue the task to hide this pop-up.
-  GetPopupData()->setHoverHideTask(PostDelayedCancellableTask(
-      *GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault),
-      FROM_HERE,
-      WTF::Bind(
-          [](Element* pop_up) {
-            // Always remove this element from hoverShowTasks.
-            if (pop_up->GetPopupData())
-              pop_up->GetPopupData()->hoverShowTasks().erase(pop_up);
-            if (pop_up->popupOpen()) {
-              DCHECK(pop_up->IsInTreeScope());
-              pop_up->HidePopUpInternal(
-                  HidePopupFocusBehavior::kFocusPreviousElement,
-                  HidePopupForcingLevel::kHideAfterAnimations);
-            }
-          },
-          WrapWeakPersistent(this)),
-      base::Seconds(hide_delay_seconds)));
-}
-
-// static
-void Element::HoveredElementChanged(Element* old_element,
-                                    Element* new_element) {
-  auto* document_for_ot =
-      old_element ? &old_element->GetDocument()
-                  : (new_element ? &new_element->GetDocument() : nullptr);
-  if (!document_for_ot || !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-                              document_for_ot->GetExecutionContext()))
-    return;
-  if (old_element) {
-    // For the previously-hovered element: loop through all showing popups
-    // (including popup=manual) and see if the element that just lost focus was
-    // an ancestor. If so, queue a task to hide it after a delay.
-    for (auto& pop_up : old_element->GetDocument().AllOpenPopUps()) {
-      if (pop_up->IsNodePopUpDescendant(*old_element))
-        pop_up->MaybeQueuePopupHideEvent();
-    }
-  }
-  // It is possible that both old_element and new_element are descendants of
-  // the same open pop_up, in which case we'll queue a hide task and then
-  // immediately cancel it, resulting in no change.
-  if (new_element) {
-    // For the newly-hovered element: loop through all showing popups and see if
-    // the newly-focused element is an ancestor. If so, cancel that pop-up's
-    // hide-after-delay task.
-    for (auto& pop_up : new_element->GetDocument().AllOpenPopUps()) {
-      if (pop_up->IsNodePopUpDescendant(*new_element))
-        pop_up->GetPopupData()->setHoverHideTask(TaskHandle());
-    }
-  }
-}
-
-void Element::HandlePopupHovered(bool hovered) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-          GetDocument().GetExecutionContext()))
-    return;
-  if (!IsInTreeScope())
-    return;
-  if (hovered) {
-    // If we've just hovered an element (or the descendant of an element), see
-    // if it has a popuphovertarget attribute that points to a valid pop-up
-    // element. If so, queue a task to show the pop-up after a timeout.
-    Element* popup_element = PopupHoverTargetElement();
-    if (!popup_element)
-      return;
-    auto& hover_tasks = popup_element->GetPopupData()->hoverShowTasks();
-    DCHECK(!hover_tasks.Contains(this));
-    if (!GetComputedStyle())
-      return;
-    float hover_delay_seconds = GetComputedStyle()->PopUpShowDelay();
-    // If the value is infinite or NaN, don't queue a task at all.
-    DCHECK_GE(hover_delay_seconds, 0);
-    if (!std::isfinite(hover_delay_seconds))
-      return;
-    // It's possible that multiple nested elements have popuphovertarget
-    // attributes pointing to the same pop-up, and in that case, we want to
-    // trigger on the first of them that reaches its timeout threshold.
-    hover_tasks.insert(
-        this,
-        PostDelayedCancellableTask(
-            *GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault),
-            FROM_HERE,
-            WTF::Bind(
-                [](Element* trigger_element, Element* popup_element) {
-                  if (!popup_element ||
-                      !popup_element->HasValidPopupAttribute())
-                    return;
-                  // Remove this element from hoverShowTasks always.
-                  popup_element->GetPopupData()->hoverShowTasks().erase(
-                      trigger_element);
-                  // Only trigger the pop-up if the popuphovertarget attribute
-                  // still points to the same pop-up, and the pop-up is in the
-                  // tree and still not showing.
-                  auto* current_target =
-                      trigger_element->GetTreeScope().getElementById(
-                          trigger_element->FastGetAttribute(
-                              html_names::kPopuphovertargetAttr));
-                  if (popup_element->IsInTreeScope() &&
-                      !popup_element->popupOpen() &&
-                      popup_element == current_target) {
-                    popup_element->InvokePopup(trigger_element);
-                  }
-                },
-                WrapWeakPersistent(this), WrapWeakPersistent(popup_element)),
-            base::Seconds(hover_delay_seconds)));
-  } else {
-    // If we have a hover show task still waiting, cancel it. Based on this
-    // logic, if you hover a popuphovertarget element, then remove the
-    // popuphovertarget attribute, there will be no way to stop the pop-up from
-    // being shown after the delay, even if you subsequently de-hover the
-    // element.
-    Element* hover_pop_up = PopupHoverTargetElement();
-    if (!hover_pop_up)
-      return;
-    if (auto& hover_tasks = hover_pop_up->GetPopupData()->hoverShowTasks();
-        hover_tasks.Contains(this)) {
-      hover_tasks.Take(this).Cancel();
-    }
-  }
 }
 
 void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
@@ -8543,7 +8357,6 @@ void Element::SetHovered(bool hovered) {
     return;
 
   GetDocument().UserActionElements().SetHovered(this, hovered);
-  HandlePopupHovered(hovered);
 
   const ComputedStyle* style = GetComputedStyle();
   if (!style || style->AffectedByHover()) {
