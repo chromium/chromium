@@ -103,6 +103,7 @@ bool SharedWorkerServiceImpl::TerminateWorker(
 
 void SharedWorkerServiceImpl::Shutdown() {
   worker_hosts_.clear();
+  shared_worker_hosts_.clear();
 }
 
 void SharedWorkerServiceImpl::SetURLLoaderFactoryForTesting(
@@ -204,9 +205,19 @@ void SharedWorkerServiceImpl::ConnectToWorker(
                   client_ukm_source_id);
 }
 
+SharedWorkerHost* SharedWorkerServiceImpl::GetSharedWorkerHostFromToken(
+    const blink::SharedWorkerToken& worker_token) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto it = shared_worker_hosts_.find(worker_token);
+  if (it == shared_worker_hosts_.end())
+    return nullptr;
+  return it->second;
+}
+
 void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(host);
+  shared_worker_hosts_.erase(host->token());
   worker_hosts_.erase(worker_hosts_.find(host));
 }
 
@@ -318,6 +329,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           creator.BuildClientSecurityState()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
+  shared_worker_hosts_[host->token()] = host;
 
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(

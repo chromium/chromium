@@ -18,6 +18,10 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/shared_worker_host.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -219,14 +223,16 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
   // accounts for extension URLs. The absence of this logic was a potential
   // cause for https://crbug.com/1346450.
-  absl::optional<blink::StorageKey> from_frame_host =
+  absl::optional<blink::StorageKey> storage_key =
       GetStorageKeyFromRenderFrameHost(
           new_origin, base::OptionalOrNullptr(isolation_info_.nonce()));
-  blink::StorageKey storage_key =
-      from_frame_host.has_value()
-          ? from_frame_host.value()
-          : blink::StorageKey::CreateFromOriginAndIsolationInfo(
-                new_origin, isolation_info_);
+  if (!storage_key.has_value()) {
+    storage_key = GetStorageKeyFromWorkerHost(new_origin);
+  }
+  if (!storage_key.has_value()) {
+    storage_key = blink::StorageKey::CreateFromOriginAndIsolationInfo(
+        new_origin, isolation_info_);
+  }
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
@@ -234,7 +240,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       skip_service_worker_ ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
       !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
-          storage_key);
+          *storage_key);
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
@@ -244,7 +250,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
-      tentative_resource_request, storage_key, browser_context,
+      tentative_resource_request, *storage_key, browser_context,
       std::move(loader_callback), std::move(fallback_callback));
 }
 
@@ -355,6 +361,36 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
   if (!frame_host)
     return absl::nullopt;
   return frame_host->CalculateStorageKey(origin, nonce);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    const url::Origin& origin) {
+  if (!worker_token_.has_value())
+    return absl::nullopt;
+  auto* process = RenderProcessHost::FromID(process_id_);
+  if (!process)
+    return absl::nullopt;
+  auto* storage_partition = process->GetStoragePartition();
+
+  if (worker_token_->Is<blink::DedicatedWorkerToken>()) {
+    auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+        storage_partition->GetDedicatedWorkerService());
+    auto* worker_host = worker_service->GetDedicatedWorkerHostFromToken(
+        worker_token_->GetAs<blink::DedicatedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else if (worker_token_->Is<blink::SharedWorkerToken>()) {
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        storage_partition->GetSharedWorkerService());
+    auto* worker_host = worker_service->GetSharedWorkerHostFromToken(
+        worker_token_->GetAs<blink::SharedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else {
+    NOTREACHED();
+  }
+  return absl::nullopt;
 }
 
 }  // namespace content

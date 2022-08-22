@@ -88,6 +88,10 @@ class BLINK_COMMON_EXPORT StorageKey {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info);
 
+  // Creates a StorageKey with the passed in |origin|, and all other information
+  // taken from the existing StorageKey instance.
+  StorageKey WithOrigin(const url::Origin& origin) const;
+
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;
   StorageKey& operator=(const StorageKey& other) = default;

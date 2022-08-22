@@ -246,6 +246,12 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
           : blink::mojom::AncestorChainBit::kSameSite);
 }
 
+StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
+  return CreateWithOptionalNonce(origin, top_level_site_,
+                                 base::OptionalOrNullptr(nonce_),
+                                 ancestor_chain_bit_);
+}
+
 std::string StorageKey::Serialize() const {
   using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());

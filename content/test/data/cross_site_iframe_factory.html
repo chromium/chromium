@@ -39,6 +39,8 @@ These options are supported:
   allowpaymentrequest
   allow-{featurename} - Adds {featurename} to the "allow" attribute
   sandbox-{flagname} - Adds {flagname} to the "sandbox" attribute
+  with-shared-worker - Creates a shared worker in each frame.
+  with-worker - Creates a dedicated worker in each frame.
 
 To make this page work, your browsertest needs a MockHostResolver, like:
 
@@ -198,6 +200,32 @@ function renderOutsideParentView(attributes) {
 }
 
 /**
+ * Determines whether or not the frame should create a worker by checking
+ * whether "with-worker" is among the list of attributes.
+ */
+ function shouldCreateWorker(attributes) {
+  for (var attribute of attributes) {
+    if (attribute == "with-worker") {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Determines whether or not the frame should create a shared worker by checking
+ * whether "with-shared-worker" is among the list of attributes.
+ */
+ function shouldCreateSharedWorker(attributes) {
+  for (var attribute of attributes) {
+    if (attribute == "with-shared-worker") {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Simple recursive layout heuristic, since frames can't size themselves.
  * This scribbles .layoutX and .layoutY properties into |tree|.
  */
@@ -258,6 +286,24 @@ function main() {
   if (shouldRenderText(frameTree.attributes)) {
       document.getElementById('siteNameHeading').appendChild(
           document.createTextNode(currentSite));
+  }
+
+  // Create a worker with matching query-string if the "with-worker" attribute
+  // is specified.
+  if (shouldCreateWorker(frameTree.attributes)) {
+    let worker_url = 'workers/empty.js';
+    worker_url += '?' + queryString;
+    console.log(worker_url);
+    self.worker = new Worker(worker_url);
+  }
+
+  // Create a shared worker with matching query-string if the "with-worker" 
+  // attribute is specified.
+  if (shouldCreateSharedWorker(frameTree.attributes)) {
+    let worker_url = 'workers/empty.js';
+    worker_url += '?' + queryString;
+    console.log(worker_url);
+    self.worker = new SharedWorker(worker_url);
   }
 
   // Apply style to the current document.

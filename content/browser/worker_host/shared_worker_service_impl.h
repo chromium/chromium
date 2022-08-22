@@ -74,6 +74,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       ukm::SourceId client_ukm_source_id);
 
+  // Returns the SharedWorkerHost associated with this token. Clients should
+  // not hold on to the pointer, as it may become invalid when the worker exits.
+  SharedWorkerHost* GetSharedWorkerHostFromToken(
+      const blink::SharedWorkerToken& worker_token) const;
+
   // Virtual for testing.
   virtual void DestroyHost(SharedWorkerHost* host);
 
@@ -133,6 +138,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   std::set<std::unique_ptr<SharedWorkerHost>, base::UniquePtrComparator>
       worker_hosts_;
+  base::flat_map<blink::SharedWorkerToken, SharedWorkerHost*>
+      shared_worker_hosts_;
 
   // |storage_partition_| owns |this|.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
