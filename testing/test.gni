@@ -1105,6 +1105,13 @@ set_defaults("test") {
     configs = default_shared_library_configs
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [ "//build/config/android:hide_all_but_jni" ]
+
+    # Compress sections to stay under 4gb hard limit on 32-bit current_cpu.
+    # https://crbug.com/1354616
+    if (symbol_level == 2 && !use_debug_fission &&
+        (current_cpu == "arm" || current_cpu == "x86")) {
+      configs += [ "//build/config:compress_debug_sections" ]
+    }
   } else {
     configs = default_executable_configs
     if (is_mac) {
