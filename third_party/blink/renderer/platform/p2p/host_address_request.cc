@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "components/webrtc/net_address_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -25,6 +26,7 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
 }
 
 void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
+                                    absl::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(kStateCreated, state_);
@@ -34,10 +36,16 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
   done_callback_ = std::move(done_callback);
   bool enable_mdns = base::FeatureList::IsEnabled(
       blink::features::kWebRtcHideLocalIpsWithMdns);
-  dispatcher_->GetP2PSocketManager()->GetHostAddress(
-      String(host_name.hostname().data()), enable_mdns,
-      WTF::Bind(&P2PAsyncAddressResolver::OnResponse,
-                scoped_refptr<P2PAsyncAddressResolver>(this)));
+  auto callback = WTF::Bind(&P2PAsyncAddressResolver::OnResponse,
+                            scoped_refptr<P2PAsyncAddressResolver>(this));
+  if (address_family.has_value()) {
+    dispatcher_->GetP2PSocketManager()->GetHostAddressWithFamily(
+        String(host_name.hostname().data()), address_family.value(),
+        enable_mdns, std::move(callback));
+  } else {
+    dispatcher_->GetP2PSocketManager()->GetHostAddress(
+        String(host_name.hostname().data()), enable_mdns, std::move(callback));
+  }
   dispatcher_ = nullptr;
 }
 

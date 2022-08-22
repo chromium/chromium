@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -214,6 +215,7 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
   // rtc::AsyncResolverInterface interface.
   void Start(const rtc::SocketAddress& addr) override;
+  void Start(const rtc::SocketAddress& addr, int address_family) override;
   bool GetResolvedAddress(int family, rtc::SocketAddress* addr) const override;
   int GetError() const override;
   void Destroy(bool wait) override;
@@ -227,6 +229,8 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
   rtc::SocketAddress addr_;                // Address to resolve.
   std::vector<rtc::IPAddress> addresses_;  // Resolved addresses.
+
+  base::WeakPtrFactory<AsyncAddressResolverImpl> weak_factory_{this};
 };
 
 IpcPacketSocket::IpcPacketSocket()
@@ -642,8 +646,21 @@ void AsyncAddressResolverImpl::Start(const rtc::SocketAddress& addr) {
   // GetResolvedAddress.
   addr_ = addr;
 
-  resolver_->Start(addr, WTF::Bind(&AsyncAddressResolverImpl::OnAddressResolved,
-                                   WTF::Unretained(this)));
+  resolver_->Start(addr, /*address_family=*/absl::nullopt,
+                   WTF::Bind(&AsyncAddressResolverImpl::OnAddressResolved,
+                             weak_factory_.GetWeakPtr()));
+}
+
+void AsyncAddressResolverImpl::Start(const rtc::SocketAddress& addr,
+                                     int address_family) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Port and hostname must be copied to the resolved address returned from
+  // GetResolvedAddress.
+  addr_ = addr;
+
+  resolver_->Start(addr, absl::make_optional(address_family),
+                   WTF::Bind(&AsyncAddressResolverImpl::OnAddressResolved,
+                             weak_factory_.GetWeakPtr()));
 }
 
 bool AsyncAddressResolverImpl::GetResolvedAddress(
