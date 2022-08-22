@@ -31,7 +31,8 @@ public class AccessibilityVisibilityHandler implements DestroyObserver {
 
             @Override
             public void onContentChanged(Tab tab) {
-                mTab.updateObscured(tabObscuringHandler.areAllTabsObscured());
+                mTab.updateObscured(tabObscuringHandler.isTabContentObscured(),
+                        tabObscuringHandler.isToolbarObscured());
             }
         };
         lifecycleDispatcher.register(this);

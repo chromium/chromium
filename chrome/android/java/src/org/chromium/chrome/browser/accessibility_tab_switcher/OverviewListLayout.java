@@ -244,10 +244,10 @@ public class OverviewListLayout extends Layout
     }
 
     @Override
-    public void updateObscured(boolean isObscured) {
+    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
         if (mTabModelWrapper == null) return;
 
-        int importantForAccessibility = !isObscured
+        int importantForAccessibility = !obscureTabContent
                 ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
                 : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
         if (mTabModelWrapper.getImportantForAccessibility() != importantForAccessibility) {

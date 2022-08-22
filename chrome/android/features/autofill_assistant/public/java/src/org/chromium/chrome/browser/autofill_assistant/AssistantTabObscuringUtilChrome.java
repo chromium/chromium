@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.autofill_assistant.AssistantTabObscuringUtil;
-import org.chromium.ui.util.TokenHolder;
 /**
  * Implementation of {@link AssistantTabObscuringUtil} for Chrome.
  */
@@ -14,7 +13,7 @@ public class AssistantTabObscuringUtilChrome implements AssistantTabObscuringUti
     private final TabObscuringHandler mTabObscuringHandler;
 
     /** A token held while the Autofill Assistant is obscuring all tabs. */
-    private int mObscuringToken = TokenHolder.INVALID_TOKEN;
+    private TabObscuringHandler.Token mObscuringToken;
 
     public AssistantTabObscuringUtilChrome(TabObscuringHandler tabObscuringHandler) {
         mTabObscuringHandler = tabObscuringHandler;
@@ -22,16 +21,17 @@ public class AssistantTabObscuringUtilChrome implements AssistantTabObscuringUti
 
     @Override
     public void obscureAllTabs() {
-        if (mObscuringToken == TokenHolder.INVALID_TOKEN) {
-            mObscuringToken = mTabObscuringHandler.obscureAllTabs();
+        if (mObscuringToken == null) {
+            mObscuringToken =
+                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
         }
     }
 
     @Override
     public void unobscureAllTabs() {
-        if (mObscuringToken != TokenHolder.INVALID_TOKEN) {
-            mTabObscuringHandler.unobscureAllTabs(mObscuringToken);
-            mObscuringToken = TokenHolder.INVALID_TOKEN;
+        if (mObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mObscuringToken);
+            mObscuringToken = null;
         }
     }
 }

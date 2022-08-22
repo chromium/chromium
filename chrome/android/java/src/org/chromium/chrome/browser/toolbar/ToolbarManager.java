@@ -184,7 +184,8 @@ import java.util.List;
  * with the rest of the application to ensure the toolbar is always visually up to date.
  */
 public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserver, TintObserver,
-                                       MenuButtonDelegate, ChromeAccessibilityUtil.Observer {
+                                       MenuButtonDelegate, ChromeAccessibilityUtil.Observer,
+                                       TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabCountProvider mTabCountProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -258,6 +259,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
     private final TabContentManager mTabContentManager;
     private final TabCreatorManager mTabCreatorManager;
+    private final TabObscuringHandler mTabObscuringHandler;
     private final SnackbarManager mSnackbarManager;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
 
@@ -271,7 +273,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
 
     private boolean mTabRestoreCompleted;
-
 
     private boolean mInitializedWithNative;
     private Runnable mOnInitializedRunnable;
@@ -312,7 +313,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
         /** A token held while the toolbar/omnibox is obscuring all visible tabs. */
-        private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+        private TabObscuringHandler.Token mTabObscuringToken;
         public TabObscuringCallback(TabObscuringHandler handler) {
             mTabObscuringHandler = handler;
         }
@@ -323,14 +324,15 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 // It's possible for the scrim to unfocus and refocus without the
                 // visibility actually changing. In this case we have to make sure we
                 // unregister the previous token before acquiring a new one.
-                int oldToken = mTabObscuringToken;
-                mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
-                if (oldToken != TokenHolder.INVALID_TOKEN) {
-                    mTabObscuringHandler.unobscureAllTabs(oldToken);
+                TabObscuringHandler.Token oldToken = mTabObscuringToken;
+                mTabObscuringToken =
+                        mTabObscuringHandler.obscure(TabObscuringHandler.Target.TAB_CONTENT);
+                if (oldToken != null) {
+                    mTabObscuringHandler.unobscure(oldToken);
                 }
             } else {
-                mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
-                mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+                mTabObscuringHandler.unobscure(mTabObscuringToken);
+                mTabObscuringToken = null;
             }
         }
     };
@@ -442,6 +444,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
+        mTabObscuringHandler = tabObscuringHandler;
         mSnackbarManager = snackbarManager;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -602,6 +605,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
+        tabObscuringHandler.addObserver(this);
+
         if (isCustomTab) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
             mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel,
@@ -644,8 +649,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mLocationBar.getOmniboxStub() != null) {
             mLocationBar.getOmniboxStub().addUrlFocusChangeListener(this);
         }
-        Runnable clickDelegate =
-                () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 new TabObscuringCallback(tabObscuringHandler), /* context= */ activity,
@@ -990,6 +994,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }));
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    @Override
+    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
+        mControlContainer.setImportantForAccessibility(obscureToolbar
+                        ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     }
 
     /**
@@ -1561,6 +1572,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurfaceStateObserver = null;
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
+
+        mTabObscuringHandler.removeObserver(this);
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         mComponentCallbacks = null;

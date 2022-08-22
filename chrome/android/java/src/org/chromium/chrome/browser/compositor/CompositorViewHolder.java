@@ -1619,8 +1619,8 @@ public class CompositorViewHolder extends FrameLayout
     // TabObscuringHandler.Observer
 
     @Override
-    public void updateObscured(boolean isObscured) {
-        setFocusable(!isObscured);
+    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
+        setFocusable(!obscureTabContent);
     }
 
     /**

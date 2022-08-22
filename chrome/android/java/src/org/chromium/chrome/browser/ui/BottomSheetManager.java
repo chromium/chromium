@@ -97,7 +97,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private TabObscuringHandler mTabObscuringHandler;
 
     /** A token held while the bottom sheet is obscuring all visible tabs. */
-    private int mTabObscuringToken;
+    private TabObscuringHandler.Token mTabObscuringToken;
 
     /** The manager for overlay panels to attach listeners to. */
     private Supplier<OverlayPanelManager> mOverlayPanelManager;
@@ -135,7 +135,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mDialogManager = dialogManager;
         mSnackbarManager = snackbarManagerSupplier;
         mTabObscuringHandler = obscuringDelegate;
-        mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
         mCallbackController = new CallbackController();
@@ -418,11 +417,12 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
      */
     private void setIsObscuringAllTabs(boolean isObscuring) {
         if (isObscuring) {
-            assert mTabObscuringToken == TokenHolder.INVALID_TOKEN;
-            mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
+            assert mTabObscuringToken == null;
+            mTabObscuringToken =
+                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
         } else {
-            mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
-            mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
         }
     }
 

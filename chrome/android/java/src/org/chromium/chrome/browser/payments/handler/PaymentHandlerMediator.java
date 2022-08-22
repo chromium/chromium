@@ -31,7 +31,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -64,7 +63,7 @@ import java.lang.annotation.RetentionPolicy;
     private final ActivityStateListener mActivityStateListener;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
-    private int mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+    private TabObscuringHandler.Token mTabObscuringToken;
 
     @IntDef({CloseReason.OTHERS, CloseReason.USER, CloseReason.ACTIVITY_DIED,
             CloseReason.INSECURE_NAVIGATION, CloseReason.FAIL_LOAD})
@@ -159,11 +158,12 @@ import java.lang.annotation.RetentionPolicy;
      * @param obscure Whether to obscure all tabs.
      */
     private void setObscureState(boolean obscure) {
-        if (obscure && mTabObscuringToken == TokenHolder.INVALID_TOKEN) {
-            mTabObscuringToken = mTabObscuringHandler.obscureAllTabs();
-        } else if (!obscure && mTabObscuringToken != TokenHolder.INVALID_TOKEN) {
-            mTabObscuringHandler.unobscureAllTabs(mTabObscuringToken);
-            mTabObscuringToken = TokenHolder.INVALID_TOKEN;
+        if (obscure && mTabObscuringToken == null) {
+            mTabObscuringToken =
+                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
+        } else if (!obscure && mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
         }
     }
 

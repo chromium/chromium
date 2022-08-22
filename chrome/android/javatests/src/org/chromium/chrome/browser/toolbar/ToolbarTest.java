@@ -100,19 +100,19 @@ public class ToolbarTest {
 
         assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
         assertFalse("All tabs should not currently be obscured.",
-                activity.getTabObscuringHandler().areAllTabsObscured());
+                activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
 
         assertNotNull("The scrim should not be null.", scrimCoordinator.getViewForTesting());
         assertTrue("All tabs should currently be obscured.",
-                activity.getTabObscuringHandler().areAllTabsObscured());
+                activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
 
         assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
         assertFalse("All tabs should not currently be obscured.",
-                activity.getTabObscuringHandler().areAllTabsObscured());
+                activity.getTabObscuringHandler().isTabContentObscured());
     }
 
     @Test
