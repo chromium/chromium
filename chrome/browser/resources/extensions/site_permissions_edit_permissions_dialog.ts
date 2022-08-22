@@ -58,17 +58,17 @@ export class SitePermissionsEditPermissionsDialogElement extends
        */
       siteSet_: String,
 
-      userSiteSetEnum_: {
+      siteSetEnum_: {
         type: Object,
-        value: chrome.developerPrivate.UserSiteSet,
+        value: chrome.developerPrivate.SiteSet,
       },
     };
   }
 
   delegate: SiteSettingsDelegate;
-  originalSiteSet: chrome.developerPrivate.UserSiteSet;
+  originalSiteSet: chrome.developerPrivate.SiteSet;
   site: string;
-  private siteSet_: chrome.developerPrivate.UserSiteSet;
+  private siteSet_: chrome.developerPrivate.SiteSet;
 
   override connectedCallback() {
     super.connectedCallback();

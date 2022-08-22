@@ -258,7 +258,7 @@ suite('RuntimeHostsDialog', function() {
 
     const [siteSet, removedSites] =
         await delegate.whenCalled('removeUserSpecifiedSites');
-    assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
+    assertEquals(chrome.developerPrivate.SiteSet.USER_RESTRICTED, siteSet);
     assertDeepEquals(
         ['http://restricted.com', 'http://sub.restricted.com'], removedSites);
   });

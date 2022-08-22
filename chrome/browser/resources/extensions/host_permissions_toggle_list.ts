@@ -187,7 +187,7 @@ export class ExtensionsHostPermissionsToggleListElement extends
       this.delegate.addRuntimeHostPermission(this.itemId, this.selectedHost_)
           .then(() => {
             this.delegate.removeUserSpecifiedSites(
-                chrome.developerPrivate.UserSiteSet.RESTRICTED,
+                chrome.developerPrivate.SiteSet.USER_RESTRICTED,
                 this.matchingRestrictedSites_);
           })
           .finally(() => {

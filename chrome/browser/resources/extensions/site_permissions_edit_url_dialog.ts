@@ -87,7 +87,7 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
   }
 
   delegate: SiteSettingsDelegate;
-  siteSet: chrome.developerPrivate.UserSiteSet;
+  siteSet: chrome.developerPrivate.SiteSet;
   siteToEdit: string|null;
   private site_: string;
   private inputValid_: boolean;

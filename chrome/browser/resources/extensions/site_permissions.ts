@@ -37,9 +37,9 @@ export class ExtensionsSitePermissionsElement extends
 
   static get properties() {
     return {
-      userSiteSetEnum_: {
+      siteSetEnum_: {
         type: Object,
-        value: chrome.developerPrivate.UserSiteSet,
+        value: chrome.developerPrivate.SiteSet,
       },
     };
   }

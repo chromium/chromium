@@ -329,13 +329,13 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   }
 
   addUserSpecifiedSites(
-      siteSet: chrome.developerPrivate.UserSiteSet, hosts: string[]) {
+      siteSet: chrome.developerPrivate.SiteSet, hosts: string[]) {
     this.methodCalled('addUserSpecifiedSites', [siteSet, hosts]);
     return Promise.resolve();
   }
 
   removeUserSpecifiedSites(
-      siteSet: chrome.developerPrivate.UserSiteSet, hosts: string[]) {
+      siteSet: chrome.developerPrivate.SiteSet, hosts: string[]) {
     this.methodCalled('removeUserSpecifiedSites', [siteSet, hosts]);
     return Promise.resolve();
   }

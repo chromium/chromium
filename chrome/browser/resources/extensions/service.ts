@@ -477,20 +477,19 @@ export class Service implements ServiceInterface {
   }
 
   addUserSpecifiedSites(
-      siteSet: chrome.developerPrivate.UserSiteSet,
+      siteSet: chrome.developerPrivate.SiteSet,
       hosts: string[]): Promise<void> {
     return new Promise(function(resolve) {
-      chrome.developerPrivate.addUserSpecifiedSites(
-          {siteList: siteSet, hosts}, resolve);
+      chrome.developerPrivate.addUserSpecifiedSites({siteSet, hosts}, resolve);
     });
   }
 
   removeUserSpecifiedSites(
-      siteSet: chrome.developerPrivate.UserSiteSet,
+      siteSet: chrome.developerPrivate.SiteSet,
       hosts: string[]): Promise<void> {
     return new Promise(function(resolve) {
       chrome.developerPrivate.removeUserSpecifiedSites(
-          {siteList: siteSet, hosts}, resolve);
+          {siteSet, hosts}, resolve);
     });
   }
 

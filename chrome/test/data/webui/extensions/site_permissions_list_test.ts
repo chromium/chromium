@@ -22,7 +22,7 @@ suite('SitePermissionsList', function() {
     document.body.innerHTML = '';
     element = document.createElement('site-permissions-list');
     element.delegate = delegate;
-    element.siteSet = chrome.developerPrivate.UserSiteSet.RESTRICTED;
+    element.siteSet = chrome.developerPrivate.SiteSet.USER_RESTRICTED;
     element.sites = [];
 
     document.body.appendChild(element);
@@ -62,7 +62,7 @@ suite('SitePermissionsList', function() {
     remove.click();
     const [siteSet, hosts] =
         await delegate.whenCalled('removeUserSpecifiedSites');
-    assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
+    assertEquals(chrome.developerPrivate.SiteSet.USER_RESTRICTED, siteSet);
     assertDeepEquals(['http://www.example.com'], hosts);
     assertFalse(actionMenu.open);
   });

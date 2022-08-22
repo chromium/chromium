@@ -100,18 +100,18 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
     // TODO(crbug.com/1253673): Revisit what to show for this eTLD+1 group's
     // subtext. For now, default to showing no text if there is any mix of sites
     // under the group (i.e. user permitted/restricted/specified by extensions).
-    const siteList = this.data.sites[0].siteList;
-    const isSiteListConsistent =
-        this.data.sites.every(site => site.siteList === siteList);
-    if (!isSiteListConsistent) {
+    const siteSet = this.data.sites[0].siteSet;
+    const isSiteSetConsistent =
+        this.data.sites.every(site => site.siteSet === siteSet);
+    if (!isSiteSetConsistent) {
       return '';
     }
 
-    if (siteList === chrome.developerPrivate.UserSiteSet.PERMITTED) {
+    if (siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED) {
       return loadTimeData.getString('permittedSites');
     }
 
-    return siteList === chrome.developerPrivate.UserSiteSet.RESTRICTED ?
+    return siteSet === chrome.developerPrivate.SiteSet.USER_RESTRICTED ?
         loadTimeData.getString('restrictedSites') :
         loadTimeData.getStringF(
             'sitePermissionsAllSitesExtensionCount', this.data.numExtensions);
@@ -124,13 +124,13 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
     }
 
     return loadTimeData.getString(
-        siteInfo.siteList === chrome.developerPrivate.UserSiteSet.PERMITTED ?
+        siteInfo.siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED ?
             'permittedSites' :
             'restrictedSites');
   }
 
   private showEditSitePermissionsDialogButton_(): boolean {
-    return !this.isExpandable_ && !!this.data.sites[0].siteList;
+    return !this.isExpandable_ && !!this.data.sites[0].siteSet;
   }
 
   private onEditSiteClick_() {
@@ -148,6 +148,12 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
     this.showEditSitePermissionsDialog_ = false;
     assert(this.siteToEdit_, 'Site To Edit');
     this.siteToEdit_ = null;
+  }
+
+  private isUserSpecifiedSite_(siteSet: chrome.developerPrivate.SiteSet):
+      boolean {
+    return siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED ||
+        siteSet === chrome.developerPrivate.SiteSet.USER_RESTRICTED;
   }
 }
 

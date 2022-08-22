@@ -80,7 +80,7 @@
       </div>
       <!-- TODO(crbug.com/1253673): Always show this once the option to edit
            extension permissions for a site is added for the dialog. -->
-      <template is="dom-if" if="[[item.siteList]]">
+      <template is="dom-if" if="[[isUserSpecifiedSite_(item.siteSet)]]">
         <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
         </cr-icon-button>
       </template>
@@ -92,7 +92,7 @@
   <site-permissions-edit-permissions-dialog
       delegate="[[delegate]]"
       site="[[siteToEdit_.site]]"
-      original-site-set="[[siteToEdit_.siteList]]"
+      original-site-set="[[siteToEdit_.siteSet]]"
       on-close="onEditSitePermissionsDialogClose_">
   </site-permissions-edit-permissions-dialog>
 </template>

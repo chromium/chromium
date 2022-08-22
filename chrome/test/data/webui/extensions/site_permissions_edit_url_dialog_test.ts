@@ -21,7 +21,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     document.body.innerHTML = '';
     element = document.createElement('site-permissions-edit-url-dialog');
     element.delegate = delegate;
-    element.siteSet = chrome.developerPrivate.UserSiteSet.PERMITTED;
+    element.siteSet = chrome.developerPrivate.SiteSet.USER_PERMITTED;
     document.body.appendChild(element);
   });
 
@@ -39,7 +39,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     submit.click();
 
     const [siteSet, hosts] = await delegate.whenCalled('addUserSpecifiedSites');
-    assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, siteSet);
+    assertEquals(chrome.developerPrivate.SiteSet.USER_PERMITTED, siteSet);
     assertDeepEquals(['http://www.example.com'], hosts);
   });
 
@@ -94,12 +94,13 @@ suite('SitePermissionsEditUrlDialog', function() {
 
     const [removedSiteSet, removedSites] =
         await delegate.whenCalled('removeUserSpecifiedSites');
-    assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, removedSiteSet);
+    assertEquals(
+        chrome.developerPrivate.SiteSet.USER_PERMITTED, removedSiteSet);
     assertDeepEquals([oldSite], removedSites);
 
     const [addedSiteSet, addedSites] =
         await delegate.whenCalled('addUserSpecifiedSites');
-    assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, addedSiteSet);
+    assertEquals(chrome.developerPrivate.SiteSet.USER_PERMITTED, addedSiteSet);
     assertDeepEquals([newSite], addedSites);
 
     await whenClosed;

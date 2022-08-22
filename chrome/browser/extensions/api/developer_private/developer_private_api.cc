@@ -283,14 +283,12 @@ std::string GetETldPlusOne(const GURL& site) {
   return etld_plus_one.empty() ? site.spec() : etld_plus_one;
 }
 
-developer::SiteInfo CreateSiteInfo(
-    const std::string& site,
-    absl::optional<developer::UserSiteSet> site_set) {
+developer::SiteInfo CreateSiteInfo(const std::string& site,
+                                   developer::SiteSet site_set) {
   developer::SiteInfo site_info;
   site_info.site = site;
-  if (site_set.has_value())
-    site_info.site_list = *site_set;
-  else
+  site_info.site_set = site_set;
+  if (site_set == developer::SITE_SET_EXTENSION_SPECIFIED)
     site_info.num_extensions = 1;
   return site_info;
 }
@@ -300,7 +298,7 @@ void AddSiteToSiteGroups(
     std::map<std::string, developer::SiteGroup>* site_groups,
     const std::string& site,
     const std::string& etld_plus_one,
-    absl::optional<developer::UserSiteSet> site_set) {
+    developer::SiteSet site_set) {
   auto [it, inserted] = site_groups->try_emplace(etld_plus_one);
   if (inserted) {
     it->second.etld_plus_one = etld_plus_one;
@@ -344,7 +342,8 @@ void ProcessSitesForRuntimeHostPermissions(
 
     std::string etld_plus_one = GetETldPlusOne(GURL(pattern.GetAsString()));
     etld_plus_ones.insert(etld_plus_one);
-    AddSiteToSiteGroups(site_groups, host.host, etld_plus_one, absl::nullopt);
+    AddSiteToSiteGroups(site_groups, host.host, etld_plus_one,
+                        developer::SITE_SET_EXTENSION_SPECIFIED);
   }
 
   // Increment the extension count for each eTLD+1 covered by this extension's
@@ -363,7 +362,7 @@ void UpdateSiteGroupCountsForExtension(
   for (auto& entry : *site_groups) {
     bool can_run_on_site_group = false;
     for (developer::SiteInfo& site_info : entry.second.sites) {
-      if (site_info.site_list)
+      if (site_info.site_set != developer::SITE_SET_EXTENSION_SPECIFIED)
         continue;
 
       URLPattern pattern(Extension::kValidHostPermissionSchemes,
@@ -2280,16 +2279,19 @@ DeveloperPrivateAddUserSpecifiedSitesFunction::Run() {
   }
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  switch (params->options.site_list) {
-    case developer::USER_SITE_SET_PERMITTED:
+  switch (params->options.site_set) {
+    case developer::SITE_SET_USER_PERMITTED:
       for (const auto& origin : origins)
         manager->AddUserPermittedSite(origin);
       break;
-    case developer::USER_SITE_SET_RESTRICTED:
+    case developer::SITE_SET_USER_RESTRICTED:
       for (const auto& origin : origins)
         manager->AddUserRestrictedSite(origin);
       break;
-    case developer::USER_SITE_SET_NONE:
+    case developer::SITE_SET_EXTENSION_SPECIFIED:
+      return RespondNow(
+          Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
+    case developer::SITE_SET_NONE:
       NOTREACHED();
   }
 
@@ -2316,16 +2318,19 @@ DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
   }
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
-  switch (params->options.site_list) {
-    case developer::USER_SITE_SET_PERMITTED:
+  switch (params->options.site_set) {
+    case developer::SITE_SET_USER_PERMITTED:
       for (const auto& origin : origins)
         manager->RemoveUserPermittedSite(origin);
       break;
-    case developer::USER_SITE_SET_RESTRICTED:
+    case developer::SITE_SET_USER_RESTRICTED:
       for (const auto& origin : origins)
         manager->RemoveUserRestrictedSite(origin);
       break;
-    case developer::USER_SITE_SET_NONE:
+    case developer::SITE_SET_EXTENSION_SPECIFIED:
+      return RespondNow(
+          Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
+    case developer::SITE_SET_NONE:
       NOTREACHED();
   }
 
@@ -2348,7 +2353,7 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
                                    site.GetURL());
     AddSiteToSiteGroups(&site_groups, site.Serialize(),
                         GetETldPlusOne(site.GetURL()),
-                        developer::USER_SITE_SET_PERMITTED);
+                        developer::SITE_SET_USER_PERMITTED);
   }
 
   for (const url::Origin& site : settings.restricted_sites) {
@@ -2356,7 +2361,7 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
                                    site.GetURL());
     AddSiteToSiteGroups(&site_groups, site.Serialize(),
                         GetETldPlusOne(site.GetURL()),
-                        developer::USER_SITE_SET_RESTRICTED);
+                        developer::SITE_SET_USER_RESTRICTED);
   }
 
   std::vector<const Extension*> extensions_with_all_hosts;

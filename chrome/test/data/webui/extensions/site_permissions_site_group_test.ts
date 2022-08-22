@@ -29,12 +29,12 @@ suite('SitePermissionsSiteGroupElement', function() {
       numExtensions: 0,
       sites: [
         {
-          siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
           numExtensions: 0,
           site: 'https://images.google.ca',
         },
         {
-          siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
           numExtensions: 0,
           site: 'http://google.ca',
         },
@@ -65,12 +65,12 @@ suite('SitePermissionsSiteGroupElement', function() {
       numExtensions: 0,
       sites: [
         {
-          siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
           numExtensions: 0,
           site: 'https://images.google.ca',
         },
         {
-          siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+          siteSet: chrome.developerPrivate.SiteSet.USER_RESTRICTED,
           numExtensions: 0,
           site: 'http://google.ca',
         },
@@ -99,7 +99,7 @@ suite('SitePermissionsSiteGroupElement', function() {
       etldPlusOne: 'example.com',
       numExtensions: 0,
       sites: [{
-        siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+        siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
         numExtensions: 0,
         site: 'https://a.example.com',
       }],
@@ -120,7 +120,7 @@ suite('SitePermissionsSiteGroupElement', function() {
           etldPlusOne: 'example.com',
           numExtensions: 0,
           sites: [{
-            siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+            siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
             numExtensions: 0,
             site: 'https://a.example.com',
           }],
@@ -140,7 +140,7 @@ suite('SitePermissionsSiteGroupElement', function() {
         assertTrue(dialog.$.dialog.open);
         assertEquals('https://a.example.com', dialog.site);
         assertEquals(
-            chrome.developerPrivate.UserSiteSet.PERMITTED,
+            chrome.developerPrivate.SiteSet.USER_PERMITTED,
             dialog.originalSiteSet);
       });
 
@@ -152,12 +152,12 @@ suite('SitePermissionsSiteGroupElement', function() {
           numExtensions: 0,
           sites: [
             {
-              siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+              siteSet: chrome.developerPrivate.SiteSet.USER_PERMITTED,
               numExtensions: 0,
               site: 'https://images.google.ca',
             },
             {
-              siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+              siteSet: chrome.developerPrivate.SiteSet.USER_RESTRICTED,
               numExtensions: 0,
               site: 'http://google.ca',
             },
@@ -182,7 +182,7 @@ suite('SitePermissionsSiteGroupElement', function() {
         assertTrue(dialog.$.dialog.open);
         assertEquals('http://google.ca', dialog.site);
         assertEquals(
-            chrome.developerPrivate.UserSiteSet.RESTRICTED,
+            chrome.developerPrivate.SiteSet.USER_RESTRICTED,
             dialog.originalSiteSet);
       });
 });

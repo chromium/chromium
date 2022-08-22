@@ -359,15 +359,25 @@ namespace developerPrivate {
     boolean? useDraggedPath;
   };
 
-  enum UserSiteSet {
-    PERMITTED,
-    RESTRICTED
+  // Describes which set of sites a given url/string is associated with. Note
+  // that a site can belong to multiple sets at the same time.
+  enum SiteSet {
+    // The site is specified by the user to automatically grant access to all
+    // extensions with matching host permissions. Mutually exclusive with
+    // USER_RESTRICTED but takes precedence over EXTENSION_SPECIFIED.
+    USER_PERMITTED,
+    // The site is specified by the user to disallow all extensions from running
+    // on it. Mutually exclusive with USER_PERMITTED but takes precedence over
+    // EXTENSION_SPECIFIED.
+    USER_RESTRICTED,
+    // The site is specified by one or more extensions' set of host permissions.
+    EXTENSION_SPECIFIED
   };
 
   dictionary UserSiteSettingsOptions {
     // Specifies which set of user specified sites that the host will be added
     // to or removed from.
-    UserSiteSet siteList;
+    SiteSet siteSet;
     // The sites to add/remove.
     DOMString[] hosts;
   };
@@ -381,8 +391,8 @@ namespace developerPrivate {
   };
 
   dictionary SiteInfo {
-    // The user specified site list that `site` belongs to, if any.
-    UserSiteSet? siteList;
+    // The site set that `site` belongs to.
+    SiteSet siteSet;
     // The number of extensions with access to `site`.
     // TODO(crbug.com/1331137): A tricky edge case is when one extension
     // specifies something like *.foo.com and another specifies foo.com.

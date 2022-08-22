@@ -283,7 +283,7 @@ export class ExtensionsRuntimeHostsDialogElement extends
             () => {
               if (restrictedSites.length) {
                 this.delegate.removeUserSpecifiedSites(
-                    chrome.developerPrivate.UserSiteSet.RESTRICTED,
+                    chrome.developerPrivate.SiteSet.USER_RESTRICTED,
                     restrictedSites);
               }
               this.$.dialog.close();

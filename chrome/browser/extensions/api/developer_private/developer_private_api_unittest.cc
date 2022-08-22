@@ -138,9 +138,9 @@ void AddUserSpecifiedSites(Profile* profile,
                            bool restricted) {
   scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
       api::DeveloperPrivateAddUserSpecifiedSitesFunction>();
-  std::string args = base::StringPrintf(R"([{"siteList":"%s","hosts":%s}])",
-                                        restricted ? "RESTRICTED" : "PERMITTED",
-                                        hosts.c_str());
+  std::string args = base::StringPrintf(
+      R"([{"siteSet":"%s","hosts":%s}])",
+      restricted ? "USER_RESTRICTED" : "USER_PERMITTED", hosts.c_str());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile))
       << function->GetError();
 }
@@ -150,9 +150,9 @@ void RemoveUserSpecifiedSites(Profile* profile,
                               bool restricted) {
   scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
       api::DeveloperPrivateRemoveUserSpecifiedSitesFunction>();
-  std::string args = base::StringPrintf(R"([{"siteList":"%s","hosts":%s}])",
-                                        restricted ? "RESTRICTED" : "PERMITTED",
-                                        hosts.c_str());
+  std::string args = base::StringPrintf(
+      R"([{"siteSet":"%s","hosts":%s}])",
+      restricted ? "USER_RESTRICTED" : "USER_PERMITTED", hosts.c_str());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile))
       << function->GetError();
 }
@@ -2036,11 +2036,11 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 0,
     "sites": [{
-      "siteList": "PERMITTED",
+      "siteSet": "USER_PERMITTED",
       "numExtensions": 0,
       "site": "http://a.example.com",
     }, {
-      "siteList": "RESTRICTED",
+      "siteSet": "USER_RESTRICTED",
       "numExtensions": 0,
       "site": "http://b.example.com",
     }]
@@ -2048,7 +2048,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "google.ca",
     "numExtensions": 0,
     "sites": [{
-      "siteList": "RESTRICTED",
+      "siteSet": "USER_RESTRICTED",
       "numExtensions": 0,
       "site": "http://google.ca",
     }]
@@ -2092,7 +2092,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "asdf.com",
     "numExtensions": 0,
     "sites": [{
-      "siteList": "RESTRICTED",
+      "siteSet": "USER_RESTRICTED",
       "numExtensions": 0,
       "site": "http://www.asdf.com",
     }]
@@ -2100,6 +2100,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 1,
     "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 1,
       "site": "https://example.com/*",
     }]
@@ -2107,16 +2108,19 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "google.com",
     "numExtensions": 2,
     "sites": [{
-      "siteList": "PERMITTED",
+      "siteSet": "USER_PERMITTED",
       "numExtensions": 0,
       "site": "http://images.google.com",
     }, {
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 2,
       "site": "http://www.google.com/*",
     }, {
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 1,
       "site": "https://*.google.com/*",
     }, {
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 1,
       "site": "https://mail.google.com/*",
     }]
@@ -2156,6 +2160,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 3,
     "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 3,
       "site": "http://www.example.com/*",
     }]
@@ -2163,10 +2168,11 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "google.ca",
     "numExtensions": 2,
     "sites": [{
+      "siteSet": "USER_PERMITTED",
       "numExtensions": 0,
       "site": "http://images.google.ca",
-      "siteList": "PERMITTED",
     }, {
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 2,
       "site": "https://*.google.ca/*",
     }]
@@ -2205,6 +2211,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 1,
     "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 1,
       "site": "https://example.com/*",
     }]
@@ -2218,6 +2225,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 2,
     "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 2,
       "site": "https://example.com/*",
     }]
@@ -2228,6 +2236,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
     "etldPlusOne": "example.com",
     "numExtensions": 2,
     "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
       "numExtensions": 2,
       "site": "https://example.com/*",
     }]
