@@ -665,8 +665,7 @@ class PortTest(LoggingTestCase):
                                       'FlagSpecificConfig'),
             '[{"name": "a", "args": ["--aa"]}, {"name": "a", "args": ["--aa", "--bb"]}]'
         )
-        # pylint: disable=protected-access
-        self.assertRaises(ValueError, port._flag_specific_configs)
+        self.assertRaises(ValueError, port.flag_specific_configs)
 
     def test_duplicate_flag_specific_args(self):
         port = self.make_port()
@@ -675,8 +674,7 @@ class PortTest(LoggingTestCase):
                                       'FlagSpecificConfig'),
             '[{"name": "a", "args": ["--aa"]}, {"name": "b", "args": ["--aa"]}]'
         )
-        # pylint: disable=protected-access
-        self.assertRaises(ValueError, port._flag_specific_configs)
+        self.assertRaises(ValueError, port.flag_specific_configs)
 
     def test_invalid_flag_specific_name(self):
         port = self.make_port()
@@ -684,8 +682,7 @@ class PortTest(LoggingTestCase):
             port.host.filesystem.join(port.web_tests_dir(),
                                       'FlagSpecificConfig'),
             '[{"name": "a/", "args": ["--aa"]}]')
-        # pylint: disable=protected-access
-        self.assertRaises(ValueError, port._flag_specific_configs)
+        self.assertRaises(ValueError, port.flag_specific_configs)
 
     def test_additional_env_var(self):
         port = self.make_port(

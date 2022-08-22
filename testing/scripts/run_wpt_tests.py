@@ -12,7 +12,6 @@ import logging
 import os
 import shutil
 import sys
-import tempfile
 
 import wpt_common
 
@@ -102,8 +101,7 @@ BinaryPassThroughAction = _make_pass_through_action(
 
 class WPTAdapter(wpt_common.BaseWptScriptAdapter):
     def __init__(self):
-        self._metadata_dir = None
-        self.temp_dir = os.path.join(tempfile.gettempdir(), "upstream_wpt")
+        self._tmp_dir = None
         super().__init__()
         # Parent adapter adds extra arguments, so it is safe to parse the
         # arguments and set options here.
@@ -115,6 +113,14 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                                        self.select_python_executable())
         except ValueError as exc:
             self._parser.error(str(exc))
+
+    @property
+    def _metadata_dir(self):
+        return self.fs.join(self._tmp_dir, 'metadata')
+
+    @property
+    def _upstream_dir(self):
+        return self.fs.join(self._tmp_dir, 'upstream_wpt')
 
     def parse_args(self, args=None):
         super().parse_args(args)
@@ -129,13 +135,13 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
     @property
     def wpt_binary(self):
         if self.options.use_upstream_wpt:
-            return os.path.join(self.temp_dir, "wpt")
+            return os.path.join(self._upstream_dir, "wpt")
         return super().wpt_binary
 
     @property
     def wpt_root_dir(self):
         if self.options.use_upstream_wpt:
-            return self.temp_dir
+            return self._upstream_dir
         return super().wpt_root_dir
 
     @property
@@ -160,6 +166,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
             '--binary-arg=--force-fieldtrial-params='
                 'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
+            '--run-info=%s' % self._tmp_dir,
         ])
         rest_args.extend(self.product.wpt_args)
 
@@ -167,6 +174,11 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         # to the list of wpt arguments
         if self._metadata_dir:
             rest_args.extend(['--metadata', self._metadata_dir])
+
+        if self.options.flag_specific:
+            configs = self.port.flag_specific_configs()
+            rest_args.extend('--binary-arg=%s' % arg
+                             for arg in configs[self.options.flag_specific])
 
         if self.options.test_filter:
             for pattern in self.options.test_filter.split(':'):
@@ -199,12 +211,11 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
 
     def run_test(self):
         with contextlib.ExitStack() as stack:
-            tmp_dir = stack.enter_context(self.fs.mkdtemp())
+            self._tmp_dir = stack.enter_context(self.fs.mkdtemp())
             # Manually remove the temporary directory's contents recursively
             # after the tests complete. Otherwise, `mkdtemp()` raise an error.
-            stack.callback(self.fs.rmtree, tmp_dir)
+            stack.callback(self.fs.rmtree, self._tmp_dir)
             stack.enter_context(self.product.test_env())
-            self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
             metadata_command_ret = self._maybe_build_metadata()
             if metadata_command_ret != 0:
                 return metadata_command_ret
@@ -215,16 +226,31 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                 os.makedirs(self._metadata_dir)
             if self.options.use_upstream_wpt:
                 logger.info("Using upstream wpt, cloning to %s ..."
-                    % self.temp_dir)
+                    % self._upstream_dir)
                 # check if directory exists, if it does remove it
-                if os.path.isdir(self.temp_dir):
-                    shutil.rmtree(self.temp_dir, ignore_errors=True)
+                if os.path.isdir(self._upstream_dir):
+                    shutil.rmtree(self._upstream_dir, ignore_errors=True)
                 # make a temp directory and git pull into it
                 clone_cmd = ['git', 'clone', UPSTREAM_GIT_URL,
-                 self.temp_dir, '--depth=1']
+                 self._upstream_dir, '--depth=1']
                 common.run_command(clone_cmd)
 
+            self._create_extra_run_info()
             return super().run_test()
+
+    def _create_extra_run_info(self):
+        run_info = {
+            # This property should always be present so that the metadata
+            # updater works, even when wptrunner is not running a flag-specific
+            # suite.
+            'flag_specific': self.options.flag_specific,
+        }
+        # The filename must be `mozinfo.json` for wptrunner to read it.
+        # The `--run-info` parameter passed to wptrunner is the directory
+        # containing `mozinfo.json`.
+        run_info_path = self.fs.join(self._tmp_dir, 'mozinfo.json')
+        with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
+            json.dump(run_info, file_handle)
 
     def do_post_test_run_tasks(self):
         self.process_and_upload_results()
@@ -233,9 +259,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         super().clean_up_after_test_run()
         # Avoid having a dangling reference to the temp directory
         # which was deleted
-        self._metadata_dir = None
-        if self.options.use_upstream_wpt:
-            shutil.rmtree(self.temp_dir, ignore_errors=True)
+        self._tmp_dir = None
 
     def add_extra_arguments(self, parser):
         super().add_extra_arguments(parser)
@@ -270,17 +294,20 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             type=lambda processes: max(0, int(processes)),
             default=1,
             help=('Number of drivers to start in parallel. (For Android, '
-                  'this number is the number of emulators started.)'
+                  'this number is the number of emulators started.) '
                   'The actual number of devices tested may be higher '
                   'if physical devices are available.)'))
         parser.add_argument(
             '--use-upstream-wpt',
             action='store_true',
-            help=('Use the upstream wpt, this tag will clone'
-                  'the upstream github wpt to a temporary'
-                  'directory and will use the binary and'
-                  'tests from upstream')
-        )
+            help=('Use the upstream wpt, this tag will clone '
+                  'the upstream github wpt to a temporary '
+                  'directory and will use the binary and '
+                  'tests from upstream'))
+        parser.add_argument(
+            '--flag-specific',
+            choices=sorted(self.port.flag_specific_configs()),
+            help='The name of a flag-specific suite to run.')
 
     def add_metadata_arguments(self, parser):
         group = parser.add_argument_group(
@@ -519,12 +546,11 @@ class Chrome(Product):
     @property
     def metadata_builder_args(self):
         args = list(super().metadata_builder_args)
-        path_to_wpt_root = self._path_finder.path_from_web_tests(
-            self._path_finder.wpt_prefix())
         # TODO(crbug/1299650): Strip trailing '/'. Otherwise,
         # build_wpt_metadata.py will not build correctly filesystem paths
         # correctly.
-        path_to_wpt_root = self._host.filesystem.normpath(path_to_wpt_root)
+        path_to_wpt_root = self._host.filesystem.normpath(
+            self._path_finder.path_from_wpt_tests())
         args.extend([
             '--no-process-baselines',
             '--checked-in-metadata-dir=%s' % path_to_wpt_root,

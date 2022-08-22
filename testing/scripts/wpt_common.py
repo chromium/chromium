@@ -41,14 +41,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     (usually platform-specific) logic."""
 
     def __init__(self, host=None):
+        self.host = host or Host()
+        self.fs = self.host.filesystem
+        self.path_finder = PathFinder(self.fs)
+        self.port = self.host.port_factory.get()
         super(BaseWptScriptAdapter, self).__init__()
         self._parser = self._override_options(self._parser)
-        if not host:
-            host = Host()
-        self.host = host
-        self.fs = host.filesystem
-        self.path_finder = PathFinder(self.fs)
-        self.port = host.port_factory.get()
         self.wptreport = None
         self._include_filename = None
         self.layout_test_results_subdir = 'layout-test-results'

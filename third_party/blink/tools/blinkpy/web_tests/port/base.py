@@ -305,14 +305,14 @@ class Port(object):
         """
         config_name = self.get_option('flag_specific')
         if config_name:
-            configs = self._flag_specific_configs()
+            configs = self.flag_specific_configs()
             assert config_name in configs, '{} is not defined in FlagSpecificConfig'.format(
                 config_name)
             return config_name
         return None
 
     @memoized
-    def _flag_specific_configs(self):
+    def flag_specific_configs(self):
         """Reads configuration from FlagSpecificConfig and returns a dictionary from name to args."""
         config_file = self._filesystem.join(self.web_tests_dir(),
                                             'FlagSpecificConfig')
@@ -359,7 +359,7 @@ class Port(object):
 
         flag_specific_option = self.flag_specific_config_name()
         if flag_specific_option:
-            flags += self._flag_specific_configs()[flag_specific_option]
+            flags += self.flag_specific_configs()[flag_specific_option]
 
         flags += self.get_option('additional_driver_flag', [])
         return flags
