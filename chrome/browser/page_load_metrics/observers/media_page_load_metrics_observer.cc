@@ -12,9 +12,9 @@ namespace {
 const char kHistogramMediaPageLoadNetworkBytes[] =
     "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Network";
 const char kHistogramMediaPageLoadCacheBytes[] =
-    "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache";
+    "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Cache2";
 const char kHistogramMediaPageLoadTotalBytes[] =
-    "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total";
+    "PageLoad.Clients.MediaPageLoad2.Experimental.Bytes.Total2";
 
 }  // namespace
 
