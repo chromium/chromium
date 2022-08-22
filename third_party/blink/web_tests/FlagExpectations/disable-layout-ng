@@ -1077,6 +1077,8 @@ crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.
 # fragmentation/
 crbug.com/1078927 fragmentation/break-in-second-table-section.html [ Failure ]
 crbug.com/1078927 fragmentation/break-in-tbody-after-caption.html [ Failure ]
+crbug.com/1078927 fragmentation/fragmented-rowspan-alignment.html [ Failure ]
+crbug.com/1078927 fragmentation/fragmented-rowspan.html [ Failure ]
 crbug.com/1078927 fragmentation/multi-line-cells.html [ Failure ]
 crbug.com/1078927 fragmentation/repeating-thead-exceeds-page-size.html [ Failure ]
 crbug.com/1078927 fragmentation/repeating-thead-no-room-for-content-row-on-first-page.html [ Failure ]
@@ -1105,6 +1107,7 @@ crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-with-cap
 crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-with-two-captions.html [ Failure ]
 crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot.html [ Failure ]
 crbug.com/1078927 fragmentation/single-line-cells.html [ Failure ]
+crbug.com/1078927 fragmentation/table-overlapping-rowspan.html [ Failure ]
 crbug.com/1078927 fragmentation/table-row-dimensions-break-freely.html [ Failure ]
 crbug.com/1078927 fragmentation/table-row-dimensions-with-thead.html [ Failure ]
 crbug.com/1078927 fragmentation/table-row-page-break-collapsed-border.html [ Failure ]

@@ -331,6 +331,11 @@ class CORE_EXPORT NGConstraintSpace final {
                          : false;
   }
 
+  bool IsTableCellWithEffectiveRowspan() const {
+    return HasRareData() ? rare_data_->IsTableCellWithEffectiveRowspan()
+                         : false;
+  }
+
   const NGTableConstraintSpaceData* TableData() const {
     return HasRareData() ? rare_data_->TableData() : nullptr;
   }
@@ -1157,6 +1162,15 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureTableCellData()->has_collapsed_borders = has_collapsed_borders;
     }
 
+    bool IsTableCellWithEffectiveRowspan() const {
+      return GetDataUnionType() == DataUnionType::kTableCellData &&
+             table_cell_data_.has_effective_rowspan;
+    }
+
+    void SetIsTableCellWithEffectiveRowspan(bool has_effective_rowspan) {
+      EnsureTableCellData()->has_effective_rowspan = has_effective_rowspan;
+    }
+
     void SetTableRowData(
         scoped_refptr<const NGTableConstraintSpaceData> table_data,
         wtf_size_t row_index) {
@@ -1315,13 +1329,14 @@ class CORE_EXPORT NGConstraintSpace final {
         return table_cell_borders == other.table_cell_borders &&
                table_cell_column_index == other.table_cell_column_index &&
                is_hidden_for_paint == other.is_hidden_for_paint &&
-               has_collapsed_borders == other.has_collapsed_borders;
+               has_collapsed_borders == other.has_collapsed_borders &&
+               has_effective_rowspan == other.has_effective_rowspan;
       }
 
       bool IsInitialForMaySkipLayout() const {
         return table_cell_borders == NGBoxStrut() &&
                table_cell_column_index == kNotFound && !is_hidden_for_paint &&
-               !has_collapsed_borders;
+               !has_collapsed_borders && !has_effective_rowspan;
       }
 
       NGBoxStrut table_cell_borders;
@@ -1329,6 +1344,7 @@ class CORE_EXPORT NGConstraintSpace final {
       absl::optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;
       bool has_collapsed_borders = false;
+      bool has_effective_rowspan = false;
     };
 
     struct TableRowData {

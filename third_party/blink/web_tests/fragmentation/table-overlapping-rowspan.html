@@ -13,21 +13,21 @@
 <div id="multicol" style="position:relative; columns:3; column-fill:auto; orphans:1; widows:1; line-height:20px; height:200px;">
     <div style="height:170px;"></div>
     <table cellspacing="0" cellpadding="0">
-        <tr data-expected-height="50">
-            <td rowspan="3" data-expected-height="110">
-                <div data-offset-y="170" style="position:relative; width:50px;"><br></div>
-                <div data-offset-y="0" style="position:relative; width:50px; background:blue;"><br></div>
-                <div data-offset-y="20" style="position:relative; width:50px; background:blue;"><br></div>
+        <tr data-expected-height="40">
+            <td rowspan="3" data-expected-height="140">
+                <div data-offset-y="20" style="position:relative; width:50px;"><br></div>
                 <div data-offset-y="40" style="position:relative; width:50px; background:blue;"><br></div>
                 <div data-offset-y="60" style="position:relative; width:50px; background:blue;"><br></div>
+                <div data-offset-y="80" style="position:relative; width:50px; background:blue;"><br></div>
+                <div data-offset-y="100" style="position:relative; width:50px; background:blue;"><br></div>
             </td>
-            <td data-expected-height="50">
+            <td data-expected-height="40">
                 <br>
-                <div style="width:30px; background:blue;"><br></div>
+                <div style="width:30px;"><br></div>
             </td>
-            <td data-expected-height="50"><br><br></td>
-            <td data-expected-height="50"><br><br></td>
-            <td data-expected-height="50"><br></td>
+            <td data-expected-height="40"><br><br></td>
+            <td data-expected-height="40"><br><br></td>
+            <td data-expected-height="40"><br></td>
         </tr>
         <tr data-expected-height="20">
             <td data-expected-height="20" style="background:blue;"><br></td>
@@ -35,14 +35,14 @@
             <td data-expected-height="20"><br></td>
             <td data-expected-height="20"><br></td>
         </tr>
-        <tr data-expected-height="40">
-            <td data-expected-height="40" style="background:blue;">
-                <br>
+        <tr data-expected-height="80">
+            <td data-expected-height="80" style="position: relative;">
+                <div style="position: absolute; background: blue; width: 100%; height: 60px; top: 0;"></div>
             </td>
-            <td data-expected-height="40">
+            <td data-expected-height="80">
                 <div style="width:50px; height:1px;"></div>
             </td>
-            <td data-expected-height="40" style="background:hotpink;">
+            <td data-expected-height="80" style="background:hotpink;">
                 <div style="width:50px;"><br></div>
             </td>
             <td data-expected-height="120" rowspan="2" style="background:hotpink;">
@@ -54,11 +54,11 @@
                 <div style="width:70px; background:hotpink;"><br></div>
             </td>
         </tr>
-        <tr data-expected-height="80">
-            <td data-expected-height="80"><br></td>
-            <td data-expected-height="80"><br></td>
-            <td data-expected-height="80"><br></td>
-            <td data-expected-height="80" style="background:hotpink;"><br></td>
+        <tr data-expected-height="40">
+            <td data-expected-height="40"><br></td>
+            <td data-expected-height="40"><br></td>
+            <td data-expected-height="40"><br></td>
+            <td data-expected-height="40" style="background:hotpink;"><br></td>
         </tr>
     </table>
 </div>

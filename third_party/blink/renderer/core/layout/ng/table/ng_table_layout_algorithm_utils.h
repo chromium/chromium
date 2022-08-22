@@ -58,6 +58,7 @@ class NGTableAlgorithmUtils {
       bool is_initial_block_size_indefinite,
       bool is_restricted_block_size_table,
       bool has_collapsed_borders,
+      bool has_effective_rowspan,
       NGCacheSlot,
       NGConstraintSpaceBuilder*);
 

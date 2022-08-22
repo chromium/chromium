@@ -1639,11 +1639,8 @@ crbug.com/1295905 [ Mac11-arm64 ] external/wpt/css/css-break/table/sections-and-
 crbug.com/1078927 external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1078927 fast/multicol/table-row-height-increase.html [ Failure ]
 crbug.com/1078927 fragmentation/border-spacing-break-before-unbreakable-row.html [ Failure ]
-crbug.com/1078927 fragmentation/fragmented-rowspan-alignment.html [ Failure ]
-crbug.com/1078927 fragmentation/fragmented-rowspan.html [ Failure ]
 crbug.com/1078927 fragmentation/no-repeating-table-header-after-sections.html [ Failure ]
 crbug.com/1352931 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
-crbug.com/1078927 fragmentation/table-overlapping-rowspan.html [ Failure ]
 
 ### With LayoutNGPrinting enabled:
 

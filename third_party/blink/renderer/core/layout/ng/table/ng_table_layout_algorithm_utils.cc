@@ -199,6 +199,15 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         cell, row_index, colspan_cell_tabulator->CurrentColumn(), section_index,
         table_writing_direction);
 
+    // Clamp the rowspan if it exceeds the total section row-count.
+    wtf_size_t effective_rowspan = cell.TableCellRowspan();
+    if (effective_rowspan > 1) {
+      const wtf_size_t max_rows =
+          row_count_func() - (row_index - start_row_index);
+      effective_rowspan = std::min(max_rows, effective_rowspan);
+    }
+    bool has_effective_rowspan = effective_rowspan > 1;
+
     NGConstraintSpaceBuilder space_builder(
         table_writing_direction.GetWritingMode(), cell_writing_direction,
         /* is_new_fc */ true);
@@ -211,7 +220,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         colspan_cell_tabulator->CurrentColumn(),
         /* is_initial_block_size_indefinite */ true,
         is_table_block_size_specified, has_collapsed_borders,
-        NGCacheSlot::kMeasure, &space_builder);
+        has_effective_rowspan, NGCacheSlot::kMeasure, &space_builder);
 
     const auto cell_space = space_builder.ToConstraintSpace();
     const NGLayoutResult* layout_result = cell.Layout(cell_space);
@@ -225,14 +234,6 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
             ? cell_style.LogicalHeight()
             : cell_style.LogicalWidth();
 
-    // Clamp the rowspan if it exceeds the total section row-count.
-    wtf_size_t effective_rowspan = cell.TableCellRowspan();
-    if (effective_rowspan > 1) {
-      const wtf_size_t max_rows =
-          row_count_func() - (row_index - start_row_index);
-      effective_rowspan = std::min(max_rows, effective_rowspan);
-    }
-    bool has_rowspan = effective_rowspan > 1;
     bool has_descendant_that_depends_on_percentage_block_size =
         layout_result->HasDescendantThatDependsOnPercentageBlockSize();
 
@@ -245,10 +246,12 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         has_descendant_that_depends_on_percentage_block_size};
     colspan_cell_tabulator->ProcessCell(cell);
     cell_block_constraints->push_back(cell_block_constraint);
-    is_constrained |= cell_block_constraint.is_constrained && !has_rowspan;
+    is_constrained |=
+        cell_block_constraint.is_constrained && !has_effective_rowspan;
     row_baseline_tabulator.ProcessCell(
         fragment, NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-        has_rowspan, has_descendant_that_depends_on_percentage_block_size);
+        has_effective_rowspan,
+        has_descendant_that_depends_on_percentage_block_size);
 
     // Compute cell's css block size.
     absl::optional<LayoutUnit> cell_css_block_size;
@@ -273,7 +276,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       }
     }
 
-    if (!has_rowspan) {
+    if (!has_effective_rowspan) {
       if (cell_css_block_size || cell_css_percent)
         is_constrained = true;
       if (cell_css_percent)
@@ -494,6 +497,7 @@ void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
     bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
     bool has_collapsed_borders,
+    bool has_effective_rowspan,
     NGCacheSlot cache_slot,
     NGConstraintSpaceBuilder* builder) {
   const auto& cell_style = cell.Style();
@@ -541,6 +545,7 @@ void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
       is_table_block_size_specified || cell_style.LogicalHeight().IsFixed());
   builder->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
   builder->SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
+  builder->SetIsTableCellWithEffectiveRowspan(has_effective_rowspan);
   builder->SetHideTableCellIfEmpty(
       !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
   builder->SetCacheSlot(cache_slot);
@@ -709,12 +714,19 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
   builder->SetIsHiddenForPaint(
       space.IsTableCellHiddenForPaint() ||
       (space.HideTableCellIfEmpty() && !has_inflow_children));
-
   builder->SetHasCollapsedBorders(space.IsTableCellWithCollapsedBorders());
-
   builder->SetIsTableNGPart();
-
   builder->SetTableCellColumnIndex(space.TableCellColumnIndex());
+
+  // When fragmentation is present, table-cells with rowspan get complicated.
+  // These cells have layout performed in their originating (first) row. As a
+  // result a subsequent row may cause the rowspan-cell to grow, and we'd need
+  // to backtrack to expand the rowspan-cell. This may then cause a row that it
+  // spans to grow!
+  // As such - we make the rowspan cell unappealing to break within, and always
+  // leave it at the original measured block-size.
+  if (space.IsTableCellWithEffectiveRowspan())
+    builder->ClampBreakAppeal(kBreakAppealViolatingBreakAvoid);
 
   // If we're resuming after a break, there'll be no alignment, since the
   // fragment will start at the block-start edge of the fragmentainer then.
