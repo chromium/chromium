@@ -182,16 +182,21 @@ GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
 
 sk_sp<SkImage> VideoFrameYUVMailboxesHolder::VideoFrameToSkImage(
     const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider) {
+    viz::RasterContextProvider* raster_context_provider,
+    sk_sp<SkColorSpace> reinterpret_color_space) {
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
 
   GrYUVABackendTextures yuva_backend_textures = VideoFrameToSkiaTextures(
       video_frame, raster_context_provider, /*for_surface=*/false);
+  auto rgb_color_space =
+      reinterpret_color_space
+          ? reinterpret_color_space
+          : video_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
 
   DCHECK(yuva_backend_textures.isValid());
   auto result = SkImage::MakeFromYUVATextures(gr_context, yuva_backend_textures,
-                                              SkColorSpace::MakeSRGB());
+                                              rgb_color_space);
   DCHECK(result);
   return result;
 }

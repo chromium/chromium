@@ -6,6 +6,7 @@
 
 #include <GLES3/gl3.h>
 
+#include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -67,7 +68,7 @@ GrGLenum GetSurfaceColorFormat(GrGLenum format, GrGLenum type) {
   return format;
 }
 
-bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
+void DrawYUVImageToSkSurface(const VideoFrame* video_frame,
                              sk_sp<SkImage> image,
                              sk_sp<SkSurface> surface,
                              bool use_visible_rect) {
@@ -88,7 +89,6 @@ bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
   }
 
   surface->flushAndSubmit();
-  return true;
 }
 
 }  // namespace
@@ -146,10 +146,10 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
   holder_->VideoFrameToMailboxes(video_frame, raster_context_provider,
                                  mailboxes);
-  ri->ConvertYUVAMailboxesToRGB(
-      dest_mailbox_holder.mailbox, holder_->yuva_info().yuvColorSpace(),
-      SkColorSpace::MakeSRGB().get(), holder_->yuva_info().planeConfig(),
-      holder_->yuva_info().subsampling(), mailboxes);
+  ri->ConvertYUVAMailboxesToRGB(dest_mailbox_holder.mailbox,
+                                holder_->yuva_info().yuvColorSpace(), nullptr,
+                                holder_->yuva_info().planeConfig(),
+                                holder_->yuva_info().subsampling(), mailboxes);
   return true;
 }
 
@@ -196,22 +196,31 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
   GrBackendTexture result_texture(result_width, result_height, GrMipMapped::kNo,
                                   result_gl_texture_info);
 
+  // Use the same SkColorSpace for the surface and image, so that no color space
+  // conversion is performed.
+  auto source_and_dest_color_space = SkColorSpace::MakeSRGB();
+
   // Use dst texture as SkSurface back resource.
   auto surface = SkSurface::MakeFromBackendTexture(
       gr_context, result_texture,
       gr_params.flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
       1, GetCompatibleSurfaceColorType(result_gl_texture_info.fFormat),
-      SkColorSpace::MakeSRGB(), nullptr);
+      source_and_dest_color_space, nullptr);
 
   // Terminate if surface cannot be created.
-  bool result = true;
+  bool result = false;
   if (surface) {
-    auto image =
-        holder_->VideoFrameToSkImage(video_frame, raster_context_provider);
-    result = DrawYUVImageToSkSurface(video_frame, image, surface,
-                                     gr_params.use_visible_rect);
+    auto image = holder_->VideoFrameToSkImage(
+        video_frame, raster_context_provider, source_and_dest_color_space);
+    if (image) {
+      result = true;
+      DrawYUVImageToSkSurface(video_frame, image, surface,
+                              gr_params.use_visible_rect);
+    } else {
+      DLOG(ERROR) << "Failed to create YUV SkImage";
+    }
   } else {
-    result = false;
+    DLOG(ERROR) << "Failed to create SkSurface";
   }
 
   // Release textures to guarantee |holder_| doesn't hold read access on

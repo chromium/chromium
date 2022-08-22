@@ -34,10 +34,14 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
       viz::RasterContextProvider* raster_context_provider,
       gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]);
 
-  // Returns a YUV SkImage for the specified video frame.
+  // Returns a YUV SkImage for the specified video frame. If
+  // `reinterpret_color_space` is non-nullptr, then the SkImage will be
+  // reinterpreted to be in the specified value. Otherwise, it will be
+  // in `video_frame`'s color space.
   sk_sp<SkImage> VideoFrameToSkImage(
       const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider);
+      viz::RasterContextProvider* raster_context_provider,
+      sk_sp<SkColorSpace> reinterpret_color_space);
 
   // Creates SkSurfaces for each plane for the specified video frame. Returns
   // true only if surfaces for all planes were created.

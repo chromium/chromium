@@ -28,7 +28,9 @@ class VideoFrameYUVMailboxesHolder;
 // I420 or NV12 format. Automatically handles upload of CPU memory backed
 // VideoFrames in I420 format. Converting CPU backed VideoFrames requires
 // creation of shared images to upload the frame to the GPU where the conversion
-// takes place.
+// takes place. This will not perform any color space conversion besides the
+// YUV to RGB conversion (it will ignore the color space of the SharedImage
+// backing the destination mailbox).
 // IMPORTANT: Callers of this function can cache this class and call
 // ConvertYUVVideoFrame() to prevent repeated creation/deletion of shared
 // images.
@@ -48,6 +50,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   VideoFrameYUVConverter();
   ~VideoFrameYUVConverter();
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
+
   static bool ConvertYUVVideoFrameNoCaching(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
