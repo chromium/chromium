@@ -26,5 +26,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int,
 DEFINE_UI_CLASS_PROPERTY_KEY(float,
                              kWindowVisibilityAnimationVerticalPositionKey,
                              15.f)
+DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowHidingAnimationCountKey, 0)
 
 }  // namespace wm

@@ -58,6 +58,9 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
  public:
   explicit HidingWindowAnimationObserverBase(aura::Window* window)
       : window_(window) {
+    window_->SetProperty(
+        kWindowHidingAnimationCountKey,
+        window_->GetProperty(kWindowHidingAnimationCountKey) + 1);
     window_->AddObserver(this);
   }
 
@@ -67,8 +70,13 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       const HidingWindowAnimationObserverBase&) = delete;
 
   ~HidingWindowAnimationObserverBase() override {
-    if (window_)
-      window_->RemoveObserver(this);
+    if (!window_)
+      return;
+    window_->RemoveObserver(this);
+    window_->SetProperty(
+        kWindowHidingAnimationCountKey,
+        window_->GetProperty(kWindowHidingAnimationCountKey) - 1);
+    DCHECK_GE(window_->GetProperty(kWindowHidingAnimationCountKey), 0);
   }
 
   // aura::WindowObserver:

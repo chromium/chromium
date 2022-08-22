@@ -43,6 +43,10 @@ COMPONENT_EXPORT(UI_WM)
 extern const ui::ClassProperty<float>* const
     kWindowVisibilityAnimationVerticalPositionKey;
 
+// The number of hiding animations in progress on the window.
+COMPONENT_EXPORT(UI_WM)
+extern const ui::ClassProperty<int32_t>* const kWindowHidingAnimationCountKey;
+
 }  // namespace wm
 
 // These need to be declared here for jumbo builds.

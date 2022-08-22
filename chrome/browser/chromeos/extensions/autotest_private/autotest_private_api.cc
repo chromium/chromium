@@ -224,6 +224,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
+#include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
@@ -4403,7 +4404,11 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     window_info.display_id = base::NumberToString(
         display::Screen::GetScreen()->GetDisplayNearestWindow(window).id());
     window_info.title = base::UTF16ToUTF8(window->GetTitle());
-    window_info.is_animating = window->layer()->GetAnimator()->is_animating();
+    // Check for window hiding animations separately because they pertain to
+    // layers detached from the window.
+    window_info.is_animating =
+        window->layer()->GetAnimator()->is_animating() ||
+        window->GetProperty(wm::kWindowHidingAnimationCountKey) > 0;
     window_info.is_visible = window->IsVisible();
     window_info.target_visibility = window->TargetVisibility();
     window_info.can_focus = window->CanFocus();
