@@ -370,6 +370,9 @@ bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kComplementary:
     case ax::mojom::Role::kContentInfo:
+    case ax::mojom::Role::kFooter:
+    case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kHeader:
     case ax::mojom::Role::kMain:
     case ax::mojom::Role::kNavigation:
     case ax::mojom::Role::kRegion:
