@@ -1722,7 +1722,7 @@ const base::Feature kDeviceActiveClientMonthlyCheckIn{
 // on ChromeOS.
 const base::Feature kDeviceActiveClientMonthlyCheckMembership{
     "DeviceActiveClientMonthlyCheckMembership",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 const base::Feature kDeviceForceScheduledReboot{
