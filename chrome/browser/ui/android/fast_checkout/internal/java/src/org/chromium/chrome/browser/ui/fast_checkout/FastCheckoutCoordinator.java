@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,6 +28,11 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         ViewFlipper rootView = (ViewFlipper) LayoutInflater.from(context).inflate(
                 R.layout.fast_checkout_bottom_sheet, null);
         mContent = new FastCheckoutSheetContent(rootView);
+
+        View homeScreenView = rootView.findViewById(R.id.fast_checkout_home_screen_sheet);
+        HomeScreenCoordinator homeScreenCoordinator =
+                new HomeScreenCoordinator(context, homeScreenView, mModel, delegate);
+        // TODO(crbug.com/1334642): Create remaining 2 screens.
 
         mModel.addObserver((source, propertyKey) -> {
             if (FastCheckoutModel.CURRENT_SCREEN == propertyKey) {

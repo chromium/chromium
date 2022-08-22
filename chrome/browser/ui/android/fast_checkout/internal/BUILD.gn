@@ -14,6 +14,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediator.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutModel.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/home_screen/HomeScreenCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/fast_checkout/home_screen/HomeScreenViewBinder.java",
   ]
   deps = [
     ":java_resources",
@@ -26,6 +28,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

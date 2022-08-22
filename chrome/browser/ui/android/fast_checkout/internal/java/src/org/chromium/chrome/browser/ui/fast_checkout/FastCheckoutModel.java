@@ -6,8 +6,14 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
+import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
+import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,15 +35,24 @@ public class FastCheckoutModel {
     }
 
     /** Property that indicates the bottom sheet visibility. */
-    public static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
+
+    /** The chosen address option. */
+    public static final WritableObjectPropertyKey<FastCheckoutAutofillProfile> SELECTED_PROFILE =
+            new WritableObjectPropertyKey<>();
+
+    /** The chosen credit card option. */
+    public static final WritableObjectPropertyKey<FastCheckoutCreditCard> SELECTED_CREDIT_CARD =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<HomeScreenCoordinator.Delegate>
+            HOME_SCREEN_DELEGATE = new WritableObjectPropertyKey<>();
 
     /**
      * Property that indicates which screen (i.e ScreenType) is currently displayed on the bottom
      * sheet.
      */
-    public static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final WritableIntPropertyKey CURRENT_SCREEN = new WritableIntPropertyKey();
 
     static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
@@ -47,5 +62,6 @@ public class FastCheckoutModel {
     }
 
     /** All keys used for the fast checkout bottom sheet. */
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CURRENT_SCREEN, VISIBLE};
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
+            CURRENT_SCREEN, VISIBLE, SELECTED_PROFILE, SELECTED_CREDIT_CARD, HOME_SCREEN_DELEGATE};
 }

@@ -43,6 +43,7 @@
       android:orientation="vertical">
       <!-- Selected Address  -->
       <LinearLayout
+          android:id="@+id/selected_address_profile_view"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
           android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
@@ -102,6 +103,7 @@
 
       <!-- Selected Credit Card -->
       <LinearLayout
+          android:id="@+id/selected_credit_card_view"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
           android:gravity="center_vertical"
@@ -146,7 +148,7 @@
         android:text="@string/fast_checkout_home_sheet_accept" />
 
     <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/fast_checkout_button_reject"
+        android:id="@+id/fast_checkout_button_decline"
         style="@style/TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
