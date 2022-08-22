@@ -153,12 +153,21 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // TaskSource.
   virtual TimeTicks GetDelayedSortKey() const = 0;
 
-  // Support for IntrusiveHeap.
-  void SetHeapHandle(const HeapHandle& handle);
-  void ClearHeapHandle();
-  HeapHandle GetHeapHandle() const { return heap_handle_; }
+  // Support for IntrusiveHeap in ThreadGroup::PriorityQueue.
+  void SetImmediateHeapHandle(const HeapHandle& handle);
+  void ClearImmediateHeapHandle();
+  HeapHandle GetImmediateHeapHandle() const {
+    return immediate_pq_heap_handle_;
+  }
 
-  HeapHandle heap_handle() const { return heap_handle_; }
+  HeapHandle immediate_heap_handle() const { return immediate_pq_heap_handle_; }
+
+  // Support for IntrusiveHeap in ThreadGroup::DelayedPriorityQueue.
+  void SetDelayedHeapHandle(const HeapHandle& handle);
+  void ClearDelayedHeapHandle();
+  HeapHandle GetDelayedHeapHandle() const { return delayed_pq_heap_handle_; }
+
+  HeapHandle delayed_heap_handle() const { return delayed_pq_heap_handle_; }
 
   // Returns the shutdown behavior of all Tasks in the TaskSource. Can be
   // accessed without a Transaction because it is never mutated.
@@ -219,7 +228,11 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   // The TaskSource's position in its current PriorityQueue. Access is protected
   // by the PriorityQueue's lock.
-  HeapHandle heap_handle_;
+  HeapHandle immediate_pq_heap_handle_;
+
+  // The TaskSource's position in its current DelayedPriorityQueue. Access is
+  // protected by the DelayedPriorityQueue's lock.
+  HeapHandle delayed_pq_heap_handle_;
 
   // A pointer to the TaskRunner that posts to this TaskSource, if any. The
   // derived class is responsible for calling AddRef() when a TaskSource from

@@ -41,7 +41,7 @@ class PriorityQueue::TaskSourceAndSortKey {
   // call.
   RegisteredTaskSource take_task_source() {
     DCHECK(task_source_);
-    task_source_->ClearHeapHandle();
+    task_source_->ClearImmediateHeapHandle();
     return std::move(task_source_);
   }
 
@@ -54,7 +54,7 @@ class PriorityQueue::TaskSourceAndSortKey {
   // Required by IntrusiveHeap.
   void SetHeapHandle(const HeapHandle& handle) {
     DCHECK(task_source_);
-    task_source_->SetHeapHandle(handle);
+    task_source_->SetImmediateHeapHandle(handle);
   }
 
   // Required by IntrusiveHeap.
@@ -62,13 +62,13 @@ class PriorityQueue::TaskSourceAndSortKey {
     // Ensure |task_source_| is not nullptr, which may be the case if
     // take_task_source() was called before this.
     if (task_source_)
-      task_source_->ClearHeapHandle();
+      task_source_->ClearImmediateHeapHandle();
   }
 
   // Required by IntrusiveHeap.
   HeapHandle GetHeapHandle() const {
     if (task_source_)
-      return task_source_->GetHeapHandle();
+      return task_source_->GetImmediateHeapHandle();
     return HeapHandle::Invalid();
   }
 
@@ -140,7 +140,7 @@ RegisteredTaskSource PriorityQueue::RemoveTaskSource(
   if (IsEmpty())
     return nullptr;
 
-  const HeapHandle heap_handle = task_source.heap_handle();
+  const HeapHandle heap_handle = task_source.immediate_heap_handle();
   if (!heap_handle.IsValid())
     return nullptr;
 
@@ -162,7 +162,7 @@ void PriorityQueue::UpdateSortKey(const TaskSource& task_source,
   if (IsEmpty())
     return;
 
-  const HeapHandle heap_handle = task_source.heap_handle();
+  const HeapHandle heap_handle = task_source.immediate_heap_handle();
   if (!heap_handle.IsValid())
     return;
 

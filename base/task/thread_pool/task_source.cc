@@ -38,12 +38,20 @@ void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
                                      std::memory_order_relaxed);
 }
 
-void TaskSource::SetHeapHandle(const HeapHandle& handle) {
-  heap_handle_ = handle;
+void TaskSource::SetImmediateHeapHandle(const HeapHandle& handle) {
+  immediate_pq_heap_handle_ = handle;
 }
 
-void TaskSource::ClearHeapHandle() {
-  heap_handle_ = HeapHandle();
+void TaskSource::ClearImmediateHeapHandle() {
+  immediate_pq_heap_handle_ = HeapHandle();
+}
+
+void TaskSource::SetDelayedHeapHandle(const HeapHandle& handle) {
+  delayed_pq_heap_handle_ = handle;
+}
+
+void TaskSource::ClearDelayedHeapHandle() {
+  delayed_pq_heap_handle_ = HeapHandle();
 }
 
 TaskSource::TaskSource(const TaskTraits& traits,
