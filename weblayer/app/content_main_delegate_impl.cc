@@ -187,6 +187,9 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
     ::features::kBackForwardCache,
     // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
     translate::kTFLiteLanguageDetectionEnabled,
+    // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
+    // not yet supported.
+    blink::features::kAnonymousIframeOriginTrial,
 
 #if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
@@ -220,6 +223,10 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
 
   // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
   blink::WebRuntimeFeatures::EnableWebGPU(false);
+
+  // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
+  // not yet supported.
+  blink::WebRuntimeFeatures::EnableAnonymousIframe(false);
 
 #if BUILDFLAG(IS_ANDROID)
   content::Compositor::Initialize();

@@ -140,6 +140,10 @@ void WebRuntimeFeatures::EnableAdTagging(bool enable) {
   RuntimeEnabledFeatures::SetAdTaggingEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAnonymousIframe(bool enable) {
+  RuntimeEnabledFeatures::SetAnonymousIframeEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableBatchFetchRequests(bool enable) {
   RuntimeEnabledFeatures::SetBatchFetchRequestsEnabled(enable);
 }

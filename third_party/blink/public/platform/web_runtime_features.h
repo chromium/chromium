@@ -79,6 +79,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void
   EnableAccessibilityUseAXPositionForDocumentMarkers(bool);
   BLINK_PLATFORM_EXPORT static void EnableAdTagging(bool);
+  BLINK_PLATFORM_EXPORT static void EnableAnonymousIframe(bool);
   BLINK_PLATFORM_EXPORT static void EnableBackgroundFetch(bool);
   BLINK_PLATFORM_EXPORT static void EnableBatchFetchRequests(bool);
   BLINK_PLATFORM_EXPORT static void EnableBrowserVerifiedUserActivationKeyboard(
