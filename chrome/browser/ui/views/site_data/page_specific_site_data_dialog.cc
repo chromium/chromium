@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,7 +45,7 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
 
 // Returns the registable domain (eTLD+1) for the |origin|. If it doesn't exist,
 // returns the host.
-std::string GetEtldPlusOne(url::Origin origin) {
+std::string GetEtldPlusOne(const url::Origin& origin) {
   auto eltd_plus_one = net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return eltd_plus_one.empty() ? origin.host() : eltd_plus_one;
@@ -111,6 +112,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS));
+    cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
   }
 
   void OnDialogExplicitlyClosed() {
@@ -139,7 +141,57 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   FaviconCache* favicon_cache() { return favicon_cache_.get(); }
 
+  void DeleteStoredObjects(const url::Origin& origin) {
+    // TODO(crbug.com/1344787): Record metrics.
+    bool deleted_from_allowed = DeleteMatchingHostNodeFromModel(
+        allowed_cookies_tree_model_.get(), origin);
+    bool deleted_from_blocked = DeleteMatchingHostNodeFromModel(
+        blocked_cookies_tree_model_.get(), origin);
+    DCHECK(deleted_from_allowed || deleted_from_blocked)
+        << "The node with a matching origin should be found and deleted in one "
+           "of "
+           "the models";
+    DCHECK(deleted_from_allowed != deleted_from_blocked)
+        << "The node with a matching origin should be found and deleted in "
+           "ONLY "
+           "ONE of the models";
+  }
+
+  void SetContentException(const url::Origin& origin, ContentSetting setting) {
+    // TODO(crbug.com/1344787): Record metrics.
+    DCHECK(setting == CONTENT_SETTING_ALLOW ||
+           setting == CONTENT_SETTING_BLOCK ||
+           setting == CONTENT_SETTING_SESSION_ONLY);
+    GURL url = origin.GetURL();
+    if (CanCreateContentException(url)) {
+      cookie_settings_->ResetCookieSetting(url);
+      cookie_settings_->SetCookieSetting(url, setting);
+    }
+  }
+
  private:
+  // Deletes the host node matching |origin| and all stored objects for it.
+  bool DeleteMatchingHostNodeFromModel(CookiesTreeModel* model,
+                                       const url::Origin& origin) {
+    CookieTreeNode* node_to_delete = nullptr;
+    for (const auto& node : model->GetRoot()->children()) {
+      if (origin == node->GetDetailedInfo().origin) {
+        DCHECK(!node_to_delete)
+            << "The node with a matching origin should only be found once";
+        node_to_delete = node.get();
+      }
+    }
+    if (node_to_delete) {
+      DCHECK_EQ(node_to_delete->GetDetailedInfo().node_type,
+                CookieTreeNode::DetailedInfo::TYPE_HOST);
+      model->DeleteCookieNode(node_to_delete);
+    }
+
+    return node_to_delete != nullptr;
+  }
+
+  bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
+
   base::WeakPtr<content::WebContents> web_contents_;
   // Each model represent separate local storage container. The implementation
   // doesn't make a difference between allowed and blocked models and checks
@@ -147,10 +199,12 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
   std::unique_ptr<FaviconCache> favicon_cache_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
 }  // namespace
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRowForTesting);
 // static
 views::Widget* ShowPageSpecificSiteDataDialog(
     content::WebContents* web_contents) {
@@ -174,9 +228,19 @@ views::Widget* ShowPageSpecificSiteDataDialog(
     for (const auto& origin : section.origins) {
       // TODO(crbug.com/1344787): Get the actual state based on the cookie
       // setting.
+      // It is safe to use base::Unretained for the delegate here because both
+      // the row view and the delegate are owned by the dialog and will be
+      // destroyed when the dialog is destroyed.
       builder.AddCustomField(
           CreateCustomField(std::make_unique<SiteDataRowView>(
-              origin, CONTENT_SETTING_BLOCK, delegate->favicon_cache())));
+              origin, CONTENT_SETTING_BLOCK, delegate->favicon_cache(),
+              base::BindRepeating(
+                  &PageSpecificSiteDataDialogModelDelegate::DeleteStoredObjects,
+                  base::Unretained(delegate)),
+              base::BindRepeating(
+                  &PageSpecificSiteDataDialogModelDelegate::SetContentException,
+                  base::Unretained(delegate)))),
+          kPageSpecificSiteDataDialogRowForTesting);
     }
   }
   // TODO(crbug.com/1344787): Build the rest of the dialog. Add action handling.

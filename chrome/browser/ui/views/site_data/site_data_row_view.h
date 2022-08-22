@@ -7,6 +7,7 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/views/view.h"
+#include "url/origin.h"
 
 class FaviconCache;
 
@@ -30,11 +31,21 @@ class Origin;
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
  public:
-  explicit SiteDataRowView(const url::Origin& origin,
-                           ContentSetting setting,
-                           FaviconCache* favicon_cache);
+  SiteDataRowView(
+      const url::Origin& origin,
+      ContentSetting setting,
+      FaviconCache* favicon_cache,
+      base::RepeatingCallback<void(const url::Origin&)> delete_callback,
+      base::RepeatingCallback<void(const url::Origin&, ContentSetting)>
+          create_exception_callback);
+
+  ~SiteDataRowView() override;
+
+  views::Label* state_label_for_testing() { return state_label_; }
 
  private:
+  friend class PageSpecificSiteDataDialogBrowserTest;
+
   void SetFaviconImage(const gfx::Image& image);
 
   void OnMenuIconClicked();
@@ -49,7 +60,11 @@ class SiteDataRowView : public views::View {
   // content menu items. After an update the state label is always visible.
   void SetContentSettingException(ContentSetting setting);
 
+  url::Origin origin_;
   ContentSetting setting_;
+  base::RepeatingCallback<void(const url::Origin&)> delete_callback_;
+  base::RepeatingCallback<void(const url::Origin&, ContentSetting)>
+      create_exception_callback_;
 
   raw_ptr<views::Label> state_label_ = nullptr;
   raw_ptr<views::ImageView> favicon_image_ = nullptr;
