@@ -2470,11 +2470,6 @@
       },
     },
   },
-  'lacros_all_tast_tests eve': {
-    'remove_from': [
-      'lacros-amd64-generic-rel',
-    ]
-  },
   'lacros_all_tast_tests jacuzzi': {
     'modifications': {
       'lacros-arm-generic-rel': {
