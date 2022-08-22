@@ -6,10 +6,15 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -24,6 +29,8 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
+
     AshTestBase::SetUp();
     privacy_indicators_view_ =
         std::make_unique<PrivacyIndicatorsTrayItemView>(GetPrimaryShelf());
@@ -31,6 +38,11 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
   std::u16string GetTooltipText() {
     return privacy_indicators_view_->GetTooltipText(gfx::Point());
+  }
+
+  views::BoxLayout* GetLayoutManager(
+      PrivacyIndicatorsTrayItemView* privacy_indicators_view) {
+    return privacy_indicators_view->layout_manager_;
   }
 
  protected:
@@ -47,6 +59,8 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<PrivacyIndicatorsTrayItemView> privacy_indicators_view_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
@@ -97,6 +111,27 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
   privacy_indicators_view()->Update(/*camera_is_used=*/false,
                                     /*microphone_is_used=*/false);
   EXPECT_EQ(std::u16string(), GetTooltipText());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, ShelfAlignmentChanged) {
+  auto* privacy_indicators_view =
+      GetPrimaryUnifiedSystemTray()->privacy_indicators_view();
+
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(views::BoxLayout::Orientation::kVertical,
+            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
+            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_EQ(views::BoxLayout::Orientation::kVertical,
+            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
+  EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
+            GetLayoutManager(privacy_indicators_view)->GetOrientation());
 }
 
 }  // namespace ash

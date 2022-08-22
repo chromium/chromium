@@ -37,11 +37,13 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   SetVisible(false);
 
   auto container_view = std::make_unique<views::View>();
-  auto* layout =
+  layout_manager_ =
       container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
+          shelf->PrimaryAxisValue(views::BoxLayout::Orientation::kHorizontal,
+                                  views::BoxLayout::Orientation::kVertical),
           kPrivacyIndicatorsViewPadding, kPrivacyIndicatorsViewSpacing));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout_manager_->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
 
   auto camera_icon = std::make_unique<views::ImageView>();
   camera_icon_ = container_view->AddChildView(std::move(camera_icon));
@@ -76,7 +78,9 @@ void PrivacyIndicatorsTrayItemView::Update(bool camera_is_used,
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
-  // TODO(crbug/1352593): Handle layout change when shelf alignment changes.
+  layout_manager_->SetOrientation(
+      shelf->PrimaryAxisValue(views::BoxLayout::Orientation::kHorizontal,
+                              views::BoxLayout::Orientation::kVertical));
 }
 
 void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
@@ -84,14 +88,24 @@ void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
 }
 
 gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
+  // If the view is laid out vertically in vertical shelf, the view is rotated
+  // 90 degree.
+  if (layout_manager_->GetOrientation() ==
+      views::BoxLayout::Orientation::kVertical) {
+    return gfx::Size(kPrivacyIndicatorsViewHeight, kPrivacyIndicatorsViewWidth);
+  }
   return gfx::Size(kPrivacyIndicatorsViewWidth, kPrivacyIndicatorsViewHeight);
 }
 
 void PrivacyIndicatorsTrayItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
+  // We round the corners and set the border thickness based on the shorter side
+  // of the view (the shorter size changes based on shelf alignment).
+  int shorter_side = std::min(width(), height());
   SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorAshPrivacyIndicatorsBackground, height() / 2,
-      height() - kPrivacyIndicatorsViewHeight));
+      ui::kColorAshPrivacyIndicatorsBackground, shorter_side / 2,
+      shorter_side - kPrivacyIndicatorsViewHeight));
   UpdateIcons();
 }
 

@@ -655,6 +655,8 @@ void UnifiedSystemTray::ClickedOutsideBubble() {
 void UnifiedSystemTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
   time_view_->UpdateAlignmentForShelf(shelf());
+  if (privacy_indicators_view_)
+    privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
 }
 
 void UnifiedSystemTray::ShowBubbleInternal() {

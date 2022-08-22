@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
 
+namespace views {
+class BoxLayout;
+}  // namespace views
+
 namespace ash {
 class Shelf;
 
@@ -42,6 +46,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
 
   // Update the icons for the children views.
   void UpdateIcons();
+
+  views::BoxLayout* layout_manager_ = nullptr;
 
   // Owned by the views hierarchy.
   views::ImageView* camera_icon_ = nullptr;
