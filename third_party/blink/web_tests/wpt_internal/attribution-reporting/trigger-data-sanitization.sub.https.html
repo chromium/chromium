@@ -1,51 +1,55 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
-<meta name=variant content="?source-type=event">
-<meta name=variant content="?source-type=navigation">
+<!-- event source -->
+<meta name=variant content="?method=img&in=0&out=0">
+<meta name=variant content="?method=img&in=1&out=1">
+<meta name=variant content="?method=img&in=2&out=0">
+<meta name=variant content="?method=img&in=3&out=1">
+<!-- navigation source -->
+<meta name=variant content="?method=open&in=0&out=0">
+<meta name=variant content="?method=open&in=1&out=1">
+<meta name=variant content="?method=open&in=2&out=2">
+<meta name=variant content="?method=open&in=3&out=3">
+<meta name=variant content="?method=open&in=4&out=4">
+<meta name=variant content="?method=open&in=5&out=5">
+<meta name=variant content="?method=open&in=6&out=6">
+<meta name=variant content="?method=open&in=7&out=7">
+<meta name=variant content="?method=open&in=8&out=0">
+<meta name=variant content="?method=open&in=9&out=1">
+<meta name=variant content="?method=open&in=10&out=2">
+<meta name=variant content="?method=open&in=11&out=3">
+<meta name=variant content="?method=open&in=12&out=4">
+<meta name=variant content="?method=open&in=13&out=5">
+<meta name=variant content="?method=open&in=14&out=6">
+<meta name=variant content="?method=open&in=15&out=7">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-const sourceTypes = {
-  event: {
-    method: 'img',
-    cardinality: 2,
-  },
-  navigation: {
-    method: 'open',
-    cardinality: 8,
-  },
-};
+const params = new URLSearchParams(location.search);
+const method = params.get('method');
+const dataIn = params.get('in');
+const dataOut = params.get('out');
 
-const sourceType = (new URLSearchParams(location.search)).get('source-type');
+attribution_reporting_promise_test(async t => {
+  await registerAttributionSrc(t, {
+    source: {
+      destination: 'https://{{host}}',
+    },
+    method,
+  });
 
-const {method, cardinality} = sourceTypes[sourceType];
+  await registerAttributionSrc(t, {trigger: {
+    event_trigger_data: [{trigger_data: `${dataIn}`}],
+  }});
 
-const trigger_data_cardinality_promise_test = value =>
-  attribution_reporting_promise_test(async t => {
-    await registerAttributionSrc(t, {
-      source: {
-        destination: `https://{{host}}`,
-      },
-      method,
-    });
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
 
-    await registerAttributionSrc(t, {trigger: {
-      event_trigger_data: [{trigger_data: `${value}`}],
-    }});
-
-    const payload = await pollEventLevelReports();
-    assert_equals(payload.reports.length, 1);
-    const report = JSON.parse(payload.reports[0].body);
-
-    const expected = value % cardinality;
-    assert_equals(report.trigger_data, `${expected}`);
-  }, `Trigger data ${value} is sanitized for source type ${sourceType}.`);
-
-for (let i = 0; i < cardinality * 2; i++) {
-  trigger_data_cardinality_promise_test(i);
-}
+  assert_equals(report.trigger_data, `${dataOut}`);
+}, `Trigger data ${dataIn} is sanitized for ${method}.`);
 </script>
