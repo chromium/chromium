@@ -18,7 +18,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "ash/wm/window_state.h"
 #include "base/containers/flat_set.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"

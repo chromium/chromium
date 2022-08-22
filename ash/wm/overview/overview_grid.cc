@@ -15,11 +15,7 @@
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/root_window_controller.h"
-#include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -28,7 +24,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -43,11 +38,9 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/drop_target_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -69,24 +62,20 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/window_animations.h"
 
 namespace ash {
 namespace {
@@ -783,10 +772,12 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
 void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
   for (auto& item : window_list_) {
     item->RevertHideForDesksTemplatesGrid(/*animate=*/false);
-    item->RestoreWindow(/*reset_tranform=*/true,
+    item->RestoreWindow(/*reset_transform=*/true,
                         /*was_desks_templates_grid_showing=*/true);
   }
   window_list_.clear();
+  num_incognito_windows_ = 0;
+  num_unsupported_windows_ = 0;
 }
 
 void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
@@ -1767,7 +1758,7 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
 
   if (was_zero_state) {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
-                                        /*expanded_desks_bar_button=*/true);
+                                        /*expanding_bar_view=*/true);
   }
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
@@ -2250,8 +2241,8 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
   }
 
   gfx::Vector2dF offset(0, (total_bounds.bottom() - max_bottom) / 2.f);
-  for (size_t i = 0; i < rects.size(); ++i)
-    rects[i] += offset;
+  for (auto& rect : rects)
+    rect += offset;
   return rects;
 }
 
@@ -2301,16 +2292,15 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   const int height = total_bounds.height() / kTabletLayoutRow;
   int window_position = 0;
   std::vector<gfx::RectF> rects;
-  for (size_t i = 0; i < window_list_.size(); ++i) {
-    OverviewItem* item = window_list_[i].get();
+  for (const auto& window : window_list_) {
+    OverviewItem* item = window.get();
     if (ShouldExcludeItemFromGridLayout(item, ignored_items)) {
-      rects.push_back(gfx::RectF());
+      rects.emplace_back();
       continue;
     }
 
     // Calculate the width and y position of the item.
-    const int width =
-        CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(), height);
+    const int width = CalculateWidthAndMaybeSetUnclippedBounds(item, height);
     const int y =
         height * (window_position % kTabletLayoutRow) + total_bounds.y();
 
