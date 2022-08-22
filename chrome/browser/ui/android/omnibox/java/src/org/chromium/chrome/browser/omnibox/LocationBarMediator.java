@@ -1047,6 +1047,7 @@ class LocationBarMediator
     }
 
     private boolean shouldShowMicButton() {
+        if (shouldShowDeleteButton()) return false;
         if (!mNativeInitialized || mVoiceRecognitionHandler == null
                 || !mVoiceRecognitionHandler.isVoiceSearchEnabled()) {
             return false;
@@ -1055,9 +1056,8 @@ class LocationBarMediator
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
             return !isToolbarMicEnabled && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
         } else {
-            boolean deleteButtonVisible = shouldShowDeleteButton();
             boolean canShowMicButton = !mIsTablet || !isToolbarMicEnabled;
-            return canShowMicButton && !deleteButtonVisible
+            return canShowMicButton
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress
                             || mIsLocationBarFocusedFromNtpScroll
                             || mShouldShowMicButtonWhenUnfocused);
@@ -1065,6 +1065,8 @@ class LocationBarMediator
     }
 
     private boolean shouldShowLensButton() {
+        if (shouldShowDeleteButton()) return false;
+
         // When this method is called on UI inflation, return false as the native is not ready.
         if (!mNativeInitialized) {
             return false;
@@ -1085,9 +1087,8 @@ class LocationBarMediator
             return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
         }
 
-        return !shouldShowDeleteButton()
-                && (mUrlHasFocus || mIsUrlFocusChangeInProgress
-                        || mIsLocationBarFocusedFromNtpScroll || mShouldShowLensButtonWhenUnfocused)
+        return (mUrlHasFocus || mIsUrlFocusChangeInProgress || mIsLocationBarFocusedFromNtpScroll
+                       || mShouldShowLensButtonWhenUnfocused)
                 && isLensOnOmniboxEnabled();
     }
 
