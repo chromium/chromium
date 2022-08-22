@@ -166,6 +166,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
   @contextlib.contextmanager
   def _archive_logcat(self, filename, endpoint_name):
+    start_point = 'START {}'.format(endpoint_name)
+    end_point = 'END {}'.format(endpoint_name)
     with logcat_monitor.LogcatMonitor(
         self._device.adb,
         filter_specs=LOGCAT_FILTERS,
@@ -173,13 +175,29 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
         check_error=False):
       try:
         self._device.RunShellCommand(['log', '-p', 'i', '-t', LOGCAT_TAG,
-                                      'START {}'.format(endpoint_name)],
+                                      start_point],
                                      check_return=True)
         yield
       finally:
         self._device.RunShellCommand(['log', '-p', 'i', '-t', LOGCAT_TAG,
-                                      'END {}'.format(endpoint_name)],
+                                      end_point],
                                      check_return=True)
+
+    with open(filename, 'r+') as logcat_file:
+      logcat_lines = []
+      store_line = False
+      for line in logcat_file.readlines():
+        if start_point in line:
+          store_line = True
+        elif end_point in line:
+          store_line = False
+          logcat_lines.append(line)
+
+        if store_line:
+          logcat_lines.append(line)
+
+    with open(filename, 'w') as logcat_file:
+      logcat_file.write(''.join(logcat_lines))
 
   def parse_args(self, args=None):
     super(FinchTestCase, self).parse_args(args)
