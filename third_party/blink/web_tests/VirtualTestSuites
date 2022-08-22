@@ -603,12 +603,6 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
-    "prefix": "json-modules",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
-    "args": ["--enable-features=JSONModules", "--js-flags=--harmony-import-assertions"]
-  },
-  {
     "prefix": "css-trigonometric-functions-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
@@ -623,7 +617,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/scripting-1/the-script-element/import-assertions", 
-      "external/wpt/html/semantics/scripting-1/the-script-element/css-module"],
+      "external/wpt/html/semantics/scripting-1/the-script-element/css-module",
+      "external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
     "args": ["--js-flags=--harmony-import-assertions"]
   },
   {
