@@ -9,9 +9,9 @@
 
 #include <map>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -251,6 +251,100 @@ bool IsRunningHeadless() {
   return is_running_headless;
 }
 
+// Observer for display metrics change notifications.
+class DisplayMetricsChangeObserver : public display::DisplayObserver {
+ public:
+  DisplayMetricsChangeObserver(int64_t display_id,
+                               const gfx::Size& size,
+                               uint32_t expected_changed_metrics)
+      : display_id_(display_id),
+        size_(size),
+        expected_changed_metrics_(expected_changed_metrics) {
+    display::Screen::GetScreen()->AddObserver(this);
+  }
+  ~DisplayMetricsChangeObserver() override {
+    display::Screen::GetScreen()->RemoveObserver(this);
+  };
+
+  DisplayMetricsChangeObserver(const DisplayMetricsChangeObserver&) = delete;
+  DisplayMetricsChangeObserver& operator=(const DisplayMetricsChangeObserver&) =
+      delete;
+
+  // Runs a loop until the display metrics change is seen (unless one has
+  // already been observed, in which case it returns immediately).
+  void Wait() {
+    if (observed_change_)
+      return;
+
+    run_loop_.Run();
+  }
+
+ private:
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override {
+    if (!(display.id() == display_id_ && display.size() == size_ &&
+          (changed_metrics & expected_changed_metrics_))) {
+      return;
+    }
+
+    observed_change_ = true;
+    if (run_loop_.running())
+      run_loop_.Quit();
+  }
+  void OnDisplayAdded(const display::Display& new_display) override{};
+  void OnDisplayRemoved(const display::Display& old_display) override{};
+
+  const int64_t display_id_;
+  const gfx::Size size_;
+  const uint32_t expected_changed_metrics_;
+
+  bool observed_change_ = false;
+  base::RunLoop run_loop_;
+};
+
+void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
+                                 const gfx::Size& size) {
+  base::ScopedCFTypeRef<CGDisplayModeRef> current_display_mode(
+      CGDisplayCopyDisplayMode(display_id));
+  if (gfx::Size(CGDisplayModeGetWidth(current_display_mode),
+                CGDisplayModeGetHeight(current_display_mode)) == size) {
+    return;
+  }
+
+  base::ScopedCFTypeRef<CFArrayRef> display_modes(
+      CGDisplayCopyAllDisplayModes(display_id, nullptr));
+  DCHECK(display_modes);
+
+  CGDisplayModeRef prefered_display_mode = nullptr;
+  for (CFIndex i = 0; i < CFArrayGetCount(display_modes); ++i) {
+    CGDisplayModeRef display_mode =
+        (CGDisplayModeRef)CFArrayGetValueAtIndex(display_modes, i);
+    if (gfx::Size(CGDisplayModeGetWidth(display_mode),
+                  CGDisplayModeGetHeight(display_mode)) == size) {
+      prefered_display_mode = display_mode;
+      break;
+    }
+  }
+  DCHECK(prefered_display_mode);
+
+  uint32_t expected_changed_metrics =
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR;
+  DisplayMetricsChangeObserver display_metrics_change_observer(
+      display_id, size, expected_changed_metrics);
+
+  // This operation is always synchronous. The function doesn’t return until the
+  // mode switch is complete.
+  CGError result =
+      CGDisplaySetDisplayMode(display_id, prefered_display_mode, nullptr);
+  DCHECK_EQ(result, kCGErrorSuccess);
+
+  // Wait for `display::Screen` and `display::Display` structures to be updated.
+  display_metrics_change_observer.Wait();
+}
+
 }  // namespace
 
 namespace display::test {
@@ -292,13 +386,6 @@ VirtualDisplayMacUtil::~VirtualDisplayMacUtil() {
 int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
                                           const DisplayParams& display_params) {
   if (@available(macos 10.14, *)) {
-    // When there are no virtual displays at all, the first virtual display
-    // added will use the default resolution provided by the system. Adding and
-    // removing a temporary virtual display will fix the resolution of the first
-    // display that was previously added.
-    // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
-    bool need_display_resolution_workaround = g_display_map.empty();
-
     DCHECK(display_params.IsValid());
 
     NSString* display_name =
@@ -319,6 +406,9 @@ int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
 
     WaitForDisplay(id, /*added=*/true);
 
+    EnsureDisplayWithResolution(
+        id, gfx::Size(display_params.width, display_params.height));
+
     // TODO(crbug.com/1126278): Please remove this log or replace it with
     // [D]CHECK() ASAP when the TEST is stable.
     LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
@@ -327,11 +417,6 @@ int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
 
     DCHECK(!g_display_map[id]);
     g_display_map[id] = display;
-
-    if (need_display_resolution_workaround) {
-      int64_t tmp_id = AddDisplay(0, k1920x1080);
-      RemoveDisplay(tmp_id);
-    }
 
     return id;
   }

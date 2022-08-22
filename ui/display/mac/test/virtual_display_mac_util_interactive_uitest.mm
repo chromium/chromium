@@ -7,6 +7,7 @@
 #include "ui/display/mac/test/virtual_display_mac_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/geometry/size.h"
 
 class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
  protected:
@@ -80,4 +81,15 @@ TEST_F(VirtualDisplayMacUtilInteractiveUitest, HotPlug) {
 
   virtual_display_mac_util.reset();
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count);
+}
+
+TEST_F(VirtualDisplayMacUtilInteractiveUitest, EnsureDisplayWithResolution) {
+  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
+
+  int64_t id = virtual_display_mac_util.AddDisplay(
+      1, display::test::VirtualDisplayMacUtil::k1920x1080);
+
+  display::Display d;
+  display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
+  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 }
