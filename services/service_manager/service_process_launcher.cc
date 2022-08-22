@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -124,6 +125,15 @@ mojo::PendingRemote<mojom::Service> ServiceProcessLauncher::Start(
   if (!disabled_features.empty()) {
     child_command_line->AppendSwitchASCII(::switches::kDisableFeatures,
                                           disabled_features);
+  }
+
+  // Use --force-field-trials to make the child process to create field trials.
+  std::string field_trial_states;
+  base::FieldTrialList::AllStatesToString(&field_trial_states, false);
+  if (!field_trial_states.empty()) {
+    DCHECK(!child_command_line->HasSwitch(::switches::kForceFieldTrials));
+    child_command_line->AppendSwitchASCII(::switches::kForceFieldTrials,
+                                          field_trial_states);
   }
 
   child_command_line->AppendSwitchASCII(switches::kServiceName, target.name());

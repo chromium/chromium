@@ -11,12 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/service_executable/service_executable_environment.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
@@ -91,8 +91,15 @@ int main(int argc, char** argv) {
 #endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitFromCommandLine(
+  std::unique_ptr<base::FieldTrialList> field_trial_list =
+      std::make_unique<base::FieldTrialList>(nullptr);
+  // Create field trials according to --force-fieldtrials param.
+  base::FieldTrialList::CreateTrialsFromCommandLine(*command_line, -1);
+  // Enable and disable features according to --enable-features and
+  // --disable-features.
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  feature_list->InitializeFromCommandLine(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 
