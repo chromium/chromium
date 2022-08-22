@@ -4,6 +4,9 @@
 
 #include "net/spdy/alps_decoder.h"
 
+#include "base/feature_list.h"
+#include "net/base/features.h"
+
 namespace net {
 namespace {
 
@@ -101,23 +104,34 @@ bool AlpsDecoder::AcceptChParser::OnFrameHeader(spdy::SpdyStreamId stream_id,
                                                 size_t length,
                                                 uint8_t type,
                                                 uint8_t flags) {
-  if (type != static_cast<uint8_t>(spdy::SpdyFrameType::ACCEPT_CH) ||
-      error_ != Error::kNoError) {
-    // Ignore every frame except for ACCEPT_CH.
-    // Ignore data after an error has occurred.
-    // Returning false causes Http2DecoderAdapter not to call OnFramePayload().
+  // Ignore data after an error has occurred.
+  if (error_ != Error::kNoError)
     return false;
-  }
-  if (stream_id != 0) {
-    error_ = Error::kAcceptChInvalidStream;
+  // Stop all alps parsing if it's disabled.
+  if (!base::FeatureList::IsEnabled(features::kAlpsParsing))
     return false;
+  // Handle per-type parsing.
+  switch (type) {
+    case static_cast<uint8_t>(spdy::SpdyFrameType::ACCEPT_CH): {
+      // Stop alps client hint parsing if it's disabled.
+      if (!base::FeatureList::IsEnabled(features::kAlpsClientHintParsing))
+        return false;
+      // Check for issues with the frame.
+      if (stream_id != 0) {
+        error_ = Error::kAcceptChInvalidStream;
+        return false;
+      }
+      if (flags != 0) {
+        error_ = Error::kAcceptChWithFlags;
+        return false;
+      }
+      // This frame can be parsed in OnFramePayload.
+      return true;
+    }
+    default:
+      // Ignore all other types.
+      return false;
   }
-  if (flags != 0) {
-    error_ = Error::kAcceptChWithFlags;
-    return false;
-  }
-
-  return true;
 }
 
 void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {

@@ -487,6 +487,12 @@ NET_EXPORT extern const base::FeatureParam<bool>
 
 NET_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 
+// Whether ALPS parsing is on for any type of frame.
+NET_EXPORT extern const base::Feature kAlpsParsing;
+
+// Whether ALPS parsing is on for client hint parsing specifically.
+NET_EXPORT extern const base::Feature kAlpsClientHintParsing;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

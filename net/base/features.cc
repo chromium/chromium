@@ -344,4 +344,10 @@ const base::FeatureParam<bool> kStorageAccessAPIGrantsUnpartitionedStorage(
 // by the top level site to reduce fingerprinting.
 const base::Feature kThirdPartyStoragePartitioning{
     "ThirdPartyStoragePartitioning", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAlpsParsing{"AlpsParsing",
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAlpsClientHintParsing{"AlpsClientHintParsing",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace net::features
