@@ -265,13 +265,6 @@ void LocationBarView::Init() {
         std::u16string(), ChromeTextContext::CONTEXT_OMNIBOX_DEEMPHASIZED,
         views::style::STYLE_LINK);
     omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    int left_margin =
-        OmniboxFieldTrial::kRichAutocompletionAdditionalTextWithParenthesis
-                .Get()
-            ? 10
-            : 0;
-    omnibox_additional_text_view->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets::TLBR(0, left_margin, 0, 0)));
     omnibox_additional_text_view->SetFontList(font_list);
     omnibox_additional_text_view->SetVisible(false);
     omnibox_additional_text_view_ =
@@ -440,18 +433,18 @@ void LocationBarView::SetOmniboxAdditionalText(const std::u16string& text) {
   if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText())
     return;
 
-  // TODO(pkasting): This should use a localizable string constant.
-  // TODO(manukh): '-' separator doesn't play nice with RTL; results in
-  //  'input[autocompletion] URL -'.
-  std::u16string wrapped_text;
+  std::u16string adjusted_text;
   if (!text.empty()) {
-    wrapped_text =
+    const int message_id =
         OmniboxFieldTrial::kRichAutocompletionAdditionalTextWithParenthesis
                 .Get()
-            ? u"(" + text + u")"
-            : u" - " + text;
+            ? IDS_OMNIBOX_ADDITIONAL_TEXT_PARENTHESIS_TEMPLATE
+            : IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE;
+    adjusted_text = text;
+    base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
+    adjusted_text = l10n_util::GetStringFUTF16(message_id, u"", adjusted_text);
   }
-  SetOmniboxAdjacentText(omnibox_additional_text_view_, wrapped_text);
+  SetOmniboxAdjacentText(omnibox_additional_text_view_, adjusted_text);
 }
 
 std::u16string LocationBarView::GetOmniboxAdditionalText() const {
