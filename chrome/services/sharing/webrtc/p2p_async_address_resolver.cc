@@ -24,16 +24,24 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
 }
 
 void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
+                                    absl::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(STATE_CREATED, state_);
 
   state_ = STATE_SENT;
   done_callback_ = std::move(done_callback);
-  socket_manager_->GetHostAddress(
-      host_name.hostname(), /*enable_mdns=*/true,
-      base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
-                     base::Unretained(this)));
+  if (address_family.has_value()) {
+    socket_manager_->GetHostAddressWithFamily(
+        host_name.hostname(), address_family.value(), /*enable_mdns=*/true,
+        base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
+                       base::Unretained(this)));
+  } else {
+    socket_manager_->GetHostAddress(
+        host_name.hostname(), /*enable_mdns=*/true,
+        base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
+                       base::Unretained(this)));
+  }
 }
 
 void P2PAsyncAddressResolver::Cancel() {
