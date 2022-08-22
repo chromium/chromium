@@ -88,7 +88,7 @@ BOOL HandleSystemAlertsIfVisible() {
   XCTAssert(HandleSystemAlertsIfVisible(), @"Unhandled system alert.");
 }
 
-// Verifies Internet connectivity by navigating to browsingtest.appspot.com.
+// Verifies Internet connectivity by navigating to google.com.
 - (void)testNetworkConnection {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
@@ -97,15 +97,15 @@ BOOL HandleSystemAlertsIfVisible() {
   XCTAssert([app.keyboards.firstMatch
                 waitForExistenceWithTimeout:kWaitForUIElementTimeout],
             @"Keyboard didn't appear!");
-  [app typeText:@"http://browsingtest.appspot.com/googleLogoPage.html"];
+  [app typeText:@"http://google.com"];
   [app typeText:XCUIKeyboardKeyReturn];
 
-  ConditionBlock waitForWebContents = ^{
-    return ElementStaticTextContainsText(app.webViews.firstMatch, @"some text");
-  };
   XCTAssert(
-      WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, waitForWebContents),
-      @"Failed to find desired text in web page!");
+      // verify chrome is not showing offline dino page
+      ![[[app.webViews.firstMatch descendantsMatchingType:XCUIElementTypeAny]
+            matchingIdentifier:@"Dino game, play"]
+              .firstMatch waitForExistenceWithTimeout:kWaitForPageLoadTimeout],
+      @"Showing chrome dino page!");
 }
 
 @end

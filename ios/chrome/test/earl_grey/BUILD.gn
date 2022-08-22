@@ -13,8 +13,11 @@ source_set("device_check_eg2_tests") {
   sources = [ "device_check_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    "//components/strings",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//ui/base",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
