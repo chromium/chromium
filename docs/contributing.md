@@ -172,8 +172,7 @@ has more in-depth tips for writing a good commit description.
 ### Chromium-specific description tips
 
 - Links to previous CLs should be formatted as `https://crrev.com/c/NUMBER`,
-  which forwards to [Gitiles][cr-gitiles], rather than linking to the review at
-  <https://chromium-review.googlesource.com>.
+  which is slightly shorter than <https://chromium-review.googlesource.com>.
 
 - If there are instructions for testers to verify the change is correct,
   include them with the `Test:` tag:
@@ -499,7 +498,6 @@ formats.
 [core-principles]: https://www.chromium.org/developers/core-principles
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate?csw=1
 [cr-authors]: https://chromium.googlesource.com/chromium/src/+/HEAD/AUTHORS
-[cr-gitiles]: https://chromium.googlesource.com/chromium/src/+/main/
 [cr-styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md
 [crbug-new]: https://bugs.chromium.org/p/chromium/issues/entry
 [crbug]: https://bugs.chromium.org/p/chromium/issues/list
