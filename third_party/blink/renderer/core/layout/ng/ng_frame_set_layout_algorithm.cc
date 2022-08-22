@@ -213,6 +213,46 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
     }
   }
 
+  // If we still have some left over space we probably ended up with a remainder
+  // of a division. We cannot spread it evenly anymore. If we have any
+  // percentage columns/rows simply spread the remainder equally over all
+  // available percentage columns, regardless of their size.
+  if (remaining_length && !percent_indices.IsEmpty()) {
+    LayoutUnit remaining_percent = remaining_length;
+    for (auto i : percent_indices) {
+      int change_percent = (remaining_percent / percent_indices.size()).ToInt();
+      sizes[i] += change_percent;
+      remaining_length -= change_percent;
+    }
+  } else if (remaining_length && !fixed_indices.IsEmpty()) {
+    // If we don't have any percentage columns/rows we only have fixed columns.
+    // Spread the remainder equally over all fixed columns/rows.
+    LayoutUnit remaining_fixed = remaining_length;
+    for (auto i : fixed_indices) {
+      int change_fixed = (remaining_fixed / fixed_indices.size()).ToInt();
+      sizes[i] += change_fixed;
+      remaining_length -= change_fixed;
+    }
+  }
+
+  // Still some left over. Add it to the last column, because it is impossible
+  // spread it evenly or equally.
+  if (remaining_length)
+    sizes[count - 1] += remaining_length;
+
+  // Now we have the final layout, distribute the delta over it.
+  bool worked = true;
+  for (wtf_size_t i = 0; i < count; ++i) {
+    if (sizes[i] && sizes[i] + deltas[i] <= 0)
+      worked = false;
+    sizes[i] += deltas[i];
+  }
+  // If the deltas broke something, undo them.
+  if (!worked) {
+    for (wtf_size_t i = 0; i < count; ++i)
+      sizes[i] -= deltas[i];
+  }
+
   return sizes;
 }
 
