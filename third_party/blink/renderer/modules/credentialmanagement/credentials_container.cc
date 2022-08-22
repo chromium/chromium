@@ -540,8 +540,6 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
 }
 
 void OnRequestToken(ScriptPromiseResolver* resolver,
-                    const KURL& provider_url,
-                    const String& client_id,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
                     const WTF::String& token) {
@@ -1179,32 +1177,45 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       resolver->Detach();
       return ScriptPromise();
     }
-    if (options->identity()->providers().size() > 1) {
+    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled() &&
+        options->identity()->providers().size() > 1) {
       exception_state.ThrowTypeError(
-          "More than one provider is not supported.");
+          "Multiple providers specified but FedCmMultipleIdentityProviders "
+          "flag is disabled.");
       resolver->Detach();
       return ScriptPromise();
     }
-    IdentityProvider* provider = options->identity()->providers()[0];
+
     // Log the UseCounter only when the WebID flag is enabled.
     UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
-    // TODO(kenrb): Add some renderer-side validation here, such as
-    // validating |provider|, and making sure the calling context is legal.
-    // Some of this has not been spec'd yet.
-    KURL provider_url(provider->configURL());
-    String client_id = provider->clientId();
 
-    if (!provider_url.IsValid() || client_id == "") {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          "Provider information is incomplete."));
-      return promise;
-    }
-    // We disallow redirects (in idp_network_request_manager.cc), so it is
-    // enough to check the initial URL here.
-    if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
-                                                       provider_url)) {
-      return promise;
+    int provider_index = 0;
+    Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
+    for (const auto& provider : options->identity()->providers()) {
+      // TODO(kenrb): Add some renderer-side validation here, such as
+      // validating |provider|, and making sure the calling context is legal.
+      // Some of this has not been spec'd yet.
+      KURL provider_url(provider->configURL());
+      String client_id = provider->clientId();
+
+      ++provider_index;
+      if (!provider_url.IsValid() || client_id == "") {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            String::Format("Provider %i information is incomplete.",
+                           provider_index)));
+        return promise;
+      }
+      // We disallow redirects (in idp_network_request_manager.cc), so it is
+      // enough to check the initial URL here.
+      if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
+                                                         provider_url)) {
+        return promise;
+      }
+
+      mojom::blink::IdentityProviderPtr identity_provider =
+          blink::mojom::blink::IdentityProvider::From(*provider);
+      identity_provider_ptrs.push_back(std::move(identity_provider));
     }
 
     DCHECK(options->identity()->hasPreferAutoSignIn());
@@ -1218,20 +1229,13 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
                                                 WrapPersistent(script_state)));
     }
 
-    Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
-    for (const auto& provider : options->identity()->providers()) {
-      mojom::blink::IdentityProviderPtr identity_provider =
-          blink::mojom::blink::IdentityProvider::From(*provider);
-      identity_provider_ptrs.push_back(std::move(identity_provider));
-    }
     bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
     auto* auth_request =
         CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-
     auth_request->RequestToken(
         std::move(identity_provider_ptrs), prefer_auto_sign_in,
-        WTF::Bind(&OnRequestToken, WrapPersistent(resolver), provider_url,
-                  client_id, WrapPersistent(options)));
+        WTF::Bind(&OnRequestToken, WrapPersistent(resolver),
+                  WrapPersistent(options)));
 
     return promise;
   }
