@@ -1029,6 +1029,34 @@ class Chrome(ChromeChromiumBase):
         return True
 
 
+class ContentShell(Browser):
+    """Interface for the Chromium content shell.
+    """
+
+    product = "content_shell"
+    requirements = None
+
+    def download(self, dest=None, channel=None, rename=None):
+        raise NotImplementedError
+
+    def install(self, dest=None, channel=None):
+        raise NotImplementedError
+
+    def install_webdriver(self, dest=None, channel=None, browser_binary=None):
+        raise NotImplementedError
+
+    def find_binary(self, venv_path=None, channel=None):
+        if uname[0] == "Darwin":
+            return find_executable("Content Shell.app/Contents/MacOS/Content Shell")
+        return find_executable("content_shell")  # .exe is added automatically for Windows
+
+    def find_webdriver(self, venv_path=None, channel=None):
+        return None
+
+    def version(self, binary=None, webdriver_binary=None):
+        # content_shell does not return version information.
+        return "N/A"
+
 class ChromeAndroidBase(Browser):
     """A base class for ChromeAndroid and AndroidWebView.
 
