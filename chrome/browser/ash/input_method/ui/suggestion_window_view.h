@@ -96,6 +96,8 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   void ResizeCandidateArea(const std::vector<std::u16string>& new_candidates,
                            bool use_legacy_candidate = false);
 
+  void Reorient(Orientation orientation);
+
   void MakeVisible();
 
   // Sets |candidate|'s highlight state to |highlighted|. At most one candidate

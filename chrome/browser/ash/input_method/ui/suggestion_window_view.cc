@@ -176,28 +176,6 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
-  views::BoxLayout::Orientation layout_orientation;
-  int multiple_candidate_area_padding = 0;
-  switch (orientation) {
-    case Orientation::kVertical: {
-      layout_orientation = views::BoxLayout::Orientation::kVertical;
-      // TODO(jhtin): remove this when emoji uses horizontal layout.
-      multiple_candidate_area_padding = 0;
-      break;
-    }
-    case Orientation::kHorizontal: {
-      layout_orientation = views::BoxLayout::Orientation::kHorizontal;
-      multiple_candidate_area_padding = 4;
-      break;
-    }
-    default: {
-      // Unimplemented orientation.
-      NOTREACHED();
-      break;
-    }
-  }
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(layout_orientation));
   completion_view_ = AddChildView(
       std::make_unique<CompletionSuggestionView>(base::BindRepeating(
           &AssistiveDelegate::AssistiveWindowButtonClicked,
@@ -206,11 +184,8 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
                                 .index = 0})));
   completion_view_->SetVisible(false);
   multiple_candidate_area_ = AddChildView(std::make_unique<views::View>());
-
-  multiple_candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      layout_orientation, gfx::Insets(multiple_candidate_area_padding),
-      /* between_child_spacing=*/multiple_candidate_area_padding));
   multiple_candidate_area_->SetVisible(false);
+  Reorient(orientation);
 
   setting_link_ = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_SUGGESTION_LEARN_MORE)));
@@ -284,6 +259,30 @@ void SuggestionWindowView::ResizeCandidateArea(
         base::Unretained(this), base::Unretained(candidate)));
     subscriptions_.insert({candidate, std::move(subscription)});
   }
+}
+
+void SuggestionWindowView::Reorient(Orientation orientation) {
+  views::BoxLayout::Orientation layout_orientation =
+      views::BoxLayout::Orientation::kVertical;
+  int multiple_candidate_area_padding = 0;
+  switch (orientation) {
+    case Orientation::kVertical: {
+      layout_orientation = views::BoxLayout::Orientation::kVertical;
+      // TODO(jhtin): remove this when emoji uses horizontal layout.
+      multiple_candidate_area_padding = 0;
+      break;
+    }
+    case Orientation::kHorizontal: {
+      layout_orientation = views::BoxLayout::Orientation::kHorizontal;
+      multiple_candidate_area_padding = 4;
+      break;
+    }
+  }
+
+  SetLayoutManager(std::make_unique<views::BoxLayout>(layout_orientation));
+  multiple_candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      layout_orientation, gfx::Insets(multiple_candidate_area_padding),
+      /* between_child_spacing=*/multiple_candidate_area_padding));
 }
 
 void SuggestionWindowView::MakeVisible() {
