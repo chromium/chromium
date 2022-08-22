@@ -31,9 +31,12 @@ class COMPONENT_EXPORT(X11) Event {
     send_event_ = send_event;
     sequence_ = xproto_event.sequence;
     type_id_ = DecayT::type_id;
-    deleter_ = [](void* event) { delete reinterpret_cast<DecayT*>(event); };
     auto* event = new DecayT(std::forward<T>(xproto_event));
-    event_ = event;
+    event_ = {event, [](void* e) {
+                if (e) {
+                  delete reinterpret_cast<DecayT*>(e);
+                }
+              }};
     window_ = event->GetWindow();
   }
 
@@ -74,14 +77,12 @@ class COMPONENT_EXPORT(X11) Event {
       *window_ = window;
   }
 
-  bool Initialized() const { return deleter_; }
+  bool Initialized() const { return !!event_; }
 
  private:
   friend void ReadEvent(Event* event,
                         Connection* connection,
                         ReadBuffer* buffer);
-
-  void Dealloc();
 
   // True if this event was sent from another X client.  False if this event
   // was sent by the X server.
@@ -90,12 +91,11 @@ class COMPONENT_EXPORT(X11) Event {
 
   // XProto event state.
   int type_id_ = 0;
-  void (*deleter_)(void*) = nullptr;
-  raw_ptr<void, DanglingUntriaged> event_ = nullptr;
+  std::unique_ptr<void, void (*)(void*)> event_ = {nullptr, nullptr};
 
   // This member points to a field in |event_|, or may be nullptr if there's no
   // associated window for the event.  It's owned by |event_|, not us.
-  raw_ptr<Window, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<Window> window_ = nullptr;
 };
 
 }  // namespace x11

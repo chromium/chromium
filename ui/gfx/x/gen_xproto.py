@@ -1506,14 +1506,15 @@ class GenReadEvent(FileWriter):
         cond, opcode = self.event_condition(event, typename, proto)
         with Indent(self, 'if (%s) {' % cond, '}'):
             self.write('event->type_id_ = %d;' % event.type_id)
-            with Indent(self, 'event->deleter_ = [](void* event) {', '};'):
-                self.write('delete reinterpret_cast<%s*>(event);' % typename)
+            with Indent(self, 'auto deleter_ = [](void* e) {', '};'):
+                self.write('if(e){delete reinterpret_cast<%s*>(e);}' %
+                           typename)
             self.write('auto* event_ = new %s;' % typename)
             self.write('ReadEvent(event_, buffer);')
             if len(event.opcodes) > 1:
                 self.write('{0} = static_cast<decltype({0})>({1});'.format(
                     'event_->opcode', opcode))
-            self.write('event->event_ = event_;')
+            self.write('event->event_ = {event_, deleter_};')
             self.write('event->window_ = event_->GetWindow();')
             self.write('return;')
         self.write()

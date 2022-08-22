@@ -59,25 +59,28 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   ReadEvent(this, connection, &buf);
 }
 
-Event::Event(Event&& event) {
-  memcpy(this, &event, sizeof(Event));
+Event::Event(Event&& event)
+    : send_event_(event.send_event_),
+      sequence_(event.sequence_),
+      type_id_(event.type_id_),
+      event_(std::move(event.event_)),
+      window_(event.window_) {
   memset(&event, 0, sizeof(Event));
 }
 
 Event& Event::operator=(Event&& event) {
-  Dealloc();
-  memcpy(this, &event, sizeof(Event));
+  send_event_ = event.send_event_;
+  sequence_ = event.sequence_;
+  type_id_ = event.type_id_;
+  //`window_` is owned by `event_`. Set it to nullptr before calling
+  //`event.reset()` to avoid holding a dangling ptr.
+  window_ = nullptr;
+  event_.reset();
+  event_ = std::move(event.event_);
+  window_ = event.window_;
   memset(&event, 0, sizeof(Event));
   return *this;
 }
 
-Event::~Event() {
-  Dealloc();
-}
-
-void Event::Dealloc() {
-  if (deleter_)
-    deleter_(event_);
-}
-
+Event::~Event() = default;
 }  // namespace x11
