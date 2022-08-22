@@ -100,11 +100,12 @@ Connection::Connection(const std::string& address)
               ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                     switches::kX11Display)
               : address),
+      connection_(xcb_connect(display_string_.empty() ? nullptr
+                                                      : display_string_.c_str(),
+                              &default_screen_id_),
+                  xcb_disconnect),
       error_handler_(base::BindRepeating(DefaultErrorHandler)),
       io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
-  connection_ =
-      xcb_connect(display_string_.empty() ? nullptr : display_string_.c_str(),
-                  &default_screen_id_);
   DCHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
@@ -162,7 +163,6 @@ Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   platform_event_source.reset();
-  xcb_disconnect(connection_);
 }
 
 size_t Connection::MaxRequestSizeInBytes() const {
@@ -323,12 +323,12 @@ int Connection::DefaultScreenId() const {
 
 bool Connection::Ready() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !xcb_connection_has_error(connection_);
+  return !xcb_connection_has_error(connection_.get());
 }
 
 void Connection::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  xcb_flush(connection_);
+  xcb_flush(connection_.get());
 }
 
 void Connection::Sync() {
@@ -480,9 +480,9 @@ void Connection::RemoveEventObserver(EventObserver* observer) {
 
 xcb_connection_t* Connection::XcbConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (io_error_handler_ && xcb_connection_has_error(connection_))
+  if (io_error_handler_ && xcb_connection_has_error(connection_.get()))
     std::move(io_error_handler_).Run();
-  return connection_;
+  return connection_.get();
 }
 
 void Connection::InitRootDepthAndVisual() {
@@ -755,7 +755,7 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
 }
 
 uint32_t Connection::GenerateIdImpl() {
-  return xcb_generate_id(connection_);
+  return xcb_generate_id(connection_.get());
 }
 
 }  // namespace x11

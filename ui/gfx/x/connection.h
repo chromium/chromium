@@ -326,7 +326,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t GenerateIdImpl();
 
-  raw_ptr<xcb_connection_t, DanglingUntriaged> connection_ = nullptr;
+  std::string display_string_;
+  int default_screen_id_ = 0;
+  std::unique_ptr<xcb_connection_t, void (*)(xcb_connection_t*)> connection_ = {
+      nullptr, nullptr};
   std::unique_ptr<XlibDisplay> xlib_display_;
 
   bool synchronous_ = false;
@@ -334,8 +337,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t extended_max_request_length_ = 0;
 
-  std::string display_string_;
-  int default_screen_id_ = 0;
   Setup setup_;
   raw_ptr<Screen> default_screen_ = nullptr;
   raw_ptr<Depth> default_root_depth_ = nullptr;
