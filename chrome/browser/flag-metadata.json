@@ -5432,7 +5432,7 @@
   {
     "name": "quick-dim",
     "owners": [ "charleszhao", "martis", "napper" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "quick-intensive-throttling-after-loading",
@@ -5997,7 +5997,7 @@
   {
     "name": "snooping-protection",
     "owners": [ "martis", "charleszhao", "napper" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "spectre-v2-mitigation",
