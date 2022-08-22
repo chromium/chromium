@@ -423,9 +423,7 @@ class WrappedSkImage::SkiaImageRepresentationImpl
 WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
     : context_state_(std::move(context_state)),
-      is_drdc_enabled_(
-          features::IsDrDcEnabled() &&
-          !context_state_->feature_info()->workarounds().disable_drdc) {}
+      is_drdc_enabled_(features::IsDrDcEnabled()) {}
 
 WrappedSkImageBackingFactory::~WrappedSkImageBackingFactory() = default;
 
