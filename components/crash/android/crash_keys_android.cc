@@ -23,6 +23,7 @@ JavaCrashKey& GetCrashKey(int index) {
       {"emulated_modules", JavaCrashKey::Tag::kArray},
       {"dynamic_module_dex_name", JavaCrashKey::Tag::kArray},
       {"partner_customization_config", JavaCrashKey::Tag::kArray},
+      {"first_run", JavaCrashKey::Tag::kArray},
   };
   static_assert(
       std::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),

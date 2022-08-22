@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyF
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.crash.CrashKeyIndex;
+import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -282,6 +284,7 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         Log.d(TAG, "Redirecting user through FRE.");
+        CrashKeys.getInstance().set(CrashKeyIndex.FIRST_RUN, "yes");
 
         // Launch the async restriction checking as soon as we know we'll be running FRE.
         FirstRunAppRestrictionInfo.startInitializationHint();
