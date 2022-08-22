@@ -227,6 +227,7 @@ if (include_js_tests) {
 
       sources = [
         "chromeos/ash_common/ash_common_browsertest.js",
+        "chromeos/cloud_upload/cloud_upload_browsertest.js",
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
         "chromeos/diagnostics/diagnostics_browsertest.js",
@@ -573,12 +574,14 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     input_files += [ "test_store.js" ]
     deps += [
+      "chromeos/cloud_upload:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/personalization_app:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",

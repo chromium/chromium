@@ -59,7 +59,7 @@ CloudUploadDialog::~CloudUploadDialog() = default;
 
 std::string CloudUploadDialog::GetDialogArgs() const {
   base::DictionaryValue args;
-  args.SetKey("path", base::Value(file_url_.path().BaseName().value()));
+  args.SetKey("fileName", base::Value(file_url_.path().BaseName().value()));
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
