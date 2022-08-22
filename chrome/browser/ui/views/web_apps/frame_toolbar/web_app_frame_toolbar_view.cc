@@ -296,6 +296,8 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     DestroyLayer();
     views::SetHitTestComponent(this, static_cast<int>(HTNOWHERE));
   }
+  right_container_->extensions_container()->WindowControlsOverlayEnabledChanged(
+      browser_view_->IsWindowControlsOverlayEnabled());
 }
 
 void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {

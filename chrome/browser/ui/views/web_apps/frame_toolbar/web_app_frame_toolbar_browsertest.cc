@@ -1204,3 +1204,43 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                       "window.navigator.windowControlsOverlay."
                       "getTitlebarAreaRect().height"));
 }
+
+// Extensions in  ChromeOS are not in the titlebar.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Regression test for https://crbug.com/1351566.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       ExtensionsIconVisibility) {
+  web_app::AppId app_id = InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  // There should be no visible Extensions icon.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
+
+  LoadTestPopUpExtension(browser()->profile());
+
+  EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
+
+  // Shut down the browser with window controls overlay toggled on so for next
+  // launch it stays toggled on.
+  CloseBrowserSynchronously(helper()->app_browser());
+
+  Browser* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  views::NonClientFrameView* frame_view =
+      browser_view->GetWidget()->non_client_view()->frame_view();
+  BrowserNonClientFrameView* browser_frame_view =
+      static_cast<BrowserNonClientFrameView*>(frame_view);
+  auto* web_app_frame_toolbar =
+      browser_frame_view->web_app_frame_toolbar_for_testing();
+
+  // There should be a visible Extensions icon.
+  EXPECT_TRUE(web_app_frame_toolbar->get_right_container_for_testing()
+                  ->extensions_container()
+                  ->GetVisible());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

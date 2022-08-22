@@ -284,13 +284,19 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
         break;
       case DisplayMode::kCompact:
       case DisplayMode::kAutoHide:
+        views::MinimumFlexSizeRule min_flex_rule =
+            views::MinimumFlexSizeRule::kPreferredSnapToZero;
+        BrowserView* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser_);
+        if (browser_view->IsWindowControlsOverlayEnabled())
+          min_flex_rule = views::MinimumFlexSizeRule::kPreferred;
+
         // In compact/auto hide mode, the icon can still drop out, but receives
         // precedence over other actions.
         action_view->SetProperty(
             views::kFlexBehaviorKey,
-            views::FlexSpecification(
-                views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                views::MaximumFlexSizeRule::kPreferred)
+            views::FlexSpecification(min_flex_rule,
+                                     views::MaximumFlexSizeRule::kPreferred)
                 .WithWeight(0)
                 .WithOrder(2));
         break;
@@ -860,6 +866,27 @@ void ExtensionsToolbarContainer::OnMenuOpening() {
 
 void ExtensionsToolbarContainer::OnMenuClosed() {
   UpdateContainerVisibility();
+}
+
+void ExtensionsToolbarContainer::WindowControlsOverlayEnabledChanged(
+    bool enabled) {
+  if (!main_item())
+    return;
+
+  UpdateContainerVisibility();
+
+  main_item()->ClearProperty(views::kFlexBehaviorKey);
+  views::MinimumFlexSizeRule min_flex_rule =
+      views::MinimumFlexSizeRule::kPreferredSnapToZero;
+
+  if (enabled)
+    min_flex_rule = views::MinimumFlexSizeRule::kPreferred;
+
+  main_item()->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(min_flex_rule,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(1));
 }
 
 void ExtensionsToolbarContainer::MovePinnedAction(

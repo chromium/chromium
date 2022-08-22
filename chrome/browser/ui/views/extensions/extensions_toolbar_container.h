@@ -121,6 +121,13 @@ class ExtensionsToolbarContainer
     return extension_with_open_context_menu_id_;
   }
 
+  // Updates the flex layout rules for the extension toolbar container to have
+  // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
+  // toggled on for PWAs. Otherwise the extensions icon does not stay visible as
+  // it is not considered for during the calculation of the preferred size of
+  // it's parent (in the case of WCO PWAs, WebAppFrameToolbarView).
+  void WindowControlsOverlayEnabledChanged(bool enabled);
+
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
   bool GetDropFormats(int* formats,
