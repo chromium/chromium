@@ -45,7 +45,7 @@ class CORE_EXPORT NGGridTrackCollectionBase {
 class CORE_EXPORT TrackSpanProperties {
  public:
   enum PropertyId : unsigned {
-    kNone = 0,
+    kNoPropertyId = 0,
     kHasAutoMinimumTrack = 1 << 1,
     kHasFixedMaximumTrack = 1 << 2,
     kHasFixedMinimumTrack = 1 << 3,
@@ -59,10 +59,10 @@ class CORE_EXPORT TrackSpanProperties {
 
   inline bool HasProperty(PropertyId id) const { return bitmask_ & id; }
   inline void SetProperty(PropertyId id) { bitmask_ |= id; }
-  inline void Reset() { bitmask_ = kNone; }
+  inline void Reset() { bitmask_ = kNoPropertyId; }
 
  private:
-  wtf_size_t bitmask_{kNone};
+  wtf_size_t bitmask_{kNoPropertyId};
 };
 
 class CORE_EXPORT NGGridBlockTrackCollection
