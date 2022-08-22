@@ -589,6 +589,7 @@ component("skia") {
     }
     if (enable_vulkan) {
       sources += skia_vk_sources
+      sources += skia_shared_vk_sources
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
