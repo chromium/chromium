@@ -32,16 +32,16 @@ class InfobarBadgeTabHelper
 
   ~InfobarBadgeTabHelper() override;
 
-  // Sets the InfobarBadgeTabHelperDelegate to |delegate|.
+  // Sets the InfobarBadgeTabHelperDelegate to `delegate`.
   void SetDelegate(id<InfobarBadgeTabHelperDelegate> delegate);
   // Updates Infobar for the case where the user is aware that they could access
-  // the infobar with |infobar_type| through a badge.
+  // the infobar with `infobar_type` through a badge.
   void UpdateBadgeForInfobarRead(InfobarType infobar_type);
   // Updates Infobar for the case where an Infobar banner of
-  // |infobar_type| was presented.
+  // `infobar_type` was presented.
   void UpdateBadgeForInfobarBannerPresented(InfobarType infobar_type);
   // Updates Infobar for the case where an Infobar banner of
-  // |infobar_type| was dismissed.
+  // `infobar_type` was dismissed.
   void UpdateBadgeForInfobarBannerDismissed(InfobarType infobar_type);
 
   // DEPRECATED: The accept state of an infobar is now stored directly in
@@ -60,7 +60,7 @@ class InfobarBadgeTabHelper
   // activities.
   void RegisterInfobar(infobars::InfoBar* infobar);
   void UnregisterInfobar(infobars::InfoBar* infobar);
-  // Notifies the tab helper that an infobar with |type| was accepted or
+  // Notifies the tab helper that an infobar with `type` was accepted or
   // reverted.
   void OnInfobarAcceptanceStateChanged(InfobarType infobar_type, bool accepted);
   // Update the badges displayed in the location bar.
@@ -109,7 +109,7 @@ class InfobarBadgeTabHelper
 
     // The owning tab helper.
     InfobarBadgeTabHelper* tab_helper_ = nullptr;
-    // The infobar acceptance observer for |tab_helper_|.  Added to each infobar
+    // The infobar acceptance observer for `tab_helper_`.  Added to each infobar
     // in the observed manager.
     InfobarAcceptanceObserver* infobar_accept_observer_ = nullptr;
     // Scoped observer that facilitates observing an InfoBarManager.

@@ -34,12 +34,12 @@ enum class MobileMessagesConfirmInfobarEvents {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Records histogram |event| for ConfirmInfobar of type |infobarConfirmType|.
+// Records histogram `event` for ConfirmInfobar of type `infobarConfirmType`.
 + (void)recordConfirmInfobarEvent:(MobileMessagesConfirmInfobarEvents)event
             forInfobarConfirmType:(InfobarConfirmType)infobarConfirmType;
 
-// Records the |duration| since the Infobar delegate was created until it was
-// accepted for ConfirmInfobar of type |infobarConfirmType|.
+// Records the `duration` since the Infobar delegate was created until it was
+// accepted for ConfirmInfobar of type `infobarConfirmType`.
 + (void)recordConfirmAcceptTime:(NSTimeInterval)duration
           forInfobarConfirmType:(InfobarConfirmType)infobarConfirmType;
 

@@ -18,7 +18,7 @@ class FakeInfobarDelegate : public ConfirmInfoBarDelegate {
   FakeInfobarDelegate(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   ~FakeInfobarDelegate() override;
 
-  // Returns |identifier_|, set during construction.
+  // Returns `identifier_`, set during construction.
   InfoBarIdentifier GetIdentifier() const override;
 
   // Returns the message string to be displayed for the Infobar.

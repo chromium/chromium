@@ -24,7 +24,7 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
 
   ~InfoBarManagerImpl() override;
 
-  // Returns the |web_state_| tied to this InfobarManager.
+  // Returns the `web_state_` tied to this InfobarManager.
   web::WebState* web_state() const { return web_state_; }
 
  private:
@@ -40,7 +40,7 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Opens a URL according to the specified |disposition|.
+  // Opens a URL according to the specified `disposition`.
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override;
 
   // The WebState this instance is observing. Will be null after

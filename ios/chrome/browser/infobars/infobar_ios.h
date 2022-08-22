@@ -32,10 +32,10 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   // Observer interface for objects interested in changes to InfoBarIOS.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when |infobar|'s accepted() is set to a new value.
+    // Called when `infobar`'s accepted() is set to a new value.
     virtual void DidUpdateAcceptedState(InfoBarIOS* infobar) {}
 
-    // Called when |infobar| is destroyed.
+    // Called when `infobar` is destroyed.
     virtual void InfobarDestroyed(InfoBarIOS* infobar) {}
   };
 

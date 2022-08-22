@@ -12,7 +12,7 @@
 #endif
 
 namespace {
-// Returns |infobar|'s InfobarType.
+// Returns `infobar`'s InfobarType.
 InfobarType GetInfobarType(infobars::InfoBar* infobar) {
   return static_cast<InfoBarIOS*>(infobar)->infobar_type();
 }
