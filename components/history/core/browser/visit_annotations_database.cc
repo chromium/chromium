@@ -100,6 +100,26 @@ int BrowserTypeToInt(VisitContextAnnotations::BrowserType type) {
   return static_cast<int>(type);
 }
 
+VisitContentAnnotations::PasswordState PasswordStateFromInt(int state) {
+  VisitContentAnnotations::PasswordState converted =
+      static_cast<VisitContentAnnotations::PasswordState>(state);
+  // Verify that `converted` is actually a valid enum value.
+  switch (converted) {
+    case VisitContentAnnotations::PasswordState::kUnknown:
+    case VisitContentAnnotations::PasswordState::kNoPasswordField:
+    case VisitContentAnnotations::PasswordState::kHasPasswordField:
+      return converted;
+  }
+  // If the `state` wasn't actually a valid PasswordState value (e.g. due to DB
+  // corruption), return `kUnknown` to be safe.
+  return VisitContentAnnotations::PasswordState::kUnknown;
+}
+
+int PasswordStateToInt(VisitContentAnnotations::PasswordState state) {
+  DCHECK_EQ(PasswordStateFromInt(static_cast<int>(state)), state);
+  return static_cast<int>(state);
+}
+
 // An enum of bitmasks to help represent the boolean flags of
 // `VisitContextAnnotations` in the database. This avoids having to update
 // the schema every time we add/remove/change a bool context annotation. As
@@ -293,7 +313,8 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   statement.BindString16(8, visit_content_annotations.search_terms);
   statement.BindString(9, visit_content_annotations.alternative_title);
   statement.BindString(10, visit_content_annotations.page_language);
-  statement.BindInt(11, visit_content_annotations.password_state);
+  statement.BindInt(
+      11, PasswordStateToInt(visit_content_annotations.password_state));
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'content_annotations' insert statement:  "
@@ -478,7 +499,8 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->search_terms = statement.ColumnString16(8);
   out_content_annotations->alternative_title = statement.ColumnString(9);
   out_content_annotations->page_language = statement.ColumnString(10);
-  out_content_annotations->password_state = statement.ColumnInt(11);
+  out_content_annotations->password_state =
+      PasswordStateFromInt(statement.ColumnInt(11));
   return true;
 }
 

@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/navigation_task_id.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -142,6 +143,19 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+history::VisitContentAnnotations::PasswordState
+ConvertSessionsPasswordStateToHistory(
+    sessions::SerializedNavigationEntry::PasswordState password_state) {
+  switch (password_state) {
+    case sessions::SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN:
+      return history::VisitContentAnnotations::PasswordState::kUnknown;
+    case sessions::SerializedNavigationEntry::NO_PASSWORD_FIELD:
+      return history::VisitContentAnnotations::PasswordState::kNoPasswordField;
+    case sessions::SerializedNavigationEntry::HAS_PASSWORD_FIELD:
+      return history::VisitContentAnnotations::PasswordState::kHasPasswordField;
+  }
 }
 
 }  // namespace
@@ -271,6 +285,20 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       add_page_args.redirects.back() = virtual_url;
   }
   return add_page_args;
+}
+
+void HistoryTabHelper::OnPasswordStateUpdated(
+    sessions::SerializedNavigationEntry::PasswordState password_state) {
+  if (history::HistoryService* hs = GetHistoryService()) {
+    NavigationEntry* entry =
+        web_contents()->GetController().GetLastCommittedEntry();
+    if (entry) {
+      hs->SetPasswordStateForVisit(
+          history::ContextIDForWebContents(web_contents()),
+          entry->GetUniqueID(), web_contents()->GetLastCommittedURL(),
+          ConvertSessionsPasswordStateToHistory(password_state));
+    }
+  }
 }
 
 void HistoryTabHelper::DidFinishNavigation(

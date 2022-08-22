@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -39,6 +40,11 @@ class HistoryTabHelper
       base::Time timestamp,
       int nav_entry_id,
       content::NavigationHandle* navigation_handle);
+
+  // Called by password manager code when the PasswordState in this tab was
+  // updated.
+  void OnPasswordStateUpdated(
+      sessions::SerializedNavigationEntry::PasswordState password_state);
 
   // Fakes that the WebContents is a tab for testing purposes.
   void SetForceEligibleTabForTesting(bool force) {

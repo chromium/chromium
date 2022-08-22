@@ -235,6 +235,14 @@ struct VisitContentModelAnnotations {
 
 // A structure containing the annotations made to page content for a visit.
 struct VisitContentAnnotations {
+  // Values are persisted; do not reorder or reuse, and only add new values at
+  // the end.
+  enum class PasswordState {
+    kUnknown = 0,
+    kNoPasswordField = 1,
+    kHasPasswordField = 2,
+  };
+
   VisitContentAnnotations();
   VisitContentAnnotations(VisitContentAnnotationFlags annotation_flags,
                           VisitContentModelAnnotations model_annotations,
@@ -243,7 +251,7 @@ struct VisitContentAnnotations {
                           const std::u16string& search_terms,
                           const std::string& alternative_title,
                           const std::string& page_language,
-                          int password_state);
+                          PasswordState password_state);
   VisitContentAnnotations(const VisitContentAnnotations& other);
   ~VisitContentAnnotations();
 
@@ -259,10 +267,9 @@ struct VisitContentAnnotations {
   // Language of the content on the page, as an ISO 639 language code (usually
   // two letters). May be "und" if the language couldn't be determined.
   std::string page_language;
-  // Whether a password form was found on the page - see
-  // sessions::GetPasswordStateFromNavigation().
-  // TODO(crbug.com/1347012): Make this strongly typed instead of just an int.
-  int password_state = 0;
+  // Whether a password form was found on the page - see also
+  // sessions::SerializedNavigationEntry::PasswordState.
+  PasswordState password_state = PasswordState::kUnknown;
 };
 
 class URLResult : public URLRow {

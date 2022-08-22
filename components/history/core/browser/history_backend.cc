@@ -544,6 +544,43 @@ void HistoryBackend::SetPageLanguageForVisitByVisitID(
   }
 }
 
+void HistoryBackend::SetPasswordStateForVisit(
+    ContextID context_id,
+    int nav_entry_id,
+    const GURL& url,
+    VisitContentAnnotations::PasswordState password_state) {
+  VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+  if (!visit_id)
+    return;
+
+  SetPasswordStateForVisitByVisitID(visit_id, password_state);
+}
+
+void HistoryBackend::SetPasswordStateForVisitByVisitID(
+    VisitID visit_id,
+    VisitContentAnnotations::PasswordState password_state) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetPasswordStateForVisitByVisitID");
+
+  if (!db_)
+    return;
+
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.password_state = password_state;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.password_state = password_state;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    NotifyVisitUpdated(visit_row);
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::AddContentModelAnnotationsForVisit(
     VisitID visit_id,
     const VisitContentModelAnnotations& model_annotations) {

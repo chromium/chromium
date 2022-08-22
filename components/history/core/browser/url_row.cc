@@ -136,7 +136,7 @@ VisitContentAnnotations::VisitContentAnnotations(
     const std::u16string& search_terms,
     const std::string& alternative_title,
     const std::string& page_language,
-    int password_state)
+    PasswordState password_state)
     : annotation_flags(annotation_flags),
       model_annotations(model_annotations),
       related_searches(related_searches),

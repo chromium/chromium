@@ -124,7 +124,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
       u"search",
       "Alternative title",
       "en",
-      0};
+      VisitContentAnnotations::PasswordState::kUnknown};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -256,14 +256,15 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   std::vector<std::string> related_searches{"related searches"};
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kBrowsingTopicsEligible;
-  VisitContentAnnotations original{annotation_flags,
-                                   model_annotations,
-                                   related_searches,
-                                   GURL("http://pagewithvisit.com?q=search"),
-                                   u"search",
-                                   "Alternative title",
-                                   "en",
-                                   0};
+  VisitContentAnnotations original{
+      annotation_flags,
+      model_annotations,
+      related_searches,
+      GURL("http://pagewithvisit.com?q=search"),
+      u"search",
+      "Alternative title",
+      "en",
+      VisitContentAnnotations::PasswordState::kUnknown};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.

@@ -33,6 +33,7 @@
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "sql/init_status.h"
 #include "ui/base/page_transition_types.h"
@@ -221,10 +222,24 @@ class HistoryService : public KeyedService {
                                 int nav_entry_id,
                                 const GURL& url);
 
+  // Updates the history database by setting the detected language of the page
+  // content.
+  // The page can be identified by the combination of the context id, the
+  // navigation entry id and the url. No-op if the page is not found.
   void SetPageLanguageForVisit(ContextID context_id,
                                int nav_entry_id,
                                const GURL& url,
                                const std::string& page_language);
+
+  // Updates the history database by setting the "password state", i.e. whether
+  // a password form was found on the page.
+  // The page can be identified by the combination of the context id, the
+  // navigation entry id and the url. No-op if the page is not found.
+  void SetPasswordStateForVisit(
+      ContextID context_id,
+      int nav_entry_id,
+      const GURL& url,
+      VisitContentAnnotations::PasswordState password_state);
 
   // Updates the history database with the content model annotations for the
   // visit.

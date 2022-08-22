@@ -498,6 +498,20 @@ void HistoryService::SetPageLanguageForVisit(ContextID context_id,
                      context_id, nav_entry_id, url, page_language));
 }
 
+void HistoryService::SetPasswordStateForVisit(
+    ContextID context_id,
+    int nav_entry_id,
+    const GURL& url,
+    VisitContentAnnotations::PasswordState password_state) {
+  TRACE_EVENT0("browser", "HistoryService::SetPasswordStateForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::SetPasswordStateForVisit,
+                              history_backend_, context_id, nav_entry_id, url,
+                              password_state));
+}
+
 void HistoryService::AddContentModelAnnotationsForVisit(
     const VisitContentModelAnnotations& model_annotations,
     VisitID visit_id) {
