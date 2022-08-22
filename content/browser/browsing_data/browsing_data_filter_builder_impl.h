@@ -31,7 +31,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   void SetCookiePartitionKeyCollection(
       const net::CookiePartitionKeyCollection& cookie_partition_key_collection)
       override;
-  bool IsCrossSiteClearSiteData() const override;
+  bool IsCrossSiteClearSiteDataForCookies() const override;
   bool MatchesAllOriginsAndDomains() override;
   base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() override;
   content::StoragePartition::StorageKeyMatcherFunction BuildStorageKeyFilter()

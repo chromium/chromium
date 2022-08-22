@@ -396,7 +396,7 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
   }
 }
 
-TEST(BrowserDataFilterBuilderImplTest, IsCrossSiteClearSiteData) {
+TEST(BrowserDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
   struct TestCase {
     const std::string desc;
     const net::CookiePartitionKeyCollection cookie_partition_key_collection;
@@ -450,7 +450,7 @@ TEST(BrowserDataFilterBuilderImplTest, IsCrossSiteClearSiteData) {
     builder.AddRegisterableDomain("cookie.com");
     builder.SetCookiePartitionKeyCollection(
         test_case.cookie_partition_key_collection);
-    EXPECT_EQ(test_case.expected, builder.IsCrossSiteClearSiteData());
+    EXPECT_EQ(test_case.expected, builder.IsCrossSiteClearSiteDataForCookies());
   }
 }
 

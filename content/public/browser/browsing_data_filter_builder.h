@@ -68,8 +68,10 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
           cookie_partition_key_collection) = 0;
 
   // Returns true if this filter is handling a Clear-Site-Data header sent in a
-  // cross-site context.
-  virtual bool IsCrossSiteClearSiteData() const = 0;
+  // cross-site context. Only works for processing the Clear-Site-Data header
+  // (which means the filter contains a single domain) when partitioned cookies
+  // are enabled.
+  virtual bool IsCrossSiteClearSiteDataForCookies() const = 0;
 
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;

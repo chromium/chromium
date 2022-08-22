@@ -642,7 +642,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
                                                    host_content_settings_map_);
 
-    if (!filter_builder->IsCrossSiteClearSiteData()) {
+    if (!filter_builder->IsCrossSiteClearSiteDataForCookies()) {
       browsing_data::RemoveEmbedderCookieData(
           delete_begin, delete_end, filter_builder, host_content_settings_map_,
           safe_browsing_context,
@@ -670,7 +670,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
     if (nullable_filter.is_null() ||
-        (!filter_builder->IsCrossSiteClearSiteData() &&
+        (!filter_builder->IsCrossSiteClearSiteDataForCookies() &&
          nullable_filter.Run(GaiaUrls::GetInstance()->google_url()))) {
       // Set a flag to clear account storage settings later instead of clearing
       // it now as we can not reset this setting before passwords are deleted.
@@ -875,7 +875,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                             ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
-    if (password_store && !filter_builder->IsCrossSiteClearSiteData()) {
+    if (password_store &&
+        !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
       password_store->DisableAutoSignInForOrigins(
           filter,
           CreateTaskCompletionClosure(TracingDataType::kDisableAutoSignin));
@@ -1106,7 +1107,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // results only when their respective URLs are in the filter.
   if ((remove_mask & (content::BrowsingDataRemover::DATA_TYPE_CACHE |
                       content::BrowsingDataRemover::DATA_TYPE_COOKIES)) &&
-      !filter_builder->IsCrossSiteClearSiteData()) {
+      !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
     // If there is no template service or DSE, clear the caches.
     bool should_clear_zero_suggest_and_session_token = true;
     bool should_clear_search_prefetch = true;

@@ -143,11 +143,15 @@ void BrowsingDataFilterBuilderImpl::SetCookiePartitionKeyCollection(
   cookie_partition_key_collection_ = cookie_partition_key_collection;
 }
 
-bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteData() const {
+bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
   if (cookie_partition_key_collection_.IsEmpty() ||
       cookie_partition_key_collection_.ContainsAllKeys()) {
     return false;
   }
+  // Assumes that there is only a single domain in the filter, since C-S-D
+  // requests only have one. If this method needs to be used with more than one
+  // domain, the code below needs to be modified.
+  DCHECK_EQ(1U, domains_.size());
   for (const auto& domain : domains_) {
     auto secure_site =
         net::SchemefulSite(url::Origin::Create(GURL("https://" + domain)));
@@ -170,7 +174,7 @@ BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
   if (MatchesAllOriginsAndDomains())
     return base::BindRepeating([](const GURL&) { return true; });
   return base::BindRepeating(&MatchesURL, origins_, domains_, mode_,
-                             IsCrossSiteClearSiteData());
+                             IsCrossSiteClearSiteDataForCookies());
 }
 
 content::StoragePartition::StorageKeyMatcherFunction
