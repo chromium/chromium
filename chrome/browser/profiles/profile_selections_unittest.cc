@@ -84,6 +84,22 @@ TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 }
 
+TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
+  ProfileSelections selections =
+      ProfileSelections::BuildForRegularAndIncognitoNonExperimental();
+
+  TestProfileSelection(selections, regular_profile(), regular_profile());
+  TestProfileSelection(selections, incognito_profile(), incognito_profile());
+
+  TestProfileSelection(selections, guest_profile(), nullptr);
+  TestProfileSelection(selections, guest_profile_otr(), nullptr);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+  TestProfileSelection(selections, system_profile(), nullptr);
+  TestProfileSelection(selections, system_profile_otr(), nullptr);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+}
+
 TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
   ProfileSelections selections =
       ProfileSelections::BuildRedirectedInIncognitoNonExperimental();

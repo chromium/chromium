@@ -66,6 +66,15 @@ ProfileSelections ProfileSelections::BuildForRegularProfile() {
 }
 
 ProfileSelections
+ProfileSelections::BuildForRegularAndIncognitoNonExperimental() {
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kOwnInstance)
+      .WithGuest(ProfileSelection::kNone)
+      .WithSystem(ProfileSelection::kNone)
+      .Build();
+}
+
+ProfileSelections
 ProfileSelections::BuildRedirectedInIncognitoNonExperimental() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kRedirectedToOriginal)

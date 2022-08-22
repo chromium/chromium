@@ -71,6 +71,19 @@ class ProfileSelections {
   // +---------+------------+------------+
   static ProfileSelections BuildForRegularProfile();
 
+  // Only select the regular profile and incognito for regular profiles. No
+  // profiles for Guest and System profiles. "NonExperimental" is added to
+  // differentiate with the experimental behavior during the experiment, once
+  // done it will be the equivalent builder.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | self       |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // +---------+------------+------------+
+  static ProfileSelections BuildForRegularAndIncognitoNonExperimental();
+
   // Redirects incognito profiles to their original regular profile. No
   // profiles for Guest and System profiles. "NonExperimental" is added to
   // differentiate with the experimental behavior during the experiment, once
