@@ -184,6 +184,35 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
     }
   }
 
+  // If we still have some left over space we need to divide it over the already
+  // existing columns/rows
+  if (remaining_length) {
+    // Our first priority is to spread if over the percentage columns. The
+    // remaining space is spread evenly, for example: if we have a space of
+    // 100px, the columns definition of 25%,25% used to result in two columns of
+    // 25px. After this the columns will each be 50px in width.
+    if (!percent_indices.IsEmpty() && total_percent) {
+      LayoutUnit remaining_percent = remaining_length;
+      for (auto i : percent_indices) {
+        LayoutUnit change_percent = AdjustSizeToRemainingSize(
+            sizes[i], remaining_percent, total_percent);
+        sizes[i] += change_percent;
+        remaining_length -= change_percent;
+      }
+    } else if (total_fixed) {
+      // Our last priority is to spread the remaining space over the fixed
+      // columns. For example if we have 100px of space and two column of each
+      // 40px, both columns will become exactly 50px.
+      LayoutUnit remaining_fixed = remaining_length;
+      for (auto i : fixed_indices) {
+        LayoutUnit change_fixed =
+            AdjustSizeToRemainingSize(sizes[i], remaining_fixed, total_fixed);
+        sizes[i] += change_fixed;
+        remaining_length -= change_fixed;
+      }
+    }
+  }
+
   return sizes;
 }
 
