@@ -58,7 +58,8 @@ class ContextMenuNativeDelegateImpl {
       const base::android::JavaRef<jobject>& jcallback,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& max_dimen_px,
-      const std::string& image_extension)>;
+      const std::string& image_extension,
+      const std::vector<lens::mojom::LatencyLogPtr>)>;
 
  private:
   void RetrieveImageInternal(

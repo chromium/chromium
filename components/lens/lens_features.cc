@@ -28,6 +28,9 @@ const base::Feature kLensSearchImageInScreenshotSharing{
 const base::Feature kLensUnifiedSidePanelFooter{
     "LensUnifiedSidePanelFooter", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnableLatencyLogging{"LensImageLatencyLogging",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kEnableRegionSearchOnPdfViewer{
     "LensEnableRegionSearchOnPdfViewer", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -85,6 +88,11 @@ const base::FeatureParam<bool> kUseSelectionIconWithImage{
 
 const base::FeatureParam<bool> kUseAltChipString{
     &kLensInstructionChipImprovements, "use-alt-chip-string", false};
+
+bool GetEnableLatencyLogging() {
+  return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
+         base::FeatureList::IsEnabled(kLensStandalone);
+}
 
 bool GetEnableUKMLoggingForRegionSearch() {
   return kEnableUKMLoggingForRegionSearch.Get();

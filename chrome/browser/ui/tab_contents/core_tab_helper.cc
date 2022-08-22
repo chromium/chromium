@@ -367,9 +367,17 @@ void CoreTabHelper::DoSearchByImageInNewTab(
     bool use_side_panel,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
-    const std::string& image_extension) {
+    const std::string& image_extension,
+    const std::vector<lens::mojom::LatencyLogPtr> log_data) {
   if (thumbnail_data.empty())
     return;
+
+  std::string additional_query_params_modified = additional_query_params;
+  if (lens::features::GetEnableLatencyLogging() &&
+      src_url.path() == lens::features::GetHomepageURLForLens()) {
+    lens::AppendLogsQueryParam(&additional_query_params_modified,
+                               std::move(log_data));
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -387,7 +395,7 @@ void CoreTabHelper::DoSearchByImageInNewTab(
                                              thumbnail_data.end());
   search_args.image_url = src_url;
   search_args.image_original_size = original_size;
-  search_args.additional_query_params = additional_query_params;
+  search_args.additional_query_params = additional_query_params_modified;
   TemplateURLRef::PostContent post_content;
   GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));

@@ -729,7 +729,7 @@ mojom("mojo_bindings") {
     "sync_encryption_keys_extension.mojom",
   ]
 
-  deps = []
+  deps = [ "//components/lens:lens_mojo" ]
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]

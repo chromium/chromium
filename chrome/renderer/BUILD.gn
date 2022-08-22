@@ -149,6 +149,8 @@ static_library("renderer") {
     "//components/feed/content/renderer:feed_renderer",
     "//components/heap_profiling/in_process",
     "//components/history_clusters/core",
+    "//components/lens",
+    "//components/lens:lens_mojo",
     "//components/metrics:child_call_stack_profile_builder",
     "//components/network_hints/renderer",
     "//components/no_state_prefetch/common",

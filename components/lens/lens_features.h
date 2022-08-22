@@ -30,6 +30,9 @@ extern const base::Feature kLensTransparentImagesFix;
 // a "Search Image" button.
 extern const base::Feature kLensSearchImageInScreenshotSharing;
 
+// Enables Latency logging for the LensStandalone feature.
+extern const base::Feature kEnableLatencyLogging;
+
 // Enable the Lens Region Search feature on the PDF viewer.
 extern const base::Feature kEnableRegionSearchOnPdfViewer;
 
@@ -79,6 +82,9 @@ extern const base::FeatureParam<bool> kUseSelectionIconWithImage;
 
 // Enables the use of an alternative string for the instruction chip.
 extern const base::FeatureParam<bool> kUseAltChipString;
+
+// Enables Latency logging for the LensStandalone feature.
+extern bool GetEnableLatencyLogging();
 
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();

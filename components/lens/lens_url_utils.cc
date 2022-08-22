@@ -11,6 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_metadata.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_rendering_environment.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -27,6 +29,7 @@ constexpr char kChromeScreenshotSearch[] = "css";
 
 constexpr char kSurfaceQueryParameter[] = "s";
 constexpr char kStartTimeQueryParameter[] = "st";
+constexpr char kLensMetadataParameter[] = "lm";
 constexpr char kSidePanel[] = "csp";
 
 constexpr char kRenderingEnvironmentQueryParameter[] = "re";
@@ -109,6 +112,16 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
 }  // namespace
 
 namespace lens {
+
+// TODO(shivpatel): add unit tests (b/243041286)
+void AppendLogsQueryParam(
+    std::string* query_string,
+    const std::vector<lens::mojom::LatencyLogPtr>& log_data) {
+  if (!log_data.empty()) {
+    AppendQueryParam(query_string, kLensMetadataParameter,
+                     LensMetadata::CreateProto(std::move(log_data)).c_str());
+  }
+}
 
 GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
                                                   lens::EntryPoint ep,

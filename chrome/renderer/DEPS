@@ -28,6 +28,7 @@ include_rules = [
   "+components/guest_view/renderer",
   "+components/history_clusters/core/config.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
+  "+components/lens/lens_metadata.mojom.h",
   "+components/metrics/call_stack_profile_builder.h",
   "+components/nacl/common",
   "+components/nacl/renderer",
@@ -97,6 +98,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/widevine/cdm/buildflags.h",
   "+third_party/widevine/cdm/widevine_cdm_common.h",
+  "+ui/gfx/geometry/size_f.h",
 ]
 
 specific_include_rules = {

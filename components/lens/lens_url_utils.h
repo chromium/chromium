@@ -6,7 +6,9 @@
 #define COMPONENTS_LENS_LENS_URL_UTILS_H_
 
 #include <string>
+
 #include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_rendering_environment.h"
 
 class GURL;
@@ -15,6 +17,11 @@ namespace lens {
 
 // Query parameter for the payload.
 constexpr char kPayloadQueryParameter[] = "p";
+
+// Appends logs to query param as a string
+extern void AppendLogsQueryParam(
+    std::string* query_string,
+    const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
 // Returns a modified GURL with appended or replaced parameters depending on the
 // entrypoint and other parameters.

@@ -59,6 +59,7 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_data.h"
@@ -299,12 +300,15 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     auto callback =
         [](std::vector<uint8_t>* response_image_data,
            gfx::Size* response_original_size,
-           std::string* response_file_extension, base::OnceClosure quit,
-           const std::vector<uint8_t>& image_data,
-           const gfx::Size& original_size, const std::string& file_extension) {
+           std::string* response_file_extension,
+           std::vector<lens::mojom::LatencyLogPtr>* response_log_data,
+           base::OnceClosure quit, const std::vector<uint8_t>& image_data,
+           const gfx::Size& original_size, const std::string& file_extension,
+           std::vector<lens::mojom::LatencyLogPtr> log_data) {
           *response_image_data = image_data;
           *response_original_size = original_size;
           *response_file_extension = file_extension;
+          *response_log_data = std::move(log_data);
           std::move(quit).Run();
         };
 
@@ -312,10 +316,12 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     std::vector<uint8_t> response_image_data;
     gfx::Size response_original_size;
     std::string response_file_extension;
+    std::vector<lens::mojom::LatencyLogPtr> response_log_data;
     chrome_render_frame->RequestImageForContextNode(
         0, request_size, request_image_format,
         base::BindOnce(callback, &response_image_data, &response_original_size,
-                       &response_file_extension, run_loop.QuitClosure()));
+                       &response_file_extension, &response_log_data,
+                       run_loop.QuitClosure()));
     run_loop.Run();
 
     ASSERT_EQ(expected_original_size.width(), response_original_size.width());
@@ -1838,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(new_tab_content, testing::MatchesRegex(
                                    expected_content.substr(0, query_start_pos) +
-                                   ".*ep=crs&re=df&s=&st=\\d+"));
+                                   ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
@@ -1935,7 +1941,7 @@ class SearchByRegionWithSidePanelBrowserTest
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
+                              ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
     quit_closure_.Run();
   }
 
@@ -2005,7 +2011,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
+                              ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
     quit_closure_.Run();
   }
 
@@ -2176,7 +2182,8 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   auto callback = [](bool* response_received, base::OnceClosure quit,
                      const std::vector<uint8_t>& thumbnail_data,
                      const gfx::Size& original_size,
-                     const std::string& file_extension) {
+                     const std::string& file_extension,
+                     std::vector<lens::mojom::LatencyLogPtr> log_data) {
     *response_received = true;
     std::move(quit).Run();
   };
