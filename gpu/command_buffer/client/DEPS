@@ -1,6 +1,7 @@
 include_rules = [
   "+ui/latency",
   "+cc/paint",
+  "+components/nacl/common/buildflags.h",
   "+third_party/skia",
   "+components/viz/common/resources/resource_format.h",
   "+components/viz/common/resources/resource_format_utils.h",

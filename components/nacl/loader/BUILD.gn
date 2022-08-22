@@ -166,7 +166,10 @@ if ((is_linux || is_chromeos) && current_cpu != "arm64") {
     ]
 
     if (is_minimal_toolchain) {
-      assert_no_deps += [ "//net" ]
+      assert_no_deps += [
+        "//net",
+        "//skia",
+      ]
     }
   }
 

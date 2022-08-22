@@ -6,9 +6,11 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/nacl/common/buildflags.h"
 
-#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
-#include "third_party/skia/include/core/SkTypes.h"
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64) && \
+    !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#include "third_party/skia/include/core/SkTypes.h"  //nogncheck
 #endif
 
 namespace ppapi {
@@ -20,7 +22,7 @@ PP_ImageDataFormat PPB_ImageData_Shared::GetNativeImageDataFormat() {
   // later.
   // TODO(dmichael): Really proxy this.
   return PP_IMAGEDATAFORMAT_BGRA_PREMUL;
-#elif defined(NACL_WIN64)
+#elif defined(NACL_WIN64) || BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
   // In the NaCl Win64 helper, this shouldn't be called. If we start building
   // Chrome on Windows 64 for realz, we should really implement this.
   NOTIMPLEMENTED();

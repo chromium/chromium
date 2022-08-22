@@ -104,13 +104,14 @@ source_set("common") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/nacl/common:buildflags",
     "//ppapi/c",
     "//ppapi/thunk:headers",
     "//third_party/icu:icuuc",
     "//url",
   ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     deps += [ "//skia" ]
   }
 }
@@ -222,6 +223,7 @@ component("shared_impl") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//components/nacl/common:buildflags",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",

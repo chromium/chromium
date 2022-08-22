@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/nacl/config.gni")
+import("//components/nacl/toolchain.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
 assert(enable_ppapi)
@@ -229,6 +230,7 @@ component("proxy") {
   deps = [
     ":common",
     "//base",
+    "//components/nacl/common:buildflags",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu/command_buffer/client:client",
@@ -245,7 +247,7 @@ component("proxy") {
     "//ui/gfx/ipc/geometry",
   ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     deps += [
       "//base/third_party/dynamic_annotations",
       "//gin",
@@ -320,7 +322,7 @@ source_set("ipc_sources") {
 
   public_deps = [ "//ipc" ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     deps += [ "//skia" ]
   }
 }

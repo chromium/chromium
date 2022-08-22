@@ -11,6 +11,7 @@
 
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
+#include "components/nacl/common/buildflags.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_completion_callback.h"
@@ -27,9 +28,9 @@
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_image_data_api.h"
 
-#if !BUILDFLAG(IS_NACL)
-#include "third_party/skia/include/core/SkRefCnt.h"
-#endif  // !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#include "third_party/skia/include/core/SkRefCnt.h"  //nogncheck
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 class TransportDIB;
 
@@ -83,7 +84,7 @@ class PPAPI_PROXY_EXPORT ImageData : public ppapi::Resource,
 // PlatformImageData is a full featured image data resource which can access
 // the underlying platform-specific canvas and |image_region|. This can't be
 // used by NaCl apps.
-#if !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
  public:
   PlatformImageData(const ppapi::HostResource& resource,
@@ -106,7 +107,7 @@ class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
   // Null when the image isn't mapped.
   std::unique_ptr<SkCanvas> mapped_canvas_;
 };
-#endif  // !BUILDFLAG(IS_NACL)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 // SimpleImageData is a simple, platform-independent image data resource which
 // can be used by NaCl. It can also be used by trusted apps when access to the

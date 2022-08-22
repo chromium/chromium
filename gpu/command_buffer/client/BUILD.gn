@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/nacl/toolchain.gni")
 import("//ui/gl/features.gni")
 
-if (!is_nacl) {
+if (!is_nacl && !is_minimal_toolchain) {
   import("//skia/features.gni")
 }
 
@@ -95,7 +96,7 @@ source_set("client_sources") {
   ]
 
   # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     sources += [
       "shared_image_interface.cc",
       "shared_image_interface.h",
@@ -235,13 +236,14 @@ component("gles2_implementation") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
+    "//components/nacl/common:buildflags",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx/geometry",
   ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     deps += [
       "//components/viz/common:resource_format",
       "//ui/gfx:color_space",
@@ -338,6 +340,7 @@ component("gles2_implementation_no_check") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
+    "//components/nacl/common:buildflags",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
