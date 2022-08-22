@@ -316,10 +316,16 @@ void ShelfLayoutManagerTestBase::SwipeDownOnShelf() {
 }
 
 void ShelfLayoutManagerTestBase::FlingUpOnShelf() {
-  gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  const gfx::Point start(display_bounds.bottom_center());
-  const gfx::Point end(start.x(), 10);
+  const gfx::Point location_start(display::Screen::GetScreen()
+                                      ->GetPrimaryDisplay()
+                                      .bounds()
+                                      .bottom_center());
+  const gfx::Point location_end(location_start.x(), 10);
+  FlingBetweenLocations(location_start, location_end);
+}
+
+void ShelfLayoutManagerTestBase::FlingBetweenLocations(gfx::Point start,
+                                                       gfx::Point end) {
   const base::TimeDelta kTimeDelta = base::Milliseconds(10);
   const int kNumScrollSteps = 4;
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
@@ -359,17 +365,18 @@ void ShelfLayoutManagerTestBase::MouseMouseToShowAutoHiddenShelf() {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
 }
 
-// Move mouse to |location| and do a two-finger vertical scroll.
-void ShelfLayoutManagerTestBase::DoTwoFingerVerticalScrollAtLocation(
+// Move mouse to |location| and do a two-finger scroll.
+void ShelfLayoutManagerTestBase::DoTwoFingerScrollAtLocation(
     gfx::Point location,
+    int x_offset,
     int y_offset,
     bool reverse_scroll) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   prefs->SetBoolean(prefs::kNaturalScroll, reverse_scroll);
   y_offset = reverse_scroll ? -y_offset : y_offset;
-  GetEventGenerator()->ScrollSequence(location, base::TimeDelta(),
-                                      /*x_offset=*/0, y_offset, /*steps=*/1,
+  GetEventGenerator()->ScrollSequence(location, base::TimeDelta(), x_offset,
+                                      y_offset, /*steps=*/1,
                                       /*num_fingers=*/2);
 }
 

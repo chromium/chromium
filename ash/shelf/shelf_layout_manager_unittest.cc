@@ -22,6 +22,7 @@
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -4571,8 +4572,9 @@ TEST_F(ShelfLayoutManagerTest, ScrollUpFromShelfToShowPeekingAppList) {
       DoMouseWheelScrollAtLocation(start, scroll_offset_threshold + 1,
                                    test.reverse_scroll);
     } else {
-      DoTwoFingerVerticalScrollAtLocation(start, scroll_offset_threshold + 10,
-                                          test.reverse_scroll);
+      DoTwoFingerScrollAtLocation(start, /*x_offset=*/0,
+                                  scroll_offset_threshold + 10,
+                                  test.reverse_scroll);
     }
 
     GetAppListTestHelper()->WaitUntilIdle();
@@ -4594,8 +4596,9 @@ TEST_F(ShelfLayoutManagerTest, ScrollUpFromShelfToShowPeekingAppList) {
       // A ScrollEvent gets amplified when transformed into a mousewheel event.
       // We need to set a lower offset so when it gets amplified, it still is
       // under the threshold.
-      DoTwoFingerVerticalScrollAtLocation(start, scroll_offset_threshold - 10,
-                                          test.reverse_scroll);
+      DoTwoFingerScrollAtLocation(start, /*x_offset=*/0,
+                                  scroll_offset_threshold - 10,
+                                  test.reverse_scroll);
     }
 
     GetAppListTestHelper()->WaitUntilIdle();
@@ -4604,6 +4607,128 @@ TEST_F(ShelfLayoutManagerTest, ScrollUpFromShelfToShowPeekingAppList) {
     histogram_tester.ExpectBucketCount("Apps.AppListShowSource",
                                        AppListShowSource::kScrollFromShelf,
                                        bucket_count);
+  }
+}
+
+class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {}
+  ~QuickActionShowBubbleTest() override = default;
+  // ShelfLayoutManagerTestBase:
+  void SetUp() override {
+    ShelfLayoutManagerTestBase::SetUp();
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{features::kProductivityLauncher,
+                              app_list_features::
+                                  kQuickActionShowBubbleLauncher},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+};
+
+// Used to test RTL UI orientation.
+INSTANTIATE_TEST_SUITE_P(All, QuickActionShowBubbleTest, testing::Bool());
+
+// Tests that the two finger gesture and the swipe gesture when the mouse is
+// over the shelf near the edge shows the bubble launcher.
+TEST_P(QuickActionShowBubbleTest,
+       ScrollFromShelfToShowAppListWithProductivityLauncher) {
+  const struct {
+    ShelfAlignment alignment;
+    bool swipe_gesture;
+  } test_table[]{
+      {ShelfAlignment::kBottom, false},
+      {ShelfAlignment::kBottom, true},
+      {ShelfAlignment::kBottomLocked, false},
+      {ShelfAlignment::kBottomLocked, true},
+      {ShelfAlignment::kLeft, false},
+      {ShelfAlignment::kLeft, true},
+      {ShelfAlignment::kRight, false},
+      {ShelfAlignment::kRight, true},
+  };
+  base::HistogramTester histogram_tester;
+  const int scroll_offset_threshold =
+      ShelfConfig::Get()->mousewheel_scroll_offset_threshold() + 10;
+  int bucket_scroll_count = 0;
+  int bucket_swipe_count = 0;
+
+  for (auto test : test_table) {
+    GetShelfLayoutManager()->LayoutShelf();
+    GetPrimaryShelf()->SetAlignment(test.alignment);
+    ASSERT_EQ(test.alignment, GetPrimaryShelf()->alignment());
+
+    // Direction of the swipe gesture depends on the shelf alignment and on the
+    // event being a swipe or a fling.
+    gfx::Vector2d offset;
+    switch (test.alignment) {
+      case ShelfAlignment::kBottom:
+      case ShelfAlignment::kBottomLocked:
+        offset.set_y(scroll_offset_threshold);
+        break;
+      case ShelfAlignment::kLeft:
+        offset.set_x(-scroll_offset_threshold);
+        break;
+      case ShelfAlignment::kRight:
+        offset.set_x(scroll_offset_threshold);
+        break;
+    }
+
+    // Action performed from the navigation_widget should show the bubble
+    // launcher.
+    const gfx::Point navigation_widget_center = GetPrimaryShelf()
+                                                    ->navigation_widget()
+                                                    ->GetContentsView()
+                                                    ->GetBoundsInScreen()
+                                                    .CenterPoint();
+    if (test.swipe_gesture) {
+      FlingBetweenLocations(navigation_widget_center,
+                            navigation_widget_center - offset);
+      ++bucket_swipe_count;
+    } else {
+      DoTwoFingerScrollAtLocation(navigation_widget_center, offset.x(),
+                                  offset.y(), false);
+      ++bucket_scroll_count;
+    }
+
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckVisibility(true);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kSwipeFromShelf,
+                                       bucket_swipe_count);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kScrollFromShelf,
+                                       bucket_scroll_count);
+
+    GetAppListTestHelper()->DismissAndRunLoop();
+    GetAppListTestHelper()->CheckVisibility(false);
+
+    // Action performed from the status area should not show the bubble
+    // launcher.
+    const gfx::Point status_area_widget_center = GetShelfWidget()
+                                                     ->status_area_widget()
+                                                     ->GetContentsView()
+                                                     ->GetBoundsInScreen()
+                                                     .CenterPoint();
+    if (test.swipe_gesture) {
+      FlingBetweenLocations(status_area_widget_center,
+                            status_area_widget_center - offset);
+    } else {
+      DoTwoFingerScrollAtLocation(status_area_widget_center, offset.x(),
+                                  offset.y(), false);
+    }
+
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckVisibility(false);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kSwipeFromShelf,
+                                       bucket_swipe_count);
+    histogram_tester.ExpectBucketCount("Apps.AppListBubbleShowSource",
+                                       AppListShowSource::kScrollFromShelf,
+                                       bucket_scroll_count);
   }
 }
 

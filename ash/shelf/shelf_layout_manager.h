@@ -93,6 +93,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     kDragCompleteInProgress,
     kDragAppListInProgress,
     kDragHomeToOverviewInProgress,
+    kFlingBubbleLauncherInProgress,
   };
 
   // Suspend work area updates within its scope. Note that relevant
@@ -201,8 +202,25 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // Handles scroll events from the shelf.
   void ProcessScrollEventFromShelf(ui::ScrollEvent* event);
 
+  // Returns whether the current state of the shelf allows a gesture fling or
+  // scroll to show the bubble launcher.
+  bool IsBubbleLauncherShowOnGestureScrollAvailable();
+
+  // Handles a fling event over the shelf. Returns whether the event was handled
+  // by the manager or false if it was ignored.
+  bool MaybeHandleShelfFling(const ui::GestureEvent& event_in_screen);
+
+  // Cleans up after a fling event was successfully completed on the shelf.
+  void CompleteShelfFling(const ui::LocatedEvent& event_in_screen);
+
+  // Returns true if the location is within the bounds of the area designated to
+  // receive the gesture fling or scroll over the shelf to show the bubble
+  // launcher.
+  bool IsLocationInBubbleLauncherShowBounds(
+      const gfx::Point& location_in_screen);
+
   // Contains logic that is the same between mouse wheel and gesture scrolling.
-  void ProcessScrollOffset(int offset, base::TimeTicks time_stamp);
+  void ProcessScrollOffset(int offset, const ui::LocatedEvent& event);
 
   // Returns how the shelf background should be painted.
   ShelfBackgroundType GetShelfBackgroundType() const;

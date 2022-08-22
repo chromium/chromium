@@ -34,6 +34,8 @@ const base::Feature kForceShowContinueSection{
     "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kQuickActionShowBubbleLauncher{
+    "QuickActionShowBubbleLauncher", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",
@@ -91,6 +93,11 @@ bool IsSearchResultInlineIconEnabled() {
   // Inline Icons are only supported for categorical search.
   return IsCategoricalSearchEnabled() &&
          base::FeatureList::IsEnabled(kSearchResultInlineIcon);
+}
+
+bool IsQuickActionShowBubbleLauncherEnabled() {
+  return ash::features::IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kQuickActionShowBubbleLauncher);
 }
 
 bool IsDynamicSearchUpdateAnimationEnabled() {

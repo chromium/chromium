@@ -18,6 +18,7 @@
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -125,6 +126,9 @@ const constexpr char* const kStylusAppIds[] = {
     "gjcfgmjegppjhimhlldbhhkfgkdjngcc",  // Squid
     "afihfgfghkmdmggakhkgnfhlikhdpima",  // Infinite Painter
 };
+
+// Minimum velocity required for the shelf to process a gesture fling event.
+constexpr int kShelfFlingVelocityThresehold = 100;
 
 // Returns the `aura::client::DragDropClient` for the given `shelf_widget`. Note
 // that this may return `nullptr` if the browser is performing its shutdown
@@ -805,13 +809,19 @@ bool ShelfLayoutManager::ProcessGestureEvent(
 
   if (drag_status_ != kDragInProgress &&
       drag_status_ != kDragAppListInProgress &&
-      drag_status_ != kDragHomeToOverviewInProgress) {
+      drag_status_ != kDragHomeToOverviewInProgress &&
+      drag_status_ != kFlingBubbleLauncherInProgress) {
     return false;
   }
 
   if (event_in_screen.type() == ui::ET_GESTURE_SCROLL_UPDATE) {
     UpdateGestureDrag(event_in_screen);
     return true;
+  }
+
+  if (event_in_screen.type() == ui::ET_SCROLL_FLING_START) {
+    if (MaybeHandleShelfFling(event_in_screen))
+      return true;
   }
 
   if (event_in_screen.type() == ui::ET_GESTURE_SCROLL_END ||
@@ -824,6 +834,8 @@ bool ShelfLayoutManager::ProcessGestureEvent(
       CompleteAppListDrag(event_in_screen);
     } else if (drag_status_ == kDragHomeToOverviewInProgress) {
       CompleteDragHomeToOverview(event_in_screen);
+    } else if (drag_status_ == kFlingBubbleLauncherInProgress) {
+      CompleteShelfFling(event_in_screen);
     } else {
       CompleteDrag(event_in_screen);
     }
@@ -868,39 +880,107 @@ void ShelfLayoutManager::ProcessGestureEventFromShelfWidget(
 }
 
 void ShelfLayoutManager::ProcessScrollOffset(int offset,
-                                             base::TimeTicks time_stamp) {
-  DCHECK(!features::IsProductivityLauncherEnabled());
-
+                                             const ui::LocatedEvent& event) {
   if (offset <= ShelfConfig::Get()->mousewheel_scroll_offset_threshold())
     return;
+
+  if (app_list_features::IsQuickActionShowBubbleLauncherEnabled() &&
+      !IsLocationInBubbleLauncherShowBounds(event.root_location())) {
+    return;
+  }
 
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(shelf_widget_->GetNativeWindow())
           .id(),
-      kScrollFromShelf, time_stamp);
+      kScrollFromShelf, event.time_stamp());
 }
 
 void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
-  DCHECK(!features::IsProductivityLauncherEnabled());
   if (shelf_->IsHorizontalAlignment()) {
     ProcessScrollOffset(GetOffset(event->y_offset(), prefs::kNaturalScroll),
-                        event->time_stamp());
+                        *event);
   } else {
     int offset = shelf_->alignment() == ShelfAlignment::kLeft
                      ? -event->x_offset()
                      : event->x_offset();
     offset = GetOffset(offset, prefs::kNaturalScroll),
-    ProcessScrollOffset(offset, event->time_stamp());
+    ProcessScrollOffset(offset, *event);
   }
+}
+
+bool ShelfLayoutManager::IsBubbleLauncherShowOnGestureScrollAvailable() {
+  if (!app_list_features::IsQuickActionShowBubbleLauncherEnabled())
+    return false;
+
+  if (!state_.IsShelfVisible())
+    return false;
+
+  if (Shell::Get()->IsInTabletMode())
+    return false;
+
+  return Shell::Get()->app_list_controller() &&
+         !Shell::Get()->app_list_controller()->IsVisible(display_.id());
+}
+
+bool ShelfLayoutManager::MaybeHandleShelfFling(
+    const ui::GestureEvent& event_in_screen) {
+  if (!IsBubbleLauncherShowOnGestureScrollAvailable())
+    return false;
+  int velocity = shelf_->SelectValueForShelfAlignment(
+      event_in_screen.AsGestureEvent()->details().velocity_y(),
+      -event_in_screen.AsGestureEvent()->details().velocity_x(),
+      event_in_screen.AsGestureEvent()->details().velocity_x());
+
+  if (velocity > -kShelfFlingVelocityThresehold)
+    return false;
+
+  if (!IsLocationInBubbleLauncherShowBounds(drag_start_point_in_screen_))
+    return false;
+
+  Shell::Get()->app_list_controller()->ToggleAppList(
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(shelf_widget_->GetNativeWindow())
+          .id(),
+      kSwipeFromShelf, event_in_screen.time_stamp());
+
+  return true;
+}
+
+bool ShelfLayoutManager::IsLocationInBubbleLauncherShowBounds(
+    const gfx::Point& location_in_screen) {
+  gfx::Rect app_list_swipe_bounds =
+      shelf_->shelf_widget()->GetWindowBoundsInScreen();
+
+  // We want to be able to recognize the swipe/fling action only on part of the
+  // shelf that is closer to the launcher button.
+  if (shelf_->IsHorizontalAlignment()) {
+    const int app_list_swipe_width = app_list_swipe_bounds.width() / 4;
+    // On the horizontal shelf, the poision of the launcher button may vary if
+    // the UI direction is RTL.
+    gfx::Insets insets;
+    const int non_actionable_insets =
+        app_list_swipe_bounds.width() - app_list_swipe_width;
+    if (base::i18n::IsRTL())
+      insets.set_left(non_actionable_insets);
+    else
+      insets.set_right(non_actionable_insets);
+
+    app_list_swipe_bounds.Inset(insets);
+  } else {
+    // On the vertical shelf, the launcher button is always on top regardless of
+    // locale.
+    app_list_swipe_bounds.set_height(app_list_swipe_bounds.height() / 4);
+  }
+
+  return app_list_swipe_bounds.Contains(location_in_screen);
 }
 
 void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(
     ui::MouseWheelEvent* event) {
-  DCHECK(!features::IsProductivityLauncherEnabled());
   const int y_offset =
       GetOffset(event->offset().y(), prefs::kMouseReverseScroll);
-  ProcessScrollOffset(y_offset, event->time_stamp());
+  ProcessScrollOffset(y_offset, *event);
 }
 
 ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
@@ -2084,7 +2164,8 @@ ShelfAutoHideState ShelfLayoutManager::CalculateAutoHideState(
   }
 
   if (drag_status_ == kDragCompleteInProgress ||
-      drag_status_ == kDragCancelInProgress) {
+      drag_status_ == kDragCancelInProgress ||
+      drag_status_ == kFlingBubbleLauncherInProgress) {
     return drag_auto_hide_state_;
   }
 
@@ -2351,10 +2432,18 @@ bool ShelfLayoutManager::StartGestureDrag(
   if (Shell::Get()->app_list_controller()->IsVisible(display_.id()))
     return true;
 
-  return StartShelfDrag(
-      gesture_in_screen,
-      gfx::Vector2dF(gesture_in_screen.details().scroll_x_hint(),
-                     scroll_y_hint));
+  if (StartShelfDrag(gesture_in_screen,
+                     gfx::Vector2dF(gesture_in_screen.details().scroll_x_hint(),
+                                    scroll_y_hint))) {
+    return true;
+  }
+
+  if (IsBubbleLauncherShowOnGestureScrollAvailable()) {
+    drag_status_ = kFlingBubbleLauncherInProgress;
+    return true;
+  }
+
+  return false;
 }
 
 void ShelfLayoutManager::UpdateGestureDrag(
@@ -2367,6 +2456,12 @@ void ShelfLayoutManager::UpdateGestureDrag(
     swipe_home_to_overview_controller_->Drag(
         gesture_in_screen.details().bounding_box_f().CenterPoint(), scroll_x,
         scroll_y);
+    return;
+  }
+
+  if (drag_status_ == kFlingBubbleLauncherInProgress) {
+    if (drag_start_point_in_screen_ == gfx::Point())
+      drag_start_point_in_screen_ = gesture_in_screen.location();
     return;
   }
 
@@ -2699,6 +2794,13 @@ void ShelfLayoutManager::CompleteAppListDrag(
   drag_status_ = kDragNone;
 }
 
+void ShelfLayoutManager::CompleteShelfFling(
+    const ui::LocatedEvent& event_in_screen) {
+  drag_status_ = kDragNone;
+  drag_start_point_in_screen_ = gfx::Point();
+  last_drag_velocity_ = 0;
+}
+
 void ShelfLayoutManager::CompleteDragHomeToOverview(
     const ui::LocatedEvent& event_in_screen) {
   absl::optional<float> velocity_y;
@@ -2754,6 +2856,7 @@ void ShelfLayoutManager::CancelDrag(
 
     hotseat_presentation_time_recorder_.reset();
   }
+
   hotseat_is_in_drag_ = false;
   drag_status_ = kDragNone;
   drag_start_point_in_screen_ = gfx::Point();
