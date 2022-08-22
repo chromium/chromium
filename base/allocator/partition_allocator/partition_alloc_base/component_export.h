@@ -56,6 +56,9 @@
   PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_(                              \
       PA_COMPONENT_MACRO_CONDITIONAL_COMMA_(condition), consequent, alternate)
 
+// MSVC workaround for __VA_ARGS__ expanding into one expression.
+#define PA_MSVC_EXPAND_ARG(arg) arg
+
 // Expands to a comma (,) iff its first argument expands to |1|. Used in
 // conjunction with |PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_()|, as the
 // presence or absense of an extra comma can be used to conditionally shift
@@ -70,7 +73,8 @@
 // |PA_COMPONENT_MACRO_CONDITIONAL_COMMA_()| above to implement conditional
 // macro expansion.
 #define PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_(...) \
-  PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_IMPL_(__VA_ARGS__)
+  PA_MSVC_EXPAND_ARG(                                  \
+      PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_IMPL_(__VA_ARGS__))
 #define PA_COMPONENT_MACRO_SELECT_THIRD_ARGUMENT_IMPL_(a, b, c, ...) c
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_COMPONENT_EXPORT_H_
