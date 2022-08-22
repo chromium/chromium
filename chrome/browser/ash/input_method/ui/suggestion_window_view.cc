@@ -89,7 +89,7 @@ SuggestionWindowView::CreateNonClientFrameView(views::Widget* widget) {
 
 void SuggestionWindowView::Show(const SuggestionDetails& details) {
   ResizeCandidateArea({});
-
+  Reorient(Orientation::kVertical);
   completion_view_->SetVisible(true);
   completion_view_->SetView(details);
   if (details.show_setting_link)
@@ -101,9 +101,11 @@ void SuggestionWindowView::Show(const SuggestionDetails& details) {
 }
 
 void SuggestionWindowView::ShowMultipleCandidates(
-    const ash::input_method::AssistiveWindowProperties& properties) {
+    const ash::input_method::AssistiveWindowProperties& properties,
+    Orientation orientation) {
   const std::vector<std::u16string>& candidates = properties.candidates;
   completion_view_->SetVisible(false);
+  Reorient(orientation);
   ResizeCandidateArea(
       candidates,
       properties.type == ui::ime::AssistiveWindowType::kEmojiSuggestion);

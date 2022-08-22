@@ -63,7 +63,8 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   void Show(const SuggestionDetails& details);
 
   void ShowMultipleCandidates(
-      const ash::input_method::AssistiveWindowProperties& properties);
+      const ash::input_method::AssistiveWindowProperties& properties,
+      Orientation orientation);
 
   // Sets |button|'s highlight state to |highlighted|. At most one button with
   // the same id will be highlighted at any given time.

@@ -366,6 +366,59 @@ TEST_F(AssistiveWindowControllerTest,
 }
 
 TEST_F(AssistiveWindowControllerTest,
+       SetsWindowOrientationHorizontalWhenVerticalWindowAlreadyInitialised) {
+  AssistiveWindowProperties init_vertical_properties;
+  init_vertical_properties.type =
+      ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  init_vertical_properties.visible = true;
+  init_vertical_properties.candidates =
+      std::vector<std::u16string>({u"vertical"});
+  controller_->SetAssistiveWindowProperties(init_vertical_properties);
+
+  AssistiveWindowProperties horizontal_properties;
+  horizontal_properties.type =
+      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  horizontal_properties.visible = true;
+  horizontal_properties.candidates =
+      std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(horizontal_properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()
+              ->multiple_candidate_area_for_testing()
+              ->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kHorizontal);
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       SetsWindowOrientationVerticalWhenHorizontalWindowAlreadyInitialised) {
+  AssistiveWindowProperties init_horizontal_properties;
+  init_horizontal_properties.type =
+      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  init_horizontal_properties.visible = true;
+  init_horizontal_properties.candidates =
+      std::vector<std::u16string>({u"horizontal"});
+  controller_->SetAssistiveWindowProperties(init_horizontal_properties);
+
+  AssistiveWindowProperties vertical_properties;
+  vertical_properties.type = ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  vertical_properties.visible = true;
+  vertical_properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(vertical_properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()
+              ->multiple_candidate_area_for_testing()
+              ->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
+}
+TEST_F(AssistiveWindowControllerTest,
        AnnouncesWhenSetButtonHighlightedInEmojiWindowHasAnnounceString) {
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);

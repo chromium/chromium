@@ -283,7 +283,8 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         InitSuggestionWindow(WindowOrientationFor(window.type));
       if (window_.visible) {
         suggestion_window_view_->SetAnchorRect(bounds_.caret);
-        suggestion_window_view_->ShowMultipleCandidates(window);
+        suggestion_window_view_->ShowMultipleCandidates(
+            window, WindowOrientationFor(window.type));
       } else {
         HideSuggestion();
       }
