@@ -15,6 +15,21 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 
 namespace blink {
+namespace {
+
+// Max number of background producers allowed at a single time. As each
+// background producer effectively takes a thread, a limit is imposed. This is
+// especially important for some scenarios that may trigger a bunch of producers
+// to be created. For example,
+// external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
+// . This number was chosen based on there generally not being that many main
+// frame navigations happening concurrently in a particular renderer.
+constexpr uint8_t kMaxNumBgProducers = 8;
+
+// Current number of background producers.
+uint8_t g_num_bg_producers = 0;
+
+}  // namespace
 
 HTMLTokenProducer::HTMLTokenProducer(HTMLInputStream& input_stream,
                                      const HTMLParserOptions& parser_options,
@@ -27,7 +42,9 @@ HTMLTokenProducer::HTMLTokenProducer(HTMLInputStream& input_stream,
       tokenizer_(std::make_unique<HTMLTokenizer>(parser_options_)) {
   tokenizer_->SetState(initial_state);
   if (can_use_background_token_producer &&
-      base::FeatureList::IsEnabled(features::kThreadedHtmlTokenizer)) {
+      base::FeatureList::IsEnabled(features::kThreadedHtmlTokenizer) &&
+      g_num_bg_producers < kMaxNumBgProducers) {
+    ++g_num_bg_producers;
     worker_pool_ = worker_pool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_BLOCKING, base::WithBaseSyncPrimitives()});
     // BackgroundHTMLTokenProducer deletes itself when
@@ -43,6 +60,8 @@ HTMLTokenProducer::~HTMLTokenProducer() {
   token_.reset();
 
   if (IsUsingBackgroundProducer()) {
+    DCHECK_GT(g_num_bg_producers, 0);
+    --g_num_bg_producers;
     background_producer_->ShutdownAndScheduleDeletion(
         BackgroundHTMLTokenProducerShutdownReason::kDone);
     background_producer_ = nullptr;
@@ -79,6 +98,8 @@ void HTMLTokenProducer::AbortBackgroundParsingImpl(
       force_null_character_replacement_);
   tokenizer_->SetShouldAllowCDATA(should_allow_cdata_);
   background_producer_->ShutdownAndScheduleDeletion(reason);
+  DCHECK_GT(g_num_bg_producers, 0);
+  --g_num_bg_producers;
   background_producer_ = nullptr;
   results_ = nullptr;
 }
