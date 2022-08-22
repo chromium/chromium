@@ -159,6 +159,23 @@ class SettingsCreditCardListEntryElement extends
     }
     return this.creditCard.metadata!.summarySublabel!;
   }
+
+  private shouldShowPaymentsLabel_(): boolean {
+    return !this.creditCard.metadata!.isLocal &&
+        !this.isVirtualCardMetadataEnabled_();
+  }
+
+  private shouldShowPaymentsIndicator_(): boolean {
+    return !this.creditCard.metadata!.isLocal &&
+        this.isVirtualCardMetadataEnabled_();
+  }
+
+  private getPaymentsLabel_(): string {
+    if (this.creditCard.metadata!.isCached) {
+      return this.i18nAdvanced('googlePaymentsCached');
+    }
+    return this.i18nAdvanced('googlePayments');
+  }
 }
 
 customElements.define(

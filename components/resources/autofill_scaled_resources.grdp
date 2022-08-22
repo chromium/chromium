@@ -16,9 +16,11 @@
   <if expr="_google_chrome">
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="google_chrome/autofill/googlepay_dark.png" />
     </then>
     <else>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="autofill/cc-generic.png" />
     </else>
   </if>
   <if expr="is_android">
@@ -28,7 +30,6 @@
   <if expr="not is_android and _google_chrome">
     <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MIGRATION_DIALOG_HEADER" file="google_chrome/autofill/migration_header.png" />
     <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK" file="google_chrome/autofill/migration_header_dark.png" />
-    <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="google_chrome/autofill/googlepay_dark.png" />
   </if>
 
   <structure type="chrome_scaled_image" name="IDR_CREDIT_CARD_CVC_HINT" file="autofill/credit_card_cvc_hint.png" />

@@ -377,6 +377,46 @@ suite('PaymentsSection', function() {
                 '#summarySublabel')!.textContent!.trim());
   });
 
+  test('verifyPaymentsLabel', function() {
+    loadTimeData.overrideValues({
+      virtualCardMetadataEnabled: false,
+    });
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#paymentsLabel')!.hidden);
+    assertTrue(getCardRowShadowRoot(section.$.paymentsList)
+                   .querySelector<HTMLElement>('#paymentsIndicator')!.hidden);
+  });
+
+  test('verifyPaymentsIndicator', function() {
+    loadTimeData.overrideValues({
+      virtualCardMetadataEnabled: true,
+    });
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
+    creditCard.metadata!.isVirtualCardEnrolled = false;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertTrue(getCardRowShadowRoot(section.$.paymentsList)
+                   .querySelector<HTMLElement>('#paymentsLabel')!.hidden);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#paymentsIndicator')!.hidden);
+  });
+
   test('verifyAddVsEditCreditCardTitle', function() {
     const newCreditCard = createEmptyCreditCardEntry();
     const newCreditCardDialog = createCreditCardDialog(newCreditCard);
