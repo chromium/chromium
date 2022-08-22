@@ -25,7 +25,10 @@ source_set("demuxer_stream_traits") {
 source_set("config_conversions") {
   deps = [
     "//base",
-    "//components/openscreen_platform",
+
+    # Partial implementation of the platform API used by
+    # //third_party/openscreen/src/cast/streaming:receiver.
+    "//components/openscreen_platform:openscreen_platform_without_sockets",
     "//media",
     "//ui/gfx/geometry",
     "//url",
@@ -55,7 +58,11 @@ source_set("remoting_utils") {
   public_configs =
       [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
 
-  deps = [ "//components/openscreen_platform:openscreen_platform" ]
+  deps = [
+    # Partial implementation of the platform API used by
+    # //third_party/openscreen/src/cast/streaming:common.
+    "//components/openscreen_platform:openscreen_platform_without_sockets",
+  ]
 
   public_deps = [
     "//base",
@@ -72,7 +79,7 @@ source_set("unit_tests") {
     ":public",
     ":remoting_utils",
     "//base/test:test_support",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//media:test_support",
     "//media/mojo:test_support",
     "//testing/gmock",

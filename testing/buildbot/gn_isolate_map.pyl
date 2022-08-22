@@ -648,7 +648,7 @@
     "type": "additional_compile_target",
   },
   "components/openscreen_platform": {
-    "label": "//components/openscreen_platform:openscreen_platform",
+    "label": "//components/openscreen_platform",
     "type": "additional_compile_target",
   },
   "components_browsertests": {

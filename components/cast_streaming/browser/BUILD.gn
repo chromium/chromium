@@ -80,7 +80,10 @@ if (!is_win) {
       "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
       "//components/cast_streaming/public/mojom",
-      "//components/openscreen_platform",
+
+      # Partial implementation of the platform API used by
+      # //third_party/openscreen/src/cast/streaming:receiver.
+      "//components/openscreen_platform:openscreen_platform_without_sockets",
       "//media",
       "//media/mojo/common",
       "//media/mojo/mojom",
@@ -108,6 +111,10 @@ if (!is_win) {
       ":streaming_initialization_info",
       "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
+
+      # Partial implementation of the platform API used by
+      # //third_party/openscreen/src/cast/*.
+      "//components/openscreen_platform:openscreen_platform_without_sockets",
       "//media/mojo/common",
       "//media/mojo/mojom",
       "//mojo/public/cpp/system",
@@ -115,7 +122,6 @@ if (!is_win) {
     ]
     public_deps = [
       "//base",
-      "//components/openscreen_platform",
       "//media",
       "//third_party/openscreen/src/cast/common:public",
       "//third_party/openscreen/src/cast/streaming:sender",
@@ -136,7 +142,10 @@ if (!is_win) {
       "//base",
       "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
-      "//components/openscreen_platform",
+
+      # Partial implementation of the platform API used by
+      # //third_party/openscreen/src/*.
+      "//components/openscreen_platform:openscreen_platform_without_sockets",
       "//media",
       "//media/mojo/common",
       "//mojo/public/cpp/system",
@@ -159,7 +168,9 @@ if (!is_win) {
       ":test_receiver",
       ":test_sender",
       "//base/test:test_support",
-      "//components/openscreen_platform:openscreen_platform_net",
+
+      # Complete implementation of //third_party/openscreen/src/platform:api.
+      "//components/openscreen_platform:openscreen_platform_using_net_sockets",
       "//media",
       "//mojo/core/embedder",
       "//testing/gtest",
@@ -191,7 +202,7 @@ source_set("network_context") {
   public = [ "public/network_context_getter.h" ]
   deps = [
     "//base",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
   ]
   visibility = [ ":*" ]
   sources = [ "network_context_getter.cc" ]

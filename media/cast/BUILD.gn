@@ -70,7 +70,7 @@ source_set("common") {
     # The generated headers reference headers within protobuf_lite, so
     # dependencies must be able to find those headers too.
     ":logging_proto",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/openscreen/src/cast/streaming:sender",
   ]
@@ -217,7 +217,7 @@ source_set("sender") {
     ":encoding",
     ":net",
     "//base",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//media",
     "//media/capture:capture_base",
     "//third_party/openscreen/src/cast/streaming:sender",
@@ -384,7 +384,7 @@ test("cast_unittests") {
     "//base",
     "//base:cfi_buildflags",
     "//base/test:test_support",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//media:test_support",
     "//media/test:run_all_unittests",
     "//mojo/public/cpp/bindings",

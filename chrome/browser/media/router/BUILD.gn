@@ -53,7 +53,7 @@ static_library("router") {
     "//components/cast_channel",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
@@ -335,7 +335,7 @@ if (!is_fuchsia && !is_win) {
     deps = [
       "//base/test:run_all_unittests",
       "//components/cast_certificate:openscreen_certificate_verifier",
-      "//components/openscreen_platform:openscreen_platform_network_service",
+      "//components/openscreen_platform",
       "//testing/gmock",
       "//third_party/openscreen/src:openscreen_unittests_all",
     ]

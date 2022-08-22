@@ -46,7 +46,6 @@ source_set("browser") {
     "//components/cast_channel",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
-    "//components/openscreen_platform:openscreen_platform_network_service",
     "//components/prefs",
     "//components/sessions",
     "//components/user_prefs",

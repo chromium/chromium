@@ -41,7 +41,7 @@ source_set("remoting_sender") {
     # generated remoting.pb.h file.
     public_deps += [
       "//components/cast_streaming/public:remoting_utils",
-      "//components/openscreen_platform:openscreen_platform_network_service",
+      "//components/openscreen_platform",
     ]
   }
 }
@@ -64,7 +64,7 @@ source_set("remoting_renderer") {
 
   deps = [
     ":remoting_constants",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
   ]
@@ -94,7 +94,7 @@ source_set("media_remoting_tests") {
     "//base",
     "//base/test:test_support",
     "//components/cast_streaming/public:remoting_utils",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform",
     "//media:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:remoting",

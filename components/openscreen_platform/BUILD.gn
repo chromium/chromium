@@ -4,7 +4,49 @@
 
 import("//testing/test.gni")
 
+# Network service-based implementation of Open Screen platform.
+# Incompatible with ":openscreen_platform_using_net_sockets".
 source_set("openscreen_platform") {
+  sources = [
+    "network_context.cc",
+    "network_context.h",
+    "tls_client_connection.cc",
+    "tls_client_connection.h",
+    "tls_connection_factory.cc",
+    "tls_connection_factory.h",
+    "udp_socket.cc",
+    "udp_socket.h",
+  ]
+
+  public_deps = [
+    ":openscreen_platform_without_sockets",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+
+  deps = [
+    "//base",
+    "//services/network:network_service",
+  ]
+}
+
+# //net-based implementation of UdpSocket.
+# Incompatible with ":openscreen_platform".
+source_set("openscreen_platform_using_net_sockets") {
+  sources = [
+    "net_udp_socket.cc",
+    "net_udp_socket.h",
+  ]
+
+  public_deps = [ ":openscreen_platform_without_sockets" ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("openscreen_platform_without_sockets") {
   sources = [
     "logging.cc",
     "network_util.cc",
@@ -20,48 +62,6 @@ source_set("openscreen_platform") {
   deps = [
     "//base",
     "//net",
-  ]
-}
-
-# //net-based implementation of UdpSocket.
-# Incompatible with ":openscreen_platform_network_service".
-source_set("openscreen_platform_net") {
-  sources = [
-    "net_udp_socket.cc",
-    "net_udp_socket.h",
-  ]
-
-  public_deps = [ ":openscreen_platform" ]
-
-  deps = [
-    "//base",
-    "//net",
-  ]
-}
-
-# Network service-based implementation of Open Screen platform.
-# Incompatible with ":openscreen_platform_net".
-source_set("openscreen_platform_network_service") {
-  sources = [
-    "network_context.cc",
-    "network_context.h",
-    "tls_client_connection.cc",
-    "tls_client_connection.h",
-    "tls_connection_factory.cc",
-    "tls_connection_factory.h",
-    "udp_socket.cc",
-    "udp_socket.h",
-  ]
-
-  public_deps = [
-    ":openscreen_platform",
-    "//mojo/public/cpp/bindings",
-    "//services/network/public/mojom",
-  ]
-
-  deps = [
-    "//base",
-    "//services/network:network_service",
   ]
 }
 
@@ -93,7 +93,7 @@ source_set("unittests") {
   ]
 
   deps = [
-    ":openscreen_platform_network_service",
+    ":openscreen_platform",
     "//base/test:test_support",
     "//services/network:test_support",
     "//testing/gmock",
