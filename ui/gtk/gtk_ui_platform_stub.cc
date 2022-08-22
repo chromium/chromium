@@ -5,6 +5,7 @@
 #include "ui/gtk/gtk_ui_platform_stub.h"
 
 #include "base/callback.h"
+#include "ui/base/ime/linux/linux_input_method_context.h"
 
 namespace gtk {
 
