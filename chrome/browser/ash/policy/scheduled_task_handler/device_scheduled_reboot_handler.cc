@@ -60,11 +60,14 @@ DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
       scheduled_task_executor_(std::move(scheduled_task_executor)),
       notifications_scheduler_(std::move(notifications_scheduler)) {
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
-  // Check if policy already exists.
-  OnScheduledRebootDataChanged();
+  auto* power_manager_client = chromeos::PowerManagerClient::Get();
+  if (power_manager_client) {
+    observation_.Observe(power_manager_client);
+  }
 }
 
 DeviceScheduledRebootHandler::~DeviceScheduledRebootHandler() {
+  observation_.Reset();
   ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
@@ -75,6 +78,17 @@ void DeviceScheduledRebootHandler::TimezoneChanged(
   // as it would be incorrect in the context of a new time zone. For this
   // purpose, treat it as a new policy and call |OnScheduledRebootDataChanged|
   // instead of |StartRebootTimer| directly.
+  OnScheduledRebootDataChanged();
+}
+
+void DeviceScheduledRebootHandler::PowerManagerBecameAvailable(bool available) {
+  if (!available) {
+    LOG(ERROR) << "Power manager service is not available. Not possible to "
+                  "schedule reboot.";
+    ResetState();
+    return;
+  }
+  // Check if policy already exists.
   OnScheduledRebootDataChanged();
 }
 
