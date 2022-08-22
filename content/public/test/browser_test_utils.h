@@ -2293,13 +2293,6 @@ RegisterWebContentsCreationCallback(
 [[nodiscard]] bool HistoryGoBack(WebContents* wc);
 [[nodiscard]] bool HistoryGoForward(WebContents* wc);
 
-#if BUILDFLAG(IS_MAC)
-// Grant native windows the ability to activate, allowing them to become key
-// and/or main. This can be useful to enable when the process hosting the window
-// is a standalone executable without an Info.plist.
-bool EnableNativeWindowActivation();
-#endif  // BUILDFLAG(IS_MAC)
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_

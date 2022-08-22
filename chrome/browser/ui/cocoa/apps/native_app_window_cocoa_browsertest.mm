@@ -589,28 +589,20 @@ NSBitmapImageRep* ScreenshotNSWindow(NSWindow* window) {
 
 // Test that the colored frames have the correct color when active and inactive.
 // Disabled; https://crbug.com/1322741.
-IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, FrameColor) {
-  EXPECT_EQ(NSApp.activationPolicy, NSApplicationActivationPolicyAccessory);
-
+IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, DISABLED_FrameColor) {
   // The hex values indicate an RGB color. When we get the NSColor later, the
   // components are CGFloats in the range [0, 1].
   extensions::AppWindow* app_window = CreateTestAppWindow(
       "{\"frame\": {\"color\": \"#FF0000\", \"inactiveColor\": \"#0000FF\"}}");
   NSWindow* ns_window = app_window->GetNativeWindow().GetNativeNSWindow();
-
   // No color correction in the default case.
   [ns_window setColorSpace:[NSColorSpace sRGBColorSpace]];
 
-  // Make sure the window is inactive before color sampling.
-  ui::test::ScopedFakeNSWindowFocus fake_focus;
-  [ns_window resignMainWindow];
-  [ns_window resignKeyWindow];
+  int half_width = NSWidth([ns_window frame]) / 2;
 
   NSBitmapImageRep* bitmap = ScreenshotNSWindow(ns_window);
-  // The window is currently inactive so it should be blue (#0000FF). We are
-  // assuming the Light appearance is being used.
+  // The window is currently inactive so it should be blue (#0000FF).
   NSColor* expected_color = ColorInBitmapColorSpace(0xFF0000FF, bitmap);
-  int half_width = NSWidth([ns_window frame]) / 2;
   NSColor* color = [bitmap colorAtX:half_width y:5];
   CGFloat expected_components[4], color_components[4];
   [expected_color getComponents:expected_components];
@@ -619,12 +611,11 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, FrameColor) {
   EXPECT_NEAR(expected_components[1], color_components[1], 0.01);
   EXPECT_NEAR(expected_components[2], color_components[2], 0.01);
 
-  // Activate the window.
+  ui::test::ScopedFakeNSWindowFocus fake_focus;
   [ns_window makeMainWindow];
 
   bitmap = ScreenshotNSWindow(ns_window);
-  // The window is now active so it should be red (#FF0000). Again, this is
-  // assuming the Light appearance is being used.
+  // The window is now active so it should be red (#FF0000).
   expected_color = ColorInBitmapColorSpace(0xFFFF0000, bitmap);
   color = [bitmap colorAtX:half_width y:5];
   [expected_color getComponents:expected_components];
