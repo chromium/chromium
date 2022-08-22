@@ -138,7 +138,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/i18n/rtl.h"
-#include "chrome/browser/browser_process.h"
 #endif
 
 using base::ASCIIToUTF16;

@@ -172,7 +172,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "components/accuracy_tips/accuracy_web_contents_observer.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
