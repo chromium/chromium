@@ -85,6 +85,14 @@ export class SiteEntryElement extends SiteEntryElementBase {
       cookieString_: String,
 
       /**
+       * Whether First Party Sets are enabled.
+       */
+      enableFirstPartySetsUI_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
+      },
+
+      /**
        * The position of this site-entry in its parent list.
        */
       listIndex: {
@@ -135,6 +143,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   siteGroup: SiteGroup;
   private displayName_: string;
   private cookieString_: string;
+  private enableFirstPartySetsUI_: boolean;
   listIndex: number;
   private overallUsageString_: string;
   private originUsages_: string[];
@@ -306,6 +315,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
     this.browserProxy.getFormattedBytes(overallUsage).then(string => {
       this.overallUsageString_ = string;
     });
+  }
+
+
+  private isFpsMember_(): boolean {
+    return this.enableFirstPartySetsUI_ &&
+        this.siteGroup.fpsOwner !== undefined;
   }
 
   /**

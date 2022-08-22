@@ -83,15 +83,27 @@
     <cr-lazy-render id="menu">
       <template>
         <cr-action-menu role-description="$i18n{menu}">
-          <button hidden$="[[actionMenuModel_.isPartitioned]]"
-              class="dropdown-item" role="menuitem"
-              on-click="onConfirmResetSettings_">
-            $i18n{siteSettingsSiteGroupReset}
-          </button>
-          <button class="dropdown-item" role="menuitem"
-              on-click="onConfirmClearData_">
-            $i18n{siteSettingsSiteGroupDelete}
-          </button>
+          <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+            <button class="dropdown-item" role="menuitem"
+                on-click="onShowRelatedSites_">
+                $i18n{firstPartySetsShowRelatedSitesButton}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                on-click="onRemove_">
+                $i18n{firstPartySetsSiteClearStorageButton}
+            </button>
+          </template>
+          <template is="dom-if" if="[[!enableFirstPartySetsUI_]]">
+            <button hidden$="[[actionMenuModel_.isPartitioned]]"
+                class="dropdown-item" role="menuitem"
+                on-click="onConfirmResetSettings_">
+              $i18n{siteSettingsSiteGroupReset}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                on-click="onConfirmClearData_">
+              $i18n{siteSettingsSiteGroupDelete}
+            </button>
+          </template>
         </cr-action-menu>
       </template>
     </cr-lazy-render>

@@ -64,6 +64,7 @@ export interface SiteGroup {
   etldPlus1: string;
   numCookies: number;
   origins: OriginInfo[];
+  fpsOwner?: string;
   hasInstalledPWA: boolean;
 }
 

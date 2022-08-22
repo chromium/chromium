@@ -149,6 +149,14 @@ export class AllSitesElement extends AllSitesElementBase {
       },
 
       /**
+       * Whether First Party Sets are enabled.
+       */
+      enableFirstPartySetsUI_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
+      },
+
+      /**
        * All possible sort methods.
        */
       sortMethods_: {
@@ -201,6 +209,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private filteredList_: SiteGroup[];
   subpageRoute: Route;
   filter: string;
+  private enableFirstPartySetsUI_: boolean;
   private selectedItem_: SelectedItem|null;
   private listBlurred_: boolean;
   private actionMenuModel_: ActionMenuModel|null;
@@ -454,8 +463,17 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
+  private onShowRelatedSites_() {
+    // TODO(crbug.com/1349370): implement filtering by fps owner.
+    this.forceListUpdate_();
+  }
+
   private onRemoveSite_(e: RemoveSiteEvent) {
     this.actionMenuModel_ = e.detail;
+    this.$.confirmRemoveSite.get().showModal();
+  }
+
+  private onRemove_() {
     this.$.confirmRemoveSite.get().showModal();
   }
 
@@ -467,6 +485,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
+      fpsOwner: siteGroupToUpdate.fpsOwner,
       origins: [],
     };
 
@@ -830,6 +849,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: false,
       numCookies: siteGroupToUpdate.numCookies,
+      fpsOwner: siteGroupToUpdate.fpsOwner,
       origins: [],
     };
 
@@ -903,6 +923,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
+      fpsOwner: siteGroupToUpdate.fpsOwner,
       origins: [],
     };
 
@@ -934,6 +955,7 @@ export class AllSitesElement extends AllSitesElementBase {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: false,
       numCookies: 0,
+      fpsOwner: siteGroupToUpdate.fpsOwner,
       origins: [],
     };
 

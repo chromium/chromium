@@ -559,16 +559,16 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteEntries[0]!.$$<HTMLElement>('#overflowMenuButton')!;
     assertFalse(
         overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
-    // Open the reset settings dialog.
-    const overflowMenu = testElement.$.menu.get();
-    const menuItems =
-        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
 
+    // Open the reset settings dialog.
     // Test clicking on the overflow menu button opens the menu.
+    const overflowMenu = testElement.$.menu.get();
     assertFalse(overflowMenu.open);
     overflowMenuButton.click();
     assertTrue(overflowMenu.open);
-
+    flush();
+    const menuItems =
+        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
     // Open the reset settings dialog and tap the |buttonType| button.
     assertFalse(testElement.$.confirmResetSettings.get().open);
     menuItems[0]!.click();
@@ -664,12 +664,13 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
     // Open the clear data dialog.
     const overflowMenu = testElement.$.menu.get();
-    const menuItems =
-        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
     // Test clicking on the overflow menu button opens the menu.
     assertFalse(overflowMenu.open);
     overflowMenuButton.click();
     assertTrue(overflowMenu.open);
+    flush();
+    const menuItems =
+        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
 
     // Open the clear data dialog and tap the |buttonType| button.
     assertFalse(testElement.$.confirmClearData.get().open);
@@ -859,7 +860,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
       },
     }));
     assertTrue(overflowMenu.open);
-
+    flush();
     const menuItems =
         overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
 
@@ -957,7 +958,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
       },
     }));
     assertTrue(overflowMenu.open);
-
+    flush();
     const menuItems =
         overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
 
@@ -1385,4 +1386,149 @@ suite('AllSites_EnabledConsolidatedControls', function() {
         testElement.shadowRoot!
             .querySelector<HTMLElement>('#logoutBulletPoint')!.innerText);
   });
+});
+
+suite('AllSites_EnableFirstPartySets', function() {
+  /**
+   * An example eTLD+1 Object with multiple origins grouped under it.
+   */
+  const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
+    'http://example.com',
+    'https://www.example.com',
+    'https://login.example.com',
+  ]);
+
+  let testElement: AllSitesElement;
+
+  /**
+   * The mock proxy object to use during test.
+   */
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  /**
+   * The mock local data proxy object to use during test.
+   */
+  let localDataBrowserProxy: TestLocalDataBrowserProxy;
+
+  suiteSetup(function() {
+    CrSettingsPrefs.setInitialized();
+
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: true,
+      firstPartySetsUIEnabled: true,
+    });
+  });
+
+  suiteTeardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
+
+
+  // Initialize a site-list before each test.
+  setup(async function() {
+    document.body.innerHTML = '';
+
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    localDataBrowserProxy = new TestLocalDataBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
+    testElement = document.createElement('all-sites');
+    assertTrue(!!testElement);
+    document.body.appendChild(testElement);
+  });
+
+  function removeSiteViaOverflowMenu(buttonType: string) {
+    assertTrue(
+        buttonType === 'cancel-button' || buttonType === 'action-button');
+    flush();
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(1, siteEntries.length);
+    const overflowMenuButton =
+        siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
+            '#fpsOverflowMenuButton')!;
+    assertFalse(
+        overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
+
+    // Test clicking on the overflow menu button opens the menu.
+    const overflowMenu = testElement.$.menu.get();
+    assertFalse(overflowMenu.open);
+    overflowMenuButton.click();
+    assertTrue(overflowMenu.open);
+    flush();
+    const menuItems =
+        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+    assertFalse(testElement.$.confirmRemoveSite.get().open);
+    menuItems[1]!.click();
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    const actionButtonList =
+        testElement.$.confirmRemoveSite.get().querySelectorAll<HTMLElement>(
+            `.${buttonType}`);
+    assertEquals(1, actionButtonList.length);
+    actionButtonList[0]!.click();
+    // Check the dialog and overflow menu are now both closed.
+    assertFalse(testElement.$.confirmRemoveSite.get().open);
+    assertFalse(overflowMenu.open);
+  }
+
+  function removeFirstSiteGroup() {
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(1, siteEntries.length);
+    siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
+                                   '#removeSiteButton')!.click();
+  }
+
+  function confirmDialog() {
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    testElement.$.confirmRemoveSite.get()
+        .querySelector<HTMLElement>('.action-button')!.click();
+  }
+
+  function cancelDialog() {
+    assertTrue(testElement.$.confirmRemoveSite.get().open);
+    testElement.$.confirmRemoveSite.get()
+        .querySelector<HTMLElement>('.cancel-button')!.click();
+  }
+
+  test('remove site via overflow menu', async function() {
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    siteGroup.fpsOwner = 'htpps://google.com';
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdateForTesting();
+    removeSiteViaOverflowMenu('action-button');
+  });
+
+  test(
+      'cancelling the confirm dialog on removing site works', async function() {
+        const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+        siteGroup.fpsOwner = 'htpps://google.com';
+        testElement.siteGroupMap.set(
+            siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+        testElement.forceListUpdateForTesting();
+        removeSiteViaOverflowMenu('cancel-button');
+      });
+
+  test('click and remove site entry with remove button', async function() {
+    testElement.siteGroupMap.set(
+        TEST_MULTIPLE_SITE_GROUP.etldPlus1,
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+    testElement.forceListUpdateForTesting();
+    flush();
+    removeFirstSiteGroup();
+    confirmDialog();
+  });
+
+  test(
+      'click and cancel dialog site entry with remove button',
+      async function() {
+        testElement.siteGroupMap.set(
+            TEST_MULTIPLE_SITE_GROUP.etldPlus1,
+            JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+        testElement.forceListUpdateForTesting();
+        flush();
+        removeFirstSiteGroup();
+        cancelDialog();
+      });
 });
