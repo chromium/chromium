@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -41,13 +42,30 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     /**
      * Returns the current visibility constraints for the display of browser controls.
      * {@link BrowserControlsState} defines the valid return options.
-     * @param tab Tab whose browser constrol state is looked into.
+     * @param tab Tab whose browser controls state is looked into.
      * @return The current visibility constraints.
      */
     @BrowserControlsState
     public static int getConstraints(Tab tab) {
         if (tab == null || get(tab) == null) return BrowserControlsState.BOTH;
         return get(tab).getConstraints();
+    }
+
+    /**
+     * Returns the constraints delegate for a particular tab. The returned supplier will always be
+     * associated with that tab, even if it stops being the active tab.
+     * @param tab Tab whose browser controls state is looked into.
+     * @return Observable supplier for the current visibility constraints.
+     */
+    public static ObservableSupplier<Integer> getObservableConstraints(Tab tab) {
+        if (tab == null) {
+            return null;
+        }
+        TabBrowserControlsConstraintsHelper helper = get(tab);
+        if (helper == null) {
+            return null;
+        }
+        return helper.mVisibilityDelegate;
     }
 
     /**
