@@ -10,6 +10,9 @@ source_set("cells") {
     "cvc_header_item.mm",
     "cvc_item.h",
     "cvc_item.mm",
+    "expiration_date_edit_item.h",
+    "expiration_date_edit_item.mm",
+    "expiration_date_edit_item_delegate.h",
     "legacy_autofill_edit_item.h",
     "legacy_autofill_edit_item.mm",
     "status_item.h",
@@ -28,6 +31,7 @@ source_set("cells") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/ntp:logo",
@@ -50,6 +54,7 @@ source_set("unit_tests") {
   sources = [
     "cvc_header_item_unittest.mm",
     "cvc_item_unittest.mm",
+    "expiration_date_edit_item_unittest.mm",
     "legacy_autofill_edit_item_unittest.mm",
     "status_item_unittest.mm",
   ]
@@ -58,10 +63,12 @@ source_set("unit_tests") {
     ":cells",
     "//base",
     "//components/resources",
+    "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/third_party/material_components_ios",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

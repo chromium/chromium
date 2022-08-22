@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -38,6 +40,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
   ItemTypeCVCInput,
   ItemTypeFooter,
+  ItemTypeExpirationDateInput,
 };
 
 // Empty space on top of the input section. This value added up to the gPay
@@ -55,8 +58,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 }  // namespace
 
 @interface CardUnmaskPromptViewController () <
-    TableViewTextEditItemDelegate,
-    TableViewLinkHeaderFooterItemDelegate> {
+    ExpirationDateEditItemDelegate,
+    TableViewLinkHeaderFooterItemDelegate,
+    TableViewTextEditItemDelegate> {
   // Button displayed on the right side of the navigation bar.
   // Tapping it sends the data in the prompt for verification.
   UIBarButtonItem* _confirmButton;
@@ -66,6 +70,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewTextEditItem* _CVCInputItem;
   // Model of the footer.
   TableViewLinkHeaderFooterItem* _footerItem;
+  // Model of the header.
+  CVCHeaderItem* _headerItem;
+  // Model of the expiration date input cell.
+  ExpirationDateEditItem* _expirationDateInputItem;
 }
 
 @end
@@ -84,6 +92,11 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  // Default inset inherited from `super` is for cells that display icons.
+  // Using smaller inset.
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
 
   self.tableView.accessibilityIdentifier =
       kCardUnmaskPromptTableViewAccessibilityID;
@@ -111,7 +124,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierHeader];
 
-  [model setHeader:[self createHeaderItem]
+  _headerItem = [self createHeaderItem];
+  [self updateInstructions];
+  [model setHeader:_headerItem
       forSectionWithIdentifier:SectionIdentifierHeader];
 
   [model addSectionWithIdentifier:SectionIdentifierInputs];
@@ -146,15 +161,26 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 #pragma mark - Private
 
+// Displays the form for updating the card's expiration date.
+// Displayed on this state:
+//   - Header with instructions label and gPay badge.
+//   - CVC input field.
+//   - Update expiration date input field.
+- (void)showUpdateExpirationDateForm {
+  // Load instructions for updating the expiration date.
+  [self updateInstructions];
+
+  [self addExpirationDateInputItem];
+
+  // The footer is not displayed when updating the expiration date.
+  [self removeFooterItem];
+
+  [self reloadAllSections];
+}
+
 // Returns a newly created item for the header of the section.
 - (CVCHeaderItem*)createHeaderItem {
-  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
-  NSString* instructions =
-      base::SysUTF16ToNSString(controller->GetInstructionsMessage());
-
   CVCHeaderItem* header = [[CVCHeaderItem alloc] initWithType:ItemTypeHeader];
-  header.instructionsText = instructions;
-
   return header;
 }
 
@@ -217,6 +243,52 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // The link target is ignored and taps on it are handled by `didTapLinkURL`.
   footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kFooterDummyLinkTarget)] ];
   return footer;
+}
+
+// Removes the footer item from the table view model.
+- (void)removeFooterItem {
+  _footerItem = nil;
+
+  [self.tableViewModel setFooter:nil
+        forSectionWithIdentifier:SectionIdentifierInputs];
+}
+
+// Returns the model for the expiration date input cell.
+- (ExpirationDateEditItem*)createExpirationDateInputItem {
+  ExpirationDateEditItem* expirationDateInputItem =
+      [[ExpirationDateEditItem alloc] initWithType:ItemTypeExpirationDateInput];
+  expirationDateInputItem.delegate = self;
+  expirationDateInputItem.fieldNameLabelText = l10n_util::GetNSString(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRATION_DATE_FIELD_TITLE);
+  return expirationDateInputItem;
+}
+
+// Adds the model for the expiration input item to the TableView model.
+- (void)addExpirationDateInputItem {
+  _expirationDateInputItem = [self createExpirationDateInputItem];
+  [self.tableViewModel addItem:_expirationDateInputItem
+       toSectionWithIdentifier:SectionIdentifierInputs];
+}
+
+// Updates the instructions in the header.
+- (void)updateInstructions {
+  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
+  NSString* instructions =
+      base::SysUTF16ToNSString(controller->GetInstructionsMessage());
+  _headerItem.instructionsText = instructions;
+}
+
+// Reloads all sections of the table view using automatic row animations.
+// This method is used to update the views after the state of `self` changes.
+// `reloadData` could work as well but preferring the animated aproach for
+// smoother UX transitions.
+- (void)reloadAllSections {
+  NSIndexSet* indexSet = [NSIndexSet
+      indexSetWithIndexesInRange:NSMakeRange(
+                                     0,
+                                     [self.tableViewModel numberOfSections])];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -285,7 +357,17 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 #pragma mark - TableViewLinkHeaderFooterDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  // Notify Controller about the Expiration Date Form being shown so it updates
+  // its state accordingly.
+  _bridge->GetController()->NewCardLinkClicked();
   // Handle taps on the Update Card link.
+  [self showUpdateExpirationDateForm];
+}
+
+#pragma mark - ExpirationDateEditItemDelegate
+
+- (void)expirationDateEditItemDidChange:(ExpirationDateEditItem*)item {
+  // Handle expiration date selections.
   NOTIMPLEMENTED();
 }
 
