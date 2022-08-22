@@ -57,12 +57,14 @@
     parent.appendChild(popUp);
   }
   function assertNotAPopUp(nonPopUp) {
-    // Non-popup elements should already be visible.
-    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
+    // If the non-pop-up element nonetheless has a 'popup' attribute, it should
+    // be invisible. Otherwise, it should be visible.
+    const expectVisible = !nonPopUp.hasAttribute('popup');
+    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
     assert_throws_dom("NotSupportedError",() => nonPopUp.showPopUp(),'Calling showPopUp on a non-pop-up should throw NotSupportedError');
-    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
+    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
     assert_throws_dom("NotSupportedError",() => nonPopUp.hidePopUp(),'Calling hidePopUp on a non-pop-up should throw NotSupportedError');
-    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
+    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
   }
 
   Array.from(document.getElementById('popups').children).forEach(popUp => {

@@ -84,6 +84,5 @@ rootWebArea
 ++++++++genericContainer
 ++++++staticText name='Text input pointing to invalid popup value'
 ++++++++inlineTextBox name='Text input pointing to invalid popup value'
-++++++genericContainer
-++++++++staticText name='Invalid popup attribute value'
-++++++++++inlineTextBox name='Invalid popup attribute value'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Invalid popup attribute value'

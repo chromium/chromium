@@ -10,13 +10,10 @@
 @namespace "http://www.w3.org/1999/xhtml";
 
 [popup]:-internal-popup-hidden {
-  display: none;
+  display: none !important;
 }
 
-[popup="" i],
-[popup=auto i],
-[popup=hint i],
-[popup=manual i] {
+[popup] {
   position: fixed;
   inset-inline-start: 0;
   inset-inline-end: 0;
@@ -27,20 +24,14 @@
   margin: auto;
   border: solid;
   overflow: auto;
-  padding: 1em;
   color: CanvasText;
   background-color: Canvas;
 }
 
-[popup="" i]::backdrop,
-[popup=auto i]::backdrop,
-[popup=hint i]::backdrop,
-[popup=manual i]::backdrop {
-    position: fixed;
-    inset-inline-start: 0;
-    inset-inline-end: 0;
-    inset-block-start: 0;
-    inset-block-end: 0;
-    background: transparent;
-    pointer-events: none !important;
+[popup]::backdrop {
+  /* From the fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  top:0; right:0; bottom:0; left:0;
+  /* Specific to [popup]: */
+  pointer-events: none !important;
 }

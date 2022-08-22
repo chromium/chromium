@@ -4,11 +4,12 @@
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <link rel=match href="popup-hidden-display-ref.tentative.html">
 
-<div popup>This content should be visible</div>
+<div popup>This content should *not* be visible</div>
+<div popup=invalid>This content should *not* be visible</div>
 
 <style>
   [popup] {
-    display: block; /* This should make the popup visible */
+    display: block !important; /* This should *not* make the popup visible */
     top: 0;
     width: 300px;
     height: 200px;

@@ -1504,11 +1504,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoPopupHidden:
+      if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+              element.GetDocument().GetExecutionContext())) {
+        return false;
+      }
       if (element.HasValidPopupAttribute()) {
         return element.GetPopupData()->visibilityState() ==
                PopupVisibilityState::kHidden;
       }
-      return false;
+      // Invalid values of the `popup` attribute should match the
+      // :-internal-popup-hidden pseudo selector.
+      return element.FastHasAttribute(html_names::kPopupAttr);
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:

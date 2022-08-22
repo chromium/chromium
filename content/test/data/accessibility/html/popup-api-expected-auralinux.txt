@@ -31,5 +31,3 @@
 ++[push button] name='Button pointing to invalid popup value'
 ++[entry] selectable-text
 ++[static] name='Text input pointing to invalid popup value'
-++[section]
-++++[static] name='Invalid popup attribute value'
