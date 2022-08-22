@@ -7,18 +7,34 @@
 
 #include "ash/glanceables/glanceables_delegate.h"
 
+namespace ash {
+class GlanceablesController;
+}  // namespace ash
+
 // Implements the GlanceablesDelegate interface, allowing access to
 // functionality in the //chrome/browser layer.
 class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate {
  public:
-  ChromeGlanceablesDelegate();
+  explicit ChromeGlanceablesDelegate(ash::GlanceablesController* controller);
   ChromeGlanceablesDelegate(const ChromeGlanceablesDelegate&) = delete;
   ChromeGlanceablesDelegate& operator=(const ChromeGlanceablesDelegate&) =
       delete;
   ~ChromeGlanceablesDelegate() override;
 
+  static ChromeGlanceablesDelegate* Get();
+
+  // Called when the primary user logs in, after various KeyedServices are
+  // created.
+  void OnPrimaryUserSessionStarted();
+
   // ash::GlanceablesDelegate:
   void RestoreSession() override;
+
+ private:
+  // Returns true if glanceables should be show for the current login.
+  bool ShouldShowOnLogin() const;
+
+  ash::GlanceablesController* const controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_

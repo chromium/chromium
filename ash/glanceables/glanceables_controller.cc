@@ -18,13 +18,24 @@
 
 namespace ash {
 
-GlanceablesController::GlanceablesController(
-    std::unique_ptr<GlanceablesDelegate> delegate)
-    : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
-}
+GlanceablesController::GlanceablesController() = default;
 
 GlanceablesController::~GlanceablesController() = default;
+
+void GlanceablesController::Init(
+    std::unique_ptr<GlanceablesDelegate> delegate) {
+  DCHECK(delegate);
+  delegate_ = std::move(delegate);
+}
+
+void GlanceablesController::ShowOnLogin() {
+  CreateUi();
+  FetchData();
+}
+
+bool GlanceablesController::IsShowing() const {
+  return !!widget_;
+}
 
 void GlanceablesController::CreateUi() {
   widget_ = std::make_unique<views::Widget>();
@@ -54,16 +65,16 @@ void GlanceablesController::DestroyUi() {
   view_ = nullptr;
 }
 
+void GlanceablesController::RestoreSession() {
+  delegate_->RestoreSession();
+}
+
 void GlanceablesController::FetchData() {
   // GlanceablesWeatherView observes the weather model for updates.
   Shell::Get()
       ->ambient_controller()
       ->ambient_weather_controller()
       ->FetchWeather();
-}
-
-void GlanceablesController::RestoreSession() {
-  delegate_->RestoreSession();
 }
 
 }  // namespace ash

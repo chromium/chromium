@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
+#include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
@@ -251,6 +252,11 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
+
+    if (ash::features::AreGlanceablesEnabled()) {
+      // Must be called after CalenderKeyedServiceFactory is initialized.
+      ChromeGlanceablesDelegate::Get()->OnPrimaryUserSessionStarted();
+    }
 
     // Ensure that PhoneHubManager and EcheAppManager are created for the
     // primary profile.

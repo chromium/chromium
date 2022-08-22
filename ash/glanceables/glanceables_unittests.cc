@@ -31,19 +31,14 @@ AmbientWeatherModel* GetWeatherModel() {
 }  // namespace
 
 // Unified test suite for the glanceables controller, views, etc.
-//
-// Use a "no session" test so the glanceables widget is not automatically
-// created at the start of the test.
-// TODO(crbug.com/1353119): Once glanceables are shown by code in the
-// chrome/browser/ash layer, switch this to AshTestBase.
-class GlanceablesTest : public NoSessionAshTestBase {
+class GlanceablesTest : public AshTestBase {
  public:
   GlanceablesTest() = default;
   ~GlanceablesTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    NoSessionAshTestBase::SetUp();
+    AshTestBase::SetUp();
     controller_ = Shell::Get()->glanceables_controller();
     DCHECK(controller_);
   }

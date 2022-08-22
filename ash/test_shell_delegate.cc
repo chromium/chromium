@@ -32,7 +32,8 @@ TestShellDelegate::CreateCaptureModeDelegate() const {
 }
 
 std::unique_ptr<GlanceablesDelegate>
-TestShellDelegate::CreateGlanceablesDelegate() const {
+TestShellDelegate::CreateGlanceablesDelegate(
+    GlanceablesController* controller) const {
   return std::make_unique<TestGlanceablesDelegate>();
 }
 

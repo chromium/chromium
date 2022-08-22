@@ -117,8 +117,9 @@ ChromeShellDelegate::CreateCaptureModeDelegate() const {
 }
 
 std::unique_ptr<ash::GlanceablesDelegate>
-ChromeShellDelegate::CreateGlanceablesDelegate() const {
-  return std::make_unique<ChromeGlanceablesDelegate>();
+ChromeShellDelegate::CreateGlanceablesDelegate(
+    ash::GlanceablesController* controller) const {
+  return std::make_unique<ChromeGlanceablesDelegate>(controller);
 }
 
 ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {

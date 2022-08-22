@@ -594,8 +594,9 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   AccelerometerReader::GetInstance()->Initialize();
 
   if (features::AreGlanceablesEnabled()) {
-    glanceables_controller_ = std::make_unique<GlanceablesController>(
-        shell_delegate_->CreateGlanceablesDelegate());
+    glanceables_controller_ = std::make_unique<GlanceablesController>();
+    glanceables_controller_->Init(shell_delegate_->CreateGlanceablesDelegate(
+        glanceables_controller_.get()));
   }
 
   login_screen_controller_ =
@@ -1620,13 +1621,6 @@ void Shell::OnFirstSessionStarted() {
   // the session starts.
   app_list_feature_usage_metrics_ =
       std::make_unique<AppListFeatureUsageMetrics>();
-
-  if (features::AreGlanceablesEnabled()) {
-    // Show glanceables after signin.
-    // TODO(crbug.com/1353119): Show only when session restore would trigger.
-    glanceables_controller_->CreateUi();
-    glanceables_controller_->FetchData();
-  }
 }
 
 void Shell::OnSessionStateChanged(session_manager::SessionState state) {

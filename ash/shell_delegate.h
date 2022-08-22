@@ -37,6 +37,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class DesksTemplatesDelegate;
+class GlanceablesController;
 class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
@@ -56,8 +57,8 @@ class ASH_EXPORT ShellDelegate {
       const = 0;
 
   // Creates the delegate for the Glanceables feature.
-  virtual std::unique_ptr<GlanceablesDelegate> CreateGlanceablesDelegate()
-      const = 0;
+  virtual std::unique_ptr<GlanceablesDelegate> CreateGlanceablesDelegate(
+      GlanceablesController* controller) const = 0;
 
   // Creates a accessibility delegate. Shell takes ownership of the delegate.
   virtual AccessibilityDelegate* CreateAccessibilityDelegate() = 0;
