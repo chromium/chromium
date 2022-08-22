@@ -195,7 +195,7 @@ class ContentAutofillRouter {
                           const gfx::RectF& bounding_box,
                           int32_t query_id,
                           bool autoselect_first_suggestion,
-                          TouchToFillEligible touch_to_fill_eligible);
+                          FormElementWasClicked form_element_was_clicked);
   void HidePopup(ContentAutofillDriver* source_driver);
   void FocusNoLongerOnForm(ContentAutofillDriver* source_driver,
                            bool had_interacted_form);

@@ -407,11 +407,11 @@ bool StructTraits<
          data.ReadConfirmPasswordRendererId(&out->confirm_password_renderer_id);
 }
 
-bool StructTraits<autofill::mojom::TouchToFillEligibleDataView,
-                  autofill::TouchToFillEligible>::
-    Read(autofill::mojom::TouchToFillEligibleDataView data,
-         autofill::TouchToFillEligible* out) {
-  *out = autofill::TouchToFillEligible(data.eligible());
+bool StructTraits<autofill::mojom::FormElementWasClickedDataView,
+                  autofill::FormElementWasClicked>::
+    Read(autofill::mojom::FormElementWasClickedDataView data,
+         autofill::FormElementWasClicked* out) {
+  *out = autofill::FormElementWasClicked(data.form_element_was_clicked());
   return true;
 }
 

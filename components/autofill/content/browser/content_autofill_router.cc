@@ -354,11 +354,11 @@ void ContentAutofillRouter::AskForValuesToFill(
     const gfx::RectF& bounding_box,
     int32_t query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     source->AskForValuesToFillImpl(form, field, bounding_box, query_id,
                                    autoselect_first_suggestion,
-                                   touch_to_fill_eligible);
+                                   form_element_was_clicked);
     return;
   }
 
@@ -376,7 +376,7 @@ void ContentAutofillRouter::AskForValuesToFill(
   SetLastQueriedTarget(target);
   target->AskForValuesToFillImpl(browser_form, field, bounding_box, query_id,
                                  autoselect_first_suggestion,
-                                 touch_to_fill_eligible);
+                                 form_element_was_clicked);
 }
 
 void ContentAutofillRouter::HidePopup(ContentAutofillDriver* source) {

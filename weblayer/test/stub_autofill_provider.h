@@ -35,7 +35,8 @@ class StubAutofillProvider : public autofill::TestAutofillProvider {
       const gfx::RectF& bounding_box,
       int32_t query_id,
       bool /*unused_autoselect_first_suggestion*/,
-      autofill::TouchToFillEligible /*unused_touch_to_fill_eligible*/) override;
+      autofill::FormElementWasClicked /*unused_form_element_was_clicked*/)
+      override;
 
  private:
   base::RepeatingCallback<void(const autofill::FormData&)>

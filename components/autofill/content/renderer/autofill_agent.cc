@@ -175,15 +175,16 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void SelectFieldOptionsDidChange(const FormData& form) override {
     DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
   }
-  void AskForValuesToFill(const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box,
-                          int32_t query_id,
-                          bool autoselect_first_suggestion,
-                          TouchToFillEligible touch_to_fill_eligible) override {
+  void AskForValuesToFill(
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      int32_t query_id,
+      bool autoselect_first_suggestion,
+      FormElementWasClicked form_element_was_clicked) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
              bounding_box, query_id, autoselect_first_suggestion,
-             touch_to_fill_eligible);
+             form_element_was_clicked);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusNoLongerOnForm(bool had_interacted_form) override {
@@ -823,7 +824,7 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   }
 
   QueryAutofillSuggestions(element, options.autoselect_first_suggestion,
-                           options.touch_to_fill_eligible);
+                           options.form_element_was_clicked);
 }
 
 void AutofillAgent::SetQueryPasswordSuggestion(bool query) {
@@ -891,7 +892,7 @@ void AutofillAgent::SetFieldsEligibleForManualFilling(
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   blink::WebLocalFrame* frame = element.GetDocument().GetFrame();
   if (!frame)
     return;
@@ -938,7 +939,7 @@ void AutofillAgent::QueryAutofillSuggestions(
   is_popup_possibly_visible_ = true;
   GetAutofillDriver().AskForValuesToFill(
       form, field, field.bounds, autofill_query_id_,
-      autoselect_first_suggestion, touch_to_fill_eligible);
+      autoselect_first_suggestion, form_element_was_clicked);
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
@@ -1140,7 +1141,7 @@ void AutofillAgent::FormControlElementClicked(
                 // have a common prefix with the default value.
                 .show_full_suggestion_list =
                     element.IsAutofilled() || !element.UserHasEditedTheField(),
-                .touch_to_fill_eligible = TouchToFillEligible(true)});
+                .form_element_was_clicked = FormElementWasClicked(true)});
 
   SendPotentiallySubmittedFormToBrowser();
 }

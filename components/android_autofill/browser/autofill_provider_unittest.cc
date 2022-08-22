@@ -27,7 +27,7 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
     OnAskForValuesToFillImpl(FormData(), FormFieldData(), gfx::RectF(),
                              /*query_id=*/0,
                              /*autoselect_first_suggestion=*/false,
-                             TouchToFillEligible(false));
+                             FormElementWasClicked(false));
   }
 };
 
@@ -47,7 +47,7 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
       const gfx::RectF& bounding_box,
       int32_t query_id,
       bool autoselect_first_suggestion,
-      TouchToFillEligible touch_to_fill_eligible) override {
+      FormElementWasClicked form_element_was_clicked) override {
     manager_ = manager;
   }
   void OnServerQueryRequestError(AndroidAutofillManager* manager,

@@ -179,9 +179,10 @@ class AutofillAgent : public content::RenderFrameObserver,
     // dropdown is shown. Enabled when the user presses ARROW_DOWN on a field.
     bool autoselect_first_suggestion{false};
 
-    // Specifies that suggestions are triggered in a way it makes sense to
-    // prompt the Touch To Fill surface first (e.g. on click).
-    TouchToFillEligible touch_to_fill_eligible{false};
+    // Signals that suggestions are triggered due to a click on an input
+    // element. The signal is used to understand whether other surfaces (e.g.
+    // TouchToFill, FastCheckout) can be triggered.
+    FormElementWasClicked form_element_was_clicked{false};
   };
 
   // content::RenderFrameObserver:
@@ -250,7 +251,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // |element|.
   void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
                                 bool autoselect_first_suggestion,
-                                TouchToFillEligible touch_to_fill_eligible);
+                                FormElementWasClicked form_element_was_clicked);
 
   // Sets the selected value of the the field identified by |field_id| to
   // |suggested_value|.

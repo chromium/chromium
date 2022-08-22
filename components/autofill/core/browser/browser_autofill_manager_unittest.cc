@@ -515,7 +515,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field, gfx::RectF(), query_id,
-        /*autoselect_first_suggestion=*/false, TouchToFillEligible(false));
+        /*autoselect_first_suggestion=*/false, FormElementWasClicked(false));
   }
 
   void GetAutofillSuggestions(const FormData& form,
@@ -526,10 +526,10 @@ class BrowserAutofillManagerTest : public testing::Test {
   void TryToShowTouchToFill(int query_id,
                             const FormData& form,
                             const FormFieldData& field,
-                            TouchToFillEligible touch_to_fill_eligible) {
+                            FormElementWasClicked form_element_was_clicked) {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field, gfx::RectF(), query_id,
-        /*autoselect_first_suggestion=*/false, touch_to_fill_eligible);
+        /*autoselect_first_suggestion=*/false, form_element_was_clicked);
   }
 
   void AutocompleteSuggestionsReturned(
@@ -560,7 +560,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             int unique_id) {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field, {}, query_id, /*autoselect_first_suggestion=*/true,
-        TouchToFillEligible(false));
+        FormElementWasClicked(false));
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, query_id, form, field, unique_id);
   }
@@ -9564,22 +9564,22 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
   const FormFieldData& field = form.fields[1];
   int query_id = 1;
 
-  // TTF not eligible, Autofill suggestions shown.
+  // Not a form element click, Autofill suggestions shown.
   EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
       .Times(0);
-  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(false));
+  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(false));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
-  // TTF not shown, Autofill suggestions shown.
+  // TTF not available, Autofill suggestions shown.
   EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
       .WillOnce(Return(false));
-  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(true));
+  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(true));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
-  // TTF eligible and shown, Autofill suggestions not shown
+  // A form element click and TTF available, Autofill suggestions not shown.
   EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
       .WillOnce(Return(true));
-  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(true));
+  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
@@ -9597,7 +9597,8 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_CALL(*touch_to_fill_delegate_,
               TryToShowTouchToFill(kDefaultPageID, _, _))
       .Times(0);
-  TryToShowTouchToFill(kDefaultPageID, form, field, TouchToFillEligible(true));
+  TryToShowTouchToFill(kDefaultPageID, form, field,
+                       FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 

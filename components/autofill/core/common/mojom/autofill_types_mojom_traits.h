@@ -631,12 +631,14 @@ struct StructTraits<autofill::mojom::ParsingResultDataView,
 };
 
 template <>
-struct StructTraits<autofill::mojom::TouchToFillEligibleDataView,
-                    autofill::TouchToFillEligible> {
-  static bool eligible(autofill::TouchToFillEligible r) { return r.value(); }
+struct StructTraits<autofill::mojom::FormElementWasClickedDataView,
+                    autofill::FormElementWasClicked> {
+  static bool form_element_was_clicked(autofill::FormElementWasClicked r) {
+    return r.value();
+  }
 
-  static bool Read(autofill::mojom::TouchToFillEligibleDataView data,
-                   autofill::TouchToFillEligible* out);
+  static bool Read(autofill::mojom::FormElementWasClickedDataView data,
+                   autofill::FormElementWasClicked* out);
 };
 
 }  // namespace mojo

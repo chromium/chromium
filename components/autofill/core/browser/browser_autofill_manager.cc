@@ -982,7 +982,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const gfx::RectF& transformed_box,
     int query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }
@@ -1096,7 +1096,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   single_field_form_fill_router_->CancelPendingQueries(this);
   if (touch_to_fill_delegate_->IsShowingTouchToFill() ||
-      (touch_to_fill_eligible &&
+      (form_element_was_clicked &&
        touch_to_fill_delegate_->TryToShowTouchToFill(query_id, form, field))) {
     // Touch To Fill surface is shown, so abort showing regular Autofill UI.
     // Now the flow is controlled by the |touch_to_fill_delegate_| instead

@@ -41,7 +41,7 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
       const gfx::RectF& bounding_box,
       int32_t query_id,
       bool autoselect_first_suggestion,
-      TouchToFillEligible touch_to_fill_eligible) = 0;
+      FormElementWasClicked form_element_was_clicked) = 0;
 
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,

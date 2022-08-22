@@ -77,8 +77,8 @@ mojom("mojo_types") {
           cpp = "::autofill::password_generation::PasswordGenerationUIData"
         },
         {
-          mojom = "autofill.mojom.TouchToFillEligible"
-          cpp = "::autofill::TouchToFillEligible"
+          mojom = "autofill.mojom.FormElementWasClicked"
+          cpp = "::autofill::FormElementWasClicked"
           copyable_pass_by_value = true
         },
       ]

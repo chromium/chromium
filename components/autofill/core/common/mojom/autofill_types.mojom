@@ -356,7 +356,7 @@ enum RendererFormDataAction {
   kPreview,  // The renderer should preview the form data.
 };
 
-// autofill::TouchToFillEligible (components/autofill/core/common/aliases.h)
-struct TouchToFillEligible {
-  bool eligible;
+// autofill::FormElementWasClicked (components/autofill/core/common/aliases.h)
+struct FormElementWasClicked {
+  bool form_element_was_clicked;
 };

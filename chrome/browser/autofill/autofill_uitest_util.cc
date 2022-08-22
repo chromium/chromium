@@ -144,7 +144,7 @@ void GenerateTestAutofillPopup(
       {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
                              /*autoselect_first_suggestion=*/false,
-                             TouchToFillEligible(false));
+                             FormElementWasClicked(false));
   ASSERT_TRUE(waiter.Wait());
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};

@@ -12,8 +12,9 @@ namespace autofill {
 // TODO(crbug.com/1326518): Use strong aliases for other primitives in mojom
 // files.
 
-using TouchToFillEligible =
-    base::StrongAlias<struct TouchToFillEligibleTag, bool>;
+// Specifies whether a form input element was clicked.
+using FormElementWasClicked =
+    base::StrongAlias<struct FormElementWasClickedTag, bool>;
 
 }  // namespace autofill
 

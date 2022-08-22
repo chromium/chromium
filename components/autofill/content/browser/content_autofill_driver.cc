@@ -324,10 +324,10 @@ void ContentAutofillDriver::AskForValuesToFillImpl(
     const gfx::RectF& bounding_box,
     int32_t query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   autofill_manager_->OnAskForValuesToFill(form, field, bounding_box, query_id,
                                           autoselect_first_suggestion,
-                                          touch_to_fill_eligible);
+                                          form_element_was_clicked);
 }
 
 void ContentAutofillDriver::HidePopupImpl() {
@@ -483,7 +483,7 @@ void ContentAutofillDriver::AskForValuesToFill(
     const gfx::RectF& bounding_box,
     int32_t query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
     return;
   FormData form = raw_form;
@@ -492,7 +492,7 @@ void ContentAutofillDriver::AskForValuesToFill(
   GetAutofillRouter().AskForValuesToFill(
       this, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box), query_id,
-      autoselect_first_suggestion, touch_to_fill_eligible);
+      autoselect_first_suggestion, form_element_was_clicked);
 }
 
 void ContentAutofillDriver::HidePopup() {

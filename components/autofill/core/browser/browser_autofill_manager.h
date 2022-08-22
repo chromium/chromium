@@ -395,7 +395,7 @@ class BrowserAutofillManager : public AutofillManager,
       const gfx::RectF& transformed_box,
       int query_id,
       bool autoselect_first_suggestion,
-      TouchToFillEligible touch_to_fill_eligible) override;
+      FormElementWasClicked form_element_was_clicked) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;

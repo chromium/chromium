@@ -335,7 +335,7 @@ void GetFormField(autofill::FormFieldData* field,
   autofillManager->OnAskForValuesToFill(form, field, gfx::RectF(),
                                         ++_lastQueryID,
                                         /*autoselect_first_suggestion=*/false,
-                                        autofill::TouchToFillEligible(false));
+                                        autofill::FormElementWasClicked(false));
 }
 
 - (void)checkIfSuggestionsAvailableForForm:

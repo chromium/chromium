@@ -467,7 +467,7 @@ void AutofillManager::OnAskForValuesToFill(
     const gfx::RectF& bounding_box,
     int query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
@@ -475,7 +475,7 @@ void AutofillManager::OnAskForValuesToFill(
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     OnAskForValuesToFillImpl(form, field, bounding_box, query_id,
                              autoselect_first_suggestion,
-                             touch_to_fill_eligible);
+                             form_element_was_clicked);
     NotifyObservers(&Observer::OnAfterAskForValuesToFill);
     return;
   }
@@ -483,7 +483,7 @@ void AutofillManager::OnAskForValuesToFill(
       form, ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl,
                             &Observer::OnAfterAskForValuesToFill, field,
                             bounding_box, query_id, autoselect_first_suggestion,
-                            touch_to_fill_eligible));
+                            form_element_was_clicked));
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,

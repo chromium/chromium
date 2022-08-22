@@ -76,12 +76,12 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const gfx::RectF& bounding_box,
     int query_id,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(*this,
                                    {&Observer::OnAfterAskForValuesToFill});
   AutofillManager::OnAskForValuesToFill(form, field, bounding_box, query_id,
                                         autoselect_first_suggestion,
-                                        touch_to_fill_eligible);
+                                        form_element_was_clicked);
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -248,12 +248,12 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     int query_id,
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion,
-    TouchToFillEligible touch_to_fill_eligible) {
+    FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(
       *this, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   BrowserAutofillManager::OnAskForValuesToFill(
       form, field, bounding_box, query_id, autoselect_first_suggestion,
-      touch_to_fill_eligible);
+      form_element_was_clicked);
   ASSERT_TRUE(waiter.Wait());
 }
 

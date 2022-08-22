@@ -56,7 +56,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const gfx::RectF& bounding_box,
       int query_id,
       bool autoselect_first_suggestion,
-      TouchToFillEligible touch_to_fill_eligible) override;
+      FormElementWasClicked form_element_was_clicked) override;
   void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,
@@ -114,13 +114,13 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   const std::string GetSubmittedFormSignature();
 
   // Helper to skip irrelevant params.
-  void OnAskForValuesToFillTest(
-      const FormData& form,
-      const FormFieldData& field,
-      int query_id = 0,
-      const gfx::RectF& bounding_box = {},
-      bool autoselect_first_suggestion = false,
-      TouchToFillEligible touch_to_fill_eligible = TouchToFillEligible(false));
+  void OnAskForValuesToFillTest(const FormData& form,
+                                const FormFieldData& field,
+                                int query_id = 0,
+                                const gfx::RectF& bounding_box = {},
+                                bool autoselect_first_suggestion = false,
+                                FormElementWasClicked form_element_was_clicked =
+                                    FormElementWasClicked(false));
 
   void SetAutofillProfileEnabled(bool profile_enabled);
 
