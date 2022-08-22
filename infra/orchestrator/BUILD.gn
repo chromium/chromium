@@ -28,6 +28,10 @@ group("orchestrator_all") {
     # the root vpython spec files.
     "//.vpython3",
 
+    # Used if the orchestrator needs to run recipe_module.chromium.get_version()
+    # to get the Chrome milestone being tested.
+    "//chrome/VERSION",
+
     # Test specs the Orchestrator needs to trigger swarming tests
     "//testing/buildbot/*.json",
   ]
@@ -80,7 +84,7 @@ python_library("process_perf_results_py") {
   # them, build/print_python_deps.py doesn't detect them. So to appease
   # telemetry, just add the needed dirs directly.
   data = [
-      "//third_party/catapult/telemetry/third_party/",
-      "//third_party/catapult/third_party/six/",
+    "//third_party/catapult/telemetry/third_party/",
+    "//third_party/catapult/third_party/six/",
   ]
 }
