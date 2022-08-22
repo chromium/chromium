@@ -41,7 +41,7 @@ NSString* const kInboxPath = @"Inbox";
 // Conversion factor to turn number of days to number of seconds.
 const CFTimeInterval kSecondsPerDay = 60 * 60 * 24;
 
-// Empty callback. The closure owned by |closure_runner| will be invoked as
+// Empty callback. The closure owned by `closure_runner` will be invoked as
 // part of the destructor of base::ScopedClosureRunner (which takes care of
 // checking for null closure).
 void RunCallback(base::ScopedClosureRunner closure_runner) {}
@@ -106,8 +106,8 @@ NSString* GetInboxDirectoryPath() {
 }
 
 // Removes all the files in the Inbox directory that are not in
-// |files_to_keep| and that are older than |age_in_days| days.
-// |files_to_keep| may be nil if all files should be removed.
+// `files_to_keep` and that are older than `age_in_days` days.
+// `files_to_keep` may be nil if all files should be removed.
 void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);

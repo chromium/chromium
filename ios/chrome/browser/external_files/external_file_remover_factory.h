@@ -13,9 +13,9 @@
 class ChromeBrowserState;
 class ExternalFileRemover;
 
-// Singleton that owns all |ExternalFileRemover| and associates them with
-// browser states. Listens for the |BrowserState|'s destruction notification and
-// cleans up the associated |ExternalFileRemover|.
+// Singleton that owns all `ExternalFileRemover` and associates them with
+// browser states. Listens for the `BrowserState`'s destruction notification and
+// cleans up the associated `ExternalFileRemover`.
 class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ExternalFileRemover* GetForBrowserState(

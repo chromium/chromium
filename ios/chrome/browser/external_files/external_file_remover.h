@@ -19,7 +19,7 @@ class ExternalFileRemover : public KeyedService {
 
   ~ExternalFileRemover() override = default;
   // Post a delayed task to clean up the files received from other applications.
-  // |callback| is called when the clean up has finished; it may be null.
+  // `callback` is called when the clean up has finished; it may be null.
   virtual void RemoveAfterDelay(base::TimeDelta delay,
                                 base::OnceClosure callback) = 0;
 };

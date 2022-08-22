@@ -112,8 +112,8 @@ enum class PermissionStatus {
     switch (locationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
-        // |kCLAuthorizationStatusNotDetermined| when we first start location
-        // services. Ignore it and don't reset |systemPrompt_| until we get a
+        // `kCLAuthorizationStatusNotDetermined` when we first start location
+        // services. Ignore it and don't reset `systemPrompt_` until we get a
         // real change.
         break;
 
