@@ -3927,6 +3927,7 @@
   'weblayer_bundle_test': {
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
+      'android-pie-arm64-rel', # crbug.com/1354867
       'android-11-x86-rel', # crbug.com/1165280
     ],
   },
