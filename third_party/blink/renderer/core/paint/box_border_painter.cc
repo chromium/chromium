@@ -793,7 +793,8 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   // When painting outlines, we ignore outer/inner radii.
   const auto force_rectangular = !outer_.IsRounded() && !inner_.IsRounded();
 
-  AutoDarkMode auto_dark_mode(BorderPaintAutoDarkMode(style_, color));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 
   // outer stripe
   const LayoutRectOutsets outer_third_outsets =
@@ -825,18 +826,20 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
       FirstEdge().BorderStyle() != EBorderStyle::kDouble)
     return false;
 
-  AutoDarkMode auto_dark_mode(
-      BorderPaintAutoDarkMode(style_, FirstEdge().color));
   if (visible_edge_set_ == kAllBorderEdges) {
     if (FirstEdge().BorderStyle() == EBorderStyle::kSolid) {
       if (is_uniform_width_ && !outer_.IsRounded()) {
         // 4-side, solid, uniform-width, rectangular border => one drawRect()
-        DrawSolidBorderRect(context_, outer_.Rect(), FirstEdge().Width(),
-                            FirstEdge().color, auto_dark_mode);
+        DrawSolidBorderRect(
+            context_, outer_.Rect(), FirstEdge().Width(), FirstEdge().color,
+            PaintAutoDarkMode(style_,
+                              DarkModeFilter::ElementRole::kBackground));
       } else {
         // 4-side, solid border => one drawDRRect()
-        DrawBleedAdjustedDRRect(context_, bleed_avoidance_, outer_, inner_,
-                                FirstEdge().color, auto_dark_mode);
+        DrawBleedAdjustedDRRect(
+            context_, bleed_avoidance_, outer_, inner_, FirstEdge().color,
+            PaintAutoDarkMode(style_,
+                              DarkModeFilter::ElementRole::kBackground));
       }
     } else {
       // 4-side, double border => 2x drawDRRect()
@@ -864,7 +867,9 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
     }
 
     context_.SetFillColor(FirstEdge().color);
-    context_.FillPath(path, auto_dark_mode);
+    context_.FillPath(
+        path,
+        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
     return true;
   }
 
@@ -1276,7 +1281,8 @@ void BoxBorderPainter::PaintOneBorderSide(
         side_rect.bottom(), side, color, edge_to_render.BorderStyle(),
         miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
         miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0,
-        /*antialias*/ true, BorderPaintAutoDarkMode(style_, color));
+        /*antialias*/ true,
+        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
   }
 }
 
@@ -1328,8 +1334,9 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
 
   context_.SetStrokeStyle(kNoStroke);
   context_.SetFillColor(color);
-  context_.DrawRect(gfx::ToRoundedRect(outer_.Rect()),
-                    BorderPaintAutoDarkMode(style_, color));
+  context_.DrawRect(
+      gfx::ToRoundedRect(outer_.Rect()),
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 }
 
 void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
@@ -1364,8 +1371,10 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
 
   // TODO(schenney): stroking the border path causes issues with tight corners:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=344234
-  context_.StrokePath(centerline_path, BorderPaintAutoDarkMode(style_, color),
-                      centerline_path.length(), border_thickness);
+  context_.StrokePath(
+      centerline_path,
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground),
+      centerline_path.length(), border_thickness);
 }
 
 void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
@@ -1377,9 +1386,10 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
 
   // TODO(schenney): stroking the border path causes issues with tight corners:
   // https://bugs.webkit.org/show_bug.cgi?id=58711
-  context_.StrokePath(border_path,
-                      BorderPaintAutoDarkMode(style_, context_.StrokeColor()),
-                      border_path.length(), border_thickness);
+  context_.StrokePath(
+      border_path,
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground),
+      border_path.length(), border_thickness);
 }
 
 void BoxBorderPainter::DrawDoubleBoxSideFromPath(

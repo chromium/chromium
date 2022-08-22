@@ -208,16 +208,6 @@ sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
   return immutable_.image_filter;
 }
 
-DarkModeFilter::ElementRole DarkModeFilter::BorderElementRole(
-    SkColor border_color,
-    SkColor background_color) {
-  if (background_color == 0 ||
-      DarkModeColorClassifier::CalculateColorBrightness(border_color) <
-          DarkModeColorClassifier::CalculateColorBrightness(background_color))
-    return ElementRole::kForeground;
-  return ElementRole::kBackground;
-}
-
 absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
     const cc::PaintFlags& flags,
     ElementRole role) {

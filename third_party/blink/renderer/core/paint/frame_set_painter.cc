@@ -35,30 +35,28 @@ void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
   // FIXME: We should do something clever when borders from distinct framesets
   // meet at a join.
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_frame_set_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
+
   // Fill first.
   GraphicsContext& context = paint_info.context;
-  Color border_color =
+  context.FillRect(
+      border_rect,
       layout_frame_set_.FrameSet()->HasBorderColor()
           ? layout_frame_set_.ResolveColor(GetCSSPropertyBorderLeftColor())
-          : BorderFillColor();
-  context.FillRect(
-      border_rect, border_color,
-      BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(), border_color));
+          : BorderFillColor(),
+      auto_dark_mode);
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
   if (border_rect.width() >= 3) {
     context.FillRect(
         gfx::Rect(border_rect.origin(), gfx::Size(1, border_rect.height())),
-        BorderStartEdgeColor(),
-        BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(),
-                                BorderStartEdgeColor()));
+        BorderStartEdgeColor(), auto_dark_mode);
     context.FillRect(
         gfx::Rect(gfx::Point(border_rect.right() - 1, border_rect.y()),
                   gfx::Size(1, border_rect.height())),
-        BorderEndEdgeColor(),
-        BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(),
-                                BorderEndEdgeColor()));
+        BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 
@@ -67,30 +65,28 @@ void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
   // FIXME: We should do something clever when borders from distinct framesets
   // meet at a join.
 
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_frame_set_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
+
   // Fill first.
   GraphicsContext& context = paint_info.context;
-  Color border_color =
+  context.FillRect(
+      border_rect,
       layout_frame_set_.FrameSet()->HasBorderColor()
           ? layout_frame_set_.ResolveColor(GetCSSPropertyBorderLeftColor())
-          : BorderFillColor();
-  context.FillRect(
-      border_rect, border_color,
-      BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(), border_color));
+          : BorderFillColor(),
+      auto_dark_mode);
 
   // Now stroke the edges but only if we have enough room to paint both edges
   // with a little bit of the fill color showing through.
   if (border_rect.height() >= 3) {
     context.FillRect(
         gfx::Rect(border_rect.origin(), gfx::Size(border_rect.width(), 1)),
-        BorderStartEdgeColor(),
-        BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(),
-                                BorderStartEdgeColor()));
+        BorderStartEdgeColor(), auto_dark_mode);
     context.FillRect(
         gfx::Rect(gfx::Point(border_rect.x(), border_rect.bottom() - 1),
                   gfx::Size(border_rect.width(), 1)),
-        BorderEndEdgeColor(),
-        BorderPaintAutoDarkMode(layout_frame_set_.StyleRef(),
-                                BorderEndEdgeColor()));
+        BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 
