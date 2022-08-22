@@ -3716,24 +3716,17 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
           }));
   loop.Run();
 
-  base::RunLoop loop1;
-  desk_model()->GetEntryByUUID(
-      uuid.AsLowercaseString(),
-      base::BindLambdaForTesting(
-          [&](desks_storage::DeskModel::GetEntryByUuidStatus status,
-              std::unique_ptr<ash::DeskTemplate> entry) {
-            EXPECT_EQ(desks_storage::DeskModel::GetEntryByUuidStatus::kOk,
-                      status);
-            // `LocalDeskStorage` does not support
-            // `EntriesAddedOrUpdatedRemotely`, so
-            // manually call it to simluate what the real model would do.
-            saved_desk_util::GetSavedDeskPresenter()
-                ->EntriesAddedOrUpdatedRemotely({entry.get()});
-            ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
-            ASSERT_EQ(u"Desk 2", second_item->desk_template().template_name());
-            loop1.Quit();
-          }));
-  loop1.Run();
+  desks_storage::DeskModel::GetEntryByUuidResult result =
+      desk_model()->GetEntryByUUID(uuid.AsLowercaseString());
+
+  EXPECT_EQ(desks_storage::DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  // `LocalDeskStorage` does not support
+  // `EntriesAddedOrUpdatedRemotely`, so
+  // manually call it to simulate what the real model would do.
+  saved_desk_util::GetSavedDeskPresenter()->EntriesAddedOrUpdatedRemotely(
+      {result.entry.get()});
+  ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
+  ASSERT_EQ(u"Desk 2", second_item->desk_template().template_name());
 
   // Save template 2 under new name and confirm, this will trigger replace
   // dialog.

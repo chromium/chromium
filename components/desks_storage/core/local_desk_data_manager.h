@@ -56,8 +56,8 @@ class LocalDeskDataManager : public DeskModel {
 
   // DeskModel:
   DeskModel::GetAllEntriesResult GetAllEntries() override;
-  void GetEntryByUUID(const std::string& uuid_str,
-                      GetEntryByUuidCallback callback) override;
+  DeskModel::GetEntryByUuidResult GetEntryByUUID(
+      const std::string& uuid) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
   void DeleteEntry(const base::GUID& uuid,
@@ -91,17 +91,6 @@ class LocalDeskDataManager : public DeskModel {
       const base::FilePath& user_data_dir_path,
       CacheStatus* cache_status_ptr,
       std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>* entries_ptr);
-
-  // Get a specific entry by `uuid_str`.
-  void GetEntryByUuidTask(const std::string& uuid_str,
-                          DeskModel::GetEntryByUuidStatus* status_ptr);
-
-  // Wrapper method to call GetEntryByUuidCallback.
-  void OnGetEntryByUuid(
-      const std::string& uuid_str,
-      std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
-      std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
-      DeskModel::GetEntryByUuidCallback callback);
 
   // Add or update an entry by `new_entry`'s UUID.
   void AddOrUpdateEntryTask(const base::GUID uuid,

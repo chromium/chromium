@@ -252,10 +252,20 @@ void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  GetDeskModel()->GetEntryByUUID(
-      template_uuid, base::BindOnce(&DesksClient::OnGetTemplateToBeUpdated,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    template_name, std::move(callback)));
+  desks_storage::DeskModel::GetEntryByUuidResult result =
+      GetDeskModel()->GetEntryByUUID(template_uuid);
+
+  if (result.status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
+    std::move(callback).Run(kStorageError);
+    return;
+  }
+
+  result.entry->set_template_name(template_name);
+
+  GetDeskModel()->AddOrUpdateEntry(
+      std::move(result.entry),
+      base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::DeleteDeskTemplate(const base::GUID& template_uuid,
@@ -325,11 +335,12 @@ void DesksClient::LaunchDeskTemplate(
     return;
   }
 
-  GetDeskModel()->GetEntryByUUID(
-      template_uuid,
-      base::BindOnce(&DesksClient::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     customized_desk_name, launch_started));
+  desks_storage::DeskModel::GetEntryByUuidResult result =
+      GetDeskModel()->GetEntryByUUID(template_uuid);
+
+  OnGetTemplateForDeskLaunch(std::move(callback), customized_desk_name,
+                             launch_started, result.status,
+                             std::move(result.entry));
 }
 
 void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
@@ -584,23 +595,6 @@ void DesksClient::OnUpdateDeskTemplate(
       status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
           ? kStorageError
           : ""));
-}
-
-void DesksClient::OnGetTemplateToBeUpdated(
-    const std::u16string& template_name,
-    DesksClient::UpdateDeskTemplateCallback callback,
-    desks_storage::DeskModel::GetEntryByUuidStatus status,
-    std::unique_ptr<ash::DeskTemplate> entry) {
-  if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
-    std::move(callback).Run(kStorageError);
-    return;
-  }
-
-  entry->set_template_name(template_name);
-  GetDeskModel()->AddOrUpdateEntry(
-      std::move(entry),
-      base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::OnCapturedDeskTemplate(

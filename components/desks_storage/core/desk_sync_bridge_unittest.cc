@@ -1303,16 +1303,9 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldSucceed) {
 
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
 
-  base::RunLoop loop;
-  bridge()->GetEntryByUUID(
-      kTestUuid1.AsLowercaseString(),
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kOk);
-        EXPECT_TRUE(entry);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = bridge()->GetEntryByUUID(kTestUuid1.AsLowercaseString());
+  EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
+  EXPECT_TRUE(result.entry);
 }
 
 // Verify that event_flag placeholder has been set. This is a short-term
@@ -1322,22 +1315,15 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFillEventFlag) {
 
   AddTwoTemplates();
 
-  base::RunLoop loop;
-  bridge()->GetEntryByUUID(
-      kTestUuid1.AsLowercaseString(),
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kOk);
-        EXPECT_TRUE(entry);
-        for (const auto& [app_id, launch_list] :
-             entry->desk_restore_data()->app_id_to_launch_list()) {
-          for (const auto& [id, restore_data] : launch_list) {
-            EXPECT_EQ(restore_data->event_flag, 0);
-          }
-        }
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = bridge()->GetEntryByUUID(kTestUuid1.AsLowercaseString());
+  EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
+  EXPECT_TRUE(result.entry);
+  for (const auto& [app_id, launch_list] :
+       result.entry->desk_restore_data()->app_id_to_launch_list()) {
+    for (const auto& [id, restore_data] : launch_list) {
+      EXPECT_EQ(restore_data->event_flag, 0);
+    }
+  }
 }
 
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldReturnAdminTemplate) {
@@ -1351,15 +1337,10 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldReturnAdminTemplate) {
   EXPECT_EQ(3ul, bridge()->GetAllEntryUuids().size());
 
   base::RunLoop loop;
-  bridge()->GetEntryByUUID(
-      kTestAdminTemplateUuid1.AsLowercaseString(),
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-        EXPECT_TRUE(entry);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result =
+      bridge()->GetEntryByUUID(kTestAdminTemplateUuid1.AsLowercaseString());
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_TRUE(result.entry);
 }
 
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
@@ -1372,30 +1353,18 @@ TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsNotFound) {
   const std::string nonExistingUuid = base::StringPrintf(kUuidFormat, 5);
 
   base::RunLoop loop;
-  bridge()->GetEntryByUUID(
-      nonExistingUuid,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kNotFound);
-        EXPECT_FALSE(entry);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = bridge()->GetEntryByUUID(nonExistingUuid);
+  EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kNotFound);
+  EXPECT_FALSE(result.entry);
 }
 
 TEST_F(DeskSyncBridgeTest, GetEntryByUUIDShouldFailWhenUuidIsInvalid) {
   InitializeBridge();
 
   base::RunLoop loop;
-  bridge()->GetEntryByUUID(
-      "invalid uuid",
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(status, DeskModel::GetEntryByUuidStatus::kInvalidUuid);
-        EXPECT_FALSE(entry);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = bridge()->GetEntryByUUID("invalid uuid");
+  EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kInvalidUuid);
+  EXPECT_FALSE(result.entry);
 }
 
 TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {

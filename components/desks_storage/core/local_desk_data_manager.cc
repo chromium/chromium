@@ -184,41 +184,38 @@ DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
   return DeskModel::GetAllEntriesResult(status, std::move(entries));
 }
 
-void LocalDeskDataManager::GetEntryByUUID(
-    const std::string& uuid_str,
-    DeskModel::GetEntryByUuidCallback callback) {
-  auto status = std::make_unique<DeskModel::GetEntryByUuidStatus>();
-  auto entry_ptr = std::make_unique<ash::DeskTemplate*>();
-
+DeskModel::GetEntryByUuidResult LocalDeskDataManager::GetEntryByUUID(
+    const std::string& uuid_str) {
   if (cache_status_ != LocalDeskDataManager::CacheStatus::kOk) {
-    *status = DeskModel::GetEntryByUuidStatus::kFailure;
-    std::move(callback).Run(*status, nullptr);
-    return;
+    return DeskModel::GetEntryByUuidResult(
+        DeskModel::GetEntryByUuidStatus::kFailure, nullptr);
   }
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid()) {
-    *status = DeskModel::GetEntryByUuidStatus::kInvalidUuid;
+    return DeskModel::GetEntryByUuidResult(
+        DeskModel::GetEntryByUuidStatus::kInvalidUuid, nullptr);
   }
+
   const ash::DeskTemplateType desk_type = GetDeskTypeOfUuid(uuid);
 
   const auto cache_entry = saved_desks_list_[desk_type].find(uuid);
 
-  if (cache_entry != saved_desks_list_[desk_type].end()) {
-    *status = DeskModel::GetEntryByUuidStatus::kOk;
-    *entry_ptr = cache_entry->second.get();
-  } else {
-    *status = DeskModel::GetEntryByUuidStatus::kNotFound;
-  }
+  if (cache_entry == saved_desks_list_[desk_type].end()) {
+    std::unique_ptr<ash::DeskTemplate> policy_entry =
+        GetAdminDeskTemplateByUUID(uuid_str);
 
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&LocalDeskDataManager::GetEntryByUuidTask,
-                     base::Unretained(this), uuid_str, status.get()),
-      base::BindOnce(&LocalDeskDataManager::OnGetEntryByUuid,
-                     weak_ptr_factory_.GetWeakPtr(), uuid_str,
-                     std::move(status), std::move(entry_ptr),
-                     std::move(callback)));
+    if (policy_entry) {
+      return DeskModel::GetEntryByUuidResult(
+          DeskModel::GetEntryByUuidStatus::kOk, std::move(policy_entry));
+    } else {
+      return DeskModel::GetEntryByUuidResult(
+          DeskModel::GetEntryByUuidStatus::kNotFound, nullptr);
+    }
+  } else {
+    return DeskModel::GetEntryByUuidResult(DeskModel::GetEntryByUuidStatus::kOk,
+                                           cache_entry->second.get()->Clone());
+  }
 }
 
 void LocalDeskDataManager::AddOrUpdateEntry(
@@ -466,41 +463,6 @@ void LocalDeskDataManager::EnsureCacheIsLoaded(
 
   *cache_status_ptr = CacheStatus::kOk;
   return;
-}
-
-void LocalDeskDataManager::GetEntryByUuidTask(
-    const std::string& uuid_str,
-    DeskModel::GetEntryByUuidStatus* out_status_ptr) {
-  if (cache_status_ == LocalDeskDataManager::CacheStatus::kInvalidPath) {
-    *out_status_ptr = DeskModel::GetEntryByUuidStatus::kFailure;
-    return;
-  }
-
-  const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
-  if (!uuid.is_valid()) {
-    *out_status_ptr = DeskModel::GetEntryByUuidStatus::kInvalidUuid;
-    return;
-  }
-}
-
-void LocalDeskDataManager::OnGetEntryByUuid(
-    const std::string& uuid_str,
-    std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
-    std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
-    DeskModel::GetEntryByUuidCallback callback) {
-  if (*entry_ptr_ptr == nullptr) {
-    std::unique_ptr<ash::DeskTemplate> policy_entry =
-        GetAdminDeskTemplateByUUID(uuid_str);
-
-    if (policy_entry) {
-      std::move(callback).Run(DeskModel::GetEntryByUuidStatus::kOk,
-                              std::move(policy_entry));
-    } else {
-      std::move(callback).Run(*status_ptr, nullptr);
-    }
-  } else {
-    std::move(callback).Run(*status_ptr, (*entry_ptr_ptr)->Clone());
-  }
 }
 
 void LocalDeskDataManager::AddOrUpdateEntryTask(

@@ -455,19 +455,14 @@ TEST_F(LocalDeskDataManagerTest, CanGetEntryByUuid) {
   data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager_->GetEntryByUUID(
-      kTestUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-
-        EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid1));
-        EXPECT_EQ(entry->template_name(),
-                  base::UTF8ToUTF16(std::string("desk_01")));
-        EXPECT_EQ(entry->created_time(), kTestTime1);
-      }));
-
   task_environment_.RunUntilIdle();
+
+  auto result = data_manager_->GetEntryByUUID(kTestUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestUuid1), result.entry->uuid());
+  EXPECT_EQ(base::UTF8ToUTF16(std::string("desk_01")),
+            result.entry->template_name());
+  EXPECT_EQ(kTestTime1, result.entry->created_time());
 }
 
 TEST_F(LocalDeskDataManagerTest, GetEntryByUuidShouldReturnAdminTemplate) {
@@ -477,31 +472,20 @@ TEST_F(LocalDeskDataManagerTest, GetEntryByUuidShouldReturnAdminTemplate) {
   // Set admin template with UUID: kTestUuid9.
   data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
 
-  data_manager_->GetEntryByUUID(
-      kTestUuid9,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-        EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestUuid9), entry->uuid());
-        EXPECT_EQ(ash::DeskTemplateSource::kPolicy, entry->source());
-        EXPECT_EQ(base::UTF8ToUTF16(std::string("Admin Template 1")),
-                  entry->template_name());
-      }));
-
   task_environment_.RunUntilIdle();
+
+  auto result = data_manager_->GetEntryByUUID(kTestUuid9);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestUuid9), result.entry->uuid());
+  EXPECT_EQ(ash::DeskTemplateSource::kPolicy, result.entry->source());
+  EXPECT_EQ(base::UTF8ToUTF16(std::string("Admin Template 1")),
+            result.entry->template_name());
 }
 
 TEST_F(LocalDeskDataManagerTest,
        GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
-  base::RunLoop loop;
-  data_manager_->GetEntryByUUID(
-      kTestUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = data_manager_->GetEntryByUUID(kTestUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, result.status);
 }
 
 TEST_F(LocalDeskDataManagerTest, DeskTemplateIsIgnoredIfItHasBadData) {
@@ -509,15 +493,8 @@ TEST_F(LocalDeskDataManagerTest, DeskTemplateIsIgnoredIfItHasBadData) {
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&WriteJunkData, temp_dir_.GetPath()));
 
-  base::RunLoop loop;
-  data_manager_->GetEntryByUUID(
-      kTestUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = data_manager_->GetEntryByUUID(kTestUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, result.status);
 }
 
 TEST_F(LocalDeskDataManagerTest,
@@ -526,15 +503,8 @@ TEST_F(LocalDeskDataManagerTest,
       std::make_unique<LocalDeskDataManager>(kInvalidFilePath, account_id_);
   task_environment_.RunUntilIdle();
 
-  base::RunLoop loop;
-  data_manager_->GetEntryByUUID(
-      kTestUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, status);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = data_manager_->GetEntryByUUID(kTestUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, result.status);
 }
 
 TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
@@ -544,20 +514,14 @@ TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
   data_manager_->AddOrUpdateEntry(std::move(modified_sample_desk_template_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  base::RunLoop loop;
-  data_manager_->GetEntryByUUID(
-      kTestUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
+  task_environment_.RunUntilIdle();
 
-        EXPECT_EQ(entry->uuid(), base::GUID::ParseCaseInsensitive(kTestUuid1));
-        EXPECT_EQ(entry->template_name(),
-                  base::UTF8ToUTF16(std::string("desk_01_mod")));
-        EXPECT_EQ(entry->created_time(), kTestTime1);
-        loop.Quit();
-      }));
-  loop.Run();
+  auto result = data_manager_->GetEntryByUUID(kTestUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestUuid1), result.entry->uuid());
+  EXPECT_EQ(base::UTF8ToUTF16(std::string("desk_01_mod")),
+            result.entry->template_name());
+  EXPECT_EQ(kTestTime1, result.entry->created_time());
 }
 
 TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
@@ -658,19 +622,14 @@ TEST_F(LocalDeskDataManagerTest, CanGetSaveAndRecallDeskEntryByUuid) {
   data_manager_->AddOrUpdateEntry(std::move(sample_save_and_recall_desk_one_),
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
-  data_manager_->GetEntryByUUID(
-      kTestSaveAndRecallDeskUuid1,
-      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
-                                     std::unique_ptr<ash::DeskTemplate> entry) {
-        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
-
-        EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestSaveAndRecallDeskUuid1),
-                  entry->uuid());
-        EXPECT_EQ(u"save_and_recall_desk_01", entry->template_name());
-        EXPECT_EQ(kTestTime1, entry->created_time());
-      }));
-
   task_environment_.RunUntilIdle();
+
+  auto result = data_manager_->GetEntryByUUID(kTestSaveAndRecallDeskUuid1);
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestSaveAndRecallDeskUuid1),
+            result.entry->uuid());
+  EXPECT_EQ(u"save_and_recall_desk_01", result.entry->template_name());
+  EXPECT_EQ(kTestTime1, result.entry->created_time());
 }
 
 TEST_F(LocalDeskDataManagerTest, CanDeleteSaveAndRecallDeskEntry) {

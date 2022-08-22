@@ -199,14 +199,6 @@ class DesksClient : public ash::SessionObserver {
       UpdateDeskTemplateCallback callback,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
-  // Callback function that handles finding a template to be updated in
-  // |UpdateDeskTemplate|
-  void OnGetTemplateToBeUpdated(
-      const std::u16string& template_name,
-      UpdateDeskTemplateCallback callback,
-      desks_storage::DeskModel::GetEntryByUuidStatus status,
-      std::unique_ptr<ash::DeskTemplate> entry);
-
   // Callback function that is called once the DesksController has captured the
   // active desk as a template. Invokes |callback| with |desk_template| as an
   // argument.

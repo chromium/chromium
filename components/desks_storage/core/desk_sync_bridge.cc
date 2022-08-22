@@ -1075,17 +1075,15 @@ DeskModel::GetAllEntriesStatus DeskSyncBridge::GetAllEntries(
   return GetAllEntriesStatus::kOk;
 }
 
-void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
-                                    GetEntryByUuidCallback callback) {
+DeskModel::GetEntryByUuidResult DeskSyncBridge::GetEntryByUUID(
+    const std::string& uuid_str) {
   if (!IsReady()) {
-    std::move(callback).Run(GetEntryByUuidStatus::kFailure, nullptr);
-    return;
+    return GetEntryByUuidResult(GetEntryByUuidStatus::kFailure, nullptr);
   }
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid()) {
-    std::move(callback).Run(GetEntryByUuidStatus::kInvalidUuid, nullptr);
-    return;
+    return GetEntryByUuidResult(GetEntryByUuidStatus::kInvalidUuid, nullptr);
   }
 
   auto it = desk_template_entries_.find(uuid);
@@ -1094,14 +1092,14 @@ void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
         GetAdminDeskTemplateByUUID(uuid_str);
 
     if (policy_entry) {
-      std::move(callback).Run(GetEntryByUuidStatus::kOk,
-                              std::move(policy_entry));
+      return GetEntryByUuidResult(GetEntryByUuidStatus::kOk,
+                                  std::move(policy_entry));
     } else {
-      std::move(callback).Run(GetEntryByUuidStatus::kNotFound, nullptr);
+      return GetEntryByUuidResult(GetEntryByUuidStatus::kNotFound, nullptr);
     }
   } else {
-    std::move(callback).Run(GetEntryByUuidStatus::kOk,
-                            it->second.get()->Clone());
+    return GetEntryByUuidResult(GetEntryByUuidStatus::kOk,
+                                it->second.get()->Clone());
   }
 }
 

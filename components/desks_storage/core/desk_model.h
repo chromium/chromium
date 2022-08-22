@@ -75,11 +75,6 @@ class DeskModel {
     kFailure,
   };
 
-  DeskModel();
-  DeskModel(const DeskModel&) = delete;
-  DeskModel& operator=(const DeskModel&) = delete;
-  virtual ~DeskModel();
-
   // Stores GetAllEntries result.
   struct GetAllEntriesResult {
     GetAllEntriesResult(GetAllEntriesStatus status,
@@ -90,14 +85,26 @@ class DeskModel {
     std::vector<const ash::DeskTemplate*> entries;
   };
 
+  // Stores GetEntryByUuid result.
+  struct GetEntryByUuidResult {
+    GetEntryByUuidResult(GetEntryByUuidStatus status,
+                         std::unique_ptr<ash::DeskTemplate> entry);
+    ~GetEntryByUuidResult();
+
+    GetEntryByUuidStatus status;
+    std::unique_ptr<ash::DeskTemplate> entry;
+  };
+
+  DeskModel();
+  DeskModel(const DeskModel&) = delete;
+  DeskModel& operator=(const DeskModel&) = delete;
+  virtual ~DeskModel();
+
   // TODO(crbug.com/1320805): Once DeskSyncBridge is set to support saved desk,
   // add methods to support operations on both types of templates.
   // Returns all entries in the model.
   virtual GetAllEntriesResult GetAllEntries() = 0;
 
-  using GetEntryByUuidCallback =
-      base::OnceCallback<void(GetEntryByUuidStatus status,
-                              std::unique_ptr<ash::DeskTemplate> entry)>;
   // Get a specific desk template by `uuid`. Actual storage backend does not
   // need to keep desk templates in memory. The storage backend could load the
   // specified desk template into memory and then call the `callback` with a
@@ -107,8 +114,7 @@ class DeskModel {
   // but could not be loaded/parsed, `callback` will be called with `kFailure`
   // and a nullptr. An asynchronous `callback` is used here to accommodate
   // storage backend that need to perform asynchronous I/O.
-  virtual void GetEntryByUUID(const std::string& uuid,
-                              GetEntryByUuidCallback callback) = 0;
+  virtual GetEntryByUuidResult GetEntryByUUID(const std::string& uuid) = 0;
 
   using AddOrUpdateEntryCallback =
       base::OnceCallback<void(AddOrUpdateEntryStatus status)>;

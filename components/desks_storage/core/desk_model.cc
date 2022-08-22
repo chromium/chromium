@@ -32,18 +32,24 @@ DeskModel::GetTemplateJsonStatus ConvertGetEntryStatusToTemplateJsonStatus(
 
 }  // namespace
 
+DeskModel::GetAllEntriesResult::GetAllEntriesResult(
+    GetAllEntriesStatus status,
+    std::vector<const ash::DeskTemplate*> entries)
+    : status(status), entries(std::move(entries)) {}
+DeskModel::GetAllEntriesResult::~GetAllEntriesResult() = default;
+
+DeskModel::GetEntryByUuidResult::GetEntryByUuidResult(
+    GetEntryByUuidStatus status,
+    std::unique_ptr<ash::DeskTemplate> entry)
+    : status(status), entry(std::move(entry)) {}
+DeskModel::GetEntryByUuidResult::~GetEntryByUuidResult() = default;
+
 DeskModel::DeskModel() = default;
 
 DeskModel::~DeskModel() {
   for (DeskModelObserver& observer : observers_)
     observer.OnDeskModelDestroying();
 }
-
-DeskModel::GetAllEntriesResult::GetAllEntriesResult(
-    GetAllEntriesStatus status,
-    std::vector<const ash::DeskTemplate*> entries)
-    : status(status), entries(std::move(entries)) {}
-DeskModel::GetAllEntriesResult::~GetAllEntriesResult() = default;
 
 void DeskModel::AddObserver(DeskModelObserver* observer) {
   DCHECK(observer);
@@ -57,10 +63,9 @@ void DeskModel::RemoveObserver(DeskModelObserver* observer) {
 void DeskModel::GetTemplateJson(const std::string& uuid,
                                 apps::AppRegistryCache* app_cache,
                                 GetTemplateJsonCallback callback) {
-  GetEntryByUUID(
-      uuid,
-      base::BindOnce(&DeskModel::HandleTemplateConversionToPolicyJson,
-                     base::Unretained(this), std::move(callback), app_cache));
+  auto result = GetEntryByUUID(uuid);
+  HandleTemplateConversionToPolicyJson(std::move(callback), app_cache,
+                                       result.status, std::move(result.entry));
 }
 
 void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
