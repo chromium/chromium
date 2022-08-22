@@ -135,11 +135,11 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
 
   // Main constructor. |tab_id| refers to any remoted content managed
   // by this instance (i.e., any remoted content from one tab/WebContents).
-  CastRemotingConnector(media_router::MediaRouter* router,
-                        PrefService* pref_service,
-                        SessionID tab_id,
-                        std::unique_ptr<MediaRemotingDialogCoordinator>
-                            dialog_coordinator = nullptr);
+  CastRemotingConnector(
+      media_router::MediaRouter* router,
+      PrefService* pref_service,
+      SessionID tab_id,
+      std::unique_ptr<MediaRemotingDialogCoordinator> dialog_coordinator);
 
   // Creates a RemotingBridge that implements the requested Remoter service, and
   // binds it to the interface |receiver|.
@@ -218,6 +218,9 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // Called when the user preference to enable/disable remoting changes. Stops
   // remoting if necessary.
   void OnPrefChanged();
+
+  // Returns the user's remoting preference, or nullopt if it isn't set.
+  absl::optional<bool> GetRemotingAllowedUserPref() const;
 
   void set_remoting_allowed_for_testing(bool remoting_allowed) {
     remoting_allowed_ = remoting_allowed;
