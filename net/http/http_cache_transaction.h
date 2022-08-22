@@ -317,6 +317,18 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     HINT_UNUSABLE_PER_CACHING_HEADERS = (1 << 0),
   };
 
+  // An enum representing the state of this transaction. This is for debugging.
+  enum class TransactionState : uint8_t {
+    // Unknown state.
+    kUnknown,
+    // This transaction is directly talking to the network.
+    kNetwork,
+    // This transaction is held by a cache entry as a writer.
+    kAsWriter,
+    // This transaction is held by a cache entry as a reader.
+    kAsReader,
+  };
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
@@ -608,6 +620,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
 
+  static const char* ToString(TransactionState state);
+
   State next_state_{STATE_NONE};
 
   // Used for tracing.
@@ -739,6 +753,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   // True if the Transaction is currently processing the DoLoop.
   bool in_do_loop_ = false;
+
+  // The transaction state at TransitionToReadingState. This is for debugging.
+  TransactionState transaction_state_at_transition_to_reading_state_ =
+      TransactionState::kUnknown;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };
