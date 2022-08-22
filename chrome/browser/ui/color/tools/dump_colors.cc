@@ -32,10 +32,6 @@ const char* enum_names[] = {
 // .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_macros.inc"
 
-#if BUILDFLAG(IS_MAC)
-#include "ui/color/color_mixers.h"
-#endif
-
 // Longest color name, plus a space.  Currently, "SK_ColorTRANSPARENT ".
 constexpr size_t kColorColumnWidth = 19 + 1;
 

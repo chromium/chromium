@@ -38,10 +38,6 @@
 #include "content/public/common/content_features.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
