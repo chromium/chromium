@@ -103,9 +103,6 @@ A non-exhaustive list of work items:
 * `MEMORY_TOOL_REPLACES_ALLOCATOR`
 * `*_SANITIZER` - mainly influences unit tests.
 
-TODO(crbug.com/1151236): don't `PA_COMPONENT_EXPORT()` functions defined
-under `partition_alloc_base/`.
-
 *** note
 Over time, the above list should evolve into a list of macros / GN args
 that influence PartitionAlloc's behavior.
