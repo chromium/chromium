@@ -2161,6 +2161,37 @@ TEST_P(ScrollbarsTest, AutosizeAlmostRemovableScrollbar) {
   }
 }
 
+TEST_P(ScrollbarsTest, AutosizeExpandingContentScrollable) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  SimRequest resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  resource.Complete(R"HTML(
+    <style>
+    body { margin: 0 }
+    #spacer { width: 100px; height: 100px; }
+    </style>
+    <div id="spacer"></div>
+  )HTML");
+  test::RunPendingTasks();
+
+  LocalFrameView* frame_view = WebView().MainFrameImpl()->GetFrameView();
+  ScrollableArea* layout_viewport = frame_view->LayoutViewport();
+
+  WebView().EnableAutoResizeMode(gfx::Size(800, 600), gfx::Size(800, 600));
+  Compositor().BeginFrame();
+
+  // Not scrollable due to no overflow.
+  EXPECT_FALSE(layout_viewport->UserInputScrollable(kVerticalScrollbar));
+
+  GetDocument().getElementById("spacer")->setAttribute(html_names::kStyleAttr,
+                                                       "height: 900px");
+  Compositor().BeginFrame();
+
+  // Now scrollable due to overflow.
+  EXPECT_TRUE(layout_viewport->UserInputScrollable(kVerticalScrollbar));
+}
+
 TEST_P(ScrollbarsTest,
        HideTheOverlayScrollbarNotCrashAfterPLSADisposedPaintLayer) {
   // This test is specifically checking the behavior when overlay scrollbars
