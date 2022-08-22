@@ -55,7 +55,7 @@ bool IsCellularDeviceInhibited() {
          chromeos::network_config::mojom::InhibitReason::kNotInhibited;
 }
 
-bool IsCellularSimLocked() {
+bool IsCellularInhibited() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
@@ -318,7 +318,7 @@ void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
   // (Tether may be enabled by turning on Bluetooth and turning on
   // 'Get data connection' in the Settings > Mobile data subpage).
   if (cellular_state != DeviceStateType::kUnavailable) {
-    if (is_on && IsCellularSimLocked()) {
+    if (is_on && IsCellularInhibited()) {
       ShowCellularSettings();
       return;
     }
