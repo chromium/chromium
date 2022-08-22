@@ -598,7 +598,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
                                  "https://d.r.test", now + base::Days(1))},
     };
 
-    for (const auto& [_, row] : rows) {
+    for (const auto& [key, row] : rows) {
       switch (row.scope) {
         case RateLimitScope::kSource:
           ASSERT_TRUE(AddRateLimitForSource(row)) << row;
