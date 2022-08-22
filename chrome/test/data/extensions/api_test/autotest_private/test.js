@@ -806,6 +806,8 @@ var defaultTests = [
         chrome.test.assertEq('Normal', window.frameMode);
         chrome.test.assertTrue(window.isFrameVisible);
         chrome.test.assertFalse(window.hasOwnProperty('overviewInfo'));
+        chrome.test.assertEq(null, window.fullRestoreWindowAppId);
+        chrome.test.assertEq('mgndgikekgjfcpckkfioiadnlibdjbkf', window.appId);
 
         var change = new Object();
         change.eventType = 'WMEventFullscreen';

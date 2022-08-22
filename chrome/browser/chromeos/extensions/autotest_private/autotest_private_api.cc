@@ -389,7 +389,7 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
       // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
       // Lacros-hosted chrome-apps.
       return api::autotest_private::AppType::APP_TYPE_NONE;
-    }
+  }
   NOTREACHED();
   return api::autotest_private::AppType::APP_TYPE_NONE;
 }
@@ -1185,8 +1185,7 @@ class EventGenerator {
                                              pressed);
         }
         if (task->flags & ui::EF_BACK_MOUSE_BUTTON) {
-          input_injector_->InjectMouseButton(ui::EF_BACK_MOUSE_BUTTON,
-                                             pressed);
+          input_injector_->InjectMouseButton(ui::EF_BACK_MOUSE_BUTTON, pressed);
         }
         if (task->flags & ui::EF_FORWARD_MOUSE_BUTTON) {
           input_injector_->InjectMouseButton(ui::EF_FORWARD_MOUSE_BUTTON,
@@ -4432,13 +4431,17 @@ AutotestPrivateGetAppWindowListFunction::Run() {
                    << " (ID: " << window->GetId()
                    << ") isn't available even though it is an ARC window.";
       }
-
-      std::string* app_id = window->GetProperty(app_restore::kAppIdKey);
-      if (app_id) {
-        window_info.full_restore_window_app_id =
-            std::make_unique<std::string>(*app_id);
-      }
     }
+    std::string* full_restore_window_app_id =
+        window->GetProperty(app_restore::kAppIdKey);
+    if (full_restore_window_app_id) {
+      window_info.full_restore_window_app_id =
+          std::make_unique<std::string>(*full_restore_window_app_id);
+    }
+    std::string* app_id = window->GetProperty(ash::kAppIDKey);
+    if (app_id)
+      window_info.app_id = std::make_unique<std::string>(*app_id);
+
     auto* widget = views::Widget::GetWidgetForNativeWindow(window);
     // Frame information
     auto* immersive_controller =

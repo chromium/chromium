@@ -543,7 +543,13 @@ namespace autotestPrivate {
 
     OverviewInfo? overviewInfo;
 
+    // The identifier of the app associated with the window that was launched
+    // from full restore. This should be same as |appId| when the window was
+    // restored from full restore, otherwise null.
     DOMString? fullRestoreWindowAppId;
+
+    // The identifier of the app associated with the window.
+    DOMString? appId;
   };
 
   dictionary Accelerator {
