@@ -1312,9 +1312,9 @@ void QuicTestPacketMaker::InitializeHeader(uint64_t packet_number,
       header_.version_flag) {
     if (long_header_type_ == quic::INITIAL) {
       header_.retry_token_length_length =
-          quic::VARIABLE_LENGTH_INTEGER_LENGTH_1;
+          quiche::VARIABLE_LENGTH_INTEGER_LENGTH_1;
     }
-    header_.length_length = quic::VARIABLE_LENGTH_INTEGER_LENGTH_2;
+    header_.length_length = quiche::VARIABLE_LENGTH_INTEGER_LENGTH_2;
   }
 }
 

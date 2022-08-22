@@ -381,6 +381,8 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
     is_first_stream = stream_->IsFirstStream();
     load_timing_info->first_early_hints_time =
         stream_->first_early_hints_time();
+    load_timing_info->receive_headers_start =
+        stream_->headers_received_start_time();
   }
 
   if (is_first_stream) {
