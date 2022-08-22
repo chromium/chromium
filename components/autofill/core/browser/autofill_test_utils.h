@@ -125,6 +125,13 @@ void CreateTestFormField(const char* label,
                          const char* type,
                          FormFieldData* field);
 
+void CreateTestFormField(const char* label,
+                         const char* name,
+                         const char* value,
+                         const char* type,
+                         const char* autocomplete,
+                         FormFieldData* field);
+
 // Provides a quick way to populate a select field.
 void CreateTestSelectField(const char* label,
                            const char* name,

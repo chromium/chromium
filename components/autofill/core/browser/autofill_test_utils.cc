@@ -170,6 +170,16 @@ void CreateTestFormField(const char* label,
   field->is_focusable = true;
 }
 
+void CreateTestFormField(const char* label,
+                         const char* name,
+                         const char* value,
+                         const char* type,
+                         const char* autocomplete,
+                         FormFieldData* field) {
+  CreateTestFormField(label, name, value, type, field);
+  field->autocomplete_attribute = autocomplete;
+}
+
 void CreateTestSelectField(const char* label,
                            const char* name,
                            const char* value,

@@ -85,6 +85,14 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   int GetPackedCreditCardID(int credit_card_id);
 
   void AddSeenForm(const FormData& form,
+                   const std::vector<ServerFieldType>& field_types,
+                   bool preserve_values_in_form_structure = false) {
+    AddSeenForm(form, /*heuristic_types=*/field_types,
+                /*server_types=*/field_types,
+                preserve_values_in_form_structure);
+  }
+
+  void AddSeenForm(const FormData& form,
                    const std::vector<ServerFieldType>& heuristic_types,
                    const std::vector<ServerFieldType>& server_types,
                    bool preserve_values_in_form_structure = false);
