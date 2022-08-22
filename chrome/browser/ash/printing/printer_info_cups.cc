@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
@@ -135,7 +136,7 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
   if (result != ::printing::PrinterQueryResult::kSuccess) {
     VLOG(1) << "Could not reach printer";
     std::move(callback).Run(result, ::printing::PrinterStatus(), std::string(),
-                            {}, false);
+                            {}, false, {});
     return;
   }
 
@@ -148,7 +149,9 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
 
   std::move(callback).Run(result, printer_status, printer_info.make_and_model,
                           printer_info.document_formats,
-                          IsAutoconf(printer_info));
+                          IsAutoconf(printer_info),
+                          {.oauth_server = printer_info.oauth_server,
+                           .oauth_scope = printer_info.oauth_scope});
 }
 
 }  // namespace

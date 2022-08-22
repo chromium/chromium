@@ -88,6 +88,10 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterInfo {
 
   // Does ipp-features-supported contain 'ipp-everywhere'.
   bool ipp_everywhere = false;
+
+  // URI of OAuth2 Authorization Server and scope. Empty strings if not set.
+  std::string oauth_server;
+  std::string oauth_scope;
 };
 
 // Specifies classes of jobs.

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/printing/cups_printer_status_creator.h"
 
+#include "chrome/browser/ash/printing/printer_info.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
@@ -16,7 +18,8 @@ using SeverityFromPrinter = printing::PrinterStatus::PrinterReason::Severity;
 
 CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
     const std::string& printer_id,
-    const printing::PrinterStatus& printer_status) {
+    const printing::PrinterStatus& printer_status,
+    const chromeos::PrinterAuthenticationInfo& auth_info) {
   CupsPrinterStatus cups_printer_status(printer_id);
 
   for (const auto& reason : printer_status.reasons) {
@@ -27,6 +30,7 @@ CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
     cups_printer_status.AddStatusReason(
         PrinterReasonToCupsReason(reason.reason),
         PrinterSeverityToCupsSeverity(reason.severity));
+    cups_printer_status.SetAuthenticationInfo(auth_info);
   }
 
   return cups_printer_status;

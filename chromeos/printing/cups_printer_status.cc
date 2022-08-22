@@ -54,4 +54,9 @@ void CupsPrinterStatus::AddStatusReason(
   status_reasons_.emplace(CupsPrinterStatusReason(reason, severity));
 }
 
+void CupsPrinterStatus::SetAuthenticationInfo(
+    const PrinterAuthenticationInfo& auth_info) {
+  auth_info_ = auth_info;
+}
+
 }  // namespace chromeos

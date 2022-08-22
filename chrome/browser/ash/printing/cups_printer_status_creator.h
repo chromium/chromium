@@ -10,10 +10,6 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "printing/printer_status.h"
 
-namespace chromeos {
-class CupsPrinterStatus;
-}
-
 namespace printing {
 struct PrinterStatus;
 }  // namespace printing
@@ -22,7 +18,8 @@ namespace ash {
 
 chromeos::CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
     const std::string& printer_id,
-    const printing::PrinterStatus& printer_status);
+    const printing::PrinterStatus& printer_status,
+    const chromeos::PrinterAuthenticationInfo& auth_info);
 
 chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason
 PrinterReasonToCupsReason(

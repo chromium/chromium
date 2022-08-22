@@ -14,6 +14,13 @@
 
 namespace chromeos {
 
+// Holds information about authentication required by a printer.
+struct PrinterAuthenticationInfo {
+  // URI of OAuth2 Authorization Server and scope. Empty strings if not set.
+  std::string oauth_server;
+  std::string oauth_scope;
+};
+
 // A container for the results of a printer status query. A printer status query
 // can return multiple error reasons so CupsPrinterStatus contains multiple
 // CupsPrinterStatusReasons. |timestamp| is set at the time of CupsPrinterStatus
@@ -65,15 +72,22 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
   // printer.
   const base::flat_set<CupsPrinterStatusReason>& GetStatusReasons() const;
 
+  const PrinterAuthenticationInfo& GetAuthenticationInfo() const {
+    return auth_info_;
+  }
+
   const base::Time& GetTimestamp() const;
 
   // Adds a new CupsPrinterStatusReason to an existing CupsPrinterStatus.
   void AddStatusReason(const CupsPrinterStatusReason::Reason& reason,
                        const CupsPrinterStatusReason::Severity& severity);
 
+  void SetAuthenticationInfo(const PrinterAuthenticationInfo& auth_info);
+
  private:
   std::string printer_id_;
   base::flat_set<CupsPrinterStatusReason> status_reasons_;
+  PrinterAuthenticationInfo auth_info_;
   base::Time timestamp_;
 };
 

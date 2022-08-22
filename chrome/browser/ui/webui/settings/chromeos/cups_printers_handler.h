@@ -39,6 +39,9 @@ class GURL;
 class Profile;
 
 namespace chromeos {
+
+struct PrinterAuthenticationInfo;
+
 namespace settings {
 
 // Chrome OS CUPS printing settings page UI handler.
@@ -88,13 +91,15 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // printer. |make_and_model| is the unparsed printer-make-and-model string.
   // |ipp_everywhere| indicates if configuration using the CUPS IPP Everywhere
   // driver should be attempted. If |result| is not SUCCESS, the values of
-  // |printer_status|, |make_and_model|, and |ipp_everywhere| are not specified.
+  // |printer_status|, |make_and_model|, |document_formats|, |ipp_everywhere|,
+  // and |auth_info| are not specified.
   void OnAutoconfQueried(const std::string& callback_id,
                          printing::PrinterQueryResult result,
                          const printing::PrinterStatus& printer_status,
                          const std::string& make_and_model,
                          const std::vector<std::string>& document_formats,
-                         bool ipp_everywhere);
+                         bool ipp_everywhere,
+                         const PrinterAuthenticationInfo& auth_info);
 
   // Handles the callback for HandleGetPrinterInfo for a discovered printer.
   void OnAutoconfQueriedDiscovered(
@@ -104,7 +109,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const printing::PrinterStatus& printer_status,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
-      bool ipp_everywhere);
+      bool ipp_everywhere,
+      const PrinterAuthenticationInfo& auth_info);
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,

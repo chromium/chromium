@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
@@ -499,7 +500,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
       !IsValidPrinterUri(uri)) {
     // Run the failure callback.
     OnAutoconfQueried(callback_id, PrinterQueryResult::kUnknownFailure,
-                      printing::PrinterStatus(), "", {}, false);
+                      printing::PrinterStatus(), "", {}, false, {});
     return;
   }
 
@@ -512,10 +513,11 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     const std::string& callback_id,
     Printer printer,
     PrinterQueryResult result,
-    const printing::PrinterStatus& printer_status,
+    const printing::PrinterStatus& /*printer_status*/,
     const std::string& make_and_model,
-    const std::vector<std::string>& document_formats,
-    bool ipp_everywhere) {
+    const std::vector<std::string>& /*document_formats*/,
+    bool ipp_everywhere,
+    const PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
 
   const bool success = result == PrinterQueryResult::kSuccess;
@@ -552,10 +554,11 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
 void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& callback_id,
     PrinterQueryResult result,
-    const printing::PrinterStatus& printer_status,
+    const printing::PrinterStatus& /*printer_status*/,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
-    bool ipp_everywhere) {
+    bool ipp_everywhere,
+    const PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
   const bool success = result == PrinterQueryResult::kSuccess;
 
