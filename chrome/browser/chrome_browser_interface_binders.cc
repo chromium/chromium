@@ -790,7 +790,10 @@ void PopulateChromeFrameBinders(
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsSubApps) &&
-      render_frame_host->IsInPrimaryMainFrame()) {
+      !render_frame_host->GetParentOrOuterDocument()) {
+    // The service binder will reject non-primary main frames, but we still need
+    // to register it for them because a non-primary main frame could become a
+    // primary main frame at a later time (eg. a prerendered page).
     map->Add<blink::mojom::SubAppsService>(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
   }
