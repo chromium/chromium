@@ -402,6 +402,7 @@ class ManagedStateView : public views::Button {
   ~ManagedStateView() override = default;
 
   // views::Button:
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   const char* GetClassName() const override { return "ManagedStateView"; }
   void OnThemeChanged() override;
 
@@ -415,6 +416,12 @@ class ManagedStateView : public views::Button {
   views::ImageView* image_ = nullptr;
   const gfx::VectorIcon& icon_;
 };
+
+views::View* ManagedStateView::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  // Tooltip events should be handled by this top-level view.
+  return HitTestPoint(point) ? this : nullptr;
+}
 
 void ManagedStateView::OnThemeChanged() {
   views::Button::OnThemeChanged();
