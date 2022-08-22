@@ -47,6 +47,8 @@ const base::Feature kIPHReadingListInSidePanelFeature{
     "IPH_ReadingListInSidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHSideSearchAutoTriggeringFeature{
+    "IPH_SideSearchAutoTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHSideSearchFeature{"IPH_SideSearch",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTabSearchFeature{"IPH_TabSearch",

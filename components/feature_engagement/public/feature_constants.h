@@ -45,6 +45,7 @@ extern const base::Feature kIPHReadingListEntryPointFeature;
 extern const base::Feature kIPHIntentChipFeature;
 extern const base::Feature kIPHReadingListInSidePanelFeature;
 extern const base::Feature kIPHReopenTabFeature;
+extern const base::Feature kIPHSideSearchAutoTriggeringFeature;
 extern const base::Feature kIPHSideSearchFeature;
 extern const base::Feature kIPHTabSearchFeature;
 extern const base::Feature kIPHWebUITabStripFeature;
