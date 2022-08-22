@@ -869,16 +869,30 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)initializePrefObservers {
   // Track changes to local state prefs.
-  _localStatePrefChangeRegistrar.Init(GetApplicationContext()->GetLocalState());
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  _localStatePrefChangeRegistrar.Init(localState);
   _localStatePrefObserverBridge = std::make_unique<PrefObserverBridge>(self);
   _localStatePrefObserverBridge->ObserveChangesForPreference(
       metrics::prefs::kMetricsReportingEnabled,
       &_localStatePrefChangeRegistrar);
 
-  // Calls the onPreferenceChanged function in case there was
-  // a change to the observed preferences before the observer
-  // bridge was set up.
-  [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
+  // Calls the onPreferenceChanged function in case there was a change to the
+  // observed preferences before the observer bridge was set up. However, if the
+  // metrics reporting pref is still unset (has default value), then do not
+  // call. This likely means that the user is still on the welcome screen during
+  // the first run experience (FRE), and calling onPreferenceChanged here would
+  // clear the provisional client ID (in
+  // MetricsMediator::updateMetricsPrefsOnPermissionChange). The provisional
+  // client ID is crucial for field trial assignment consistency between the
+  // first session and follow-up sessions, and is promoted to be the real client
+  // ID if the user enables metrics reporting in the FRE. Otherwise, it is
+  // discarded, as would happen here if onPreferenceChanged was called while the
+  // user was still on the welcome screen and did yet enable/disable metrics
+  // reporting.
+  if (!localState->FindPreference(metrics::prefs::kMetricsReportingEnabled)
+           ->IsDefaultValue()) {
+    [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
+  }
 
   // Track changes to default search engine.
   TemplateURLService* service =
