@@ -1981,10 +1981,10 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
     if (app_controller_ && app_controller_->HasMinimalUiButtons())
       return blink::mojom::DisplayMode::kMinimalUi;
 
-    // TODO(crbug.com/1333978): Sync with the value of
-    // browser_view()->IsWindowControlsOverlayEnabled().
-    if (app_controller_ && app_controller_->AppUsesWindowControlsOverlay())
+    if (app_controller_ && app_controller_->AppUsesWindowControlsOverlay() &&
+        !web_contents->GetWindowsControlsOverlayRect().IsEmpty()) {
       return blink::mojom::DisplayMode::kWindowControlsOverlay;
+    }
 
     // TODO(crbug.com/1325830): Add check for the Window Management API
     // permission status.
