@@ -2651,6 +2651,27 @@ if (enable_java_templates) {
           "${_shared_resources_allowlist_target}__compile_resources"
     }
 
+    if (_incremental_apk) {
+      _incremental_android_manifest =
+          "$target_gen_dir/${_template_name}/AndroidManifest.incremental.xml"
+      _incremental_manifest_target_name = "${target_name}__incremental_manifest"
+      action_with_pydeps(_incremental_manifest_target_name) {
+        deps = [ ":$_merge_manifest_target" ]
+        script =
+            "//build/android/incremental_install/generate_android_manifest.py"
+        inputs = [ _android_manifest ]
+        outputs = [ _incremental_android_manifest ]
+
+        args = [
+          "--disable-isolated-processes",
+          "--src-manifest",
+          rebase_path(_android_manifest, root_build_dir),
+          "--dst-manifest",
+          rebase_path(_incremental_android_manifest, root_build_dir),
+        ]
+      }
+    }
+
     _compile_resources_target = "${_template_name}__compile_resources"
     _compile_resources_rtxt_out =
         "${target_gen_dir}/${_compile_resources_target}_R.txt"
@@ -2717,6 +2738,10 @@ if (enable_java_templates) {
         foreach(_dep, invoker.static_library_dependent_targets) {
           deps += [ "${_dep.name}__compile_resources" ]
         }
+      }
+      if (_incremental_apk) {
+        android_manifest = _incremental_android_manifest
+        android_manifest_dep = ":$_incremental_manifest_target_name"
       }
 
       if (defined(invoker.apk_under_test)) {
@@ -3307,41 +3332,6 @@ if (enable_java_templates) {
         }
       }
 
-      if (_incremental_apk) {
-        _incremental_compiled_resources_path = "${_base_path}_incremental.ap_"
-        _incremental_compile_resources_target_name =
-            "${target_name}__compile_incremental_resources"
-
-        action_with_pydeps(_incremental_compile_resources_target_name) {
-          deps = [
-            ":$_build_config_target",
-            ":$_compile_resources_target",
-            ":$_merge_manifest_target",
-          ]
-          script =
-              "//build/android/incremental_install/generate_android_manifest.py"
-          inputs = [
-            _android_manifest,
-            _build_config,
-            _arsc_resources_path,
-          ]
-          outputs = [ _incremental_compiled_resources_path ]
-
-          args = [
-            "--disable-isolated-processes",
-            "--src-manifest",
-            rebase_path(_android_manifest, root_build_dir),
-            "--in-apk",
-            rebase_path(_arsc_resources_path, root_build_dir),
-            "--out-apk",
-            rebase_path(_incremental_compiled_resources_path, root_build_dir),
-            "--aapt2-path",
-            rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
-            "--android-sdk-jars=@FileArg($_rebased_build_config:android:sdk_jars)",
-          ]
-        }
-      }
-
       _create_apk_target = "${_template_name}__create"
       _final_deps += [ ":$_create_apk_target" ]
       package_apk("$_create_apk_target") {
@@ -3369,6 +3359,7 @@ if (enable_java_templates) {
         build_config = _build_config
         min_sdk_version = _min_sdk_version
         uncompress_shared_libraries = _uncompress_shared_libraries
+        packaged_resources_path = _arsc_resources_path
 
         # Need full deps rather than _non_java_deps, because loadable_modules
         # may include .so files extracted by __unpack_aar targets.
@@ -3386,11 +3377,15 @@ if (enable_java_templates) {
           _dex_target = "//build/android/incremental_install:apk_dex"
 
           deps += [
-            ":${_incremental_compile_resources_target_name}",
+            ":$_compile_resources_target",
             _dex_target,
           ]
 
           dex_path = get_label_info(_dex_target, "target_out_dir") + "/apk.dex"
+
+          # Incremental APKs cannot be installed via `adb install` as such they
+          # should be clearly named/labeled "incremental".
+          output_apk_path = _incremental_apk_path
 
           # All native libraries are side-loaded, so use a placeholder to force
           # the proper bitness for the app.
@@ -3399,9 +3394,6 @@ if (enable_java_templates) {
           if (_has_native_libs && !defined(native_lib_placeholders)) {
             native_lib_placeholders = [ "libfix.crbug.384638.so" ]
           }
-
-          packaged_resources_path = _incremental_compiled_resources_path
-          output_apk_path = _incremental_apk_path
         } else {
           loadable_modules = _loadable_modules
           deps += _all_native_libs_deps + [
@@ -3414,13 +3406,12 @@ if (enable_java_templates) {
             deps += [ _final_dex_target_dep ]
           }
 
-          packaged_resources_path = _arsc_resources_path
+          output_apk_path = _final_apk_path
 
           if (defined(_native_libs_filearg)) {
             native_libs_filearg = _native_libs_filearg
             secondary_abi_native_libs_filearg = "@FileArg($_rebased_build_config:native:secondary_abi_libraries)"
           }
-          output_apk_path = _final_apk_path
         }
       }
     }
