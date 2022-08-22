@@ -316,10 +316,11 @@ std::string FontSizeTabHelper::GetUserZoomMultiplierKeyUrlPart() const {
 }
 
 double FontSizeTabHelper::GetCurrentUserZoomMultiplier() const {
-  const base::Value* pref =
-      GetPrefService()->Get(prefs::kIosUserZoomMultipliers);
+  const base::Value::Dict& pref =
+      GetPrefService()->GetValueDict(prefs::kIosUserZoomMultipliers);
 
-  return pref->FindDoublePath(GetCurrentUserZoomMultiplierKey()).value_or(1);
+  return pref.FindDoubleByDottedPath(GetCurrentUserZoomMultiplierKey())
+      .value_or(1);
 }
 
 void FontSizeTabHelper::StoreCurrentUserZoomMultiplier(double multiplier) {
