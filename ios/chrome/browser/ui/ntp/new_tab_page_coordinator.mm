@@ -610,7 +610,7 @@ namespace {
 }
 
 - (void)selectFeedType:(FeedType)feedType {
-  if (!self.started) {
+  if (!self.ntpViewController.viewDidAppear) {
     self.selectedFeed = feedType;
     return;
   }
