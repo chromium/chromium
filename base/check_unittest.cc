@@ -392,8 +392,6 @@ std::ostream& operator<<(std::ostream& out,
 }
 #endif  // CHECK_WILL_STREAM()
 
-// TODO(crbug.com/1354494): Short term fix by sheriff to get compiling.
-#if !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 TEST_F(CheckTest, OstreamVsToString) {
   StructWithOstream a, b;
   EXPECT_CHECK("Check failed: a == b (ostream vs. ostream)", CHECK_EQ(a, b));
@@ -408,7 +406,6 @@ TEST_F(CheckTest, OstreamVsToString) {
   EXPECT_CHECK("Check failed: g == h (ToString+ostream vs. ToString+ostream)",
                CHECK_EQ(g, h));
 }
-#endif
 
 #define EXPECT_LOG_ERROR(expected_line, expr, msg)                             \
   do {                                                                         \
