@@ -77,13 +77,15 @@
 </iron-collapse>
 <template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
   <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-      id="alwaysTranslateDialog" on-close="onAlwaysTranslateDialogClose_"
+      language-helper="{{languageHelper}}" id="alwaysTranslateDialog"
+      on-close="onAlwaysTranslateDialogClose_"
       on-languages-added="onAlwaysTranslateLanguagesAdded_">
   </settings-add-languages-dialog>
 </template>
 <template is="dom-if" if="[[showAddNeverTranslateDialog_]]" restamp>
   <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-      id="neverTranslateDialog" on-close="onNeverTranslateDialogClose_"
+      language-helper="{{languageHelper}}" id="neverTranslateDialog"
+      on-close="onNeverTranslateDialogClose_"
       on-languages-added="onNeverTranslateLanguagesAdded_">
   </settings-add-languages-dialog>
 </template>

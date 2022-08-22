@@ -750,6 +750,20 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   /**
+   * @param language
+   * @return the [displayName] - [nativeDisplayName] if displayName and
+   * nativeDisplayName are different.
+   * If they're the same than only returns the displayName.
+   */
+  getFullName(language: chrome.languageSettingsPrivate.Language): string {
+    let fullName = language.displayName;
+    if (language.displayName !== language.nativeDisplayName) {
+      fullName += ' - ' + language.nativeDisplayName;
+    }
+    return fullName;
+  }
+
+  /**
    * @return True if the language is for ARC IMEs.
    */
   isLanguageCodeForArcIme(languageCode: string): boolean {

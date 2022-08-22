@@ -94,11 +94,7 @@ export class SettingsTranslatePageElement extends
   */
   private getTargetLanguageDisplayOption_(
         item: chrome.languageSettingsPrivate.Language): string {
-    let formattedLanguage = item.displayName;
-    if (item.displayName !== item.nativeDisplayName) {
-      formattedLanguage += ' - ' + item.nativeDisplayName;
-    }
-    return formattedLanguage;
+    return this.languageHelper.getFullName(item);
   }
 
   /**

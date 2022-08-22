@@ -22,6 +22,7 @@ import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
+import {LanguageHelper} from './languages_types.js';
 
 export interface SettingsAddLanguagesDialogElement {
   $: {
@@ -57,6 +58,8 @@ export class SettingsAddLanguagesDialogElement extends
         notify: true,
       },
 
+      languageHelper: Object,
+
       languagesToAdd_: {
         type: Object,
         value() {
@@ -77,6 +80,7 @@ export class SettingsAddLanguagesDialogElement extends
   }
 
   languages: chrome.languageSettingsPrivate.Language[];
+  languageHelper: LanguageHelper;
   private languagesToAdd_: Set<string>;
   private disableActionButton_: boolean;
   private filterValue_: string;
@@ -126,12 +130,7 @@ export class SettingsAddLanguagesDialogElement extends
 
   private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
       string {
-    let displayText = language.displayName;
-    // If the native name is different, add it.
-    if (language.displayName !== language.nativeDisplayName) {
-      displayText += ' - ' + language.nativeDisplayName;
-    }
-    return displayText;
+    return this.languageHelper.getFullName(language);
   }
 
   /**
