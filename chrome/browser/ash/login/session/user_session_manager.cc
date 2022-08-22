@@ -1321,30 +1321,29 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
                                     kEventPrepareProfile, TRACE_ID_LOCAL(this));
 
   g_browser_process->profile_manager()->CreateProfileAsync(
-      profile_path, base::BindRepeating(&UserSessionManager::OnProfileCreated,
-                                        AsWeakPtr(), user_context_));
-}
-
-void UserSessionManager::OnProfileCreated(const UserContext& user_context,
-                                          Profile* profile,
-                                          Profile::CreateStatus status) {
-  switch (status) {
-    case Profile::CREATE_STATUS_CREATED:
-      CHECK(profile);
-      // Profile created but before initializing extensions and promo resources.
-      InitProfilePreferences(profile, user_context);
-      break;
-    case Profile::CREATE_STATUS_INITIALIZED:
-      CHECK(profile);
-      // Profile is created, extensions and promo resources are initialized.
-      // At this point all other Chrome OS services will be notified that it is
-      // safe to use this profile.
-      UserProfileInitialized(profile, user_context.GetAccountId());
-      break;
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      NOTREACHED();
-      break;
-  }
+      profile_path,
+      /*initialized_callback=*/
+      base::BindOnce(
+          [](base::WeakPtr<UserSessionManager> self,
+             const UserContext& user_context, Profile* profile) {
+            CHECK(profile);
+            // Profile is created, extensions and promo resources
+            // are initialized. At this point all other Chrome OS
+            // services will be notified that it is safe to use
+            // this profile.
+            self->UserProfileInitialized(profile, user_context.GetAccountId());
+          },
+          AsWeakPtr(), user_context_),
+      /*created_callback=*/
+      base::BindOnce(
+          [](base::WeakPtr<UserSessionManager> self,
+             const UserContext& user_context, Profile* profile) {
+            CHECK(profile);
+            // Profile created but before initializing extensions and
+            // promo resources.
+            self->InitProfilePreferences(profile, user_context);
+          },
+          AsWeakPtr(), user_context_));
 }
 
 void UserSessionManager::InitProfilePreferences(
@@ -1739,7 +1738,7 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
     ProfileHelper::Get()->FlushProfile(profile);
 
   // TODO(nkostylev): This pointer should probably never be NULL, but it looks
-  // like OnProfileCreated() may be getting called before
+  // like CreateProfileAsync callback may be getting called before
   // UserSessionManager::PrepareProfile() has set `delegate_` when Chrome is
   // killed during shutdown in tests -- see http://crosbug.com/18269.  Replace
   // this 'if' statement with a CHECK(delegate_) once the underlying issue is

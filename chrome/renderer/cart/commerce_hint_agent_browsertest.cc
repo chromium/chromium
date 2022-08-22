@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -99,15 +100,6 @@ cart_db::ChromeCartContentProto BuildProtoWithProducts(
   }
   return proto;
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 const char kMockExample[] = "guitarcenter.com";
 const char kMockExampleFallbackURL[] = "https://www.guitarcenter.com/cart";
@@ -857,10 +849,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_MultipleProfiles) {
   // Create another profile.
   base::FilePath profile_path2 =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile_path2, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, profile_path2);
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
 
   NavigateToURL("https://www.guitarcenter.com/");

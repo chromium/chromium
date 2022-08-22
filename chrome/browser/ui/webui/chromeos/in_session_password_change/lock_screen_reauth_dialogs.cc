@@ -138,29 +138,28 @@ void LockScreenStartReauthDialog::Show() {
   g_dialog = this;
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileHelper::GetLockScreenProfileDir(),
-      base::BindRepeating(&LockScreenStartReauthDialog::OnProfileCreated,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&LockScreenStartReauthDialog::OnProfileInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LockScreenStartReauthDialog::OnProfileCreated(
-    Profile* profile,
-    Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    profile_ = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    g_dialog->ShowSystemDialogForBrowserContext(profile_);
-    const NetworkStateInformer::State state = network_state_informer_->state();
-    // Show network or captive portal screen if needed.
-    // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
-    // properly.
-    if (state == NetworkStateInformer::OFFLINE) {
-      ShowLockScreenNetworkDialog();
-    } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
-      ShowLockScreenCaptivePortalDialog();
-    }
-  } else if (status != Profile::CREATE_STATUS_CREATED) {
-    // TODO(mohammedabdon): Create some generic way to show an error on the lock
-    // screen.
+void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
+  if (!profile) {
+    // TODO(mohammedabdon): Create some generic way to show an error on
+    // the lock screen.
     LOG(ERROR) << "Failed to load lockscreen profile";
+    return;
+  }
+
+  profile_ = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  g_dialog->ShowSystemDialogForBrowserContext(profile_);
+  const NetworkStateInformer::State state = network_state_informer_->state();
+  // Show network or captive portal screen if needed.
+  // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
+  // properly.
+  if (state == NetworkStateInformer::OFFLINE) {
+    ShowLockScreenNetworkDialog();
+  } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
+    ShowLockScreenCaptivePortalDialog();
   }
 }
 

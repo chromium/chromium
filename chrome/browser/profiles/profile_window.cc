@@ -86,16 +86,11 @@ void UnblockExtensions(Profile* profile) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Helper function to run a callback on a profile once it's initialized.
-void ProfileLoadedCallback(base::OnceCallback<void(Profile*)>& callback,
-                           Profile* profile,
-                           Profile::CreateStatus status) {
+void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
+                           Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
+  if (!profile)
     return;
-
-  // This function is called with `CREATE_STATUS_INITIALIZED` at most once, so
-  // it is fine to move the callback.
   if (callback)
     std::move(callback).Run(profile);
 }
@@ -227,8 +222,7 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
 void LoadProfileAsync(const base::FilePath& path,
                       base::OnceCallback<void(Profile*)> callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
-      path, base::BindRepeating(&ProfileLoadedCallback,
-                                base::OwnedRef(std::move(callback))));
+      path, base::BindOnce(&ProfileLoadedCallback, std::move(callback)));
 }
 
 void SwitchToProfile(const base::FilePath& path,
@@ -241,8 +235,7 @@ void SwitchToProfile(const base::FilePath& path,
                      /*unblock_extensions=*/false);
   g_browser_process->profile_manager()->CreateProfileAsync(
       path,
-      base::BindRepeating(&ProfileLoadedCallback,
-                          base::OwnedRef(std::move(open_browser_callback))));
+      base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));
 }
 
 void SwitchToGuestProfile(base::OnceCallback<void(Profile*)> callback) {

@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -489,19 +490,8 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
     DebuggerApiTest::SetUpOnMainThread();
     profile_manager_ = g_browser_process->profile_manager();
 
-    base::RunLoop run_loop;
-    profile_manager_->CreateProfileAsync(
-        profile_manager_->GenerateNextProfileDirectoryPath(),
-        base::BindRepeating(
-            [](CrossProfileDebuggerApiTest* self, base::RunLoop* run_loop,
-               Profile* profile, Profile::CreateStatus status) {
-              if (status == Profile::CREATE_STATUS_INITIALIZED) {
-                self->other_profile_ = profile;
-                run_loop->Quit();
-              }
-            },
-            this, &run_loop));
-    run_loop.Run();
+    other_profile_ = profiles::testing::CreateProfileSync(
+        profile_manager_, profile_manager_->GenerateNextProfileDirectoryPath());
     otr_profile_ = profile()->GetPrimaryOTRProfile(true);
   }
 

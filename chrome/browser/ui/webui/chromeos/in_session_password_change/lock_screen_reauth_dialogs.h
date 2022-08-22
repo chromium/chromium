@@ -81,7 +81,7 @@ class LockScreenStartReauthDialog
  private:
   class ModalDialogManagerCleanup;
 
-  void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
+  void OnProfileInitialized(Profile* profile);
   void DeleteLockScreenNetworkDialog();
 
   // BaseLockDialog:

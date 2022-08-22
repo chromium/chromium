@@ -254,13 +254,12 @@ class StartupBrowserCreator {
                               const base::FilePath& cur_dir,
                               Profile* profile);
 
-  // Callback after a profile has been created.
-  static void ProcessCommandLineOnProfileCreated(
+  // Callback after a profile has been initialized.
+  static void ProcessCommandLineOnProfileInitialized(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       StartupProfileMode mode,
-      Profile* profile,
-      Profile::CreateStatus status);
+      Profile* profile);
 
   // Returns true once a profile was activated. Used by the
   // StartupBrowserCreatorTest.LastUsedProfileActivated test.

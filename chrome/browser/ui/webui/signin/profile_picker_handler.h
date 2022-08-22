@@ -104,13 +104,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
                                  Profile* profile);
-  void OnProfileCreated(absl::optional<SkColor> profile_color,
-                        bool create_shortcut,
-                        Profile* profile,
-                        Profile::CreateStatus status);
-  void OnProfileCreationSuccess(absl::optional<SkColor> profile_color,
-                                bool create_shortcut,
-                                Profile* profile);
+  void OnProfileInitialized(absl::optional<SkColor> profile_color,
+                            bool create_shortcut,
+                            Profile* profile);
   void PushProfilesList();
   base::Value::List GetProfilesList();
   // Adds a profile with `profile_path` to `profiles_order_`.

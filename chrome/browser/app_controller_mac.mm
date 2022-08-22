@@ -1965,12 +1965,12 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 namespace {
 
-void UpdateProfileInUse(Profile* profile, Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    AppController* controller =
-        base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-    [controller setLastProfile:profile];
-  }
+void UpdateProfileInUse(Profile* profile) {
+  if (!profile)
+    return;
+  AppController* controller =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  [controller setLastProfile:profile];
 }
 
 void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
@@ -2014,16 +2014,9 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
 }
 
 // Returns the profile to be used for new windows (or nullptr if it fails).
-Profile* GetSafeProfile(Profile* loaded_profile, Profile::CreateStatus status) {
-  switch (status) {
-    case Profile::CREATE_STATUS_INITIALIZED:
-      break;
-    case Profile::CREATE_STATUS_CREATED:
-      NOTREACHED() << "Should only be called when profile loading is complete";
-      [[fallthrough]];
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      return nullptr;
-  }
+Profile* GetSafeProfile(Profile* loaded_profile) {
+  if (!loaded_profile)
+    return nullptr;
   AppController* controller =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
   if (!controller)
@@ -2034,13 +2027,10 @@ Profile* GetSafeProfile(Profile* loaded_profile, Profile::CreateStatus status) {
 
 // Called when the profile has been loaded for RunIn*ProfileSafely(). This
 // profile may not be safe to use for new windows (due to policies).
-void OnProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
+void OnProfileLoaded(base::OnceCallback<void(Profile*)> callback,
                      app_controller_mac::ProfileLoadFailureBehavior on_failure,
-                     Profile* loaded_profile,
-                     Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_CREATED)
-    return;  // Profile loading is not complete, wait to be called again.
-  Profile* safe_profile = GetSafeProfile(loaded_profile, status);
+                     Profile* loaded_profile) {
+  Profile* safe_profile = GetSafeProfile(loaded_profile);
   if (!safe_profile) {
     switch (on_failure) {
       case app_controller_mac::kShowProfilePickerOnFailure:
@@ -2066,7 +2056,7 @@ bool IsOpeningNewWindow() {
 void CreateGuestProfileIfNeeded() {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetGuestProfilePath(),
-      base::BindRepeating(&UpdateProfileInUse));
+      base::BindOnce(&UpdateProfileInUse));
 }
 
 void EnterpriseStartupDialogClosed() {
@@ -2086,21 +2076,17 @@ void RunInLastProfileSafely(base::OnceCallback<void(Profile*)> callback,
   AppController* controller =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
   if (!controller) {
-    OnProfileLoaded(callback, on_failure, nullptr,
-                    Profile::CREATE_STATUS_LOCAL_FAIL);
+    OnProfileLoaded(std::move(callback), on_failure, nullptr);
     return;
   }
   if (Profile* profile = [controller lastProfileIfLoaded]) {
-    OnProfileLoaded(callback, on_failure, profile,
-                    Profile::CREATE_STATUS_INITIALIZED);
+    OnProfileLoaded(std::move(callback), on_failure, profile);
     return;
   }
-  // Pass the OnceCallback by reference because CreateProfileAsync() needs a
-  // repeating callback. It will be called at most once.
+
   g_browser_process->profile_manager()->CreateProfileAsync(
       GetStartupProfilePathMac(),
-      base::BindRepeating(&OnProfileLoaded, base::OwnedRef(std::move(callback)),
-                          on_failure));
+      base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
 }
 
 void RunInProfileSafely(const base::FilePath& profile_dir,
@@ -2110,21 +2096,18 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // `profile_manager` can be null in tests.
   if (!profile_manager) {
-    OnProfileLoaded(callback, on_failure, nullptr,
-                    Profile::CREATE_STATUS_LOCAL_FAIL);
+    OnProfileLoaded(std::move(callback), on_failure, nullptr);
     return;
   }
   if (Profile* profile = profile_manager->GetProfileByPath(profile_dir)) {
-    OnProfileLoaded(callback, on_failure, profile,
-                    Profile::CREATE_STATUS_INITIALIZED);
+    OnProfileLoaded(std::move(callback), on_failure, profile);
     return;
   }
   // Pass the OnceCallback by reference because CreateProfileAsync() needs a
   // repeating callback. It will be called at most once.
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_dir,
-      base::BindRepeating(&OnProfileLoaded, base::OwnedRef(std::move(callback)),
-                          on_failure));
+      base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
 }
 
 // static

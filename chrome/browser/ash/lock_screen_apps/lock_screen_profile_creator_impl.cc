@@ -57,9 +57,18 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
 
   g_browser_process->profile_manager()->CreateProfileAsync(
       ash::ProfileHelper::GetLockScreenAppProfilePath(),
-      base::BindRepeating(&LockScreenProfileCreatorImpl::OnProfileReady,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          tick_clock_->NowTicks()));
+      /*initialized_callback=*/
+      base::BindOnce(&LockScreenProfileCreatorImpl::OnProfileReady,
+                     weak_ptr_factory_.GetWeakPtr(), tick_clock_->NowTicks()),
+      /*created_callback=*/base::BindOnce([](Profile* profile) {
+        // Disable safe browsing for the profile to avoid activating
+        // SafeBrowsingService when the user has safe browsing disabled
+        // (reasoning similar to http://crbug.com/461493).
+        // TODO(tbarzic): Revisit this if webviews get enabled for lock screen
+        // apps.
+        profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+        profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+      }));
 }
 
 void LockScreenProfileCreatorImpl::InitializeImpl() {
@@ -82,26 +91,13 @@ void LockScreenProfileCreatorImpl::OnExtensionSystemReady() {
 
 void LockScreenProfileCreatorImpl::OnProfileReady(
     const base::TimeTicks& start_time,
-    Profile* profile,
-    Profile::CreateStatus status) {
-  // Ignore CREATED status - wait for profile to be initialized before
-  // continuing.
-  if (status == Profile::CREATE_STATUS_CREATED) {
-    // Disable safe browsing for the profile to avoid activating
-    // SafeBrowsingService when the user has safe browsing disabled (reasoning
-    // similar to http://crbug.com/461493).
-    // TODO(tbarzic): Revisit this if webviews get enabled for lock screen apps.
-    profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-    profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-    return;
-  }
-
+    Profile* profile) {
   UMA_HISTOGRAM_BOOLEAN("Apps.LockScreen.AppsProfile.Creation.Success",
-                        status == Profile::CREATE_STATUS_INITIALIZED);
+                        profile != nullptr);
 
   // On error, bail out - this will cause the lock screen apps to remain
   // unavailable on the device.
-  if (status != Profile::CREATE_STATUS_INITIALIZED) {
+  if (!profile) {
     OnLockScreenProfileCreated(nullptr);
     return;
   }

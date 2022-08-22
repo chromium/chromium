@@ -105,10 +105,9 @@ class ProfilePickerDiceSignInProvider
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // Initializes the flow with the newly created profile.
-  void OnProfileCreated(
-      base::OnceCallback<void(bool)>& switch_finished_callback,
-      Profile* new_profile,
-      Profile::CreateStatus status);
+  void OnProfileInitialized(
+      base::OnceCallback<void(bool)> switch_finished_callback,
+      Profile* new_profile);
 
   // Finishes the sign-in (if there is a primary account with refresh tokens).
   void FinishFlowIfSignedIn();

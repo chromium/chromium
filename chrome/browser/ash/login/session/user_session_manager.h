@@ -417,11 +417,6 @@ class UserSessionManager
   void StartCrosSession();
   void PrepareProfile(const base::FilePath& profile_path);
 
-  // Callback for asynchronous profile creation.
-  void OnProfileCreated(const UserContext& user_context,
-                        Profile* profile,
-                        Profile::CreateStatus status);
-
   // Callback for Profile::CREATE_STATUS_CREATED profile state.
   // Initializes basic preferences for newly created profile. Any other
   // early profile initialization that needs to happen before

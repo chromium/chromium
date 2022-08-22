@@ -554,8 +554,8 @@ void ProfilePickerView::Display() {
 
     g_browser_process->profile_manager()->CreateProfileAsync(
         params_.profile_path(),
-        base::BindRepeating(&ProfilePickerView::OnPickerProfileCreated,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ProfilePickerView::OnPickerProfileCreated,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -565,16 +565,12 @@ void ProfilePickerView::Display() {
   GetWidget()->Activate();
 }
 
-void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile,
-                                               Profile::CreateStatus status) {
-  TRACE_EVENT2("browser,startup", "ProfilePickerView::OnPickerProfileCreated",
-               "profile_path",
-               (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""),
-               "status", status);
-  DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
-    return;
-
+void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile) {
+  TRACE_EVENT1(
+      "browser,startup", "ProfilePickerView::OnPickerProfileCreated",
+      "profile_path",
+      (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""));
+  DCHECK(picker_profile);
   Init(picker_profile);
 }
 
@@ -663,10 +659,9 @@ void ProfilePickerView::SwitchToDiceSignIn(
             ->GetProfileAttributesStorage()
             .ChooseNameForNewProfile(icon_index),
         icon_index, /*is_hidden=*/true,
-        base::BindRepeating(
-            &ProfilePickerView::OnProfileForDiceForcedSigninCreated,
-            weak_ptr_factory_.GetWeakPtr(),
-            base::OwnedRef(std::move(switch_finished_callback))));
+        base::BindOnce(&ProfilePickerView::OnProfileForDiceForcedSigninCreated,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(switch_finished_callback)));
     return;
   }
 
@@ -682,21 +677,15 @@ void ProfilePickerView::SwitchToDiceSignIn(
 }
 
 void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
-    base::OnceCallback<void(bool)>& switch_finished_callback,
-    Profile* profile,
-    Profile::CreateStatus status) {
+    base::OnceCallback<void(bool)> switch_finished_callback,
+    Profile* profile) {
   DCHECK(signin_util::IsForceSigninEnabled());
-
-  if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
+  if (!profile) {
     std::move(switch_finished_callback).Run(false);
-    return;
-  } else if (status != Profile::CREATE_STATUS_INITIALIZED) {
     return;
   }
 
-  DCHECK(profile);
   std::move(switch_finished_callback).Run(true);
-
   ProfilePickerForceSigninDialog::ShowForceSigninDialog(
       web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
 }

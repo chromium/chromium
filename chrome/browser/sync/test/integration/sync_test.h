@@ -341,12 +341,6 @@ class SyncTest : public PlatformBrowserTest {
   // determined at runtime based on server type.
   bool CreateProfile(int index);
 
-  // Callback for MakeProfileForUISignin() method. It runs the quit_closure once
-  // profile is created successfully.
-  static void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
-                                    Profile* profile,
-                                    Profile::CreateStatus status);
-
   static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
       std::map<const Profile*, invalidation::FCMNetworkHandler*>*
           profile_to_fcm_network_handler_map,

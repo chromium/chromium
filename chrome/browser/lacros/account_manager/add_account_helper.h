@@ -75,7 +75,7 @@ class AddAccountHelper {
 
   // Called as part of the account addition flow, if the profile does not
   // already exist.
-  void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
+  void OnNewProfileInitialized(Profile* new_profile);
 
   // Called after the user added and account and the profile exists.
   // `profile_path` must not be empty.

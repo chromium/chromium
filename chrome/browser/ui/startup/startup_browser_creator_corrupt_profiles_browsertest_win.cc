@@ -18,6 +18,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -31,26 +32,6 @@
 
 namespace {
 
-void UnblockOnProfileCreation(Profile::CreateStatus expected_final_status,
-                              base::OnceClosure quit_closure,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  // If the status is CREATE_STATUS_CREATED, then the function will be called
-  // again with CREATE_STATUS_INITIALIZED.
-  if (status == Profile::CREATE_STATUS_CREATED)
-    return;
-
-  EXPECT_EQ(expected_final_status, status);
-  std::move(quit_closure).Run();
-}
-
-void UnblockOnProfileInitialized(base::OnceClosure quit_closure,
-                                 Profile* profile,
-                                 Profile::CreateStatus status) {
-  UnblockOnProfileCreation(Profile::CREATE_STATUS_INITIALIZED,
-                           std::move(quit_closure), profile, status);
-}
-
 void OnCloseAllBrowsersSucceeded(base::OnceClosure quit_closure,
                                  const base::FilePath& path) {
   std::move(quit_closure).Run();
@@ -59,15 +40,8 @@ void OnCloseAllBrowsersSucceeded(base::OnceClosure quit_closure,
 void CreateAndSwitchToProfile(const std::string& basepath) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
-
   base::FilePath path = profile_manager->user_data_dir().AppendASCII(basepath);
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path, base::BindRepeating(&UnblockOnProfileInitialized,
-                                run_loop.QuitClosure()));
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by UnblockOnProfileCreation when the profile is created.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, path);
 
   profiles::SwitchToProfile(path, false);
 }

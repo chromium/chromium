@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util_win.h"
@@ -486,30 +487,12 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                              /*existing_email=*/L"foo@gmail.com",
                              /*expect_is_started=*/true)));
 
-void UnblockOnProfileInitialized(base::OnceClosure quit_closure,
-                                 Profile* profile,
-                                 Profile::CreateStatus status) {
-  // If the status is CREATE_STATUS_CREATED, then the function will be called
-  // again with CREATE_STATUS_INITIALIZED.
-  if (status == Profile::CREATE_STATUS_CREATED)
-    return;
-
-  EXPECT_EQ(Profile::CREATE_STATUS_INITIALIZED, status);
-  std::move(quit_closure).Run();
-}
-
 void CreateAndSwitchToProfile(const std::string& basepath) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
   base::FilePath path = profile_manager->user_data_dir().AppendASCII(basepath);
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path, base::BindRepeating(&UnblockOnProfileInitialized,
-                                run_loop.QuitClosure()));
-  // Run the message loop to allow profile initialization to take place; the
-  // loop is terminated by UnblockOnProfileInitialized.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, path);
 
   profiles::SwitchToProfile(path, false);
 }

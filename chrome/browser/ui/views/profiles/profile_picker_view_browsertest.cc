@@ -567,15 +567,12 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     base::FilePath path = profile_manager->GenerateNextProfileDirectoryPath();
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
-        path, base::BindLambdaForTesting(
-                  [&run_loop](Profile* profile, Profile::CreateStatus status) {
-                    if (status == Profile::CREATE_STATUS_INITIALIZED) {
-                      // Avoid showing the welcome page.
-                      profile->GetPrefs()->SetBoolean(
-                          prefs::kHasSeenWelcomePage, true);
-                      run_loop.Quit();
-                    }
-                  }));
+        path, base::BindLambdaForTesting([&run_loop](Profile* profile) {
+          ASSERT_TRUE(profile);
+          // Avoid showing the welcome page.
+          profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return path;
   }
@@ -1042,13 +1039,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   Profile* second_profile = nullptr;
   ProfileManager::CreateMultiProfileAsync(
       u"Joe", /*icon_index=*/0, /*is_hidden=*/false,
-      base::BindLambdaForTesting(
-          [&](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              second_profile = profile;
-              run_loop.Quit();
-            }
-          }));
+      base::BindLambdaForTesting([&](Profile* profile) {
+        ASSERT_TRUE(profile);
+        second_profile = profile;
+        run_loop.Quit();
+      }));
   run_loop.Run();
   AccountInfo second_profile_info =
       FinishDiceSignIn(second_profile, "joe.secondary@gmail.com", "Joe");

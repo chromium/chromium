@@ -22,27 +22,11 @@ namespace profiles::testing {
 
 Profile* CreateProfileSync(ProfileManager* profile_manager,
                            const base::FilePath& path) {
-  Profile* created_profile = nullptr;
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path, base::BindLambdaForTesting(
-                [&run_loop, &created_profile](Profile* profile,
-                                              Profile::CreateStatus status) {
-                  switch (status) {
-                    case Profile::CREATE_STATUS_LOCAL_FAIL:
-                      NOTREACHED();
-                      return;
-                    case Profile::CREATE_STATUS_CREATED:
-                      // Do nothing, wait for the profile to be initialized.
-                      return;
-                    case Profile::CREATE_STATUS_INITIALIZED:
-                      created_profile = profile;
-                      run_loop.Quit();
-                      return;
-                  }
-                }));
-  run_loop.Run();
-  return created_profile;
+  base::test::TestFuture<Profile*> profile_future;
+  profile_manager->CreateProfileAsync(path, profile_future.GetCallback());
+  Profile* profile = profile_future.Get();
+  CHECK(profile);
+  return profile;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

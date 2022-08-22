@@ -25,6 +25,7 @@
 #include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -200,17 +201,6 @@ class TestTabModel : public TabModel {
 
 }  // namespace
 
-// An observer that returns back to test code after a new profile is
-// initialized.
-#if !BUILDFLAG(IS_ANDROID)
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // A helper object for overriding metrics enabled state.
 class MetricsConsentOverride {
  public:
@@ -322,11 +312,8 @@ class UkmBrowserTestBase : public SyncTest {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath new_path =
         profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-    run_loop.Run();
-    Profile* profile = profile_manager->GetProfileByPath(new_path);
+    Profile* profile =
+        profiles::testing::CreateProfileSync(profile_manager, new_path);
     SetupMockGaiaResponsesForProfile(profile);
     return profile;
   }

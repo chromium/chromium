@@ -102,9 +102,9 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
       icon_index, /*is_hidden=*/true,
-      base::BindRepeating(&ProfilePickerDiceSignInProvider::OnProfileCreated,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          base::OwnedRef(std::move(switch_finished_callback))));
+      base::BindOnce(&ProfilePickerDiceSignInProvider::OnProfileInitialized,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(switch_finished_callback)));
 }
 
 void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
@@ -217,19 +217,13 @@ void ProfilePickerDiceSignInProvider::FinishFlowIfSignedIn() {
   }
 }
 
-void ProfilePickerDiceSignInProvider::OnProfileCreated(
-    base::OnceCallback<void(bool)>& switch_finished_callback,
-    Profile* new_profile,
-    Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
+void ProfilePickerDiceSignInProvider::OnProfileInitialized(
+    base::OnceCallback<void(bool)> switch_finished_callback,
+    Profile* new_profile) {
+  if (!new_profile) {
     std::move(switch_finished_callback).Run(false);
     return;
   }
-  if (status != Profile::CREATE_STATUS_INITIALIZED) {
-    return;
-  }
-
-  DCHECK(new_profile);
   DCHECK(!profile_);
   DCHECK(!contents());
   std::move(switch_finished_callback).Run(true);

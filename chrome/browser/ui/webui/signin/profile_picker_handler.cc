@@ -680,9 +680,9 @@ void ProfilePickerHandler::HandleCreateProfile(const base::Value::List& args) {
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
   ProfileManager::CreateMultiProfileAsync(
       profile_name, avatar_index, /*is_hidden=*/false,
-      base::BindRepeating(&ProfilePickerHandler::OnProfileCreated,
-                          weak_factory_.GetWeakPtr(), profile_color,
-                          create_shortcut));
+      base::BindOnce(&ProfilePickerHandler::OnProfileInitialized,
+                     weak_factory_.GetWeakPtr(), profile_color,
+                     create_shortcut));
 }
 
 void ProfilePickerHandler::HandleGetSwitchProfile(
@@ -726,35 +726,15 @@ void ProfilePickerHandler::HandleCancelProfileSwitch(
   ProfilePicker::CancelSignedInFlow();
 }
 
-void ProfilePickerHandler::OnProfileCreated(
-    absl::optional<SkColor> profile_color,
-    bool create_shortcut,
-    Profile* profile,
-    Profile::CreateStatus status) {
-  switch (status) {
-    case Profile::CREATE_STATUS_LOCAL_FAIL: {
-      NOTREACHED() << "Local fail in creating new profile";
-      break;
-    }
-
-    case Profile::CREATE_STATUS_CREATED:
-      // Do nothing for an intermediate status.
-      return;
-
-    case Profile::CREATE_STATUS_INITIALIZED: {
-      OnProfileCreationSuccess(profile_color, create_shortcut, profile);
-      break;
-    }
-  }
-
-  FireWebUIListener("create-profile-finished", base::Value());
-}
-
-void ProfilePickerHandler::OnProfileCreationSuccess(
+void ProfilePickerHandler::OnProfileInitialized(
     absl::optional<SkColor> profile_color,
     bool create_shortcut,
     Profile* profile) {
-  DCHECK(profile);
+  if (!profile) {
+    NOTREACHED() << "Local fail in creating new profile";
+    FireWebUIListener("create-profile-finished", base::Value());
+    return;
+  }
   DCHECK(!signin_util::IsForceSigninEnabled());
 
   // Apply a new color to the profile or use the default theme.
@@ -788,6 +768,8 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
               // browser window if the Profile is not locked. Hence there is no
               // extension blocked.
       profile);
+
+  FireWebUIListener("create-profile-finished", base::Value());
 }
 
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(

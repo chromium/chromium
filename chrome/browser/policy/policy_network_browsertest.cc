@@ -22,6 +22,7 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -89,18 +90,6 @@ bool IsQuicEnabledForSystem() {
 bool IsQuicEnabledForSafeBrowsing(Profile* profile) {
   return IsQuicEnabled(
       g_browser_process->safe_browsing_service()->GetNetworkContext(profile));
-}
-
-// Called when an additional profile has been created.
-// The created profile is stored in *|out_created_profile|.
-void OnProfileInitialized(Profile** out_created_profile,
-                          base::RunLoop* run_loop,
-                          Profile* profile,
-                          Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    *out_created_profile = profile;
-    run_loop->Quit();
-  }
 }
 
 }  // namespace
@@ -382,19 +371,11 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
         &policy_for_profile_2_);
 
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-    // Create an additional profile.
     base::FilePath path_profile =
         profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        path_profile,
-        base::BindRepeating(&OnProfileInitialized, &profile_2_, &run_loop));
-
-    // Run the message loop to allow profile creation to take place; the loop is
-    // terminated by OnProfileInitialized calling the loop's QuitClosure when
-    // the profile is created.
-    run_loop.Run();
+    // Create an additional profile.
+    profile_2_ =
+        profiles::testing::CreateProfileSync(profile_manager, path_profile);
 
     // Make sure second profile creation does what we think it does.
     EXPECT_TRUE(profile_1() != profile_2());

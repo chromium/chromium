@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -180,8 +181,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
 
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
-  profile_manager->CreateProfileAsync(path_profile2,
-                                      ProfileManager::CreateCallback());
+  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
+
   // The default profile's name should be part of the relaunch name.
   ValidateBrowserWindowProperties(
       browser(), base::UTF8ToUTF16(browser()->profile()->GetProfileUserName()));

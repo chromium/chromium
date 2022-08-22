@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -18,18 +19,6 @@
 #include "url/gurl.h"
 
 namespace web_app {
-namespace {
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
-                                Profile* profile,
-                                Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-#endif
-
-}  // namespace
 
 class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
  public:
@@ -78,13 +67,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
   // another profile first, we ensure this doesn't happen.
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop create_run_loop;
-  profile_manager->CreateProfileAsync(
-      path_profile2,
-      base::BindRepeating(&OnUnblockOnProfileCreation, &create_run_loop));
-  // Run the message loop to allow profile creation to take place; the loop is
-  // terminated by OnUnblockOnProfileCreation when the profile is created.
-  create_run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 #endif
 
   ScheduleCurrentProfileForDeletion();

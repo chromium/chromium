@@ -393,27 +393,17 @@ size_t GetEnabledAppCount(Profile* profile) {
 
 #endif  // ENABLE_EXTENSIONS
 
-// Once a profile is loaded through LoadProfile this method is executed.
-// It will then run |client_callback| with the right profile or null if it was
-// unable to load it.
-// It might get called more than once with different values of
-// |status| but only once the profile is fully initialized will
-// |client_callback| be run.
-void OnProfileLoaded(ProfileManager::ProfileLoadedCallback& client_callback,
-                     bool incognito,
-                     Profile* profile,
-                     Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_CREATED) {
-    // This is an intermediate state where the profile has been created, but is
-    // not yet initialized. Ignore this and wait for the next state change.
-    return;
-  }
-  if (status != Profile::CREATE_STATUS_INITIALIZED) {
+// Once a profile is initialized through LoadProfile this method is executed.
+// It will then run |client_callback| with the right profile.
+void OnProfileInitialized(ProfileManager::ProfileLoadedCallback client_callback,
+                          bool incognito,
+                          Profile* profile) {
+  if (!profile) {
     LOG(WARNING) << "Profile not loaded correctly";
     std::move(client_callback).Run(nullptr);
     return;
   }
-  DCHECK(profile);
+
   std::move(client_callback)
       .Run(incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                      : profile);
@@ -517,6 +507,12 @@ absl::optional<bool> IsUserChild(Profile* profile) {
 #endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void RunCallbacks(std::vector<base::OnceCallback<void(Profile*)>>& callbacks,
+                  Profile* profile) {
+  for (base::OnceCallback<void(Profile*)>& callback : callbacks)
+    std::move(callback).Run(profile);
+}
 
 }  // namespace
 
@@ -648,24 +644,6 @@ Profile* ProfileManager::GetLastUsedProfileIfLoaded() {
 Profile* ProfileManager::GetLastUsedProfileAllowedByPolicy() {
   return MaybeForceOffTheRecordMode(GetLastUsedProfile());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-void ProfileManager::LoadLastUsedProfileAllowedByPolicy(
-    ProfileLoadedCallback callback) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileLoadedCallback callback_with_incognito =
-      base::BindOnce(&ProfileManager::MaybeForceOffTheRecordMode)
-          .Then(std::move(callback));
-  profile_manager->CreateProfileAsync(
-      profile_manager->GetLastUsedProfileDir(),
-      base::BindRepeating(&OnProfileLoaded,
-                          // OnProfileLoaded may be called multiple times, but
-                          // |callback_with_incognito| will be called only once.
-                          base::OwnedRef(std::move(callback_with_incognito)),
-                          /*incognito=*/false));
-}
-#endif
 
 // static
 Profile* ProfileManager::MaybeForceOffTheRecordMode(Profile* profile) {
@@ -837,22 +815,21 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
   }
   CreateProfileAsync(
       profile_path,
-      base::BindRepeating(&OnProfileLoaded,
-                          // OnProfileLoaded may be called multiple times, but
-                          // |callback| will be called only once.
-                          base::OwnedRef(std::move(callback)), incognito));
+      base::BindOnce(&OnProfileInitialized, std::move(callback), incognito));
   return true;
 }
 
-void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
-                                        const CreateCallback& callback) {
+void ProfileManager::CreateProfileAsync(
+    const base::FilePath& profile_path,
+    base::OnceCallback<void(Profile*)> initialized_callback,
+    base::OnceCallback<void(Profile*)> created_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser,startup", "ProfileManager::CreateProfileAsync",
                "profile_path", profile_path.AsUTF8Unsafe());
 
   if (!CanCreateProfileAtPath(profile_path)) {
-    if (!callback.is_null())
-      callback.Run(nullptr, Profile::CREATE_STATUS_LOCAL_FAIL);
+    if (!initialized_callback.is_null())
+      std::move(initialized_callback).Run(nullptr);
     return;
   }
 
@@ -868,7 +845,7 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
   }
 
   // Call or enqueue the callback.
-  if (!callback.is_null()) {
+  if (!initialized_callback.is_null() || !created_callback.is_null()) {
     if (iter != profiles_info_.end() && info->GetCreatedProfile()) {
       Profile* profile = info->GetCreatedProfile();
       // If this was the Guest profile, apply settings and go OffTheRecord.
@@ -880,11 +857,15 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
       }
 
       // Profile has already been created. Run callback immediately.
-      callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
+      if (!initialized_callback.is_null())
+        std::move(initialized_callback).Run(profile);
     } else {
       // Profile is either already in the process of being created, or new.
       // Add callback to the list.
-      info->callbacks.push_back(callback);
+      if (!initialized_callback.is_null())
+        info->init_callbacks.push_back(std::move(initialized_callback));
+      if (!created_callback.is_null())
+        info->created_callbacks.push_back(std::move(created_callback));
     }
   }
 }
@@ -996,10 +977,12 @@ std::map<ProfileKeepAliveOrigin, int> ProfileManager::GetKeepAlivesByPath(
 }
 
 // static
-void ProfileManager::CreateMultiProfileAsync(const std::u16string& name,
-                                             size_t icon_index,
-                                             bool is_hidden,
-                                             const CreateCallback& callback) {
+void ProfileManager::CreateMultiProfileAsync(
+    const std::u16string& name,
+    size_t icon_index,
+    bool is_hidden,
+    base::OnceCallback<void(Profile*)> initialized_callback,
+    base::OnceCallback<void(Profile*)> created_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!name.empty());
   DCHECK(profiles::IsDefaultAvatarIconIndex(icon_index));
@@ -1039,7 +1022,8 @@ void ProfileManager::CreateMultiProfileAsync(const std::u16string& name,
 
   if (!base::FeatureList::IsEnabled(
           features::kNukeProfileBeforeCreateMultiAsync)) {
-    profile_manager->CreateProfileAsync(new_path, callback);
+    profile_manager->CreateProfileAsync(
+        new_path, std::move(initialized_callback), std::move(created_callback));
     return;
   }
 
@@ -1057,7 +1041,8 @@ void ProfileManager::CreateMultiProfileAsync(const std::u16string& name,
       base::BindOnce(&NukeProfileFromDisk, new_path,
                      base::BindOnce(&ProfileManager::CreateProfileAsync,
                                     profile_manager->weak_factory_.GetWeakPtr(),
-                                    new_path, callback)));
+                                    new_path, std::move(initialized_callback),
+                                    std::move(created_callback))));
 }
 
 // static
@@ -1964,13 +1949,16 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
     return;
   }
 
-  std::vector<CreateCallback> callbacks;
-  info->callbacks.swap(callbacks);
+  std::vector<base::OnceCallback<void(Profile*)>> created_callbacks;
+  info->created_callbacks.swap(created_callbacks);
+
+  std::vector<base::OnceCallback<void(Profile*)>> init_callbacks;
+  info->init_callbacks.swap(init_callbacks);
 
   // Invoke CREATED callback for normal profiles.
   bool go_off_the_record = ShouldGoOffTheRecord(profile);
   if (success && !go_off_the_record)
-    RunCallbacks(callbacks, profile, Profile::CREATE_STATUS_CREATED);
+    RunCallbacks(created_callbacks, profile);
 
   // Perform initialization.
   if (success) {
@@ -1990,13 +1978,12 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
 
     // Invoke CREATED callback for incognito profiles.
     if (go_off_the_record)
-      RunCallbacks(callbacks, profile, Profile::CREATE_STATUS_CREATED);
+      RunCallbacks(created_callbacks, profile);
   }
 
-  // Invoke INITIALIZED or FAIL for all profiles.
-  RunCallbacks(callbacks, profile,
-               profile ? Profile::CREATE_STATUS_INITIALIZED
-                       : Profile::CREATE_STATUS_LOCAL_FAIL);
+  // Invoke INITIALIZED for all profiles.
+  // Profile might be null, meaning that the creation failed.
+  RunCallbacks(init_callbacks, profile);
 }
 
 void ProfileManager::OnProfileCreationStarted(Profile* profile,
@@ -2034,8 +2021,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
     base::FilePath cur_path = profile->GetPath();
     if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-      OnNewActiveProfileLoaded(profile_dir, cur_path, &callback, nullptr,
-                               profile, Profile::CREATE_STATUS_INITIALIZED);
+      OnNewActiveProfileInitialized(profile_dir, cur_path, std::move(callback),
+                                    nullptr, profile);
       return;
     }
   }
@@ -2073,14 +2060,9 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
   // Create and/or load fallback profile.
   CreateProfileAsync(
       fallback_profile_path,
-      base::BindRepeating(
-          &ProfileManager::OnNewActiveProfileLoaded, base::Unretained(this),
-          profile_dir, fallback_profile_path,
-          // OnNewActiveProfileLoaded may be called several times, but
-          // only once with CREATE_STATUS_INITIALIZED.
-          base::Owned(
-              std::make_unique<ProfileLoadedCallback>(std::move(callback))),
-          base::Owned(std::move(keep_alive))));
+      base::BindOnce(&ProfileManager::OnNewActiveProfileInitialized,
+                     base::Unretained(this), profile_dir, fallback_profile_path,
+                     std::move(callback), std::move(keep_alive)));
 }
 
 void ProfileManager::OnLoadProfileForProfileDeletion(
@@ -2353,13 +2335,6 @@ bool ProfileManager::ShouldGoOffTheRecord(Profile* profile) {
   return profile->IsGuestSession() || profile->IsSystemProfile();
 }
 
-void ProfileManager::RunCallbacks(const std::vector<CreateCallback>& callbacks,
-                                  Profile* profile,
-                                  Profile::CreateStatus status) {
-  for (size_t i = 0; i < callbacks.size(); ++i)
-    callbacks[i].Run(profile, status);
-}
-
 void ProfileManager::SaveActiveProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
@@ -2534,30 +2509,24 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
   profile_manager_->UpdateLastUser(last_active);
 }
 
-void ProfileManager::OnNewActiveProfileLoaded(
+void ProfileManager::OnNewActiveProfileInitialized(
     const base::FilePath& profile_to_delete_path,
     const base::FilePath& new_active_profile_path,
-    ProfileLoadedCallback* callback,
-    ScopedKeepAlive* keep_alive,
-    Profile* loaded_profile,
-    Profile::CreateStatus status) {
-  DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
-
-  // Only run the code if the profile initialization has finished completely.
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
-    return;
-
+    ProfileLoadedCallback callback,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    Profile* loaded_profile) {
+  DCHECK(loaded_profile);
   if (IsProfileDirectoryMarkedForDeletion(new_active_profile_path)) {
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load
     // the next available profile.
-    EnsureActiveProfileExistsBeforeDeletion(std::move(*callback),
+    EnsureActiveProfileExistsBeforeDeletion(std::move(callback),
                                             profile_to_delete_path);
     return;
   }
 
   FinishDeletingProfile(profile_to_delete_path, new_active_profile_path);
-  std::move(*callback).Run(loaded_profile);
+  std::move(callback).Run(loaded_profile);
 }
 
 void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {

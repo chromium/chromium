@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,23 +49,11 @@ speech::LanguageCode fr_fr() {
 
 }  // namespace
 
-// Blocks until a new profile is created.
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(profile_path);
+  return profiles::testing::CreateProfileSync(profile_manager, profile_path);
 }
 
 class LiveCaptionControllerTest : public LiveCaptionBrowserTest {

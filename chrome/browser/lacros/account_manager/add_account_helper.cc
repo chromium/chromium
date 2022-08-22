@@ -111,30 +111,24 @@ void AddAccountHelper::OnShowAddAccountDialogCompleted(
         profile_attributes_storage_->ChooseNameForNewProfile(icon_index),
         icon_index,
         /*is_hidden=*/true,
-        base::BindRepeating(&AddAccountHelper::OnNewProfileCreated,
-                            weak_factory_.GetWeakPtr()));
+        base::BindOnce(&AddAccountHelper::OnNewProfileInitialized,
+                       weak_factory_.GetWeakPtr()));
   } else {
     OnShowAddAccountDialogCompletedWithProfilePath(profile_path);
   }
 }
 
-void AddAccountHelper::OnNewProfileCreated(Profile* new_profile,
-                                           Profile::CreateStatus status) {
+void AddAccountHelper::OnNewProfileInitialized(Profile* new_profile) {
   DCHECK(account_);
-  switch (status) {
-    case Profile::CREATE_STATUS_CREATED:
-      // Ignore this, wait for profile to be initialized.
-      return;
-    case Profile::CREATE_STATUS_INITIALIZED:
-      OnShowAddAccountDialogCompletedWithProfilePath(new_profile->GetPath());
-      return;
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      NOTREACHED() << "Error creating new profile";
-      profile_path_ = base::FilePath();
-      MaybeCompleteAddAccount();
-      // `this` may be deleted.
-      return;
+  if (!new_profile) {
+    NOTREACHED() << "Error creating new profile";
+    profile_path_ = base::FilePath();
+    MaybeCompleteAddAccount();
+    // `this` may be deleted.
+    return;
   }
+
+  OnShowAddAccountDialogCompletedWithProfilePath(new_profile->GetPath());
 }
 
 void AddAccountHelper::OnShowAddAccountDialogCompletedWithProfilePath(

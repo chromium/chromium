@@ -37,6 +37,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -98,18 +99,6 @@ using testing::AtLeast;
 using testing::Sequence;
 
 namespace policy {
-
-// Called when an additional profile has been created.
-// The created profile is stored in *|out_created_profile|.
-void OnProfileInitialized(Profile** out_created_profile,
-                          base::RunLoop* run_loop,
-                          Profile* profile,
-                          Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    *out_created_profile = profile;
-    run_loop->Quit();
-  }
-}
 namespace {
 
 const base::FilePath::CharType kGoodCrxName[] = FILE_PATH_LITERAL("good.crx");
@@ -2513,24 +2502,13 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
         .WillByDefault(testing::Return(true));
     ON_CALL(*policy_for_profile, IsFirstPolicyLoadComplete(testing::_))
         .WillByDefault(testing::Return(true));
-    Profile* profile = nullptr;
     policy::PushProfilePolicyConnectorProviderForTesting(policy_for_profile);
 
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-    // Create an additional profile.
     base::FilePath path_profile =
         profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        path_profile, base::BindRepeating(&policy::OnProfileInitialized,
-                                          &profile, &run_loop));
-
-    // Run the message loop to allow profile creation to take place; the loop is
-    // terminated by OnProfileInitialized calling the loop's QuitClosure when
-    // the profile is created.
-    run_loop.Run();
-    return profile;
+    // Create an additional profile.
+    return profiles::testing::CreateProfileSync(profile_manager, path_profile);
   }
 
   extensions::ExtensionService* CreateExtensionService(

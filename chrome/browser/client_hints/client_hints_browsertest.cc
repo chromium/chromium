@@ -32,6 +32,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -226,13 +227,6 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
       return false;
   }
   return true;
-}
-
-void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
-                                Profile* profile,
-                                Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
 }
 
 // Return |true| in the following conditions: If we expect reduced user agent,
@@ -793,12 +787,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     // Create an additional profile.
     base::FilePath new_path =
         profile_manager->GenerateNextProfileDirectoryPath();
-    base::RunLoop run_loop;
-    profile_manager->CreateProfileAsync(
-        new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
-    run_loop.Run();
 
-    return profile_manager->GetProfile(new_path);
+    return profiles::testing::CreateProfileSync(profile_manager, new_path);
   }
 
  private:

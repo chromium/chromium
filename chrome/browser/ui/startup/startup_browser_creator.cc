@@ -1369,13 +1369,12 @@ bool StartupBrowserCreator::ProcessLoadApps(
 }
 
 // static
-void StartupBrowserCreator::ProcessCommandLineOnProfileCreated(
+void StartupBrowserCreator::ProcessCommandLineOnProfileInitialized(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     StartupProfileMode mode,
-    Profile* profile,
-    Profile::CreateStatus status) {
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
+    Profile* profile) {
+  if (!profile)
     return;
   StartupBrowserCreator startup_browser_creator;
   startup_browser_creator.ProcessCmdLineImpl(
@@ -1395,8 +1394,8 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
   if (!profile) {
     profile_manager->CreateProfileAsync(
         profile_path_info.path,
-        base::BindRepeating(&ProcessCommandLineOnProfileCreated, command_line,
-                            cur_dir, profile_path_info.mode));
+        base::BindOnce(&ProcessCommandLineOnProfileInitialized, command_line,
+                       cur_dir, profile_path_info.mode));
     return;
   }
   StartupBrowserCreator startup_browser_creator;

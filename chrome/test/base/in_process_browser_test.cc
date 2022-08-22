@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -173,17 +174,6 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
   return factory.get();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// An observer that returns back to test code after a new profile is
-// initialized.
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-#endif
 
 #if BUILDFLAG(IS_MAC)
 class ChromeBrowserMainExtraPartsBrowserProcessInjection
@@ -678,16 +668,14 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath guest_path = profile_manager->GetGuestProfilePath();
 
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      guest_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
-  run_loop.Run();
-
-  Profile* profile = profile_manager->GetProfileByPath(guest_path)
-                         ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* guest_profile =
+      profiles::testing::CreateProfileSync(profile_manager, guest_path);
+  Profile* guest_profile_otr =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Create browser and add tab.
-  Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
+  Browser* browser =
+      Browser::Create(Browser::CreateParams(guest_profile_otr, true));
   AddBlankTabAndShow(browser);
   return browser;
 }

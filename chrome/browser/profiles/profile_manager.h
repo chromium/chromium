@@ -50,8 +50,6 @@ class ScopedProfileKeepAlive;
 // is closed. The DestroyProfileOnBrowserClose flag controls this behavior.
 class ProfileManager : public Profile::Delegate {
  public:
-  using CreateCallback =
-      base::RepeatingCallback<void(Profile*, Profile::CreateStatus)>;
   using ProfileLoadedCallback = base::OnceCallback<void(Profile*)>;
 
   explicit ProfileManager(const base::FilePath& user_data_dir);
@@ -87,19 +85,8 @@ class ProfileManager : public Profile::Delegate {
   // incognito mode is forced. This should be used if the last used `Profile`
   // will be used to open new browser windows.
   // WARNING: if the `Profile` does not exist, this function creates it
-  // synchronously, causing blocking file I/O. Use
-  // `LoadLastUsedProfileAllowedByPolicy()` instead.
+  // synchronously, causing blocking file I/O.
   static Profile* GetLastUsedProfileAllowedByPolicy();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Same as `GetLastUsedProfileAllowedByPolicy()`, but asynchronously loads the
-  // `Profile` if it's not already loaded.
-  // TODO(https://crbug.com/1176734): Implement on Ash. Requires handling the
-  // cases where the user is not logged in, and implementing an asynchronous
-  // version of `GetActiveUserOrOffTheRecordProfile()`.
-  static void LoadLastUsedProfileAllowedByPolicy(
-      ProfileLoadedCallback callback);
-#endif
 
   // Helper function that returns the OffTheRecord profile if it is forced for
   // `profile` (normal mode is not available for browsing).
@@ -178,10 +165,19 @@ class ProfileManager : public Profile::Delegate {
                          ProfileLoadedCallback callback);
 
   // Explicit asynchronous creation of a profile located at |profile_path|.
-  // If the profile has already been created then callback is called
-  // immediately. Should be called on the UI thread.
-  void CreateProfileAsync(const base::FilePath& profile_path,
-                          const CreateCallback& callback);
+  // Should be called on the UI thread.
+  // Params:
+  // - `initialized_callback`: called when profile initialization is done, will
+  // return nullptr if failed. If the profile has already been fully loaded then
+  // this callback is called immediately.
+  // - `created_callback`: called when profile creation is done (default
+  // implementation to do nothing).
+  // Note: Refer to `Profile::CreateStatus` for the definition of CREATED and
+  // INITIALIZED profile creation status.
+  void CreateProfileAsync(
+      const base::FilePath& profile_path,
+      base::OnceCallback<void(Profile*)> initialized_callback,
+      base::OnceCallback<void(Profile*)> created_callback = {});
 
   // Returns true if the profile pointer is known to point to an existing
   // profile.
@@ -217,15 +213,23 @@ class ProfileManager : public Profile::Delegate {
   // directory. Directories are named "profile_1", "profile_2", etc., in
   // sequence of creation. (Because directories can be removed, however, it may
   // be the case that at some point the list of numbered profiles is not
-  // continuous.) |callback| may be invoked multiple times (for
-  // CREATE_STATUS_INITIALIZED and CREATE_STATUS_CREATED) so binding parameters
-  // with bind::Passed() is prohibited. If |is_hidden| is true, the new profile
+  // continuous.) If |is_hidden| is true, the new profile
   // will be created as ephemeral (removed on the next startup) and omitted (not
   // visible in the list of profiles).
-  static void CreateMultiProfileAsync(const std::u16string& name,
-                                      size_t icon_index,
-                                      bool is_hidden,
-                                      const CreateCallback& callback);
+  // Params:
+  // - `initialized_callback`: called when profile initialization is done, will
+  // return nullptr if failed. If the profile has already been fully loaded then
+  // this callback is called immediately.
+  // - `created_callback`: called when profile creation is done (default
+  // implementation to do nothing).
+  // Note: Refer to `Profile::CreateStatus` for the definition of CREATED and
+  // INITIALIZED profile creation status.
+  static void CreateMultiProfileAsync(
+      const std::u16string& name,
+      size_t icon_index,
+      bool is_hidden,
+      base::OnceCallback<void(Profile*)> initialized_callback,
+      base::OnceCallback<void(Profile*)> created_callback = {});
 
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
@@ -410,9 +414,12 @@ class ProfileManager : public Profile::Delegate {
     // Initially contains a kWaitingForFirstBrowserWindow entry, which gets
     // removed when a kBrowserWindow keepalive is added.
     std::map<ProfileKeepAliveOrigin, int> keep_alives;
-    // List of callbacks to run when profile initialization is done. Note, when
+    // List of callbacks to run when profile initialization (success or fail) is
+    // done. Note, when profile is fully loaded this vector will be empty.
+    std::vector<base::OnceCallback<void(Profile*)>> init_callbacks;
+    // List of callbacks to run when profile is created. Note, when
     // profile is fully loaded this vector will be empty.
-    std::vector<CreateCallback> callbacks;
+    std::vector<base::OnceCallback<void(Profile*)>> created_callbacks;
 
    private:
     // Callers should use FromOwned/UnownedProfile() instead.
@@ -530,10 +537,6 @@ class ProfileManager : public Profile::Delegate {
   // Determines if profile should be OTR.
   bool ShouldGoOffTheRecord(Profile* profile);
 
-  void RunCallbacks(const std::vector<CreateCallback>& callbacks,
-                    Profile* profile,
-                    Profile::CreateStatus status);
-
   void SaveActiveProfiles();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -562,19 +565,17 @@ class ProfileManager : public Profile::Delegate {
     raw_ptr<ProfileManager> profile_manager_;
   };
 
-  // If the `loaded_profile` has been loaded successfully (according to
-  // `status`) and isn't already scheduled for deletion, then finishes adding
-  // `profile_to_delete_dir` to the queue of profiles to be deleted, and updates
-  // the kProfileLastUsed preference based on
-  // `last_non_supervised_profile_path`. `keep_alive` may be null and is used
-  // to ensure shutdown does not start.
-  void OnNewActiveProfileLoaded(
+  // If the `loaded_profile` has been loaded successfully and isn't already
+  // scheduled for deletion, then finishes adding `profile_to_delete_dir` to the
+  // queue of profiles to be deleted, and updates the kProfileLastUsed
+  // preference based on `last_non_supervised_profile_path`. `keep_alive` may be
+  // null and is used to ensure shutdown does not start.
+  void OnNewActiveProfileInitialized(
       const base::FilePath& profile_to_delete_path,
       const base::FilePath& last_non_supervised_profile_path,
-      ProfileLoadedCallback* callback,
-      ScopedKeepAlive* keep_alive,
-      Profile* loaded_profile,
-      Profile::CreateStatus status);
+      ProfileLoadedCallback callback,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      Profile* loaded_profile);
 
   void OnClosingAllBrowsersChanged(bool closing);
 #endif  // !BUILDFLAG(IS_ANDROID)

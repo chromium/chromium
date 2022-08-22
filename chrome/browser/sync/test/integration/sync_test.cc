@@ -35,6 +35,7 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -443,20 +444,6 @@ bool SyncTest::CreateProfile(int index) {
   return true;
 }
 
-// Called when the ProfileManager has created a profile.
-// static
-void SyncTest::CreateProfileCallback(const base::RepeatingClosure& quit_closure,
-                                     Profile* profile,
-                                     Profile::CreateStatus status) {
-  EXPECT_TRUE(profile);
-  EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
-  // This will be called multiple times. Wait until the profile is initialized
-  // fully to quit the loop.
-  if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    quit_closure.Run();
-  }
-}
-
 // TODO(shadi): Ideally creating a new profile should not depend on signin
 // process. We should try to consolidate MakeProfileForUISignin() and
 // MakeProfile(). Major differences are profile paths and creation methods. For
@@ -465,12 +452,7 @@ void SyncTest::CreateProfileCallback(const base::RepeatingClosure& quit_closure,
 // static
 Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::RunLoop run_loop;
-  ProfileManager::CreateCallback create_callback =
-      base::BindRepeating(&CreateProfileCallback, run_loop.QuitClosure());
-  profile_manager->CreateProfileAsync(profile_path, create_callback);
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(profile_path);
+  return profiles::testing::CreateProfileSync(profile_manager, profile_path);
 }
 
 Profile* SyncTest::GetProfile(int index) const {

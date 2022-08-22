@@ -200,13 +200,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
   Profile* profile2 = nullptr;
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
       u"New Profile", 0, false,
-      base::BindLambdaForTesting(
-          [&](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              profile2 = profile;
-              run_loop.Quit();
-            }
-          }));
+      base::BindLambdaForTesting([&](Profile* profile) {
+        if (profile) {
+          profile2 = profile;
+          run_loop.Quit();
+        }
+      }));
   run_loop.Run();
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(profile2);
 

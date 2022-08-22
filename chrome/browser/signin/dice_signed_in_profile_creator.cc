@@ -97,6 +97,10 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     : source_profile_(source_profile),
       account_id_(account_id),
       callback_(std::move(callback)) {
+  auto initialized_callback =
+      base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileInitialized,
+                     weak_pointer_factory_.GetWeakPtr());
+
   // Passing the sign-in token to an ephemeral Guest profile is part of the
   // experiment to surface a Guest mode link in the DiceWebSigninIntercept
   // and is only used to sign in to the web through account consistency and
@@ -114,9 +118,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
         base::BindOnce(&ProfileManager::CreateProfileAsync,
                        base::Unretained(g_browser_process->profile_manager()),
                        ProfileManager::GetGuestProfilePath(),
-                       base::BindRepeating(
-                           &DiceSignedInProfileCreator::OnNewProfileCreated,
-                           weak_pointer_factory_.GetWeakPtr())));
+                       std::move(initialized_callback), base::DoNothing()));
   } else {
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -125,10 +127,9 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     std::u16string name = local_profile_name.empty()
                               ? storage.ChooseNameForNewProfile(*icon_index)
                               : local_profile_name;
-    ProfileManager::CreateMultiProfileAsync(
-        name, *icon_index, /*is_hidden=*/false,
-        base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
-                            weak_pointer_factory_.GetWeakPtr()));
+    ProfileManager::CreateMultiProfileAsync(name, *icon_index,
+                                            /*is_hidden=*/false,
+                                            std::move(initialized_callback));
   }
 }
 
@@ -153,26 +154,9 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
 
 DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
-void DiceSignedInProfileCreator::OnNewProfileCreated(
-    Profile* new_profile,
-    Profile::CreateStatus status) {
-  switch (status) {
-    case Profile::CREATE_STATUS_CREATED:
-      // Ignore this, wait for profile to be initialized.
-      return;
-    case Profile::CREATE_STATUS_INITIALIZED:
-      OnNewProfileInitialized(new_profile);
-      return;
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      NOTREACHED() << "Error creating new profile";
-      if (callback_)
-        std::move(callback_).Run(nullptr);
-      return;
-  }
-}
-
 void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
   if (!new_profile) {
+    NOTREACHED() << "Error creating new profile";
     if (callback_)
       std::move(callback_).Run(nullptr);
     return;

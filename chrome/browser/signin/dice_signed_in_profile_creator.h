@@ -48,12 +48,8 @@ class DiceSignedInProfileCreator {
       delete;
 
  private:
-  // Callback invoked once a profile is created, so we can transfer the
-  // credentials.
-  void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
-
   // Called when the profile is initialized.
-  void OnNewProfileInitialized(Profile* new_profile);
+  void OnNewProfileInitialized(Profile* profile);
 
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);

@@ -131,8 +131,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void Display();
 
   // On picker profile creation success, it initializes the view.
-  void OnPickerProfileCreated(Profile* picker_profile,
-                              Profile::CreateStatus status);
+  void OnPickerProfileCreated(Profile* picker_profile);
 
   // Creates and shows the dialog.
   void Init(Profile* picker_profile);
@@ -146,9 +145,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Handles profile creation when forced sign-in is enabled.
   void OnProfileForDiceForcedSigninCreated(
-      base::OnceCallback<void(bool)>& switch_finished_callback,
-      Profile* new_profile,
-      Profile::CreateStatus status);
+      base::OnceCallback<void(bool)> switch_finished_callback,
+      Profile* new_profile);
 
   // Called when dice sign-in finishes.
   void OnDiceSigninFinished(absl::optional<SkColor> profile_color,

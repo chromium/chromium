@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -97,38 +98,10 @@ void SendOpenUrlToAppController(const GURL& url) {
   [NSApp.delegate application:NSApp openURLs:@[ net::NSURLWithGURL(url) ]];
 }
 
-void RunClosureWhenProfileInitialized(const base::RepeatingClosure& closure,
-                                      Profile* profile,
-                                      Profile::CreateStatus status) {
-  // This will be called multiple times. Wait until the profile is initialized
-  // fully to quit the loop.
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    closure.Run();
-}
-
-// Called when the ProfileManager has created a profile.
-void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
-                           Profile** out_profile,
-                           Profile* profile,
-                           Profile::CreateStatus status) {
-  EXPECT_TRUE(profile);
-  ASSERT_TRUE(out_profile);
-  *out_profile = profile;
-  EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
-  // This will be called multiple times. Wait until the profile is initialized
-  // fully to quit the loop.
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    quit_closure.Run();
-}
-
 Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
-  Profile* profile;
-  ProfileManager::CreateCallback create_callback = base::BindRepeating(
-      &CreateProfileCallback,
-      base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(), &profile);
-  g_browser_process->profile_manager()->CreateProfileAsync(profile_dir,
-                                                           create_callback);
-  base::RunLoop().Run();
+  Profile* profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(), profile_dir);
+  EXPECT_TRUE(profile);
   return profile;
 }
 
@@ -808,12 +781,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   // Create profile 2.
   base::FilePath profile2_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile2_path, base::BindRepeating(&RunClosureWhenProfileInitialized,
-                                         run_loop.QuitClosure()));
-  run_loop.Run();
-  Profile* profile2 = profile_manager->GetProfileByPath(profile2_path);
+  Profile* profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile2_path);
   ASSERT_TRUE(profile2);
 
   // Load profile1's History Service backend so it will be assigned to the

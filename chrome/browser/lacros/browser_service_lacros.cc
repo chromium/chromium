@@ -89,39 +89,31 @@ void MaybeProceedWithProfile(base::OnceCallback<void(Profile*)> callback,
   std::move(callback).Run(proceed ? profile : nullptr);
 }
 
-// Helper function to handle profile loading errors.
-void OnMainProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
-                         bool can_trigger_fre,
-                         Profile* profile,
-                         Profile::CreateStatus status) {
+// Helper function to handle profile initialization.
+void OnMainProfileInitialized(base::OnceCallback<void(Profile*)> callback,
+                              bool can_trigger_fre,
+                              Profile* profile) {
   DCHECK(callback);
-  switch (status) {
-    case Profile::CREATE_STATUS_LOCAL_FAIL:
-      LOG(ERROR) << "Profile creation failed.";
-      // Profile creation failed, show the profile picker instead.
-      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-          ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-      std::move(callback).Run(nullptr);
-      return;
-    case Profile::CREATE_STATUS_CREATED:
-      // Do nothing, wait for the profile to be fully initialized.
-      return;
-    case Profile::CREATE_STATUS_INITIALIZED:
-      DCHECK(profile);
+  if (!profile) {
+    LOG(ERROR) << "Profile creation failed.";
+    // Profile creation failed, show the profile picker instead.
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
-      auto* fre_service =
-          LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
-      if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
-        // TODO(https://crbug.com/1313848): Consider taking a
-        // `ScopedProfileKeepAlive`.
-        fre_service->OpenFirstRunIfNeeded(
-            LacrosFirstRunService::EntryPoint::kOther,
-            base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
-                           base::Unretained(profile)));
-      } else {
-        std::move(callback).Run(profile);
-      }
-      return;
+  auto* fre_service =
+      LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
+  if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
+    // TODO(https://crbug.com/1313848): Consider taking a
+    // `ScopedProfileKeepAlive`.
+    fre_service->OpenFirstRunIfNeeded(
+        LacrosFirstRunService::EntryPoint::kOther,
+        base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
+                       base::Unretained(profile)));
+  } else {
+    std::move(callback).Run(profile);
   }
 }
 
@@ -130,11 +122,8 @@ void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   profile_manager->CreateProfileAsync(
       ProfileManager::GetPrimaryUserProfilePath(),
-      // Use base::OwnedRef as `OnMainProfileLoaded()` is called multiple
-      // times, but `callback` is only called once.
-      base::BindRepeating(&OnMainProfileLoaded,
-                          base::OwnedRef(std::move(callback)),
-                          can_trigger_fre));
+      base::BindOnce(&OnMainProfileInitialized, std::move(callback),
+                     can_trigger_fre));
 }
 
 NavigateParams::PathBehavior ConvertPathBehavior(

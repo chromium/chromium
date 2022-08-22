@@ -36,15 +36,11 @@ class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     ProfileManager::CreateMultiProfileAsync(
         u"test_profile", /*icon_index=*/0, /*is_hidden=*/false,
-        base::BindLambdaForTesting(
-            [&new_profile, &run_loop](Profile* profile,
-                                      Profile::CreateStatus status) {
-              ASSERT_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
-              if (status == Profile::CREATE_STATUS_INITIALIZED) {
-                new_profile = profile;
-                run_loop.Quit();
-              }
-            }));
+        base::BindLambdaForTesting([&new_profile, &run_loop](Profile* profile) {
+          ASSERT_TRUE(profile);
+          new_profile = profile;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return new_profile;
   }
