@@ -61,9 +61,6 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
   // Sends the array of default profile icon URLs and profile names to WebUI.
   void HandleGetAvailableIcons(const base::Value::List& args);
 
-  // Get all the available profile icons to choose from.
-  base::Value::List GetAvailableIcons();
-
   // Callback for the "setProfileIconToGaiaAvatar" message.
   void HandleSetProfileIconToGaiaAvatar(const base::Value::List& args);
 

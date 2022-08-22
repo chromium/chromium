@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -65,6 +66,14 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationTitle", IDS_PROFILE_CUSTOMIZATION_TITLE_V2},
       {"localProfileCreationTitle",
        IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE},
+      {"profileCustomizationCustomizeAvatarLabel",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
+      {"profileCustomizationAvatarSelectionTitle",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
+      {"profileCustomizationAvatarSelectionConfirmButtonLabel", IDS_OK},
+      {"profileCustomizationAvatarSelectionCancelButtonLabel", IDS_CANCEL},
+      {"profileCustomizationAvatarSelectionBackButtonLabel",
+       IDS_PROFILE_CUSTOMIZATION_AVATAR_SELECTION_BACK_BUTTON_LABEL},
 
       // Color picker strings:
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
@@ -107,7 +116,7 @@ void ProfileCustomizationUI::Initialize(
     base::OnceCallback<void(ProfileCustomizationHandler::CustomizationResult)>
         completion_callback) {
   web_ui()->AddMessageHandler(std::make_unique<ProfileCustomizationHandler>(
-      std::move(completion_callback)));
+      Profile::FromWebUI(web_ui()), std::move(completion_callback)));
 }
 
 void ProfileCustomizationUI::BindInterface(

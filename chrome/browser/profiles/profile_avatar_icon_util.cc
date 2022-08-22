@@ -26,10 +26,15 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/prefs/pref_service.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -638,6 +643,62 @@ size_t GetRandomAvatarIconIndex(
   }
   // All indices are used, so return a random one.
   return interval_begin + random_offset;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
+    const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
+
+  bool using_gaia = entry->IsUsingGAIAPicture();
+  size_t selected_avatar_idx =
+      using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
+
+  // Obtain a list of the modern avatar icons.
+  base::Value::List avatars(
+      GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
+
+  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
+    ProfileThemeColors colors = entry->GetProfileThemeColors();
+    auto generic_avatar_info = GetDefaultProfileAvatarIconAndLabel(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        selected_avatar_idx == GetPlaceholderAvatarIndex());
+    avatars.Insert(avatars.begin(),
+                   base::Value(std::move(generic_avatar_info)));
+    return avatars;
+  }
+
+  // Add the GAIA picture to the beginning of the list if it is available.
+  const gfx::Image* icon = entry->GetGAIAPicture();
+  if (icon) {
+    gfx::Image avatar_icon = GetAvatarIconForWebUI(*icon);
+    auto gaia_picture_info = GetAvatarIconAndLabelDict(
+        /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
+        /*label=*/
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
+        /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
+    avatars.Insert(avatars.begin(), base::Value(std::move(gaia_picture_info)));
+  }
+
+  return avatars;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
+  CHECK(IsDefaultAvatarIconIndex(avatar_icon_index));
+
+  PrefService* pref_service = profile->GetPrefs();
+  pref_service->SetInteger(prefs::kProfileAvatarIndex, avatar_icon_index);
+  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar,
+                           avatar_icon_index == GetPlaceholderAvatarIndex());
+  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
+
+  ProfileMetrics::LogProfileAvatarSelection(avatar_icon_index);
+  ProfileMetrics::LogProfileUpdate(profile->GetPath());
 }
 
 #if BUILDFLAG(IS_WIN)

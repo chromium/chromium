@@ -10,7 +10,8 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
   private profileInfo_: ProfileInfo;
 
   constructor() {
-    super(['done', 'initialized', 'skip']);
+    super(
+        ['done', 'initialized', 'getAvailableIcons', 'skip', 'setAvatarIcon']);
 
     this.profileInfo_ = {
       backgroundColor: '',
@@ -29,11 +30,20 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
     return Promise.resolve(this.profileInfo_);
   }
 
+  getAvailableIcons() {
+    this.methodCalled('getAvailableIcons');
+    return Promise.resolve([]);
+  }
+
   done(profileName: string) {
     this.methodCalled('done', profileName);
   }
 
   skip() {
     this.methodCalled('skip');
+  }
+
+  setAvatarIcon(avatarIndex: number) {
+    this.methodCalled('setAvatarIcon', avatarIndex);
   }
 }

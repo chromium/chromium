@@ -1,5 +1,11 @@
 <style include="signin-shared">
-  #customizeDialog {
+  #viewManager,
+  #customizeDialog,
+  #selectAvatarDialog {
+    height: 100%;
+  }
+
+  .profile-customization-wrapper {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -132,7 +138,7 @@
 
   cr-button {
     font-size: 12px;
-    width: 111px;
+    min-width: 111px;
   }
 
   .in-dialog-design #title {
@@ -145,12 +151,58 @@
   }
 
   .in-dialog-design #doneButton {
-    width: 119px;
+    min-width: 119px;
   }
 
   .in-dialog-design #skipButton {
     margin-inline-end: 12px;
-    width: 76px;
+    min-width: 76px;
+  }
+
+  cr-profile-avatar-selector {
+    --avatar-size: 72px;
+    --avatar-spacing: 18px;
+    --avatar-grid-columns: 5;
+    height: 398px;
+    margin: 0 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 15px;
+    padding-inline-start: 15px;
+    padding-top: 15px;
+    width: fit-content;
+  }
+
+  .select-avatar-header {
+    display: flex;
+    height: 22px;
+    justify-content: flex-start;
+    padding: 13px 16px 17px;
+  }
+
+  .select-avatar-title {
+    font-size: 15px;
+    line-height: 22px;
+    margin: auto 0;
+  }
+
+  #selectAvatarCloseButton {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 22px;
+    margin-inline-end: 20px;
+    margin-inline-start: 2px;
+  }
+
+  #selectAvatarDialog .action-container {
+    padding: 24px;
+  }
+
+  #selectAvatarConfirmButton {
+    min-width: 119px;
+  }
+
+  #selectAvatarCancelButton {
+    margin-inline-end: 12px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -165,58 +217,92 @@
   }
 </style>
 
-<div role="dialog" id="customizeDialog" aria-labelledby="title"
+<cr-view-manager role="dialog" id="viewManager" aria-labelledby="title"
     aria-describedby="content"
     class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
-  <div id="header">
-    <div id="avatarContainer">
-      <img id="avatar" alt="" src="[[pictureUrl_]]">
-      <template is="dom-if" if="[[!isLocalProfileCreation_]]">
-        <div class="avatar-badge" id="workBadge" hidden="[[!isManaged_]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+  <div id="customizeDialog" slot="view" class="active">
+    <!-- An extra wrapper is needed because cr-view-manager incorrectly
+         displays views with display: flex -->
+    <div class="profile-customization-wrapper">
+      <div id="header">
+        <div id="avatarContainer">
+          <img id="avatar" alt="" src="[[pictureUrl_]]">
+          <template is="dom-if" if="[[!isLocalProfileCreation_]]">
+            <div class="avatar-badge" id="workBadge" hidden="[[!isManaged_]]">
+              <iron-icon class="icon" icon="cr:domain"></iron-icon>
+            </div>
+          </template>
+          <template is="dom-if" if="[[isLocalProfileCreation_]]">
+            <div class="avatar-badge">
+              <cr-icon-button id="customizeAvatarIcon" iron-icon="cr:create"
+                  on-click="onCustomizeAvatarClick_"
+                  aria-label="$i18n{profileCustomizationCustomizeAvatarLabel}">
+              </cr-icon-button>
+            </div>
+          </template>
         </div>
-      </template>
-      <template is="dom-if" if="[[isLocalProfileCreation_]]">
-        <div class="avatar-badge">
-          <cr-icon-button id="customizeAvatarIcon" iron-icon="cr:create"
-              on-click="onCustomizeAvatarClick_">
-          </cr-icon-button>
+      </div>
+
+      <div id="body">
+        <div id="title">
+          [[welcomeTitle_]]
         </div>
-      </template>
+        <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
+          <div id="content">$i18n{profileCustomizationText}</div>
+        </template>
+      </div>
+
+      <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
+        aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
+        required spellcheck="false">
+      </cr-input>
+
+      <div id="pickThemeContainer">
+        <cr-customize-themes id="themeSelector">
+        </cr-customize-themes>
+      </div>
+
+      <div class="action-container">
+        <cr-button id="doneButton" class="action-button"
+            disabled="[[isDoneButtonDisabled_(profileName_)]]"
+            on-click="onDoneCustomizationClicked_" autofocus>
+          $i18n{profileCustomizationDoneLabel}
+        </cr-button>
+        <template is="dom-if" if="[[shouldShowCancelButton_()]]">
+          <cr-button id="skipButton" class="cancel-button"
+              on-click="onSkipCustomizationClicked_">
+            $i18n{profileCustomizationSkipLabel}
+          </cr-button>
+        </template>
+      </div>
     </div>
   </div>
 
-  <div id="body">
-    <div id="title">
-      [[welcomeTitle_]]
+  <template is="dom-if" if="[[isLocalProfileCreation_]]">
+    <div id="selectAvatarDialog" slot="view">
+      <div class="select-avatar-header">
+        <cr-icon-button iron-icon="cr:arrow-back" id="selectAvatarCloseButton"
+            aria-label="$i18n{profileCustomizationAvatarSelectionBackButtonLabel}"
+            on-click="onSelectAvatarCancelClicked_">
+        </cr-icon-button>
+        <div class="select-avatar-title">
+          $i18n{profileCustomizationAvatarSelectionTitle}
+        </div>
+      </div>
+      <cr-profile-avatar-selector avatars="[[availableIcons_]]"
+          selected-avatar="{{selectedAvatar_}}">
+      </cr-profile-avatar-selector>
+      <div class="action-container">
+        <cr-button id="selectAvatarConfirmButton" class="action-button"
+            on-click="onSelectAvatarConfirmClicked_">
+          $i18n{profileCustomizationAvatarSelectionConfirmButtonLabel}
+        </cr-button>
+        <cr-button id="selectAvatarCancelButton" class="cancel-button"
+            on-click="onSelectAvatarCancelClicked_">
+          $i18n{profileCustomizationAvatarSelectionCancelButtonLabel}
+        </cr-button>
+      </div>
     </div>
-    <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
-      <div id="content">$i18n{profileCustomizationText}</div>
-    </template>
-  </div>
+  </template>
 
-  <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
-    aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
-    required spellcheck="false">
-  </cr-input>
-
-  <div id="pickThemeContainer">
-    <cr-customize-themes id="themeSelector">
-    </cr-customize-themes>
-  </div>
-
-  <div class="action-container">
-    <cr-button id="doneButton" class="action-button"
-        disabled="[[isDoneButtonDisabled_(profileName_)]]"
-        on-click="onDoneCustomizationClicked_" autofocus>
-      $i18n{profileCustomizationDoneLabel}
-    </cr-button>
-    <template is="dom-if" if="[[shouldShowCancelButton_()]]">
-      <cr-button id="skipButton" class="cancel-button"
-          on-click="onSkipCustomizationClicked_">
-        $i18n{profileCustomizationSkipLabel}
-      </cr-button>
-    </template>
-  <div>
-
-</div>
+</cr-view-manager>

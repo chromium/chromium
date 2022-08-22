@@ -27,6 +27,7 @@ namespace gfx {
 class Image;
 }
 
+class Profile;
 class ProfileAttributesEntry;
 class SkBitmap;
 
@@ -170,6 +171,17 @@ base::Value::List GetCustomProfileAvatarIconsAndLabels(
 // |used_icon_indices|. If there is no such index, a random index is returned.
 size_t GetRandomAvatarIconIndex(
     const std::unordered_set<size_t>& used_icon_indices);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Get all the available profile icons to choose from for a specific profile
+// with |profile_path|.
+base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
+    const base::FilePath& profile_path);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Set the default profile avatar icon index to |avatar_icon_index| for a
+// specific |profile|.
+void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index);
 
 #if BUILDFLAG(IS_WIN)
 // Get the 2x avatar image for a ProfileAttributesEntry.

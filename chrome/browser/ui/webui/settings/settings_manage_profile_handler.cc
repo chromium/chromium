@@ -103,7 +103,9 @@ void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     return;
 
   // GAIA image is loaded asynchronously.
-  FireWebUIListener("available-icons-changed", GetAvailableIcons());
+  FireWebUIListener(
+      "available-icons-changed",
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ManageProfileHandler::OnProfileAvatarChanged(
@@ -112,7 +114,9 @@ void ManageProfileHandler::OnProfileAvatarChanged(
     return;
 
   // This is necessary to send the potentially updated GAIA photo.
-  FireWebUIListener("available-icons-changed", GetAvailableIcons());
+  FireWebUIListener(
+      "available-icons-changed",
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ManageProfileHandler::OnProfileThemeColorsChanged(
@@ -130,52 +134,9 @@ void ManageProfileHandler::HandleGetAvailableIcons(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, GetAvailableIcons());
-}
-
-base::Value::List ManageProfileHandler::GetAvailableIcons() {
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-  // TODO(msalama): Convert to a DCHECK.
-  if (!entry) {
-    LOG(ERROR) << "No profile attributes entry found for profile with path: "
-               << profile_->GetPath();
-    return base::Value::List();
-  }
-
-  bool using_gaia = entry->IsUsingGAIAPicture();
-  size_t selected_avatar_idx =
-      using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
-
-  // Obtain a list of the modern avatar icons.
-  base::Value::List avatars(
-      profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
-
-  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
-    ProfileThemeColors colors = entry->GetProfileThemeColors();
-    auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
-        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-        selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
-    avatars.Insert(avatars.begin(),
-                   base::Value(std::move(generic_avatar_info)));
-    return avatars;
-  }
-
-  // Add the GAIA picture to the beginning of the list if it is available.
-  const gfx::Image* icon = entry->GetGAIAPicture();
-  if (icon) {
-    gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon);
-    auto gaia_picture_info = profiles::GetAvatarIconAndLabelDict(
-        /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
-        /*label=*/
-        l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
-        /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
-    avatars.Insert(avatars.begin(), base::Value(std::move(gaia_picture_info)));
-  }
-
-  return avatars;
+  ResolveJavascriptCallback(
+      callback_id,
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
@@ -204,18 +165,8 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
   CHECK_EQ(1u, args.size());
   CHECK(args[0].is_int());
 
-  size_t new_icon_index = args[0].GetInt();
-  CHECK(profiles::IsDefaultAvatarIconIndex(new_icon_index));
-
-  PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, new_icon_index);
-  pref_service->SetBoolean(
-      prefs::kProfileUsingDefaultAvatar,
-      new_icon_index == profiles::GetPlaceholderAvatarIndex());
-  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
-
-  ProfileMetrics::LogProfileAvatarSelection(new_icon_index);
-  ProfileMetrics::LogProfileUpdate(profile_->GetPath());
+  size_t avatar_icon_index = args[0].GetInt();
+  profiles::SetDefaultProfileAvatarIndex(profile_, avatar_icon_index);
 }
 
 void ManageProfileHandler::HandleSetProfileName(const base::Value::List& args) {

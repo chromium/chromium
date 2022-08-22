@@ -33,16 +33,20 @@ const size_t kAvatarSize = 60;
 }
 
 ProfileCustomizationHandler::ProfileCustomizationHandler(
+    Profile* profile,
     base::OnceCallback<void(CustomizationResult)> completion_callback)
-    : completion_callback_(std::move(completion_callback)) {}
+    : profile_(profile), completion_callback_(std::move(completion_callback)) {}
 
 ProfileCustomizationHandler::~ProfileCustomizationHandler() = default;
 
 void ProfileCustomizationHandler::RegisterMessages() {
-  profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
   web_ui()->RegisterMessageCallback(
       "initialized",
       base::BindRepeating(&ProfileCustomizationHandler::HandleInitialized,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAvailableIcons",
+      base::BindRepeating(&ProfileCustomizationHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "done", base::BindRepeating(&ProfileCustomizationHandler::HandleDone,
@@ -50,6 +54,10 @@ void ProfileCustomizationHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "skip", base::BindRepeating(&ProfileCustomizationHandler::HandleSkip,
                                   base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setAvatarIcon",
+      base::BindRepeating(&ProfileCustomizationHandler::HandleSetAvatarIcon,
+                          base::Unretained(this)));
 }
 
 void ProfileCustomizationHandler::OnJavascriptAllowed() {
@@ -64,6 +72,9 @@ void ProfileCustomizationHandler::OnJavascriptDisallowed() {
 void ProfileCustomizationHandler::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
+  FireWebUIListener(
+      "on-available-icons-changed",
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ProfileCustomizationHandler::OnProfileHighResAvatarLoaded(
@@ -74,6 +85,9 @@ void ProfileCustomizationHandler::OnProfileHighResAvatarLoaded(
 void ProfileCustomizationHandler::OnProfileThemeColorsChanged(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
+  FireWebUIListener(
+      "on-available-icons-changed",
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ProfileCustomizationHandler::OnProfileHostedDomainChanged(
@@ -93,6 +107,16 @@ void ProfileCustomizationHandler::HandleInitialized(
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
+}
+
+void ProfileCustomizationHandler::HandleGetAvailableIcons(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(
+      callback_id,
+      profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
 void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
@@ -115,10 +139,18 @@ void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
     std::move(completion_callback_).Run(CustomizationResult::kSkip);
 }
 
+void ProfileCustomizationHandler::HandleSetAvatarIcon(
+    const base::Value::List& args) {
+  CHECK_EQ(1u, args.size());
+  size_t avatar_icon_index = args[0].GetInt();
+
+  profiles::SetDefaultProfileAvatarIndex(profile_, avatar_icon_index);
+}
+
 void ProfileCustomizationHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
   DCHECK(IsJavascriptAllowed());
-  if (profile_path != profile_path_)
+  if (profile_path != profile_->GetPath())
     return;
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
@@ -148,7 +180,7 @@ ProfileAttributesEntry* ProfileCustomizationHandler::GetProfileEntry() const {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_path_);
+          .GetProfileAttributesWithPath(profile_->GetPath());
   DCHECK(entry);
   return entry;
 }

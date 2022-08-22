@@ -5,6 +5,8 @@
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -15,6 +17,9 @@ import './signin_vars.css.js';
 import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -30,6 +35,7 @@ export interface ProfileCustomizationAppElement {
     nameInput: CrInputElement,
     title: HTMLElement,
     themeSelector: CustomizeThemesElement,
+    viewManager: CrViewManagerElement,
   };
 }
 
@@ -48,23 +54,34 @@ export class ProfileCustomizationAppElement extends
 
   static get properties() {
     return {
-      /** Whether the account is managed (Enterprise) */
+      /** Whether the account is managed (Enterprise). */
       isManaged_: {
         type: Boolean,
         value: false,
       },
 
-      /** Local profile name, editable by user input */
+      /** Local profile name, editable by user input. */
       profileName_: {
         type: String,
         value: '',
       },
 
-      /** URL for the profile picture */
+      /** URL for the profile picture. */
       pictureUrl_: String,
 
-      /** Welcome title for the bubble */
+      /** Welcome title for the bubble. */
       welcomeTitle_: String,
+
+      /** List of available profile icon URLs and labels. */
+      availableIcons_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /** The currently selected profile avatar, if any. */
+      selectedAvatar_: Object,
 
       profileCustomizationInDialogDesign_: {
         type: Boolean,
@@ -83,6 +100,9 @@ export class ProfileCustomizationAppElement extends
   private profileName_: string;
   private pictureUrl_: string;
   private welcomeTitle_: string;
+  private availableIcons_: AvatarIcon[];
+  private selectedAvatar_: AvatarIcon;
+  private confirmedAvatar_: AvatarIcon;
   private profileCustomizationInDialogDesign_: boolean;
   private isLocalProfileCreation_: boolean;
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
@@ -97,8 +117,15 @@ export class ProfileCustomizationAppElement extends
     this.addWebUIListener(
         'on-profile-info-changed',
         (info: ProfileInfo) => this.setProfileInfo_(info));
+    this.addWebUIListener(
+        'on-available-icons-changed',
+        (icons: AvatarIcon[]) => this.setAvailableIcons_(icons));
     this.profileCustomizationBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
+    if (this.isLocalProfileCreation_) {
+      this.profileCustomizationBrowserProxy_.getAvailableIcons().then(
+          icons => this.setAvailableIcons_(icons));
+    }
   }
 
   /**
@@ -142,7 +169,43 @@ export class ProfileCustomizationAppElement extends
   }
 
   private onCustomizeAvatarClick_() {
-    // TODO(https://crbug.com/1282157): Add action for onCustomizeAvatarClick_
+    assert(this.isLocalProfileCreation_);
+    this.$.viewManager.switchView('selectAvatarDialog', 'fade-in', 'fade-out');
+  }
+
+  private setAvailableIcons_(icons: AvatarIcon[]) {
+    // If there is no selectedAvatar_ yet, get it from the icons list.
+    // Setting all the icons in availableIcons_ as not selected so the only
+    // source of truth for the currently selected icon is selectedAvatar_ and
+    // there is only one icon marked as selected.
+    icons.forEach((icon, index) => {
+      if (icon.selected) {
+        icons[index].selected = false;
+        this.confirmedAvatar_ = icons[index];
+        if (!this.selectedAvatar_) {
+          this.selectedAvatar_ = icons[index];
+        }
+      }
+    });
+    this.availableIcons_ = icons;
+  }
+
+  private onSelectAvatarConfirmClicked_() {
+    assert(this.isLocalProfileCreation_);
+    this.profileCustomizationBrowserProxy_.setAvatarIcon(
+        this.selectedAvatar_.index);
+    this.confirmedAvatar_ = this.selectedAvatar_;
+    this.closeSelectAvatar_();
+  }
+
+  private onSelectAvatarCancelClicked_() {
+    assert(this.isLocalProfileCreation_);
+    this.closeSelectAvatar_();
+    this.selectedAvatar_ = this.confirmedAvatar_;
+  }
+
+  private closeSelectAvatar_() {
+    this.$.viewManager.switchView('customizeDialog', 'fade-in', 'fade-out');
   }
 }
 

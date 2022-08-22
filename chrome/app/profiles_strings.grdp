@@ -508,6 +508,9 @@
     <message name="IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE" desc="Title of the profile customization dialog for local profile creation (user is not signed-in)">
       Welcome!
     </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_AVATAR_SELECTION_BACK_BUTTON_LABEL" desc="Accessibility label for the Back icon button on the avatar selection dialog in the profile customization when the back icon is focused and is not rendered.">
+      Back from avatar selection page
+    </message>
 
     <!-- Enterprise profile welcome screen -->
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_TITLE" desc="Title of the enteprise profile welcome screen. It is part of the profile creation flow, shown after sign-in to enterprise users.">

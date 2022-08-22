@@ -7,6 +7,7 @@
  * interact with the browser.
  */
 
+import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 // Profile info (colors and avatar) sent from C++.
@@ -21,11 +22,16 @@ export interface ProfileCustomizationBrowserProxy {
   // Called when the page is ready.
   initialized(): Promise<ProfileInfo>;
 
+  // Retrieves custom avatar list for the select avatar dialog.
+  getAvailableIcons(): Promise<AvatarIcon[]>;
+
   // Called when the user clicks the done button.
   done(profileName: string): void;
 
   // Called when the user clicks the skip button.
   skip(): void;
+
+  setAvatarIcon(avatarIndex: number): void;
 }
 
 export class ProfileCustomizationBrowserProxyImpl implements
@@ -34,12 +40,20 @@ export class ProfileCustomizationBrowserProxyImpl implements
     return sendWithPromise('initialized');
   }
 
+  getAvailableIcons() {
+    return sendWithPromise('getAvailableIcons');
+  }
+
   done(profileName: string) {
     chrome.send('done', [profileName]);
   }
 
   skip() {
     chrome.send('skip');
+  }
+
+  setAvatarIcon(avatarIndex: number) {
+    chrome.send('setAvatarIcon', [avatarIndex]);
   }
 
   static getInstance(): ProfileCustomizationBrowserProxy {
