@@ -326,6 +326,11 @@ void ScopedFeatureList::Reset() {
   // Restore params to how they were before.
   FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
   if (!original_params_.empty()) {
+    // Before restoring params, we need to make all field trials in-active,
+    // because FieldTrialParamAssociator checks whether the given field trial
+    // is active or not, and associates no parameters if the trial is active.
+    // So temporarily restore field trial list to be nullptr.
+    FieldTrialList::RestoreInstanceForTesting(nullptr);
     AssociateFieldTrialParamsFromString(original_params_, &HexDecodeString);
   }
 

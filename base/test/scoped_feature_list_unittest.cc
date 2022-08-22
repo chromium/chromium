@@ -633,6 +633,46 @@ TEST_F(ScopedFeatureListTest, ScopedFeatureListIsNoopWhenNotInitialized) {
   ExpectFeatures("*TestFeature1", std::string());
 }
 
+TEST_F(ScopedFeatureListTest,
+       RestoreFieldTrialParamsCorrectlyWhenLeakedFieldTrialCreated) {
+  test::ScopedFeatureList feature_list1;
+  feature_list1.InitFromCommandLine("TestFeature1:TestParam/TestValue1", "");
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_EQ("TestValue1",
+            GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+
+  // content::InitializeFieldTrialAndFeatureList() creates a leaked
+  // FieldTrialList. To emulate the leaked one, declare
+  // unique_ptr<FieldTriaList> here and initialize it inside the following
+  // child scope.
+  std::unique_ptr<FieldTrialList> leaked_field_trial_list;
+  {
+    test::ScopedFeatureList feature_list2;
+    feature_list2.InitWithNullFeatureAndFieldTrialLists();
+
+    leaked_field_trial_list = std::make_unique<FieldTrialList>(nullptr);
+    FeatureList::InitializeInstance("TestFeature1:TestParam/TestValue2", "",
+                                    {});
+    EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+    EXPECT_EQ("TestValue2",
+              GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+  }
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_EQ("TestValue1",
+            GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));
+
+  {
+    FieldTrialList* backup_field_trial =
+        FieldTrialList::BackupInstanceForTesting();
+
+    // To free leaked_field_trial_list, need RestoreInstanceForTesting()
+    // to pass DCHECK_EQ(this, global_) at ~FieldTrialList().
+    FieldTrialList::RestoreInstanceForTesting(leaked_field_trial_list.get());
+    leaked_field_trial_list.reset();
+    FieldTrialList::RestoreInstanceForTesting(backup_field_trial);
+  }
+}
+
 TEST(ScopedFeatureListTestWithMemberList, ScopedFeatureListLocalOverride) {
   test::ScopedFeatureList initial_feature_list;
   initial_feature_list.InitAndDisableFeature(kTestFeature1);
