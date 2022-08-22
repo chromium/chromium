@@ -20,8 +20,6 @@ class Profile;
 
 namespace ash {
 
-class WebAppProvider;
-
 // Returns the system app type for the given App ID.
 absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
@@ -82,12 +80,6 @@ void LaunchSystemWebAppAsync(
 // calls on |profile| are processed (i.e. LaunchSystemWebAppImpl finishes
 // executing). Useful for testing SWA launch behaviors.
 void FlushSystemWebAppLaunchesForTesting(Profile* profile);
-
-// Utility function to set up launch files and launch directory as appropriate.
-void SetLaunchFiles(bool should_include_launch_directory,
-                    const apps::AppLaunchParams& params,
-                    content::WebContents* web_contents,
-                    WebAppProvider* provider);
 
 // Implementation of LaunchSystemWebApp. Do not use this before discussing your
 // use case with the System Web Apps team.
