@@ -48,6 +48,10 @@ _log = logging.getLogger(__name__)
 # the leading dot.
 # TODO(robertma): Investigate changing the CLI.
 BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
+# When large number of tests need to be optimized, limit the length of the commandline to 128 tests
+# to not run into issues with any commandline size limitations with popen. In windows CreateProcess()
+# arg length limit is 32768. With 250 chars in test path length, choosing a chunk size of 128.
+MAX_TESTS_IN_OPTIMIZE_CMDLINE = 128
 
 
 class AbstractRebaseliningCommand(Command):
@@ -529,60 +533,62 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                            verbose=False,
                            resultDB=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
-        # Group suffixes together to invoke fewer commands.
-        test_flag_pairs_to_suffixes = collections.defaultdict(set)
+        flag_spec_test_list = collections.defaultdict(set)
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
         for test, build, step_name, _ in baseline_subset:
             if not self._can_optimize(build.builder_name):
                 continue
+            # Use the suffixes information to determine whether to proceed with the optimize
+            # step. Suffixes are not passed to the optimizer.
+            if resultDB:
+                suffixes = self._suffixes_for_actual_failures_resultdb(
+                    test, build)
+            else:
+                suffixes = self._suffixes_for_actual_failures(
+                    test, build, step_name)
+            if suffixes == set():
+                continue
 
             flag_spec = self._tool.builders.flag_specific_option(
                 build.builder_name, step_name)
-            if resultDB:
-                test_flag_pairs_to_suffixes[test, flag_spec].update(
-                    self._suffixes_for_actual_failures_resultdb(test, build))
-            else:
-                test_flag_pairs_to_suffixes[test, flag_spec].update(
-                    self._suffixes_for_actual_failures(test, build, step_name))
-
-        suffixes_flag_spec = collections.defaultdict(set)
-        test_list = collections.defaultdict(list)
-        for (test, flag_spec), suffixes in test_flag_pairs_to_suffixes.items():
-            if not suffixes:
-                continue
             if flag_spec is None:
                 flag_spec = 'default'
+            flag_spec_test_list[flag_spec].add(test)
 
-            suffixes_flag_spec[flag_spec].update(suffixes)
-            test_list[flag_spec].append(test)
+        # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
+        capped_test_list = collections.defaultdict(list)
+        for flag_spec, test_set in flag_spec_test_list.items():
+            capped_tests_per_flag = []
+            test_list = list(test_set)
+            for i in range(0, len(test_list), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
+                capped_tests_per_flag.append(
+                    test_list[i:i + MAX_TESTS_IN_OPTIMIZE_CMDLINE])
+            if capped_tests_per_flag:
+                capped_test_list[flag_spec].extend(capped_tests_per_flag)
 
-        optimize_commands = collections.defaultdict(lambda: ([], ''))
+        optimize_commands = collections.defaultdict(lambda: [])
         cwd = self._tool.git().checkout_root
         path_to_blink_tool = self._tool.path()
 
         # Build one optimize-baselines invocation command for each flag_spec.
         # All the tests in the test list will be optimized iteratively.
-        for flag_spec, test_list_flag in test_list.items():
-            command = [
-                self._tool.executable,
-                path_to_blink_tool,
-                'optimize-baselines',
-                # FIXME: We should propagate the platform options as well.
-                # Prevent multiple baseline optimizer to race updating the manifest.
-                # The manifest has already been updated when listing tests.
-                '--no-manifest-update',
-            ]
-            if verbose:
-                command.append('--verbose')
-            if flag_spec != 'default':
-                command.extend(['--flag-specific', flag_spec])
-            command.extend([
-                '--suffixes', ','.join(sorted(suffixes_flag_spec[flag_spec]))
-            ])
-            for test in test_list_flag:
-                command.append(test)
-
-            optimize_commands[flag_spec] = (command, cwd)
+        for flag_spec, test_list_flag in capped_test_list.items():
+            for test_list in test_list_flag:
+                command = [
+                    self._tool.executable,
+                    path_to_blink_tool,
+                    'optimize-baselines',
+                    # FIXME: We should propagate the platform options as well.
+                    # Prevent multiple baseline optimizer to race updating the manifest.
+                    # The manifest has already been updated when listing tests.
+                    '--no-manifest-update',
+                ]
+                if verbose:
+                    command.append('--verbose')
+                if flag_spec != 'default':
+                    command.extend(['--flag-specific', flag_spec])
+                command.extend(test_list)
+                optimize_commands[flag_spec].append((command, cwd))
 
         return optimize_commands
 
@@ -696,9 +702,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             else:
                 optimize_commands = self._optimize_commands(
                     test_baseline_set, options.verbose, options.resultDB)
-                for _, (cmd, cwd) in optimize_commands.items():
-                    output = self._tool.executive.run_command(cmd, cwd)
-                    print(output)
+                for _, cmd_list in optimize_commands.items():
+                    for (cmd, cwd) in cmd_list:
+                        output = self._tool.executive.run_command(cmd, cwd)
+                        print(output)
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())

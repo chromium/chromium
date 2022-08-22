@@ -420,7 +420,6 @@ class TestRebaseline(BaseTestCase):
         test_baseline_set.add('userscripts/first-test.html',
                               Build('MOCK Win7'))
         self.command.rebaseline(self.options(), test_baseline_set)
-
         self.assertEqual(self.tool.executive.calls, [])
 
     def test_rebaseline_all(self):
@@ -465,8 +464,6 @@ class TestRebaseline(BaseTestCase):
                               'optimize-baselines',
                               '--no-manifest-update',
                               '--verbose',
-                              '--suffixes',
-                              'png,txt',
                               'userscripts/first-test.html',
                           ]])
 
@@ -512,8 +509,6 @@ class TestRebaseline(BaseTestCase):
                               'optimize-baselines',
                               '--no-manifest-update',
                               '--verbose',
-                              '--suffixes',
-                              'png,txt',
                               'userscripts/first-test.html',
                           ]])
 
@@ -639,8 +634,6 @@ class TestRebaseline(BaseTestCase):
                               'optimize-baselines',
                               '--no-manifest-update',
                               '--verbose',
-                              '--suffixes',
-                              'png,txt',
                               'userscripts/first-test.html',
                           ]])
 
