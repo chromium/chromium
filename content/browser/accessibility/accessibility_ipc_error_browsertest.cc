@@ -142,13 +142,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// http://crbug.com/542704
-#define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
-  DISABLED_MultipleBadAccessibilityIPCsKillsRenderer
-#else
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
   MultipleBadAccessibilityIPCsKillsRenderer
+#else
+// http://crbug.com/542704, http://crbug.com/1281355
+#define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
+  DISABLED_MultipleBadAccessibilityIPCsKillsRenderer
 #endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
                        MAYBE_MultipleBadAccessibilityIPCsKillsRenderer) {
