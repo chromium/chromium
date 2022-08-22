@@ -286,7 +286,7 @@ void PasswordGenerationAgentTest::FocusField(const char* element_id) {
   // TODO(crbug.com/1293802): On Android, the JS above doesn't trigger the
   // method below.
   GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void PasswordGenerationAgentTest::ExpectAutomaticGenerationAvailable(
