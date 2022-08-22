@@ -522,6 +522,7 @@ TEST_F(SigninPromoViewMediatorTest,
   EXPECT_FALSE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
                                                       ACCESS_POINT_RECENT_TABS
+                            authenticationService:GetAuthenticationService()
                                       prefService:browser_state->GetPrefs()]);
 }
 

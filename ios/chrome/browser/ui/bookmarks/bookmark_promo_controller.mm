@@ -102,9 +102,12 @@
     return;
 
   DCHECK(_browserState);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+                                authenticationService:authenticationService
                                           prefService:_browserState
                                                           ->GetPrefs()]) {
     signin::IdentityManager* identityManager =

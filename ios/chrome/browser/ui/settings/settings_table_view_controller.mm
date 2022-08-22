@@ -642,9 +642,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(_browserState);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
   return [SigninPromoViewMediator
              shouldDisplaySigninPromoViewWithAccessPoint:
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+                                   authenticationService:authenticationService
                                              prefService:_browserState
                                                              ->GetPrefs()] &&
          !syncSetupService->IsFirstSetupComplete();

@@ -78,6 +78,8 @@ class PrefRegistrySyncable;
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                              authenticationService:
+                                  (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService;
 
 // See -[SigninPromoViewMediator initWithBrowserState:].

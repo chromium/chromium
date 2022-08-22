@@ -434,10 +434,21 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                              authenticationService:
+                                  (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService {
   // Checks if user can't sign in.
-  if (!signin::IsSigninAllowed(prefService)) {
-    return NO;
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      // The user is allowed to sign-in, so the sign-in/sync promo can be
+      // displayed.
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      // The user is not allowed to sign-in. The promo cannot be displayed.
+      return NO;
   }
 
   // Checks if the user has exceeded the max impression count.
