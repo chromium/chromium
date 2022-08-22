@@ -28,43 +28,43 @@ cjxl -d 0 dice.png alpha-large-dice.jxl
 
 cjxl 3x3.png temp.jxl -d 0
 djxl temp.jxl 3x3_srgb.png
-cjxl 3x3_srgb.png 3x3_srgb_lossy.jxl -d 0.1 -e 7
+cjxl 3x3_srgb.png 3x3_srgb_lossy.jxl -d 0.1 -s 3
 cjxl 3x3_srgb.png 3x3_srgb_lossless.jxl -d 0
 
 cjxl 3x3a.png temp.jxl -d 0
 djxl temp.jxl 3x3a_srgb.png
-cjxl 3x3a_srgb.png 3x3a_srgb_lossy.jxl -d 0.1 -e 7
+cjxl 3x3a_srgb.png 3x3a_srgb_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_srgb.png 3x3a_srgb_lossless.jxl -d 0
 
 cjxl 3x3.png temp.jxl -x color_space=RGB_D65_202_Rel_PeQ -d 0
 djxl temp.jxl 3x3_pq.png
-cjxl 3x3_pq.png 3x3_pq_lossy.jxl -d 0.1 -e 7
+cjxl 3x3_pq.png 3x3_pq_lossy.jxl -d 0.1 -s 3
 cjxl 3x3_pq.png 3x3_pq_lossless.jxl -d 0
 
 cjxl 3x3a.png temp.jxl -x color_space=RGB_D65_202_Rel_PeQ -d 0
 djxl temp.jxl 3x3a_pq.png
-cjxl 3x3a_pq.png 3x3a_pq_lossy.jxl -d 0.1 -e 7
+cjxl 3x3a_pq.png 3x3a_pq_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_pq.png 3x3a_pq_lossless.jxl -d 0
 
 cjxl 3x3.png temp.jxl -x color_space=RGB_D65_202_Rel_HLG -d 0
 djxl temp.jxl 3x3_hlg.png
-cjxl 3x3_hlg.png 3x3_hlg_lossy.jxl -d 0.1 -e 7
+cjxl 3x3_hlg.png 3x3_hlg_lossy.jxl -d 0.1 -s 3
 cjxl 3x3_hlg.png 3x3_hlg_lossless.jxl -d 0
 
 cjxl 3x3a.png temp.jxl -x color_space=RGB_D65_202_Rel_HLG -d 0
 djxl temp.jxl 3x3a_hlg.png
-cjxl 3x3a_hlg.png 3x3a_hlg_lossy.jxl -d 0.1 -e 7
+cjxl 3x3a_hlg.png 3x3a_hlg_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_hlg.png 3x3a_hlg_lossless.jxl -d 0
 
 convert icc-v2-gbr.jpg icc-v2-gbr.icc
 cjxl 3x3.png temp.jxl -x icc_pathname=icc-v2-gbr.icc -d 0
 djxl temp.jxl 3x3_gbr.png
-cjxl 3x3_gbr.png 3x3_gbr_lossy.jxl -d 0.1 -e 7
+cjxl 3x3_gbr.png 3x3_gbr_lossy.jxl -d 0.1 -s 3
 cjxl 3x3_gbr.png 3x3_gbr_lossless.jxl -d 0
 
 cjxl 3x3a.png temp.jxl -x icc_pathname=icc-v2-gbr.icc -d 0
 djxl temp.jxl 3x3a_gbr.png
-cjxl 3x3a_gbr.png 3x3a_gbr_lossy.jxl -d 0.1 -e 7
+cjxl 3x3a_gbr.png 3x3a_gbr_lossy.jxl -d 0.1 -s 3
 cjxl 3x3a_gbr.png 3x3a_gbr_lossless.jxl -d 0
 
 cjxl animated.gif animated.jxl
