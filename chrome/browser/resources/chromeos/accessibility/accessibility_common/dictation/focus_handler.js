@@ -7,6 +7,8 @@ const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
 
 import {AutomationPredicate} from '../../common/automation_predicate.js';
+import {EventHandler} from '../../common/event_handler.js';
+
 export class FocusHandler {
   constructor() {
     /** @private {boolean} */

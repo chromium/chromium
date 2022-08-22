@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../common/event_generator.js';
+import {EventHandler} from '../../common/event_handler.js';
 import {RectUtil} from '../../common/rect_util.js';
 import {AutoScanManager} from '../auto_scan_manager.js';
 import {Navigator} from '../navigator.js';

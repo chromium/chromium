@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {constants} from '../../common/constants.js';
+import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
 import {AutomationTreeWalker} from '../../common/tree_walker.js';
 import {SACache} from '../cache.js';
 import {FocusRingManager} from '../focus_ring_manager.js';

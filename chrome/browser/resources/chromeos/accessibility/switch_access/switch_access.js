@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventHandler} from '../common/event_handler.js';
+
 import {Commands} from './commands.js';
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';

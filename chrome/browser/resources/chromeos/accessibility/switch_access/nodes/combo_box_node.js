@@ -5,6 +5,7 @@
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
+import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
 import {Navigator} from '../navigator.js';
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
 

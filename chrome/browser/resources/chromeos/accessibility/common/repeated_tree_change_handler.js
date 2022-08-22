@@ -6,7 +6,7 @@
  * This class assists with processing repeated tree changes in nontrivial ways
  * by allowing only the most recent tree change to be processed.
  */
-class RepeatedTreeChangeHandler {
+export class RepeatedTreeChangeHandler {
   /**
    * @param {!chrome.automation.TreeChangeObserverFilter} filter
    * @param {!function(!chrome.automation.TreeChange)} callback

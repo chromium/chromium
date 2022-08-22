@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../common/event_generator.js';
+import {EventHandler} from '../../common/event_handler.js';
 import {KeyCode} from '../../common/key_code.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';

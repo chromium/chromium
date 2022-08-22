@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ChromeEventHandler} from '../../common/chrome_event_handler.js';
+import {EventHandler} from '../../common/event_handler.js';
 import {RectUtil} from '../../common/rect_util.js';
 
 const EventType = chrome.automation.EventType;

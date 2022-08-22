@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ArrayUtil} from '../common/array_util.js';
+import {EventHandler} from '../common/event_handler.js';
 
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';

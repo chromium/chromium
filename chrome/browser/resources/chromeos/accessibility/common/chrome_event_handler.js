@@ -6,7 +6,7 @@
  * This class wraps ChromeEvent listeners, adding some convenience
  * functions.
  */
-class ChromeEventHandler {
+export class ChromeEventHandler {
   /**
    * @param {!ChromeEvent} chromeEvent
    * @param {function(...)} callback

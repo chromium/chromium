@@ -6,7 +6,7 @@
  * This class assists with processing repeated events in nontrivial ways by
  * allowing only the most recent event to be processed.
  */
-class RepeatedEventHandler {
+export class RepeatedEventHandler {
   /**
    * @param {!chrome.automation.AutomationNode |
    *     !Array<!chrome.automation.AutomationNode>} nodes
