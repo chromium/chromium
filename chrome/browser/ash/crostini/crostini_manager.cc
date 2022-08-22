@@ -624,7 +624,7 @@ base::OnceClosure CrostiniManager::CrostiniRestarter::ExtractRequests(
     if (it->observer)
       observer_list_.RemoveObserver(it->observer);
     callbacks.push_back(std::move(it->callback));
-    requests_.erase(it);
+    it = requests_.erase(it);
   }
 
   return base::BindOnce(
