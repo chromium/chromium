@@ -1336,10 +1336,12 @@ void HTMLCanvasElement::DiscardResourceProvider() {
 }
 
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
-  SetSuspendOffscreenCanvasAnimation(
-      GetPage()->GetVisibilityState() ==
-          mojom::blink::PageVisibilityState::kHidden &&
-      !HasCanvasCapture());
+  if (GetPage()) {
+    SetSuspendOffscreenCanvasAnimation(
+        GetPage()->GetVisibilityState() ==
+            mojom::blink::PageVisibilityState::kHidden &&
+        !HasCanvasCapture());
+  }
 }
 
 void HTMLCanvasElement::PageVisibilityChanged() {
