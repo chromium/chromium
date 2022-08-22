@@ -275,6 +275,11 @@ const base::Feature kDesktopPWAsRunOnOsLogin {
 #endif
 };
 
+// Runs diagnostics during start up to measure how broken web app icons are to
+// feed into metrics.
+const base::Feature kDesktopPWAsIconHealthChecks{
+    "DesktopPWAsIconHealthChecks", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 const base::Feature kDesktopPWAsTabStripSettings{
     "DesktopPWAsTabStripSettings", base::FEATURE_DISABLED_BY_DEFAULT};
