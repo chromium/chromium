@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_VERIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
 class InstallVerifier;
 
-class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
+class InstallVerifierFactory : public ProfileKeyedServiceFactory {
  public:
   InstallVerifierFactory(const InstallVerifierFactory&) = delete;
   InstallVerifierFactory& operator=(const InstallVerifierFactory&) = delete;
@@ -29,8 +29,6 @@ class InstallVerifierFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

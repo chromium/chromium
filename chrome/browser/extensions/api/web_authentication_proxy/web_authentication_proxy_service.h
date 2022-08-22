@@ -10,8 +10,8 @@
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "extensions/browser/extension_registry.h"
@@ -132,8 +132,7 @@ class WebAuthenticationProxyService
 
 // WebAuthenticationProxyServiceFactory creates instances of
 // WebAuthenticationProxyService for a given BrowserContext.
-class WebAuthenticationProxyServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class WebAuthenticationProxyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static WebAuthenticationProxyServiceFactory* GetInstance();
 
@@ -148,8 +147,6 @@ class WebAuthenticationProxyServiceFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

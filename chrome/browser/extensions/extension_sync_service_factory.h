@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ExtensionSyncService;
 
-class ExtensionSyncServiceFactory : public BrowserContextKeyedServiceFactory {
+class ExtensionSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ExtensionSyncService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -24,8 +24,6 @@ class ExtensionSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   ~ExtensionSyncServiceFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

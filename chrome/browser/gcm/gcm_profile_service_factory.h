@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_GCM_GCM_PROFILE_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/gcm_driver/system_encryptor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace gcm {
 
@@ -15,7 +15,7 @@ class GCMProfileService;
 
 // Singleton that owns all GCMProfileService and associates them with
 // Profiles.
-class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
+class GCMProfileServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static GCMProfileService* GetForProfile(content::BrowserContext* profile);
   static GCMProfileServiceFactory* GetInstance();
@@ -48,8 +48,6 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace gcm

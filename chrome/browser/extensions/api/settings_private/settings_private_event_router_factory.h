@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
@@ -15,8 +15,7 @@ class SettingsPrivateEventRouter;
 // This is a factory class used by the BrowserContextDependencyManager
 // to instantiate the settingsPrivate event router per profile (since the
 // extension event router is per profile).
-class SettingsPrivateEventRouterFactory
-    : public BrowserContextKeyedServiceFactory {
+class SettingsPrivateEventRouterFactory : public ProfileKeyedServiceFactory {
  public:
   SettingsPrivateEventRouterFactory(const SettingsPrivateEventRouterFactory&) =
       delete;
@@ -33,8 +32,6 @@ class SettingsPrivateEventRouterFactory
 
  protected:
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 

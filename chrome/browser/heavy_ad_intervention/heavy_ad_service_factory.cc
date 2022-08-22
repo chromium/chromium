@@ -4,10 +4,8 @@
 
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -30,18 +28,13 @@ HeavyAdServiceFactory* HeavyAdServiceFactory::GetInstance() {
 }
 
 HeavyAdServiceFactory::HeavyAdServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "HeavyAdService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 HeavyAdServiceFactory::~HeavyAdServiceFactory() {}
 
 KeyedService* HeavyAdServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new heavy_ad_intervention::HeavyAdService();
-}
-
-content::BrowserContext* HeavyAdServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

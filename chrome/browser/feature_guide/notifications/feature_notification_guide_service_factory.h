@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_FEATURE_NOTIFICATION_GUIDE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_FEATURE_NOTIFICATION_GUIDE_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -23,7 +23,7 @@ class FeatureNotificationGuideService;
 
 // A factory to create one unique FeatureNotificationGuideService.
 class FeatureNotificationGuideServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static FeatureNotificationGuideServiceFactory* GetInstance();
   static FeatureNotificationGuideService* GetForProfile(Profile* profile);

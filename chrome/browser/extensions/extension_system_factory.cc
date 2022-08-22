@@ -39,9 +39,9 @@ ExtensionSystemSharedFactory* ExtensionSystemSharedFactory::GetInstance() {
 }
 
 ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
-    : BrowserContextKeyedServiceFactory(
-        "ExtensionSystemShared",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "ExtensionSystemShared",
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(ExtensionManagementFactory::GetInstance());
   // This depends on ExtensionService, which depends on ExtensionRegistry.
@@ -67,12 +67,6 @@ ExtensionSystemSharedFactory::~ExtensionSystemSharedFactory() {
 KeyedService* ExtensionSystemSharedFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new ExtensionSystemImpl::Shared(static_cast<Profile*>(context));
-}
-
-content::BrowserContext* ExtensionSystemSharedFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 // ExtensionSystemFactory

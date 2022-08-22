@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -25,9 +24,10 @@ BlocklistFactory* BlocklistFactory::GetInstance() {
 }
 
 BlocklistFactory::BlocklistFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "Blocklist",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Redirected in incognito.
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 }
 
@@ -36,12 +36,6 @@ BlocklistFactory::~BlocklistFactory() {}
 KeyedService* BlocklistFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
   return new Blocklist(ExtensionPrefs::Get(context));
-}
-
-BrowserContext* BlocklistFactory::GetBrowserContextToUse(
-    BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 }  // namespace extensions

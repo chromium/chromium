@@ -7,7 +7,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system_provider.h"
 
 namespace extensions {
@@ -27,18 +26,11 @@ SettingsPrivateDelegateFactory* SettingsPrivateDelegateFactory::GetInstance() {
 }
 
 SettingsPrivateDelegateFactory::SettingsPrivateDelegateFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SettingsPrivateDelegate",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 SettingsPrivateDelegateFactory::~SettingsPrivateDelegateFactory() {
-}
-
-content::BrowserContext* SettingsPrivateDelegateFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Use the incognito profile when in Guest mode.
-  return context;
 }
 
 KeyedService* SettingsPrivateDelegateFactory::BuildServiceInstanceFor(

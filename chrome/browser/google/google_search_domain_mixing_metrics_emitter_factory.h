@@ -9,14 +9,14 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/google/google_search_domain_mixing_metrics_emitter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 // Singleton that owns all GoogleSearchDomainMixingMetricsEmitters and
 // associates them with Profiles.
 class GoogleSearchDomainMixingMetricsEmitterFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Flag to enable computing domain mixing metrics based on the Google search
   // activity of the user.

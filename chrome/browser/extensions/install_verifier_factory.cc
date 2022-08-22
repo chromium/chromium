@@ -6,7 +6,6 @@
 
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -29,9 +28,9 @@ InstallVerifierFactory* InstallVerifierFactory::GetInstance() {
 }
 
 InstallVerifierFactory::InstallVerifierFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "InstallVerifier",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
@@ -42,12 +41,6 @@ InstallVerifierFactory::~InstallVerifierFactory() {
 KeyedService* InstallVerifierFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
   return new InstallVerifier(ExtensionPrefs::Get(context), context);
-}
-
-BrowserContext* InstallVerifierFactory::GetBrowserContextToUse(
-    BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 }  // namespace extensions

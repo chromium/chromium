@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_ERROR_CONSOLE_ERROR_CONSOLE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
 
 class ErrorConsole;
 
-class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
+class ErrorConsoleFactory : public ProfileKeyedServiceFactory {
  public:
   ErrorConsoleFactory(const ErrorConsoleFactory&) = delete;
   ErrorConsoleFactory& operator=(const ErrorConsoleFactory&) = delete;
@@ -28,8 +28,6 @@ class ErrorConsoleFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

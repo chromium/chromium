@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -88,9 +87,7 @@ FeatureNotificationGuideServiceFactory::GetForProfile(Profile* profile) {
 }
 
 FeatureNotificationGuideServiceFactory::FeatureNotificationGuideServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FeatureNotificationGuideService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FeatureNotificationGuideService") {
   DependsOn(NotificationScheduleServiceFactory::GetInstance());
   DependsOn(
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());

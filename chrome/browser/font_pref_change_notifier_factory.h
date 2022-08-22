@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_FONT_PREF_CHANGE_NOTIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class FontPrefChangeNotifier;
 class Profile;
 
 // Keyed service factory for a FontPrefChangeNotifier.
-class FontPrefChangeNotifierFactory : public BrowserContextKeyedServiceFactory {
+class FontPrefChangeNotifierFactory : public ProfileKeyedServiceFactory {
  public:
   static FontPrefChangeNotifier* GetForProfile(Profile* profile);
 
@@ -26,8 +26,6 @@ class FontPrefChangeNotifierFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

@@ -5,8 +5,6 @@
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 namespace extensions {
@@ -24,9 +22,9 @@ ChromeAppIconServiceFactory* ChromeAppIconServiceFactory::GetInstance() {
 }
 
 ChromeAppIconServiceFactory::ChromeAppIconServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ChromeAppIconService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
@@ -35,11 +33,6 @@ ChromeAppIconServiceFactory::~ChromeAppIconServiceFactory() = default;
 KeyedService* ChromeAppIconServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new ChromeAppIconService(context);
-}
-
-content::BrowserContext* ChromeAppIconServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace extensions

@@ -7,11 +7,9 @@
 #include <memory>
 
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace instance_id {
 
@@ -33,9 +31,9 @@ InstanceIDProfileServiceFactory::GetInstance() {
 }
 
 InstanceIDProfileServiceFactory::InstanceIDProfileServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "InstanceIDProfileService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "InstanceIDProfileService",
+          ProfileSelections::BuildForRegularAndIncognito()) {
   // GCM is needed for device ID.
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 }
@@ -49,12 +47,6 @@ KeyedService* InstanceIDProfileServiceFactory::BuildServiceInstanceFor(
   return new InstanceIDProfileService(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       profile->IsOffTheRecord());
-}
-
-content::BrowserContext*
-InstanceIDProfileServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace instance_id

@@ -29,7 +29,7 @@ namespace {
 
 HidChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
   auto* profile = Profile::FromBrowserContext(browser_context);
-  return HidChooserContextFactory::GetForProfile(profile);
+  return profile ? HidChooserContextFactory::GetForProfile(profile) : nullptr;
 }
 
 }  // namespace

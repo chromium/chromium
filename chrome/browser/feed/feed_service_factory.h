@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/strings/string_piece_forward.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -23,7 +23,7 @@ class FeedService;
 
 // Factory to create one FeedService per browser context. Callers need to
 // watch out for nullptr when incognito, as the feed should not be used then.
-class FeedServiceFactory : public BrowserContextKeyedServiceFactory {
+class FeedServiceFactory : public ProfileKeyedServiceFactory {
  public:
   FeedServiceFactory(const FeedServiceFactory&) = delete;
   FeedServiceFactory& operator=(const FeedServiceFactory&) = delete;
@@ -39,8 +39,6 @@ class FeedServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

@@ -26,7 +26,6 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -164,9 +163,7 @@ FeedServiceFactory* FeedServiceFactory::GetInstance() {
 }
 
 FeedServiceFactory::FeedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FeedService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FeedService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(background_task::BackgroundTaskSchedulerFactory::GetInstance());
@@ -235,11 +232,6 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
                                            ServiceAccessType::IMPLICIT_ACCESS),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(),
       background_task_runner, api_key, chrome_info);
-}
-
-content::BrowserContext* FeedServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context->IsOffTheRecord() ? nullptr : context;
 }
 
 bool FeedServiceFactory::ServiceIsNULLWhileTesting() const {
